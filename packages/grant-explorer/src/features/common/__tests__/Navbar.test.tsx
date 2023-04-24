@@ -52,9 +52,14 @@ describe("<Navbar>", () => {
     expect(screen.getByTestId("connect-wallet-button")).toBeInTheDocument();
   });
 
-  it("SHOULD display cart", () => {
-    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
+  it("SHOULD display cart if round has not ended", () => {
+    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} isBeforeRoundEndDate={true}/>);
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
+  });
+
+  it("SHOULD not display cart if round has ended", () => {
+    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"}  isBeforeRoundEndDate={false}/>);
+    expect(screen.queryByTestId("navbar-cart")).not.toBeInTheDocument();
   });
 
   it("SHOULD display support options", async () => {

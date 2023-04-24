@@ -92,7 +92,10 @@ export default function ViewProjectDetails() {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar
+        roundUrlPath={`/round/${chainId}/${roundId}`}
+        isBeforeRoundEndDate={isBeforeRoundEndDate}
+      />
       {isBeforeRoundEndDate && <PassportBanner />}
       {isAfterRoundEndDate && (
         <div>
@@ -131,6 +134,7 @@ export default function ViewProjectDetails() {
                 </div>
                 <Sidebar
                   isAlreadyInCart={isAlreadyInCart}
+                  isBeforeRoundEndDate={isBeforeRoundEndDate}
                   removeFromCart={() => {
                     handleRemoveProjectsFromCart([projectToRender]);
                   }}
@@ -434,17 +438,20 @@ export function ProjectLogo(props: {
 
 function Sidebar(props: {
   isAlreadyInCart: boolean;
+  isBeforeRoundEndDate?: boolean;
   removeFromCart: () => void;
   addToCart: () => void;
 }) {
   return (
     <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6">
       <ProjectStats />
-      <CartButtonToggle
-        isAlreadyInCart={props.isAlreadyInCart}
-        addToCart={props.addToCart}
-        removeFromCart={props.removeFromCart}
-      />
+      {props.isBeforeRoundEndDate &&
+        <CartButtonToggle
+          isAlreadyInCart={props.isAlreadyInCart}
+          addToCart={props.addToCart}
+          removeFromCart={props.removeFromCart}
+        />
+      }
     </div>
   );
 }

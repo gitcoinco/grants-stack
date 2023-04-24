@@ -1,17 +1,16 @@
 import { RadioGroup } from "@headlessui/react";
 import {
   ExclamationCircleIcon as NoInformationIcon,
-  InformationCircleIcon, XIcon
+  InformationCircleIcon,
+  XIcon,
 } from "@heroicons/react/outline";
 import { Button } from "common/src/styles";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { errorModalDelayMs } from "../../constants";
-import {
-  useFinalizeRound
-} from "../../context/round/FinalizeRoundContext";
-import { setReadyForPayout } from "../../features/api/round";
+import { useFinalizeRound } from "../../context/round/FinalizeRoundContext";
+import { setReadyForPayout } from "../api/round";
 import { useRoundMatchData } from "../api/api";
 import { useFetchMatchingDistributionFromContract } from "../api/payoutStrategy/merklePayoutStrategy";
 import {
@@ -19,7 +18,7 @@ import {
   ProgressStatus,
   ProgressStep,
   Round,
-  TransactionBlock
+  TransactionBlock,
 } from "../api/types";
 import { saveObjectAsJson } from "../api/utils";
 import { useWallet } from "../common/Auth";
@@ -27,6 +26,7 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+import { classNames } from "common";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
@@ -86,7 +86,10 @@ function InformationContent(props: {
   const [customMatchingData, setCustomMatchingData] = useState<
     MatchingStatsData[] | undefined
   >();
-  const [useFetchDistributionFromContract, setUseFetchDistributionFromContract] = useState(true);
+  const [
+    useFetchDistributionFromContract,
+    setUseFetchDistributionFromContract,
+  ] = useState(true);
 
   const {
     distributionMetaPtr,
@@ -149,7 +152,9 @@ function InformationContent(props: {
           customMatchingData={customMatchingData}
           setCustomMatchingData={setCustomMatchingData}
           useFetchDistributionFromContract={useFetchDistributionFromContract}
-          setUseFetchDistributionFromContract={setUseFetchDistributionFromContract}
+          setUseFetchDistributionFromContract={
+            setUseFetchDistributionFromContract
+          }
           matchingDistributionContract={matchingDistributionContract}
         />
       )}
@@ -171,17 +176,12 @@ function ErrorMessage() {
   );
 }
 
-
 const getPayoutReadyStatus = (
   isDistributionAvailableOnChain?: boolean,
   hasReadyForPayoutBeenExecuted?: boolean
 ): boolean => {
-
-  if (!isDistributionAvailableOnChain || hasReadyForPayoutBeenExecuted) {
-    return false;
-  }
-  return true;
-}
+  return !(!isDistributionAvailableOnChain || hasReadyForPayoutBeenExecuted);
+};
 
 function InformationTable(props: {
   roundId: string | undefined;
@@ -194,9 +194,9 @@ function InformationTable(props: {
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
 }) {
-
   const [openReadyForPayoutModal, setOpenReadyForPayoutModal] = useState(false);
-  const [openReadyForPayoutProgressModal, setOpenReadyForPayoutProgressModal] = useState(false);
+  const [openReadyForPayoutProgressModal, setOpenReadyForPayoutProgressModal] =
+    useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const [payoutReady, setPayoutReady] = useState(
@@ -212,10 +212,12 @@ function InformationTable(props: {
     setOpenReadyForPayoutModal(false);
     setOpenReadyForPayoutProgressModal(true);
     try {
-
       await handleFinalizeDistributionForPayout();
     } catch (error) {
-      console.error("Progress modal error calling handleFinalizeDistributionForPayout()", error);
+      console.error(
+        "Progress modal error calling handleFinalizeDistributionForPayout()",
+        error
+      );
     }
   };
 
@@ -224,11 +226,10 @@ function InformationTable(props: {
       if (signer && props.roundId) {
         const setReadyForPayoutTx: TransactionBlock = await setReadyForPayout({
           roundId: props.roundId,
-          signerOrProvider: signer
+          signerOrProvider: signer,
         });
 
         if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
-
           setTimeout(() => {
             setOpenReadyForPayoutProgressModal(false);
             setOpenErrorModal(true);
@@ -252,24 +253,24 @@ function InformationTable(props: {
       setPayoutReady(false);
       setOpenReadyForPayoutProgressModal(false);
     }, errorModalDelayMs);
-  }
+  };
 
-  const [finalizingDistributionStatus, setFinalizingDistributionStatus] = useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
-
+  const [finalizingDistributionStatus, setFinalizingDistributionStatus] =
+    useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
 
   const readyForPayoutProgressSteps: ProgressStep[] = [
     {
       name: "Finalizing Distribution",
       description: "The distribution is being finalized in the contract.",
-      status: finalizingDistributionStatus
+      status: finalizingDistributionStatus,
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
       status:
-        finalizingDistributionStatus == ProgressStatus.IS_SUCCESS ?
-          ProgressStatus.IS_SUCCESS :
-          ProgressStatus.NOT_STARTED,
+        finalizingDistributionStatus == ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IS_SUCCESS
+          : ProgressStatus.NOT_STARTED,
     },
   ];
 
@@ -281,8 +282,8 @@ function InformationTable(props: {
           {props.useFetchDistributionFromContract
             ? "Finalized"
             : props.isCustom
-              ? "Custom"
-              : "Default"}{" "}
+            ? "Custom"
+            : "Default"}{" "}
           Matching Stats
         </p>
         {props.isCustom ? (
@@ -318,22 +319,18 @@ function InformationTable(props: {
             </tr>
           </thead>
           <tbody>
-            {
-              props.matchingData?.map((data: MatchingStatsData) => (
-                <tr key={data.projectId}>
-                  <td className="py-2">
-                    {data.projectName && data.projectName.slice(0, 16) + "..."}
-                  </td>
-                  <td className="py-2">
-                    {data.projectId.slice(0, 32) + "..."}
-                  </td>
-                  <td className="py-2">{data.uniqueContributorsCount}</td>
-                  <td className="py-2">
-                    {Number(data.matchPoolPercentage.toFixed(4)) * 100 + "%"}
-                  </td>
-                </tr>
-              ))
-            }
+            {props.matchingData?.map((data: MatchingStatsData) => (
+              <tr key={data.projectId}>
+                <td className="py-2">
+                  {data.projectName && data.projectName.slice(0, 16) + "..."}
+                </td>
+                <td className="py-2">{data.projectId.slice(0, 32) + "..."}</td>
+                <td className="py-2">{data.uniqueContributorsCount}</td>
+                <td className="py-2">
+                  {Number(data.matchPoolPercentage.toFixed(4)) * 100 + "%"}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -368,7 +365,8 @@ function InformationTable(props: {
           </div>
           <div className="flex justify-end mt-4">
             <span className="text-gray-400 flex">
-              You will not be able to change the distribution after you finalize.
+              You will not be able to change the distribution after you
+              finalize.
             </span>
           </div>
         </>
@@ -382,8 +380,7 @@ function InformationTable(props: {
         setIsOpen={setOpenReadyForPayoutModal}
         continueButtonText={"Ready for payout"}
         continueButtonAction={handleReadyForPayoutModal}
-      >
-      </InfoModal>
+      ></InfoModal>
       <ProgressModal
         isOpen={openReadyForPayoutProgressModal}
         subheading={"Please hold while we update the contract."}
@@ -414,7 +411,9 @@ function FinalizeRound(props: {
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
   useFetchDistributionFromContract: boolean;
-  setUseFetchDistributionFromContract: (useFetchDistributionFromContract: boolean) => void;
+  setUseFetchDistributionFromContract: (
+    useFetchDistributionFromContract: boolean
+  ) => void;
   matchingDistributionContract: MatchingStatsData[] | undefined;
 }) {
   const [openInfoModal, setOpenInfoModal] = useState(false);
@@ -450,9 +449,7 @@ function FinalizeRound(props: {
   const handleFinalizeRound = async () => {
     try {
       if (props.payoutStrategy !== undefined) {
-
         setTimeout(async () => {
-
           setOpenInfoModal(false);
           setOpenProgressModal(true);
 
@@ -460,7 +457,7 @@ function FinalizeRound(props: {
             props.payoutStrategy.id ?? "",
             props.useDefault ? props.matchingData : props.customMatchingData
           );
-        }, errorModalDelayMs)
+        }, errorModalDelayMs);
       }
     } catch (error) {
       console.error("FinalizeRound", error);
@@ -498,7 +495,9 @@ function FinalizeRound(props: {
           <InformationTable
             roundId={props.roundId}
             isReadyForPayout={props.payoutStrategy.isReadyForPayout}
-            useFetchDistributionFromContract={props.useFetchDistributionFromContract}
+            useFetchDistributionFromContract={
+              props.useFetchDistributionFromContract
+            }
             matchingData={props.matchingDistributionContract}
           />
         </div>
@@ -524,12 +523,14 @@ function FinalizeRound(props: {
                       roundId={props.roundId}
                       matchingData={props.matchingData}
                       isReadyForPayout={props.payoutStrategy.isReadyForPayout}
-                      useFetchDistributionFromContract={props.useFetchDistributionFromContract}
+                      useFetchDistributionFromContract={
+                        props.useFetchDistributionFromContract
+                      }
                     />
                   ) : null}
 
                   {/* Trigger for updateDistribution */}
-                  {!props.payoutStrategy.isReadyForPayout &&
+                  {!props.payoutStrategy.isReadyForPayout && (
                     <div className="grid justify-items-end">
                       <div className="w-fit">
                         <Button
@@ -537,13 +538,15 @@ function FinalizeRound(props: {
                           onClick={() => setOpenInfoModal(true)}
                           type="submit"
                           className="my-0 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
-                          disabled={!props.useDefault && !props.customMatchingData}
+                          disabled={
+                            !props.useDefault && !props.customMatchingData
+                          }
                         >
                           Save distribution
                         </Button>
                       </div>
                     </div>
-                  }
+                  )}
 
                   {!props.useDefault && !props.customMatchingData && (
                     <UploadJSON
@@ -557,13 +560,14 @@ function FinalizeRound(props: {
                       matchingData={props.customMatchingData}
                       isCustom={true}
                       isReadyForPayout={props.payoutStrategy.isReadyForPayout}
-                      useFetchDistributionFromContract={props.useFetchDistributionFromContract}
+                      useFetchDistributionFromContract={
+                        props.useFetchDistributionFromContract
+                      }
                       customMatchingData={props.customMatchingData}
                       setCustomMatchingData={props.setCustomMatchingData}
                     />
                   ) : null}
                 </div>
-
               </form>
             </div>
             <InfoModal
@@ -588,10 +592,6 @@ function FinalizeRound(props: {
       ) : null}
     </>
   );
-}
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
 }
 
 function UploadJSON(props: {
@@ -850,11 +850,13 @@ function ReadyForPayoutModalBody() {
   return (
     <div className="text-sm text-grey-400 gap-16">
       <p className="text-sm">
-        Upon finalizing round results, they'll be permanently locked in the smart contract, ensuring distribution integrity on the blockchain.
+        Upon finalizing round results, they'll be permanently locked in the
+        smart contract, ensuring distribution integrity on the blockchain.
       </p>
 
       <p className="text-sm mt-4">
-        Please verify results before confirming, as you'll acknowledge their accuracy and accept the permanent locking of the distribution.
+        Please verify results before confirming, as you'll acknowledge their
+        accuracy and accept the permanent locking of the distribution.
       </p>
     </div>
   );

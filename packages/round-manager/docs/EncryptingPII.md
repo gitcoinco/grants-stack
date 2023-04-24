@@ -1,6 +1,6 @@
 # Encrypting PII information
 
-When a round is created, the operators specify a list of additional questions AKA (application schema) which would be asked to a project when the apply to the round.
+When a round is created, the operators specify a list of additional questions AKA (application schema) which would be asked to a project when they apply to the round.
 The schema is stored in IPFS and when a project applies to the round, this schema is used to generate the form which they then fill out which is then stored in IPFS
 Some of these questions would contain Personally identifiable information(PII) which would need to encrypted and could be decrypted only
 
@@ -23,7 +23,7 @@ To ensure only the round operators are allowed, `isRoundOperatorAccessControl` w
 
 Assuming the `unifiedAccessControlConditions` was set to `isRoundOperatorAccessControl`, then upon recieving the encrypted content, round-manager would use `decryptString` to decrypt the encrypted data.
 
-Ideally when the project applies to the round, the would be expected to pass:
+Ideally when the project applies to the round, they would be expected to pass:
 
 - `encryptedString`
 - `encryptedSymmetricKey`

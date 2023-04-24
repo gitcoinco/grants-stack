@@ -83,7 +83,7 @@ export default function ViewApplicationPage() {
   const { applications, isLoading } = useApplicationByRoundId(roundId!);
   const filteredApplication = applications?.filter((a) => a.id == id) || [];
   const application = filteredApplication[0];
-
+  
   const {
     bulkUpdateGrantApplications,
     contractUpdatingStatus,
@@ -233,6 +233,12 @@ export default function ViewApplicationPage() {
         return;
       }
 
+      /* During development, give frontend access to all rounds */
+      if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
+        setHasAccess(true);
+        return;
+      }
+
       if (round) {
         setHasAccess(!!round.operatorWallets?.includes(address?.toLowerCase()));
       }
@@ -296,6 +302,9 @@ export default function ViewApplicationPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [application, hasAccess, isLoading]);
+
+  // Handle case where project github is not set but user github is set. if both are not available, set to null
+  const registeredGithub = application?.project?.projectGithub ?? application?.project?.userGithub;
 
   return isLoading ? (
     <Spinner text="We're fetching the round application." />
@@ -418,25 +427,30 @@ export default function ViewApplicationPage() {
               <div className="sm:flex sm:justify-between my-6">
                 <div className="sm:basis-3/4 sm:mr-3">
                   <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
-                    <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
-                      data-testid="twitter-info"
-                    >
+
+                    <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="twitter-info">
                       <TwitterIcon className="h-4 w-4 mr-2" />
-                      <span className="text-sm text-violet-400 mr-2">
+                      <a
+                        href={`https://twitter.com/${application?.project?.projectTwitter}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-violet-400 mr-2"
+                      >
                         {application?.project?.projectTwitter}
-                      </span>
+                      </a>
                       {getVerifiableCredentialVerificationResultView("twitter")}
                     </span>
 
-                    <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
-                      data-testid="github-info"
-                    >
+                    <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="github-info">
                       <GithubIcon className="h-4 w-4 mr-2" />
-                      <span className="text-sm text-violet-400 mr-2">
-                        {application?.project?.projectGithub}
-                      </span>
+                      <a
+                        href={`https://github.com/${registeredGithub}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-violet-400 mr-2"
+                      >
+                        {registeredGithub}
+                      </a>
                       {getVerifiableCredentialVerificationResultView("github")}
                     </span>
 
@@ -447,9 +461,9 @@ export default function ViewApplicationPage() {
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       <span className="text-sm text-violet-400 mr-2">
                         Created on:{" "}
-                        {application?.createdAt
+                        {application?.project?.createdAt
                           ? formatDateWithOrdinal(
-                              new Date(Number(application?.createdAt) * 1000)
+                              new Date(Number(application?.project?.createdAt))
                             )
                           : "-"}
                       </span>

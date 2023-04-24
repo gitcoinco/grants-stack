@@ -150,7 +150,7 @@ export default function About({
                 </span>
               </p>
             </div>
-            {project?.projectGithub && (
+            {project?.userGithub && (
               <div className="flex items-center m-2">
                 <img
                   className="h-4 ml-0.5 mr-2 mt-1"

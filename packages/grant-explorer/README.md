@@ -11,10 +11,10 @@ Indexed data can be queried by the graphs deployed from the Allo's [graph](https
 
 ## Live Links
 
-| Env     | Git Branch | URL                                |
-| ------- | ---------- | ---------------------------------- |
-| STAGING | main       | https://gegitcoin.on.fleek.co/     |
-| LIVE    | release    | https://explorer.gitcoin.co/ |
+| Env     | Git Branch | URL                            |
+| ------- | ---------- | ------------------------------ |
+| STAGING | main       | https://gegitcoin.on.fleek.co/ |
+| LIVE    | release    | https://explorer.gitcoin.co/   |
 
 ## Directory Structure
 

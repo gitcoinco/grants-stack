@@ -284,7 +284,7 @@ export async function deployRoundContract(
     const initMetaPtr = [round.store, round.applicationStore];
 
     const initRoles = [
-      round.operatorWallets?.slice(0, 1),
+      [await signerOrProvider.getAddress()],
       round.operatorWallets,
     ];
 
@@ -487,6 +487,7 @@ export async function getProjectOwners(
 /**
  * Fetch finalized matching distribution
  * @param roundId - the ID of a specific round for detail
+ * @param signerOrProvider
  */
 export async function fetchMatchingDistribution(
   roundId: string | undefined,

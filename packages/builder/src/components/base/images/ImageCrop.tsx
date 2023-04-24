@@ -13,7 +13,7 @@ import "react-image-crop/dist/ReactCrop.css";
 import Button, { ButtonVariants } from "../Button";
 
 // This is to demonstate how to make and center a % aspect crop
-// which is a bit trickier so we use some helper functions.
+// which is a bit trickier, so we use some helper functions.
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,

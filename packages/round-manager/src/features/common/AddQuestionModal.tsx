@@ -28,9 +28,14 @@ const questions: InputType[] = [
   "address",
   "link",
   "number",
-]
+];
 
-function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalProps) {
+function AddQuestionModal({
+  onSave,
+  question,
+  show,
+  onClose,
+}: AddQuestionModalProps) {
   const questionExists = question && question.index !== undefined;
 
   const [isOpen, setIsOpen] = useState(show);
@@ -66,7 +71,10 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           key="required"
           activeLabel="*Required"
           inactiveLabel="Optional"
-          value={questionOptions["required" as keyof SchemaQuestion] as boolean || false}
+          value={
+            (questionOptions["required" as keyof SchemaQuestion] as boolean) ||
+            false
+          }
           handler={(b: boolean) =>
             setQuestionOptions({ ...questionOptions, ["required"]: b })
           }
@@ -76,7 +84,10 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           key="encrypted"
           activeLabel="Encrypted"
           inactiveLabel="Not Encrypted"
-          value={questionOptions["encrypted" as keyof SchemaQuestion] as boolean || false}
+          value={
+            (questionOptions["encrypted" as keyof SchemaQuestion] as boolean) ||
+            false
+          }
           handler={(b: boolean) =>
             setQuestionOptions({ ...questionOptions, ["encrypted"]: b })
           }
@@ -86,14 +97,17 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           key="hidden"
           activeLabel="Shown in Explorer"
           inactiveLabel="Hidden from Explorer"
-          value={!(questionOptions["hidden" as keyof SchemaQuestion] as boolean) || false}
+          value={
+            !(questionOptions["hidden" as keyof SchemaQuestion] as boolean) ||
+            false
+          }
           handler={(b: boolean) =>
             setQuestionOptions({ ...questionOptions, ["hidden"]: !b })
           }
         />
       </div>
     );
-  }
+  };
 
   function answerArea(inner: JSX.Element) {
     return (
@@ -145,15 +159,19 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
   };
 
   function addOptions() {
-
     const renderOptions = questionOptions.choices || [];
 
-    if (renderOptions.length === 0 || (selectedQuestion === "multiple-choice" || selectedQuestion === "dropdown") && renderOptions.length === 1) {
+    if (
+      renderOptions.length === 0 ||
+      ((selectedQuestion === "multiple-choice" ||
+        selectedQuestion === "dropdown") &&
+        renderOptions.length === 1)
+    ) {
       renderOptions.push("");
       setQuestionOptions({
         ...questionOptions,
         choices: renderOptions,
-      })
+      });
     }
 
     const render: JSX.Element[] = [];
@@ -173,10 +191,9 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                     ...questionOptions.choices.slice(0, i),
                     event.target.value,
                     ...questionOptions.choices.slice(i + 1),
-                  ]
-                })
-            }
-            }
+                  ],
+                });
+            }}
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onDeleteOption={() => {
               if (questionOptions.choices?.length)
@@ -185,8 +202,8 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                   choices: [
                     ...questionOptions.choices.slice(0, i),
                     ...questionOptions.choices.slice(i + 1),
-                  ]
-                })
+                  ],
+                });
             }}
             options={[questionOptions]}
           />
@@ -196,9 +213,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
     return (
       <>
-        <div className="border-l mb-2 mt-4">
-          {render}
-        </div>
+        <div className="border-l mb-2 mt-4">{render}</div>
         <AddOptionButton />
       </>
     );
@@ -227,8 +242,13 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             >
               <div className="flex items-center justify-center">
                 <InputIcon type={selectedQuestion} />
-                <span className="mx-1 text-[16px] text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
-                <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
+                <span className="mx-1 text-[16px] text-grey-400 font-medium">
+                  {typeToText(selectedQuestion)}
+                </span>
+                <ChevronDownIcon
+                  className="text-grey-400 h-5 w-5 ml-8"
+                  aria-hidden="true"
+                />
               </div>
             </Listbox.Button>
             <Transition
@@ -247,23 +267,28 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                   >
                     {({ active }) => (
                       <span
-                        className={`flex w-full py-2 ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
-                          }`}
+                        className={`flex w-full py-2 ${
+                          active
+                            ? "bg-violet-400 text-white"
+                            : "bg-white text-black"
+                        }`}
                       >
                         <span className="mt-0.5 flex items-center">
                           <InputIcon className="mr-3 ml-[20px]" type={q} />
                         </span>
-                        <span className="flex text-md w-full mt-0.5 ">{typeToText(q)}</span>
+                        <span className="flex text-md w-full mt-0.5 ">
+                          {typeToText(q)}
+                        </span>
                       </span>
                     )}
-                  </Listbox.Option>)
-                )}
+                  </Listbox.Option>
+                ))}
               </Listbox.Options>
             </Transition>
           </div>
         </Listbox>
       </div>
-    )
+    );
   }
 
   const checkForErrors = (): boolean => {
@@ -276,20 +301,30 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     if (selectedQuestion !== INITIAL_VALUE && !questionOptions.title) {
       errors.push("Question title is required.");
     }
-    if (questionOptions.type === "checkbox" && questionOptions.choices?.[0] === "") {
+    if (
+      questionOptions.type === "checkbox" &&
+      questionOptions.choices?.[0] === ""
+    ) {
       errors.push("Please provide at least 1 option.");
     }
-    if ((questionOptions.type === "multiple-choice" || questionOptions.type === "dropdown")
-      && (!questionOptions.choices || questionOptions.choices?.length < 2 || questionOptions.choices?.[1] === "")) {
+    if (
+      (questionOptions.type === "multiple-choice" ||
+        questionOptions.type === "dropdown") &&
+      (!questionOptions.choices ||
+        questionOptions.choices?.length < 2 ||
+        questionOptions.choices?.[1] === "")
+    ) {
       errors.push("Please provide at least 2 options.");
     }
-    if (questionOptions.encrypted === true && questionOptions.hidden === false) {
-      errors.push("Questions cannot be marked as encrypted and shown in explorer. Please select one.");
+    if (questionOptions.encrypted && !questionOptions.hidden) {
+      errors.push(
+        "Questions cannot be marked as encrypted and shown in explorer. Please select one."
+      );
     }
 
     setInputError(errors);
-    return (errors.length > 0);
-  }
+    return errors.length > 0;
+  };
 
   const checkForOptions = (): SchemaQuestion => {
     let result: SchemaQuestion = { ...questionOptions };
@@ -306,36 +341,50 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     }
 
     return result;
-  }
+  };
 
   const renderError = (errors: string[]) => {
     return (
       <div className="bg-pink-100 pb-3 text-sm mt-4">
         <div className="text-red-100 pt-3 pl-3 pb-2 grid grid-flow-col grid-cols-10 items-center">
-          <div className="col-span-1 w-5"><XCircleIcon /></div>
+          <div className="col-span-1 w-5">
+            <XCircleIcon />
+          </div>
           <div className="col-span-9">
-            {`There ${errors.length === 1 ? "was 1 error" : `were ${errors.length} errors`} with your form submission:`}
+            {`There ${
+              errors.length === 1
+                ? "was 1 error"
+                : `were ${errors.length} errors`
+            } with your form submission:`}
           </div>
         </div>
-        {errors.map((error) => (<div className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10">
-          <div className="col-span-1"></div>
-          <div className="col-span-9">
-            <span className="text-md pr-2 pt-1">&bull;</span>{error}
+        {errors.map((error) => (
+          <div className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10">
+            <div className="col-span-1"></div>
+            <div className="col-span-9">
+              <span className="text-md pr-2 pt-1">&bull;</span>
+              {error}
+            </div>
           </div>
-        </div>)
-        )}
+        ))}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div data-testid="add-question-modal">
-      <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
+      <Dialog
+        open={isOpen}
+        onClose={onClose}
+        className="relative z-50 max-w-[628px] max-h-[557px]"
+      >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center">
           <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-6">
             <Dialog.Title className="mb-4 -mt-4">
-              <span className="text-[18px] text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
+              <span className="text-[18px] text-grey-500">
+                {questionExists ? `Edit Question` : `Add Question`}
+              </span>
             </Dialog.Title>
             <Dialog.Description className="mb-2 text-grey-500 font-normal">
               <span className="text-[14px]">Question Type</span>
@@ -346,10 +395,15 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             <div>
               <div className="flex flex-col mt-2">
                 {selectedQuestion !== INITIAL_VALUE &&
-                  answerArea((selectedQuestion == "multiple-choice"
-                    || selectedQuestion == "checkbox"
-                    || selectedQuestion == "dropdown") ? addOptions() : <></>)
-                }
+                  answerArea(
+                    selectedQuestion == "multiple-choice" ||
+                      selectedQuestion == "checkbox" ||
+                      selectedQuestion == "dropdown" ? (
+                      addOptions()
+                    ) : (
+                      <></>
+                    )
+                  )}
               </div>
             </div>
             {inputError.length > 0 && renderError(inputError)}
@@ -358,8 +412,8 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                 role="cancel"
                 className="border rounded-[4px] border-gray-100 p-3 mr-2 w-[140px]"
                 onClick={() => {
-                  setIsOpen(false)
-                  onClose()
+                  setIsOpen(false);
+                  onClose();
                 }}
               >
                 Cancel
@@ -374,12 +428,11 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                     onSave({
                       ...initialQuestion,
                       field: {
-                        ...checkForOptions()
-                      }
-                    })
+                        ...checkForOptions(),
+                      },
+                    });
                   }
-                }
-                }
+                }}
               >
                 {questionExists ? `Save` : `Add`}
               </button>

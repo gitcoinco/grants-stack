@@ -5,7 +5,7 @@ import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
-import { getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
+import { payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -23,7 +23,11 @@ import Footer from "../common/Footer";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import { Button, Input } from "common/src/styles";
-import { renderToPlainText } from "common";
+import {
+  formatUTCDateAsISOString,
+  getUTCTime,
+  renderToPlainText,
+} from "common";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 
@@ -166,8 +170,11 @@ function AfterRoundStart(props: {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      {props.isAfterRoundEndDate && (
+      <Navbar
+        roundUrlPath={`/round/${chainId}/${roundId}`}
+        isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+      />
+      {props.isBeforeRoundEndDate && (
         <PassportBanner chainId={chainId} roundId={roundId} />
       )}
       {props.isAfterRoundEndDate && (
@@ -182,13 +189,17 @@ function AfterRoundStart(props: {
           <div className="flex text-grey-400 mb-3">
             <p className="mr-4 text-sm">
               <span className="mr-1">Round starts on:</span>
-              <span className="mr-1">{getUTCDate(round.roundStartTime)}</span>
+              <span className="mr-1">
+                {formatUTCDateAsISOString(round.roundStartTime)}
+              </span>
               <span>{getUTCTime(round.roundStartTime)}</span>
             </p>
             <p className="text-sm">
               <span className="mr-1">Round ends on:</span>
 
-              <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
+              <span className="mr-1">
+                {formatUTCDateAsISOString(round.roundEndTime)}
+              </span>
 
               <span>{getUTCTime(round.roundEndTime)}</span>
             </p>
@@ -223,6 +234,7 @@ function AfterRoundStart(props: {
             <ProjectList
               projects={projects}
               roundRoutePath={`/round/${chainId}/${roundId}`}
+              isBeforeRoundEndDate={props.isBeforeRoundEndDate}
             />
           )}
         </main>
@@ -235,6 +247,7 @@ function AfterRoundStart(props: {
 const ProjectList = (props: {
   projects: Project[];
   roundRoutePath: string;
+  isBeforeRoundEndDate?: boolean;
 }): JSX.Element => {
   const { projects, roundRoutePath } = props;
 
@@ -246,6 +259,7 @@ const ProjectList = (props: {
             key={index}
             project={project}
             roundRoutePath={roundRoutePath}
+            isBeforeRoundEndDate={props.isBeforeRoundEndDate}
           />
         );
       })}
@@ -253,7 +267,11 @@ const ProjectList = (props: {
   );
 };
 
-function ProjectCard(props: { project: Project; roundRoutePath: string }) {
+function ProjectCard(props: {
+  project: Project;
+  roundRoutePath: string;
+  isBeforeRoundEndDate?: boolean;
+}) {
   const { project, roundRoutePath } = props;
   const projectRecipient = project.recipient.slice(0, 6);
 
@@ -293,16 +311,18 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
       </Link>
       <CardFooter className="bg-white border-t">
         <CardContent className="text-xs mt-3">
-          <CartButton
-            project={project}
-            isAlreadyInCart={isAlreadyInCart}
-            removeFromCart={() => {
-              handleRemoveProjectsFromCart([project]);
-            }}
-            addToCart={() => {
-              handleAddProjectsToCart([project]);
-            }}
-          />
+          {props.isBeforeRoundEndDate && (
+            <CartButton
+              project={project}
+              isAlreadyInCart={isAlreadyInCart}
+              removeFromCart={() => {
+                handleRemoveProjectsFromCart([project]);
+              }}
+              addToCart={() => {
+                handleAddProjectsToCart([project]);
+              }}
+            />
+          )}
         </CardContent>
       </CardFooter>
     </BasicCard>
@@ -400,7 +420,7 @@ function PreRoundPage(props: {
             Application Period:
             <span className="mx-1">
               <span className="mr-1">
-                {getUTCDate(round.applicationsStartTime)}
+                {formatUTCDateAsISOString(round.applicationsStartTime)}
               </span>
 
               <span>( {getUTCTime(round.applicationsStartTime)} )</span>
@@ -408,7 +428,7 @@ function PreRoundPage(props: {
               <span className="mx-1">-</span>
 
               <span className="mr-1">
-                {getUTCDate(round.applicationsEndTime)}
+                {formatUTCDateAsISOString(round.applicationsEndTime)}
               </span>
 
               <span>( {getUTCTime(round.applicationsEndTime)} )</span>
@@ -420,13 +440,17 @@ function PreRoundPage(props: {
           >
             Round Period:
             <span>
-              <span className="mx-1">{getUTCDate(round.roundStartTime)}</span>
+              <span className="mx-1">
+                {formatUTCDateAsISOString(round.roundStartTime)}
+              </span>
 
               <span>( {getUTCTime(round.roundStartTime)} )</span>
 
               <span className="mx-1">-</span>
 
-              <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
+              <span className="mr-1">
+                {formatUTCDateAsISOString(round.roundEndTime)}
+              </span>
 
               <span>( {getUTCTime(round.roundEndTime)} )</span>
             </span>

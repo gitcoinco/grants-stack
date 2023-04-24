@@ -426,8 +426,8 @@ export const fetchProjectApplications =
           );
 
           const response: any = await graphqlFetch(
-            `query roundApplications($projectID: String) {
-            roundApplications(where: { project: $projectID }) {
+            `query roundApplications($projectApplicationID: String) {
+            roundApplications(where: { project: $projectApplicationID }) {
               status
               round {
                 id
@@ -441,7 +441,7 @@ export const fetchProjectApplications =
           `,
             chain.id,
             {
-              projectID: projectApplicationID,
+              projectApplicationID,
             },
             reactEnv
           );

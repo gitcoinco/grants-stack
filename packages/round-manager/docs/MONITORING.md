@@ -16,11 +16,12 @@ REACT_APP_DATADOG_SERVICE=######################
 REACT_APP_DATADOG_SITE=######################
 ```
 
-These can be configured from your datadog account and you can customize the collection information over at [datadog.tsx](../src/datadog.tsx)
+These can be configured from your datadog account, and you can customize the collection information over
+at [datadog.tsx](../src/datadog.tsx)
 
 ## Logging
 
-When a new route is create, ensure you add the following to make the debugging easier.
+When a new route is created, ensure you add the following to make the debugging easier.
 
 ```javascript
 import { datadogLogs } from "@datadog/browser-logs";

@@ -133,37 +133,41 @@ function convertStatus(status: string) {
     case "REJECTED":
       return 2;
     case "CANCELLED":
-      return 4;
+      return 3;
     default:
-      return 0;
+      throw new Error(`Unknown status ${status}`);
   }
 }
 
 function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
   const statuses: Status[] = [];
 
-  for (let i = rowIndex * 128; i < rowIndex * 128 + 128; i++) {
-    if (applications[i] !== undefined) {
+  const startApplicationIndex = rowIndex * 128;
+
+  for (let columnIndex = 0; columnIndex < 128; columnIndex++) {
+    const applicationIndex = startApplicationIndex + columnIndex;
+
+    if (applications[applicationIndex] !== undefined) {
       statuses.push({
-        index: i,
+        index: columnIndex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        status: convertStatus(applications[i].status!),
+        status: convertStatus(applications[applicationIndex].status!),
       });
     }
   }
   return statuses;
 }
 
-function createFullRow(statuses: Status[] | undefined) {
+function createFullRow(statuses: Status[]) {
   let fullRow = BigInt(0);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   for (const statusObj of statuses!) {
-    const { index, status } = statusObj;
+    const { index: columnIndex, status } = statusObj;
 
-    if (index >= 0 && index < 128 && status >= 0 && status <= 3) {
+    if (columnIndex >= 0 && columnIndex < 128 && status >= 0 && status <= 3) {
       const statusBigInt = BigInt(status);
-      const shiftedStatus = statusBigInt << BigInt(index * 2);
+      const shiftedStatus = statusBigInt << BigInt(columnIndex * 2);
       fullRow |= shiftedStatus;
     } else {
       throw new Error("Invalid index or status value");
@@ -182,41 +186,37 @@ async function _bulkUpdateGrantApplication({
   resetToInitialState(context);
 
   try {
-    const statusRows: AppStatus[] | undefined = [];
-    let statuses: Status[] | undefined = [];
+    const updatedApplications = applications.map((application) => {
+      let newStatus = application.status;
 
-    const _applications = [...applications];
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    _applications.sort((a, b) => a.applicationIndex! - b.applicationIndex!);
-
-    _applications.forEach((application) => {
       const selectedApplication = selectedApplications.find(
         (selectedApplication) =>
           selectedApplication.applicationIndex === application.applicationIndex
       );
 
       if (selectedApplication) {
-        application.status = selectedApplication.status;
+        newStatus = selectedApplication.status;
       }
+
+      return { ...application, status: newStatus };
     });
 
-    const rowIndex = selectedApplications.map((application) => {
-      if (application.applicationIndex === 0) {
-        return 0;
-      }
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return 128 % application.applicationIndex!;
-    });
+    const rowsToUpdate = Array.from(
+      new Set(
+        selectedApplications.map((application) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          return Math.floor(application.applicationIndex! / 128);
+        })
+      )
+    );
 
-    // remove duplicates from rowIndex & sort it
-    const uniqueRowIndex = Array.from(new Set(rowIndex)).sort();
+    const statusRows: AppStatus[] = [];
 
-    for (let i = 0; i < uniqueRowIndex.length; i++) {
-      statuses = fetchStatuses(uniqueRowIndex[i], _applications);
+    for (let i = 0; i < rowsToUpdate.length; i++) {
+      const rowStatuses = fetchStatuses(rowsToUpdate[i], updatedApplications);
       statusRows.push({
-        index: uniqueRowIndex[i],
-        statusRow: createFullRow(statuses),
+        index: rowsToUpdate[i],
+        statusRow: createFullRow(rowStatuses),
       });
     }
 
