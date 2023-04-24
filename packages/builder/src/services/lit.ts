@@ -38,6 +38,7 @@ interface LitProvider extends Provider {
 
 export default class Lit {
   chain: string;
+
   contract: string;
 
   /**
