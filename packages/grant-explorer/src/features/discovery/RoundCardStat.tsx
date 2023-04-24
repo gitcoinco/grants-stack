@@ -27,11 +27,19 @@ function RoundCardStat(props: RoundCardStatProps) {
       </div>
 
       <div>
-        <img
-          className="w-8"
-          src={CHAINS[props.chainId ?? 1].logo}
-          alt="Round Chain Logo"
-        />
+        {CHAINS[props.chainId ?? 1] ?
+          <img
+            className="w-8"
+            src={CHAINS[props.chainId ?? 1].logo}
+            alt="Round Chain Logo"
+          />
+        :
+          <img
+            className="w-8"
+            src={CHAINS[1].logo}
+            alt="Round Chain Logo"
+          />
+        }
       </div>
     </div>
   );
