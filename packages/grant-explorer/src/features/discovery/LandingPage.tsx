@@ -37,21 +37,22 @@ const LandingPage = () => {
   const filterProjectsByTitle = (query: string) => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
-    // const exactMatches = activeRounds?.filter(
-    //   (round) =>
-    //   round.projectMetadata.title.toLocaleLowerCase() ===
-    //     query.toLocaleLowerCase()
-    // );
-    // const nonExactMatches = projects?.filter(
-    //   (project) =>
-    //     project.projectMetadata.title
-    //       .toLocaleLowerCase()
-    //       .includes(query.toLocaleLowerCase()) &&
-    //     project.projectMetadata.title.toLocaleLowerCase() !==
-    //       query.toLocaleLowerCase()
-    // );
-    // // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    // setActiveRounds([...exactMatches!, ...nonExactMatches!]);
+
+    const exactMatches = activeRounds?.filter(
+      round =>
+        round.roundMetadata?.name?.toLocaleLowerCase() === query.toLocaleLowerCase()
+    );
+
+    const nonExactMatches = activeRounds?.filter(
+      (round) =>
+        round.roundMetadata?.name?.toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase()) &&
+        round.roundMetadata?.name?.toLocaleLowerCase() !==
+          query.toLocaleLowerCase()
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    setActiveRounds([...exactMatches!, ...nonExactMatches!]);
   };
 
   // Fetch active rounds
