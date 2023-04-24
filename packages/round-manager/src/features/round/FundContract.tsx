@@ -273,7 +273,7 @@ export default function FundContract(props: {
               <span className="text-sm text-slate-400 ml-2">
                 ${matchingFundsInUSD} USD
               </span>
-            ): null}
+            ) : null}
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -336,84 +336,110 @@ export default function FundContract(props: {
           </p>
           <p className="text-sm">{props.round.roundFeePercentage ?? 0}%</p>
         </div>
-        <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3">Amount in contract:</p>
-          <p className="text-sm">
-            {contractBalance} {matchingFundPayoutToken?.name}{" "}
-            {tokenBalanceInUSD && tokenBalanceInUSD > 0 ? (
-              <span className="text-sm text-slate-400 ml-2">
-              ${tokenBalanceInUSD} USD
-            </span>
-              ): null}
-          </p>
-        </div>
         <hr className="mt-6 mb-6" />
-        <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3">Amount left to fund:</p>
-          <p className="text-sm">
-            {" "}
-            {totalAmountLeftToFund} {matchingFundPayoutToken?.name}{" "}
-            {amountLeftToFundInUSD > 0 ? (
-              <span className="text-sm text-slate-400 ml-2">
-                ${amountLeftToFundInUSD} USD
-              </span>
-            ) : null}
-          </p>
-        </div>
-        <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3 py-3">Amount to fund:</p>
-          {/* todo: update input with a max selector at right of input */}
-          <input
-            disabled={fundContractDisabled}
-            className="border border-gray-300 rounded-md p-2 w-1/2"
-            placeholder={`${
-              fundContractDisabled
-                ? "Contract is fully funded"
-                : "Enter the amount you wish to fund"
-            }`}
-            value={amountToFund}
-            onChange={(e) => setAmountToFund(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-row justify-start mt-6">
-          <button
-            disabled={fundContractDisabled}
-            className={classNames(
-              `bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded ${
-                fundContractDisabled ? "cursor-not-allowed" : "cursor-pointer"
-              }`
+        {!props.round.payoutStrategy.isReadyForPayout ? (
+          <>
+            <div className="flex flex-row justify-start mt-6">
+              <p className="text-sm w-1/3">Amount in contract:</p>
+              <p className="text-sm">
+                {contractBalance} {matchingFundPayoutToken?.name}{" "}
+                {tokenBalanceInUSD && Number(tokenBalanceInUSD) > 0 ? (
+                  <span className="text-sm text-slate-400 ml-2">
+                    ${tokenBalanceInUSD} USD
+                  </span>
+                ) : null}
+              </p>
+            </div>
+            <div className="flex flex-row justify-start mt-6">
+              <p className="text-sm w-1/3">Amount left to fund:</p>
+              <p className="text-sm">
+                {" "}
+                {totalAmountLeftToFund} {matchingFundPayoutToken?.name}{" "}
+                {amountLeftToFundInUSD > 0 ? (
+                  <span className="text-sm text-slate-400 ml-2">
+                    ${amountLeftToFundInUSD} USD
+                  </span>
+                ) : null}
+              </p>
+            </div>
+            <div className="flex flex-row justify-start mt-6">
+              <p className="text-sm w-1/3 py-3">Amount to fund:</p>
+              {/* todo: update input with a max selector at right of input */}
+              <input
+                disabled={fundContractDisabled}
+                className="border border-gray-300 rounded-md p-2 w-1/2"
+                placeholder={`${
+                  fundContractDisabled
+                    ? "Contract is fully funded"
+                    : "Enter the amount you wish to fund"
+                }`}
+                value={amountToFund}
+                onChange={(e) => setAmountToFund(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-row justify-start mt-6">
+              <button
+                disabled={fundContractDisabled}
+                className={classNames(
+                  `bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded ${
+                    fundContractDisabled
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`
+                )}
+                data-testid="fund-contract-btn"
+                onClick={() => handleFundContract()}
+              >
+                Fund Contract
+              </button>
+              <button
+                className="bg-white hover:text-violet-700 hover:border-violet-700 text-gray py-2 px-4 rounded border border-gray ml-4"
+                data-testid="view-contract-btn"
+                onClick={() =>
+                  window.open(
+                    getTxExplorerForContract(chainId, props.roundId as string),
+                    "_blank"
+                  )
+                }
+              >
+                View Contract
+              </button>
+            </div>
+            {insufficientBalance && (
+              <p
+                data-testid="insufficientBalance"
+                className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+              >
+                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                <span>
+                  You do not have enough funds for funding the matching pool.
+                </span>
+              </p>
             )}
-            data-testid="fund-contract-btn"
-            onClick={() => handleFundContract()}
-          >
-            Fund Contract
-          </button>
-          <button
-            className="bg-white hover:text-violet-700 hover:border-violet-700 text-gray py-2 px-4 rounded border border-gray ml-4"
-            data-testid="view-contract-btn"
-            onClick={() =>
-              window.open(
-                getTxExplorerForContract(chainId, props.roundId as string),
-                "_blank"
-              )
-            }
-          >
-            View Contract
-          </button>
-        </div>
-        {insufficientBalance && (
-          <p
-            data-testid="insufficientBalance"
-            className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-          >
-            <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-            <span>
-              You do not have enough funds for funding the matching pool.
-            </span>
-          </p>
+            <FundContractModals />
+          </>
+        ) : (
+          <div>
+            <p className="text-sm text-grey-400 mb-4">
+              {" "}
+              Round has been finalized and funds have been moved to the payout
+              contract.
+            </p>
+            <button
+              disabled={fundContractDisabled}
+              className={classNames(
+                `${
+                  fundContractDisabled ? "bg-violet-400" : "bg-violet-200"
+                } text-white py-2 px-4 rounded`
+              )}
+              data-testid="fund-contract-btn"
+              onClick={() => handleFundContract()}
+            >
+              Fund Contract
+            </button>
+          </div>
         )}
       </div>
-      <FundContractModals />
     </div>
   );
 
@@ -462,9 +488,7 @@ export default function FundContract(props: {
   function ConfirmationModalBody() {
     const amountInUSD =
       Number(
-        parseFloat(totalAmountLeftToFund).toFixed(
-          matchingFundPayoutToken?.decimal
-        )
+        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
       ) * Number(data);
     return (
       <div>
@@ -473,7 +497,7 @@ export default function FundContract(props: {
             AMOUNT TO BE FUNDED
           </div>
           <div className="font-bold mb-1">
-            {totalAmountLeftToFund} {matchingFundPayoutToken?.name}
+            {amountToFund} {matchingFundPayoutToken?.name}
           </div>
           {amountInUSD > 0 ? (
             <div className="text-md text-slate-400 mb-6">
