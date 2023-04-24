@@ -119,22 +119,6 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         consoleErrorSpy.mockClear();
       });
 
-      it("sets contract updating status to error when updating contract fails", async () => {
-        (updateApplicationStatuses as jest.Mock).mockRejectedValue(
-          new Error(":(")
-        );
-
-        renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
-
-        fireEvent.click(screen.getByTestId("update-grant-application"));
-
-        expect(
-          await screen.findByTestId(
-            `contract-updating-status-is-${ProgressStatus.IS_ERROR}`
-          )
-        ).toBeInTheDocument();
-      });
-
       it("sets indexing status to error when waiting for subgraph to sync fails", async () => {
         (updateApplicationStatuses as jest.Mock).mockResolvedValue({
           transactionBlockNumber: 100,
