@@ -133,21 +133,25 @@ function convertStatus(status: string) {
     case "REJECTED":
       return 2;
     case "CANCELLED":
-      return 4;
+      return 3;
     default:
-      return 0;
+      throw new Error(`Unknown status ${status}`);
   }
 }
 
 function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
   const statuses: Status[] = [];
 
-  for (let i = rowIndex * 128; i < rowIndex * 128 + 128; i++) {
-    if (applications[i] !== undefined) {
+  const startApplicationIndex = rowIndex * 128;
+
+  for (let columnIndex = 0; columnIndex < 128; columnIndex++) {
+    const applicationIndex = startApplicationIndex + columnIndex;
+
+    if (applications[applicationIndex] !== undefined) {
       statuses.push({
-        index: i,
+        index: columnIndex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        status: convertStatus(applications[i].status!),
+        status: convertStatus(applications[columnIndex].status!),
       });
     }
   }
