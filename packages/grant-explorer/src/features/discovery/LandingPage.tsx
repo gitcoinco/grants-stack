@@ -39,13 +39,15 @@ const LandingPage = () => {
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
 
     const exactMatches = activeRounds?.filter(
-      round =>
-        round.roundMetadata?.name?.toLocaleLowerCase() === query.toLocaleLowerCase()
+      (round) =>
+        round.roundMetadata?.name?.toLocaleLowerCase() ===
+        query.toLocaleLowerCase()
     );
 
     const nonExactMatches = activeRounds?.filter(
       (round) =>
-        round.roundMetadata?.name?.toLocaleLowerCase()
+        round.roundMetadata?.name
+          ?.toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         round.roundMetadata?.name?.toLocaleLowerCase() !==
           query.toLocaleLowerCase()
@@ -58,10 +60,14 @@ const LandingPage = () => {
   // Fetch active rounds
   useEffect(() => {
     const fetchActiveRounds = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { isLoading, error, rounds } = await getActiveRounds();
-      setActiveRounds(rounds);
-      setActiveRoundsLoading(isLoading);
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { isLoading, error, rounds } = await getActiveRounds();
+        setActiveRounds(rounds);
+        setActiveRoundsLoading(isLoading);
+      } catch (error) {
+        setActiveRoundsLoading(false);
+      }
     };
     fetchActiveRounds();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,10 +76,15 @@ const LandingPage = () => {
   // Fetch rounds in application phase
   useEffect(() => {
     const fetchRoundsInApplicationPhase = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { isLoading, error, rounds } = await getRoundsInApplicationPhase();
-      setRoundsInApplicationPhase(rounds);
-      setApplyRoundsLoading(isLoading);
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { isLoading, error, rounds } =
+          await getRoundsInApplicationPhase();
+        setRoundsInApplicationPhase(rounds);
+        setApplyRoundsLoading(isLoading);
+      } catch (error) {
+        setApplyRoundsLoading(false);
+      }
     };
     fetchRoundsInApplicationPhase();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,7 +98,10 @@ const LandingPage = () => {
         <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
           Browse through active rounds
         </h1>
-        <ApplyNowSection isLoading={applyRoundsLoading} roundOverview={roundsInApplicationPhase} />
+        <ApplyNowSection
+          isLoading={applyRoundsLoading}
+          roundOverview={roundsInApplicationPhase}
+        />
         <ActiveRoundsSection
           isLoading={activeRoundsLoading}
           setSearchQuery={setSearchQuery}

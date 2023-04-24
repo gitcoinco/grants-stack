@@ -13,7 +13,7 @@ const ApplyNowSection = (props: ApplyNow) => {
   const applyNowRoundsCount = props.roundOverview.length;
 
   return (
-    <div>
+    <div data-testid="apply-now-rounds">
       <div>
         <p className="text-grey-400 text-2xl">Apply Now</p>
         <div className="flex flex-col lg:flex-row justify-between">
