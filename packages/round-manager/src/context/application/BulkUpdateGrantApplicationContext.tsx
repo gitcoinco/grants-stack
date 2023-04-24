@@ -146,12 +146,15 @@ function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
 
   for (let columnIndex = 0; columnIndex < 128; columnIndex++) {
     const applicationIndex = startApplicationIndex + columnIndex;
+    const application = applications.find(
+      (app) => app.applicationIndex === applicationIndex
+    );
 
-    if (applications[applicationIndex] !== undefined) {
+    if (application !== undefined) {
       statuses.push({
         index: columnIndex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        status: convertStatus(applications[applicationIndex].status!),
+        status: convertStatus(application.status!),
       });
     }
   }
