@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { renderToPlainText, truncateDescription } from "common";
-import { useNetwork } from "wagmi";
 import { RoundOverview } from "../api/rounds";
 import { getDaysLeft, getPayoutTokenOptions } from "../api/utils";
 import {
@@ -19,7 +16,6 @@ type RoundCardProps = {
 };
 
 const RoundCard = (props: RoundCardProps) => {
-  const { chain } = useNetwork();
 
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
   const payoutTokens = getPayoutTokenOptions(props.round.chainId);
