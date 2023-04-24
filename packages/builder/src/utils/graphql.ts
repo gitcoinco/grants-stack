@@ -31,27 +31,27 @@ const getGraphQLEndpoint = (
     case ChainId.MAINNET_CHAIN_ID:
       return {
         // eslint-disable-next-line max-len
-        uri: `https://gateway.thegraph.com/api/${environment.REACT_APP_SUBGRAPH_MAINNET_API_KEY}/subgraphs/id/Ba4YGqqyYVFd55zcQnXS3XYTjJARKe93LY6qNgFbrHQz`,
+        uri: environment.REACT_APP_SUBGRAPH_URL_MAINNET,
         error: undefined,
       };
     case ChainId.GOERLI_CHAIN_ID:
       return {
-        uri: "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet",
+        uri: environment.REACT_APP_SUBGRAPH_URL_GOERLI,
         error: undefined,
       };
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
       return {
-        uri: "https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-mainnet",
+        uri: environment.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET,
         error: undefined,
       };
     case ChainId.FANTOM_MAINNET_CHAIN_ID:
       return {
-        uri: "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet",
+        uri: environment.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET,
         error: undefined,
       };
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
       return {
-        uri: "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet",
+        uri: environment.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET,
         error: undefined,
       };
     default:
