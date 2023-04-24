@@ -199,13 +199,6 @@ async function _bulkUpdateGrantApplication({
 
       if (selectedApplication) {
         newStatus = selectedApplication.status;
-        console.log(
-          application.applicationIndex,
-          "DIFF",
-          selectedApplication.status
-        );
-      } else {
-        console.log(application.applicationIndex, "SAME", application.status);
       }
 
       return { ...application, status: newStatus };
@@ -224,7 +217,6 @@ async function _bulkUpdateGrantApplication({
 
     for (let i = 0; i < rowsToUpdate.length; i++) {
       const rowStatuses = fetchStatuses(rowsToUpdate[i], updatedApplications);
-      console.log(rowStatuses, updatedApplications);
       statusRows.push({
         index: rowsToUpdate[i],
         statusRow: createFullRow(rowStatuses),
