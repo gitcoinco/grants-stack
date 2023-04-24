@@ -151,7 +151,7 @@ function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
       statuses.push({
         index: columnIndex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        status: convertStatus(applications[columnIndex].status!),
+        status: convertStatus(applications[applicationIndex].status!),
       });
     }
   }
