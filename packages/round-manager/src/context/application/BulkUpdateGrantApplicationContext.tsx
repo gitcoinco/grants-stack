@@ -191,9 +191,6 @@ async function _bulkUpdateGrantApplication({
 
     const _applications = [...applications];
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    _applications.sort((a, b) => a.applicationIndex! - b.applicationIndex!);
-
     _applications.forEach((application) => {
       const selectedApplication = selectedApplications.find(
         (selectedApplication) =>
@@ -214,7 +211,7 @@ async function _bulkUpdateGrantApplication({
     });
 
     // remove duplicates from rowIndex & sort it
-    const uniqueRowIndex = Array.from(new Set(rowIndex)).sort();
+    const uniqueRowIndex = Array.from(new Set(rowIndex));
 
     for (let i = 0; i < uniqueRowIndex.length; i++) {
       statuses = fetchStatuses(uniqueRowIndex[i], _applications);
