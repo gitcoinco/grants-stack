@@ -189,17 +189,19 @@ async function _bulkUpdateGrantApplication({
     const statusRows: AppStatus[] | undefined = [];
     let statuses: Status[] | undefined = [];
 
-    const _applications = [...applications];
+    const updatedApplications = applications.map((application) => {
+      let newStatus = application.status;
 
-    _applications.forEach((application) => {
       const selectedApplication = selectedApplications.find(
         (selectedApplication) =>
           selectedApplication.applicationIndex === application.applicationIndex
       );
 
       if (selectedApplication) {
-        application.status = selectedApplication.status;
+        newStatus = selectedApplication.status;
       }
+
+      return { ...application, status: newStatus };
     });
 
     const rowIndex = selectedApplications.map((application) => {
@@ -214,7 +216,7 @@ async function _bulkUpdateGrantApplication({
     const uniqueRowIndex = Array.from(new Set(rowIndex));
 
     for (let i = 0; i < uniqueRowIndex.length; i++) {
-      statuses = fetchStatuses(uniqueRowIndex[i], _applications);
+      statuses = fetchStatuses(uniqueRowIndex[i], updatedApplications);
       statusRows.push({
         index: uniqueRowIndex[i],
         statusRow: createFullRow(statuses),
