@@ -57,10 +57,10 @@ const LandingPage = () => {
   // Fetch active rounds
   useEffect(() => {
     const fetchActiveRounds = async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { isLoading, error, rounds } = await getActiveRounds();
       setActiveRounds(rounds);
       setActiveRoundsLoading(isLoading);
-      console.log("Active Rounds: ", { activeRounds, isLoading, error });
     };
     fetchActiveRounds();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,14 +69,10 @@ const LandingPage = () => {
   // Fetch rounds in application phase
   useEffect(() => {
     const fetchRoundsInApplicationPhase = async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { isLoading, error, rounds } = await getRoundsInApplicationPhase();
       setRoundsInApplicationPhase(rounds);
       setApplyRoundsLoading(isLoading);
-      console.log("Rounds in Application Phase: ", {
-        roundsInApplicationPhase,
-        isLoading,
-        error,
-      });
     };
     fetchRoundsInApplicationPhase();
     // eslint-disable-next-line react-hooks/exhaustive-deps

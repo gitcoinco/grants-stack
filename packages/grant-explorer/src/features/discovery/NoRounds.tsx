@@ -5,8 +5,6 @@ type NoRoundsProps = {
 };
 
 const NoRounds = (props: NoRoundsProps) => {
-  console.log("props: ", props);
-
   switch (props.type) {
     case "apply":
       return (

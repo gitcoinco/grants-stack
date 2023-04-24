@@ -22,7 +22,7 @@ const ApplyNowSection = (props: ApplyNow) => {
           </p>
           <Link
             className="cursor-pointer mr-1 text-violet-400 text-sm"
-            to="/apply-now-rounds"
+            to="/apply-now"
           >
             {applyNowRoundsCount > 0
               ? `View All (${applyNowRoundsCount})`

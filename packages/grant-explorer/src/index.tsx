@@ -25,6 +25,7 @@ import { QFDonationProvider } from "./context/QFDonationContext";
 import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
+import ApplyNowPage from "./features/discovery/ApplyNowPage";
 import LandingPage from "./features/discovery/LandingPage";
 import PassportConnect from "./features/round/PassportConnect";
 import ThankYou from "./features/round/ThankYou";
@@ -59,6 +60,9 @@ root.render(
 
                   {/* Default Route */}
                   <Route path="/" element={<LandingPage />} />
+
+                  {/* Apply Now Page */}
+                  <Route path="/apply-now" element={<ApplyNowPage />} />
 
                   {/* Round Routes */}
                   <Route

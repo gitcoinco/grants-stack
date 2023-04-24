@@ -1,5 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { useCart } from "../../context/CartContext";
@@ -15,7 +15,6 @@ export interface NavbarProps {
 
 export default function Navbar(props: NavbarProps) {
   const [cart] = useCart();
-  const { chainId, roundId } = useParams();
   const showWalletInteraction = props.showWalletInteraction ?? true;
 
   return (
@@ -24,7 +23,7 @@ export default function Navbar(props: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link
-              to={`/round/${chainId}/${roundId}`}
+              to="/"
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
