@@ -146,12 +146,15 @@ function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
 
   for (let columnIndex = 0; columnIndex < 128; columnIndex++) {
     const applicationIndex = startApplicationIndex + columnIndex;
+    const application = applications.find(
+      (app) => app.applicationIndex === applicationIndex
+    );
 
-    if (applications[applicationIndex] !== undefined) {
+    if (application !== undefined) {
       statuses.push({
         index: columnIndex,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        status: convertStatus(applications[applicationIndex].status!),
+        status: convertStatus(application.status!),
       });
     }
   }
@@ -196,6 +199,13 @@ async function _bulkUpdateGrantApplication({
 
       if (selectedApplication) {
         newStatus = selectedApplication.status;
+        console.log(
+          application.applicationIndex,
+          "DIFF",
+          selectedApplication.status
+        );
+      } else {
+        console.log(application.applicationIndex, "SAME", application.status);
       }
 
       return { ...application, status: newStatus };
@@ -214,6 +224,7 @@ async function _bulkUpdateGrantApplication({
 
     for (let i = 0; i < rowsToUpdate.length; i++) {
       const rowStatuses = fetchStatuses(rowsToUpdate[i], updatedApplications);
+      console.log(rowStatuses, updatedApplications);
       statusRows.push({
         index: rowsToUpdate[i],
         statusRow: createFullRow(rowStatuses),
