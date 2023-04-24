@@ -8,12 +8,23 @@ const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
 // @ts-ignore
 window.Buffer = Buffer;
 
-const client = LitJsSdk ? new LitJsSdk.LitNodeClient() : null;
+const litClient = LitJsSdk ? new LitJsSdk.LitNodeClient() : null;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LitClient = any;
+let connectedLitClient: Promise<LitClient> | undefined;
+
+function getClient(): Promise<LitClient> {
+  if (connectedLitClient) {
+    return connectedLitClient;
+  }
+  const promise = litClient.connect().then(() => litClient);
+  connectedLitClient = promise;
+  return promise;
+}
 
 const ROUND_OPERATOR =
   "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5";
-
-type LitClient = any;
 
 type LitInit = {
   chain: string;
@@ -26,10 +37,7 @@ interface LitProvider extends Provider {
 }
 
 export default class Lit {
-  litNodeClient: Promise<LitClient> | undefined;
-
   chain: string;
-
   contract: string;
 
   /**
@@ -73,24 +81,13 @@ export default class Lit {
   }
 
   /**
-   * Connect to the lit node
-   */
-  getClient(): Promise<LitClient> {
-    if (this.litNodeClient) {
-      return this.litNodeClient;
-    }
-    this.litNodeClient = client.connect().then(() => client);
-    return this.litNodeClient!;
-  }
-
-  /**
    * Util function to encrypt a string
    *
    * @param content the string to encrypt
    * @returns {encryptedString, encryptedSymmetricKey}
    */
   async encryptString(content: string) {
-    const client = await this.getClient();
+    const client = await getClient();
 
     const litProvider: LitProvider = global.web3Provider as Provider;
 
@@ -133,7 +130,7 @@ export default class Lit {
    * @returns decrypted string
    */
   async decryptString(encryptedStr: string, encryptedSymmetricKey: string) {
-    const client = await this.getClient();
+    const client = await getClient();
 
     // Obtain Auth Signature to verify signer is wallet owner
     const authSig = await LitJsSdk.checkAndSignAuthMessage({
