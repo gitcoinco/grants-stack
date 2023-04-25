@@ -57,11 +57,30 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
   }
 }
 
+function getActiveChainIds() {
+  const activeChainIds: string[] = [];
+  const isProduction = process.env.REACT_APP_ENV === 'production';
+
+  for (const chainId of Object.values(ChainId)) {
+    if (isProduction && [
+      ChainId.GOERLI_CHAIN_ID,
+      ChainId.FANTOM_MAINNET_CHAIN_ID,
+      ChainId.FANTOM_TESTNET_CHAIN_ID
+    ].includes(chainId as ChainId)) {
+      continue;
+    }
+    activeChainIds.push(chainId.toString());
+  }
+
+  return activeChainIds;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getRoundsInApplicationPhase(): Promise<{ isLoading: boolean; error: any; rounds: RoundOverview[] }> {
   try {
 
-    const chainIds = Object.keys(ChainId)
+    const chainIds = getActiveChainIds();
+
     const rounds: RoundOverview[] = [];
 
     const query = `
@@ -109,7 +128,7 @@ export async function getRoundsInApplicationPhase(): Promise<{ isLoading: boolea
 export async function getActiveRounds(): Promise<{ isLoading: boolean; error: any; rounds: RoundOverview[] }> {
   try {
     let isLoading = true;
-    const chainIds = Object.keys(ChainId)
+    const chainIds = getActiveChainIds();
     const rounds: RoundOverview[] = [];
 
     const query = `
