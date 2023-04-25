@@ -53,12 +53,13 @@ export const TokenAndCoinGeckoIds: Record<string, string> = {
   ETH: "ethereum",
 };
 
-// todo: reafactor this to use the getPayoutTokenOptions function, seems redundant
-export const payoutTokens = [
+
+const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
     address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
   },
@@ -66,13 +67,18 @@ export const payoutTokens = [
     name: "ETH",
     chainId: ChainId.MAINNET,
     address: ethers.constants.AddressZero,
+    decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
-  },
+  }
+];
+
+const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+    decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
   },
@@ -80,13 +86,18 @@ export const payoutTokens = [
     name: "ETH",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     address: ethers.constants.AddressZero,
+    decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
-  },
+  }
+];
+
+const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "WFTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
     coingeckoId: TokenAndCoinGeckoIds["FTM"],
   },
@@ -94,6 +105,7 @@ export const payoutTokens = [
     name: "FTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: ethers.constants.AddressZero,
+    decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
     coingeckoId: TokenAndCoinGeckoIds["FTM"],
   },
@@ -101,6 +113,7 @@ export const payoutTokens = [
     name: "BUSD",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
+    decimal: 18,
     logo: TokenNamesAndLogos["BUSD"],
     coingeckoId: TokenAndCoinGeckoIds["BUSD"],
   },
@@ -108,20 +121,19 @@ export const payoutTokens = [
     name: "DAI",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+    decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
-    address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-  },
+  }
+];
+
+
+const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "BUSD",
     chainId: ChainId.GOERLI_CHAIN_ID,
     address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
+    decimal: 18,
     logo: TokenNamesAndLogos["BUSD"],
     coingeckoId: TokenAndCoinGeckoIds["BUSD"],
   },
@@ -129,6 +141,7 @@ export const payoutTokens = [
     name: "DAI",
     chainId: ChainId.GOERLI_CHAIN_ID,
     address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
+    decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
   },
@@ -136,117 +149,48 @@ export const payoutTokens = [
     name: "ETH",
     chainId: ChainId.GOERLI_CHAIN_ID,
     address: ethers.constants.AddressZero,
+    decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
-  },
+  }
+];
+
+const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
+  {
+    name: "DAI",
+    chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
+    address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    coingeckoId: TokenAndCoinGeckoIds["DAI"],
+  }
+];
+
+export const payoutTokens = [
+  ...MAINNET_TOKENS,
+  ...OPTIMISM_MAINNET_TOKENS,
+  ...FANTOM_MAINNET_TOKENS,
+  ...GOERLI_TESTNET_TOKENS,
+  ...FANTOM_TESTNET_TOKENS
 ];
 
 export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
   switch (chainId) {
     case ChainId.MAINNET: {
-      return [
-        {
-          name: "DAI",
-          chainId: ChainId.MAINNET,
-          address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          decimal: 18,
-          logo: TokenNamesAndLogos["DAI"],
-        },
-        {
-          name: "ETH",
-          chainId: ChainId.MAINNET,
-          address: ethers.constants.AddressZero,
-          decimal: 18,
-          logo: TokenNamesAndLogos["ETH"],
-        },
-      ];
+      return MAINNET_TOKENS;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      return [
-        {
-          name: "DAI",
-          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-          decimal: 18,
-          logo: TokenNamesAndLogos["DAI"],
-        },
-        {
-          name: "ETH",
-          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-          address: ethers.constants.AddressZero,
-          decimal: 18,
-          logo: TokenNamesAndLogos["ETH"],
-        },
-      ];
+      return OPTIMISM_MAINNET_TOKENS;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      return [
-        {
-          name: "WFTM",
-          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-          decimal: 18,
-          logo: TokenNamesAndLogos["FTM"],
-        },
-        {
-          name: "FTM",
-          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: ethers.constants.AddressZero,
-          decimal: 18,
-          logo: TokenNamesAndLogos["FTM"],
-        },
-        {
-          name: "BUSD",
-          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
-          decimal: 18,
-          logo: TokenNamesAndLogos["BUSD"],
-        },
-        {
-          name: "DAI",
-          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
-          decimal: 18,
-          logo: TokenNamesAndLogos["DAI"],
-        },
-      ];
+      return FANTOM_MAINNET_TOKENS;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      return [
-        {
-          name: "DAI",
-          chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
-          address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
-          decimal: 18,
-          logo: TokenNamesAndLogos["DAI"],
-        },
-      ];
+      return FANTOM_TESTNET_TOKENS;
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      return [
-        {
-          name: "BUSD",
-          chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
-          decimal: 18,
-          logo: TokenNamesAndLogos["BUSD"],
-        },
-        {
-          name: "DAI",
-          chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
-          decimal: 18,
-          logo: TokenNamesAndLogos["DAI"],
-        },
-        {
-          name: "ETH",
-          chainId: ChainId.GOERLI_CHAIN_ID,
-          address: ethers.constants.AddressZero,
-          decimal: 18,
-          logo: TokenNamesAndLogos["ETH"],
-        },
-      ];
+      return GOERLI_TESTNET_TOKENS;
     }
   }
 };
