@@ -42,13 +42,12 @@ export function useRoundSummary({
   };
 }
 
-// TODO: import this type from API package
 export type QFContributionSummary = {
   contributionCount: number;
   uniqueContributors: number;
   totalContributionsInUSD?: number;
   averageUSDContribution?: string;
-  // FIXME: specify this type
+  // TODO: specify this type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   projects?: any;
 };

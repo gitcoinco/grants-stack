@@ -11,7 +11,7 @@ import {
 /**
  * Shape of subgraph response
  */
-export interface GetRoundByIdResult {
+interface GetRoundByIdResult {
   data: {
     rounds: RoundResult[];
   };
@@ -20,7 +20,7 @@ export interface GetRoundByIdResult {
 /**
  * Shape of subgraph response of Round
  */
-interface RoundResult {
+export interface RoundResult {
   id: string;
   program: {
     id: string;
@@ -32,9 +32,7 @@ interface RoundResult {
   roundStartTime: string;
   roundEndTime: string;
   token: string;
-  votingStrategy: {
-    id: string;
-  };
+  votingStrategy: string;
   projectsMetaPtr?: MetadataPointer | null;
   projects: RoundProjectResult[];
 }
@@ -50,7 +48,7 @@ interface RoundProjectResult {
 /**
  * Shape of IPFS content of Round RoundMetaPtr
  */
-type RoundMetadata = {
+export type RoundMetadata = {
   name: string;
   eligibility: Eligibility;
   programContractAddress: string;
@@ -92,20 +90,23 @@ export async function getRoundById(
             roundStartTime
             roundEndTime
             token
-            votingStrategy {
-              id
-            }
+            votingStrategy
             projectsMetaPtr {
               pointer
             }
-            projects(first: 1000) {
+            projects(
+              first: 1000
+              where:{
+                status: 1
+              }
+            ) {
               id
               project
               status
               applicationIndex
               metaPtr {
-                      protocol
-                      pointer
+                protocol
+                pointer
               }
             }
           }
@@ -128,7 +129,7 @@ export async function getRoundById(
       };
     });
 
-    const approvedProjectsWithMetadata = await loadApprovedProjects(
+    const approvedProjectsWithMetadata = await loadApprovedProjectsMetadata(
       round,
       chainId
     );
@@ -143,7 +144,7 @@ export async function getRoundById(
       roundStartTime: new Date(parseInt(round.roundStartTime) * 1000),
       roundEndTime: new Date(parseInt(round.roundEndTime) * 1000),
       token: round.token,
-      votingStrategy: round.votingStrategy.id,
+      votingStrategy: round.votingStrategy,
       ownedBy: round.program.id,
       approvedProjects: approvedProjectsWithMetadata,
     };
@@ -153,7 +154,7 @@ export async function getRoundById(
   }
 }
 
-function convertStatus(status: string | number) {
+export function convertStatus(status: string | number) {
   switch (status) {
     case 0:
       return "PENDING";
@@ -168,7 +169,7 @@ function convertStatus(status: string | number) {
   }
 }
 
-async function loadApprovedProjects(
+async function loadApprovedProjectsMetadata(
   round: RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
@@ -177,11 +178,8 @@ async function loadApprovedProjects(
     return [];
   }
 
-  const allRoundProjects = round.projects;
+  const approvedProjects = round.projects;
 
-  const approvedProjects = allRoundProjects.filter(
-    (project) => project.status === ApplicationStatus.APPROVED
-  );
   const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map(
     (project: RoundProjectResult) =>
       fetchMetadataAndMapProject(project, chainId)

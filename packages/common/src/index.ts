@@ -1,5 +1,5 @@
-import useSWR from "swr";
 import { useParams } from "react-router";
+import useSWR from "swr";
 import { isAddress } from "viem";
 
 export enum ChainId {
@@ -287,8 +287,8 @@ export function formatDateWithOrdinal(date: Date) {
 }
 
 export * from "./icons";
-
 export * from "./markdown";
+
 export enum VerifiedCredentialState {
   VALID,
   INVALID,
@@ -349,4 +349,8 @@ export const getUTCDate = (date: Date): string => {
   ];
 
   return utcDate.join("/");
+};
+
+export const getUTCDateTime = (date: Date): string => {
+  return `${getUTCDate(date)} ${getUTCTime(date)}`;
 };

@@ -1,9 +1,16 @@
 import { faker } from "@faker-js/faker";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import { mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import {
+  makeRoundData,
+  mockBalance,
+  mockNetwork,
+  mockSigner,
+  renderWithContext,
+} from "../../../test-utils";
 import { fetchPassport, submitPassport } from "../../api/passport";
 import PassportConnect from "../PassportConnect";
+import { Round } from "../../api/types";
+import { payoutTokens } from "../../api/utils";
 
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
@@ -59,11 +66,28 @@ describe("<PassportConnect/>", () => {
   describe("Navigation Buttons", () => {
     beforeEach(() => {
       jest.clearAllMocks();
+
+      let stubRound: Round;
+      const roundStartTime = faker.date.recent();
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+      const roundEndTime = faker.date.soon();
+      const token = payoutTokens[0].address;
+
+      // eslint-disable-next-line prefer-const
+      stubRound = makeRoundData({
+        id: roundId,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundStartTime,
+        roundEndTime,
+        token: token,
+      });
+
+      renderWithContext(<PassportConnect />, { rounds: [stubRound] });
     });
 
     it("shows Home and Connect to Passport breadcrumb", async () => {
-      render(<PassportConnect />, { wrapper: BrowserRouter });
-
       await waitFor(() => {
         expect(screen.getByTestId("breadcrumb")).toBeInTheDocument();
         expect(screen.getByText("Home")).toBeInTheDocument();
@@ -72,8 +96,6 @@ describe("<PassportConnect/>", () => {
     });
 
     it("shows back to browsing button on page load", async () => {
-      render(<PassportConnect />, { wrapper: BrowserRouter });
-
       await waitFor(() => {
         expect(
           screen.getByTestId("back-to-browsing-button")
@@ -81,27 +103,7 @@ describe("<PassportConnect/>", () => {
       });
     });
 
-    it("shows create a passport button on page load", async () => {
-      render(<PassportConnect />, { wrapper: BrowserRouter });
-
-      await waitFor(() => {
-        expect(
-          screen.getByTestId("create-passport-button")
-        ).toBeInTheDocument();
-      });
-    });
-
-    it("shows need help link on page load", async () => {
-      render(<PassportConnect />, { wrapper: BrowserRouter });
-
-      await waitFor(() => {
-        expect(screen.getByTestId("need-help-link")).toBeInTheDocument();
-      });
-    });
-
     it("shows what is passport link on page load", async () => {
-      render(<PassportConnect />, { wrapper: BrowserRouter });
-
       await waitFor(() => {
         expect(screen.getByTestId("what-is-passport-link")).toBeInTheDocument();
       });
@@ -111,12 +113,50 @@ describe("<PassportConnect/>", () => {
   describe("Passport Connect", () => {
     beforeEach(() => {
       jest.clearAllMocks();
+
+      let stubRound: Round;
+      const roundStartTime = faker.date.recent();
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+      const roundEndTime = faker.date.soon();
+      const token = payoutTokens[0].address;
+
+      // eslint-disable-next-line prefer-const
+      stubRound = makeRoundData({
+        id: roundId,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundStartTime,
+        roundEndTime,
+        token: token,
+      });
+
+      const mockJsonPromise = Promise.resolve({
+        score: "-1",
+        address: userAddress,
+        status: "DONE",
+        evidence: {
+          threshold: "0",
+          rawScore: "-1",
+        },
+      });
+
+      const mockPassportPromise = {
+        ok: true,
+        json: () => mockJsonPromise,
+      } as unknown as Response;
+
+      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
+      (submitPassport as jest.Mock).mockResolvedValueOnce(jest.fn());
+
+      renderWithContext(<PassportConnect />, {
+        rounds: [stubRound],
+        isLoading: false,
+      });
     });
 
     it("Should show the Create Passport button", async () => {
-      render(<PassportConnect />, { wrapper: BrowserRouter });
-
-      await waitFor(() => {
+      await waitFor(async () => {
         expect(
           screen.getByTestId("create-passport-button")
         ).toBeInTheDocument();
@@ -124,7 +164,6 @@ describe("<PassportConnect/>", () => {
     });
 
     it("Should show the Recalculate Score button", async () => {
-      render(<PassportConnect />, { wrapper: BrowserRouter });
       await waitFor(() => {
         expect(
           screen.getByTestId("recalculate-score-button")
@@ -133,11 +172,6 @@ describe("<PassportConnect/>", () => {
     });
 
     it("Clicking the Recalculate Score button invokes submitPassport", async () => {
-      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
-      (submitPassport as jest.Mock).mockResolvedValueOnce(jest.fn());
-
-      render(<PassportConnect />, { wrapper: BrowserRouter });
-
       await waitFor(async () => {
         fireEvent.click(await screen.findByTestId("recalculate-score-button"));
 
@@ -155,6 +189,23 @@ describe("<PassportConnect/>", () => {
     });
 
     it("IF passport state return error status THEN it shows issue in fetching passport", async () => {
+      let stubRound: Round;
+      const roundStartTime = faker.date.recent();
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+      const roundEndTime = faker.date.soon();
+      const token = payoutTokens[0].address;
+
+      // eslint-disable-next-line prefer-const
+      stubRound = makeRoundData({
+        id: roundId,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundStartTime,
+        roundEndTime,
+        token: token,
+      });
+
       const mockJsonPromise = Promise.resolve({
         score: "-1",
         address: userAddress,
@@ -172,7 +223,10 @@ describe("<PassportConnect/>", () => {
 
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
 
-      render(<PassportConnect />, { wrapper: BrowserRouter });
+      renderWithContext(<PassportConnect />, {
+        rounds: [stubRound],
+        isLoading: false,
+      });
 
       await waitFor(() => {
         expect(
@@ -185,13 +239,30 @@ describe("<PassportConnect/>", () => {
     });
 
     it("IF passport state is match inelgible THEN it shows ineligible for matching", async () => {
+      let stubRound: Round;
+      const roundStartTime = faker.date.recent();
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+      const roundEndTime = faker.date.soon();
+      const token = payoutTokens[0].address;
+
+      // eslint-disable-next-line prefer-const
+      stubRound = makeRoundData({
+        id: roundId,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundStartTime,
+        roundEndTime,
+        token: token,
+      });
+
       const mockJsonPromise = Promise.resolve({
-        score: "-1",
+        score: "1",
         address: userAddress,
         status: "DONE",
         evidence: {
-          threshold: "0",
-          rawScore: "-1",
+          threshold: "2",
+          rawScore: "1",
         },
       });
 
@@ -202,38 +273,86 @@ describe("<PassportConnect/>", () => {
 
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
 
-      render(<PassportConnect />, { wrapper: BrowserRouter });
+      renderWithContext(<PassportConnect />, {
+        rounds: [stubRound],
+        isLoading: false,
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Ineligible for matching")).toBeInTheDocument();
-        expect(
-          screen.getByText(
-            "Current score. Reach 0 to have your donation matched."
-          )
-        ).toBeInTheDocument();
       });
     });
 
     it("IF passport state is match eligible THEN it shows eligible for matching", async () => {
+      let stubRound: Round;
+      const roundStartTime = faker.date.recent();
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+      const roundEndTime = faker.date.soon();
+      const token = payoutTokens[0].address;
+
+      // eslint-disable-next-line prefer-const
+      stubRound = makeRoundData({
+        id: roundId,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundStartTime,
+        roundEndTime,
+        token: token,
+      });
+
+      const mockJsonPromise = Promise.resolve({
+        score: "2",
+        address: userAddress,
+        status: "DONE",
+        evidence: {
+          threshold: "2",
+          rawScore: "2",
+        },
+      });
+
+      const mockPassportPromise = {
+        ok: true,
+        json: () => mockJsonPromise,
+      } as unknown as Response;
+
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
 
-      render(<PassportConnect />, { wrapper: BrowserRouter });
+      renderWithContext(<PassportConnect />, {
+        rounds: [stubRound],
+        isLoading: false,
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Eligible for matching")).toBeInTheDocument();
-        expect(
-          screen.getByText("You are eligible for matching. Happy donating!")
-        ).toBeInTheDocument();
-        expect(screen.getByTestId("passport-score")).toBeInTheDocument();
-        expect(screen.getByTestId("threshold")).toBeInTheDocument();
       });
     });
 
     it("IF passport state is not connected THEN it shows ineligible for matching", async () => {
+      let stubRound: Round;
+      const roundStartTime = faker.date.recent();
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+      const roundEndTime = faker.date.soon();
+      const token = payoutTokens[0].address;
+
+      // eslint-disable-next-line prefer-const
+      stubRound = makeRoundData({
+        id: roundId,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundStartTime,
+        roundEndTime,
+        token: token,
+      });
+
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
       mockAccount.isConnected = false;
 
-      render(<PassportConnect />, { wrapper: BrowserRouter });
+      renderWithContext(<PassportConnect />, {
+        rounds: [stubRound],
+        isLoading: false,
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Ineligible for matching")).toBeInTheDocument();

@@ -166,7 +166,6 @@ export default function ViewCart() {
   useEffect(() => {
     setPassportState(PassportState.LOADING);
 
-    // TODO: fetch from round metadata
     const PASSPORT_COMMUNITY_ID =
       process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
     const PASSPORT_THRESHOLD = 0;
@@ -251,7 +250,8 @@ export default function ViewCart() {
         isBeforeRoundEndDate={isBeforeRoundEndDate}
       />
       {isBeforeRoundEndDate && (
-        <PassportBanner chainId={chainId} roundId={roundId} />
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        <PassportBanner chainId={chainId!} round={round} />
       )}
       {isAfterRoundEndDate && (
         <div>
@@ -359,7 +359,6 @@ export default function ViewCart() {
               <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
               <span>
                 You are on the wrong chain ({chain?.name}) for this round.
-                <br />
                 Please switch to{" "}
                 {chains.filter((c) => c?.id == Number(chainId))[0]?.name}{" "}
                 network.
@@ -891,11 +890,10 @@ export default function ViewCart() {
           subheading={
             <>
               <p className={"text-sm text-grey-400 mb-2"}>
-                Verify with Passport to amplify your donations.
+                Verify your identity with Gitcoin Passport to amplify your donations. 
               </p>
               <p className={"text-sm text-grey-400"}>
-                Note that donations made without Passport verification will not
-                be matched.
+                Note that donations made without Gitcoin Passport verification will not be matched.
               </p>
             </>
           }
