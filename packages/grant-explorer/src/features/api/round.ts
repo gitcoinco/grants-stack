@@ -32,9 +32,7 @@ export interface RoundResult {
   roundStartTime: string;
   roundEndTime: string;
   token: string;
-  votingStrategy: {
-    id: string;
-  };
+  votingStrategy: string;
   projectsMetaPtr?: MetadataPointer | null;
   projects: RoundProjectResult[];
 }
@@ -92,9 +90,7 @@ export async function getRoundById(
             roundStartTime
             roundEndTime
             token
-            votingStrategy {
-              id
-            }
+            votingStrategy
             projectsMetaPtr {
               pointer
             }
@@ -109,8 +105,8 @@ export async function getRoundById(
               status
               applicationIndex
               metaPtr {
-                      protocol
-                      pointer
+                protocol
+                pointer
               }
             }
           }
@@ -148,7 +144,7 @@ export async function getRoundById(
       roundStartTime: new Date(parseInt(round.roundStartTime) * 1000),
       roundEndTime: new Date(parseInt(round.roundEndTime) * 1000),
       token: round.token,
-      votingStrategy: round.votingStrategy.id,
+      votingStrategy: round.votingStrategy,
       ownedBy: round.program.id,
       approvedProjects: approvedProjectsWithMetadata,
     };
