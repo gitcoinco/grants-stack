@@ -19,6 +19,7 @@ import {
   Round,
 } from "./features/api/types";
 import history from "./history";
+import { RoundMetadata } from "./features/api/round";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -92,35 +93,41 @@ export const makeApprovedProjectData = (
   };
 };
 
-export const makeRoundOverviewData = (): RoundOverview[] => {
-  return [
-    {
-      id: faker.finance.ethereumAddress(),
-      chainId: "5",
-      roundMetaPtr: {
-        protocol: 1,
-        pointer: generateIpfsCid(),
+export const makeRoundOverviewData = (
+  overrides?: Partial<RoundOverview>,
+  roundMetadataOverrides?: Partial<RoundMetadata>
+): RoundOverview => {
+  return {
+    id: faker.finance.ethereumAddress(),
+    chainId: "5",
+    roundMetaPtr: {
+      protocol: 1,
+      pointer: generateIpfsCid(),
+    },
+    applicationMetaPtr: {
+      protocol: 1,
+      pointer: generateIpfsCid(),
+    },
+    applicationsStartTime: faker.date.soon().toString(),
+    applicationsEndTime: faker.date.soon(10).toString(),
+    roundStartTime: faker.date.soon(20).toString(),
+    roundEndTime: faker.date.soon(30).toString(),
+    matchAmount: "1000000000000000000000000",
+    token: faker.finance.ethereumAddress(),
+    roundMetadata: {
+      name: faker.company.name(),
+      eligibility: {
+        description: faker.lorem.sentence(),
+        requirements: [
+          { requirement: faker.lorem.sentence() },
+          { requirement: faker.lorem.sentence() }
+        ],
       },
-      applicationMetaPtr: {
-        protocol: 1,
-        pointer: generateIpfsCid(),
-      },
-      applicationsStartTime: faker.date.soon().toString(),
-      applicationsEndTime: faker.date.soon(10).toString(),
-      roundStartTime: faker.date.soon(20).toString(),
-      roundEndTime: faker.date.soon(30).toString(),
-      matchAmount: "1000000000000000000000000",
-      token: faker.finance.ethereumAddress(),
-      roundMetadata: {
-        name: "Round 1",
-        eligibility: {
-          description: "name",
-          requirements: [],
-        },
-        programContractAddress: faker.finance.ethereumAddress(),
-      }
-    }
-  ];
+      programContractAddress: faker.finance.ethereumAddress(),
+      ...roundMetadataOverrides,
+    },
+    ...overrides
+  };
 }
 
 export function generateIpfsCid() {

@@ -1,7 +1,9 @@
-import { screen, waitFor } from "@testing-library/react";
-import { renderWithContext } from "../../../test-utils";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { makeApprovedProjectData, makeRoundOverviewData, renderWithContext } from "../../../test-utils";
 import { RoundOverview, getActiveRounds, getRoundsInApplicationPhase } from "../../api/rounds";
 import LandingPage from "../LandingPage";
+import { RoundMetadata } from "../../api/round";
+import { faker } from "@faker-js/faker";
 
 // Mock the API calls
 jest.mock("../../api/rounds", () => {
@@ -42,7 +44,7 @@ describe("LandingPage", () => {
         });
       });
     });
-  
+
     mockGetRoundsInApplicationPhase.mockImplementation(async () => {
       return new Promise((resolve) => {
         resolve({
@@ -68,10 +70,26 @@ describe("LandingPage", () => {
     });
   });
 
-  // todo: finish this test for the search functionality
   it("filters active rounds based on search query", async () => {
+    const roundMetadata: RoundMetadata = {
+      name: "gitcoin",
+      eligibility: {
+        description: faker.lorem.sentence(),
+        requirements: [],
+      },
+      programContractAddress: faker.finance.ethereumAddress(),
+    };
+
     const activeRounds: RoundOverview[] = [
-      // Provide your active rounds data
+      makeRoundOverviewData(),
+      makeRoundOverviewData(),
+      makeRoundOverviewData({roundMetadata}),
+      makeRoundOverviewData({
+        roundMetadata: {
+          ...roundMetadata,
+          name: "gitcoin pro",
+        }
+      }),
     ];
 
     mockGetActiveRounds.mockImplementation(async () => {
@@ -93,14 +111,18 @@ describe("LandingPage", () => {
       });
     });
 
-    // Enter a search query
-    // const searchInput = screen.getByPlaceholderText("Search...");
-    // await act(async () => {
-    //   userEvent.type(searchInput, "search query");
-    // });
+    const searchInput = screen.getByPlaceholderText("Search...");
+    const roundCards = screen.getAllByTestId("round-card");
+    expect(roundCards.length).toEqual(activeRounds.length);
 
-    // Verify that the filtered active rounds are displayed
-    // ...
+    const searchQuery = "gitcoin";
+    fireEvent.change(searchInput, { target: { value: searchQuery } });
+
+    await waitFor(() => {
+      const filteredRoundCards = screen.getAllByTestId("round-name");
+      expect(filteredRoundCards.length).toEqual(2);
+      expect(filteredRoundCards[0].textContent).toEqual(searchQuery);
+    });
   });
 });
 
