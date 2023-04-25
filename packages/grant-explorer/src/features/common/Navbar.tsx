@@ -1,7 +1,7 @@
-import { Link, useParams } from "react-router-dom";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Link } from "react-router-dom";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useCart } from "../../context/CartContext";
 import CustomerSupport from "./CustomerSupport";
 import NavbarCart from "./NavbarCart";
@@ -10,11 +10,12 @@ export interface NavbarProps {
   roundUrlPath: string;
   customBackground?: string;
   isBeforeRoundEndDate?: boolean;
+  showWalletInteraction?: boolean;
 }
 
 export default function Navbar(props: NavbarProps) {
   const [cart] = useCart();
-  const { chainId, roundId } = useParams();
+  const showWalletInteraction = props.showWalletInteraction ?? true;
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
@@ -22,7 +23,7 @@ export default function Navbar(props: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link
-              to={`/round/${chainId}/${roundId}`}
+              to="/"
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
@@ -34,12 +35,19 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
-            <div data-testid="connect-wallet-button" id="connect-wallet-button">
-              <ConnectButton />
-            </div>
-            {props.isBeforeRoundEndDate &&
+            {showWalletInteraction && (
+              <div>
+                <div
+                  data-testid="connect-wallet-button"
+                  id="connect-wallet-button"
+                >
+                  <ConnectButton />
+                </div>
+              </div>
+            )}
+            {props.isBeforeRoundEndDate && (
               <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
-            }
+            )}
             <CustomerSupport />
           </div>
         </div>

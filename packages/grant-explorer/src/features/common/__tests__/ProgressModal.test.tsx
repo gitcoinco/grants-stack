@@ -4,7 +4,7 @@ import ProgressModal, { Step } from "../ProgressModal";
 import { ProgressStatus } from "../../api/types";
 
 const completedStep = {
-  name: "My Todo List",
+  name: "My Random List",
   description: "Done :)",
   status: ProgressStatus.IS_SUCCESS,
 };

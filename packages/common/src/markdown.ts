@@ -1,5 +1,5 @@
-import MarkdownIt from "markdown-it";
 import { sanitize } from "dompurify";
+import MarkdownIt from "markdown-it";
 
 const markdownIt = new MarkdownIt({
   linkify: true,
@@ -51,6 +51,14 @@ export function renderToPlainText(markdownSourceText: string) {
   return sanitize(renderToHTML(markdownSourceText), {
     USE_PROFILES: { html: false },
   });
+}
+
+export function truncateDescription(description: string, maxLength: number) {
+  if (description.length > maxLength) {
+    return description.slice(0, maxLength) + "...";
+  } else {
+    return description;
+  }
 }
 
 export default { renderToHTML, renderToPlainText };

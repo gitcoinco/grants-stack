@@ -11,7 +11,7 @@ import {
 /**
  * Shape of subgraph response
  */
-export interface GetRoundByIdResult {
+interface GetRoundByIdResult {
   data: {
     rounds: RoundResult[];
   };
@@ -20,7 +20,7 @@ export interface GetRoundByIdResult {
 /**
  * Shape of subgraph response of Round
  */
-interface RoundResult {
+export interface RoundResult {
   id: string;
   program: {
     id: string;
@@ -50,7 +50,7 @@ interface RoundProjectResult {
 /**
  * Shape of IPFS content of Round RoundMetaPtr
  */
-type RoundMetadata = {
+export type RoundMetadata = {
   name: string;
   eligibility: Eligibility;
   programContractAddress: string;
@@ -98,7 +98,12 @@ export async function getRoundById(
             projectsMetaPtr {
               pointer
             }
-            projects(first: 1000) {
+            projects(
+              first: 1000
+              where:{
+                status: 1
+              }
+            ) {
               id
               project
               status
@@ -128,7 +133,7 @@ export async function getRoundById(
       };
     });
 
-    const approvedProjectsWithMetadata = await loadApprovedProjects(
+    const approvedProjectsWithMetadata = await loadApprovedProjectsMetadata(
       round,
       chainId
     );
@@ -153,7 +158,7 @@ export async function getRoundById(
   }
 }
 
-function convertStatus(status: string | number) {
+export function convertStatus(status: string | number) {
   switch (status) {
     case 0:
       return "PENDING";
@@ -168,7 +173,7 @@ function convertStatus(status: string | number) {
   }
 }
 
-async function loadApprovedProjects(
+async function loadApprovedProjectsMetadata(
   round: RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
@@ -177,11 +182,8 @@ async function loadApprovedProjects(
     return [];
   }
 
-  const allRoundProjects = round.projects;
+  const approvedProjects = round.projects;
 
-  const approvedProjects = allRoundProjects.filter(
-    (project) => project.status === ApplicationStatus.APPROVED
-  );
   const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map(
     (project: RoundProjectResult) =>
       fetchMetadataAndMapProject(project, chainId)

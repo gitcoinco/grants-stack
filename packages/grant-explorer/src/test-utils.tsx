@@ -1,23 +1,25 @@
 import { faker } from "@faker-js/faker";
+import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
+import { BigNumber, ethers } from "ethers";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
+import { store } from "./app/store";
+import { CartProvider } from "./context/CartContext";
 import {
   initialRoundState,
   RoundContext,
   RoundState,
 } from "./context/RoundContext";
+import { RoundOverview } from "./features/api/rounds";
 import {
   ApplicationStatus,
   Project,
   ProjectMetadata,
   Round,
 } from "./features/api/types";
-import { CartProvider } from "./context/CartContext";
-import { Provider } from "react-redux";
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { store } from "./app/store";
 import history from "./history";
-import { BigNumber, ethers } from "ethers";
+import { RoundMetadata } from "./features/api/round";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -90,6 +92,43 @@ export const makeApprovedProjectData = (
     ...overrides,
   };
 };
+
+export const makeRoundOverviewData = (
+  overrides?: Partial<RoundOverview>,
+  roundMetadataOverrides?: Partial<RoundMetadata>
+): RoundOverview => {
+  return {
+    id: faker.finance.ethereumAddress(),
+    chainId: "5",
+    roundMetaPtr: {
+      protocol: 1,
+      pointer: generateIpfsCid(),
+    },
+    applicationMetaPtr: {
+      protocol: 1,
+      pointer: generateIpfsCid(),
+    },
+    applicationsStartTime: faker.date.soon().toString(),
+    applicationsEndTime: faker.date.soon(10).toString(),
+    roundStartTime: faker.date.soon(20).toString(),
+    roundEndTime: faker.date.soon(30).toString(),
+    matchAmount: "1000000000000000000000000",
+    token: faker.finance.ethereumAddress(),
+    roundMetadata: {
+      name: faker.company.name(),
+      eligibility: {
+        description: faker.lorem.sentence(),
+        requirements: [
+          { requirement: faker.lorem.sentence() },
+          { requirement: faker.lorem.sentence() }
+        ],
+      },
+      programContractAddress: faker.finance.ethereumAddress(),
+      ...roundMetadataOverrides,
+    },
+    ...overrides
+  };
+}
 
 export function generateIpfsCid() {
   return faker.random.alpha({ count: 59, casing: "lower" });
