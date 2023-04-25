@@ -18,7 +18,7 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
 
   return (
     <div className="my-6">
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
         <div className="flex flex-col mt-4 justify-items-center">
           <p className="text-grey-400 text-2xl">
             All Active Rounds{" "}
@@ -27,11 +27,6 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
           <p className="text-grey-400 text-sm mb-4 mt-2">
             Rounds that are ongoing
           </p>
-          {props.isLoading ? (
-            <div className="flex flex-col lg:flex-row my-auto">
-              <Spinner />
-            </div>
-          ) : null}
         </div>
         {!props.isLoading && activeRoundsCount > 0 ? (
           <div className="flex flex-col lg:flex-row my-auto">
@@ -48,6 +43,11 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
         ) : null}
       </div>
       <div>
+        {props.isLoading ? (
+          <div className="flex flex-col lg:flex-row my-auto">
+            <Spinner />
+          </div>
+        ) : null}
         {activeRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
             {props.roundOverview?.slice(0, 4).map((round, index) => {

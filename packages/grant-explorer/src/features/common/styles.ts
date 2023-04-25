@@ -33,7 +33,7 @@ export const CardContent = tw.div`
 
 export const CardTitle = tw.p`
   w-full
-  mt-14
+  mt-[16px]
   text-[16px]
   font-normal
   text-ellipsis
