@@ -3,9 +3,11 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect";
-import { TextEncoder } from "util";
+import { TextEncoder, TextDecoder } from "util";
 
 global.TextEncoder = TextEncoder;
+// @ts-expect-error I love jest
+global.TextDecoder = TextDecoder;
 
 beforeEach(() => {
   // @headlessui/react needs IntersectionObserver but isn't available in test environment

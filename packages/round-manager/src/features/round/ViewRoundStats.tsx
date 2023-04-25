@@ -6,7 +6,7 @@ import {
   useRound,
   useRoundApplications,
   useRoundMatchingFunds,
-} from "@/src/hooks";
+} from "../../hooks";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
@@ -26,9 +26,7 @@ export default function ViewRoundStats() {
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
-      <p className="text-xl font-semibold leading-6 mb-10 text-base">
-        Round Stats
-      </p>
+      <p className="text-xl font-semibold leading-6 mb-10">Round Stats</p>
       <div className="grid grid-cols-5 grid-rows-2 gap-6">
         <div className={"mr-10 flex items-center "}>Overview</div>
         <StatsCard

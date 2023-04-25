@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { faker } from "@faker-js/faker";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useParams } from "react-router-dom";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
@@ -12,21 +18,17 @@ import {
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithFinalizeRoundContext,
   wrapWithReadProgramContext,
-  wrapWithRoundContext
+  wrapWithRoundContext,
 } from "../../../test-utils";
-import { useRoundMatchData } from "../../api/api";
 import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
 import { setReadyForPayout } from "../../api/round";
 import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { TextDecoder } = require("util");
-global.TextDecoder = TextDecoder;
+import { useRoundMatchingFunds } from "../../../hooks";
 
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
 jest.mock("../../api/round");
+jest.mock("wagmi");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
@@ -39,20 +41,18 @@ jest.mock("react-router-dom", () => ({
   useParams: jest.fn(),
 }));
 
-jest.mock("../../api/api", () => ({
-  ...jest.requireActual("../../api/api"),
-  useRoundMatchData: jest.fn(),
+jest.mock("../../../hooks", () => ({
+  ...jest.requireActual("../../../hooks"),
+  useRoundMatchingFunds: jest.fn(),
 }));
-
 
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
   ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
   useFetchMatchingDistributionFromContract: jest.fn(),
 }));
 
-
 jest.mock("../../../context/round/FinalizeRoundContext", () => ({
-  ...jest.requireActual("../../../context/round/FinalizeRoundContext")
+  ...jest.requireActual("../../../context/round/FinalizeRoundContext"),
 }));
 
 jest.mock("../../common/Auth", () => ({
@@ -89,6 +89,11 @@ describe("View Round Results before distribution data is finalized to contract",
 
   describe("display round results tab", () => {
     it("displays No Information Available before round end date", async () => {
+      (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
+        data: [makeQFDistribution(), makeQFDistribution()],
+        error: null,
+        loading: false,
+      }));
       const roundEndTime = faker.date.future();
       mockRoundData = makeRoundData({ roundEndTime });
       render(
@@ -114,13 +119,15 @@ describe("View Round Results before distribution data is finalized to contract",
     });
 
     it("displays matching stats table from api after round end date", async () => {
-      (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+      (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
         loading: false,
       }));
 
-      (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      (
+        useFetchMatchingDistributionFromContract as jest.Mock
+      ).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -170,18 +177,20 @@ describe("View Round Results before distribution data is finalized to contract",
   });
 
   it("displays upload field when custom radio button is selected", () => {
-    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
     }));
 
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
-      distributionMetaPtr: "",
-      matchingDistribution: [],
-      isLoading: false,
-      isError: null,
-    }));
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
+      () => ({
+        distributionMetaPtr: "",
+        matchingDistribution: [],
+        isLoading: false,
+        isError: null,
+      })
+    );
 
     const roundEndTime = faker.date.recent();
     const roundStartTime = faker.date.past(1, roundEndTime);
@@ -226,18 +235,20 @@ describe("View Round Results before distribution data is finalized to contract",
   });
 
   it("uploading invalid json file throws error", async () => {
-    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
     }));
 
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
-      distributionMetaPtr: "",
-      matchingDistribution: [],
-      isLoading: false,
-      isError: null,
-    }));
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
+      () => ({
+        distributionMetaPtr: "",
+        matchingDistribution: [],
+        isLoading: false,
+        isError: null,
+      })
+    );
 
     // mock file.arrayBuffer
     const mockFile = new File([""], "test.json", { type: "application/json" });
@@ -320,18 +331,20 @@ describe("View Round Results before distribution data is finalized to contract",
   });
 
   it("does not upload an invalid json file when dropped in dropzone", async () => {
-    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
     }));
 
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
-      distributionMetaPtr: "",
-      matchingDistribution: [],
-      isLoading: false,
-      isError: null,
-    }));
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
+      () => ({
+        distributionMetaPtr: "",
+        matchingDistribution: [],
+        isLoading: false,
+        isError: null,
+      })
+    );
 
     // mock file.arrayBuffer
     const mockFile = new File(["{}"], "test.json", {
@@ -355,6 +368,7 @@ describe("View Round Results before distribution data is finalized to contract",
       ]
       `),
     });
+
     Object.defineProperty(window, "TextDecoder", {
       value: mockTextDecoder,
     });
@@ -416,13 +430,15 @@ describe("View Round Results before distribution data is finalized to contract",
 
   describe("finalize state to contract", () => {
     beforeEach(() => {
-      (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+      (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
         loading: false,
       }));
 
-      (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      (
+        useFetchMatchingDistributionFromContract as jest.Mock
+      ).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -512,18 +528,23 @@ describe("View Round Results after distribution data is finalized to contract", 
   });
 
   it("displays finalized matching data from contract", async () => {
-    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
     }));
 
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
-      distributionMetaPtr: "abcd",
-      matchingDistribution: [makeMatchingStatsData(), makeMatchingStatsData()],
-      isLoading: false,
-      isError: null,
-    }));
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
+      () => ({
+        distributionMetaPtr: "abcd",
+        matchingDistribution: [
+          makeMatchingStatsData(),
+          makeMatchingStatsData(),
+        ],
+        isLoading: false,
+        isError: null,
+      })
+    );
 
     const roundEndTime = faker.date.recent();
     const roundStartTime = faker.date.past(1, roundEndTime);
@@ -576,20 +597,21 @@ describe("Ready For Payout", () => {
     (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
-
   it("Should not show the Ready For Payout button if the round is not finalized", async () => {
-    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
     }));
 
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
-      distributionMetaPtr: "",
-      matchingDistribution: [],
-      isLoading: false,
-      isError: null,
-    }));
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
+      () => ({
+        distributionMetaPtr: "",
+        matchingDistribution: [],
+        isLoading: false,
+        isError: null,
+      })
+    );
 
     const roundEndTime = faker.date.past();
     mockRoundData = makeRoundData({ roundEndTime });
@@ -621,18 +643,20 @@ describe("Ready For Payout", () => {
   });
 
   it("Should show the Ready For Payout button if the round is finalized", async () => {
-    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
     }));
 
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
-      distributionMetaPtr: "",
-      matchingDistribution: [],
-      isLoading: false,
-      isError: null,
-    }));
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
+      () => ({
+        distributionMetaPtr: "",
+        matchingDistribution: [],
+        isLoading: false,
+        isError: null,
+      })
+    );
 
     const roundEndTime = faker.date.past();
     mockRoundData = makeRoundData({ roundEndTime });
@@ -660,18 +684,20 @@ describe("Ready For Payout", () => {
   });
 
   it("Should show Info Modal when Ready For Payout button is clicked", async () => {
-    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
     }));
 
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
-      distributionMetaPtr: "9a8sdf679a87sdf89",
-      matchingDistribution: [],
-      isLoading: false,
-      isError: null,
-    }));
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
+      () => ({
+        distributionMetaPtr: "9a8sdf679a87sdf89",
+        matchingDistribution: [],
+        isLoading: false,
+        isError: null,
+      })
+    );
 
     const roundEndTime = faker.date.past();
     mockRoundData = makeRoundData({ roundEndTime });
@@ -707,18 +733,20 @@ describe("Ready For Payout", () => {
   });
 
   it("Should show Progress Modal when Info Modal is clicked", async () => {
-    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
     }));
 
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
-      distributionMetaPtr: "9a8sdf679a87sdf89",
-      matchingDistribution: [],
-      isLoading: false,
-      isError: null,
-    }));
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
+      () => ({
+        distributionMetaPtr: "9a8sdf679a87sdf89",
+        matchingDistribution: [],
+        isLoading: false,
+        isError: null,
+      })
+    );
 
     (setReadyForPayout as jest.Mock).mockResolvedValueOnce(() => ({
       blockNumber: 0,

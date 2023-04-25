@@ -11,10 +11,10 @@ import {
 } from "react-dropzone";
 import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
-import { useRoundMatchingFunds } from "@/src/hooks";
-import { MatchingStatsData } from "@/src/features/api/types";
+import { useRound, useRoundMatchingFunds } from "../../../hooks";
+import { MatchingStatsData } from "../../api/types";
 import * as yup from "yup";
-import { parse } from "csv-parse/sync";
+import { Match } from "allo-indexer-client";
 
 function horizontalTabStyles(selected: boolean) {
   return classNames(
@@ -42,8 +42,7 @@ export default function ViewRoundResults() {
       const reader = new FileReader();
       reader.onload = () => {
         if (reader.result) {
-          /*TODO: handle arraybuffer case */
-          const parsedResult = parse(reader.result as string);
+          /**/
         }
       };
       reader.readAsText(file);
@@ -63,6 +62,9 @@ export default function ViewRoundResults() {
   const onFinalizeResults = () => {
     // Logic for finalizing results goes here
   };
+
+  const { data: round } = useRound(roundId);
+  const matchAmountUSD = round?.matchAmountUSD;
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -124,7 +126,7 @@ export default function ViewRoundResults() {
                 </thead>
                 <tbody>
                   {matches &&
-                    matches.map((match) => {
+                    matches.map((match: Match) => {
                       return (
                         <tr key={match.applicationId}>
                           <td className="text-sm leading-5 text-gray-400 text-left">
@@ -134,7 +136,10 @@ export default function ViewRoundResults() {
                             {match.contributionsCount}
                           </td>
                           <td className="text-sm leading-5 text-gray-400 text-left">
-                            {-99} {/* Corrected line */}
+                            {matchAmountUSD &&
+                              Math.trunc(
+                                (match.matched / matchAmountUSD) * 100
+                              )}
                           </td>
                         </tr>
                       );
