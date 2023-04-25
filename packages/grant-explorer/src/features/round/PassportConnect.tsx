@@ -44,6 +44,14 @@ export default function PassportConnect() {
     PassportState.LOADING
   );
 
+  const [expanded, setExpanded] = useState(true);
+
+  useEffect(() => {
+    if (passportState === PassportState.MATCH_ELIGIBLE) {
+      setExpanded(false);
+    }
+  }, [passportState]);
+
   const callFetchPassport = async () => {
     if (!address || !PASSPORT_COMMUNITY_ID) {
       setPassportState(PassportState.NOT_CONNECTED);
@@ -134,12 +142,6 @@ export default function PassportConnect() {
   };
 
   function HaveAPassportInstructions() {
-    const [expanded, setExpanded] = useState(true);
-
-    if (passportState === PassportState.MATCH_ELIGIBLE) {
-      setExpanded(false);
-    }
-
     return (
       <div
         data-testid="have-a-passport-instructions"

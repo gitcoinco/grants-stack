@@ -283,50 +283,50 @@ describe("<PassportConnect/>", () => {
       });
     });
 
-    //ToDo: fix below test
+    it("IF passport state is match eligible THEN it shows eligible for matching", async () => {
+      let stubRound: Round;
+      const roundStartTime = faker.date.recent();
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+      const roundEndTime = faker.date.soon();
+      const token = payoutTokens[0].address;
 
-    // it("IF passport state is match eligible THEN it shows eligible for matching", async () => {
+      // eslint-disable-next-line prefer-const
+      stubRound = makeRoundData({
+        id: roundId,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundStartTime,
+        roundEndTime,
+        token: token,
+      });
 
-    //   let stubRound: Round;
-    //   const roundStartTime = faker.date.recent();
-    //   const applicationsEndTime = faker.date.past(1, roundStartTime);
-    //   const applicationsStartTime = faker.date.past(1, applicationsEndTime);
-    //   const roundEndTime = faker.date.soon();
-    //   const token = payoutTokens[0].address;
+      const mockJsonPromise = Promise.resolve({
+        score: "2",
+        address: userAddress,
+        status: "DONE",
+        evidence: {
+          threshold: "2",
+          rawScore: "2",
+        },
+      });
 
-    //   // eslint-disable-next-line prefer-const
-    //   stubRound = makeRoundData({
-    //     id: roundId,
-    //     applicationsStartTime,
-    //     applicationsEndTime,
-    //     roundStartTime,
-    //     roundEndTime,
-    //     token: token,
-    //   });
+      const mockPassportPromise = {
+        ok: true,
+        json: () => mockJsonPromise,
+      } as unknown as Response;
 
-    //   const mockJsonPromise = Promise.resolve({
-    //     score: "2",
-    //     address: userAddress,
-    //     status: "DONE",
-    //     evidence: {
-    //       threshold: "2",
-    //       rawScore: "2",
-    //     },
-    //   });
+      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
 
-    //   const mockPassportPromise = {
-    //     ok: true,
-    //     json: () => mockJsonPromise,
-    //   } as unknown as Response;
+      renderWithContext(<PassportConnect />, {
+        rounds: [stubRound],
+        isLoading: false,
+      });
 
-    //   (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
-
-    //   renderWithContext(<PassportConnect />, { rounds: [stubRound], isLoading: false });
-
-    //   await waitFor(() => {
-    //     expect(screen.getByText("Eligible for matching")).toBeInTheDocument();
-    //   });
-    // });
+      await waitFor(() => {
+        expect(screen.getByText("Eligible for matching")).toBeInTheDocument();
+      });
+    });
 
     it("IF passport state is not connected THEN it shows ineligible for matching", async () => {
       let stubRound: Round;
