@@ -68,9 +68,8 @@ export default function ViewRoundResults() {
   const matchAmountUSD = round?.matchAmountUSD;
 
   // TODO: Implement round.RoundStart/EndTime and AppStart/EndTime in allo indexer Round
-  // const currentTime = new Date();
-  // const isBeforeRoundEndDate = currentTime < round.RoundEndTime;
-  const isBeforeRoundEndDate = false;
+  const currentTime = new Date();
+  const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
 
   if (isBeforeRoundEndDate) {
     return <NoInformationContent />;
