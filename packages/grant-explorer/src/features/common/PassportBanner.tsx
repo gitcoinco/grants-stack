@@ -5,19 +5,20 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
-import { useRoundById } from "../../context/RoundContext";
 import {
   PassportResponse,
   PassportState,
   fetchPassport,
 } from "../api/passport";
+import { Round } from "../api/types";
 
 export default function PassportBanner(props: {
-  chainId?: string;
-  roundId?: string;
+  chainId: string;
+  round: Round;
 }) {
+
   const chainId = props.chainId;
-  const roundId = props.roundId;
+  const roundId = props.round.id;
 
   const navigate = useNavigate();
 
@@ -27,10 +28,7 @@ export default function PassportBanner(props: {
 
   const [passportState, setPassportState] = useState<PassportState>(
     PassportState.LOADING
-  );
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(chainId!, roundId!);
+  );  
 
   useEffect(() => {
     setPassportState(PassportState.LOADING);
@@ -178,8 +176,7 @@ export default function PassportBanner(props: {
       color: "bg-purple-200",
       testId: "wallet-not-connected",
       body: `Want to make sure your donations get matched? Verify your Gitcoin Passport by ${getUTCDateTime(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        round!.roundEndTime
+        props.round.roundEndTime
       )}.`,
       button: <ConnectWalletButton />,
     },
@@ -197,8 +194,7 @@ export default function PassportBanner(props: {
       color: "bg-yelllow-100",
       testId: "match-ineligible",
       body: `Your Gitcoin Passport is not currently eligible for donation matching. Please update by ${getUTCDateTime(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        round!.roundEndTime
+        props.round.roundEndTime
       )}.`,
       button: <UpdateScoreButton />,
     },
@@ -214,8 +210,7 @@ export default function PassportBanner(props: {
       color: "bg-yellow-100",
       testId: "invalid-passport",
       body: `You don't have a Gitcoin Passport. Please create one by ${getUTCDateTime(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        round!.roundEndTime
+        props.round.roundEndTime
       )}.`,
       button: <CreatePassportButton />,
     },

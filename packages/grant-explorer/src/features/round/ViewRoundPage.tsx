@@ -175,7 +175,7 @@ function AfterRoundStart(props: {
         isBeforeRoundEndDate={props.isBeforeRoundEndDate}
       />
       {props.isBeforeRoundEndDate && (
-        <PassportBanner chainId={chainId} roundId={roundId} />
+        <PassportBanner chainId={chainId} round={round} />
       )}
       {props.isAfterRoundEndDate && (
         <div>
