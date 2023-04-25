@@ -23,7 +23,6 @@ const RoundCard = (props: RoundCardProps) => {
   );
 
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
-
   const approvedApplicationsCount = 10;
 
   return (
@@ -56,8 +55,8 @@ const RoundCard = (props: RoundCardProps) => {
       </a>
 
       <div className="bg-white">
-        <div className="border-t w-11/12 ml-4" />
-        <CardContent className="text-xs mt-3 pb-0">
+        <div className="border-t w-11/12 ml-4 hidden" />
+        <CardContent className="text-xs mt-3 pb-0 hidden">
           <RoundCardStat
             chainId={Number(props.round.chainId)}
             matchAmount={props.round.matchAmount}
