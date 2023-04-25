@@ -13,6 +13,8 @@ import {
 } from "../api/passport";
 import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
+import { useRoundById } from "../../context/RoundContext";
+import { formatUTCDateAsISOString, getUTCTime } from "common";
 
 export default function PassportConnect() {
   datadogLogs.logger.info(
@@ -23,6 +25,9 @@ export default function PassportConnect() {
   const navigate = useNavigate();
 
   const { chainId, roundId } = useParams();
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { round, isLoading } = useRoundById(chainId!, roundId!);
 
   const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
 
@@ -244,7 +249,7 @@ export default function PassportConnect() {
             <div>
               <p className="text-pink-400 mb-2">Ineligible for matching</p>
               <p>
-                Current score. Reach {passport?.evidence?.threshold || 0} to
+                Reach {Number(passport?.evidence?.threshold).toFixed(2) || 0} to
                 have your donation matched.
               </p>
             </div>
@@ -285,18 +290,61 @@ export default function PassportConnect() {
             Back to browsing
           </Button>
 
-          <Button
-            type="button"
-            $variant="outline"
-            onClick={() =>
-              window.open(`https://passport.gitcoin.co/#/dashboard`, "_blank")
-            }
-            className="items-center justify-center shadow-sm text-sm rounded border-1 bg-grey-500 text-white px-10"
-            data-testid="create-passport-button"
-          >
-            Create a Passport
-          </Button>
+          {passportState === PassportState.INVALID_PASSPORT && (
+            <Button
+              type="button"
+              $variant="outline"
+              onClick={() =>
+                window.open(`https://passport.gitcoin.co/#/dashboard`, "_blank")
+              }
+              className="items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-400 text-white px-10"
+              data-testid="create-passport-button"
+            >
+              Create a Passport
+            </Button>
+          )}
+          {passportState === PassportState.MATCH_INELIGIBLE && (
+            <Button
+              type="button"
+              $variant="outline"
+              onClick={() =>
+                window.open(`https://passport.gitcoin.co/#/dashboard`, "_blank")
+              }
+              className="items-center justify-center shadow-sm text-sm rounded border-1 bg-grey-500 text-white px-10"
+              data-testid="create-passport-button"
+            >
+              Add more stamps
+            </Button>
+          )}
+          {passportState === PassportState.MATCH_ELIGIBLE && (
+            <Button
+              type="button"
+              $variant="outline"
+              onClick={() =>
+                window.open(`https://passport.gitcoin.co/#/dashboard`, "_blank")
+              }
+              className="items-center justify-center shadow-sm text-sm rounded border-1 bg-grey-500 text-white px-10"
+              data-testid="create-passport-button"
+            >
+              Open Passport
+            </Button>
+          )}
         </div>
+
+        {passportState === PassportState.MATCH_INELIGIBLE && (
+          <div className="flex justify-center mt-8">
+            <p>
+              Make sure to update your score before the round ends{" "}
+              {!isLoading && round
+                ? "on " +
+                  formatUTCDateAsISOString(round.roundEndTime) +
+                  " " +
+                  getUTCTime(round.roundEndTime)
+                : ""}
+              .
+            </p>
+          </div>
+        )}
       </>
     );
   }
