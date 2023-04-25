@@ -13,7 +13,6 @@ import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
 import { useRound, useRoundMatchingFunds } from "../../../hooks";
 import { MatchingStatsData } from "../../api/types";
-import * as yup from "yup";
 import { Match } from "allo-indexer-client";
 
 // CHECK: should this be in common?
@@ -66,13 +65,11 @@ export default function ViewRoundResults() {
 
   const { data: round } = useRound(roundId);
 
-  console.log("round", round);
-
-
   const matchAmountUSD = round?.matchAmountUSD;
 
-  const currentTime = new Date();\
   // TODO: Implement round.RoundStart/EndTime and AppStart/EndTime in allo indexer Round
+  // const currentTime = new Date();
+  // const isBeforeRoundEndDate = currentTime < round.RoundEndTime;
   const isBeforeRoundEndDate = false;
 
   if (isBeforeRoundEndDate) {
@@ -189,11 +186,11 @@ export default function ViewRoundResults() {
                     <RadioGroup.Option
                       key={option.value}
                       value={option.value}
-                      className={({ active, checked }) =>
+                      className={() =>
                         classNames("cursor-pointer flex items-center")
                       }
                     >
-                      {({ active, checked }) => (
+                      {({ checked }) => (
                         <>
                           <input
                             type="radio"
@@ -285,59 +282,59 @@ export function UploadJSON(props: {
   matchingData: MatchingStatsData[];
   setCustomMatchingData: (customMatchingStats: MatchingStatsData[]) => void;
 }) {
-  const [projectIDMismatch, setProjectIDMismatch] = useState(false);
-  const [matchingPerecentMismatch, setMatchingPerecentMismatch] =
-    useState(false);
+  const [projectIDMismatch, ] = useState(false);
+  const [matchingPerecentMismatch, ] = useState(false);
 
-  const projectIDs = props.matchingData?.map((data) => data.projectId);
-
-  const matchingDataSchema = yup.array().of(
-    yup.object().shape({
-      projectName: yup.string().required(),
-      projectId: yup.string().required(),
-      uniqueContributorsCount: yup.number().required(),
-      matchPoolPercentage: yup.number().required(),
-    })
-  );
+  // TODO: implement this when file upload is ready
+  // const projectIDs = props.matchingData?.map((data) => data.projectId);
+  //
+  // const matchingDataSchema = yup.array().of(
+  //   yup.object().shape({
+  //     projectName: yup.string().required(),
+  //     projectId: yup.string().required(),
+  //     uniqueContributorsCount: yup.number().required(),
+  //     matchPoolPercentage: yup.number().required(),
+  //   })
+  // );
 
   /* TODO(1474): adapt this to parse and validate csv instead of JSON + type safety */
-  const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const fileList = event.dataTransfer.files;
-    fileList[0].arrayBuffer().then((buffer) => {
-      const decoder = new TextDecoder("utf-8");
-      const jsonString = decoder.decode(buffer);
-      const jsonData = JSON.parse(jsonString);
-      try {
-        matchingDataSchema.validateSync(jsonData);
-        const jsonProjectIDs = jsonData.map((data: any) => data.projectId);
-        const jsonMatchPoolPercentages = jsonData.map(
-          (data: any) => data.matchPoolPercentage
-        );
-        const idMismatch = !projectIDs?.every((projectID) =>
-          jsonProjectIDs.includes(projectID)
-        );
-        const matchPoolPercentageMismatch = !(
-          Number(
-            jsonMatchPoolPercentages
-              ?.reduce(
-                (accumulator: number, currentValue: number) =>
-                  accumulator + currentValue,
-                0
-              )
-              .toFixed(4)
-          ) === 1
-        );
-        setProjectIDMismatch(idMismatch);
-        setMatchingPerecentMismatch(matchPoolPercentageMismatch);
-        !idMismatch &&
-          !matchPoolPercentageMismatch &&
-          props.setCustomMatchingData(jsonData);
-      } catch (error) {
-        props.setCustomMatchingData([]);
-      }
-    });
-  };
+  // const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  //   event.preventDefault();
+  //   const fileList = event.dataTransfer.files;
+  //   fileList[0].arrayBuffer().then((buffer) => {
+  //     const decoder = new TextDecoder("utf-8");
+  //     const jsonString = decoder.decode(buffer);
+  //     const jsonData = JSON.parse(jsonString);
+  //     try {
+  //       matchingDataSchema.validateSync(jsonData);
+  //       const jsonProjectIDs = jsonData.map((data: any) => data.projectId);
+  //       const jsonMatchPoolPercentages = jsonData.map(
+  //         (data: any) => data.matchPoolPercentage
+  //       );
+  //       const idMismatch = !projectIDs?.every((projectID) =>
+  //         jsonProjectIDs.includes(projectID)
+  //       );
+  //       const matchPoolPercentageMismatch = !(
+  //         Number(
+  //           jsonMatchPoolPercentages
+  //             ?.reduce(
+  //               (accumulator: number, currentValue: number) =>
+  //                 accumulator + currentValue,
+  //               0
+  //             )
+  //             .toFixed(4)
+  //         ) === 1
+  //       );
+  //       setProjectIDMismatch(idMismatch);
+  //       setMatchingPerecentMismatch(matchPoolPercentageMismatch);
+  //       !idMismatch &&
+  //         !matchPoolPercentageMismatch &&
+  //         props.setCustomMatchingData(jsonData);
+  //     } catch (error) {
+  //       props.setCustomMatchingData([]);
+  //     }
+  //   });
+  // };
 
   return (
     <div className="pt-2 flex flex-col items-start" {...props.rootProps}>
