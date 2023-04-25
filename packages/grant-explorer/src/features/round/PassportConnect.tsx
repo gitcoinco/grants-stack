@@ -1,5 +1,10 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { ArrowPathIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowPathIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/24/solid";
 import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -129,6 +134,12 @@ export default function PassportConnect() {
   };
 
   function HaveAPassportInstructions() {
+    const [expanded, setExpanded] = useState(true);
+
+    if (passportState === PassportState.MATCH_ELIGIBLE) {
+      setExpanded(false);
+    }
+
     return (
       <div
         data-testid="have-a-passport-instructions"
@@ -136,49 +147,66 @@ export default function PassportConnect() {
       >
         <PassportButtons />
         <div className="mt-10">
-          <div className="text-[18px] pb-2 border-b-2">Instructions</div>
-          <div className="text-[18px] mt-8 mb-4 flex">
-            <div className="bg-violet-200 w-24 md:w-8 h-8 rounded-full relative mr-4">
-              <div className="absolute mt-1 ml-3">1</div>
-            </div>
-            <div className="my-auto">
-              Create a Gitcoin Passport if you don’t have one already. You will
-              be taken to a new window to begin verifying your identity.
-            </div>
+          <div className="flex flex-column justify-between pb-2 border-b-2">
+            <div className="text-[18px]">Instructions</div>
+            <button
+              className="ml-auto focus:outline-none"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? (
+                <ChevronUpIcon className="w-6 h-6 text-black-200" />
+              ) : (
+                <ChevronDownIcon className="w-6 h-6 text-black-200" />
+              )}
+            </button>
           </div>
-          <div className="text-[18px] mb-6 flex">
-            <div className="bg-violet-200 w-12 md:w-8 h-8 rounded-full relative mr-4">
-              <div className="absolute mt-1 m-[10px]">2</div>
-            </div>
-            <div className="my-auto">
-              Verify your identity by connecting to various stamps.
-            </div>
-          </div>
-          <div className="text-[18px] mb-6 flex">
-            <div className="bg-violet-200 w-12 md:w-8 h-8 rounded-full relative mr-4">
-              <div className="absolute mt-1 m-[10px]">3</div>
-            </div>
-            <div className="my-auto">
-              Return back to this screen and recalculate your score.
-            </div>
-          </div>
-          <div className="text-[18px] mb-6 flex">
-            <div className="bg-violet-200 w-28 md:w-8 h-8 rounded-full relative mr-4">
-              <div className="absolute mt-1 m-[10px]">4</div>
-            </div>
-            <div className="my-auto">
-              If ineligible, you will have the chance to verify more stamps to
-              raise your score. Once you have, recalculate your score.
-            </div>
-          </div>
-          <div className="text-[18px] mb-6 flex">
-            <div className="bg-violet-200 w-9 md:w-8 h-8 rounded-full relative mr-4">
-              <div className="absolute mt-1 m-[10px]">5</div>
-            </div>
-            <div className="my-auto">
-              If eligible, your donation will be matched.
-            </div>
-          </div>
+          {expanded && (
+            <>
+              <div className="text-[18px] mt-8 mb-4 flex">
+                <div className="bg-violet-200 w-24 md:w-8 h-8 rounded-full relative mr-4">
+                  <div className="absolute mt-1 ml-3">1</div>
+                </div>
+                <div className="my-auto">
+                  Create a Gitcoin Passport if you don’t have one already. You
+                  will be taken to a new window to begin verifying your
+                  identity.
+                </div>
+              </div>
+              <div className="text-[18px] mb-6 flex">
+                <div className="bg-violet-200 w-12 md:w-8 h-8 rounded-full relative mr-4">
+                  <div className="absolute mt-1 m-[10px]">2</div>
+                </div>
+                <div className="my-auto">
+                  Verify your identity by connecting to various stamps.
+                </div>
+              </div>
+              <div className="text-[18px] mb-6 flex">
+                <div className="bg-violet-200 w-12 md:w-8 h-8 rounded-full relative mr-4">
+                  <div className="absolute mt-1 m-[10px]">3</div>
+                </div>
+                <div className="my-auto">
+                  Return back to this screen and recalculate your score.
+                </div>
+              </div>
+              <div className="text-[18px] mb-6 flex">
+                <div className="bg-violet-200 w-28 md:w-8 h-8 rounded-full relative mr-4">
+                  <div className="absolute mt-1 m-[10px]">4</div>
+                </div>
+                <div className="my-auto">
+                  If ineligible, you will have the chance to verify more stamps
+                  to raise your score. Once you have, recalculate your score.
+                </div>
+              </div>
+              <div className="text-[18px] mb-6 flex">
+                <div className="bg-violet-200 w-9 md:w-8 h-8 rounded-full relative mr-4">
+                  <div className="absolute mt-1 m-[10px]">5</div>
+                </div>
+                <div className="my-auto">
+                  If eligible, your donation will be matched.
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
