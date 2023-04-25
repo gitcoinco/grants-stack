@@ -53,7 +53,6 @@ export const TokenAndCoinGeckoIds: Record<string, string> = {
   ETH: "ethereum",
 };
 
-
 const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
@@ -70,7 +69,7 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
-  }
+  },
 ];
 
 const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
@@ -89,7 +88,7 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
-  }
+  },
 ];
 
 const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
@@ -124,9 +123,8 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
-  }
+  },
 ];
-
 
 const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
   {
@@ -152,7 +150,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
-  }
+  },
 ];
 
 const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
@@ -163,7 +161,7 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
-  }
+  },
 ];
 
 export const payoutTokens = [
@@ -171,7 +169,7 @@ export const payoutTokens = [
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
   ...GOERLI_TESTNET_TOKENS,
-  ...FANTOM_TESTNET_TOKENS
+  ...FANTOM_TESTNET_TOKENS,
 ];
 
 export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
@@ -395,7 +393,7 @@ export const getDaysLeft = (date: number) => {
   const daysLeftInMs = Number(date) - new Date().getSeconds();
   const daysLeft = Math.ceil(daysLeftInMs / (1000 * 60 * 60 * 24));
   return daysLeft;
-}
+};
 
 export const listenForOutsideClicks = ({
   listening,

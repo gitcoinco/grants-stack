@@ -120,15 +120,15 @@ export const makeRoundOverviewData = (
         description: faker.lorem.sentence(),
         requirements: [
           { requirement: faker.lorem.sentence() },
-          { requirement: faker.lorem.sentence() }
+          { requirement: faker.lorem.sentence() },
         ],
       },
       programContractAddress: faker.finance.ethereumAddress(),
       ...roundMetadataOverrides,
     },
-    ...overrides
+    ...overrides,
   };
-}
+};
 
 export function generateIpfsCid() {
   return faker.random.alpha({ count: 59, casing: "lower" });

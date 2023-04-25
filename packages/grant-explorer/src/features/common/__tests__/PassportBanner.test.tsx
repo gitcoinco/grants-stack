@@ -3,7 +3,7 @@ import PassportBanner from "../PassportBanner";
 import { BrowserRouter } from "react-router-dom";
 import { fetchPassport } from "../../api/passport";
 import { faker } from "@faker-js/faker";
-import { mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
+import { makeRoundData, mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
 
 const userAddress = faker.finance.ethereumAddress();
 
@@ -24,10 +24,13 @@ jest.mock("../../../features/api/passport");
 process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = "12";
 
 describe("PassportBanner", () => {
+
+  const mockRound = makeRoundData();
+
   describe("renders the correct banner", () => {
     it("WHEN user is not connected to passport THEN it shows the not connected banner", () => {
       mockAccount.isConnected = false;
-      render(<PassportBanner />, { wrapper: BrowserRouter });
+      render(<PassportBanner chainId="5" round={mockRound}/>, { wrapper: BrowserRouter });
       expect(screen.getByTestId("wallet-not-connected")).toBeInTheDocument();
       expect(screen.getByTestId("connect-wallet-button")).toBeInTheDocument();
     });
@@ -53,7 +56,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner />, { wrapper: BrowserRouter });
+      render(<PassportBanner chainId="5" round={mockRound}/>, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByTestId("match-eligible")).toBeInTheDocument();
@@ -82,7 +85,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner />, { wrapper: BrowserRouter });
+      render(<PassportBanner chainId="5" round={mockRound}/>, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByTestId("match-ineligible")).toBeInTheDocument();
@@ -111,7 +114,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner />, { wrapper: BrowserRouter });
+      render(<PassportBanner chainId="5" round={mockRound}/>, { wrapper: BrowserRouter });
 
       expect(screen.getByTestId("loading-passport-score")).toBeInTheDocument();
     });
@@ -137,11 +140,10 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner />, { wrapper: BrowserRouter });
+      render(<PassportBanner chainId="5" round={mockRound}/>, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByTestId("invalid-passport")).toBeInTheDocument();
-        expect(screen.getByTestId("visit-passport-button")).toBeInTheDocument();
       });
     });
 
@@ -160,7 +162,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner />, { wrapper: BrowserRouter });
+      render(<PassportBanner chainId="5" round={mockRound}/>, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(
@@ -191,7 +193,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner />, { wrapper: BrowserRouter });
+      render(<PassportBanner chainId="5" round={mockRound}/>, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(

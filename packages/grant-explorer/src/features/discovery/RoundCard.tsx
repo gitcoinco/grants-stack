@@ -1,6 +1,6 @@
 import { renderToPlainText, truncateDescription } from "common";
 import { RoundOverview } from "../api/rounds";
-import { getDaysLeft, getPayoutTokenOptions } from "../api/utils";
+import { ChainId, getDaysLeft, getPayoutTokenOptions } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -16,20 +16,21 @@ type RoundCardProps = {
 };
 
 const RoundCard = (props: RoundCardProps) => {
-
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
   const payoutTokens = getPayoutTokenOptions(props.round.chainId);
   const payoutToken = payoutTokens.find(
     (token) => token.address === props.round.token
   );
 
+  const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
+  
   const approvedApplicationsCount = 10;
 
   return (
     <BasicCard className="w-full">
       <a
         target="_blank"
-        href={`https://manager.gitcoin.co/#/round/${props.round.id}`}
+        href={`/#/round/${chainIdEnumValue}/${props.round.id}`}
         data-testid="round-card"
       >
         <CardHeader>

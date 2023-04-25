@@ -96,7 +96,8 @@ export default function ViewProjectDetails() {
         roundUrlPath={`/round/${chainId}/${roundId}`}
         isBeforeRoundEndDate={isBeforeRoundEndDate}
       />
-      {isBeforeRoundEndDate && <PassportBanner />}
+      {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+      {isBeforeRoundEndDate && <PassportBanner chainId={chainId!} round={round}/>}
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />
@@ -445,13 +446,13 @@ function Sidebar(props: {
   return (
     <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6">
       <ProjectStats />
-      {props.isBeforeRoundEndDate &&
+      {props.isBeforeRoundEndDate && (
         <CartButtonToggle
           isAlreadyInCart={props.isAlreadyInCart}
           addToCart={props.addToCart}
           removeFromCart={props.removeFromCart}
         />
-      }
+      )}
     </div>
   );
 }
