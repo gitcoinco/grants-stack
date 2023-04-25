@@ -157,7 +157,7 @@ export const qfVotingStrategyFactoryContract = (
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0xE1F4A28299966686c689223Ee7803258Dbde0942";
+      address = "0x838C5e10dcc1e54d62761d994722367BA167AC22";
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
