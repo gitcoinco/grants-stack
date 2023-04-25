@@ -127,51 +127,54 @@ export default function PassportConnect() {
     return (
       <div
         data-testid="have-a-passport-instructions"
-        className="text-left mt-8 mb-5 text-grey-500 max-w-7xl mx-auto"
+        className="text-left mt-4 mb-4 text-grey-500 max-w-7xl mx-auto"
       >
-        <div className="text-[18px] mb-6 flex">
-          <div className="bg-violet-200 w-24 md:w-8 h-8 rounded-full relative mr-4">
-            <div className="absolute mt-1 ml-3">1</div>
-          </div>
-          <div className="my-auto">
-            Create a Gitcoin Passport if you don’t have one already. You will be
-            taken to a new window to begin verifying your identity.
-          </div>
-        </div>
-        <div className="text-[18px] mb-6 flex">
-          <div className="bg-violet-200 w-12 md:w-8 h-8 rounded-full relative mr-4">
-            <div className="absolute mt-1 m-[10px]">2</div>
-          </div>
-          <div className="my-auto">
-            Verify your identity by connecting to various stamps.
-          </div>
-        </div>
-        <div className="text-[18px] mb-6 flex">
-          <div className="bg-violet-200 w-12 md:w-8 h-8 rounded-full relative mr-4">
-            <div className="absolute mt-1 m-[10px]">3</div>
-          </div>
-          <div className="my-auto">
-            Return back to this screen and recalculate your score.
-          </div>
-        </div>
-        <div className="text-[18px] mb-6 flex">
-          <div className="bg-violet-200 w-28 md:w-8 h-8 rounded-full relative mr-4">
-            <div className="absolute mt-1 m-[10px]">4</div>
-          </div>
-          <div className="my-auto">
-            If ineligible, you will have the chance to verify more stamps to
-            raise your score. Once you have, recalculate your score.
-          </div>
-        </div>
-        <div className="text-[18px] mb-6 flex">
-          <div className="bg-violet-200 w-9 md:w-8 h-8 rounded-full relative mr-4">
-            <div className="absolute mt-1 m-[10px]">5</div>
-          </div>
-          <div className="my-auto">
-            If eligible, your donation will be matched.
-          </div>
-        </div>
         <PassportButtons />
+        <div className="mt-10">
+          <div className="text-[18px] pb-2 border-b-2">Instructions</div>
+          <div className="text-[18px] mt-8 mb-4 flex">
+            <div className="bg-violet-200 w-24 md:w-8 h-8 rounded-full relative mr-4">
+              <div className="absolute mt-1 ml-3">1</div>
+            </div>
+            <div className="my-auto">
+              Create a Gitcoin Passport if you don’t have one already. You will
+              be taken to a new window to begin verifying your identity.
+            </div>
+          </div>
+          <div className="text-[18px] mb-6 flex">
+            <div className="bg-violet-200 w-12 md:w-8 h-8 rounded-full relative mr-4">
+              <div className="absolute mt-1 m-[10px]">2</div>
+            </div>
+            <div className="my-auto">
+              Verify your identity by connecting to various stamps.
+            </div>
+          </div>
+          <div className="text-[18px] mb-6 flex">
+            <div className="bg-violet-200 w-12 md:w-8 h-8 rounded-full relative mr-4">
+              <div className="absolute mt-1 m-[10px]">3</div>
+            </div>
+            <div className="my-auto">
+              Return back to this screen and recalculate your score.
+            </div>
+          </div>
+          <div className="text-[18px] mb-6 flex">
+            <div className="bg-violet-200 w-28 md:w-8 h-8 rounded-full relative mr-4">
+              <div className="absolute mt-1 m-[10px]">4</div>
+            </div>
+            <div className="my-auto">
+              If ineligible, you will have the chance to verify more stamps to
+              raise your score. Once you have, recalculate your score.
+            </div>
+          </div>
+          <div className="text-[18px] mb-6 flex">
+            <div className="bg-violet-200 w-9 md:w-8 h-8 rounded-full relative mr-4">
+              <div className="absolute mt-1 m-[10px]">5</div>
+            </div>
+            <div className="my-auto">
+              If eligible, your donation will be matched.
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -294,18 +297,6 @@ export default function PassportConnect() {
             Create a Passport
           </Button>
         </div>
-
-        <p className="mt-3 pb-3 text-center">
-          <a
-            data-testid="need-help-link"
-            className="text-md border-b border-black pb-1"
-            target="_blank"
-            href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/how-do-i-create-a-gitcoin-passport"
-            rel="noreferrer"
-          >
-            Need Help?
-          </a>
-        </p>
       </>
     );
   }
@@ -328,7 +319,7 @@ export default function PassportConnect() {
         </header>
 
         <main>
-          <div className="text-center my-8">
+          <div className="text-center my-4">
             <h2 className="pt-8 pb-8 font-['Libre_Franklin']">
               <span className="font-semibold mr-2">Amplify</span>
               your donation
@@ -345,7 +336,7 @@ export default function PassportConnect() {
               protect against Sybil attacks.
             </p>
 
-            <p className="mt-4 mb-10 pb-3">
+            <p className="mt-4 mb-4 pb-3">
               <a
                 data-testid="what-is-passport-link"
                 className="text-md border-b border-black pb-1"
