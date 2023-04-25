@@ -13,6 +13,8 @@ import ApplyNowSection from "./ApplyNowSection";
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 
 const LandingPage = () => {
+  window.location.replace("https://grants.gitcoin.co");
+
   const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
