@@ -19,11 +19,11 @@ const RoundCard = (props: RoundCardProps) => {
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
   const payoutTokens = getPayoutTokenOptions(props.round.chainId);
   const payoutToken = payoutTokens.find(
-    (token) => token.address === props.round.token
+    (token) => token.address.toLowerCase() === props.round.token.toLowerCase()
   );
 
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
-  
+
   const approvedApplicationsCount = 10;
 
   return (
