@@ -24,7 +24,7 @@ export default function PassportConnect() {
 
   const { chainId, roundId } = useParams();
 
-  const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID; // TODO: fetch from round metadata
+  const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
 
   const [passport, setPassport] = useState<PassportResponse | undefined>();
   const [, setError] = useState<Response | undefined>();

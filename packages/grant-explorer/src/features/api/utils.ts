@@ -13,12 +13,12 @@ export enum ChainId {
 export const CHAINS: Record<number, any> = {
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
-    name: "Mainnet", // TODO get canonical network names
+    name: "Mainnet",
     logo: "./logos/ethereum-eth-logo.svg",
   },
   [ChainId.GOERLI_CHAIN_ID]: {
     id: ChainId.GOERLI_CHAIN_ID,
-    name: "Goerli", // TODO get canonical network names
+    name: "Goerli",
     logo: "./logos/ethereum-eth-logo.svg",
   },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
@@ -342,7 +342,6 @@ export const graphql_fetch = async (
 
 /**
  * Fetch data from IPFS
- * TODO: include support for fetching abitrary data e.g images
  *
  * @param cid - the unique content identifier that points to the data
  */

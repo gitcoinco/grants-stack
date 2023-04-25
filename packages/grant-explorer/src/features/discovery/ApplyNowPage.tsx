@@ -33,7 +33,6 @@ const ApplyNowPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // todo: updating the breadcrumb items
   // eslint-disable-next-line prefer-const
   let breadcrumbItems = [
     {
@@ -42,7 +41,7 @@ const ApplyNowPage = () => {
     },
     {
       name: "Apply Now",
-      path: "/",
+      path: "/apply-now",
     },
   ];
 

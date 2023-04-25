@@ -26,7 +26,6 @@ const LandingPage = () => {
         () => filterProjectsByTitle(searchQuery),
         300
       );
-      // TODO: Figure out how to how to handle this
       return () => clearTimeout(timeOutId);
     } else {
       setActiveRounds(activeRounds);

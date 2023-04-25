@@ -166,7 +166,6 @@ export default function ViewCart() {
   useEffect(() => {
     setPassportState(PassportState.LOADING);
 
-    // TODO: fetch from round metadata
     const PASSPORT_COMMUNITY_ID =
       process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
     const PASSPORT_THRESHOLD = 0;

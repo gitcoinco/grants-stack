@@ -65,14 +65,15 @@ export interface Contract {
   bytecode?: string;
 }
 
-// TODO: Document this
 export interface Requirement {
+  // Requirement for the round
   requirement?: string;
 }
 
-// TODO: Document this
 export interface Eligibility {
+  // Eligibility for the round
   description: string;
+  // Requirements for the round
   requirements?: Requirement[];
 }
 
@@ -214,5 +215,5 @@ export type PayoutToken = {
   address: string;
   decimal: number;
   logo?: string;
-  default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
+  default?: boolean;
 };
