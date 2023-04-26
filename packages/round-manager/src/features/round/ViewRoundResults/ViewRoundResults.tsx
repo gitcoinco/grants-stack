@@ -17,6 +17,7 @@ import { classNames } from "common";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
 import { MatchingStatsData } from "../../api/types";
 import { Match } from "allo-indexer-client";
+import { Spinner } from "../../common/Spinner";
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -36,7 +37,8 @@ const distributionOptions = [
 export default function ViewRoundResults() {
   const { id } = useParams();
   const roundId = utils.getAddress(id?.toLowerCase() ?? "");
-  const { data: matches } = useRoundMatchingFunds(roundId);
+  const { data: matches, isLoading: isLoadingMatchingFunds } =
+    useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
 
   const [distributionOption, setDistributionOption] = useState("keep");
@@ -67,15 +69,21 @@ export default function ViewRoundResults() {
     // Logic for finalizing results goes here
   };
 
-  const { data: round } = useRound(roundId);
+  const { data: round, isLoading: isLoadingRound } = useRound(roundId);
 
   const matchAmountUSD = round?.matchAmountUSD;
 
   const currentTime = new Date();
-  const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
+  /*TODO: uncomment this before ship */
+  const isBeforeRoundEndDate =
+    false; /*round && currentTime < round.roundEndTime*/
 
   if (isBeforeRoundEndDate && !debugModeEnabled) {
     return <NoInformationContent />;
+  }
+
+  if (isLoadingRound || isLoadingMatchingFunds) {
+    return <Spinner text="We're fetching the matching data." />;
   }
 
   return (
@@ -112,7 +120,12 @@ export default function ViewRoundResults() {
                 </span>
               </div>
               <div className="flex flex-col mt-4 w-min">
-                <button className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    /* Download vote coefficients */
+                  }}
+                  className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
+                >
                   <DownloadIcon className="h-5 w-5" />
                   CSV
                 </button>
@@ -167,10 +180,16 @@ export default function ViewRoundResults() {
                 </table>
               </div>
               <div className="flex flex-col mt-4 w-min">
-                <button className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2">
-                  <DownloadIcon className="h-5 w-5" />{" "}
-                  {/* Add the ArrowNarrowDown icon */}
-                  CSV
+                <button
+                  onClick={() => {
+                    /*Download matching distribution json as csv */
+                    if (!matches) {
+                      return;
+                    }
+                  }}
+                  className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
+                >
+                  <DownloadIcon className="h-5 w-5" /> CSV
                 </button>
               </div>
               <div className="flex flex-col mt-4 gap-1 mb-3">
