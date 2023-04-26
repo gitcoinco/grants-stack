@@ -890,10 +890,12 @@ export default function ViewCart() {
           subheading={
             <>
               <p className={"text-sm text-grey-400 mb-2"}>
-                Verify your identity with Gitcoin Passport to amplify your donations. 
+                Verify your identity with Gitcoin Passport to amplify your
+                donations.
               </p>
               <p className={"text-sm text-grey-400"}>
-                Note that donations made without Gitcoin Passport verification will not be matched.
+                Note that donations made without Gitcoin Passport verification
+                will not be matched.
               </p>
             </>
           }

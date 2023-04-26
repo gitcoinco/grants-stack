@@ -1,37 +1,36 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { Link, useParams } from "react-router-dom";
-import { useRoundById } from "../../context/RoundContext";
-import { ProjectBanner } from "../common/ProjectBanner";
-import DefaultLogoImage from "../../assets/default_logo.png";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import {
-  GrantApplicationFormAnswer,
-  Project,
-  ProjectCredentials,
-  ProjectMetadata,
-} from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   BoltIcon,
   ChevronLeftIcon,
   GlobeAltIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
-import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
-import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
+import { Application, Client } from "allo-indexer-client";
+import { formatDateWithOrdinal, renderToHTML } from "common";
 import { Button } from "common/src/styles";
-import { useCart } from "../../context/CartContext";
-import Navbar from "../common/Navbar";
-import React, { useEffect, useState } from "react";
-import Footer from "../common/Footer";
-import useSWR from "swr";
 import { formatDistanceToNowStrict } from "date-fns";
-import RoundEndedBanner from "../common/RoundEndedBanner";
-import PassportBanner from "../common/PassportBanner";
-import { formatDateWithOrdinal } from "common";
-import { renderToHTML } from "common";
-import { Client, Application } from "allo-indexer-client";
 import { utils } from "ethers";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import useSWR from "swr";
+import DefaultLogoImage from "../../assets/default_logo.png";
+import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
+import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
+import { useCart } from "../../context/CartContext";
+import { useRoundById } from "../../context/RoundContext";
+import {
+  GrantApplicationFormAnswer,
+  Project,
+  ProjectCredentials,
+  ProjectMetadata,
+} from "../api/types";
+import Footer from "../common/Footer";
+import Navbar from "../common/Navbar";
+import PassportBanner from "../common/PassportBanner";
+import { ProjectBanner } from "../common/ProjectBanner";
+import RoundEndedBanner from "../common/RoundEndedBanner";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -96,8 +95,11 @@ export default function ViewProjectDetails() {
         roundUrlPath={`/round/${chainId}/${roundId}`}
         isBeforeRoundEndDate={isBeforeRoundEndDate}
       />
-      {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-      {isBeforeRoundEndDate && <PassportBanner chainId={chainId!} round={round}/>}
+
+      {isBeforeRoundEndDate && (
+        /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+        <PassportBanner chainId={chainId!} round={round} />
+      )}
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />
@@ -469,6 +471,7 @@ export function useRoundProject(
     process.env.REACT_APP_ALLO_API_ENDPOINT ?? "",
     chainId
   );
+
   return useSWR([roundId, "/projects"], ([roundId]) =>
     client
       .getRoundApplications(utils.getAddress(roundId.toLowerCase()))
@@ -477,16 +480,20 @@ export function useRoundProject(
       )
   );
 }
+
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
-  const projectId = applicationId?.split("-")[0] as string;
+
+  const projectToRender = round?.approvedProjects?.find(
+    (project) => project.grantApplicationId === applicationId
+  );
 
   const { data: project } = useRoundProject(
     Number(chainId),
     roundId as string,
-    projectId
+    projectToRender?.projectRegistryId as string
   );
 
   const timeRemaining = round?.roundEndTime
