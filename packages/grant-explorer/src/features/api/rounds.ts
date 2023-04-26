@@ -97,8 +97,12 @@ export async function getRoundsInApplicationPhase(): Promise<{
           applicationsStartTime_lt: $currentTimestamp
           applicationsEndTime_gt: $currentTimestamp
 
-          program_: {
+          ${
+            process.env.NODE_ENV === "production"
+              ? `program_: {
             id: "0xa1b6245d7ba4b126adf7ee1e05e96bfda974990c"
+          }`
+              : ""
           }
 
         }) {
@@ -158,7 +162,10 @@ export async function getActiveRounds(): Promise<{
         rounds(where: {
           roundStartTime_lt: $currentTimestamp
           roundEndTime_gt: $currentTimestamp
-          id_in: [
+
+          ${
+            process.env.NODE_ENV === "production"
+              ? `id_in: [
             "0x12bb5bbbfe596dbc489d209299b8302c3300fa40",
             "0x274554eb289004e15a7679123901b7f070dda0fa",
             "0xaa40e2e5c8df03d792a52b5458959c320f86ca18",
@@ -175,7 +182,9 @@ export async function getActiveRounds(): Promise<{
             "0x905efbabe2d52cd648fadfafcec8d6c8c60f7423",
             "0x32c49d2da5f6866a057e4aa2058c62a2974a5623",
             "0x64aa545c9c63944f8e765d9a65eda3cbbdc6e620"
-          ]
+          ]`
+              : ""
+          }
         }) {
           id
           roundMetaPtr {
