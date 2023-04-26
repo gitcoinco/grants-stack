@@ -339,7 +339,7 @@ function AboutProject(props: { projectToRender: Project }) {
 }
 
 function DescriptionTitle() {
-  return <h1 className="text-2xl mt-8 font-thin text-black">About</h1>;
+  return <h1 className="text-2xl mt-8 mb-4 font-thin text-black">Description</h1>;
 }
 
 function DetailSummary(props: { text: string; testID: string; sm?: boolean }) {
