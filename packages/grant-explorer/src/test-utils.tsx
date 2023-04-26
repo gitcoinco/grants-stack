@@ -99,7 +99,7 @@ export const makeRoundOverviewData = (
 ): RoundOverview => {
   return {
     id: faker.finance.ethereumAddress(),
-    chainId: "5",
+    chainId: "1",
     roundMetaPtr: {
       protocol: 1,
       pointer: generateIpfsCid(),
