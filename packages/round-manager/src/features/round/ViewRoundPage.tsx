@@ -40,9 +40,9 @@ import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
 import ViewFundGrantees from "./ViewFundGrantees";
-import ViewRoundResults from "./ViewRoundResults";
 import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
+import ViewRoundResults from "./ViewRoundResults/ViewRoundResults";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -132,7 +132,11 @@ export default function ViewRoundPage() {
                       className="flex flex-col h-max"
                       data-testid="side-nav-bar"
                     >
-                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
                         {({ selected }) => (
                           <div
                             className={
@@ -151,7 +155,11 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
                         {({ selected }) => (
                           <div
                             className={
@@ -171,7 +179,11 @@ export default function ViewRoundPage() {
                         )}
                       </Tab>
 
-                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
                         {({ selected }) => (
                           <div
                             className={
@@ -188,7 +200,11 @@ export default function ViewRoundPage() {
                         )}
                       </Tab>
 
-                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
                         {({ selected }) => (
                           <div
                             className={
@@ -204,7 +220,11 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
                         {({ selected }) => (
                           <div
                             className={
@@ -223,7 +243,11 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
                         {({ selected }) => (
                           <div
                             className={
@@ -242,7 +266,11 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
                         {({ selected }) => (
                           <div
                             className={
@@ -283,11 +311,7 @@ export default function ViewRoundPage() {
                       <ViewRoundStats />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewRoundResults
-                        round={round}
-                        chainId={chain.id}
-                        roundId={id}
-                      />
+                      <ViewRoundResults />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewFundGrantees
@@ -355,7 +379,11 @@ function GrantApplications(props: {
               <div className="justify-end grow relative">
                 <Tab.List className="border-b mb-6 flex items-center justify-between">
                   <div className="space-x-8">
-                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
+                    <Tab
+                      className={({ selected }) =>
+                        horizontalTabStyles(selected)
+                      }
+                    >
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Received
@@ -370,7 +398,11 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
-                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
+                    <Tab
+                      className={({ selected }) =>
+                        horizontalTabStyles(selected)
+                      }
+                    >
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Approved
@@ -385,7 +417,11 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
-                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
+                    <Tab
+                      className={({ selected }) =>
+                        horizontalTabStyles(selected)
+                      }
+                    >
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Rejected

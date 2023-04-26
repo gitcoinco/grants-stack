@@ -225,7 +225,11 @@ export const useApplicationByRoundId = (
   const { provider: walletProvider } = useWallet();
 
   useEffect(() => {
-    fetchApplicationsByRoundId(context.dispatch, roundId, walletProvider);
+    fetchApplicationsByRoundId(
+      context.dispatch,
+      roundId?.toLowerCase(),
+      walletProvider
+    );
   }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {

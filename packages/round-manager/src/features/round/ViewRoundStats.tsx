@@ -1,42 +1,13 @@
-import useSWR from "swr";
-import { useWallet } from "../common/Auth";
-import { Client, Match } from "allo-indexer-client";
+import { Match } from "allo-indexer-client";
 import { useParams } from "react-router-dom";
 import { utils } from "ethers";
 import { useMemo } from "react";
-
-function useAlloIndexerClient(): Client {
-  const { chain } = useWallet();
-
-  return useMemo(() => {
-    return new Client(
-      fetch.bind(window),
-      process.env.REACT_APP_ALLO_API_URL ?? "",
-      chain.id
-    );
-  }, [chain.id]);
-}
-
-function useRound(roundId: string) {
-  const client = useAlloIndexerClient();
-  return useSWR([roundId, "/stats"], ([roundId]) => {
-    return client.getRoundBy("id", roundId);
-  });
-}
-
-function useRoundApplications(roundId: string) {
-  const client = useAlloIndexerClient();
-  return useSWR([roundId, "/applications"], ([roundId]) => {
-    return client.getRoundApplications(roundId);
-  });
-}
-
-function useRoundMatchingFunds(roundId: string) {
-  const client = useAlloIndexerClient();
-  return useSWR([roundId, "/matches"], ([roundId]) => {
-    return client.getRoundMatchingFunds(roundId);
-  });
-}
+import {
+  useRound,
+  useRoundApplications,
+  useRoundMatchingFunds,
+} from "../../hooks";
+import { getUTCDate } from "common";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
@@ -56,9 +27,7 @@ export default function ViewRoundStats() {
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
-      <p className="text-xl font-semibold leading-6 mb-10 text-base">
-        Round Stats
-      </p>
+      <p className="text-xl font-semibold leading-6 mb-10">Round Stats</p>
       <div className="grid grid-cols-5 grid-rows-2 gap-6">
         <div className={"mr-10 flex items-center "}>Overview</div>
         <StatsCard
@@ -72,7 +41,13 @@ export default function ViewRoundStats() {
           title={"Est. Donations Made"}
         />
         <StatsCard
-          text={matchAmountUSD && matchAmountUSD.toFixed(2)}
+          text={
+            matchAmountUSD &&
+            new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(matchAmountUSD)
+          }
           title={"Matching Funds Available"}
         />
         <StatsCard
@@ -87,7 +62,7 @@ export default function ViewRoundStats() {
         <div className="col-span-1 row-span-2 flex items-center">
           Matching Funds
         </div>
-        <div className="col-span-3 row-span-2 overflow-y-auto max-h-52">
+        <div className="col-span-3 border  rounded p-4 row-span-2 overflow-y-auto max-h-52">
           <table
             className={
               "table-auto border-separate border-spacing-y-4 h-full w-full"
@@ -98,18 +73,18 @@ export default function ViewRoundStats() {
                 Current Matching Stats
               </span>
               <span className={"text-sm leading-5 text-gray-400"}>
-                (as of {})
+                (as of {getUTCDate(new Date())})
               </span>
             </caption>
             <thead>
               <tr>
-                <th className="text-sm leading-5 text-gray-400 text-left">
+                <th className="text-sm leading-5 text-gray-600 text-left">
                   Projects
                 </th>
-                <th className="text-sm leading-5 text-gray-400 text-left">
+                <th className="text-sm leading-5 text-gray-600 text-left">
                   No. of Contributions
                 </th>
-                <th className="text-sm leading-5 text-gray-400 text-left">
+                <th className="text-sm leading-5 text-gray-600 text-left">
                   Est. Matching %
                 </th>
               </tr>
@@ -128,6 +103,7 @@ export default function ViewRoundStats() {
                       <td className="text-sm leading-5 text-gray-400 text-left">
                         {matchAmountUSD &&
                           Math.trunc((match.matched / matchAmountUSD) * 100)}
+                        %
                       </td>
                     </tr>
                   );
