@@ -2,7 +2,10 @@ import React, { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
 import { utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
-import {ExclamationCircleIcon as NoInformationIcon, InformationCircleIcon} from "@heroicons/react/outline";
+import {
+  ExclamationCircleIcon as NoInformationIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/outline";
 import { DownloadIcon } from "@heroicons/react/solid";
 import {
   DropzoneInputProps,
@@ -67,7 +70,6 @@ export default function ViewRoundResults() {
 
   const matchAmountUSD = round?.matchAmountUSD;
 
-  // TODO: Implement round.RoundStart/EndTime and AppStart/EndTime in allo indexer Round
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
 
@@ -114,12 +116,18 @@ export default function ViewRoundResults() {
                   CSV
                 </button>
               </div>
-              <div className="flex flex-col mt-4" data-testid="match-stats-title">
+              <div
+                className="flex flex-col mt-4"
+                data-testid="match-stats-title"
+              >
                 <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
                   Matching Distribution
                 </span>
               </div>
-              <table className="table-auto border-separate border-spacing-y-4 h-full w-full" data-testid="match-stats-table">
+              <table
+                className="table-auto border-separate border-spacing-y-4 h-full w-full"
+                data-testid="match-stats-table"
+              >
                 <thead>
                   <tr>
                     <th className="text-sm leading-5 text-gray-400 text-left">
@@ -281,8 +289,8 @@ export function UploadJSON(props: {
   matchingData: MatchingStatsData[];
   setCustomMatchingData: (customMatchingStats: MatchingStatsData[]) => void;
 }) {
-  const [projectIDMismatch, ] = useState(false);
-  const [matchingPerecentMismatch, ] = useState(false);
+  const [projectIDMismatch] = useState(false);
+  const [matchingPerecentMismatch] = useState(false);
 
   // TODO: implement this when file upload is ready
   // const projectIDs = props.matchingData?.map((data) => data.projectId);
@@ -402,24 +410,24 @@ export function UploadJSON(props: {
 
 function NoInformationContent() {
   return (
-      <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
-        <div className="flex flex-center justify-center items-center bg-grey-150 rounded-full h-12 w-12 text-violet-400">
-          <NoInformationIcon className="w-6 h-6" />
-        </div>
-        <NoInformationMessage />
+    <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
+      <div className="flex flex-center justify-center items-center bg-grey-150 rounded-full h-12 w-12 text-violet-400">
+        <NoInformationIcon className="w-6 h-6" />
       </div>
+      <NoInformationMessage />
+    </div>
   );
 }
 
 function NoInformationMessage() {
   return (
-      <>
-        <h2 className="mt-8 text-2xl antialiased">No Information Available</h2>
-        <div className="mt-2 text-sm">Your round has not ended yet.</div>
-        <div className="text-sm">
-          Final matching fund percentage will be available once the round has
-          finalized.
-        </div>
-      </>
+    <>
+      <h2 className="mt-8 text-2xl antialiased">No Information Available</h2>
+      <div className="mt-2 text-sm">Your round has not ended yet.</div>
+      <div className="text-sm">
+        Final matching fund percentage will be available once the round has
+        finalized.
+      </div>
+    </>
   );
 }
