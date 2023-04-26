@@ -11,8 +11,7 @@ export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
   return (
     <div>
       <span className="text-sm mx-auto md:ml-8">
-        Sort
-        <span className="hidden md:inline">by</span>
+        Sort <span className="hidden md:inline">by</span>
       </span>
       <select
         className="border-0 cursor-pointer text-violet-400 text-sm"
