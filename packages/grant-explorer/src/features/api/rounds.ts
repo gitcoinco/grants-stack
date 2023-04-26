@@ -96,6 +96,11 @@ export async function getRoundsInApplicationPhase(): Promise<{
         rounds(where: {
           applicationsStartTime_lt: $currentTimestamp
           applicationsEndTime_gt: $currentTimestamp
+
+          program_: {
+            id: "0xa1b6245d7ba4b126adf7ee1e05e96bfda974990c"
+          }
+
         }) {
           id
           roundMetaPtr {
@@ -153,6 +158,10 @@ export async function getActiveRounds(): Promise<{
         rounds(where: {
           roundStartTime_lt: $currentTimestamp
           roundEndTime_gt: $currentTimestamp
+
+          program_: {
+            id: "0xa1b6245d7ba4b126adf7ee1e05e96bfda974990c"
+          }
         }) {
           id
           roundMetaPtr {
