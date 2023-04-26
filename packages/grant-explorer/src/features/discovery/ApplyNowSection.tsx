@@ -35,7 +35,7 @@ const ApplyNowSection = (props: ApplyNow) => {
           <Spinner />
         </div>
       ) : applyNowRoundsCount > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
           {props.roundOverview.slice(0, 4).map((round, index) => {
             return <RoundCard key={index} round={round} />;
           })}
