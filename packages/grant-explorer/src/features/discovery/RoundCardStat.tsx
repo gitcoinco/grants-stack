@@ -20,21 +20,17 @@ function RoundCardStat(props: RoundCardStatProps) {
         </span>
         <span className="mx-1">|</span>
         <span className="mr-1" data-testid="match-amount">
-          {matchAmountNormalized.toString()}
+          {matchAmountNormalized.toLocaleString()}
         </span>
         <span data-testid="match-token">{props.token} match amount</span>
       </div>
 
       <div>
-        {CHAINS[props.chainId ?? 1] ? (
-          <img
-            className="w-8"
-            src={CHAINS[props.chainId ?? 1].logo}
-            alt="Round Chain Logo"
-          />
-        ) : (
-          <img className="w-8" src={CHAINS[1].logo} alt="Round Chain Logo" />
-        )}
+        <img
+          className="w-8"
+          src={CHAINS[props.chainId].logo}
+          alt="Round Chain Logo"
+        />
       </div>
     </div>
   );
