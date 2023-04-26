@@ -1,17 +1,13 @@
+import { faker } from "@faker-js/faker";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
-import {
-  makeApprovedProjectData,
-  makeRoundOverviewData,
-  renderWithContext,
-} from "../../../test-utils";
+import { makeRoundOverviewData, renderWithContext } from "../../../test-utils";
+import { RoundMetadata } from "../../api/round";
 import {
   RoundOverview,
   getActiveRounds,
   getRoundsInApplicationPhase,
 } from "../../api/rounds";
 import LandingPage from "../LandingPage";
-import { RoundMetadata } from "../../api/round";
-import { faker } from "@faker-js/faker";
 
 // Mock the API calls
 jest.mock("../../api/rounds", () => {
