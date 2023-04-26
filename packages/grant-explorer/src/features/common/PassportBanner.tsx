@@ -16,7 +16,6 @@ export default function PassportBanner(props: {
   chainId: string;
   round: Round;
 }) {
-
   const chainId = props.chainId;
   const roundId = props.round.id;
 
@@ -28,7 +27,7 @@ export default function PassportBanner(props: {
 
   const [passportState, setPassportState] = useState<PassportState>(
     PassportState.LOADING
-  );  
+  );
 
   useEffect(() => {
     setPassportState(PassportState.LOADING);
