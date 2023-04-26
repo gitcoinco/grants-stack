@@ -21,6 +21,7 @@ export type RoundOverview = {
   matchAmount: string;
   token: string;
   roundMetadata?: RoundMetadata;
+  projects?: [];
 };
 
 async function fetchRoundsByTimestamp(
@@ -107,6 +108,12 @@ export async function getRoundsInApplicationPhase(): Promise<{
           roundEndTime
           matchAmount
           token
+
+          projects(where:{
+            status: 1
+          }) {
+            id
+          }
         }
       }
     `;
@@ -158,6 +165,12 @@ export async function getActiveRounds(): Promise<{
           roundEndTime
           matchAmount
           token
+
+          projects(where:{
+            status: 1
+          }) {
+            id
+          }
         }
       }
     `;

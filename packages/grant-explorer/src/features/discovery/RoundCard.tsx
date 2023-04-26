@@ -24,7 +24,7 @@ const RoundCard = (props: RoundCardProps) => {
 
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
 
-  const approvedApplicationsCount = 10;
+  const approvedApplicationsCount = props.round.projects?.length ?? 0;
 
   return (
     <BasicCard className="w-full">
