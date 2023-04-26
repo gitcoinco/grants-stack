@@ -174,6 +174,7 @@ export async function getActiveRounds(): Promise<{
             "0x859faeaa266ba13bd1e72eb6dd7a223902d1adfe",
             "0x905efbabe2d52cd648fadfafcec8d6c8c60f7423",
             "0x32c49d2da5f6866a057e4aa2058c62a2974a5623",
+            "0x64aa545c9c63944f8e765d9a65eda3cbbdc6e620"
           ]
         }) {
           id
