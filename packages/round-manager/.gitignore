@@ -23,6 +23,7 @@
 .env.test.local
 .env.production.local
 .env
+.run
 
 npm-debug.log*
 /.eslintcache
