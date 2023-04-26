@@ -12,16 +12,67 @@ const ApplyNowPage = () => {
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
     RoundOverview[]
   >([]);
+  const [
+    filteredRoundsInApplicationPhase,
+    setFilteredRoundsInApplicationPhase,
+  ] = useState<RoundOverview[]>([]);
   const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
+
   const [searchQuery, setSearchQuery] = useState("");
 
-  const applyNowRoundsCount = roundsInApplicationPhase.length;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (searchQuery) {
+      const timeOutId = setTimeout(
+        () => filterProjectsByTitle(searchQuery),
+        300
+      );
+      return () => clearTimeout(timeOutId);
+    } else {
+      setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
+    }
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const filterProjectsByTitle = (query: string) => {
+    // filter by exact title matches first
+    // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
+
+    if (!query || query === "") {
+      setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
+      return;
+    }
+
+    const exactMatches = roundsInApplicationPhase?.filter(
+      (round) =>
+        round.roundMetadata?.name?.toLocaleLowerCase() ===
+        query.toLocaleLowerCase()
+    );
+
+    const nonExactMatches = roundsInApplicationPhase?.filter(
+      (round) =>
+        round.roundMetadata?.name
+          ?.toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase()) &&
+        round.roundMetadata?.name?.toLocaleLowerCase() !==
+          query.toLocaleLowerCase()
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    setFilteredRoundsInApplicationPhase([
+      ...exactMatches!,
+      ...nonExactMatches!,
+    ]);
+  };
+
+  const applyNowRoundsCount = filteredRoundsInApplicationPhase.length;
 
   // Fetch rounds in application phase
   useEffect(() => {
     const fetchRoundsInApplicationPhase = async () => {
       const { isLoading, error, rounds } = await getRoundsInApplicationPhase();
       setRoundsInApplicationPhase(rounds);
+      setFilteredRoundsInApplicationPhase(rounds);
       setApplyRoundsLoading(isLoading);
       console.log("Rounds in Application Phase: ", {
         roundsInApplicationPhase,
@@ -76,7 +127,7 @@ const ApplyNowPage = () => {
           <Spinner />
         ) : applyNowRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
-            {roundsInApplicationPhase.map((round, index) => {
+            {filteredRoundsInApplicationPhase.map((round, index) => {
               return <RoundCard key={index} round={round} />;
             })}
           </div>
