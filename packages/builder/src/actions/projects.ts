@@ -544,7 +544,10 @@ export const loadProjectStats =
           {
             fundingReceived: project.amountUSD,
             uniqueContributors: project.uniqueContributors,
-            avgContribution: project.amountUSD / project.uniqueContributors,
+            avgContribution:
+              project.uniqueContributors === 0
+                ? 0
+                : project.amountUSD / project.uniqueContributors,
             totalContributions: project.votes,
             success: true,
           },

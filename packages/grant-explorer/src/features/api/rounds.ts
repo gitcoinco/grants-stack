@@ -154,14 +154,28 @@ export async function getActiveRounds(): Promise<{
     const rounds: RoundOverview[] = [];
 
     const query = `
-      query GetRoundsInApplicationPhase($currentTimestamp: String) {
+      query GetActiveRounds($currentTimestamp: String) {
         rounds(where: {
           roundStartTime_lt: $currentTimestamp
           roundEndTime_gt: $currentTimestamp
-
-          program_: {
-            id: "0xa1b6245d7ba4b126adf7ee1e05e96bfda974990c"
-          }
+          id_in: [
+            "0x12bb5bbbfe596dbc489d209299b8302c3300fa40",
+            "0x274554eb289004e15a7679123901b7f070dda0fa",
+            "0xaa40e2e5c8df03d792a52b5458959c320f86ca18",
+            "0x421510312c40486965767be5ea603aa8a5707983",
+            "0xdf22a2c8f6ba9376ff17ee13e6154b784ee92094",
+            "0x9c3b81967eafba0a451e324417dd4f3f353b997b",
+            "0x64e5b2228ef31437909900b38fc42dd5e4b83147",
+            "0x9e669c0a6e075f14ba9d9d98c3580ad67e20ec38",
+            "0x8aa06b3b8cac2970857f4e0fd78f21dc01aade94",
+            "0x8aa06b3b8cac2970857f4e0fd78f21dc01aade94",
+            "0x6e8dc2e623204d61b0e59e668702654ae336c9f7",
+            "0xf1c021df6dc6b2dc2e5a837cdfddc2f42503233b",
+            "0x859faeaa266ba13bd1e72eb6dd7a223902d1adfe",
+            "0x905efbabe2d52cd648fadfafcec8d6c8c60f7423",
+            "0x32c49d2da5f6866a057e4aa2058c62a2974a5623",
+            "0x64aa545c9c63944f8e765d9a65eda3cbbdc6e620"
+          ]
         }) {
           id
           roundMetaPtr {

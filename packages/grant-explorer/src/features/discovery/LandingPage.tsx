@@ -16,9 +16,8 @@ const LandingPage = () => {
     RoundOverview[]
   >([]);
   const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]);
-  const [filteredActiveRounds, setFilteredActiveRounds] = useState<
-    RoundOverview[]
-  >([]);
+  const [allActiveRounds, setAllActiveRounds] = useState<RoundOverview[]>([]);
+
   const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
   const [activeRoundsLoading, setActiveRoundsLoading] = useState<boolean>(true);
 
@@ -31,7 +30,7 @@ const LandingPage = () => {
       );
       return () => clearTimeout(timeOutId);
     } else {
-      setActiveRounds(activeRounds);
+      setActiveRounds(allActiveRounds);
     }
   });
 
@@ -41,7 +40,7 @@ const LandingPage = () => {
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
 
     if (!query || query === "") {
-      setFilteredActiveRounds(activeRounds);
+      setActiveRounds(activeRounds);
       return;
     }
 
@@ -61,7 +60,7 @@ const LandingPage = () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    setFilteredActiveRounds([...exactMatches!, ...nonExactMatches!]);
+    setActiveRounds([...exactMatches!, ...nonExactMatches!]);
   };
 
   // Fetch active rounds
@@ -71,7 +70,7 @@ const LandingPage = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { isLoading, error, rounds } = await getActiveRounds();
         setActiveRounds(rounds);
-        setFilteredActiveRounds(rounds);
+        setAllActiveRounds(rounds);
         setActiveRoundsLoading(isLoading);
       } catch (error) {
         setActiveRoundsLoading(false);
@@ -113,7 +112,7 @@ const LandingPage = () => {
         <ActiveRoundsSection
           isLoading={activeRoundsLoading}
           setSearchQuery={setSearchQuery}
-          roundOverview={filteredActiveRounds}
+          roundOverview={activeRounds}
           searchQuery={searchQuery}
         />
       </div>
