@@ -47,27 +47,28 @@ const mainnetChains = () => {
   /***********************/
 
   // Fantom Mainnet
-  const fantomMainnet: Chain = {
-    id: 250,
-    name: "Fantom",
-    network: "fantom mainnet",
-    iconUrl:
-      "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
-    nativeCurrency: {
-      decimals: 18,
-      name: "Fantom",
-      symbol: "FTM",
-    },
-    rpcUrls: {
-      default: "https://rpc.ankr.com/fantom/",
-    },
-    blockExplorers: {
-      default: { name: "ftmscan", url: "https://ftmscan.com" },
-    },
-    testnet: false,
-  };
+  // const fantomMainnet: Chain = {
+  //   id: 250,
+  //   name: "Fantom",
+  //   network: "fantom mainnet",
+  //   iconUrl:
+  //     "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
+  //   nativeCurrency: {
+  //     decimals: 18,
+  //     name: "Fantom",
+  //     symbol: "FTM",
+  //   },
+  //   rpcUrls: {
+  //     default: "https://rpc.ankr.com/fantom/",
+  //   },
+  //   blockExplorers: {
+  //     default: { name: "ftmscan", url: "https://ftmscan.com" },
+  //   },
+  //   testnet: false,
+  // };
 
-  return [chain.mainnet, chain.optimism, fantomMainnet];
+  // return [chain.mainnet, chain.optimism, fantomMainnet];
+  return [chain.mainnet];
 };
 
 const allChains: Chain[] =
