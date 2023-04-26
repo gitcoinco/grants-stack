@@ -18,6 +18,8 @@ import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
 import { MatchingStatsData } from "../../api/types";
 import { Match } from "allo-indexer-client";
 import { Spinner } from "../../common/Spinner";
+import { stringify } from "csv-stringify/browser/esm/sync";
+import { Input } from "csv-stringify/lib";
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -73,14 +75,13 @@ export default function ViewRoundResults() {
 
   const matchAmountUSD = round?.matchAmountUSD;
 
-  const currentTime = new Date();
   /*TODO: uncomment this before ship */
-  const isBeforeRoundEndDate =
-    false; /*round && currentTime < round.roundEndTime*/
-
-  if (isBeforeRoundEndDate && !debugModeEnabled) {
-    return <NoInformationContent />;
-  }
+  // const currentTime = new Date();
+  // const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
+  //
+  // if (isBeforeRoundEndDate && !debugModeEnabled) {
+  //   return <NoInformationContent />;
+  // }
 
   if (isLoadingRound || isLoadingMatchingFunds) {
     return <Spinner text="We're fetching the matching data." />;
@@ -186,6 +187,8 @@ export default function ViewRoundResults() {
                     if (!matches) {
                       return;
                     }
+
+                    downloadArrayAsCsv(matches, "matches.csv");
                   }}
                   className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
                 >
@@ -452,4 +455,23 @@ function NoInformationMessage() {
       </div>
     </>
   );
+}
+
+export function downloadArrayAsCsv(data: Input, filename: string): void {
+  const csv = stringify(data, {
+    header: true,
+    quoted: true,
+  });
+
+  const csvBlob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;",
+  });
+  const url = window.URL.createObjectURL(csvBlob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
