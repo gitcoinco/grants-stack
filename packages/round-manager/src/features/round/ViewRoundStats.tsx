@@ -7,6 +7,7 @@ import {
   useRoundApplications,
   useRoundMatchingFunds,
 } from "../../hooks";
+import { getUTCDate } from "common";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
@@ -40,7 +41,13 @@ export default function ViewRoundStats() {
           title={"Est. Donations Made"}
         />
         <StatsCard
-          text={matchAmountUSD && matchAmountUSD.toFixed(2)}
+          text={
+            matchAmountUSD &&
+            new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(matchAmountUSD)
+          }
           title={"Matching Funds Available"}
         />
         <StatsCard
@@ -55,7 +62,7 @@ export default function ViewRoundStats() {
         <div className="col-span-1 row-span-2 flex items-center">
           Matching Funds
         </div>
-        <div className="col-span-3 row-span-2 overflow-y-auto max-h-52">
+        <div className="col-span-3 border  rounded p-4 row-span-2 overflow-y-auto max-h-52">
           <table
             className={
               "table-auto border-separate border-spacing-y-4 h-full w-full"
@@ -66,18 +73,18 @@ export default function ViewRoundStats() {
                 Current Matching Stats
               </span>
               <span className={"text-sm leading-5 text-gray-400"}>
-                (as of {})
+                (as of {getUTCDate(new Date())})
               </span>
             </caption>
             <thead>
               <tr>
-                <th className="text-sm leading-5 text-gray-400 text-left">
+                <th className="text-sm leading-5 text-gray-600 text-left">
                   Projects
                 </th>
-                <th className="text-sm leading-5 text-gray-400 text-left">
+                <th className="text-sm leading-5 text-gray-600 text-left">
                   No. of Contributions
                 </th>
-                <th className="text-sm leading-5 text-gray-400 text-left">
+                <th className="text-sm leading-5 text-gray-600 text-left">
                   Est. Matching %
                 </th>
               </tr>
