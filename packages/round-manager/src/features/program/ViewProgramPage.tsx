@@ -22,6 +22,7 @@ import { useProgramById } from "../../context/program/ReadProgramContext";
 import { Spinner } from "../common/Spinner";
 import { useRounds } from "../../context/round/RoundContext";
 import { ProgressStatus } from "../api/types";
+import { useDebugMode } from "../../hooks";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -40,10 +41,16 @@ export default function ViewProgram() {
 
   const [programExists, setProgramExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
+  const debugModeEnabled = useDebugMode();
 
   useEffect(() => {
     if (isProgramFetched) {
       setProgramExists(!!programToRender);
+
+      if (debugModeEnabled) {
+        setHasAccess(true);
+        return;
+      }
 
       if (programToRender) {
         programToRender.operatorWallets.includes(address?.toLowerCase())
@@ -53,7 +60,7 @@ export default function ViewProgram() {
         setHasAccess(true);
       }
     }
-  }, [isProgramFetched, programToRender, address]);
+  }, [isProgramFetched, programToRender, address, debugModeEnabled]);
 
   const roundItems = rounds
     ? rounds.map((round, index) => (

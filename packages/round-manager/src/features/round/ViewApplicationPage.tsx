@@ -48,6 +48,7 @@ import {
   VerifiedCredentialState,
 } from "common";
 import { renderToHTML } from "common";
+import { useDebugMode } from "../../hooks";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -83,7 +84,7 @@ export default function ViewApplicationPage() {
   const { applications, isLoading } = useApplicationByRoundId(roundId!);
   const filteredApplication = applications?.filter((a) => a.id == id) || [];
   const application = filteredApplication[0];
-  
+
   const {
     bulkUpdateGrantApplications,
     contractUpdatingStatus,
@@ -222,19 +223,14 @@ export default function ViewApplicationPage() {
 
   const [applicationExists, setApplicationExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
+  const debugModeEnabled = useDebugMode();
 
   useEffect(() => {
     if (!isLoading) {
       setApplicationExists(!!application);
 
-      /* During development, give frontend access to all rounds */
-      if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
-        setHasAccess(true);
-        return;
-      }
-
-      /* During development, give frontend access to all rounds */
-      if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
+      /* In debug mode, give frontend access to all rounds */
+      if (debugModeEnabled) {
         setHasAccess(true);
         return;
       }
@@ -243,7 +239,7 @@ export default function ViewApplicationPage() {
         setHasAccess(!!round.operatorWallets?.includes(address?.toLowerCase()));
       }
     }
-  }, [address, application, isLoading, round]);
+  }, [address, application, isLoading, round, debugModeEnabled]);
 
   const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>();
   useEffect(() => {
@@ -304,7 +300,8 @@ export default function ViewApplicationPage() {
   }, [application, hasAccess, isLoading]);
 
   // Handle case where project github is not set but user github is set. if both are not available, set to null
-  const registeredGithub = application?.project?.projectGithub ?? application?.project?.userGithub;
+  const registeredGithub =
+    application?.project?.projectGithub ?? application?.project?.userGithub;
 
   return isLoading ? (
     <Spinner text="We're fetching the round application." />
@@ -427,8 +424,10 @@ export default function ViewApplicationPage() {
               <div className="sm:flex sm:justify-between my-6">
                 <div className="sm:basis-3/4 sm:mr-3">
                   <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
-
-                    <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="twitter-info">
+                    <span
+                      className="text-grey-500 flex flex-row justify-start items-center"
+                      data-testid="twitter-info"
+                    >
                       <TwitterIcon className="h-4 w-4 mr-2" />
                       <a
                         href={`https://twitter.com/${application?.project?.projectTwitter}`}
@@ -441,7 +440,10 @@ export default function ViewApplicationPage() {
                       {getVerifiableCredentialVerificationResultView("twitter")}
                     </span>
 
-                    <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="github-info">
+                    <span
+                      className="text-grey-500 flex flex-row justify-start items-center"
+                      data-testid="github-info"
+                    >
                       <GithubIcon className="h-4 w-4 mr-2" />
                       <a
                         href={`https://github.com/${registeredGithub}`}

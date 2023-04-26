@@ -43,6 +43,7 @@ import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
 import ViewRoundResults from "./ViewRoundResults/ViewRoundResults";
+import { useDebugMode } from "../../hooks";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -59,14 +60,15 @@ export default function ViewRoundPage() {
 
   const [roundExists, setRoundExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
+  const debugModeEnabled = useDebugMode();
 
   useEffect(() => {
     if (isRoundsFetched) {
       setRoundExists(!!round);
 
       if (round) {
-        /* During development, give frontend access to all rounds */
-        if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
+        /* In debug mode, give frontend access to all rounds */
+        if (debugModeEnabled) {
           setHasAccess(true);
           return;
         }
@@ -77,7 +79,7 @@ export default function ViewRoundPage() {
         setHasAccess(true);
       }
     }
-  }, [isRoundsFetched, round, address]);
+  }, [isRoundsFetched, round, address, debugModeEnabled]);
 
   return (
     <>
