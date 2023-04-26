@@ -1,6 +1,6 @@
 import { renderToPlainText, truncateDescription } from "common";
 import { RoundOverview } from "../api/rounds";
-import { ChainId, getDaysLeft, getPayoutTokenOptions } from "../api/utils";
+import { ChainId, getDaysLeft, payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -17,14 +17,14 @@ type RoundCardProps = {
 
 const RoundCard = (props: RoundCardProps) => {
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
-  const payoutTokens = getPayoutTokenOptions(props.round.chainId);
-  const payoutToken = payoutTokens.find(
-    (token) => token.address.toLowerCase() === props.round.token.toLowerCase()
-  );
+
+  const matchingFundPayoutTokenName = payoutTokens.filter(
+    (t) => t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
+  )[0]?.name;
 
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
 
-  const approvedApplicationsCount = 10;
+  const approvedApplicationsCount = props.round.projects?.length ?? 0;
 
   return (
     <BasicCard className="w-full">
@@ -59,9 +59,9 @@ const RoundCard = (props: RoundCardProps) => {
         <div className="border-t w-11/12 ml-4" />
         <CardContent className="text-xs mt-3 pb-0">
           <RoundCardStat
-            chainId={Number(props.round.chainId)}
+            chainId={Number(chainIdEnumValue)}
             matchAmount={props.round.matchAmount}
-            token={payoutToken?.name ?? "ETH"}
+            token={matchingFundPayoutTokenName}
             approvedApplicationsCount={approvedApplicationsCount}
           />
         </CardContent>

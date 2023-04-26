@@ -10,7 +10,7 @@ import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 
 const LandingPage = () => {
-  window.location.replace("https://grants.gitcoin.co");
+  // window.location.replace("https://grants.gitcoin.co");
 
   const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

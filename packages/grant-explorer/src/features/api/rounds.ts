@@ -21,6 +21,7 @@ export type RoundOverview = {
   matchAmount: string;
   token: string;
   roundMetadata?: RoundMetadata;
+  projects?: [];
 };
 
 async function fetchRoundsByTimestamp(
@@ -62,19 +63,21 @@ function getActiveChainIds() {
   const isProduction = process.env.REACT_APP_ENV === "production";
 
   for (const chainId of Object.values(ChainId)) {
+    if (!isNaN(+chainId)) {
+      continue;
+    }
     if (
       isProduction &&
       [
         ChainId.GOERLI_CHAIN_ID,
         ChainId.FANTOM_MAINNET_CHAIN_ID,
         ChainId.FANTOM_TESTNET_CHAIN_ID,
-      ].includes(chainId as ChainId)
+      ].includes(ChainId[chainId as keyof typeof ChainId])
     ) {
       continue;
     }
     activeChainIds.push(chainId.toString());
   }
-
   return activeChainIds;
 }
 
@@ -93,6 +96,11 @@ export async function getRoundsInApplicationPhase(): Promise<{
         rounds(where: {
           applicationsStartTime_lt: $currentTimestamp
           applicationsEndTime_gt: $currentTimestamp
+
+          program_: {
+            id: "0xa1b6245d7ba4b126adf7ee1e05e96bfda974990c"
+          }
+
         }) {
           id
           roundMetaPtr {
@@ -105,6 +113,12 @@ export async function getRoundsInApplicationPhase(): Promise<{
           roundEndTime
           matchAmount
           token
+
+          projects(where:{
+            status: 1
+          }) {
+            id
+          }
         }
       }
     `;
@@ -144,6 +158,10 @@ export async function getActiveRounds(): Promise<{
         rounds(where: {
           roundStartTime_lt: $currentTimestamp
           roundEndTime_gt: $currentTimestamp
+
+          program_: {
+            id: "0xa1b6245d7ba4b126adf7ee1e05e96bfda974990c"
+          }
         }) {
           id
           roundMetaPtr {
@@ -156,6 +174,12 @@ export async function getActiveRounds(): Promise<{
           roundEndTime
           matchAmount
           token
+
+          projects(where:{
+            status: 1
+          }) {
+            id
+          }
         }
       }
     `;

@@ -22,7 +22,6 @@ export const BasicCard = tw.div`
 
 export const CardHeader = tw.div`
   w-full
-  h-36
   rounded-t
 `;
 
@@ -34,6 +33,7 @@ export const CardContent = tw.div`
 export const CardTitle = tw.p`
   w-full
   mt-[16px]
+  2xl:mt-[10px]
   text-[16px]
   font-normal
   text-ellipsis
