@@ -153,15 +153,16 @@ export async function getActiveRounds(): Promise<{
     const chainIds = getActiveChainIds();
     const rounds: RoundOverview[] = [];
 
+    const roundIdsToShow = [
+      "0x12bb5bbbfe596dbc489d209299b8302c3300fa40",
+    ]
+
     const query = `
       query GetRoundsInApplicationPhase($currentTimestamp: String) {
         rounds(where: {
           roundStartTime_lt: $currentTimestamp
           roundEndTime_gt: $currentTimestamp
-
-          program_: {
-            id: "0xa1b6245d7ba4b126adf7ee1e05e96bfda974990c"
-          }
+          id_id: "${roundIdsToShow}"
         }) {
           id
           roundMetaPtr {
