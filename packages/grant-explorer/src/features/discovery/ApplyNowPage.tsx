@@ -58,9 +58,10 @@ const ApplyNowPage = () => {
           query.toLocaleLowerCase()
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setFilteredRoundsInApplicationPhase([
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       ...exactMatches!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       ...nonExactMatches!,
     ]);
   };
