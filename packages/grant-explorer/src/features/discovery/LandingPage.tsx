@@ -10,7 +10,6 @@ import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 
 const LandingPage = () => {
-  window.location.replace("https://grants.gitcoin.co");
 
   const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -18,6 +17,8 @@ const LandingPage = () => {
     RoundOverview[]
   >([]);
   const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]);
+  const [allActiveRounds, setAllActiveRounds] = useState<RoundOverview[]>([]);
+
   const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
   const [activeRoundsLoading, setActiveRoundsLoading] = useState<boolean>(true);
 
@@ -30,7 +31,7 @@ const LandingPage = () => {
       );
       return () => clearTimeout(timeOutId);
     } else {
-      setActiveRounds(activeRounds);
+      setActiveRounds(allActiveRounds);
     }
   });
 
@@ -65,6 +66,8 @@ const LandingPage = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { isLoading, error, rounds } = await getActiveRounds();
         setActiveRounds(rounds);
+
+        setAllActiveRounds(rounds);
         setActiveRoundsLoading(isLoading);
       } catch (error) {
         setActiveRoundsLoading(false);
