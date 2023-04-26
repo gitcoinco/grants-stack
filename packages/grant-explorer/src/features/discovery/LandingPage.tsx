@@ -10,14 +10,15 @@ import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 
 const LandingPage = () => {
-  window.location.replace("https://grants.gitcoin.co");
-
   const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
     RoundOverview[]
   >([]);
   const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]);
+  const [filteredActiveRounds, setFilteredActiveRounds] = useState<
+    RoundOverview[]
+  >([]);
   const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
   const [activeRoundsLoading, setActiveRoundsLoading] = useState<boolean>(true);
 
@@ -39,6 +40,11 @@ const LandingPage = () => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
 
+    if (!query || query === "") {
+      setFilteredActiveRounds(activeRounds);
+      return;
+    }
+
     const exactMatches = activeRounds?.filter(
       (round) =>
         round.roundMetadata?.name?.toLocaleLowerCase() ===
@@ -55,7 +61,7 @@ const LandingPage = () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    setActiveRounds([...exactMatches!, ...nonExactMatches!]);
+    setFilteredActiveRounds([...exactMatches!, ...nonExactMatches!]);
   };
 
   // Fetch active rounds
@@ -65,6 +71,7 @@ const LandingPage = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { isLoading, error, rounds } = await getActiveRounds();
         setActiveRounds(rounds);
+        setFilteredActiveRounds(rounds);
         setActiveRoundsLoading(isLoading);
       } catch (error) {
         setActiveRoundsLoading(false);
@@ -106,7 +113,7 @@ const LandingPage = () => {
         <ActiveRoundsSection
           isLoading={activeRoundsLoading}
           setSearchQuery={setSearchQuery}
-          roundOverview={activeRounds}
+          roundOverview={filteredActiveRounds}
           searchQuery={searchQuery}
         />
       </div>
