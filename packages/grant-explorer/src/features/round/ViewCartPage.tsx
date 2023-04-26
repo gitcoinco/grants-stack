@@ -77,6 +77,8 @@ export default function ViewCart() {
   const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
 
+  const [cart, , handleRemoveProjectsFromCart] = useCart();
+
   const [fixedDonation, setFixedDonation] = useState<number>();
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
@@ -86,7 +88,6 @@ export default function ViewCart() {
     string | undefined
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
-  const [cart] = useCart();
 
   const { openConnectModal } = useConnectModal();
   const { chain, chains } = useNetwork();
@@ -454,13 +455,6 @@ export default function ViewCart() {
     }
   ) {
     const { project, roundRoutePath } = props;
-    const [
-      ,
-      ,
-      //cart,
-      //handleAddProjectsToCart
-      handleRemoveProjectsFromCart,
-    ] = useCart();
 
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
