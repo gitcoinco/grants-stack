@@ -98,7 +98,7 @@ export async function getRoundsInApplicationPhase(): Promise<{
           applicationsEndTime_gt: $currentTimestamp
 
           ${
-            process.env.NODE_ENV === "production"
+            process.env.REACT_APP_ENV === "production"
               ? `program_: {
             id: "0xa1b6245d7ba4b126adf7ee1e05e96bfda974990c"
           }`
@@ -164,7 +164,7 @@ export async function getActiveRounds(): Promise<{
           roundEndTime_gt: $currentTimestamp
 
           ${
-            process.env.NODE_ENV === "production"
+            process.env.REACT_APP_ENV === "production"
               ? `id_in: [
             "0x12bb5bbbfe596dbc489d209299b8302c3300fa40",
             "0x274554eb289004e15a7679123901b7f070dda0fa",
