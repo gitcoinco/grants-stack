@@ -50,7 +50,7 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
         ) : null}
         {activeRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
-            {props.roundOverview?.slice(0, 4).map((round, index) => {
+            {props.roundOverview.map((round, index) => {
               return <RoundCard key={index} round={round} />;
             })}
           </div>
