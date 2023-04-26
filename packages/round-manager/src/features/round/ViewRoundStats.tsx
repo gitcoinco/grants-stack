@@ -96,6 +96,7 @@ export default function ViewRoundStats() {
                       <td className="text-sm leading-5 text-gray-400 text-left">
                         {matchAmountUSD &&
                           Math.trunc((match.matched / matchAmountUSD) * 100)}
+                        %
                       </td>
                     </tr>
                   );
