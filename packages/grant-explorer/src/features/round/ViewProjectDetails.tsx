@@ -95,8 +95,9 @@ export default function ViewProjectDetails() {
         roundUrlPath={`/round/${chainId}/${roundId}`}
         isBeforeRoundEndDate={isBeforeRoundEndDate}
       />
-      {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+
       {isBeforeRoundEndDate && (
+        /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
         <PassportBanner chainId={chainId!} round={round} />
       )}
       {isAfterRoundEndDate && (
