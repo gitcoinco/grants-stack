@@ -19,7 +19,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
 import { verifyApplicationMetadata } from "common/src/verification";
-import { fetchMultipleProjectOwners } from "common/src/registry";
+import { fetchMultipleProjectOwners } from "common/src/projectRegistry";
 import { client } from "../../app/wagmi";
 
 type RoundApplication = {

@@ -5,7 +5,7 @@ import { GrantApplication } from "../types";
 import { Contract } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
-import { fetchMultipleProjectOwners } from "common/src/registry";
+import { fetchMultipleProjectOwners } from "common/src/projectRegistry";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
@@ -16,8 +16,8 @@ jest.mock("common", () => ({
   graphql_fetch: jest.fn(),
 }));
 
-jest.mock("common/src/registry", () => ({
-  ...jest.requireActual("common/src/registry"),
+jest.mock("common/src/projectRegistry", () => ({
+  ...jest.requireActual("common/src/projectRegistry"),
   fetchMultipleProjectOwners: jest.fn(),
 }));
 
