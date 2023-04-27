@@ -2,10 +2,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ethers, utils } from "ethers";
 import { Dispatch } from "redux";
 import { convertStatusToText } from "common";
-import {
-  Client as AlloClient,
-  Application as GrantApplication,
-} from "allo-indexer-client";
+import { Client as AlloClient } from "allo-indexer-client";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
