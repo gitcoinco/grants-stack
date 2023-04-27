@@ -462,7 +462,7 @@ function Sidebar(props: {
 }
 
 // NOTE: Consider moving this
-export function useRoundProject(
+export function useRoundApplication(
   chainId: number,
   roundId: string,
   projectId: string
@@ -474,13 +474,15 @@ export function useRoundProject(
     chainId
   );
 
-  return useSWR([roundId, "/projects"], ([roundId]) =>
-    client
-      .getRoundApplications(utils.getAddress(roundId.toLowerCase()))
-      .then((apps: Application[]) =>
-        apps.filter((app: Application) => app.id === projectId)
-      )
-  );
+  return useSWR([roundId, "/projects"], async ([roundId]) => {
+    const applications = await client.getRoundApplications(
+      utils.getAddress(roundId.toLowerCase())
+    );
+
+    return applications.find(
+      (app) => app.projectId === projectId && app.status === "APPROVED"
+    );
+  });
 }
 
 export function ProjectStats() {
@@ -492,7 +494,7 @@ export function ProjectStats() {
     (project) => project.grantApplicationId === applicationId
   );
 
-  const { data: project } = useRoundProject(
+  const { data: application } = useRoundApplication(
     Number(chainId),
     roundId as string,
     projectToRender?.projectRegistryId as string
@@ -505,11 +507,11 @@ export function ProjectStats() {
   return (
     <div className={"rounded bg-gray-50 mb-4 p-4 gap-4 flex flex-col"}>
       <div>
-        <h3>${project ? project[0].amountUSD.toFixed(2) : "-"}</h3>
+        <h3>${application ? application[0].amountUSD.toFixed(2) : "-"}</h3>
         <p>funding received in current round</p>
       </div>
       <div>
-        <h3>{project ? project[0].uniqueContributors : "-"}</h3>
+        <h3>{application ? application[0].uniqueContributors : "-"}</h3>
         <p>contributors</p>
       </div>
       <div>

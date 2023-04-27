@@ -540,14 +540,14 @@ export const loadProjectStats =
         round.chainId
       );
 
-      const project = await client
-        .getRoundApplications(utils.getAddress(round.roundId.toLowerCase()))
-        .then(
-          (apps: GrantApplication[]) =>
-            apps.filter(
-              (app: GrantApplication) => app.id === uniqueProjectID
-            )[0]
-        );
+      const applications = await client.getRoundApplications(
+        utils.getAddress(round.roundId.toLowerCase())
+      );
+
+      const project = applications.find(
+        (app) => app.projectId === uniqueProjectID && app.status === "APPROVED"
+      );
+
       if (project) {
         await updateStats(
           {
