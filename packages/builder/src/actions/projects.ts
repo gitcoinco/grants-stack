@@ -544,7 +544,9 @@ export const loadProjectStats =
         .getRoundApplications(utils.getAddress(round.roundId.toLowerCase()))
         .then(
           (apps: GrantApplication[]) =>
-            apps.filter((app: GrantApplication) => app.id === uniqueProjectID)[0]
+            apps.filter(
+              (app: GrantApplication) => app.id === uniqueProjectID
+            )[0]
         );
       if (project) {
         await updateStats(

@@ -67,15 +67,16 @@ export default function About({
         <span className="text-[20px]">My Applications</span>
       </Box>
       <Box>
-        {props.applications.map((application) => {
+        {props.applications.map((application, index) => {
           const roundID = application?.roundID;
           const cardData = {
             application,
             roundID,
             chainId: application.chainId,
           };
+
           return (
-            <Box key={roundID} m={2}>
+            <Box key={[roundID, index].join("-")} m={2}>
               <ApplicationCard applicationData={cardData} />
             </Box>
           );
