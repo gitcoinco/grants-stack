@@ -2,6 +2,17 @@ import useSWR from "swr";
 import { Client } from "allo-indexer-client";
 import { useWallet } from "./features/common/Auth";
 import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+
+export function useDebugMode(): boolean {
+  const [searchParams] = useSearchParams();
+
+  return (
+    (process.env.REACT_APP_ALLOW_URL_DEBUG_MODE === "true" &&
+      searchParams.get("debug") === "true") ||
+    process.env.REACT_APP_DEBUG_MODE === "true"
+  );
+}
 
 export function useAlloIndexerClient(): Client {
   const { chain } = useWallet();

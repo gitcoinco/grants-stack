@@ -22,7 +22,11 @@ export default function Navbar(props: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <a
-              href="https://grants.gitcoin.co/"
+              href={
+                process.env.REACT_APP_ENV === "production"
+                  ? "https://grants.gitcoin.co/"
+                  : "/"
+              }
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >

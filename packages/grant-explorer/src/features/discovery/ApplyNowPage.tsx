@@ -12,16 +12,84 @@ const ApplyNowPage = () => {
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
     RoundOverview[]
   >([]);
+  const [
+    filteredRoundsInApplicationPhase,
+    setFilteredRoundsInApplicationPhase,
+  ] = useState<RoundOverview[]>([]);
   const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const applyNowRoundsCount = roundsInApplicationPhase.length;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [order, setOrder] = useState<string>("round_asc");
+
+  function sortRoundsByTime(rounds: RoundOverview[], order: string) {
+    // If order is round_asc, sort in ascending order. Otherwise, sort in descending order.
+    const isAscending = order === 'round_asc';
+
+    // Use the sort method to sort the rounds array based on the start or end time
+    rounds.sort((a: RoundOverview, b: RoundOverview) => {
+      const timeA = isAscending ? Number(a.roundStartTime) : Number(a.roundEndTime);
+      const timeB = isAscending ? Number(b.roundStartTime) : Number(b.roundEndTime);
+      return timeA - timeB;
+    });
+
+    // Return the sorted array
+    return rounds;
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (searchQuery) {
+      const timeOutId = setTimeout(
+        () => filterProjectsByTitle(searchQuery),
+        300
+      );
+      return () => clearTimeout(timeOutId);
+    } else {
+      setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
+    }
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const filterProjectsByTitle = (query: string) => {
+    // filter by exact title matches first
+    // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
+
+    if (!query || query === "") {
+      setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
+      return;
+    }
+
+    const exactMatches = roundsInApplicationPhase?.filter(
+      (round) =>
+        round.roundMetadata?.name?.toLocaleLowerCase() ===
+        query.toLocaleLowerCase()
+    );
+
+    const nonExactMatches = roundsInApplicationPhase?.filter(
+      (round) =>
+        round.roundMetadata?.name
+          ?.toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase()) &&
+        round.roundMetadata?.name?.toLocaleLowerCase() !==
+        query.toLocaleLowerCase()
+    );
+
+    setFilteredRoundsInApplicationPhase([
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      ...exactMatches!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      ...nonExactMatches!,
+    ]);
+  };
+
+  const applyNowRoundsCount = filteredRoundsInApplicationPhase.length;
 
   // Fetch rounds in application phase
   useEffect(() => {
     const fetchRoundsInApplicationPhase = async () => {
       const { isLoading, error, rounds } = await getRoundsInApplicationPhase();
       setRoundsInApplicationPhase(rounds);
+      setFilteredRoundsInApplicationPhase(rounds);
       setApplyRoundsLoading(isLoading);
       console.log("Rounds in Application Phase: ", {
         roundsInApplicationPhase,
@@ -67,7 +135,7 @@ const ApplyNowPage = () => {
             <SortFilterDropdown
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e: { target: { value: any } }) =>
-                console.log(e.target.value)
+                setOrder(e.target.value)
               }
             />
           </div>
@@ -76,7 +144,7 @@ const ApplyNowPage = () => {
           <Spinner />
         ) : applyNowRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
-            {roundsInApplicationPhase.map((round, index) => {
+            {sortRoundsByTime(filteredRoundsInApplicationPhase, order).map((round, index) => {
               return <RoundCard key={index} round={round} />;
             })}
           </div>

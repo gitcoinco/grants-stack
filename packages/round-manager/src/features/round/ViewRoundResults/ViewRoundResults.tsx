@@ -14,7 +14,7 @@ import {
 } from "react-dropzone";
 import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
-import { useRound, useRoundMatchingFunds } from "../../../hooks";
+import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
 import { MatchingStatsData } from "../../api/types";
 import { Match } from "allo-indexer-client";
 
@@ -37,6 +37,7 @@ export default function ViewRoundResults() {
   const { id } = useParams();
   const roundId = utils.getAddress(id?.toLowerCase() ?? "");
   const { data: matches } = useRoundMatchingFunds(roundId);
+  const debugModeEnabled = useDebugMode();
 
   const [distributionOption, setDistributionOption] = useState("keep");
 
@@ -73,7 +74,7 @@ export default function ViewRoundResults() {
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
 
-  if (isBeforeRoundEndDate) {
+  if (isBeforeRoundEndDate && !debugModeEnabled) {
     return <NoInformationContent />;
   }
 
