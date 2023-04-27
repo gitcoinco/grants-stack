@@ -7,7 +7,7 @@ import {
   GlobeAltIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
-import { Application, Client } from "allo-indexer-client";
+import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
 import { Button } from "common/src/styles";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -462,7 +462,7 @@ function Sidebar(props: {
 }
 
 // NOTE: Consider moving this
-export function useRoundApplication(
+export function useRoundApprovedApplication(
   chainId: number,
   roundId: string,
   projectId: string
@@ -494,7 +494,7 @@ export function ProjectStats() {
     (project) => project.grantApplicationId === applicationId
   );
 
-  const { data: application } = useRoundApplication(
+  const { data: application } = useRoundApprovedApplication(
     Number(chainId),
     roundId as string,
     projectToRender?.projectRegistryId as string
@@ -507,11 +507,11 @@ export function ProjectStats() {
   return (
     <div className={"rounded bg-gray-50 mb-4 p-4 gap-4 flex flex-col"}>
       <div>
-        <h3>${application ? application[0].amountUSD.toFixed(2) : "-"}</h3>
+        <h3>${application?.amountUSD.toFixed(2) ?? "-"}</h3>
         <p>funding received in current round</p>
       </div>
       <div>
-        <h3>{application ? application[0].uniqueContributors : "-"}</h3>
+        <h3>{application?.uniqueContributors ?? "-"}</h3>
         <p>contributors</p>
       </div>
       <div>
