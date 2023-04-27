@@ -10,6 +10,9 @@ import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 
 const LandingPage = () => {
+  if (process.env.REACT_APP_ENV === "production") {
+    window.location.replace("https://grants.gitcoin.co");
+  }
 
   const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -40,6 +43,11 @@ const LandingPage = () => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
 
+    if (!query || query === "") {
+      setActiveRounds(activeRounds);
+      return;
+    }
+
     const exactMatches = activeRounds?.filter(
       (round) =>
         round.roundMetadata?.name?.toLocaleLowerCase() ===
@@ -66,7 +74,6 @@ const LandingPage = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { isLoading, error, rounds } = await getActiveRounds();
         setActiveRounds(rounds);
-
         setAllActiveRounds(rounds);
         setActiveRoundsLoading(isLoading);
       } catch (error) {

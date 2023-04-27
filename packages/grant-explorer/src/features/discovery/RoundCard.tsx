@@ -19,7 +19,8 @@ const RoundCard = (props: RoundCardProps) => {
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
 
   const matchingFundPayoutTokenName = payoutTokens.filter(
-    (t) => t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
+    (t) =>
+      t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
   )[0]?.name;
 
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
