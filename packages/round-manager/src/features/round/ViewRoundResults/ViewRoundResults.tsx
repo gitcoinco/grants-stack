@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
-import { utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
 import {
   ExclamationCircleIcon as NoInformationIcon,
@@ -15,12 +15,24 @@ import {
 import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
-import { MatchingStatsData } from "../../api/types";
+import {
+  MatchingStatsData,
+  ProgressStatus,
+  ProgressStep,
+  TransactionBlock,
+} from "../../api/types";
 import { Match } from "allo-indexer-client";
 import { Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/browser/esm/sync";
 import { Input } from "csv-stringify/lib";
-import { useNetwork } from "wagmi";
+import { useNetwork, useSigner } from "wagmi";
+import InfoModal from "../../common/InfoModal";
+import ProgressModal from "../../common/ProgressModal";
+import ErrorModal from "../../common/ErrorModal";
+import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
+import { setReadyForPayout } from "../../api/round";
+import { errorModalDelayMs } from "../../../constants";
+import { useRoundById } from "../../../context/round/RoundContext";
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -44,8 +56,15 @@ export default function ViewRoundResults() {
   const { data: matches, isLoading: isLoadingMatchingFunds } =
     useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
+  const { data: round, isLoading: isLoadingRound } = useRound(roundId);
+  const { round: oldRoundFromGraph } = useRoundById(roundId);
+  const matchAmountUSD = round?.matchAmountUSD;
+  const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
+  const { data: signer } = useSigner();
 
-  const [distributionOption, setDistributionOption] = useState("keep");
+  const [distributionOption, setDistributionOption] = useState<
+    "keep" | "scale"
+  >("keep");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file: File) => {
@@ -69,15 +88,86 @@ export default function ViewRoundResults() {
     // Logic for recalculating results goes here
   };
 
-  const onFinalizeResults = () => {
-    // Logic for finalizing results goes here
+  const [warningModalOpen, setWarningModalOpen] = useState(false);
+  const [progressModalOpen, setProgressModalOpen] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [payoutReady, setPayoutReady] = useState(true);
+
+  const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
+    useFinalizeRound();
+
+  const onFinalizeResults = async () => {
+    if (
+      !matches ||
+      !round ||
+      !signer ||
+      !oldRoundFromGraph?.payoutStrategy.id
+    ) {
+      return;
+    }
+
+    setWarningModalOpen(false);
+    setProgressModalOpen(true);
+    try {
+      /* Steps:
+       * 1. update the distribution in the contract
+       * 2. mark contract as ready for payout */
+
+      const matchingJson: MatchingStatsData[] = matches.map((match) => ({
+        uniqueContributorsCount: 0,
+        projectPayoutAddress: match.payoutAddress,
+        projectId: match.projectId,
+        matchPoolPercentage: 0,
+        matchAmountInToken: BigNumber.from(match.matched),
+      }));
+
+      await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
+
+      const setReadyForPayoutTx: TransactionBlock = await setReadyForPayout({
+        roundId: round.id,
+        signerOrProvider: signer,
+      });
+
+      if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
+        setTimeout(() => {
+          setProgressModalOpen(false);
+          setErrorModalOpen(true);
+        }, errorModalDelayMs);
+
+        console.error("setReadyForPayoutTx error", setReadyForPayoutTx.error);
+      } else {
+        setTimeout(() => {
+          setPayoutReady(false);
+          setProgressModalOpen(false);
+        }, errorModalDelayMs);
+      }
+    } catch (error) {
+      console.error("Error finalizing results", error);
+    }
   };
 
-  const { data: round, isLoading: isLoadingRound } = useRound(roundId);
+  const progressSteps: ProgressStep[] = [
+    {
+      name: "saving",
+      description:
+        "The matching distribution is being saved onto the contract.",
+      status: IPFSCurrentStatus,
+    },
+    {
+      name: "Finalizing",
+      description: `The contract is being marked as eligible for payouts.`,
+      status: finalizeRoundToContractStatus,
+    },
+    {
+      name: "finishing up",
+      description: "We’re wrapping up.",
+      status:
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
-  const matchAmountUSD = round?.matchAmountUSD;
-
-  const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
   if (isBeforeRoundEndDate && !debugModeEnabled) {
     return <NoInformationContent />;
   }
@@ -283,17 +373,24 @@ export default function ViewRoundResults() {
                   Recalculate results
                 </button>
                 <hr className="my-4" />
-                <button
-                  onClick={onFinalizeResults}
-                  className="self-end w-fit bg-white hover:bg-pink-200 border border-pink-400 text-pink-400 py-2
+                {!payoutReady && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setWarningModalOpen(true);
+                      }}
+                      className="self-end w-fit bg-white hover:bg-pink-200 border border-pink-400 text-pink-400 py-2
                    mt-2 px-3 rounded flex items-center gap-2"
-                >
-                  Finalize results
-                </button>
-                <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
-                  The contract will be locked once results are finalized. You
-                  will not be able to change the results after you finalize.
-                </span>
+                    >
+                      Finalize results
+                    </button>
+                    <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
+                      The contract will be locked once results are finalized.
+                      You will not be able to change the results after you
+                      finalize.
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </Tab.Panel>
@@ -302,6 +399,24 @@ export default function ViewRoundResults() {
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
+
+      <InfoModal
+        title={"Warning!"}
+        body={<WarningModalBody />}
+        isOpen={warningModalOpen}
+        setIsOpen={setWarningModalOpen}
+        continueButtonAction={onFinalizeResults}
+      />
+      <ProgressModal
+        isOpen={progressModalOpen}
+        subheading={"Please hold while we finalize the round results."}
+        steps={progressSteps}
+      />
+      <ErrorModal
+        isOpen={errorModalOpen}
+        setIsOpen={setErrorModalOpen}
+        tryAgainFn={onFinalizeResults}
+      />
     </div>
   );
 }
@@ -452,6 +567,17 @@ function NoInformationMessage() {
         finalized.
       </div>
     </>
+  );
+}
+
+function WarningModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      Upon finalizing round results, they'll be <b>permanently locked</b> in the
+      smart contract, ensuring distribution integrity on the blockchain.{" "}
+      <b>Please verify results</b> before confirming, as you'll acknowledge
+      their accuracy and accept the permanent locking of the distribution.
+    </div>
   );
 }
 

@@ -5,9 +5,6 @@ import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
 import gnosisABI from "../contracts/abis/gnosis.json";
 
-// Checks if tests are being run jest
-export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
-
 export const parseRoundToApply = (
   s?: string
 ): { chainID?: string; roundAddress?: string } => {

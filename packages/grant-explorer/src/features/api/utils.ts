@@ -360,34 +360,8 @@ export const pinToIPFS = (obj: IPFSObject) => {
 export const abbreviateAddress = (address: string) =>
   `${address.slice(0, 8)}...${address.slice(-4)}`;
 
-// Checks if tests are being run jest
-export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
-
-export const classNames = (...classes: string[]) => {
-  return classes.filter(Boolean).join(" ");
-};
-
 export const prefixZero = (i: number): string =>
   i < 10 ? "0" + i : i.toString();
-
-export const getUTCDate = (date: Date): string => {
-  const utcDate = [
-    prefixZero(date.getUTCDate()),
-    prefixZero(date.getUTCMonth() + 1),
-    prefixZero(date.getUTCFullYear()),
-  ];
-
-  return utcDate.join("/");
-};
-
-export const getUTCTime = (date: Date): string => {
-  const utcTime = [
-    prefixZero(date.getUTCHours()),
-    prefixZero(date.getUTCMinutes()),
-  ];
-
-  return utcTime.join(":") + " UTC";
-};
 
 export const getDaysLeft = (epochTime: number) => {
   const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds

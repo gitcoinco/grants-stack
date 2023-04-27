@@ -318,7 +318,7 @@ export const fetchFromIPFS = (cid: string) => {
  * @param obj - the data to be pinned on IPFS
  * @returns the unique content identifier that points to the data
  */
-export const pinToIPFS = (obj: IPFSObject) => {
+export const pinToIPFS = (obj: IPFSObject): Promise<{ IpfsHash: string }> => {
   const params = {
     method: "POST",
     headers: {
@@ -427,31 +427,6 @@ export const generateApplicationSchema = (
 
   return schema;
 };
-
-/* We can safely suppress the eslint warning here, since JSON.stringify accepts any*/
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function saveObjectAsJson(filename: string, dataObjToWrite: any) {
-  const blob = new Blob([JSON.stringify(dataObjToWrite)], {
-    type: "text/json",
-  });
-  const link = document.createElement("a");
-
-  link.download = filename;
-  link.href = window.URL.createObjectURL(blob);
-  link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
-
-  const evt = new MouseEvent("click", {
-    view: window,
-    bubbles: true,
-    cancelable: true,
-  });
-
-  link.dispatchEvent(evt);
-  link.remove();
-}
-
-// Checks if tests are being run jest
-export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
 
 export function typeToText(s: string) {
   if (s == "address") return "Wallet address";
