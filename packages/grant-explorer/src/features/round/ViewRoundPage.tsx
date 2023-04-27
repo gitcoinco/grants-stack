@@ -304,7 +304,7 @@ function ProjectCard(props: {
           <CardDescription className="mb-2" data-testid="project-owner">
             by {projectRecipient}
           </CardDescription>
-          <CardDescription data-testid="project-description">
+          <CardDescription data-testid="project-description" className="h-[150px] overflow-hidden">
             {renderToPlainText(project.projectMetadata.description)}
           </CardDescription>
         </CardContent>

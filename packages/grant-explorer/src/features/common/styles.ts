@@ -11,7 +11,8 @@ export const CardsContainer = tw.div`
 `;
 
 export const BasicCard = tw.div`
-  w-[296px]
+  w-[330px]
+  md:w-[296px]
   ml-0
   mx-0
   my-3
@@ -32,7 +33,8 @@ export const CardContent = tw.div`
 
 export const CardTitle = tw.p`
   w-full
-  mt-[16px]
+  mt-[10px]
+  md:mt-[16px]
   2xl:mt-[10px]
   text-[16px]
   font-normal
@@ -41,8 +43,9 @@ export const CardTitle = tw.p`
 `;
 
 export const CardDescription = tw.p`
-  mt-2
-  text-[14px]
+  md:mt-2
+  text-[12px]
+  md:text-[14px]
   text-ellipsis
   line-clamp-4
   text-grey-400
