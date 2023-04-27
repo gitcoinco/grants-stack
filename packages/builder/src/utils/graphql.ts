@@ -11,11 +11,6 @@ export enum ChainId {
   FANTOM_TESTNET_CHAIN_ID = 0xfa2,
 }
 
-export type GraphEndpoint = {
-  uri: string | undefined;
-  error: string | undefined;
-};
-
 /**
  * Fetch subgraph uri for a given chain id
  *
@@ -25,40 +20,24 @@ export type GraphEndpoint = {
 const getGraphQLEndpoint = (
   chainId: number,
   reactEnv?: any // ProcessEnv
-): GraphEndpoint => {
+): string | undefined => {
   const environment = reactEnv || env;
   switch (chainId) {
     case ChainId.MAINNET_CHAIN_ID:
-      return {
-        // eslint-disable-next-line max-len
-        uri: environment.REACT_APP_SUBGRAPH_URL_MAINNET,
-        error: undefined,
-      };
+      // eslint-disable-next-line max-len
+      return environment.REACT_APP_SUBGRAPH_URL_MAINNET;
     case ChainId.GOERLI_CHAIN_ID:
-      return {
-        uri: environment.REACT_APP_SUBGRAPH_URL_GOERLI,
-        error: undefined,
-      };
+      return environment.REACT_APP_SUBGRAPH_URL_GOERLI;
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
-      return {
-        uri: environment.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET,
-        error: undefined,
-      };
+      return environment.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET;
     case ChainId.FANTOM_MAINNET_CHAIN_ID:
-      return {
-        uri: environment.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET,
-        error: undefined,
-      };
+      return environment.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET;
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
-      return {
-        uri: environment.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET,
-        error: undefined,
-      };
+      return environment.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET;
     default:
-      return {
-        uri: undefined,
-        error: "Invalid chain id or subgraph not deployed on requested chain",
-      };
+      throw new Error(
+        `Chain id (${chainId}) is invalid or subgraph is not deployed on requested chain`
+      );
   }
 };
 
@@ -68,9 +47,9 @@ export const graphqlFetch = async (
   variables: object = {},
   reactEnv?: any // ProcessEnv
 ) => {
-  const endpoint: GraphEndpoint = getGraphQLEndpoint(chainId, reactEnv);
-  if (!endpoint.error && endpoint.uri) {
-    return fetch(endpoint.uri, {
+  const endpoint = getGraphQLEndpoint(chainId, reactEnv);
+  if (endpoint) {
+    return fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,5 +65,6 @@ export const graphqlFetch = async (
       return Promise.reject(resp);
     });
   }
-  return Promise.reject(endpoint.error);
+
+  throw new Error(`Subgraph endpoint for chain id ${chainId} not defined.`);
 };
