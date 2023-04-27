@@ -110,6 +110,6 @@ export const addresses: DeploymentAddress = {
 
 export type DeploymentAddress = {
   [key: string]: {
-    projectRegistry: string | undefined;
+    projectRegistry: string;
   };
 };
