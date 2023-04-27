@@ -567,8 +567,6 @@ export const loadProjectStats =
       }
     }
 
-    console.log("---> B6", projectID, stats, rounds);
-
     dispatch({
       type: PROJECT_STATS_LOADED,
       projectID,
