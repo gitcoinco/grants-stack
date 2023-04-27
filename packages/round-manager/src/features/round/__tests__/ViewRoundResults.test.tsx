@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { faker } from "@faker-js/faker";
 import {
-  act,
   fireEvent,
   render,
   screen,

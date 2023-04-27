@@ -6,7 +6,10 @@ import {
   Client as AlloClient,
   Application as GrantApplication,
 } from "allo-indexer-client";
-import { addressesByChainID, fetchProjectOwners } from "common/src/projectRegistry";
+import {
+  addressesByChainID,
+  fetchProjectOwners,
+} from "common/src/projectRegistry";
 import { verifyApplicationMetadata } from "common/src/verification";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -429,8 +432,8 @@ const fetchApplicationsFromSubgraph = async (
           addresses.projectRegistry!
         );
 
-          const response: any = await graphqlFetch(
-            `query roundApplications($projectApplicationID: String) {
+        const response: any = await graphqlFetch(
+          `query roundApplications($projectApplicationID: String) {
             roundApplications(where: { project: $projectApplicationID }) {
               status
               project
@@ -445,12 +448,12 @@ const fetchApplicationsFromSubgraph = async (
             }
           }
           `,
-            chain.id,
-            {
-              projectApplicationID,
-            },
-            reactEnv
-          );
+          chain.id,
+          {
+            projectApplicationID,
+          },
+          reactEnv
+        );
 
         if (response.errors) {
           datadogRum.addError(response.error, { projectID });
