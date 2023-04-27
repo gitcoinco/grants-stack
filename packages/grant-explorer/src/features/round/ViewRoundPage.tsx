@@ -27,7 +27,6 @@ import {
   formatUTCDateAsISOString,
   getUTCTime,
   renderToPlainText,
-  truncateDescription,
 } from "common";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
