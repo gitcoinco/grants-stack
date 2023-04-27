@@ -490,7 +490,7 @@ export const fetchProjectApplications =
 
 export const loadProjectStats =
   (
-    projectNumber: string,
+    projectID: string,
     projectRegistryAddress: string,
     projectChainId: string,
     rounds: Array<{ roundId: string; chainId: number }>
@@ -498,13 +498,13 @@ export const loadProjectStats =
   async (dispatch: Dispatch) => {
     const uniqueProjectID = generateUniqueRoundApplicationID(
       Number(projectChainId),
-      projectNumber,
+      projectID,
       projectRegistryAddress
     );
 
     dispatch({
       type: PROJECT_STATS_LOADING,
-      projectNumber,
+      projectID,
     });
     const boundFetch = fetch.bind(window);
 
@@ -567,12 +567,13 @@ export const loadProjectStats =
       }
     }
 
-    if (rounds.length > 0)
-      dispatch({
-        type: PROJECT_STATS_LOADED,
-        projectNumber,
-        stats,
-      });
+    console.log("---> B6", projectID, stats, rounds);
+
+    dispatch({
+      type: PROJECT_STATS_LOADED,
+      projectID,
+      stats,
+    });
   };
 
 export const unloadProjects = () => projectsUnload();
