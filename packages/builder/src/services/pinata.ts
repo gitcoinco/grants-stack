@@ -17,7 +17,7 @@ export default class PinataClient {
   constructor() {
     if (JWT === undefined || GATEWAY === undefined) {
       throw new Error(
-        "remember to set the REACT_APP_SUBGRAPH_MAINNET_API_KEY and REACT_APP_PINATA_GATEWAY env vars"
+        "remember to set the REACT_APP_PINATA_JWT and REACT_APP_PINATA_GATEWAY env vars"
       );
     }
     this.jwt = JWT!;
