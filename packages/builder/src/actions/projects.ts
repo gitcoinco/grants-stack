@@ -538,13 +538,23 @@ export const fetchProjectApplications =
   };
 
 export const loadProjectStats =
-  (projectID: string, rounds: Array<{ roundId: string; chainId: number }>) =>
+  (
+    projectID: string,
+    projectRegistryAddress: string,
+    projectChainId: string,
+    rounds: Array<{ roundId: string; chainId: number }>
+  ) =>
   async (dispatch: Dispatch) => {
+    const uniqueProjectID = generateUniqueRoundApplicationID(
+      Number(projectChainId),
+      projectID,
+      projectRegistryAddress
+    );
+
     dispatch({
       type: PROJECT_STATS_LOADING,
       projectID,
     });
-
     const boundFetch = fetch.bind(window);
 
     const stats: ProjectStats[] = [];
@@ -584,10 +594,9 @@ export const loadProjectStats =
         .then(
           (apps: GrantApplication[]) =>
             apps.filter(
-              (app: GrantApplication) => app.projectNumber === Number(projectID)
+              (app: GrantApplication) => app.id === uniqueProjectID
             )[0]
         );
-
       if (project) {
         await updateStats(
           {
@@ -607,12 +616,11 @@ export const loadProjectStats =
       }
     }
 
-    if (rounds.length > 0)
-      dispatch({
-        type: PROJECT_STATS_LOADED,
-        projectID,
-        stats,
-      });
+    dispatch({
+      type: PROJECT_STATS_LOADED,
+      projectID,
+      stats,
+    });
   };
 
 export const unloadProjects = () => projectsUnload();

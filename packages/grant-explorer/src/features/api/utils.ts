@@ -386,10 +386,14 @@ export const getUTCTime = (date: Date): string => {
   return utcTime.join(":") + " UTC";
 };
 
-export const getDaysLeft = (date: number) => {
-  const daysLeftInMs = Number(date) - new Date().getSeconds();
-  const daysLeft = Math.ceil(daysLeftInMs / (1000 * 60 * 60 * 24));
-  return daysLeft;
+export const getDaysLeft = (epochTime: number) => {
+  const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
+  const secondsPerDay = 60 * 60 * 24; // number of seconds per day
+
+  const differenceInSeconds = epochTime - currentTimestamp;
+  const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
+
+  return differenceInDays;
 };
 
 export const listenForOutsideClicks = ({
