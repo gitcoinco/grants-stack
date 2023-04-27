@@ -31,7 +31,7 @@ import {
   Project,
   recipient,
 } from "../api/types";
-import { getPayoutTokenOptions } from "../api/utils";
+import { getPayoutTokenOptions, useTokenPrice } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import Footer from "../common/Footer";
@@ -108,6 +108,12 @@ export default function ViewCart() {
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  const { data, error, loading } = useTokenPrice(
+    selectedPayoutToken.coingeckoId
+  );
+
+  const payoutTokenPrice = !loading && !error ? Number(data) : undefined;
 
   const {
     submitDonations,
@@ -536,6 +542,20 @@ export default function ViewCart() {
               className="w-24"
             />
             <p className="m-auto">{selectedPayoutToken.name}</p>
+            {payoutTokenPrice && (
+              <div className="m-auto px-2 min-w-max">
+                <span className="text-[14px] text-grey-400 ">
+                  ${" "}
+                  {Number(
+                    donations.find(
+                      (donation: CartDonation) =>
+                        donation.projectRegistryId ===
+                        props.project.projectRegistryId
+                    )?.amount
+                  ) * Number(payoutTokenPrice.toFixed(2))}
+                </span>
+              </div>
+            )}
             <TrashIcon
               data-testid="remove-from-cart"
               onClick={() => {
@@ -596,6 +616,9 @@ export default function ViewCart() {
   }
 
   function Summary() {
+    const totalDonationInUSD =
+      payoutTokenPrice && totalDonation * Number(payoutTokenPrice.toFixed(2));
+
     return (
       <div className="shrink mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
         <h2 className="text-xl border-b-2 pb-2">Summary</h2>
@@ -610,6 +633,13 @@ export default function ViewCart() {
             </span>
           </p>
         </div>
+        {payoutTokenPrice && (
+          <div className="flex flex-row-reverse mt-2">
+            <p className="text-[14px] text-grey-400">
+              $ {totalDonationInUSD?.toString()}
+            </p>
+          </div>
+        )}
       </div>
     );
   }

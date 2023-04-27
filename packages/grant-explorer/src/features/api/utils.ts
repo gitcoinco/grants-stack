@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types";
+import { useMemo, useState } from "react";
 
 export enum ChainId {
   MAINNET = "1",
@@ -422,5 +423,52 @@ export const listenForOutsideClicks = ({
         setOpen(false);
       });
     });
+  };
+};
+
+export const useTokenPrice = (tokenId: string | undefined) => {
+  const [tokenPrice, setTokenPrice] = useState<number>();
+  const [error, setError] = useState<Response | undefined>();
+  const [loading, setLoading] = useState(false);
+
+  useMemo(() => {
+    setLoading(true);
+    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`;
+    fetch(tokenPriceEndpoint, {
+      headers: {
+        method: "GET",
+        Accept: "application/json",
+      },
+      mode: "no-cors",
+    })
+      .then((resp) => {
+        if (resp.ok) {
+          return resp.json();
+        } else {
+          setError(resp);
+          setLoading(false);
+        }
+      })
+      .then((data) => {
+        if (data) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const { usd } = data[tokenId!];
+          setTokenPrice(usd);
+        } else {
+          setError(data.message);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("error fetching token price", { err });
+        setError(err);
+        setLoading(false);
+      });
+  }, [tokenId]);
+
+  return {
+    data: tokenPrice,
+    error,
+    loading,
   };
 };
