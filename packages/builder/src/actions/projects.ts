@@ -444,9 +444,7 @@ export const fetchProjectApplications =
           );
 
           if (response.errors) {
-            datadogRum.addError(response.error, { projectID });
-            console.error(response.error);
-            return [];
+            throw response.errors;
           }
 
           const applications = response.data.roundApplications.map(
@@ -470,8 +468,15 @@ export const fetchProjectApplications =
 
           return applications;
         } catch (error: any) {
+          console.error(
+            "failed fetchProjectApplications for",
+            "Project Id",
+            projectID,
+            "in Chain Id",
+            chain.id,
+            error
+          );
           datadogRum.addError(error, { projectID });
-          console.error(error);
 
           return [];
         }
