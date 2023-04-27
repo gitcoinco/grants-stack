@@ -303,6 +303,9 @@ export default function ViewCart() {
   }
 
   function SummaryContainer() {
+
+    const minDonationThresholdAmount = round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount;
+
     return (
       <div className="order-first md:order-last">
         <div>
@@ -330,10 +333,12 @@ export default function ViewCart() {
           >
             Submit your donation!
           </Button>
-          <p className="flex justify-center my-4 text-sm italic">
-            Your donation to each project must be valued at $1 USD or more to be
-            eligible for matching.
-          </p>
+          {minDonationThresholdAmount &&
+            <p className="flex justify-center my-4 text-sm italic">
+              Your donation to each project must be valued at {minDonationThresholdAmount} USD or more to be
+              eligible for matching.
+            </p>
+          }
           {emptyInput && (
             <p
               data-testid="emptyInput"
