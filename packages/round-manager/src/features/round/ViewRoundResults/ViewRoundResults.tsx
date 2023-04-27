@@ -20,6 +20,7 @@ import { Match } from "allo-indexer-client";
 import { Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/browser/esm/sync";
 import { Input } from "csv-stringify/lib";
+import { useNetwork } from "wagmi";
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -37,6 +38,7 @@ const distributionOptions = [
 ];
 
 export default function ViewRoundResults() {
+  const { chain } = useNetwork();
   const { id } = useParams();
   const roundId = utils.getAddress(id?.toLowerCase() ?? "");
   const { data: matches, isLoading: isLoadingMatchingFunds } =
@@ -75,13 +77,10 @@ export default function ViewRoundResults() {
 
   const matchAmountUSD = round?.matchAmountUSD;
 
-  /*TODO: uncomment this before ship */
-  // const currentTime = new Date();
-  // const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
-  //
-  // if (isBeforeRoundEndDate && !debugModeEnabled) {
-  //   return <NoInformationContent />;
-  // }
+  const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
+  if (isBeforeRoundEndDate && !debugModeEnabled) {
+    return <NoInformationContent />;
+  }
 
   if (isLoadingRound || isLoadingMatchingFunds) {
     return <Spinner text="We're fetching the matching data." />;
@@ -121,15 +120,14 @@ export default function ViewRoundResults() {
                 </span>
               </div>
               <div className="flex flex-col mt-4 w-min">
-                <button
-                  onClick={() => {
-                    /* Download vote coefficients */
-                  }}
+                <a
+                  role={"link"}
+                  href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${roundId}/votecoefficients.csv`}
                   className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
                 >
                   <DownloadIcon className="h-5 w-5" />
                   CSV
-                </button>
+                </a>
               </div>
               <div
                 className="flex flex-col mt-4"
@@ -183,7 +181,7 @@ export default function ViewRoundResults() {
               <div className="flex flex-col mt-4 w-min">
                 <button
                   onClick={() => {
-                    /*Download matching distribution json as csv */
+                    /* Download matching distribution data as csv */
                     if (!matches) {
                       return;
                     }
@@ -463,7 +461,11 @@ export function downloadArrayAsCsv(data: Input, filename: string): void {
     quoted: true,
   });
 
-  const csvBlob = new Blob([csv], {
+  downloadFile(csv, filename);
+}
+
+export function downloadFile(data: BlobPart, filename: string): void {
+  const csvBlob = new Blob([data], {
     type: "text/csv;charset=utf-8;",
   });
   const url = window.URL.createObjectURL(csvBlob);
