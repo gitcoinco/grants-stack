@@ -47,7 +47,15 @@ export default function RoundStats() {
           chainId: app.chainId,
         });
       });
-      dispatch(loadProjectStats(params.id!, rounds));
+
+      dispatch(
+        loadProjectStats(
+          params.id!,
+          params.registryAddress!,
+          params.chainId!,
+          rounds
+        )
+      );
     } else {
       setNoStats(true);
     }
