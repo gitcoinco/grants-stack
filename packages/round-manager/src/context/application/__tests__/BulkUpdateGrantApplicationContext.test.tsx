@@ -16,7 +16,7 @@ const mockWallet = {
 describe("<BulkUpdateGrantApplicationProvider />", () => {
   it("placeholder", () => {
     expect(true).toBe(true);
-  })
+  });
 });
 
 // describe("<BulkUpdateGrantApplicationProvider />", () => {
@@ -227,3 +227,5 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
 //     </BulkUpdateGrantApplicationProvider>
 //   );
 // }
+
+export {};
