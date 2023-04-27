@@ -3,7 +3,7 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
-import { chains } from "common/src/registry";
+import { chains } from "common/src/projectRegistry";
 import { EthDiamondGlyph, FantomFTMLogo, FTMTestnet, OPIcon } from "../assets";
 
 export function shortAddress(address: string): string {

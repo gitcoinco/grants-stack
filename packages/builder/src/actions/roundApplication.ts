@@ -3,7 +3,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { chains } from "common/src/registry";
+import { chains } from "common/src/projectRegistry";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { global } from "../global";
 import { RootState } from "../reducers";

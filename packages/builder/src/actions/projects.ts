@@ -6,7 +6,7 @@ import {
   Client as AlloClient,
   Application as GrantApplication,
 } from "allo-indexer-client";
-import { addressesByChainID, fetchProjectOwners } from "common/src/registry";
+import { addressesByChainID, fetchProjectOwners } from "common/src/projectRegistry";
 import { verifyApplicationMetadata } from "common/src/verification";
 import { global } from "../global";
 import { RootState } from "../reducers";

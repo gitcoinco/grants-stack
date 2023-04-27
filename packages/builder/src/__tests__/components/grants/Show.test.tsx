@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { waitFor } from "@testing-library/react";
-import { fetchProjectOwners } from "common/src/registry";
+import { fetchProjectOwners } from "common/src/projectRegistry";
 import Show from "../../../components/grants/Show";
 import setupStore from "../../../store";
 import {
@@ -30,8 +30,8 @@ jest.mock("../../../actions/grantsMetadata", () => ({
   fetchGrantData: () => ({ type: "TEST" }),
 }));
 
-jest.mock("common/src/registry", () => ({
-  ...jest.requireActual("common/src/registry"),
+jest.mock("common/src/projectRegistry", () => ({
+  ...jest.requireActual("common/src/projectRegistry"),
   fetchProjectOwners: jest.fn(),
 }));
 

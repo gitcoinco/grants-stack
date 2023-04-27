@@ -1,5 +1,5 @@
 import { Dispatch } from "redux";
-import { chains } from "common/src/registry";
+import { chains } from "common/src/projectRegistry";
 import { global } from "../global";
 
 const chainIds = Object.keys(chains);

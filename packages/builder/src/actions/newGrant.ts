@@ -2,7 +2,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { addressesByChainID } from "common/src/registry";
+import { addressesByChainID } from "common/src/projectRegistry";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { global } from "../global";
 import { RootState } from "../reducers";
