@@ -468,7 +468,7 @@ export function useRoundProject(
   // use chain id and project id from url params
   const client = new Client(
     boundFetch,
-    process.env.REACT_APP_ALLO_API_ENDPOINT ?? "",
+    process.env.REACT_APP_ALLO_API_URL ?? "",
     chainId
   );
 
