@@ -3,8 +3,6 @@ import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { debounce } from "ts-debounce";
 
-console.log(process.env.REACT_APP_PASSPORT_IAM_SERVER);
-
 const IAM_SERVER =
   process.env.REACT_APP_PASSPORT_IAM_SERVER ||
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";

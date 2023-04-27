@@ -20,7 +20,6 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
-import { setReadyForPayout } from "../../api/round";
 import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
 import { useRoundMatchingFunds } from "../../../hooks";
@@ -31,6 +30,7 @@ jest.mock("wagmi");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 
 let mockRoundData: Round = makeRoundData();

@@ -4,11 +4,11 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect";
 import { TextEncoder, TextDecoder } from "util";
-import { TextEncoder } from "util";
 import { Chain } from "@rainbow-me/rainbowkit";
 
 // @ts-expect-error I love jest
 global.TextDecoder = TextDecoder;
+global.TextEncoder = TextEncoder;
 // Fantom Testnet
 const fantomTestnet: Chain = {
   id: 4002,
@@ -46,6 +46,7 @@ jest.mock("wagmi", () => ({
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ...jest.requireActual("@rainbow-me/rainbowkit"),
   ConnectButton: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 
 beforeEach(() => {
