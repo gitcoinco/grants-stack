@@ -80,7 +80,7 @@ const mainnetChains = () => {
       symbol: "ETH",
     },
     rpcUrls: {
-      default: `https://opt-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_OPTIMISM}`,
+      default: `https://opt-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_OPTIMISM_ID}`,
     },
     blockExplorers: {
       default: { name: "etherscan", url: "https://optimistic.etherscan.io" },
