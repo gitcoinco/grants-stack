@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { faker } from "@faker-js/faker";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-} from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { useParams } from "react-router-dom";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
@@ -20,7 +15,6 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
-import { setReadyForPayout } from "../../api/round";
 import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
 import { useRoundMatchingFunds } from "../../../hooks";
@@ -260,4 +254,3 @@ describe("View Round Results after distribution data is finalized to contract", 
     expect(screen.getByTestId("match-stats-table")).toBeInTheDocument();
   });
 });
-

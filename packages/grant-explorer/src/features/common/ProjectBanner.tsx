@@ -4,6 +4,7 @@ import DefaultBannerImage from "../../assets/default_banner.png";
 export function ProjectBanner(props: {
   projectMetadata: ProjectMetadata;
   classNameOverride?: string;
+  resizeHeight?: number;
 }) {
   const projectBannerImage = props.projectMetadata.bannerImg
     ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.projectMetadata.bannerImg}`
@@ -15,7 +16,9 @@ export function ProjectBanner(props: {
         className={
           props.classNameOverride ?? "h-[120px] w-full object-cover rounded-t"
         }
-        src={projectBannerImage}
+        src={`${projectBannerImage}${
+          props.resizeHeight ? "?img-height=" + props.resizeHeight : ""
+        }`}
         alt="Project Banner"
       />
     </div>
