@@ -6,11 +6,24 @@ const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
 
 window.Buffer = Buffer;
 
-const client = LitJsSdk
+const litClient = LitJsSdk
   ? new LitJsSdk.LitNodeClient({
       alertWhenUnauthorized: false,
     })
   : null;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LitClient = any;
+let connectedLitClient: Promise<LitClient> | undefined;
+
+function getClient(): Promise<LitClient> {
+  if (connectedLitClient) {
+    return connectedLitClient;
+  }
+  const promise = litClient.connect().then(() => litClient);
+  connectedLitClient = promise;
+  return promise;
+}
 
 const ROUND_OPERATOR =
   "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5";
@@ -19,10 +32,9 @@ type LitInit = {
   chain: string;
   contract: string;
 };
+
 export class Lit {
   /* Lit doesn't provide types as of 12. 9. 2022 */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  litNodeClient: any;
   chain: string;
   contract: string;
 
@@ -67,23 +79,13 @@ export class Lit {
   }
 
   /**
-   * Connect to the lit node
-   */
-  async connect() {
-    await client.connect();
-    this.litNodeClient = client;
-  }
-
-  /**
    * Util function to encrypt a string
    *
    * @param content the string to encrypt
    * @returns {encryptedString, encryptedSymmetricKey}
    */
   async encryptString(content: string) {
-    if (!this.litNodeClient) {
-      await this.connect();
-    }
+    const client = await getClient();
 
     // Obtain Auth Signature to verify signer is wallet owner
     const chain = this.chain;
@@ -95,7 +97,7 @@ export class Lit {
     );
 
     // Saving the Encrypted Content to the Lit Nodes
-    const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
+    const encryptedSymmetricKey = await client.saveEncryptionKey({
       unifiedAccessControlConditions: this.isRoundOperatorAccessControl(),
       symmetricKey,
       authSig,
@@ -122,9 +124,7 @@ export class Lit {
     encryptedStr: string | Blob,
     encryptedSymmetricKey: string
   ) {
-    if (!this.litNodeClient) {
-      await this.connect();
-    }
+    const client = await getClient();
 
     try {
       const chain = this.chain;
@@ -133,7 +133,7 @@ export class Lit {
       const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
 
       // Obtaining the Decrypted Symmetric Key
-      const symmetricKey = await this.litNodeClient.getEncryptionKey({
+      const symmetricKey = await client.getEncryptionKey({
         unifiedAccessControlConditions: this.isRoundOperatorAccessControl(),
         toDecrypt: encryptedSymmetricKey,
         chain,

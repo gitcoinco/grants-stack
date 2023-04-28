@@ -2,10 +2,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ethers, utils } from "ethers";
 import { Dispatch } from "redux";
 import { convertStatusToText } from "common";
-import {
-  Client as AlloClient,
-  Application as GrantApplication,
-} from "allo-indexer-client";
+import { Client as AlloClient } from "allo-indexer-client";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -447,9 +444,7 @@ export const fetchProjectApplications =
           );
 
           if (response.errors) {
-            datadogRum.addError(response.error, { projectID });
-            console.error(response.error);
-            return [];
+            throw response.errors;
           }
 
           const applications = response.data.roundApplications.map(
@@ -473,8 +468,15 @@ export const fetchProjectApplications =
 
           return applications;
         } catch (error: any) {
+          console.error(
+            "failed fetchProjectApplications for",
+            "Project Id",
+            projectID,
+            "in Chain Id",
+            chain.id,
+            error
+          );
           datadogRum.addError(error, { projectID });
-          console.error(error);
 
           return [];
         }
@@ -540,14 +542,14 @@ export const loadProjectStats =
         round.chainId
       );
 
-      const project = await client
-        .getRoundApplications(utils.getAddress(round.roundId.toLowerCase()))
-        .then(
-          (apps: GrantApplication[]) =>
-            apps.filter(
-              (app: GrantApplication) => app.id === uniqueProjectID
-            )[0]
-        );
+      const applications = await client.getRoundApplications(
+        utils.getAddress(round.roundId.toLowerCase())
+      );
+
+      const project = applications.find(
+        (app) => app.projectId === uniqueProjectID && app.status === "APPROVED"
+      );
+
       if (project) {
         await updateStats(
           {

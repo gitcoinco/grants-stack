@@ -65,7 +65,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.0.1",
     "@testing-library/user-event": "^14.1.1",
-    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#35fba8ef3cdca7ac482dcab42e4fdb666cca0fc8",
+    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#0487c02c9bb89307b12ffe75f5bfb578278994a1",
     "babel-loader": "^8.3.0",
     "buffer": "^6.0.3",
     "common": "workspace:*",
