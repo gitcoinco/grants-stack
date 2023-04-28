@@ -273,7 +273,8 @@ function ProjectCard(props: {
   isBeforeRoundEndDate?: boolean;
 }) {
   const { project, roundRoutePath } = props;
-  const projectRecipient = project.recipient.slice(0, 5) +"..." + project.recipient.slice(-4);
+  const projectRecipient =
+    project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
 
   const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
     useCart();
@@ -295,6 +296,7 @@ function ProjectCard(props: {
             classNameOverride={
               "bg-black h-[120px] w-full object-cover rounded-t"
             }
+            resizeHeight={120}
           />
         </CardHeader>
         <CardContent className="px-2">
@@ -304,7 +306,10 @@ function ProjectCard(props: {
           <CardDescription className="mb-2 mt-0" data-testid="project-owner">
             by {projectRecipient}
           </CardDescription>
-          <CardDescription data-testid="project-description" className="h-[150px] overflow-hidden mb-1">
+          <CardDescription
+            data-testid="project-description"
+            className="h-[150px] overflow-hidden mb-1"
+          >
             {renderToPlainText(project.projectMetadata.description)}
           </CardDescription>
         </CardContent>
