@@ -69,8 +69,6 @@ export default function ViewRoundResults() {
 
   const { data: round } = useRound(roundId);
 
-  const matchAmountUSD = round?.matchAmountUSD;
-
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
 
@@ -144,6 +142,7 @@ export default function ViewRoundResults() {
                 </thead>
                 <tbody>
                   {matches &&
+                    round &&
                     matches.map((match: Match) => {
                       return (
                         <tr key={match.applicationId}>
@@ -154,10 +153,11 @@ export default function ViewRoundResults() {
                             {match.contributionsCount}
                           </td>
                           <td className="text-sm leading-5 text-gray-400 text-left">
-                            {matchAmountUSD &&
-                              Math.trunc(
-                                (match.matched / matchAmountUSD) * 100
-                              )}
+                            {(
+                              (BigInt(100) * match.matched) /
+                              round.matchAmount
+                            ).toString()}
+                            %
                           </td>
                         </tr>
                       );
