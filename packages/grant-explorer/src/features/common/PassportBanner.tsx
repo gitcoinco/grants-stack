@@ -91,7 +91,7 @@ export default function PassportBanner(props: {
   const ViewScoreButton = () => (
     <>
       <button
-        className="ml-3 font-medium text-sm underline"
+        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -108,7 +108,7 @@ export default function PassportBanner(props: {
   const UpdateScoreButton = () => (
     <>
       <button
-        className="ml-3 font-medium text-sm underline"
+        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -125,7 +125,7 @@ export default function PassportBanner(props: {
   const CreatePassportButton = () => (
     <>
       <button
-        className="ml-3 font-medium text-sm underline"
+        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -142,7 +142,7 @@ export default function PassportBanner(props: {
   const ConnectWalletButton = () => (
     <>
       <button
-        className="ml-3 font-medium text-sm underline"
+        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
         onClick={() => {
           document
             .getElementById("connect-wallet-button")
@@ -161,7 +161,7 @@ export default function PassportBanner(props: {
 
   const AlertIcon = () => {
     return (
-      <div className="flex justify-center items-center h-7 w-7 relative text-white items-center rounded-full bg-yellow-400">
+      <div className="hidden md:block flex md:justify-center items-center h-7 w-7 relative text-white items-center rounded-full bg-yellow-400">
         <ExclamationCircleIcon className="fill-yellow-400 stroke-yellow-100 h-4 w-4 relative text-white items-center rounded-full" />
       </div>
     );
@@ -237,11 +237,11 @@ export default function PassportBanner(props: {
     <div className="relative top-16">
       <div className={bannerConfig[passportState].color}>
         <div className="max-w-full py-3 px-3 sm:px-6 lg:px-8 z-0">
-          <div className="flex flex-row flex-wrap items-center justify-center">
+          <div className="flex flex-row flex-wrap items-center md:justify-center">
             <div className="relative">{bannerConfig[passportState].icon}</div>
             <span
               data-testid={bannerConfig[passportState].testId}
-              className="ml-3 font-medium text-sm"
+              className="font-medium text-sm"
             >
               {bannerConfig[passportState].body}
             </span>
