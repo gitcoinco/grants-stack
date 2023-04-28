@@ -31,7 +31,7 @@ export const voteOnRoundContract = async (
   );
 
   const gasPrice = await signer.getGasPrice();
-  const gasLimit = await roundImplementation.estimateGas.vote(encodedVotes, {
+  const gasLimit = await roundImplementation.estimateGas.approve(encodedVotes, {
     value: amountInWei,
   });
   const gasLimitWithBuffer = gasLimit.mul(2); // increase gas limit by 2x
