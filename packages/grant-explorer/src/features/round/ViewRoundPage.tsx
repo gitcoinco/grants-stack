@@ -273,7 +273,7 @@ function ProjectCard(props: {
   isBeforeRoundEndDate?: boolean;
 }) {
   const { project, roundRoutePath } = props;
-  const projectRecipient = project.recipient.slice(0, 6);
+  const projectRecipient = project.recipient.slice(0, 5) +"..." + project.recipient.slice(-4);
 
   const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
     useCart();
@@ -297,14 +297,14 @@ function ProjectCard(props: {
             }
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2">
           <CardTitle data-testid="project-title">
             {project.projectMetadata.title}
           </CardTitle>
-          <CardDescription className="mb-2" data-testid="project-owner">
+          <CardDescription className="mb-2 mt-0" data-testid="project-owner">
             by {projectRecipient}
           </CardDescription>
-          <CardDescription data-testid="project-description">
+          <CardDescription className="mb-1" data-testid="project-description">
             {renderToPlainText(project.projectMetadata.description)}
           </CardDescription>
         </CardContent>
