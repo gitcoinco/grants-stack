@@ -7,6 +7,7 @@ import {
   useRoundApplications,
   useRoundMatchingFunds,
 } from "../../hooks";
+import { payoutTokens } from "../api/utils";
 import { getUTCDate } from "common";
 
 export default function ViewRoundStats() {
@@ -23,7 +24,11 @@ export default function ViewRoundStats() {
 
   const { data: matches } = useRoundMatchingFunds(roundId);
 
-  const matchAmountUSD = round?.matchAmountUSD;
+  const matchToken =
+    round &&
+    payoutTokens.find(
+      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+    );
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -42,11 +47,10 @@ export default function ViewRoundStats() {
         />
         <StatsCard
           text={
-            matchAmountUSD &&
-            new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(matchAmountUSD)
+            round &&
+            `${utils.formatUnits(round.matchAmount, matchToken?.decimal)} ${
+              matchToken?.name
+            }`
           }
           title={"Matching Funds Available"}
         />
@@ -90,7 +94,8 @@ export default function ViewRoundStats() {
               </tr>
             </thead>
             <tbody>
-              {matches &&
+              {round &&
+                matches &&
                 matches.map((match: Match) => {
                   return (
                     <tr key={match.applicationId}>
@@ -101,8 +106,10 @@ export default function ViewRoundStats() {
                         {match.contributionsCount}
                       </td>
                       <td className="text-sm leading-5 text-gray-400 text-left">
-                        {matchAmountUSD &&
-                          Math.trunc((match.matched / matchAmountUSD) * 100)}
+                        {(
+                          (BigInt(100) * match.matched) /
+                          round.matchAmount
+                        ).toString()}
                         %
                       </td>
                     </tr>
