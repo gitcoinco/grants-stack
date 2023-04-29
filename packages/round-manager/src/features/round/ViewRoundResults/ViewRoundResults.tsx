@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -38,15 +38,33 @@ export default function ViewRoundResults() {
   const roundId = utils.getAddress(id?.toLowerCase() ?? "");
   const { data: matches } = useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
+  const { data: round } = useRound(roundId);
 
   const [distributionOption, setDistributionOption] = useState("keep");
+
+  useEffect(() => {
+    // logic for updating distribution goes here
+  }, [distributionOption])
+
+  const [currentRoundSaturation, setCurrentRoundSaturation] = useState(0);
+  const [isSaturated, setIsSaturated] = useState(true);
+
+  
+  useEffect(() =>{
+    const saturation = matches?.reduce(
+      (acc: number, match: Match) => acc + match?.matched,
+        0
+      ); 
+      round && saturation && setCurrentRoundSaturation(saturation / Number(utils.formatEther(round.matchAmount)));
+      setIsSaturated(currentRoundSaturation > 1)
+  }, [matches, round])
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file: File) => {
       const reader = new FileReader();
       reader.onload = () => {
         if (reader.result) {
-          /**/
+          /** */
         }
       };
       reader.readAsText(file);
@@ -66,8 +84,6 @@ export default function ViewRoundResults() {
   const onFinalizeResults = () => {
     // Logic for finalizing results goes here
   };
-
-  const { data: round } = useRound(roundId);
 
   const matchAmountUSD = round?.matchAmountUSD;
 
@@ -125,45 +141,53 @@ export default function ViewRoundResults() {
                   Matching Distribution
                 </span>
               </div>
-              <table
-                className="table-auto border-separate border-spacing-y-4 h-full w-full"
-                data-testid="match-stats-table"
-              >
-                <thead>
-                  <tr>
-                    <th className="text-sm leading-5 text-gray-400 text-left">
-                      Projects
-                    </th>
-                    <th className="text-sm leading-5 text-gray-400 text-left">
-                      No. of Contributions
-                    </th>
-                    <th className="text-sm leading-5 text-gray-400 text-left">
-                      Est. Matching %
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {matches &&
-                    matches.map((match: Match) => {
-                      return (
-                        <tr key={match.applicationId}>
-                          <td className="text-sm leading-5 text-gray-400 text-left">
-                            {match.projectName}
-                          </td>
-                          <td className="text-sm leading-5 text-gray-400 text-left">
-                            {match.contributionsCount}
-                          </td>
-                          <td className="text-sm leading-5 text-gray-400 text-left">
-                            {matchAmountUSD &&
-                              Math.trunc(
-                                (match.matched / matchAmountUSD) * 100
-                              )}
-                          </td>
-                        </tr>
-                      );
+              <div className="overflow-y-auto max-h-52">
+                <table
+                  className="table-auto border-separate border-spacing-y-4 h-full w-full"
+                  data-testid="match-stats-table"
+                >
+                  <thead>
+                    <tr>
+                      <th className="text-sm leading-5 text-gray-400 text-left">
+                        Projects
+                      </th>
+                      <th className="text-sm leading-5 text-gray-400 text-left">
+                        No. of Contributions
+                      </th>
+                      <th className="text-sm leading-5 text-gray-400 text-left">
+                        Est. Match Amount
+                      </th>
+                      <th className="text-sm leading-5 text-gray-400 text-left">
+                        Est. Matching %
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {matches &&
+                     matches.map((match: Match) => {
+                       return (
+                         <tr key={match.applicationId}>
+                           <td className="text-sm leading-5 text-gray-400 text-left">
+                             {match.projectName}
+                           </td>
+                           <td className="text-sm leading-5 text-gray-400 text-left">
+                             {match.contributionsCount}
+                           </td>
+                           <td className="text-sm leading-5 text-gray-400 text-left">
+                             {match.matched.toFixed(4)}
+                           </td>
+                           <td className="text-sm leading-5 text-gray-400 text-left">
+                             {
+                               matchAmountUSD &&
+                               ((match.matched / matchAmountUSD) * 100).toFixed(4)
+                             }
+                           </td>
+                         </tr>
+                       );
                     })}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
               <div className="flex flex-col mt-4 w-min">
                 <button className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2">
                   <DownloadIcon className="h-5 w-5" />{" "}
@@ -174,17 +198,18 @@ export default function ViewRoundResults() {
               <div className="flex flex-col mt-4 gap-1 mb-3">
                 <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1">
                   Round Saturation
+                  </span>
+                <span className="text-sm leading-5 font-normal text-left">
+                  {`Current round saturation: ${currentRoundSaturation > 1.0 ? 100 : currentRoundSaturation * 100}%`}
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`Current round saturation: ${-99}%`}
-                </span>
-                <span className="text-sm leading-5 font-normal text-left">
-                  {`$${0} out of the $${0} matching fund will be distributed to grantees.`}
+                  {`$${0} out of the $${round?.matchAmountUSD} matching fund will be distributed to grantees.`}
                 </span>
               </div>
               <RadioGroup
                 value={distributionOption}
                 onChange={setDistributionOption}
+                disabled={isSaturated}
               >
                 <RadioGroup.Label className="sr-only">
                   Distribution options
@@ -202,14 +227,17 @@ export default function ViewRoundResults() {
                         <>
                           <input
                             type="radio"
-                            className="text-indigo-600 focus:ring-indigo-500"
+                            className={classNames(
+                              "text-indigo-600 focus:ring-indigo-500",
+                              isSaturated && "opacity-50"
+                            )}
                             checked={checked}
                             readOnly
                           />
                           <span
                             className={classNames(
-                              "ml-2 font-medium text-gray-900",
-                              checked && "text-indigo-900"
+                              "ml-2 font-medium",
+                              isSaturated && "opacity-50"
                             )}
                           >
                             {option.label}
@@ -250,7 +278,7 @@ export default function ViewRoundResults() {
                   inputProps={getInputProps()}
                   matchingData={[]}
                   setCustomMatchingData={() => {
-                    /**/
+                    /** */
                   }}
                 />
                 <button
