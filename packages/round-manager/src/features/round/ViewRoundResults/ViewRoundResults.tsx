@@ -109,10 +109,6 @@ export default function ViewRoundResults() {
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      /* Steps:
-       * 1. update the distribution in the contract
-       * 2. mark contract as ready for payout */
-
       const matchingJson: MatchingStatsData[] = matches.map((match) => ({
         uniqueContributorsCount: 0,
         projectPayoutAddress: match.payoutAddress,
