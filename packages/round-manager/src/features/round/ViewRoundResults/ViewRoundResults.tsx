@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
 import {
@@ -19,7 +19,6 @@ import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  TransactionBlock,
 } from "../../api/types";
 import { Match } from "allo-indexer-client";
 import { Spinner } from "../../common/Spinner";
@@ -33,6 +32,7 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
+import { TransactionResponse } from "@ethersproject/providers";
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -52,12 +52,13 @@ const distributionOptions = [
 export default function ViewRoundResults() {
   const { chain } = useNetwork();
   const { id } = useParams();
+  const navigate = useNavigate();
   const roundId = utils.getAddress(id as string);
   const { data: matches, isLoading: isLoadingMatchingFunds } =
     useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
-  const { round: oldRoundFromGraph, error } = useRoundById(
+  const { round: oldRoundFromGraph } = useRoundById(
     (id as string).toLowerCase()
   );
   const matchAmountUSD = round?.matchAmountUSD;
@@ -66,6 +67,8 @@ export default function ViewRoundResults() {
   const isReadyForPayout = Boolean(
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
   );
+
+  const network = useNetwork();
 
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
@@ -96,7 +99,8 @@ export default function ViewRoundResults() {
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [readyForPayoutTransaction, setReadyforPayoutTransaction] = useState();
+  const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
+    useState<TransactionResponse>();
 
   const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
     useFinalizeRound();
@@ -124,18 +128,16 @@ export default function ViewRoundResults() {
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
 
-      const setReadyForPayoutTx: TransactionBlock = await setReadyForPayout({
+      const setReadyForPayoutTx = await setReadyForPayout({
         roundId: round.id,
         signerOrProvider: signer,
       });
 
-      if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
-        throw error;
-      } else {
-        setTimeout(() => {
-          setProgressModalOpen(false);
-        }, errorModalDelayMs);
-      }
+      setReadyforPayoutTransaction(setReadyForPayoutTx);
+
+      setTimeout(() => {
+        setProgressModalOpen(false);
+      }, errorModalDelayMs);
     } catch (error) {
       setTimeout(() => {
         setProgressModalOpen(false);
@@ -390,10 +392,19 @@ export default function ViewRoundResults() {
                     </span>
                   </>
                 )}
-                {isReadyForPayout && (
+                {readyForPayoutTransaction && (
                   <>
                     <button
-                      onClick={() => {}}
+                      onClick={() => {
+                        if (
+                          network.chain?.blockExplorers &&
+                          readyForPayoutTransaction
+                        ) {
+                          navigate(
+                            `${network.chain.blockExplorers.default.url}/tx/${readyForPayoutTransaction.hash}`
+                          );
+                        }
+                      }}
                       className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
                    mt-2 px-3 rounded flex items-center gap-2"
                     >

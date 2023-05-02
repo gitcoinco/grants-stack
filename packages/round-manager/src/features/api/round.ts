@@ -1,5 +1,9 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { Web3Provider } from "@ethersproject/providers";
+import {
+  TransactionReceipt,
+  TransactionResponse,
+  Web3Provider,
+} from "@ethersproject/providers";
 import { graphql_fetch } from "common";
 import { BigNumber, ethers, utils } from "ethers";
 import {
@@ -13,7 +17,6 @@ import {
   MatchingStatsData,
   MetadataPointer,
   Round,
-  TransactionBlock,
 } from "./types";
 import { fetchFromIPFS, payoutTokens } from "./utils";
 
@@ -547,32 +550,13 @@ export const setReadyForPayout = async ({
 }: {
   roundId: string;
   signerOrProvider: Signer;
-}): Promise<TransactionBlock> => {
-  try {
-    const roundImplementation = new ethers.Contract(
-      roundId,
-      roundImplementationContract.abi,
-      signerOrProvider
-    );
+}): Promise<TransactionResponse> => {
+  const roundImplementation = new ethers.Contract(
+    roundId,
+    roundImplementationContract.abi,
+    signerOrProvider
+  );
 
-    const tx = await roundImplementation.setReadyForPayout();
-    console.log("⏳ Waiting for transaction to be mined...", tx);
-
-    const receipt = await tx.wait();
-
-    console.log("✅ Transaction hash: ", tx.hash);
-    const blockNumber = receipt.blockNumber;
-
-    return {
-      transactionBlockNumber: blockNumber,
-      error: undefined,
-    };
-  } catch (error) {
-    console.error("setReadyForPayout", { error });
-
-    return {
-      transactionBlockNumber: 0,
-      error,
-    };
-  }
+  const tx = await roundImplementation.setReadyForPayout();
+  return tx.wait();
 };
