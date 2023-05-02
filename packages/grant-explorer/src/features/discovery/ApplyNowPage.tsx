@@ -71,7 +71,7 @@ const ApplyNowPage = () => {
           ?.toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         round.roundMetadata?.name?.toLocaleLowerCase() !==
-          query.toLocaleLowerCase()
+        query.toLocaleLowerCase()
     );
 
     setFilteredRoundsInApplicationPhase([
