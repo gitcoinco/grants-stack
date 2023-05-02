@@ -1,11 +1,11 @@
 import { BigNumber, BytesLike, ethers, Signer } from "ethers";
-import { roundImplementationContract, ERC20Contract } from "./contracts";
+import { ERC20Contract, roundImplementationContract } from "./contracts";
 
 export const voteOnRoundContract = async (
   roundId: string,
   signer: Signer,
   encodedVotes: BytesLike[],
-  nativeTokenAmount = 0,
+  nativeTokenAmount = 0
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   // checksum conversion
   roundId = ethers.utils.getAddress(roundId);
@@ -13,12 +13,12 @@ export const voteOnRoundContract = async (
   const roundImplementation = new ethers.Contract(
     roundId,
     roundImplementationContract.abi,
-    signer,
+    signer
   );
 
   const decodedValues = ethers.utils.defaultAbiCoder.decode(
     ["address", "uint256", "address", "bytes32", "uint256"],
-    encodedVotes[0],
+    encodedVotes[0]
   );
 
   // only send native token amount as value to vote function
@@ -27,19 +27,11 @@ export const voteOnRoundContract = async (
 
   const amountInWei = ethers.utils.parseUnits(
     nativeTokenAmount.toString(),
-    "ether",
+    "ether"
   );
-
-  const gasPrice = await signer.getGasPrice();
-  const gasLimit = await roundImplementation.estimateGas.vote(encodedVotes, {
-    value: amountInWei,
-  });
-  const gasLimitWithBuffer = gasLimit.mul(2); // increase gas limit by 2x
 
   const tx = await roundImplementation.vote(encodedVotes, {
     value: amountInWei,
-    gasPrice,
-    gasLimit: gasLimitWithBuffer,
   });
 
   const receipt = await tx.wait();
@@ -57,7 +49,7 @@ export const approveTokenOnContract = async (
   signer: Signer,
   votingStrategy: string,
   tokenAddress: string,
-  amount: BigNumber,
+  amount: BigNumber
 ): Promise<void> => {
   // checksum conversion
   votingStrategy = ethers.utils.getAddress(votingStrategy);
@@ -66,20 +58,10 @@ export const approveTokenOnContract = async (
   const tokenContract = new ethers.Contract(
     tokenAddress,
     ERC20Contract.abi,
-    signer,
+    signer
   );
 
-  const gasPrice = await signer.getGasPrice();
-  const gasLimit = await tokenContract.estimateGas.approve(
-    votingStrategy,
-    amount,
-  );
-  const gasLimitWithBuffer = gasLimit.mul(2); // increase gas limit by 2x
-
-  const approveTx = await tokenContract.approve(votingStrategy, amount, {
-    gasPrice,
-    gasLimit: gasLimitWithBuffer,
-  });
+  const approveTx = await tokenContract.approve(votingStrategy, amount);
 
   await approveTx.wait();
 };
