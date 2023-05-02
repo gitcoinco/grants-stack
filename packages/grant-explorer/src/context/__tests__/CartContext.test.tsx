@@ -147,14 +147,14 @@ const TestingUseCartComponent = () => {
 
       <button
         data-testid="add-project-to-cart"
-        onClick={() => handleAddProjectsToCart([testProject])}
+        onClick={() => handleAddProjectsToCart([testProject], "1")}
       >
         Add Project To Cart
       </button>
 
       <button
         data-testid="remove-project-from-cart"
-        onClick={() => handleRemoveProjectsFromCart([testProject])}
+        onClick={() => handleRemoveProjectsFromCart([testProject], "1")}
       >
         Remove Project From Cart
       </button>
