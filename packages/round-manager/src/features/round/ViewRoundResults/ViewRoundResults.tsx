@@ -67,7 +67,6 @@ export default function ViewRoundResults() {
   const isReadyForPayout = Boolean(
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
   );
-
   const network = useNetwork();
 
   const [distributionOption, setDistributionOption] = useState<
@@ -383,7 +382,7 @@ export default function ViewRoundResults() {
                       className="self-end w-fit bg-white hover:bg-pink-200 border border-pink-400 text-pink-400 py-2
                    mt-2 px-3 rounded flex items-center gap-2"
                     >
-                      Finalize results
+                      Finalize Results
                     </button>
                     <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
                       The contract will be locked once results are finalized.

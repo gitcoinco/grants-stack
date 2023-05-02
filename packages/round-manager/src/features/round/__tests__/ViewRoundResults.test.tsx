@@ -15,9 +15,11 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
-import { ProgressStatus, Round } from "../../api/types";
+import { ProgressStatus } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-import { useRoundMatchingFunds } from "../../../hooks";
+import { useRound, useRoundMatchingFunds } from "../../../hooks";
+import { Round as IndexerRound } from "allo-indexer-client";
+import { Round } from "../../api/types";
 
 jest.mock("../../common/Auth");
 jest.mock("../../api/round");
@@ -54,16 +56,13 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("../../../hooks", () => ({
   ...jest.requireActual("../../../hooks"),
+  useRound: jest.fn(),
   useRoundMatchingFunds: jest.fn(),
 }));
 
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
   ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
   useFetchMatchingDistributionFromContract: jest.fn(),
-}));
-
-jest.mock("../../../context/round/FinalizeRoundContext", () => ({
-  ...jest.requireActual("../../../context/round/FinalizeRoundContext"),
 }));
 
 jest.mock("../../common/Auth", () => ({
@@ -86,7 +85,7 @@ jest.mock("../../../constants", () => ({
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
-describe.skip("View Round Results before distribution data is finalized to contract", () => {
+describe("View Round Results before distribution data is finalized to contract", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
@@ -120,11 +119,25 @@ describe.skip("View Round Results before distribution data is finalized to contr
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
 
+      (useRound as jest.Mock).mockReturnValue({
+        id: mockRoundData.id,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundEndTime,
+        roundStartTime,
+        amountUSD: 10,
+        matchAmountUSD: 10,
+        votes: 1,
+        matchAmount: "10",
+        uniqueContributors: 1,
+      } as IndexerRound);
+
       const approvedProjects = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
         makeApprovedProjectData(),
       ];
+
       mockRoundData = makeRoundData({
         applicationsStartTime,
         applicationsEndTime,
@@ -132,6 +145,7 @@ describe.skip("View Round Results before distribution data is finalized to contr
         roundEndTime,
         approvedProjects,
       });
+
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
@@ -172,6 +186,23 @@ describe.skip("View Round Results before distribution data is finalized to contr
 
       const roundEndTime = faker.date.past();
       mockRoundData = makeRoundData({ roundEndTime });
+
+      const roundStartTime = faker.date.past(1, roundEndTime);
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+
+      (useRound as jest.Mock).mockReturnValue({
+        id: mockRoundData.id,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundEndTime,
+        roundStartTime,
+        amountUSD: 10,
+        matchAmountUSD: 10,
+        votes: 1,
+        matchAmount: "10",
+        uniqueContributors: 1,
+      } as IndexerRound);
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithFinalizeRoundContext(
@@ -194,6 +225,7 @@ describe.skip("View Round Results before distribution data is finalized to contr
     });
     it("displays the finalize button", async () => {
       const roundResultsTab = screen.getByTestId("round-results");
+
       fireEvent.click(roundResultsTab);
       expect(
         screen.getByRole("button", {
@@ -204,7 +236,7 @@ describe.skip("View Round Results before distribution data is finalized to contr
   });
 });
 
-describe.skip("View Round Results after distribution data is finalized to contract", () => {
+describe("View Round Results after distribution data is finalized to contract", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
@@ -239,6 +271,19 @@ describe.skip("View Round Results after distribution data is finalized to contra
     const roundStartTime = faker.date.past(1, roundEndTime);
     const applicationsEndTime = faker.date.past(1, roundStartTime);
     const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+
+    (useRound as jest.Mock).mockReturnValue({
+      id: mockRoundData.id,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundEndTime,
+      roundStartTime,
+      amountUSD: 10,
+      matchAmountUSD: 10,
+      votes: 1,
+      matchAmount: "10",
+      uniqueContributors: 1,
+    } as IndexerRound);
 
     const approvedProjects = [
       makeApprovedProjectData(),
