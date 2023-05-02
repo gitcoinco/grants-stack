@@ -23,7 +23,7 @@ import {
 } from "../../api/types";
 import { Match } from "allo-indexer-client";
 import { Spinner } from "../../common/Spinner";
-import { stringify } from "csv-stringify/browser/esm/sync";
+import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
 import { useNetwork, useSigner } from "wagmi";
 import InfoModal from "../../common/InfoModal";
@@ -52,15 +52,20 @@ const distributionOptions = [
 export default function ViewRoundResults() {
   const { chain } = useNetwork();
   const { id } = useParams();
-  const roundId = utils.getAddress(id?.toLowerCase() ?? "");
+  const roundId = utils.getAddress(id as string);
   const { data: matches, isLoading: isLoadingMatchingFunds } =
     useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
-  const { round: oldRoundFromGraph } = useRoundById(roundId);
+  const { round: oldRoundFromGraph, error } = useRoundById(
+    (id as string).toLowerCase()
+  );
   const matchAmountUSD = round?.matchAmountUSD;
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
   const { data: signer } = useSigner();
+  const isReadyForPayout = Boolean(
+    oldRoundFromGraph?.payoutStrategy.isReadyForPayout
+  );
 
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
@@ -91,7 +96,6 @@ export default function ViewRoundResults() {
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [payoutReady, setPayoutReady] = useState(true);
 
   const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
     useFinalizeRound();
@@ -125,19 +129,17 @@ export default function ViewRoundResults() {
       });
 
       if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
-        setTimeout(() => {
-          setProgressModalOpen(false);
-          setErrorModalOpen(true);
-        }, errorModalDelayMs);
-
-        console.error("setReadyForPayoutTx error", setReadyForPayoutTx.error);
+        throw error;
       } else {
         setTimeout(() => {
-          setPayoutReady(false);
           setProgressModalOpen(false);
         }, errorModalDelayMs);
       }
     } catch (error) {
+      setTimeout(() => {
+        setProgressModalOpen(false);
+        setErrorModalOpen(true);
+      }, errorModalDelayMs);
       console.error("Error finalizing results", error);
     }
   };
@@ -369,13 +371,31 @@ export default function ViewRoundResults() {
                   Recalculate results
                 </button>
                 <hr className="my-4" />
-                {!payoutReady && (
+                {!isReadyForPayout && (
                   <>
                     <button
                       onClick={() => {
                         setWarningModalOpen(true);
                       }}
                       className="self-end w-fit bg-white hover:bg-pink-200 border border-pink-400 text-pink-400 py-2
+                   mt-2 px-3 rounded flex items-center gap-2"
+                    >
+                      Finalize results
+                    </button>
+                    <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
+                      The contract will be locked once results are finalized.
+                      You will not be able to change the results after you
+                      finalize.
+                    </span>
+                  </>
+                )}
+                {isReadyForPayout && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setWarningModalOpen(true);
+                      }}
+                      className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
                    mt-2 px-3 rounded flex items-center gap-2"
                     >
                       Finalize results

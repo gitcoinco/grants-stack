@@ -117,11 +117,12 @@ export async function getRoundById(
 
     const DENOMINATOR = 100000;
 
-    const protocolFeePercentage = res.data.alloSettings ?
-      (res.data.alloSettings.protocolFeePercentage / DENOMINATOR) :
-      0;
+    const protocolFeePercentage = res.data.alloSettings
+      ? res.data.alloSettings.protocolFeePercentage / DENOMINATOR
+      : 0;
 
-    const roundFeePercentage = res.data.rounds[0].roundFeePercentage / DENOMINATOR;
+    const roundFeePercentage =
+      res.data.rounds[0].roundFeePercentage / DENOMINATOR;
 
     return {
       id: round.id,
@@ -130,9 +131,7 @@ export async function getRoundById(
       applicationsStartTime: new Date(
         Number(round.applicationsStartTime) * 1000
       ),
-      applicationsEndTime: new Date(
-        Number(round.applicationsEndTime) * 1000
-      ),
+      applicationsEndTime: new Date(Number(round.applicationsEndTime) * 1000),
       roundStartTime: new Date(Number(round.roundStartTime) * 1000),
       roundEndTime: new Date(Number(round.roundEndTime) * 1000),
       protocolFeePercentage: protocolFeePercentage,
