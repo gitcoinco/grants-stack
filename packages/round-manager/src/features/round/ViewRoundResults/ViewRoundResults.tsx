@@ -96,6 +96,7 @@ export default function ViewRoundResults() {
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [readyForPayoutTransaction, setReadyforPayoutTransaction] = useState();
 
   const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
     useFinalizeRound();
@@ -392,19 +393,12 @@ export default function ViewRoundResults() {
                 {isReadyForPayout && (
                   <>
                     <button
-                      onClick={() => {
-                        setWarningModalOpen(true);
-                      }}
+                      onClick={() => {}}
                       className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
                    mt-2 px-3 rounded flex items-center gap-2"
                     >
-                      Finalize results
+                      View on Etherscan
                     </button>
-                    <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
-                      The contract will be locked once results are finalized.
-                      You will not be able to change the results after you
-                      finalize.
-                    </span>
                   </>
                 )}
               </div>
