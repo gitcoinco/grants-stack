@@ -215,7 +215,7 @@ function AfterRoundStart(props: {
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
-          <hr className="mt-4 mb-8" />
+          <hr className="mt-4 mb-4" />
           <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
             <p className="text-2xl mb-4">
               All Projects ({projects ? projects.length : 0})

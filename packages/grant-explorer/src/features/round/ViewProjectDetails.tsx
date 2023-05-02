@@ -481,7 +481,8 @@ export function useRoundApprovedApplication(
     );
 
     return applications.find(
-      (app) => app.projectId === projectId && app.status === "APPROVED"
+      (app: { projectId: string; status: string }) =>
+        app.projectId === projectId && app.status === "APPROVED"
     );
   });
 }
