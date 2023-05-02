@@ -15,6 +15,7 @@ import { utils } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useSWR from "swr";
+import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
@@ -200,6 +201,9 @@ function AboutProject(props: { projectToRender: Project }) {
     projectToRender.recipient.slice(0, 6) +
     "..." +
     projectToRender.recipient.slice(-4);
+  const { data: ensName } = useEnsName({
+    address: projectToRender.recipient ?? "",
+  });
   const projectWebsite = projectToRender.projectMetadata.website;
   const projectTwitter = projectToRender.projectMetadata.projectTwitter;
   const userGithub = projectToRender.projectMetadata.userGithub;
@@ -260,7 +264,7 @@ function AboutProject(props: { projectToRender: Project }) {
         <span className="flex items-center mt-4 gap-1">
           <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
           <DetailSummary
-            text={`${projectRecipient}`}
+            text={`${ensName ? ensName : projectRecipient}`}
             testID="project-recipient"
             sm={true}
           />

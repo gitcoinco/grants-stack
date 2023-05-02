@@ -92,9 +92,9 @@ export default function PassportBanner(props: {
   }, [address, isConnected]);
 
   const ViewScoreButton = () => (
-    <>
+    <div className="flex flex-row items-center mt-2 md:mt-0">
       <button
-        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
+        className="md:ml-3 font-medium text-sm underline md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -105,13 +105,13 @@ export default function PassportBanner(props: {
       <div className="pl-1">
         <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
       </div>
-    </>
+    </div>
   );
 
   const UpdateScoreButton = () => (
-    <>
+    <div className="flex flex-row items-center mt-2 md:mt-0">
       <button
-        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
+        className="md:ml-3 font-medium text-sm underline md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -122,13 +122,13 @@ export default function PassportBanner(props: {
       <div className="pl-1">
         <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
       </div>
-    </>
+    </div>
   );
 
   const CreatePassportButton = () => (
-    <>
+    <div className="flex flex-row items-center mt-2 md:mt-0">
       <button
-        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
+        className="md:ml-3 font-medium text-sm underline md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -139,7 +139,7 @@ export default function PassportBanner(props: {
       <div className="pl-1">
         <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
       </div>
-    </>
+    </div>
   );
 
   const ConnectWalletButton = () => (
