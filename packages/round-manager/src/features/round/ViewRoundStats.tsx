@@ -92,6 +92,11 @@ export default function ViewRoundStats() {
             <tbody>
               {matches &&
                 matches.map((match: Match) => {
+                  const percentage =
+                    Number(
+                      (BigInt(1000000) * match.matched) / round.matchAmount
+                    ) / 10000;
+
                   return (
                     <tr key={match.applicationId}>
                       <td className="text-sm leading-5 text-gray-400 text-left">
@@ -101,9 +106,7 @@ export default function ViewRoundStats() {
                         {match.contributionsCount}
                       </td>
                       <td className="text-sm leading-5 text-gray-400 text-left">
-                        {matchAmountUSD &&
-                          Math.trunc((match.matched / matchAmountUSD) * 100)}
-                        %
+                        {percentage.toString()}%
                       </td>
                     </tr>
                   );
