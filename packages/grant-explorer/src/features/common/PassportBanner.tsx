@@ -239,7 +239,9 @@ export default function PassportBanner(props: {
       <div className={bannerConfig[passportState].color}>
         <div className="max-w-full py-3 px-3 sm:px-6 lg:px-8 z-0">
           <div className="flex flex-row justify-center items-center items-left">
-            <div className="flex mb-10 lg:mb-0 mr-2">{bannerConfig[passportState].icon}</div>
+            <div className="flex mb-10 lg:mb-0 mr-2">
+              {bannerConfig[passportState].icon}
+            </div>
             <div className="lg:flex">
               <span
                 data-testid={bannerConfig[passportState].testId}

@@ -1,35 +1,36 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { Link, useParams } from "react-router-dom";
-import { useRoundById } from "../../context/RoundContext";
-import Navbar from "../common/Navbar";
-import NotFoundPage from "../common/NotFoundPage";
-import { Spinner } from "../common/Spinner";
-import { Project, Requirement, Round } from "../api/types";
-import { payoutTokens } from "../api/utils";
-import {
-  BasicCard,
-  CardContent,
-  CardHeader,
-  CardsContainer,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "../common/styles";
-import { ProjectBanner } from "../common/ProjectBanner";
-import { useCart } from "../../context/CartContext";
-import { ReactComponent as Search } from "../../assets/search-grey.svg";
-import { useEffect, useState } from "react";
-import Footer from "../common/Footer";
-import RoundEndedBanner from "../common/RoundEndedBanner";
-import PassportBanner from "../common/PassportBanner";
-import { Button, Input } from "common/src/styles";
 import {
   formatUTCDateAsISOString,
   getUTCTime,
   renderToPlainText,
+  truncateDescription,
 } from "common";
-import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
+import { Button, Input } from "common/src/styles";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
+import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
+import { ReactComponent as Search } from "../../assets/search-grey.svg";
+import { useCart } from "../../context/CartContext";
+import { useRoundById } from "../../context/RoundContext";
+import { Project, Requirement, Round } from "../api/types";
+import { payoutTokens } from "../api/utils";
+import Footer from "../common/Footer";
+import Navbar from "../common/Navbar";
+import NotFoundPage from "../common/NotFoundPage";
+import PassportBanner from "../common/PassportBanner";
+import { ProjectBanner } from "../common/ProjectBanner";
+import RoundEndedBanner from "../common/RoundEndedBanner";
+import { Spinner } from "../common/Spinner";
+import {
+  BasicCard,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardsContainer,
+} from "../common/styles";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -310,12 +311,15 @@ function ProjectCard(props: {
             data-testid="project-description"
             className="h-[150px] overflow-hidden mb-1"
           >
-            {renderToPlainText(project.projectMetadata.description)}
+            {truncateDescription(
+              renderToPlainText(project.projectMetadata.description),
+              180
+            )}
           </CardDescription>
         </CardContent>
       </Link>
       <CardFooter className="bg-white border-t">
-        <CardContent className="text-xs mt-3">
+        <CardContent className="text-xs mt-2">
           {props.isBeforeRoundEndDate && (
             <CartButton
               project={project}

@@ -11,11 +11,7 @@ export const CardsContainer = tw.div`
 `;
 
 export const BasicCard = tw.div`
-  w-[330px]
-  md:w-[296px]
-  ml-0
-  mx-0
-  my-3
+  w-[343px]
   rounded
   bg-white
   shadow-md
@@ -57,7 +53,7 @@ export const CardFooter = tw.div`
   bottom-0
   inset-x-0
   bg-zinc-50
-  h-16
+  h-20
   w-full
 `;
 
