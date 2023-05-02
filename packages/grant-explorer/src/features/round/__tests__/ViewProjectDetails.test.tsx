@@ -2,6 +2,11 @@ import fetchMock from "jest-fetch-mock";
 
 fetchMock.enableMocks();
 
+import { faker } from "@faker-js/faker";
+import { fireEvent, screen } from "@testing-library/react";
+import { rest } from "msw";
+import { setupServer } from "msw/node";
+import { SWRConfig } from "swr";
 import {
   makeApprovedProjectData,
   makeRoundData,
@@ -10,12 +15,7 @@ import {
   mockSigner,
   renderWithContext,
 } from "../../../test-utils";
-import { fireEvent, screen } from "@testing-library/react";
 import ViewProjectDetails from "../ViewProjectDetails";
-import { faker } from "@faker-js/faker";
-import { SWRConfig } from "swr";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -41,6 +41,7 @@ jest.mock("wagmi", () => ({
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
   useNetwork: () => mockNetwork,
+  useEnsName: () => "mocked.eth",
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -101,7 +102,7 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     it("shows project recipient", async () => {
-      expect(await screen.getByTestId("project-recipient")).toBeInTheDocument();
+      expect(screen.getByTestId("project-recipient")).toBeInTheDocument();
     });
 
     it("shows project website", async () => {
