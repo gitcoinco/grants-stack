@@ -27,7 +27,38 @@ describe("<CartProvider>", () => {
     });
   });
 
-  describe("Cart", () => {
+  describe("Cart -> remove", () => {
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should update the cart when removing the project from the cart", () => {
+      render(
+        <CartProvider>
+          <TestingUseCartComponent />
+        </CartProvider>
+      );
+      fireEvent.click(screen.getByTestId("add-project-to-cart"));
+      expect(screen.getAllByTestId("cart-project")).toHaveLength(1);
+
+      fireEvent.click(screen.getByTestId("remove-project-from-cart"));
+      expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
+    });
+
+    it("does not error when trying to remove a project not in the cart", () => {
+      render(
+        <CartProvider>
+          <TestingUseCartComponent />
+        </CartProvider>
+      );
+
+      fireEvent.click(screen.getByTestId("remove-project-from-cart"));
+      expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
+    });
+  });
+
+  describe("Cart -> Add", () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -98,37 +129,19 @@ describe("<CartProvider>", () => {
       expect(saveCartToLocalStorage).toBeCalled();
     });
 
-    it("should update the cart when removing the project from the cart", () => {
-      render(
-        <CartProvider>
-          <TestingUseCartComponent />
-        </CartProvider>
-      );
-      fireEvent.click(screen.getByTestId("add-project-to-cart"));
-      expect(screen.getAllByTestId("cart-project")).toHaveLength(1);
-
-      fireEvent.click(screen.getByTestId("remove-project-from-cart"));
-      expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
-    });
-
-    it("does not error when trying to remove a project not in the cart", () => {
-      render(
-        <CartProvider>
-          <TestingUseCartComponent />
-        </CartProvider>
-      );
-
-      fireEvent.click(screen.getByTestId("remove-project-from-cart"));
-      expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
-    });
   });
 });
+
+
 
 const testProject: Project = makeApprovedProjectData();
 
 const TestingUseCartComponent = () => {
-  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
-    useCart();
+  const [
+    cart,
+    handleAddProjectsToCart,
+    handleRemoveProjectsFromCart
+  ] = useCart();
 
   return (
     <>

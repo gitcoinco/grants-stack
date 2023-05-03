@@ -74,6 +74,9 @@ export const useCart = (): UseCart => {
   const { cart, setCart } = context;
 
   const handleAddProjectsToCart = (projectsToAdd: Project[], roundId: string): void => {
+
+    const currentCart = loadCartFromLocalStorage(roundId) ?? [];
+
     // Add projects to the cart if they are not already present
     const newCart = projectsToAdd.reduce((acc, projectToAdd) => {
       const isProjectAlreadyInCart = acc.find(
@@ -81,21 +84,27 @@ export const useCart = (): UseCart => {
           project.projectRegistryId === projectToAdd.projectRegistryId
       );
       return isProjectAlreadyInCart ? acc : acc.concat(projectToAdd);
-    }, loadCartFromLocalStorage(roundId));
+    }, currentCart);
 
     setCart(newCart);
+    saveCartToLocalStorage(newCart, roundId)
   };
 
   const handleRemoveProjectsFromCart = (projectsToRemove: Project[], roundId: string): void => {
+
+    const currentCart = loadCartFromLocalStorage(roundId) ?? [];
+
     // Remove projects from the cart if they are present
-    const newCart = loadCartFromLocalStorage(roundId).filter(
+    const newCart = currentCart.filter(
       (project) =>
         !projectsToRemove.find(
           (projectToRemove) =>
             projectToRemove.projectRegistryId === project.projectRegistryId
         )
     );
+
     setCart(newCart);
+    saveCartToLocalStorage(newCart, roundId)
   };
 
   return [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart];
