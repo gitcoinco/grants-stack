@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { Client } from "allo-indexer-client";
 import { useWallet } from "./features/common/Auth";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export function useDebugMode(): boolean {
@@ -45,4 +45,30 @@ export function useRoundApplications(roundId: string) {
   return useSWR([roundId, "/applications"], ([roundId]) => {
     return client.getRoundApplications(roundId);
   });
+}
+
+export function useFileUpload() {
+  const [uploadedData, setUploadedData] = useState<any[]>([]);
+  const [uploadedFilename, setUploadedFilename] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setError(null);
+
+    acceptedFiles.forEach((file: File) => {
+      setUploadedFilename(file.name);
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result as string);
+          setUploadedData(data);
+        } catch (error) {
+          setError("Error parsing JSON file: " + error);
+        }
+      };
+      reader.readAsText(file);
+    });
+  }, []);
+
+  return { uploadedData, uploadedFilename, onDrop, error };
 }
