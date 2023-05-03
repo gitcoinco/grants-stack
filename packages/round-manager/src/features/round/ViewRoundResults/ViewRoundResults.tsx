@@ -39,6 +39,8 @@ export default function ViewRoundResults() {
   const { data: matches } = useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
   const [distributionOption, setDistributionOption] = useState("keep");
+  const { data: round } = useRound(roundId);
+  const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file: File) => {
@@ -65,11 +67,6 @@ export default function ViewRoundResults() {
   const onFinalizeResults = () => {
     // Logic for finalizing results goes here
   };
-
-  const { data: round } = useRound(roundId);
-
-  const currentTime = new Date();
-  const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
 
   if (isBeforeRoundEndDate && !debugModeEnabled) {
     return <NoInformationContent />;
