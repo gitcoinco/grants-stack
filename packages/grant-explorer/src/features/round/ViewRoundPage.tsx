@@ -285,7 +285,7 @@ function ProjectCard(props: {
   );
 
   return (
-    <BasicCard className="relative" data-testid="project-card">
+    <BasicCard className="relative md:w-[296px]" data-testid="project-card">
       <Link
         to={`${roundRoutePath}/${project.grantApplicationId}`}
         data-testid="project-detail-link"
