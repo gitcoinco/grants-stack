@@ -2,20 +2,23 @@ import fetchMock from "jest-fetch-mock";
 
 fetchMock.enableMocks();
 
+import { faker } from "@faker-js/faker";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { rest } from "msw";
+import { setupServer } from "msw/node";
+import { act } from "react-dom/test-utils";
+import { SWRConfig } from "swr";
 import {
   makeApprovedProjectData,
   makeRoundData,
   mockBalance,
   mockNetwork,
   mockSigner,
+  renderComponentsBasedOnDeviceSize,
   renderWithContext,
+  setWindowDimensions,
 } from "../../../test-utils";
-import { fireEvent, screen } from "@testing-library/react";
 import ViewProjectDetails from "../ViewProjectDetails";
-import { faker } from "@faker-js/faker";
-import { SWRConfig } from "swr";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -41,6 +44,7 @@ jest.mock("wagmi", () => ({
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
   useNetwork: () => mockNetwork,
+  useEnsName: () => "mocked.eth",
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -105,7 +109,7 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     it("shows project recipient", async () => {
-      expect(await screen.getByTestId("project-recipient")).toBeInTheDocument();
+      expect(screen.getByTestId("project-recipient")).toBeInTheDocument();
     });
 
     it("shows project website", async () => {
@@ -144,7 +148,7 @@ describe("<ViewProjectDetails/>", () => {
       { rounds: [roundWithProjects], isLoading: false }
     );
     /* Initially shows - when loading */
-    expect(screen.getByText("$-")).toBeInTheDocument();
+    expect(screen.getAllByText("$-")[0]).toBeInTheDocument();
   });
 
   it("shows project description", async () => {
@@ -302,13 +306,47 @@ describe("voting cart", () => {
     approvedProjects: [expectedProject],
   });
 
-  it("shows an add-to-cart button", () => {
+  it("shows an add-to-cart button", async () => {
     renderWithContext(<ViewProjectDetails />, {
       rounds: [roundWithProjects],
       isLoading: false,
     });
 
-    expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
+    // mock screen size
+    setWindowDimensions(320, 480);
+
+    expect(renderComponentsBasedOnDeviceSize()).toBe("mobile");
+
+    // click add to cart
+    const addToCart = screen.getAllByTestId("add-to-cart");
+    fireEvent.click(addToCart[0]);
+
+    await act(async () => {
+      await waitFor(
+        () => {
+          expect(
+            screen.queryAllByTestId("remove-from-cart")[0]
+          ).toBeInTheDocument();
+          expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+    });
+
+    const removeFromCart = screen.getAllByTestId("remove-from-cart");
+    fireEvent.click(removeFromCart[0]);
+
+    await act(async () => {
+      await waitFor(
+        () => {
+          expect(screen.queryAllByTestId("add-to-cart")[0]).toBeInTheDocument();
+          expect(
+            screen.queryByTestId("remove-from-cart")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+    });
   });
 
   it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked", () => {
@@ -316,8 +354,8 @@ describe("voting cart", () => {
       rounds: [roundWithProjects],
       isLoading: false,
     });
-    const addToCart = screen.getByTestId("add-to-cart");
-    fireEvent.click(addToCart);
+    const addToCart = screen.getAllByTestId("add-to-cart");
+    fireEvent.click(addToCart[0]);
     setTimeout(() => {
       // wait three seconds after the user clicks add before proceeding
       expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
@@ -325,24 +363,46 @@ describe("voting cart", () => {
     }, 3000);
   });
 
-  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
+  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", async () => {
     renderWithContext(<ViewProjectDetails />, {
       rounds: [roundWithProjects],
       isLoading: false,
     });
 
+    // mock screen size
+    setWindowDimensions(1200, 800);
+
+    expect(renderComponentsBasedOnDeviceSize()).toBe("desktop");
+
     // click add to cart
-    const addToCart = screen.getByTestId("add-to-cart");
-    fireEvent.click(addToCart);
-    setTimeout(() => {
-      // wait three seconds after the user clicks add before proceeding
-      expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
-      expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
-      // click remove from cart
-      const removeFromCart = screen.getByTestId("remove-from-cart");
-      fireEvent.click(removeFromCart);
-      expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
-      expect(screen.queryByTestId("remove-from-cart")).not.toBeInTheDocument();
-    }, 3000);
+    const addToCart = screen.getAllByTestId("add-to-cart");
+    fireEvent.click(addToCart[1]);
+
+    await act(async () => {
+      await waitFor(
+        () => {
+          expect(
+            screen.queryAllByTestId("remove-from-cart")[1]
+          ).toBeInTheDocument();
+          expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+    });
+
+    const removeFromCart = screen.getAllByTestId("remove-from-cart");
+    fireEvent.click(removeFromCart[1]);
+
+    await act(async () => {
+      await waitFor(
+        () => {
+          expect(screen.queryAllByTestId("add-to-cart")[1]).toBeInTheDocument();
+          expect(
+            screen.queryByTestId("remove-from-cart")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+    });
   });
 });
