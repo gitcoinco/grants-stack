@@ -306,7 +306,7 @@ describe("voting cart", () => {
     approvedProjects: [expectedProject],
   });
 
-  it("shows an add-to-cart button", () => {
+  it("shows an add-to-cart button", async () => {
     renderWithContext(<ViewProjectDetails />, {
       rounds: [roundWithProjects],
       isLoading: false,
@@ -354,8 +354,8 @@ describe("voting cart", () => {
       rounds: [roundWithProjects],
       isLoading: false,
     });
-    const addToCart = screen.getByTestId("add-to-cart");
-    fireEvent.click(addToCart);
+    const addToCart = screen.getAllByTestId("add-to-cart");
+    fireEvent.click(addToCart[0]);
     setTimeout(() => {
       // wait three seconds after the user clicks add before proceeding
       expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
@@ -363,7 +363,7 @@ describe("voting cart", () => {
     }, 3000);
   });
 
-  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
+  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", async () => {
     renderWithContext(<ViewProjectDetails />, {
       rounds: [roundWithProjects],
       isLoading: false,
