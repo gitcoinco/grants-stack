@@ -403,7 +403,6 @@ importers:
       react-router-dom: '6'
       react-scripts: 5.0.1
       react-tooltip: ^4.5.0
-      redstone-api: ^0.4.11
       redux: latest
       redux-thunk: latest
       stream-browserify: ^3.0.0
@@ -472,7 +471,6 @@ importers:
       react-router-dom: 6.7.0_biqbaboplfbrettd7655fr4n2y
       react-scripts: 5.0.1_nxhyxwde3eoe75duibejr53p3m
       react-tooltip: 4.5.1_biqbaboplfbrettd7655fr4n2y
-      redstone-api: 0.4.11
       redux: 4.2.1
       redux-thunk: 2.4.2_redux@4.2.1
       stream-browserify: 3.0.0
@@ -7077,6 +7075,7 @@ packages:
       typescript: 4.9.4
     transitivePeerDependencies:
       - supports-color
+    dev: false
 
   /@typescript-eslint/parser/5.48.2_eslint@8.32.0:
     resolution: {integrity: sha512-38zMsKsG2sIuM5Oi/olurGwYJXzmtdsHhn5mI/pQogP+BjYVkK5iRazCQ8RGS0V+YLk282uWElN70zAAUmaYHw==}
@@ -11516,7 +11515,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
+      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
       debug: 3.2.7
       eslint: 8.32.0
       eslint-import-resolver-node: 0.3.7
@@ -11586,7 +11585,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
+      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
