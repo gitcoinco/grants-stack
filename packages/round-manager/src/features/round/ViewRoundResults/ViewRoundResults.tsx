@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -78,9 +78,29 @@ export default function ViewRoundResults() {
     "keep" | "scale"
   >("keep");
 
-  const [warningModalOpen, setWarningModalOpen] = useState(false);
-  const [progressModalOpen, setProgressModalOpen] = useState(false);
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  useEffect(() => {
+    // Logic for scaling the dist pool
+  }, [distributionOption]);
+
+  const [totalMatched, setTotalMatched] = useState<number>(0);
+  const [roundSaturation, setRoundSaturation] = useState<number>(0);
+
+  useEffect(() => {
+    // check if round is saturated
+    if (round && matches) {
+      const matchTotal = matches.reduce(
+        (acc, match) => acc + match.matched,
+        0
+      );
+      setTotalMatched(matchTotal);
+      const saturation = Number((matchTotal / round.matchAmountUSD).toFixed(2));
+      setRoundSaturation(saturation);
+    }
+  }, [round, matches]);
+
+  const [warningModalOpen, setWarningModalOpen] = useState<boolean>(false);
+  const [progressModalOpen, setProgressModalOpen] = useState<boolean>(false);
+  const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
     useState<TransactionResponse>();
 
@@ -287,15 +307,20 @@ export default function ViewRoundResults() {
                   Round Saturation
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`Current round saturation: ${-99}%`}
+                  {`Current round saturation: ${roundSaturation * 100}%`}
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`$${0} out of the $${0} matching fund will be distributed to grantees.`}
+                  {`$${totalMatched.toFixed(4)} out of the $${round?.matchAmountUSD.toFixed(4)} matching fund will be distributed to grantees.`}
                 </span>
               </div>
               <RadioGroup
                 value={distributionOption}
                 onChange={setDistributionOption}
+                disabled={roundSaturation >= 1}
+                className={() =>
+                  classNames(
+                    roundSaturation >= 1 && "opacity-50 cursor-not-allowed"
+                  )}
               >
                 <RadioGroup.Label className="sr-only">
                   Distribution options
