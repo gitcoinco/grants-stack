@@ -187,7 +187,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
   });
 
   it("displays the round name", async () => {
-    renderWithContext(<ViewRound />, { rounds: [stubRound] });
+    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
 
     await screen.findByText(stubRound.roundMetadata!.name);
   });
@@ -212,7 +212,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
       token,
     });
 
-    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewRound />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const ProjectTitle = await screen.getByTestId("project-title");
     const ProjectOwner = await screen.getByTestId("project-owner");
@@ -242,7 +245,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
       token,
     });
 
-    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewRound />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const actualBanner = screen.getAllByRole("img", {
       name: /project banner/i,
@@ -267,7 +273,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
       token,
     });
 
-    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewRound />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const projectCards = screen.getAllByTestId("project-card");
     expect(projectCards.length).toEqual(approvedProjects.length);
@@ -295,7 +304,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
       token,
     });
 
-    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewRound />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const projectLinks = screen.getAllByTestId(
       "project-detail-link"
@@ -340,7 +352,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
       token,
     });
 
-    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewRound />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const searchInput = screen.getByPlaceholderText("Search");
     const projectCards = screen.getAllByTestId("project-card");
@@ -370,13 +385,19 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
 
     it("shows an add-to-cart button", () => {
-      renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+      renderWithContext(<ViewRound />, {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      });
 
       expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
     });
 
     it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked", () => {
-      renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+      renderWithContext(<ViewRound />, {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      });
       const addToCart = screen.getByTestId("add-to-cart");
       fireEvent.click(addToCart);
       setTimeout(() => {
@@ -387,7 +408,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
 
     it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
-      renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+      renderWithContext(<ViewRound />, {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      });
 
       // click add to cart
       const addToCart = screen.getByTestId("add-to-cart");

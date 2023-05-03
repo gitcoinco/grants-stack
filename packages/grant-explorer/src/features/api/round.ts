@@ -11,7 +11,7 @@ import {
 /**
  * Shape of subgraph response
  */
-interface GetRoundByIdResult {
+export interface GetRoundByIdResult {
   data: {
     rounds: RoundResult[];
   };

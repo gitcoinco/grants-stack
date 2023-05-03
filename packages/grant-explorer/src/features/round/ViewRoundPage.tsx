@@ -37,17 +37,16 @@ export default function ViewRound() {
 
   const { chainId, roundId } = useParams();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round, isLoading } = useRoundById(chainId!, roundId!);
+  const { round, isLoading } = useRoundById(
+    chainId as string,
+    roundId as string
+  );
 
   const currentTime = new Date();
 
   const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
-
   const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
-
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
-
   const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
 
   return isLoading ? (

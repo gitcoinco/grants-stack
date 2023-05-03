@@ -79,7 +79,10 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(await screen.findByText(expectedProjectName)).toBeInTheDocument();
   });
@@ -97,6 +100,7 @@ describe("<ViewProjectDetails/>", () => {
       jest.clearAllMocks();
       renderWithContext(<ViewProjectDetails />, {
         rounds: [roundWithProjects],
+        isLoading: false,
       });
     });
 
@@ -137,7 +141,7 @@ describe("<ViewProjectDetails/>", () => {
       <SWRConfig value={{ dedupingInterval: 0 }}>
         <ViewProjectDetails />
       </SWRConfig>,
-      { rounds: [roundWithProjects] }
+      { rounds: [roundWithProjects], isLoading: false }
     );
     /* Initially shows - when loading */
     expect(screen.getByText("$-")).toBeInTheDocument();
@@ -152,7 +156,10 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(
       await screen.findByText(expectedProjectDescription)
@@ -170,7 +177,10 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const bannerImg = screen.getByRole("img", {
       name: /project banner/i,
@@ -190,7 +200,10 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const logoImg = screen.getByRole("img", {
       name: /project logo/i,
@@ -229,7 +242,10 @@ describe("<ViewProjectDetails/>", () => {
       approvedProjects: [expectedProject],
     });
 
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(screen.getByText("Additional Information")).toBeInTheDocument();
 
@@ -263,7 +279,10 @@ describe("<ViewProjectDetails/>", () => {
       approvedProjects: [expectedProject],
     });
 
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(
       screen.queryByText("Additional Information")
@@ -284,13 +303,19 @@ describe("voting cart", () => {
   });
 
   it("shows an add-to-cart button", () => {
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
   });
 
   it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked", () => {
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
     const addToCart = screen.getByTestId("add-to-cart");
     fireEvent.click(addToCart);
     setTimeout(() => {
@@ -301,7 +326,10 @@ describe("voting cart", () => {
   });
 
   it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     // click add to cart
     const addToCart = screen.getByTestId("add-to-cart");
