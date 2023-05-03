@@ -177,7 +177,9 @@ export default function PassportBanner(props: {
       ),
       color: "bg-violet-100",
       testId: "wallet-not-connected",
-      body: `In order to for your donations to be matched, you must first verify your Gitcoin Passport.`,
+      body: `Want to make sure your donations get matched? Verify your Gitcoin Passport by ${getUTCDateTime(
+        props.round.roundEndTime
+      )}`,
       button: <ConnectWalletButton />,
     },
     [PassportState.MATCH_ELIGIBLE]: {
