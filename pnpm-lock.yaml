@@ -542,7 +542,7 @@ importers:
       '@types/react-gtm-module': ^2.0.1
       '@types/testing-library__jest-dom': ^5.14.5
       add: ^2.0.6
-      allo-indexer-client: github:gitcoinco/allo-indexer-client#8fef5b397f881f2f453d096f872720267f8bf3b4
+      allo-indexer-client: github:gitcoinco/allo-indexer-client#c1c5f40e3db45062dcefee9512e203b24d619339
       autoprefixer: ^10.4.7
       buffer: ^6.0.3
       common: workspace:*
@@ -616,7 +616,7 @@ importers:
       '@testing-library/user-event': 14.4.3
       '@types/jest': 27.5.2
       '@types/node': 17.0.45
-      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/8fef5b397f881f2f453d096f872720267f8bf3b4
+      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/c1c5f40e3db45062dcefee9512e203b24d619339
       buffer: 6.0.3
       common: link:../common
       crypto-browserify: 3.12.0
@@ -6625,7 +6625,7 @@ packages:
   /@types/express-serve-static-core/4.17.32:
     resolution: {integrity: sha512-aI5h/VOkxOF2Z1saPy0Zsxs5avets/iaiAJYznQFm5By/pamU31xWKL//epiF4OfUA2qTOc9PV6tCUjhO8wlZA==}
     dependencies:
-      '@types/node': 17.0.45
+      '@types/node': 18.15.5
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
 
@@ -6858,7 +6858,7 @@ packages:
     resolution: {integrity: sha512-z5xyF6uh8CbjAu9760KDKsH2FcDxZ2tFCsA4HIMWE6IkiYMXfVoa+4f9KX+FN0ZLsaMw1WNG2ETLA6N+/YA+cg==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 17.0.45
+      '@types/node': 18.15.5
 
   /@types/set-cookie-parser/2.4.2:
     resolution: {integrity: sha512-fBZgytwhYAUkj/jC/FAV4RQ5EerRup1YQsXQCh8rZfiHkc4UahC192oH0smGwsXol3cL3A5oETuAHeQHmhXM4w==}
@@ -15149,7 +15149,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.45
+      '@types/node': 18.15.5
       jest-mock: 27.5.1
       jest-util: 27.5.1
       jsdom: 16.7.0
@@ -19557,7 +19557,6 @@ packages:
   /punycode/2.1.1:
     resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}
     engines: {node: '>=6'}
-    dev: false
 
   /punycode/2.3.0:
     resolution: {integrity: sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==}
@@ -22236,7 +22235,7 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       psl: 1.9.0
-      punycode: 2.3.0
+      punycode: 2.1.1
       universalify: 0.2.0
       url-parse: 1.5.10
 
@@ -23959,8 +23958,8 @@ packages:
       '@types/node': 18.15.5
     dev: false
 
-  github.com/gitcoinco/allo-indexer-client/8fef5b397f881f2f453d096f872720267f8bf3b4:
-    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/8fef5b397f881f2f453d096f872720267f8bf3b4}
+  github.com/gitcoinco/allo-indexer-client/c1c5f40e3db45062dcefee9512e203b24d619339:
+    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/c1c5f40e3db45062dcefee9512e203b24d619339}
     name: allo-indexer-client
     version: 0.1.0
     hasBin: true

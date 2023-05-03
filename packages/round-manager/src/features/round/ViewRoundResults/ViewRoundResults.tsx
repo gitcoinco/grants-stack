@@ -2,18 +2,12 @@ import React, { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
-import {
-  ExclamationCircleIcon as NoInformationIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/outline";
+import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
 import { DownloadIcon } from "@heroicons/react/solid";
-import {
-  DropzoneInputProps,
-  DropzoneRootProps,
-  useDropzone,
-} from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
+import { Button } from "common/src/styles";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
 import {
   MatchingStatsData,
@@ -54,8 +48,18 @@ export default function ViewRoundResults() {
   const { id } = useParams();
   const navigate = useNavigate();
   const roundId = utils.getAddress(id as string);
-  const { data: matches, isLoading: isLoadingMatchingFunds } =
-    useRoundMatchingFunds(roundId);
+  const [overridesFileDraft, setOverridesFileDraft] = useState<
+    undefined | File
+  >(undefined);
+  const [overridesFile, setOverridesFile] = useState<undefined | File>(
+    undefined
+  );
+
+  const {
+    data: matches,
+    error: matchingFundsError,
+    isLoading: isLoadingMatchingFunds,
+  } = useRoundMatchingFunds(roundId, overridesFile);
   const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
@@ -71,28 +75,6 @@ export default function ViewRoundResults() {
     "keep" | "scale"
   >("keep");
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file: File) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result) {
-          /**/
-        }
-      };
-      reader.readAsText(file);
-    });
-  }, []);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    noClick: true,
-    noKeyboard: true,
-  });
-
-  const onRecalculateResults = () => {
-    // Logic for recalculating results goes here
-  };
 
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
@@ -338,6 +320,11 @@ export default function ViewRoundResults() {
                 <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
                   Revise Results
                 </span>
+                {matchingFundsError && (
+                  <div className="p-4 bg-red-50 text-red-400 my-4">
+                    {matchingFundsError?.message}
+                  </div>
+                )}
                 <div className="text-sm leading-5 text-left mb-1">
                   Upload a CSV with the finalized Vote Coefficient overrides{" "}
                   <b>only</b>. For instructions, click{" "}
@@ -359,21 +346,24 @@ export default function ViewRoundResults() {
                   it will not be saved to the contract until you finalize
                   results.
                 </div>
-                <UploadJSON
-                  rootProps={getRootProps()}
-                  inputProps={getInputProps()}
-                  matchingData={[]}
-                  setCustomMatchingData={() => {
-                    /**/
+                <FileUploader
+                  file={overridesFileDraft}
+                  onSelectFile={(file: File) => {
+                    setOverridesFileDraft(file);
                   }}
                 />
-                <button
-                  onClick={onRecalculateResults}
-                  className="w-fit bg-violet-100 hover:bg-violet-200 text-violet-400 font-medium py-2 px-4 mt-4 rounded flex items-center gap-2"
+                <Button
+                  type="button"
+                  className="mt-4 mr-auto"
+                  $variant="secondary"
+                  onClick={() => {
+                    setOverridesFile(overridesFileDraft);
+                  }}
+                  disabled={overridesFileDraft === undefined}
                 >
-                  <RefreshIcon className="h-5 w-5" />
-                  Recalculate results
-                </button>
+                  <RefreshIcon className="h-5 w-5 inline mr-2" />
+                  <span>Recalculate results</span>
+                </Button>
                 <hr className="my-4" />
                 {!isReadyForPayout && (
                   <>
@@ -443,74 +433,38 @@ export default function ViewRoundResults() {
   );
 }
 
-export function UploadJSON(props: {
-  rootProps: DropzoneRootProps;
-  inputProps: DropzoneInputProps;
-  matchingData: MatchingStatsData[];
-  setCustomMatchingData: (customMatchingStats: MatchingStatsData[]) => void;
+export function FileUploader(props: {
+  file: File | undefined;
+  onSelectFile: (file: File) => void;
 }) {
-  const [projectIDMismatch] = useState(false);
-  const [matchingPerecentMismatch] = useState(false);
+  const { onSelectFile } = props;
 
-  // TODO: implement this when file upload is ready
-  // const projectIDs = props.matchingData?.map((data) => data.projectId);
-  //
-  // const matchingDataSchema = yup.array().of(
-  //   yup.object().shape({
-  //     projectName: yup.string().required(),
-  //     projectId: yup.string().required(),
-  //     uniqueContributorsCount: yup.number().required(),
-  //     matchPoolPercentage: yup.number().required(),
-  //   })
-  // );
+  const onDrop = useCallback(
+    (files: File[]) => {
+      if (files[0]) {
+        onSelectFile(files[0]);
+        return;
+      }
+    },
+    [onSelectFile]
+  );
 
-  /* TODO(1474): adapt this to parse and validate csv instead of JSON + type safety */
-  // const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
-  //   event.preventDefault();
-  //   const fileList = event.dataTransfer.files;
-  //   fileList[0].arrayBuffer().then((buffer) => {
-  //     const decoder = new TextDecoder("utf-8");
-  //     const jsonString = decoder.decode(buffer);
-  //     const jsonData = JSON.parse(jsonString);
-  //     try {
-  //       matchingDataSchema.validateSync(jsonData);
-  //       const jsonProjectIDs = jsonData.map((data: any) => data.projectId);
-  //       const jsonMatchPoolPercentages = jsonData.map(
-  //         (data: any) => data.matchPoolPercentage
-  //       );
-  //       const idMismatch = !projectIDs?.every((projectID) =>
-  //         jsonProjectIDs.includes(projectID)
-  //       );
-  //       const matchPoolPercentageMismatch = !(
-  //         Number(
-  //           jsonMatchPoolPercentages
-  //             ?.reduce(
-  //               (accumulator: number, currentValue: number) =>
-  //                 accumulator + currentValue,
-  //               0
-  //             )
-  //             .toFixed(4)
-  //         ) === 1
-  //       );
-  //       setProjectIDMismatch(idMismatch);
-  //       setMatchingPerecentMismatch(matchPoolPercentageMismatch);
-  //       !idMismatch &&
-  //         !matchPoolPercentageMismatch &&
-  //         props.setCustomMatchingData(jsonData);
-  //     } catch (error) {
-  //       props.setCustomMatchingData([]);
-  //     }
-  //   });
-  // };
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: { "text/csv": [] },
+    noClick: true,
+    noKeyboard: true,
+  });
 
   return (
-    <div className="pt-2 flex flex-col items-start" {...props.rootProps}>
+    <div className="pt-2 flex flex-col items-start" {...getRootProps()}>
       <div
         className="flex items-center justify-center w-2/4 mt-4"
         data-testid="dropzone"
       >
         <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
           <div className="h-full w-full text-center flex flex-col justify-center items-center  ">
+            <span className="font-bold block mb-4">{props.file?.name}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -525,7 +479,7 @@ export function UploadJSON(props: {
                 d="M24 32.5V19.75m0 0l6 6m-6-6l-6 6M13.5 39.5a9 9 0 01-2.82-17.55 10.5 10.5 0 0120.465-4.66 6 6 0 017.517 7.696A7.504 7.504 0 0136 39.5H13.5z"
               />
             </svg>
-            <p className="pointer-none text-gray-500 ">
+            <p className="pointer-none text-gray-500">
               <span>
                 <a className="text-purple-600 hover:underline">Upload a file</a>{" "}
                 or drag and drop
@@ -538,32 +492,10 @@ export function UploadJSON(props: {
             type="file"
             className="hidden"
             id="file-input"
-            {...props.inputProps}
+            {...getInputProps()}
           />
         </label>
       </div>
-      {projectIDMismatch && (
-        <p
-          data-testid="project-id-mismatch"
-          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm w-2/4"
-        >
-          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-          <span>
-            The project IDs in the JSON file do not match actual project IDs.
-          </span>
-        </p>
-      )}
-      {matchingPerecentMismatch && (
-        <p
-          data-testid="matching-perecent-mismatch"
-          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm w-2/4"
-        >
-          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-          <span>
-            Matching percent decimal in the JSON file does not add up to 1.
-          </span>
-        </p>
-      )}
     </div>
   );
 }
