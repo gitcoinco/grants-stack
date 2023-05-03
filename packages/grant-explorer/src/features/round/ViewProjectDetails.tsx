@@ -117,7 +117,7 @@ export default function ViewProjectDetails() {
           {!isLoading && projectToRender && (
             <>
               <Header projectMetadata={projectToRender.projectMetadata} />
-              <div className="flex flex-col w-full sm:invisible sm:-mt-[230px]">
+              <div className="flex flex-col w-full md:invisible sm:-mt-[230px]">
                 <Sidebar
                   isAlreadyInCart={isAlreadyInCart}
                   isBeforeRoundEndDate={isBeforeRoundEndDate}
@@ -148,7 +148,7 @@ export default function ViewProjectDetails() {
                     />
                   </div>
                 </div>
-                <div className="lg:visible invisible">
+                <div className="md:visible invisible">
                   <Sidebar
                     isAlreadyInCart={isAlreadyInCart}
                     isBeforeRoundEndDate={isBeforeRoundEndDate}
