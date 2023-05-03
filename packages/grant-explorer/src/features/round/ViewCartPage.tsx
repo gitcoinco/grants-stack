@@ -23,7 +23,7 @@ import {
   PassportResponse,
   PassportState,
 } from "../api/passport";
-import { renderToPlainText } from "common";
+import { renderToPlainText, useTokenPrice } from "common";
 import {
   CartDonation,
   PayoutToken,
@@ -31,7 +31,7 @@ import {
   Project,
   recipient,
 } from "../api/types";
-import { getPayoutTokenOptions, useTokenPrice } from "../api/utils";
+import { getPayoutTokenOptions } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import Footer from "../common/Footer";
@@ -110,7 +110,7 @@ export default function ViewCart() {
   const navigate = useNavigate();
 
   const { data, error, loading } = useTokenPrice(
-    selectedPayoutToken.coingeckoId
+    selectedPayoutToken.redstoneTokenId
   );
 
   const payoutTokenPrice = !loading && !error ? Number(data) : undefined;
@@ -512,7 +512,7 @@ export default function ViewCart() {
             </div>
           </div>
 
-          <div className="mt-1 flex space-x-4 h-16 pl-4 pt-3">
+          <div className="mt-6 flex space-x-4 h-16 pl-4 pt-3">
             <div className="md:hidden w-12"></div>
             <Input
               aria-label={
@@ -551,7 +551,7 @@ export default function ViewCart() {
                       (donation: CartDonation) =>
                         donation.projectRegistryId ===
                         props.project.projectRegistryId
-                    )?.amount
+                    )?.amount || 0
                   ) * Number(payoutTokenPrice.toFixed(2))}
                 </span>
               </div>

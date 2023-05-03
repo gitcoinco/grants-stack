@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types";
-import { useMemo, useState } from "react";
+import { RedstoneTokenIds } from "common";
 
 export enum ChainId {
   MAINNET = "1",
@@ -47,12 +47,6 @@ export const TokenNamesAndLogos: Record<string, string> = {
   OP: "./logos/optimism-logo.svg",
 };
 
-export const TokenAndCoinGeckoIds: Record<string, string> = {
-  FTM: "fantom",
-  BUSD: "binance-usd",
-  DAI: "dai",
-  ETH: "ethereum",
-};
 
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -61,7 +55,7 @@ const MAINNET_TOKENS: PayoutToken[] = [
     address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
   {
     name: "ETH",
@@ -69,7 +63,7 @@ const MAINNET_TOKENS: PayoutToken[] = [
     address: ethers.constants.AddressZero,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
 
@@ -80,7 +74,7 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
   {
     name: "ETH",
@@ -88,7 +82,7 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     address: ethers.constants.AddressZero,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
 
@@ -99,7 +93,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
     decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
-    coingeckoId: TokenAndCoinGeckoIds["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
   },
   {
     name: "FTM",
@@ -107,7 +101,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     address: ethers.constants.AddressZero,
     decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
-    coingeckoId: TokenAndCoinGeckoIds["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
   },
   {
     name: "BUSD",
@@ -115,7 +109,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
     decimal: 18,
     logo: TokenNamesAndLogos["BUSD"],
-    coingeckoId: TokenAndCoinGeckoIds["BUSD"],
+    redstoneTokenId: RedstoneTokenIds["BUSD"],
   },
   {
     name: "DAI",
@@ -123,7 +117,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
 ];
 
@@ -134,7 +128,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
     decimal: 18,
     logo: TokenNamesAndLogos["BUSD"],
-    coingeckoId: TokenAndCoinGeckoIds["BUSD"],
+    redstoneTokenId: RedstoneTokenIds["BUSD"],
   },
   {
     name: "DAI",
@@ -142,7 +136,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
   {
     name: "ETH",
@@ -150,7 +144,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     address: ethers.constants.AddressZero,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
 
@@ -161,7 +155,7 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
 ];
 
@@ -423,52 +417,5 @@ export const listenForOutsideClicks = ({
         setOpen(false);
       });
     });
-  };
-};
-
-export const useTokenPrice = (tokenId: string | undefined) => {
-  const [tokenPrice, setTokenPrice] = useState<number>();
-  const [error, setError] = useState<Response | undefined>();
-  const [loading, setLoading] = useState(false);
-
-  useMemo(() => {
-    setLoading(true);
-    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`;
-    fetch(tokenPriceEndpoint, {
-      headers: {
-        method: "GET",
-        Accept: "application/json",
-      },
-      mode: "no-cors",
-    })
-      .then((resp) => {
-        if (resp.ok) {
-          return resp.json();
-        } else {
-          setError(resp);
-          setLoading(false);
-        }
-      })
-      .then((data) => {
-        if (data) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const { usd } = data[tokenId!];
-          setTokenPrice(usd);
-        } else {
-          setError(data.message);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log("error fetching token price", { err });
-        setError(err);
-        setLoading(false);
-      });
-  }, [tokenId]);
-
-  return {
-    data: tokenPrice,
-    error,
-    loading,
   };
 };

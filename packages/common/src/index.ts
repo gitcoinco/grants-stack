@@ -1,6 +1,8 @@
 import { useParams } from "react-router";
 import useSWR from "swr";
 import { isAddress } from "viem";
+import { useMemo, useState } from "react";
+import redstone from 'redstone-api';
 
 export enum ChainId {
   MAINNET = 1,
@@ -354,4 +356,43 @@ export const getUTCDate = (date: Date): string => {
 
 export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
+};
+
+export const RedstoneTokenIds: Record<string, string> = {
+  FTM: "FTM",
+  BUSD: "BUSD",
+  DAI: "DAI",
+  ETH: "ETH",
+};
+
+export const useTokenPrice = (tokenId: string|undefined) => {
+  const [tokenPrice, setTokenPrice] = useState<number>();
+  const [error, setError] = useState<Response | undefined>();
+  const [loading, setLoading] = useState(false);
+
+  if (!tokenId) return {
+    data: 0,
+    error,
+    loading,
+  };
+
+  useMemo(async () => {
+    setLoading(true);
+
+    redstone.getPrice(tokenId).then(token => {
+      setTokenPrice(token.value);
+      setLoading(false);
+    }).catch((err) => {
+      console.log("error fetching token price", { err });
+      setError(err);
+      setLoading(false);
+    });
+
+  }, [tokenId]);
+
+  return {
+    data: tokenPrice,
+    error,
+    loading,
+  };
 };
