@@ -356,15 +356,17 @@ export const fetchProjectApplicationInRound = async (
     projectChainId,
     projectNumber,
     projectRegistryAddress
-  );
+  ).toLowerCase();
+
+  const Id = roundID.toLowerCase();
 
   try {
     const response: any = await graphqlFetch(
-      `query projectApplicationInRound($projectApplicationID: String, $roundID: String) {
+      `query projectApplicationInRound($projectApplicationID: String, $Id: String) {
           roundApplications(
             where: {
               project: $projectApplicationID,
-              round: $roundID
+              round: $Id
             }
           ) {
             status
@@ -374,7 +376,7 @@ export const fetchProjectApplicationInRound = async (
       projectChainId,
       {
         projectApplicationID,
-        roundID,
+        Id,
       },
       reactEnv
     );

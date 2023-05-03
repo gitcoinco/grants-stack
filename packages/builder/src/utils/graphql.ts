@@ -1,5 +1,3 @@
-import { env } from "process";
-
 /**
  * Chain Id to network id
  */
@@ -19,21 +17,21 @@ export enum ChainId {
  */
 const getGraphQLEndpoint = (
   chainId: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   reactEnv?: any // ProcessEnv
 ): string | undefined => {
-  const environment = reactEnv || env;
   switch (chainId) {
     case ChainId.MAINNET_CHAIN_ID:
       // eslint-disable-next-line max-len
-      return environment.REACT_APP_SUBGRAPH_URL_MAINNET;
+      return `${process.env.REACT_APP_SUBGRAPH_URL_MAINNET}`;
     case ChainId.GOERLI_CHAIN_ID:
-      return environment.REACT_APP_SUBGRAPH_URL_GOERLI;
+      return `${process.env.REACT_APP_SUBGRAPH_URL_GOERLI}`;
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
-      return environment.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET;
+      return `${process.env.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET}`;
     case ChainId.FANTOM_MAINNET_CHAIN_ID:
-      return environment.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET;
+      return `${process.env.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET}`;
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
-      return environment.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET;
+      return `${process.env.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET}`;
     default:
       throw new Error(
         `Chain id (${chainId}) is invalid or subgraph is not deployed on requested chain`
