@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -15,8 +15,9 @@ import {
 import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
-import { MatchingStatsData } from "../../api/types";
 import { Match } from "allo-indexer-client";
+import { Spinner } from "../../common/Spinner";
+import { useFileUpload } from "../../../hooks";
 
 // CHECK: should this be in common?
 function horizontalTabStyles(selected: boolean) {
@@ -36,40 +37,49 @@ const distributionOptions = [
 export default function ViewRoundResults() {
   const { id } = useParams();
   const roundId = utils.getAddress(id?.toLowerCase() ?? "");
-  const { data: matches } = useRoundMatchingFunds(roundId);
+  // eslint-disable-next-line prefer-const
+  let { data: matches, isLoading } = useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
   const { data: round } = useRound(roundId);
+  const { uploadedData, uploadedFilename, onDrop, error } = useFileUpload();
 
   const [distributionOption, setDistributionOption] = useState("keep");
-
-  useEffect(() => {
-    // logic for updating distribution goes here
-  }, [distributionOption])
-
   const [currentRoundSaturation, setCurrentRoundSaturation] = useState(0);
   const [isSaturated, setIsSaturated] = useState(true);
+  const [revisedMatches, setRevisedMatches] = useState<any>(null);
 
-  
-  useEffect(() =>{
-    const saturation = matches?.reduce(
-      (acc: number, match: Match) => acc + match?.matched,
+  useEffect(() => {
+    if (distributionOption === "scale" && !isSaturated && matches) {
+      const scaleFactor = 1 / currentRoundSaturation;
+      const newMatches = matches.map((match) => {
+        return {
+          ...match,
+          revisedMatched: match.matched * scaleFactor,
+        };
+      });
+      setRevisedMatches(newMatches);
+    } else {
+      setRevisedMatches(null);
+    }
+  }, [currentRoundSaturation, distributionOption, isSaturated, matches]); 
+
+  useEffect(() => {
+    if (matches && round) {
+      console.log(round)
+      console.log(matches)
+      const matchTotal = matches.reduce(
+        (acc: number, match: Match) => acc + match?.matched,
         0
-      ); 
-      round && saturation && setCurrentRoundSaturation(saturation / Number(utils.formatEther(round.matchAmount)));
-      setIsSaturated(currentRoundSaturation > 1)
-  }, [matches, round])
+      );
+      const saturation = matchTotal / Number(utils.formatEther(round.matchAmount));
+      setCurrentRoundSaturation(saturation);
+      setIsSaturated(saturation >= 1);
+    }
+  }, [round, matches, isLoading]); 
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file: File) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result) {
-          /** */
-        }
-      };
-      reader.readAsText(file);
-    });
-  }, []);
+  useEffect(() => {
+    onRecalculateResults();
+  }, [distributionOption])
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -79,6 +89,13 @@ export default function ViewRoundResults() {
 
   const onRecalculateResults = () => {
     // Logic for recalculating results goes here
+    // DEBUG: timeout for testing
+    isLoading = true;
+    setTimeout(() => {
+      console.log("Recalculating results...");
+      isLoading = false;
+    }
+    , 1000);
   };
 
   const onFinalizeResults = () => {
@@ -141,52 +158,56 @@ export default function ViewRoundResults() {
                   Matching Distribution
                 </span>
               </div>
-              <div className="overflow-y-auto max-h-52">
-                <table
-                  className="table-auto border-separate border-spacing-y-4 h-full w-full"
-                  data-testid="match-stats-table"
-                >
-                  <thead>
-                    <tr>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        Projects
-                      </th>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        No. of Contributions
-                      </th>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        Est. Match Amount
-                      </th>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        Est. Matching %
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {matches &&
-                     matches.map((match: Match) => {
-                       return (
-                         <tr key={match.applicationId}>
-                           <td className="text-sm leading-5 text-gray-400 text-left">
-                             {match.projectName}
-                           </td>
-                           <td className="text-sm leading-5 text-gray-400 text-left">
-                             {match.contributionsCount}
-                           </td>
-                           <td className="text-sm leading-5 text-gray-400 text-left">
-                             {match.matched.toFixed(4)}
-                           </td>
-                           <td className="text-sm leading-5 text-gray-400 text-left">
-                             {
-                               matchAmountUSD &&
-                               ((match.matched / matchAmountUSD) * 100).toFixed(4)
-                             }
-                           </td>
-                         </tr>
-                       );
-                    })}
-                  </tbody>
-                </table>
+
+              <div className="overflow-y-auto max-h-54">
+              {
+                isLoading ? <Spinner text=""/> :
+                  <table
+                    className="table-auto border-separate border-spacing-y-4 h-full w-full"
+                    data-testid="match-stats-table"
+                  >
+                    <thead>
+                      <tr>
+                        <th className="text-sm leading-5 text-gray-400 text-left">
+                          Projects
+                        </th>
+                        <th className="text-sm leading-5 text-gray-400 text-left">
+                          No. of Contributions
+                        </th>
+                        <th className="text-sm leading-5 text-gray-400 text-left">
+                          Est. Match Amount
+                        </th>
+                        <th className="text-sm leading-5 text-gray-400 text-left">
+                          Est. Matching %
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {matches &&
+                      matches.map((match: Match) => {
+                        return (
+                          <tr key={match.applicationId}>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {match.projectName}
+                            </td>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {match.contributionsCount}
+                            </td>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {match.matched?.toFixed(4)}
+                            </td>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {
+                                matchAmountUSD &&
+                                ((match.matched / matchAmountUSD) * 100).toFixed(4)
+                              }
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                }
               </div>
               <div className="flex flex-col mt-4 w-min">
                 <button className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2">
@@ -276,10 +297,9 @@ export default function ViewRoundResults() {
                 <UploadJSON
                   rootProps={getRootProps()}
                   inputProps={getInputProps()}
-                  matchingData={[]}
-                  setCustomMatchingData={() => {
-                    /** */
-                  }}
+                  matchingData={revisedMatches}
+                  setCustomMatchingData={setRevisedMatches}
+                  filename={uploadedFilename}
                 />
                 <button
                   onClick={onRecalculateResults}
@@ -312,68 +332,23 @@ export default function ViewRoundResults() {
   );
 }
 
-export function UploadJSON(props: {
+interface UploadJSONProps {
   rootProps: DropzoneRootProps;
   inputProps: DropzoneInputProps;
-  matchingData: MatchingStatsData[];
-  setCustomMatchingData: (customMatchingStats: MatchingStatsData[]) => void;
-}) {
-  const [projectIDMismatch] = useState(false);
-  const [matchingPerecentMismatch] = useState(false);
+  matchingData: any;
+  setCustomMatchingData: (data: any) => void;
+  filename: string | null; // Add this line
+}
 
-  // TODO: implement this when file upload is ready
-  // const projectIDs = props.matchingData?.map((data) => data.projectId);
-  //
-  // const matchingDataSchema = yup.array().of(
-  //   yup.object().shape({
-  //     projectName: yup.string().required(),
-  //     projectId: yup.string().required(),
-  //     uniqueContributorsCount: yup.number().required(),
-  //     matchPoolPercentage: yup.number().required(),
-  //   })
-  // );
-
-  /* TODO(1474): adapt this to parse and validate csv instead of JSON + type safety */
-  // const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
-  //   event.preventDefault();
-  //   const fileList = event.dataTransfer.files;
-  //   fileList[0].arrayBuffer().then((buffer) => {
-  //     const decoder = new TextDecoder("utf-8");
-  //     const jsonString = decoder.decode(buffer);
-  //     const jsonData = JSON.parse(jsonString);
-  //     try {
-  //       matchingDataSchema.validateSync(jsonData);
-  //       const jsonProjectIDs = jsonData.map((data: any) => data.projectId);
-  //       const jsonMatchPoolPercentages = jsonData.map(
-  //         (data: any) => data.matchPoolPercentage
-  //       );
-  //       const idMismatch = !projectIDs?.every((projectID) =>
-  //         jsonProjectIDs.includes(projectID)
-  //       );
-  //       const matchPoolPercentageMismatch = !(
-  //         Number(
-  //           jsonMatchPoolPercentages
-  //             ?.reduce(
-  //               (accumulator: number, currentValue: number) =>
-  //                 accumulator + currentValue,
-  //               0
-  //             )
-  //             .toFixed(4)
-  //         ) === 1
-  //       );
-  //       setProjectIDMismatch(idMismatch);
-  //       setMatchingPerecentMismatch(matchPoolPercentageMismatch);
-  //       !idMismatch &&
-  //         !matchPoolPercentageMismatch &&
-  //         props.setCustomMatchingData(jsonData);
-  //     } catch (error) {
-  //       props.setCustomMatchingData([]);
-  //     }
-  //   });
-  // };
-
+export function UploadJSON({
+  rootProps,
+  inputProps,
+  filename, 
+}: UploadJSONProps) {
+  const [projectIDMismatch, setProjectIDMismatch] = useState(false);
+  const [matchingPercentMismatch, setMatchingPercentMismatch] = useState(false);
   return (
-    <div className="pt-2 flex flex-col items-start" {...props.rootProps}>
+    <div className="pt-2 flex flex-col items-start" {...rootProps}>
       <div
         className="flex items-center justify-center w-2/4 mt-4"
         data-testid="dropzone"
@@ -407,8 +382,9 @@ export function UploadJSON(props: {
             type="file"
             className="hidden"
             id="file-input"
-            {...props.inputProps}
+            {...inputProps}
           />
+          {filename && <div className="text-sm text-gray-400 mb-1">Uploaded file: {filename}</div>}
         </label>
       </div>
       {projectIDMismatch && (
@@ -422,7 +398,7 @@ export function UploadJSON(props: {
           </span>
         </p>
       )}
-      {matchingPerecentMismatch && (
+      {matchingPercentMismatch && (
         <p
           data-testid="matching-perecent-mismatch"
           className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm w-2/4"
@@ -460,3 +436,4 @@ function NoInformationMessage() {
     </>
   );
 }
+
