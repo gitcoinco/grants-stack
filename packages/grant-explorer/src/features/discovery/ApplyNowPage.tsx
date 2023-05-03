@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ReactComponent as LandingBannerLogo } from "../../assets/landing-banner.svg";
+import { lazy, Suspense, useEffect, useState } from "react";
+const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 import { RoundOverview, getRoundsInApplicationPhase } from "../api/rounds";
 import Breadcrumb from "../common/Breadcrumb";
 import Navbar from "../common/Navbar";
@@ -120,7 +120,18 @@ const ApplyNowPage = () => {
   return (
     <>
       <Navbar roundUrlPath={"/"} showWalletInteraction={false} />
-      <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
+      <Suspense
+        fallback={
+          <div
+            style={{
+              width: "100%",
+              height: "560px",
+            }}
+          />
+        }
+      >
+        <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
+      </Suspense>
       <div className="container px-4 md:px-0 md:mx-auto mt-4">
         <div className="my-4">
           <Breadcrumb items={breadcrumbItems} />

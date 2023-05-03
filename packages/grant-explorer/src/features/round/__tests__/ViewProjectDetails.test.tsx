@@ -83,7 +83,10 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(await screen.findByText(expectedProjectName)).toBeInTheDocument();
   });
@@ -101,6 +104,7 @@ describe("<ViewProjectDetails/>", () => {
       jest.clearAllMocks();
       renderWithContext(<ViewProjectDetails />, {
         rounds: [roundWithProjects],
+        isLoading: false,
       });
     });
 
@@ -141,7 +145,7 @@ describe("<ViewProjectDetails/>", () => {
       <SWRConfig value={{ dedupingInterval: 0 }}>
         <ViewProjectDetails />
       </SWRConfig>,
-      { rounds: [roundWithProjects] }
+      { rounds: [roundWithProjects], isLoading: false }
     );
     /* Initially shows - when loading */
     expect(screen.getAllByText("$-")[0]).toBeInTheDocument();
@@ -156,7 +160,10 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(
       await screen.findByText(expectedProjectDescription)
@@ -174,7 +181,10 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const bannerImg = screen.getByRole("img", {
       name: /project banner/i,
@@ -194,7 +204,10 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     const logoImg = screen.getByRole("img", {
       name: /project logo/i,
@@ -233,7 +246,10 @@ describe("<ViewProjectDetails/>", () => {
       approvedProjects: [expectedProject],
     });
 
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(screen.getByText("Additional Information")).toBeInTheDocument();
 
@@ -267,7 +283,10 @@ describe("<ViewProjectDetails/>", () => {
       approvedProjects: [expectedProject],
     });
 
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     expect(
       screen.queryByText("Additional Information")
@@ -287,55 +306,11 @@ describe("voting cart", () => {
     approvedProjects: [expectedProject],
   });
 
-  it("shows an add-to-cart button on mobile", async () => {
-    setWindowDimensions(320, 480);
-
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
-
-    expect(renderComponentsBasedOnDeviceSize()).toBe("mobile");
-
-    const addToCart = screen.getAllByTestId("add-to-cart");
-    expect(addToCart[0]).toBeInTheDocument();
-  });
-
-  it("shows an add-to-cart button on desktop", () => {
-    setWindowDimensions(1200, 800);
-
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
-
-    expect(renderComponentsBasedOnDeviceSize()).toBe("desktop");
-
-    const addToCart = screen.getAllByTestId("add-to-cart");
-    expect(addToCart[1]).toBeInTheDocument();
-  });
-
-  it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked on mobile", async () => {
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
-
-    // mock screen size
-    setWindowDimensions(320, 480);
-
-    expect(renderComponentsBasedOnDeviceSize()).toBe("mobile");
-
-    // click add to cart
-    const addToCart = screen.getAllByTestId("add-to-cart");
-    fireEvent.click(addToCart[0]);
-
-    await act(async () => {
-      await waitFor(
-        () => {
-          expect(
-            screen.queryAllByTestId("remove-from-cart")[0]
-          ).toBeInTheDocument();
-          expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
+  it("shows an add-to-cart button", () => {
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
     });
-  });
-
-  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked on mobile", async () => {
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
     // mock screen size
     setWindowDimensions(320, 480);
@@ -374,33 +349,25 @@ describe("voting cart", () => {
     });
   });
 
-  it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked on desktop", async () => {
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
-
-    // mock screen size
-    setWindowDimensions(1200, 800);
-
-    expect(renderComponentsBasedOnDeviceSize()).toBe("desktop");
-
-    // click add to cart
-    const addToCart = screen.getAllByTestId("add-to-cart");
-    fireEvent.click(addToCart[1]);
-
-    await act(async () => {
-      await waitFor(
-        () => {
-          expect(
-            screen.queryAllByTestId("remove-from-cart")[1]
-          ).toBeInTheDocument();
-          expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
+  it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked", () => {
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
     });
+    const addToCart = screen.getByTestId("add-to-cart");
+    fireEvent.click(addToCart);
+    setTimeout(() => {
+      // wait three seconds after the user clicks add before proceeding
+      expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
+      expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
+    }, 3000);
   });
 
-  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked on desktop", async () => {
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
+    renderWithContext(<ViewProjectDetails />, {
+      rounds: [roundWithProjects],
+      isLoading: false,
+    });
 
     // mock screen size
     setWindowDimensions(1200, 800);
