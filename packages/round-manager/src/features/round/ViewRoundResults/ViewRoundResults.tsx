@@ -54,13 +54,18 @@ export default function ViewRoundResults() {
   const [overridesFile, setOverridesFile] = useState<undefined | File>(
     undefined
   );
-
+  const [overrideSaturation, setOverrideSaturation] = useState<boolean>(false);
+  const overridesJSON = JSON.stringify({
+    overrideSaturation,
+    overridesFile,
+  });
+  const overridesBlob = new Blob([overridesJSON], { type: 'application/json' });
   const {
     data: matches,
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
-  } = useRoundMatchingFunds(roundId, overridesFile);
+  } = useRoundMatchingFunds(roundId, overridesBlob);
   const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
@@ -79,7 +84,7 @@ export default function ViewRoundResults() {
   >("keep");
 
   useEffect(() => {
-    // Logic for scaling the dist pool
+    setOverrideSaturation(distributionOption === "scale");
   }, [distributionOption]);
 
   const [totalMatched, setTotalMatched] = useState<number>(0);
