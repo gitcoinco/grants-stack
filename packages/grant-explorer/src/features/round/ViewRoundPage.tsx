@@ -1,5 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import {
+  SwitchNetworkModal,
   formatUTCDateAsISOString,
   getUTCTime,
   renderToPlainText,
@@ -7,7 +8,8 @@ import {
 } from "common";
 import { Button, Input } from "common/src/styles";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
@@ -36,7 +38,34 @@ export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
+  const [showChangeNetworkModal, setShowChangeNetworkModal] = useState(false);
   const { chainId, roundId } = useParams();
+  const { switchNetwork } = useSwitchNetwork();
+  const navigate = useNavigate();
+  const { chain } = useNetwork();
+  useEffect(() => {
+    if (chainId && Number(chainId) !== chain?.id) {
+      setShowChangeNetworkModal(true);
+    } else {
+      setShowChangeNetworkModal(false);
+    }
+  }, [chainId, chain]);
+
+  const onSwitchNetwork = () => {
+    switchNetwork?.(Number(chainId));
+  };
+
+  const renderNetworkChangeModal = () => {
+    return (
+      // eslint-disable-next-line
+      <SwitchNetworkModal
+        where="this round"
+        onSwitchNetwork={onSwitchNetwork}
+        action="edit this project"
+        navigate={navigate}
+      />
+    );
+  };
 
   const { round, isLoading } = useRoundById(
     chainId as string,
@@ -73,6 +102,7 @@ export default function ViewRound() {
               isAfterRoundEndDate={isAfterRoundEndDate}
             />
           )}
+          {showChangeNetworkModal && renderNetworkChangeModal()}
         </>
       ) : (
         <NotFoundPage />
