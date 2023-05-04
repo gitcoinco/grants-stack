@@ -503,7 +503,7 @@ export function useRoundApprovedApplication(
     );
 
     return applications.find(
-      (app) => app.id === projectId && app.status === "APPROVED"
+      (app) => app.projectId === projectId && app.status === "APPROVED"
     );
   });
 }
