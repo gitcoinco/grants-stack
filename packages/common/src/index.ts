@@ -2,7 +2,6 @@ import { useParams } from "react-router";
 import useSWR from "swr";
 import { isAddress } from "viem";
 import { useMemo, useState } from "react";
-import redstone from 'redstone-api';
 
 export enum ChainId {
   MAINNET = 1,
@@ -379,8 +378,22 @@ export const useTokenPrice = (tokenId: string|undefined) => {
   useMemo(async () => {
     setLoading(true);
 
-    redstone.getPrice(tokenId).then(token => {
-      setTokenPrice(token.value);
+    const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
+    fetch(tokenPriceEndpoint).then(resp => {
+      if (resp.ok) {
+        return resp.json();
+      } else {
+        setError(resp);
+        setLoading(false);
+      }
+    }).then(data => {
+
+      if (data) {
+        setTokenPrice(data[0].value);
+      } else {
+        setError(data);
+      }
+
       setLoading(false);
     }).catch((err) => {
       console.log("error fetching token price", { err });
