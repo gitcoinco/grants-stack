@@ -1,35 +1,35 @@
-import { FormStepper } from "../common/FormStepper";
-import { Fragment, useContext, useState } from "react";
-import { FormContext } from "../common/FormWizard";
-import {
-  Control,
-  FieldErrors,
-  SubmitHandler,
-  useController,
-  useForm,
-  UseFormRegisterReturn,
-  useWatch,
-} from "react-hook-form";
-import { Round } from "../api/types";
-import { Input } from "common/src/styles";
+import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import {
   CheckIcon,
   InformationCircleIcon,
   SelectorIcon,
 } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import { classNames } from "common";
-import { PayoutToken, getPayoutTokenOptions } from "../api/utils";
-import ReactTooltip from "react-tooltip";
-import { useWallet } from "../common/Auth";
+import { Input } from "common/src/styles";
 import _ from 'lodash';
+import { Fragment, useContext, useState } from "react";
+import {
+  Control,
+  FieldErrors,
+  SubmitHandler,
+  UseFormRegisterReturn,
+  useController,
+  useForm,
+  useWatch,
+} from "react-hook-form";
+import ReactTooltip from "react-tooltip";
+import * as yup from "yup";
+import { Round } from "../api/types";
+import { PayoutToken, getPayoutTokenOptions } from "../api/utils";
+import { useWallet } from "../common/Auth";
+import { FormStepper } from "../common/FormStepper";
+import { FormContext } from "../common/FormWizard";
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
 
-const ValidationSchema = yup.object().shape({
+export const FundingValidationSchema = yup.object().shape({
   roundMetadata: yup.object().shape({
     quadraticFundingConfig: yup.object({
       matchingFundsAvailable: yup
@@ -119,7 +119,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
         quadraticFundingConfig: initialQuadraticFundingConfig,
       },
     },
-    resolver: yupResolver(ValidationSchema),
+    resolver: yupResolver(FundingValidationSchema),
   });
 
   const FormStepper = props.stepper;
