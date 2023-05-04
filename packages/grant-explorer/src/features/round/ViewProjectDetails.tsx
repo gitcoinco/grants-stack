@@ -122,10 +122,12 @@ export default function ViewProjectDetails() {
                   isAlreadyInCart={isAlreadyInCart}
                   isBeforeRoundEndDate={isBeforeRoundEndDate}
                   removeFromCart={() => {
-                    handleRemoveProjectsFromCart([projectToRender]);
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    handleRemoveProjectsFromCart([projectToRender], roundId!);
                   }}
                   addToCart={() => {
-                    handleAddProjectsToCart([projectToRender]);
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    handleAddProjectsToCart([projectToRender], roundId!);
                   }}
                 />
               </div>
@@ -153,10 +155,12 @@ export default function ViewProjectDetails() {
                     isAlreadyInCart={isAlreadyInCart}
                     isBeforeRoundEndDate={isBeforeRoundEndDate}
                     removeFromCart={() => {
-                      handleRemoveProjectsFromCart([projectToRender]);
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      handleRemoveProjectsFromCart([projectToRender], roundId!);
                     }}
                     addToCart={() => {
-                      handleAddProjectsToCart([projectToRender]);
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      handleAddProjectsToCart([projectToRender], roundId!);
                     }}
                   />
                 </div>
@@ -499,8 +503,7 @@ export function useRoundApprovedApplication(
     );
 
     return applications.find(
-      (app: { projectId: string; status: string }) =>
-        app.projectId === projectId && app.status === "APPROVED"
+      (app) => app.id === projectId && app.status === "APPROVED"
     );
   });
 }
