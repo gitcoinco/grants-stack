@@ -1,17 +1,54 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
+import _ from "lodash";
 import { useState } from "react";
+import {
+  Control,
+  FieldErrors,
+  SubmitHandler,
+  UseFormRegisterReturn,
+  useForm,
+} from "react-hook-form";
 import { useNetwork } from "wagmi";
 import { Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
 import { horizontalTabStyles } from "../common/Utils";
+import {
+  RoundValidationSchema,
+  SupportTypeDropdown,
+  supportTypes,
+} from "./RoundDetailForm";
+
+const ValidationSchema = RoundValidationSchema;
 
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
   const [editMode, setEditMode] = useState(false);
   const [editedRound, setEditedRound] = useState<Round | undefined>(undefined);
+  const defaultRoundMetadata = {
+    ...((round as Round)?.roundMetadata ?? {}),
+  };
+  const submit: SubmitHandler<Round> = async (values: Round) => {
+    console.log("submit values", values);
+    const data = _.merge(round, values);
+    console.log("submit values merged", data);
+    setEditedRound(data);
+  };
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Round>({
+    defaultValues: {
+      ...round,
+      roundMetadata: defaultRoundMetadata,
+    },
+    resolver: yupResolver(ValidationSchema),
+  });
 
   if (!round) {
     return <></>;
@@ -26,21 +63,27 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
     hasRoundStarted,
     editMode,
     editedRound,
+    register,
+    errors,
+    control,
   });
 
   const onCancelEdit = () => {
-    console.log("cancel click", editMode);
     setEditMode(!editMode);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onEditClick = () => {
-    console.log("edit click", editMode);
     setEditMode(!editMode);
   };
 
-  const onUpdateRound = (type: string) => {
-    console.log("update round click", type);
+  const onUpdateRound = () => {
+    console.log("update round click");
+    try {
+      console.log("entering try block");
+      handleSubmit(submit);
+    } catch (e) {
+      console.log("error", e);
+    }
   };
 
   return (
@@ -58,22 +101,18 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
               >
                 Cancel
               </Button>
-              <Button type="button" onClick={() => onUpdateRound("")}>
+              <Button type="button" onClick={onUpdateRound}>
                 Update Round
               </Button>
             </>
           ) : (
-            <Button
-              type="button"
-              $variant="outline"
-              onClick={onEditClick}
-              disabled={hasRoundStarted}
-            >
+            <Button type="button" $variant="outline" onClick={onEditClick}>
               Edit Record
             </Button>
           )}
         </div>
       </div>
+      {/* todo: update the below copy when ready */}
       <p className="text-sm text-gray-600 mb-8">
         Changes can be made up until the round starts ({roundStartDateTime})
       </p>
@@ -105,27 +144,36 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
             </div>
           </Tab.List>
         </div>
-        <div className="">
+        <div>
           <Tab.Panels>
             <Tab.Panel>
               <DetailsPage
                 round={round}
                 editMode={editMode}
-                onUpdate={() => onUpdateRound("details")}
+                onUpdate={onUpdateRound}
+                errors={errors}
+                register={register("roundMetadata")}
+                control={control}
               />
             </Tab.Panel>
             <Tab.Panel>
               <RoundApplicationPeriod
                 round={round}
                 editMode={editMode}
-                onUpdate={() => onUpdateRound("period")}
+                onUpdate={onUpdateRound}
+                errors={errors}
+                register={register("roundMetadata")}
+                control={control}
               />
             </Tab.Panel>
             <Tab.Panel>
               <Funding
                 round={round}
                 editMode={editMode}
-                onUpdate={() => onUpdateRound("funding")}
+                onUpdate={onUpdateRound}
+                errors={errors}
+                register={register("roundMetadata")}
+                control={control}
               />
             </Tab.Panel>
           </Tab.Panels>
@@ -135,10 +183,14 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
   );
 }
 
+//
 function DetailsPage(props: {
   round: Round;
   editMode: boolean;
   onUpdate?: (round: Round) => void;
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  control: Control<Round>;
 }) {
   const { round } = props;
   const { chain } = useNetwork();
@@ -208,12 +260,21 @@ function DetailsPage(props: {
             Support Input
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
-            <input
-              type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-              defaultValue={round.roundMetadata.support?.type}
-              disabled={!props.editMode}
-            />
+            {!props.editMode ? (
+              <input
+                type="text"
+                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                defaultValue={round.roundMetadata.support?.type}
+                disabled={!props.editMode}
+              />
+            ) : (
+              <SupportTypeDropdown
+                register={props.register}
+                control={props.control}
+                supportTypes={supportTypes}
+                errors={props.errors}
+              />
+            )}
           </div>
         </div>
         <div>
@@ -266,6 +327,9 @@ function RoundApplicationPeriod(props: {
   round: Round;
   editMode: boolean;
   onUpdate?: (round: Round) => void;
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  control: Control<Round>;
 }) {
   const { round } = props;
   return (
@@ -360,6 +424,9 @@ function Funding(props: {
   round: Round;
   editMode: boolean;
   onUpdate?: (round: Round) => void;
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  control: Control<Round>;
 }) {
   const { round } = props;
 
@@ -394,10 +461,7 @@ function Funding(props: {
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={matchingFundPayoutToken.name}
-              disabled={!props.editMode}
-              onChange={() => {
-                console.log("Payout Token");
-              }}
+              disabled
             />
           </div>
         </div>
@@ -422,6 +486,7 @@ function Funding(props: {
               defaultValue={matchingFunds}
               disabled={!props.editMode}
               onChange={() => {
+                // todo: matching funds available cannot be changed to be less than the amount already allocated
                 console.log("Matching Funds Available");
               }}
             />
