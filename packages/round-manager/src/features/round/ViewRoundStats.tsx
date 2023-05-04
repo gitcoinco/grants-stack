@@ -65,7 +65,7 @@ export default function ViewRoundStats() {
         <div className="col-span-1 row-span-2 flex items-center">
           Matching Funds
         </div>
-        <div className="col-span-3 border  rounded p-4 row-span-2 overflow-y-auto max-h-52">
+        <div className="col-span-3 border rounded p-4 row-span-2 overflow-y-auto max-h-52">
           <table
             className={
               "table-auto border-separate border-spacing-y-4 h-full w-full"

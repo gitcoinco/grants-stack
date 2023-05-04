@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
-import { useParams } from "react-router-dom";
-import { utils } from "ethers";
+import { useNavigate, useParams } from "react-router-dom";
+import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
 import {
   ExclamationCircleIcon as NoInformationIcon,
@@ -15,10 +15,26 @@ import {
 import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
-import { MatchingStatsData } from "../../api/types";
+import {
+  MatchingStatsData,
+  ProgressStatus,
+  ProgressStep,
+} from "../../api/types";
 import { Match } from "allo-indexer-client";
+import { Spinner } from "../../common/Spinner";
+import { stringify } from "csv-stringify/sync";
+import { Input } from "csv-stringify/lib";
+import { useNetwork, useSigner } from "wagmi";
+import InfoModal from "../../common/InfoModal";
+import ProgressModal from "../../common/ProgressModal";
+import ErrorModal from "../../common/ErrorModal";
+import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
+import { setReadyForPayout } from "../../api/round";
+import { errorModalDelayMs } from "../../../constants";
+import { useRoundById } from "../../../context/round/RoundContext";
+import { TransactionResponse } from "@ethersproject/providers";
 
-// CHECK: should this be in common?
+// CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
   return classNames(
     "py-2 px-4 text-sm leading-5",
@@ -34,12 +50,26 @@ const distributionOptions = [
 ];
 
 export default function ViewRoundResults() {
+  const { chain } = useNetwork();
   const { id } = useParams();
-  const roundId = utils.getAddress(id?.toLowerCase() ?? "");
-  const { data: matches } = useRoundMatchingFunds(roundId);
+  const navigate = useNavigate();
+  const roundId = utils.getAddress(id as string);
+  const { data: matches, isLoading: isLoadingMatchingFunds } =
+    useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
-  const [distributionOption, setDistributionOption] = useState("keep");
-  const { data: round } = useRound(roundId);
+  const { data: round, isLoading: isLoadingRound } = useRound(roundId);
+  const { round: oldRoundFromGraph } = useRoundById(
+    (id as string).toLowerCase()
+  );
+  const { data: signer } = useSigner();
+  const isReadyForPayout = Boolean(
+    oldRoundFromGraph?.payoutStrategy.isReadyForPayout
+  );
+  const network = useNetwork();
+
+  const [distributionOption, setDistributionOption] = useState<
+    "keep" | "scale"
+  >("keep");
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -64,12 +94,85 @@ export default function ViewRoundResults() {
     // Logic for recalculating results goes here
   };
 
-  const onFinalizeResults = () => {
-    // Logic for finalizing results goes here
+  const [warningModalOpen, setWarningModalOpen] = useState(false);
+  const [progressModalOpen, setProgressModalOpen] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
+    useState<TransactionResponse>();
+
+  const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
+    useFinalizeRound();
+
+  const onFinalizeResults = async () => {
+    if (
+      !matches ||
+      !round ||
+      !signer ||
+      !oldRoundFromGraph?.payoutStrategy.id
+    ) {
+      return;
+    }
+
+    setWarningModalOpen(false);
+    setProgressModalOpen(true);
+    try {
+      const matchingJson: MatchingStatsData[] = matches.map((match) => ({
+        uniqueContributorsCount: 0,
+        projectPayoutAddress: match.payoutAddress,
+        projectId: match.projectId,
+        matchPoolPercentage: 0,
+        matchAmountInToken: BigNumber.from(match.matched),
+      }));
+
+      await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
+
+      const setReadyForPayoutTx = await setReadyForPayout({
+        roundId: round.id,
+        signerOrProvider: signer,
+      });
+
+      setReadyforPayoutTransaction(setReadyForPayoutTx);
+
+      setTimeout(() => {
+        setProgressModalOpen(false);
+      }, errorModalDelayMs);
+    } catch (error) {
+      setTimeout(() => {
+        setProgressModalOpen(false);
+        setErrorModalOpen(true);
+      }, errorModalDelayMs);
+      console.error("Error finalizing results", error);
+    }
   };
+
+  const progressSteps: ProgressStep[] = [
+    {
+      name: "saving",
+      description:
+        "The matching distribution is being saved onto the contract.",
+      status: IPFSCurrentStatus,
+    },
+    {
+      name: "Finalizing",
+      description: `The contract is being marked as eligible for payouts.`,
+      status: finalizeRoundToContractStatus,
+    },
+    {
+      name: "finishing up",
+      description: "We’re wrapping up.",
+      status:
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   if (isBeforeRoundEndDate && !debugModeEnabled) {
     return <NoInformationContent />;
+  }
+
+  if (isLoadingRound || isLoadingMatchingFunds) {
+    return <Spinner text="We're fetching the matching data." />;
   }
 
   return (
@@ -106,10 +209,14 @@ export default function ViewRoundResults() {
                 </span>
               </div>
               <div className="flex flex-col mt-4 w-min">
-                <button className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2">
+                <a
+                  role={"link"}
+                  href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${roundId}/vote_coefficients.csv`}
+                  className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
+                >
                   <DownloadIcon className="h-5 w-5" />
                   CSV
-                </button>
+                </a>
               </div>
               <div
                 className="flex flex-col mt-4"
@@ -146,7 +253,6 @@ export default function ViewRoundResults() {
                             (BigInt(1000000) * match.matched) /
                               round.matchAmount
                           ) / 10000;
-
                         return (
                           <tr key={match.applicationId}>
                             <td className="text-sm leading-5 text-gray-400 text-left">
@@ -165,10 +271,18 @@ export default function ViewRoundResults() {
                 </table>
               </div>
               <div className="flex flex-col mt-4 w-min">
-                <button className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2">
-                  <DownloadIcon className="h-5 w-5" />{" "}
-                  {/* Add the ArrowNarrowDown icon */}
-                  CSV
+                <button
+                  onClick={() => {
+                    /* Download matching distribution data as csv */
+                    if (!matches) {
+                      return;
+                    }
+
+                    downloadArrayAsCsv(matches, "matches.csv");
+                  }}
+                  className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
+                >
+                  <DownloadIcon className="h-5 w-5" /> CSV
                 </button>
               </div>
               <div className="flex flex-col mt-4 gap-1 mb-3">
@@ -261,17 +375,44 @@ export default function ViewRoundResults() {
                   Recalculate results
                 </button>
                 <hr className="my-4" />
-                <button
-                  onClick={onFinalizeResults}
-                  className="self-end w-fit bg-white hover:bg-pink-200 border border-pink-400 text-pink-400 py-2
+                {!isReadyForPayout && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setWarningModalOpen(true);
+                      }}
+                      className="self-end w-fit bg-white hover:bg-pink-200 border border-pink-400 text-pink-400 py-2
                    mt-2 px-3 rounded flex items-center gap-2"
-                >
-                  Finalize results
-                </button>
-                <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
-                  The contract will be locked once results are finalized. You
-                  will not be able to change the results after you finalize.
-                </span>
+                    >
+                      Finalize Results
+                    </button>
+                    <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
+                      The contract will be locked once results are finalized.
+                      You will not be able to change the results after you
+                      finalize.
+                    </span>
+                  </>
+                )}
+                {readyForPayoutTransaction && (
+                  <>
+                    <button
+                      onClick={() => {
+                        if (
+                          network.chain?.blockExplorers &&
+                          readyForPayoutTransaction
+                        ) {
+                          navigate(
+                            `${network.chain.blockExplorers.default.url}/tx/${readyForPayoutTransaction.hash}`
+                          );
+                        }
+                      }}
+                      className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
+                   mt-2 px-3 rounded flex items-center gap-2"
+                    >
+                      View on Etherscan
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </Tab.Panel>
@@ -280,6 +421,24 @@ export default function ViewRoundResults() {
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
+
+      <InfoModal
+        title={"Warning!"}
+        body={<WarningModalBody />}
+        isOpen={warningModalOpen}
+        setIsOpen={setWarningModalOpen}
+        continueButtonAction={onFinalizeResults}
+      />
+      <ProgressModal
+        isOpen={progressModalOpen}
+        subheading={"Please hold while we finalize the round results."}
+        steps={progressSteps}
+      />
+      <ErrorModal
+        isOpen={errorModalOpen}
+        setIsOpen={setErrorModalOpen}
+        tryAgainFn={onFinalizeResults}
+      />
     </div>
   );
 }
@@ -431,4 +590,38 @@ function NoInformationMessage() {
       </div>
     </>
   );
+}
+
+function WarningModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      Upon finalizing round results, they'll be <b>permanently locked</b> in the
+      smart contract, ensuring distribution integrity on the blockchain.{" "}
+      <b>Please verify results</b> before confirming, as you'll acknowledge
+      their accuracy and accept the permanent locking of the distribution.
+    </div>
+  );
+}
+
+export function downloadArrayAsCsv(data: Input, filename: string): void {
+  const csv = stringify(data, {
+    header: true,
+    quoted: true,
+  });
+
+  downloadFile(csv, filename);
+}
+
+export function downloadFile(data: BlobPart, filename: string): void {
+  const csvBlob = new Blob([data], {
+    type: "text/csv;charset=utf-8;",
+  });
+  const url = window.URL.createObjectURL(csvBlob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
