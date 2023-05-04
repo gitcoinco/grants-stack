@@ -61,8 +61,6 @@ export default function ViewRoundResults() {
   const { round: oldRoundFromGraph } = useRoundById(
     (id as string).toLowerCase()
   );
-  const matchAmountUSD = round?.matchAmountUSD;
-  const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
   const { data: signer } = useSigner();
   const isReadyForPayout = Boolean(
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
@@ -72,7 +70,6 @@ export default function ViewRoundResults() {
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
   >("keep");
-  const { data: round } = useRound(roundId);
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
