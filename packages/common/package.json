@@ -8,9 +8,6 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@chakra-ui/react": "^2.6.1",
-    "@emotion/react": "^11.10.8",
-    "@emotion/styled": "^11.10.8",
     "dompurify": "^2.4.3",
     "framer-motion": "^10.12.7",
     "markdown-it": "^13.0.1",

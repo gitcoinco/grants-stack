@@ -1,6 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import {
-  SwitchNetworkModal,
   formatUTCDateAsISOString,
   getUTCTime,
   renderToPlainText,
@@ -17,6 +16,7 @@ import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import { Project, Requirement, Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
+import ConfirmationModal from "../common/ConfirmationModal";
 import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
@@ -38,34 +38,7 @@ export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  const [showChangeNetworkModal, setShowChangeNetworkModal] = useState(false);
   const { chainId, roundId } = useParams();
-  const { switchNetwork } = useSwitchNetwork();
-  const navigate = useNavigate();
-  const { chain } = useNetwork();
-  useEffect(() => {
-    if (chainId && Number(chainId) !== chain?.id) {
-      setShowChangeNetworkModal(true);
-    } else {
-      setShowChangeNetworkModal(false);
-    }
-  }, [chainId, chain]);
-
-  const onSwitchNetwork = () => {
-    switchNetwork?.(Number(chainId));
-  };
-
-  const renderNetworkChangeModal = () => {
-    return (
-      // eslint-disable-next-line
-      <SwitchNetworkModal
-        where="this round"
-        onSwitchNetwork={onSwitchNetwork}
-        action="edit this project"
-        navigate={navigate}
-      />
-    );
-  };
 
   const { round, isLoading } = useRoundById(
     chainId as string,
@@ -102,7 +75,6 @@ export default function ViewRound() {
               isAfterRoundEndDate={isAfterRoundEndDate}
             />
           )}
-          {showChangeNetworkModal && renderNetworkChangeModal()}
         </>
       ) : (
         <NotFoundPage />
@@ -153,6 +125,47 @@ function AfterRoundStart(props: {
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
 
+  const [showChangeNetworkModal, setShowChangeNetworkModal] = useState(false);
+  const { switchNetwork } = useSwitchNetwork();
+  const navigate = useNavigate();
+  const { chain } = useNetwork();
+  useEffect(() => {
+    if (chainId && Number(chainId) !== chain?.id) {
+      setShowChangeNetworkModal(true);
+    } else {
+      setShowChangeNetworkModal(false);
+    }
+  }, [chainId, chain]);
+
+  const onSwitchNetwork = () => {
+    switchNetwork?.(Number(chainId));
+  };
+
+  function ConfirmationModalBody() {
+    return (
+      <>
+        <p className="text-sm text-grey-400">
+          To view and donate to projects on this round, you need to switch the
+          network on your wallet.
+        </p>
+      </>
+    );
+  }
+
+  const renderNetworkChangeModal = () => {
+    return (
+      // eslint-disable-next-line
+      <ConfirmationModal
+        isOpen={showChangeNetworkModal}
+        setIsOpen={setShowChangeNetworkModal}
+        confirmButtonAction={onSwitchNetwork}
+        title="Switch Network to Continue"
+        body={<ConfirmationModalBody />}
+        modalStyle="wide"
+      />
+    );
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
@@ -200,6 +213,7 @@ function AfterRoundStart(props: {
 
   return (
     <>
+      {showChangeNetworkModal && renderNetworkChangeModal()}
       <Navbar
         roundUrlPath={`/round/${chainId}/${roundId}`}
         isBeforeRoundEndDate={props.isBeforeRoundEndDate}

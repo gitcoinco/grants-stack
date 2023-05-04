@@ -3,9 +3,6 @@ import useSWR from "swr";
 import { isAddress } from "viem";
 import { useMemo, useState } from "react";
 
-export * from "./components/BaseModal";
-export * from "./components/Button";
-export * from "./components/SwitchNetworkModal";
 export * from "./icons";
 export * from "./markdown";
 
