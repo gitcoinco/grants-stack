@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
-import { DownloadIcon } from "@heroicons/react/solid";
+import { DownloadIcon, UploadIcon } from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
@@ -342,6 +342,7 @@ export default function ViewRoundResults() {
                   Upload a CSV with the finalized Vote Coefficient overrides{" "}
                   <b>only</b>. For instructions, click{" "}
                   <a
+                    className="underline"
                     href={
                       "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/program-managers/how-to-view-your-round-results"
                     }
@@ -350,9 +351,9 @@ export default function ViewRoundResults() {
                   </a>
                   .
                 </div>
-                <div className="text-sm leading-5 text-left flex items-start justify-start">
+                <div className="text-sm pt-2 leading-5 text-left flex items-start justify-start">
                   <ExclamationCircleIcon
-                    className={"w-8 h-8 text-gray-500 mr-2.5 -mt-1"}
+                    className={"w-6 h-6 text-gray-500 mr-2.5"}
                   />
                   If you navigate away from this page, your data will be lost.
                   You will be able to re-upload data as much as you’d like, but
@@ -376,8 +377,8 @@ export default function ViewRoundResults() {
                   }}
                   disabled={overridesFileDraft === undefined}
                 >
-                  <RefreshIcon className="h-5 w-5 inline mr-2" />
-                  <span>Recalculate results</span>
+                  <UploadIcon className="h-5 w-5 inline mr-2" />
+                  <span>Upload and revise</span>
                 </Button>
                 <hr className="my-4" />
                 {!isReadyForPayout && (
@@ -477,7 +478,7 @@ export function FileUploader(props: {
         className="flex items-center justify-center w-2/4 mt-4"
         data-testid="dropzone"
       >
-        <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
+        <label className="flex flex-col rounded-lg border border-dashed border-gray-100 w-full h-42 p-10 group text-center">
           <div className="h-full w-full text-center flex flex-col justify-center items-center  ">
             <span className="font-bold block mb-4">{props.file?.name}</span>
             <svg
@@ -494,9 +495,9 @@ export function FileUploader(props: {
                 d="M24 32.5V19.75m0 0l6 6m-6-6l-6 6M13.5 39.5a9 9 0 01-2.82-17.55 10.5 10.5 0 0120.465-4.66 6 6 0 017.517 7.696A7.504 7.504 0 0136 39.5H13.5z"
               />
             </svg>
-            <p className="pointer-none text-gray-500">
+            <p className="pointer-none text-grey-400">
               <span>
-                <a className="text-purple-600 hover:underline">Upload a file</a>{" "}
+                <a className="text-violet-400 hover:underline">Upload a file</a>{" "}
                 or drag and drop
               </span>
               <br />
