@@ -33,7 +33,8 @@ export default function ThankYou() {
   const [cart, , handleRemoveProjectsFromCart] = useCart();
 
   useEffect(() => {
-    handleRemoveProjectsFromCart(cart);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    handleRemoveProjectsFromCart(cart, roundId!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -38,8 +38,9 @@ export default function ViewRoundResults() {
   const roundId = utils.getAddress(id?.toLowerCase() ?? "");
   const { data: matches } = useRoundMatchingFunds(roundId);
   const debugModeEnabled = useDebugMode();
-
   const [distributionOption, setDistributionOption] = useState("keep");
+  const { data: round } = useRound(roundId);
+  const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file: File) => {
@@ -66,13 +67,6 @@ export default function ViewRoundResults() {
   const onFinalizeResults = () => {
     // Logic for finalizing results goes here
   };
-
-  const { data: round } = useRound(roundId);
-
-  const matchAmountUSD = round?.matchAmountUSD;
-
-  const currentTime = new Date();
-  const isBeforeRoundEndDate = round && currentTime < round.roundEndTime;
 
   if (isBeforeRoundEndDate && !debugModeEnabled) {
     return <NoInformationContent />;
@@ -125,45 +119,51 @@ export default function ViewRoundResults() {
                   Matching Distribution
                 </span>
               </div>
-              <table
-                className="table-auto border-separate border-spacing-y-4 h-full w-full"
-                data-testid="match-stats-table"
-              >
-                <thead>
-                  <tr>
-                    <th className="text-sm leading-5 text-gray-400 text-left">
-                      Projects
-                    </th>
-                    <th className="text-sm leading-5 text-gray-400 text-left">
-                      No. of Contributions
-                    </th>
-                    <th className="text-sm leading-5 text-gray-400 text-left">
-                      Est. Matching %
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {matches &&
-                    matches.map((match: Match) => {
-                      return (
-                        <tr key={match.applicationId}>
-                          <td className="text-sm leading-5 text-gray-400 text-left">
-                            {match.projectName}
-                          </td>
-                          <td className="text-sm leading-5 text-gray-400 text-left">
-                            {match.contributionsCount}
-                          </td>
-                          <td className="text-sm leading-5 text-gray-400 text-left">
-                            {matchAmountUSD &&
-                              Math.trunc(
-                                (match.matched / matchAmountUSD) * 100
-                              )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
+              <div className="col-span-3 border rounded p-4 row-span-2 overflow-y-auto max-h-52">
+                <table
+                  className="table-auto border-separate border-spacing-y-4 h-full w-full"
+                  data-testid="match-stats-table"
+                >
+                  <thead>
+                    <tr>
+                      <th className="text-sm leading-5 text-gray-400 text-left">
+                        Projects
+                      </th>
+                      <th className="text-sm leading-5 text-gray-400 text-left">
+                        No. of Contributions
+                      </th>
+                      <th className="text-sm leading-5 text-gray-400 text-left">
+                        Est. Matching %
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {round &&
+                      matches &&
+                      matches.map((match: Match) => {
+                        const percentage =
+                          Number(
+                            (BigInt(1000000) * match.matched) /
+                              round.matchAmount
+                          ) / 10000;
+
+                        return (
+                          <tr key={match.applicationId}>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {match.projectName}
+                            </td>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {match.contributionsCount}
+                            </td>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {percentage.toString()}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
               <div className="flex flex-col mt-4 w-min">
                 <button className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2">
                   <DownloadIcon className="h-5 w-5" />{" "}

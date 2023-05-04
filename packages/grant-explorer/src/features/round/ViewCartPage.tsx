@@ -539,7 +539,8 @@ export default function ViewCart() {
             <TrashIcon
               data-testid="remove-from-cart"
               onClick={() => {
-                handleRemoveProjectsFromCart([props.project]);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                handleRemoveProjectsFromCart([props.project], roundId!);
                 updateDonations(
                   props.project.projectRegistryId,
                   "",
