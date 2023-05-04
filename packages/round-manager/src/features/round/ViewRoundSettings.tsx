@@ -1,31 +1,69 @@
 import { Tab } from "@headlessui/react";
+import { getUTCDate, getUTCTime } from "common";
+import { Button } from "common/src/styles";
+import { useState } from "react";
 import { useNetwork } from "wagmi";
 import { Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
 import { horizontalTabStyles } from "../common/Utils";
-import { getUTCDate, getUTCTime } from "common";
 
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
+  const [editMode, setEditMode] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [editedRound, setEditedRound] = useState<Round | undefined>(round);
 
   if (!round) {
     return <></>;
   }
   const roundStartDateTime = round.roundStartTime
-    ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(
-        round.roundStartTime
-      )}`
+    ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(round.roundStartTime)}`
     : "...";
+
+  const onCancelEdit = () => {
+    console.log("cancel click", editMode);
+    setEditMode(!editMode);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onEditClick = () => {
+    console.log("edit click", editMode);
+    setEditMode(!editMode);
+  };
+
+  const onUpdateRound = (type: string) => {
+    console.log("update round click", type);
+  };
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
-      <p className="text-xl font-semibold leading-6 mb-4 text-base">
-        Round Settings
-      </p>
+      <div className="flex flex-row items-center justify-between">
+        <p className="text-xl font-semibold leading-6 mb-4">Round Settings</p>
+        <div>
+          {editMode ? (
+            <>
+              <Button
+                className="mr-4"
+                type="button"
+                $variant="outline"
+                onClick={onCancelEdit}
+              >
+                Cancel
+              </Button>
+              <Button type="button" onClick={() => onUpdateRound("")}>
+                Update Round
+              </Button>
+            </>
+          ) : (
+            <Button type="button" $variant="outline" onClick={onEditClick}>
+              Edit Record
+            </Button>
+          )}
+        </div>
+      </div>
       <p className="text-sm text-gray-600 mb-8">
         Changes can be made up until the round starts ({roundStartDateTime})
       </p>
-
       <Tab.Group>
         <div className="justify-end grow relative">
           <Tab.List className="border-b mb-6 flex items-center justify-between">
@@ -57,13 +95,25 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
         <div className="">
           <Tab.Panels>
             <Tab.Panel>
-              <DetailsPage round={round} />
+              <DetailsPage
+                round={round}
+                editMode={editMode}
+                onUpdate={() => onUpdateRound("details")}
+              />
             </Tab.Panel>
             <Tab.Panel>
-              <RoundApplicationPeriod round={round} />
+              <RoundApplicationPeriod
+                round={round}
+                editMode={editMode}
+                onUpdate={() => onUpdateRound("period")}
+              />
             </Tab.Panel>
             <Tab.Panel>
-              <Funding round={round} />
+              <Funding
+                round={round}
+                editMode={editMode}
+                onUpdate={() => onUpdateRound("funding")}
+              />
             </Tab.Panel>
           </Tab.Panels>
         </div>
@@ -72,7 +122,11 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
   );
 }
 
-function DetailsPage(props: { round: Round }) {
+function DetailsPage(props: {
+  round: Round;
+  editMode: boolean;
+  onUpdate?: (round: Round) => void;
+}) {
   const { round } = props;
   const { chain } = useNetwork();
   return (
@@ -91,7 +145,7 @@ function DetailsPage(props: { round: Round }) {
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={round.roundMetadata.name}
-              disabled
+              disabled={!props.editMode}
             />
           </div>
         </div>
@@ -108,7 +162,7 @@ function DetailsPage(props: { round: Round }) {
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={chain?.name}
-              disabled
+              disabled={!props.editMode}
             />
           </div>
         </div>
@@ -125,7 +179,7 @@ function DetailsPage(props: { round: Round }) {
           type="text"
           className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
           defaultValue={round.roundMetadata.eligibility?.description}
-          disabled
+          disabled={!props.editMode}
         />
       </div>
       <span className="mt-8 inline-flex text-sm text-gray-600 mb-8">
@@ -145,7 +199,7 @@ function DetailsPage(props: { round: Round }) {
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={round.roundMetadata.support?.type}
-              disabled
+              disabled={!props.editMode}
             />
           </div>
         </div>
@@ -162,7 +216,7 @@ function DetailsPage(props: { round: Round }) {
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={round.roundMetadata.support?.info}
-              disabled
+              disabled={!props.editMode}
             />
           </div>
         </div>
@@ -185,7 +239,7 @@ function DetailsPage(props: { round: Round }) {
                 type="text"
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                 defaultValue={req.requirement}
-                disabled
+                disabled={!props.editMode}
               />
             </div>
           </div>
@@ -195,7 +249,11 @@ function DetailsPage(props: { round: Round }) {
   );
 }
 
-function RoundApplicationPeriod(props: { round: Round }) {
+function RoundApplicationPeriod(props: {
+  round: Round;
+  editMode: boolean;
+  onUpdate?: (round: Round) => void;
+}) {
   const { round } = props;
   return (
     <div className="w-full">
@@ -218,7 +276,7 @@ function RoundApplicationPeriod(props: { round: Round }) {
               defaultValue={`${getUTCDate(
                 round.applicationsStartTime
               )} ${getUTCTime(round.applicationsStartTime)}`}
-              disabled
+              disabled={!props.editMode}
             />
           </div>
         </div>
@@ -237,7 +295,7 @@ function RoundApplicationPeriod(props: { round: Round }) {
               defaultValue={`${getUTCDate(
                 round.applicationsEndTime
               )} ${getUTCTime(round.applicationsEndTime)}`}
-              disabled
+              disabled={!props.editMode}
             />
           </div>
         </div>
@@ -257,7 +315,7 @@ function RoundApplicationPeriod(props: { round: Round }) {
               defaultValue={`${getUTCDate(round.roundStartTime)} ${getUTCTime(
                 round.roundStartTime
               )}`}
-              disabled
+              disabled={!props.editMode}
             />
           </div>
         </div>
@@ -276,7 +334,7 @@ function RoundApplicationPeriod(props: { round: Round }) {
               defaultValue={`${getUTCDate(round.roundEndTime)} ${getUTCTime(
                 round.roundEndTime
               )}`}
-              disabled
+              disabled={!props.editMode}
             />
           </div>
         </div>
@@ -285,7 +343,11 @@ function RoundApplicationPeriod(props: { round: Round }) {
   );
 }
 
-function Funding(props: { round: Round }) {
+function Funding(props: {
+  round: Round;
+  editMode: boolean;
+  onUpdate?: (round: Round) => void;
+}) {
   const { round } = props;
 
   const matchingFundPayoutToken =
@@ -319,7 +381,10 @@ function Funding(props: { round: Round }) {
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={matchingFundPayoutToken.name}
-              disabled
+              disabled={!props.editMode}
+              onChange={() => {
+                console.log("Payout Token");
+              }}
             />
           </div>
         </div>
@@ -342,7 +407,10 @@ function Funding(props: { round: Round }) {
               type="text"
               className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={matchingFunds}
-              disabled
+              disabled={!props.editMode}
+              onChange={() => {
+                console.log("Matching Funds Available");
+              }}
             />
           </div>
         </div>
@@ -365,14 +433,20 @@ function Funding(props: { round: Round }) {
               type="radio"
               className="mr-2"
               checked={round.roundMetadata.quadraticFundingConfig.matchingCap}
-              disabled
+              disabled={!props.editMode}
+              onChange={() => {
+                console.log("Do you want a matching cap for projects? YES");
+              }}
             />{" "}
             Yes
             <input
               type="radio"
               className="ml-4 mr-2"
               checked={!round.roundMetadata.quadraticFundingConfig.matchingCap}
-              disabled
+              disabled={!props.editMode}
+              onChange={() => {
+                console.log("Do you want a matching cap for projects? NO");
+              }}
             />{" "}
             No
           </div>
@@ -393,7 +467,10 @@ function Funding(props: { round: Round }) {
                 round.roundMetadata.quadraticFundingConfig.matchingCapAmount ??
                 0
               }
-              disabled
+              disabled={!props.editMode}
+              onChange={() => {
+                console.log("If so, how much?");
+              }}
             />
           </div>
         </div>
@@ -409,7 +486,6 @@ function Funding(props: { round: Round }) {
           {matchingFundPayoutToken.name}).
         </span>
       </div>
-
       <span className="mt-4 inline-flex text-lg font-light text-gray-600 mb-4">
         Minimum Donation Threshold
       </span>
@@ -429,7 +505,12 @@ function Funding(props: { round: Round }) {
               checked={
                 round.roundMetadata.quadraticFundingConfig.minDonationThreshold
               }
-              disabled
+              disabled={!props.editMode}
+              onChange={() => {
+                console.log(
+                  "Do you want a minimum donation threshold for projects? YES"
+                );
+              }}
             />{" "}
             Yes
             <input
@@ -438,7 +519,12 @@ function Funding(props: { round: Round }) {
               checked={
                 !round.roundMetadata.quadraticFundingConfig.minDonationThreshold
               }
-              disabled
+              disabled={!props.editMode}
+              onChange={() => {
+                console.log(
+                  "Do you want a minimum donation threshold for projects? NO"
+                );
+              }}
             />{" "}
             No
           </div>
@@ -459,7 +545,10 @@ function Funding(props: { round: Round }) {
                 round.roundMetadata.quadraticFundingConfig
                   .minDonationThresholdAmount ?? 0
               }
-              disabled
+              disabled={!props.editMode}
+              onChange={() => {
+                console.log("If so, how much?");
+              }}
             />
           </div>
         </div>
@@ -494,6 +583,9 @@ function Funding(props: { round: Round }) {
               name="sybil"
               value="yes"
               checked={round.roundMetadata.quadraticFundingConfig.sybilDefense}
+              onChange={() => {
+                console.log("Sybil Defense? YES");
+              }}
             />
             Yes, enable Gitcoin Passport (Recommended)
             <br />
@@ -508,6 +600,9 @@ function Funding(props: { round: Round }) {
               name="sybil"
               value="no"
               checked={!round.roundMetadata.quadraticFundingConfig.sybilDefense}
+              onChange={() => {
+                console.log("Sybil Defense? NO");
+              }}
             />
             No, disable Gitcoin Passport
             <br />
