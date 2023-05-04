@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
 import { getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
@@ -10,8 +11,7 @@ import { horizontalTabStyles } from "../common/Utils";
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
   const [editMode, setEditMode] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [editedRound, setEditedRound] = useState<Round | undefined>(round);
+  const [editedRound, setEditedRound] = useState<Round | undefined>(undefined);
 
   if (!round) {
     return <></>;
@@ -19,6 +19,14 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const roundStartDateTime = round.roundStartTime
     ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(round.roundStartTime)}`
     : "...";
+  const hasRoundStarted = round.roundStartTime < new Date();
+
+  console.log("some testing logs", {
+    round,
+    hasRoundStarted,
+    editMode,
+    editedRound,
+  });
 
   const onCancelEdit = () => {
     console.log("cancel click", editMode);
@@ -55,7 +63,12 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
               </Button>
             </>
           ) : (
-            <Button type="button" $variant="outline" onClick={onEditClick}>
+            <Button
+              type="button"
+              $variant="outline"
+              onClick={onEditClick}
+              disabled={hasRoundStarted}
+            >
               Edit Record
             </Button>
           )}
