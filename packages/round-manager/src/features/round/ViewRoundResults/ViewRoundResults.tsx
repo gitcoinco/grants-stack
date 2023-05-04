@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -54,6 +54,7 @@ export default function ViewRoundResults() {
   const [overridesFile, setOverridesFile] = useState<undefined | File>(
     undefined
   );
+  const matchingTableRef = useRef<HTMLDivElement>(null);
 
   const {
     data: matches,
@@ -204,6 +205,7 @@ export default function ViewRoundResults() {
               <div
                 className="flex flex-col mt-4"
                 data-testid="match-stats-title"
+                ref={matchingTableRef}
               >
                 <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
                   Matching Distribution
@@ -374,6 +376,14 @@ export default function ViewRoundResults() {
                     setOverridesFile(overridesFileDraft);
                     // force a refresh each time fot better ux
                     mutateMatchingFunds();
+
+                    // make sure table is in view
+                    if (matchingTableRef.current) {
+                      window.scrollTo({
+                        top: matchingTableRef.current.offsetTop,
+                        behavior: "smooth",
+                      });
+                    }
                   }}
                   disabled={overridesFileDraft === undefined}
                 >
