@@ -1,5 +1,5 @@
 import { BigNumber, BytesLike, ethers, Signer } from "ethers";
-import { roundImplementationContract, ERC20Contract } from "./contracts";
+import { ERC20Contract, roundImplementationContract } from "./contracts";
 
 export const voteOnRoundContract = async (
   roundId: string,
@@ -68,6 +68,17 @@ export const approveTokenOnContract = async (
     ERC20Contract.abi,
     signer
   );
+
+  // check if token is already approved
+  const allowance = await tokenContract.allowance(
+    signer.getAddress(),
+    votingStrategy
+  );
+
+  if (allowance.gte(amount)) {
+    console.log("✅ Token already approved");
+    return;
+  }
 
   const gasPrice = await signer.getGasPrice();
   const gasLimit = await tokenContract.estimateGas.approve(
