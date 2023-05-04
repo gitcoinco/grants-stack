@@ -8,6 +8,7 @@ import {
   useRoundMatchingFunds,
 } from "../../hooks";
 import { getUTCDate } from "common";
+import { payoutTokens } from "../api/utils";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
@@ -22,8 +23,11 @@ export default function ViewRoundStats() {
   }, [applications]);
 
   const { data: matches } = useRoundMatchingFunds(roundId);
-
-  const matchAmountUSD = round?.matchAmountUSD;
+  const matchToken =
+    round &&
+    payoutTokens.find(
+      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+    );
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -42,11 +46,10 @@ export default function ViewRoundStats() {
         />
         <StatsCard
           text={
-            matchAmountUSD &&
-            new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(matchAmountUSD)
+            round &&
+            `${utils.formatUnits(round.matchAmount, matchToken?.decimal)} ${
+              matchToken?.name
+            }`
           }
           title={"Matching Funds Available"}
         />
@@ -90,7 +93,8 @@ export default function ViewRoundStats() {
               </tr>
             </thead>
             <tbody>
-              {matches &&
+              {round &&
+                matches &&
                 matches.map((match: Match) => {
                   const percentage =
                     Number(
