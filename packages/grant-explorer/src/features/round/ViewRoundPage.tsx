@@ -7,7 +7,7 @@ import {
 } from "common";
 import { Button, Input } from "common/src/styles";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
@@ -127,7 +127,6 @@ function AfterRoundStart(props: {
 
   const [showChangeNetworkModal, setShowChangeNetworkModal] = useState(false);
   const { switchNetwork } = useSwitchNetwork();
-  const navigate = useNavigate();
   const { chain } = useNetwork();
   useEffect(() => {
     if (chainId && Number(chainId) !== chain?.id) {
