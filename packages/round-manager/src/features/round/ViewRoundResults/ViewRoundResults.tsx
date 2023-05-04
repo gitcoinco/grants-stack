@@ -59,6 +59,7 @@ export default function ViewRoundResults() {
     data: matches,
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
+    mutate: mutateMatchingFunds,
   } = useRoundMatchingFunds(roundId, overridesFile);
   const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
@@ -153,7 +154,7 @@ export default function ViewRoundResults() {
     return <NoInformationContent />;
   }
 
-  if (isLoadingRound || isLoadingMatchingFunds) {
+  if (isLoadingRound) {
     return <Spinner text="We're fetching the matching data." />;
   }
 
@@ -208,65 +209,82 @@ export default function ViewRoundResults() {
                   Matching Distribution
                 </span>
               </div>
-              <div className="col-span-3 border rounded p-4 row-span-2 overflow-y-auto max-h-52">
-                <table
-                  className="table-auto border-separate border-spacing-y-4 h-full w-full"
-                  data-testid="match-stats-table"
-                >
-                  <thead>
-                    <tr>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        Projects
-                      </th>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        No. of Contributions
-                      </th>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        Est. Matching %
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {round &&
-                      matches &&
-                      matches.map((match: Match) => {
-                        const percentage =
-                          Number(
-                            (BigInt(1000000) * match.matched) /
-                              round.matchAmount
-                          ) / 10000;
-                        return (
-                          <tr key={match.applicationId}>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                              {match.projectName}
-                            </td>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                              {match.contributionsCount}
-                            </td>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                              {percentage.toString()}
-                            </td>
+              {isLoadingMatchingFunds ? (
+                <Spinner text="We're fetching the matching data." />
+              ) : (
+                <div>
+                  {matchingFundsError && (
+                    <div className="p-4 bg-red-50 text-red-400 my-4">
+                      <div className="font-bold text-red-500 text-sm">
+                        Something went wrong while loading the matching
+                        distribution:
+                      </div>
+                      {matchingFundsError?.message}
+                    </div>
+                  )}
+                  {matches && (
+                    <div className="col-span-3 border rounded p-4 row-span-2 overflow-y-auto max-h-52">
+                      <table
+                        className="table-auto border-separate border-spacing-y-4 h-full w-full"
+                        data-testid="match-stats-table"
+                      >
+                        <thead>
+                          <tr>
+                            <th className="text-sm leading-5 text-gray-400 text-left">
+                              Projects
+                            </th>
+                            <th className="text-sm leading-5 text-gray-400 text-left">
+                              No. of Contributions
+                            </th>
+                            <th className="text-sm leading-5 text-gray-400 text-left">
+                              Est. Matching %
+                            </th>
                           </tr>
-                        );
-                      })}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex flex-col mt-4 w-min">
-                <button
-                  onClick={() => {
-                    /* Download matching distribution data as csv */
-                    if (!matches) {
-                      return;
-                    }
+                        </thead>
+                        <tbody>
+                          {round &&
+                            matches &&
+                            matches.map((match: Match) => {
+                              const percentage =
+                                Number(
+                                  (BigInt(1000000) * match.matched) /
+                                    round.matchAmount
+                                ) / 10000;
+                              return (
+                                <tr key={match.applicationId}>
+                                  <td className="text-sm leading-5 text-gray-400 text-left">
+                                    {match.projectName}
+                                  </td>
+                                  <td className="text-sm leading-5 text-gray-400 text-left">
+                                    {match.contributionsCount}
+                                  </td>
+                                  <td className="text-sm leading-5 text-gray-400 text-left">
+                                    {percentage.toString()}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  <div className="flex flex-col mt-4 w-min">
+                    <button
+                      onClick={() => {
+                        /* Download matching distribution data as csv */
+                        if (!matches) {
+                          return;
+                        }
 
-                    downloadArrayAsCsv(matches, "matches.csv");
-                  }}
-                  className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
-                >
-                  <DownloadIcon className="h-5 w-5" /> CSV
-                </button>
-              </div>
+                        downloadArrayAsCsv(matches, "matches.csv");
+                      }}
+                      className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
+                    >
+                      <DownloadIcon className="h-5 w-5" /> CSV
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="flex flex-col mt-4 gap-1 mb-3">
                 <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1">
                   Round Saturation
@@ -320,11 +338,6 @@ export default function ViewRoundResults() {
                 <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
                   Revise Results
                 </span>
-                {matchingFundsError && (
-                  <div className="p-4 bg-red-50 text-red-400 my-4">
-                    {matchingFundsError?.message}
-                  </div>
-                )}
                 <div className="text-sm leading-5 text-left mb-1">
                   Upload a CSV with the finalized Vote Coefficient overrides{" "}
                   <b>only</b>. For instructions, click{" "}
@@ -358,6 +371,8 @@ export default function ViewRoundResults() {
                   $variant="secondary"
                   onClick={() => {
                     setOverridesFile(overridesFileDraft);
+                    // force a refresh each time fot better ux
+                    mutateMatchingFunds();
                   }}
                   disabled={overridesFileDraft === undefined}
                 >
