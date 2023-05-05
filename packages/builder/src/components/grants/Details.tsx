@@ -44,8 +44,7 @@ export default function Details({
       dispatch(
         fetchProjectApplications(
           props.projectID,
-          Number(props.chainId),
-          process.env
+          Number(props.chainId)
         )
       );
     }

@@ -344,7 +344,7 @@ export const loadAllChainsProjects =
 
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
-  roundID: string,
+  roundID: string
 ): Promise<any> => {
   const splitApplicationId = applicationId.split(":");
   const projectChainId = Number(splitApplicationId[0]);
@@ -399,8 +399,7 @@ export const fetchProjectApplicationInRound = async (
 };
 
 export const fetchProjectApplications =
-  (projectID: string, projectChainId: number) =>
-  async (dispatch: Dispatch) => {
+  (projectID: string, projectChainId: number) => async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
