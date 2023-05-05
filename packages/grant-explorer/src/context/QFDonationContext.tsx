@@ -315,16 +315,11 @@ function encodeQFVotes(
   const encodedVotes: BytesLike[] = [];
 
   donations.map((donation) => {
-    const amountInUnits = ethers.utils.parseUnits(
-      donation.amount.toString(),
-      donationToken.decimal
-    );
-
     const projectAddress = ethers.utils.getAddress(donation.projectAddress);
 
     const vote = [
       donationToken.address,
-      amountInUnits,
+      donation.amount,
       projectAddress,
       donation.projectRegistryId,
       donation.applicationIndex,
