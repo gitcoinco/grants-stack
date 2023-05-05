@@ -25,6 +25,7 @@ import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
 import StatusModal from "../base/StatusModal";
 import { RoundApplicationAnswers } from "../../types/roundApplication";
+import PurpleNotificationBox from "../base/PurpleNotificationBox";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -242,6 +243,11 @@ function Apply() {
               {formatDate(props.round.roundStartTime * 1000)} -{" "}
               {formatDate(props.round.roundEndTime * 1000)}
             </p>
+            {/* tslint:disable-next-line:max-line-length */}
+            <PurpleNotificationBox className="mt-5">
+              Make sure your project details are correct as you will NOT be able
+              to edit or re-apply once you submit this application.
+            </PurpleNotificationBox>
             <p className="mt-4">
               Need Help? Check out the{" "}
               <a
