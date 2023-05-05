@@ -1,5 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { BytesLike, ethers, Signer } from "ethers";
+import { BigNumber, BytesLike, ethers, Signer } from "ethers";
 import {
   createContext,
   ReactNode,
@@ -59,7 +59,7 @@ export type QFDonationParams = {
   roundId: string;
   donations: CartDonation[];
   donationToken: PayoutToken;
-  totalDonation: number;
+  totalDonation: BigNumber;
   votingStrategy: string;
 };
 
@@ -69,7 +69,7 @@ interface SubmitDonationParams {
   roundId: string;
   donations: CartDonation[];
   donationToken: PayoutToken;
-  totalDonation: number;
+  totalDonation: BigNumber;
   votingStrategy: string;
 }
 
@@ -196,7 +196,7 @@ export const useQFDonation = () => {
 async function approveTokenForDonation(
   signerOrProvider: Signer,
   token: PayoutToken,
-  amount: number,
+  amount: BigNumber,
   votingStrategy: string,
   context: QFDonationState
 ): Promise<void> {
@@ -242,7 +242,7 @@ async function vote(
   roundId: string,
   token: PayoutToken,
   donations: CartDonation[],
-  totalDonation: number,
+  totalDonation: BigNumber,
   context: QFDonationState
 ): Promise<void> {
   const { setVoteStatus, setTxHash, setTxBlockNumber } = context;

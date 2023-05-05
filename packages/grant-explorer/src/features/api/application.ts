@@ -5,7 +5,7 @@ export const voteOnRoundContract = async (
   roundId: string,
   signer: Signer,
   encodedVotes: BytesLike[],
-  nativeTokenAmount = 0
+  nativeTokenAmount: BigNumber = BigNumber.from(0)
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   // checksum conversion
   roundId = ethers.utils.getAddress(roundId);
@@ -23,21 +23,18 @@ export const voteOnRoundContract = async (
 
   // only send native token amount as value to vote function
   nativeTokenAmount =
-    decodedValues[0] === ethers.constants.AddressZero ? nativeTokenAmount : 0;
-
-  const amountInWei = ethers.utils.parseUnits(
-    nativeTokenAmount.toString(),
-    "ether"
-  );
+    decodedValues[0] === ethers.constants.AddressZero
+      ? nativeTokenAmount
+      : BigNumber.from(0);
 
   const gasPrice = await signer.getGasPrice();
   const gasLimit = await roundImplementation.estimateGas.vote(encodedVotes, {
-    value: amountInWei,
+    value: nativeTokenAmount,
   });
   const gasLimitWithBuffer = gasLimit.mul(2); // increase gas limit by 2x
 
   const tx = await roundImplementation.vote(encodedVotes, {
-    value: amountInWei,
+    value: nativeTokenAmount,
     gasPrice,
     gasLimit: gasLimitWithBuffer,
   });
