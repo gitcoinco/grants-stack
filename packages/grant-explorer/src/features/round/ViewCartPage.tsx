@@ -23,7 +23,7 @@ import {
   PassportResponse,
   PassportState,
 } from "../api/passport";
-import { renderToPlainText } from "common";
+import { renderToPlainText, useTokenPrice } from "common";
 import {
   CartDonation,
   PayoutToken,
@@ -108,6 +108,12 @@ export default function ViewCart() {
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  const { data, error, loading } = useTokenPrice(
+    selectedPayoutToken.redstoneTokenId
+  );
+
+  const payoutTokenPrice = !loading && !error ? Number(data) : undefined;
 
   const {
     submitDonations,
@@ -506,7 +512,7 @@ export default function ViewCart() {
             </div>
           </div>
 
-          <div className="mt-1 flex space-x-4 h-16 pl-4 pt-3">
+          <div className="mt-6 flex space-x-4 h-16 pl-4 pt-3">
             <div className="md:hidden w-12"></div>
             <Input
               aria-label={
@@ -536,10 +542,25 @@ export default function ViewCart() {
               className="w-24"
             />
             <p className="m-auto">{selectedPayoutToken.name}</p>
+            {payoutTokenPrice && (
+              <div className="m-auto px-2 min-w-max">
+                <span className="text-[14px] text-grey-400 ">
+                  ${" "}
+                  {Number(
+                    donations.find(
+                      (donation: CartDonation) =>
+                        donation.projectRegistryId ===
+                        props.project.projectRegistryId
+                    )?.amount || 0
+                  ) * Number(payoutTokenPrice.toFixed(2))}
+                </span>
+              </div>
+            )}
             <TrashIcon
               data-testid="remove-from-cart"
               onClick={() => {
-                handleRemoveProjectsFromCart([props.project]);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                handleRemoveProjectsFromCart([props.project], roundId!);
                 updateDonations(
                   props.project.projectRegistryId,
                   "",
@@ -595,6 +616,9 @@ export default function ViewCart() {
   }
 
   function Summary() {
+    const totalDonationInUSD =
+      payoutTokenPrice && totalDonation * Number(payoutTokenPrice.toFixed(2));
+
     return (
       <div className="shrink mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
         <h2 className="text-xl border-b-2 pb-2">Summary</h2>
@@ -609,6 +633,13 @@ export default function ViewCart() {
             </span>
           </p>
         </div>
+        {payoutTokenPrice && (
+          <div className="flex flex-row-reverse mt-2">
+            <p className="text-[14px] text-grey-400">
+              $ {totalDonationInUSD?.toString()}
+            </p>
+          </div>
+        )}
       </div>
     );
   }

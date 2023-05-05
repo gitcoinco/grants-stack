@@ -5,7 +5,7 @@ export const voteOnRoundContract = async (
   roundId: string,
   signer: Signer,
   encodedVotes: BytesLike[],
-  nativeTokenAmount = 0,
+  nativeTokenAmount = 0
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   // checksum conversion
   roundId = ethers.utils.getAddress(roundId);
@@ -13,7 +13,7 @@ export const voteOnRoundContract = async (
   const roundImplementation = new ethers.Contract(
     roundId,
     roundImplementationContract.abi,
-    signer,
+    signer
   );
 
   const decodedValues = ethers.utils.defaultAbiCoder.decode(
@@ -27,7 +27,7 @@ export const voteOnRoundContract = async (
 
   const amountInWei = ethers.utils.parseUnits(
     nativeTokenAmount.toString(),
-    "ether",
+    "ether"
   );
 
   const tx = await roundImplementation.vote(encodedVotes, {
@@ -58,7 +58,7 @@ export const approveTokenOnContract = async (
   const tokenContract = new ethers.Contract(
     tokenAddress,
     ERC20Contract.abi,
-    signer,
+    signer
   );
 
   const approveTx = await tokenContract.approve(votingStrategy, amount);
