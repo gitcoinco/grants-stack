@@ -28,7 +28,7 @@ export const voteOnRoundContract = async (
       : BigNumber.from(0);
 
   const tx = await roundImplementation.vote(encodedVotes, {
-    value: amountInWei,
+    value: nativeTokenAmount,
   });
 
   const receipt = await tx.wait();
