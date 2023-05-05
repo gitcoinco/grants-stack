@@ -545,13 +545,15 @@ export default function ViewCart() {
               <div className="m-auto px-2 min-w-max">
                 <span className="text-[14px] text-grey-400 ">
                   ${" "}
-                  {Number(
-                    donations.find(
-                      (donation) =>
-                        donation.projectRegistryId ===
-                        props.project.projectRegistryId
-                    )?.amount || 0
-                  ) * Number(payoutTokenPrice.toFixed(2))}
+                  {(
+                    Number(
+                      donations.find(
+                        (donation) =>
+                          donation.projectRegistryId ===
+                          props.project.projectRegistryId
+                      )?.amount || 0
+                    ) * payoutTokenPrice
+                  ).toFixed(2)}
                 </span>
               </div>
             )}

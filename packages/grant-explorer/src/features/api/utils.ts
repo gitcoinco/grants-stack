@@ -47,7 +47,6 @@ export const TokenNamesAndLogos: Record<string, string> = {
   OP: "./logos/optimism-logo.svg",
 };
 
-
 const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
