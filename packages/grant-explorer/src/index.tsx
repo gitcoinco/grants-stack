@@ -1,6 +1,5 @@
 import "./browserPatches";
 
-import { ChakraProvider } from "@chakra-ui/react";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
@@ -52,64 +51,62 @@ root.render(
     <Provider store={store}>
       <WagmiConfig client={WagmiClient}>
         <RainbowKitProvider coolMode chains={chains}>
-          <ChakraProvider resetCSS={false}>
-            <RoundProvider>
-              <CartProvider>
-                <ReduxRouter history={history} store={store}>
-                  <Routes>
-                    {/* Protected Routes */}
-                    <Route element={<Auth />} />
+          <RoundProvider>
+            <CartProvider>
+              <ReduxRouter history={history} store={store}>
+                <Routes>
+                  {/* Protected Routes */}
+                  <Route element={<Auth />} />
 
-                    {/* Default Route */}
-                    <Route path="/" element={<LandingPage />} />
+                  {/* Default Route */}
+                  <Route path="/" element={<LandingPage />} />
 
-                    {/* Apply Now Page */}
-                    <Route path="/apply-now" element={<ApplyNowPage />} />
+                  {/* Apply Now Page */}
+                  <Route path="/apply-now" element={<ApplyNowPage />} />
 
-                    {/* Round Routes */}
-                    <Route
-                      path="/round/:chainId/:roundId"
-                      element={<ViewRound />}
-                    />
-                    <Route
-                      path="/round/:chainId/:roundId/:applicationId"
-                      element={<ViewProjectDetails />}
-                    />
+                  {/* Round Routes */}
+                  <Route
+                    path="/round/:chainId/:roundId"
+                    element={<ViewRound />}
+                  />
+                  <Route
+                    path="/round/:chainId/:roundId/:applicationId"
+                    element={<ViewProjectDetails />}
+                  />
 
-                    <Route
-                      path="/round/:chainId/:roundId/cart"
-                      element={
-                        <QFDonationProvider>
-                          <ViewCart />
-                        </QFDonationProvider>
-                      }
-                    />
+                  <Route
+                    path="/round/:chainId/:roundId/cart"
+                    element={
+                      <QFDonationProvider>
+                        <ViewCart />
+                      </QFDonationProvider>
+                    }
+                  />
 
-                    <Route
-                      path="/round/:chainId/:roundId/:txHash/thankyou"
-                      element={
-                        <QFDonationProvider>
-                          <ThankYou />
-                        </QFDonationProvider>
-                      }
-                    />
+                  <Route
+                    path="/round/:chainId/:roundId/:txHash/thankyou"
+                    element={
+                      <QFDonationProvider>
+                        <ThankYou />
+                      </QFDonationProvider>
+                    }
+                  />
 
-                    {/* Passport Connect */}
-                    <Route
-                      path="/round/:chainId/:roundId/passport/connect"
-                      element={<PassportConnect />}
-                    />
+                  {/* Passport Connect */}
+                  <Route
+                    path="/round/:chainId/:roundId/passport/connect"
+                    element={<PassportConnect />}
+                  />
 
-                    {/* Access Denied */}
-                    <Route path="/access-denied" element={<AccessDenied />} />
+                  {/* Access Denied */}
+                  <Route path="/access-denied" element={<AccessDenied />} />
 
-                    {/* 404 */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </ReduxRouter>
-              </CartProvider>
-            </RoundProvider>
-          </ChakraProvider>
+                  {/* 404 */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ReduxRouter>
+            </CartProvider>
+          </RoundProvider>
         </RainbowKitProvider>
       </WagmiConfig>
     </Provider>
