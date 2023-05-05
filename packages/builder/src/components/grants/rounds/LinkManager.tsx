@@ -25,7 +25,7 @@ export default function LinkManager({ linkProps }: { linkProps: LinkProps }) {
       {linkProps.displayType === RoundDisplayType.Active ? (
         <Button
           disabled={!disableExternalLink}
-          className={`bg-gitcoin-violet-100 flex p-2 my-4 rounded-md ${
+          className={`bg-gitcoin-violet-100 flex p-2 my-4 rounded-md flex text-[12px] mr-1 text-violet-400 ${
             isActive && "cursor-not-allowed"
           }`}
           width={isMobile ? "100%" : "auto"}
@@ -42,13 +42,7 @@ export default function LinkManager({ linkProps }: { linkProps: LinkProps }) {
                 width={11}
                 height={11}
               />
-              <span
-                className={`flex text-[12px] mr-1 text-violet-400 ${
-                  !disableExternalLink && "cursor-not-allowed"
-                }`}
-              >
-                {linkProps.text}
-              </span>
+              {linkProps.text}
             </a>
           ) : (
             <>
