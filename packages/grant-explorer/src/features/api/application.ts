@@ -30,16 +30,8 @@ export const voteOnRoundContract = async (
     "ether"
   );
 
-  const gasPrice = await signer.getGasPrice();
-  const gasLimit = await roundImplementation.estimateGas.vote(encodedVotes, {
-    value: amountInWei,
-  });
-  const gasLimitWithBuffer = gasLimit.mul(2); // increase gas limit by 2x
-
   const tx = await roundImplementation.vote(encodedVotes, {
     value: amountInWei,
-    gasPrice,
-    gasLimit: gasLimitWithBuffer,
   });
 
   const receipt = await tx.wait();
@@ -80,17 +72,7 @@ export const approveTokenOnContract = async (
     return;
   }
 
-  const gasPrice = await signer.getGasPrice();
-  const gasLimit = await tokenContract.estimateGas.approve(
-    votingStrategy,
-    amount
-  );
-  const gasLimitWithBuffer = gasLimit.mul(2); // increase gas limit by 2x
-
-  const approveTx = await tokenContract.approve(votingStrategy, amount, {
-    gasPrice,
-    gasLimit: gasLimitWithBuffer,
-  });
+  const approveTx = await tokenContract.approve(votingStrategy, amount);
 
   await approveTx.wait();
 };
