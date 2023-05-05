@@ -66,7 +66,10 @@ export default function ViewCart() {
   const totalDonation = useMemo(() => {
     return donations.reduce((acc, donation) => {
       return acc.add(
-        ethers.utils.parseUnits(donation.amount, selectedPayoutToken.decimal)
+        ethers.utils.parseUnits(
+          donation.amount === "" ? "0" : donation.amount,
+          selectedPayoutToken.decimal
+        )
       );
     }, BigNumber.from(0));
   }, [donations]);

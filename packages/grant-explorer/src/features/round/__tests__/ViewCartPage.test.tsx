@@ -309,9 +309,10 @@ describe("View Cart Page", () => {
 
     renderWrapped(cart, setCart);
 
-    const amountInputField = screen.getByRole("spinbutton", {
+    const amountInputField = screen.getByRole("textbox", {
       name: /donation amount for all projects/i,
     });
+
     const applyAllButton = screen.getByRole("button", {
       name: /apply to all/i,
     });
