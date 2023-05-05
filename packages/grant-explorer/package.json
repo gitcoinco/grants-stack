@@ -63,6 +63,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.0.1",
     "@testing-library/user-event": "^14.1.1",
+    "@wagmi/core": "0.5.4",
     "allo-indexer-client": "github:gitcoinco/allo-indexer-client#48490969985125e89bf1d65725ef9e510c97256a",
     "babel-loader": "^8.3.0",
     "buffer": "^6.0.3",

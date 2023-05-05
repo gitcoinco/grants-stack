@@ -128,6 +128,7 @@ function AfterRoundStart(props: {
   const [showChangeNetworkModal, setShowChangeNetworkModal] = useState(false);
   const { switchNetwork } = useSwitchNetwork();
   const { chain } = useNetwork();
+
   useEffect(() => {
     if (chainId && Number(chainId) !== chain?.id) {
       setShowChangeNetworkModal(true);
