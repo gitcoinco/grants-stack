@@ -61,6 +61,17 @@ export const approveTokenOnContract = async (
     signer
   );
 
+  // check if token is already approved
+  const allowance = await tokenContract.allowance(
+    signer.getAddress(),
+    votingStrategy
+  );
+
+  if (allowance.gte(amount)) {
+    console.log("✅ Token already approved");
+    return;
+  }
+
   const approveTx = await tokenContract.approve(votingStrategy, amount);
 
   await approveTx.wait();
