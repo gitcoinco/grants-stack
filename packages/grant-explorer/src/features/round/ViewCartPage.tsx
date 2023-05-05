@@ -45,7 +45,6 @@ import { Logger } from "ethers/lib.esm/utils";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { classNames } from "common";
 import ReactTooltip from "react-tooltip";
-import { ca } from "date-fns/locale";
 
 export default function ViewCart() {
   const { chainId, roundId } = useParams();
@@ -72,7 +71,7 @@ export default function ViewCart() {
         )
       );
     }, BigNumber.from(0));
-  }, [donations]);
+  }, [donations, selectedPayoutToken.decimal]);
 
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
@@ -548,7 +547,7 @@ export default function ViewCart() {
                   ${" "}
                   {Number(
                     donations.find(
-                      (donation: CartDonation) =>
+                      (donation) =>
                         donation.projectRegistryId ===
                         props.project.projectRegistryId
                     )?.amount || 0
@@ -617,7 +616,10 @@ export default function ViewCart() {
 
   function Summary() {
     const totalDonationInUSD =
-      payoutTokenPrice && totalDonation * Number(payoutTokenPrice.toFixed(2));
+      payoutTokenPrice &&
+      Number(
+        ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)
+      ) * Number(payoutTokenPrice.toFixed(2));
 
     return (
       <div className="shrink mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
@@ -639,7 +641,7 @@ export default function ViewCart() {
         {payoutTokenPrice && (
           <div className="flex flex-row-reverse mt-2">
             <p className="text-[14px] text-grey-400">
-              $ {totalDonationInUSD?.toString()}
+              $ {totalDonationInUSD?.toFixed(2)}
             </p>
           </div>
         )}
