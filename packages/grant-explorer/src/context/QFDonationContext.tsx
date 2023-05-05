@@ -211,16 +211,11 @@ async function approveTokenForDonation(
       return;
     }
 
-    const amountInUnits = ethers.utils.parseUnits(
-      amount.toString(),
-      token.decimal
-    );
-
     await approveTokenOnContract(
       signerOrProvider,
       votingStrategy,
       token.address,
-      amountInUnits
+      amount
     );
 
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
