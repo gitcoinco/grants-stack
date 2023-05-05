@@ -542,7 +542,7 @@ importers:
       '@types/react-gtm-module': ^2.0.1
       '@types/testing-library__jest-dom': ^5.14.5
       add: ^2.0.6
-      allo-indexer-client: github:gitcoinco/allo-indexer-client#76d303a3c2a36a86e1e44daf645364b32c4b93a1
+      allo-indexer-client: github:gitcoinco/allo-indexer-client#9e713f46db8a13e19c923a983bc5956b79da7c56
       autoprefixer: ^10.4.7
       buffer: ^6.0.3
       common: workspace:*
@@ -616,7 +616,7 @@ importers:
       '@testing-library/user-event': 14.4.3
       '@types/jest': 27.5.2
       '@types/node': 17.0.45
-      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/76d303a3c2a36a86e1e44daf645364b32c4b93a1
+      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/9e713f46db8a13e19c923a983bc5956b79da7c56
       buffer: 6.0.3
       common: link:../common
       crypto-browserify: 3.12.0
@@ -8561,7 +8561,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: true
@@ -12629,6 +12629,18 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+
+  /follow-redirects/1.15.2_debug@4.3.4:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
+    dev: true
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -24003,8 +24015,8 @@ packages:
       '@types/node': 18.15.5
     dev: false
 
-  github.com/gitcoinco/allo-indexer-client/76d303a3c2a36a86e1e44daf645364b32c4b93a1:
-    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/76d303a3c2a36a86e1e44daf645364b32c4b93a1}
+  github.com/gitcoinco/allo-indexer-client/9e713f46db8a13e19c923a983bc5956b79da7c56:
+    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/9e713f46db8a13e19c923a983bc5956b79da7c56}
     name: allo-indexer-client
     version: 0.1.0
     hasBin: true
