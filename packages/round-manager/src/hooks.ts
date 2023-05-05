@@ -26,7 +26,9 @@ export function useAlloIndexerClient(): Client {
   }, [chain.id]);
 }
 
-export function useRoundMatchingFunds(roundId: string, params?: {query: string | boolean}, overrides?: Blob) {
+// TODO: stop ignoring params type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useRoundMatchingFunds(roundId: string, params?: any, overrides?: Blob) {
   const client = useAlloIndexerClient();
   return useSWR([roundId, "/matches", overrides], ([roundId]) => {
     return client.getRoundMatchingFunds(roundId, params, overrides);
