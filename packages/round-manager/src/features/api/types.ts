@@ -141,6 +141,9 @@ export interface Round {
    * The on-chain unique round ID
    */
   id?: string;
+
+  chainId?: number;
+
   /**
    * Metadata of the Round to be stored off-chain
    */
