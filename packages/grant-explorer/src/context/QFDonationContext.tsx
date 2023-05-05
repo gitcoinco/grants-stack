@@ -1,5 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { BytesLike, ethers, Signer } from "ethers";
+import { BigNumber, BytesLike, ethers, Signer } from "ethers";
 import {
   createContext,
   ReactNode,
@@ -59,7 +59,7 @@ export type QFDonationParams = {
   roundId: string;
   donations: CartDonation[];
   donationToken: PayoutToken;
-  totalDonation: number;
+  totalDonation: BigNumber;
   votingStrategy: string;
 };
 
@@ -69,7 +69,7 @@ interface SubmitDonationParams {
   roundId: string;
   donations: CartDonation[];
   donationToken: PayoutToken;
-  totalDonation: number;
+  totalDonation: BigNumber;
   votingStrategy: string;
 }
 
@@ -196,7 +196,7 @@ export const useQFDonation = () => {
 async function approveTokenForDonation(
   signerOrProvider: Signer,
   token: PayoutToken,
-  amount: number,
+  amount: BigNumber,
   votingStrategy: string,
   context: QFDonationState
 ): Promise<void> {
@@ -211,16 +211,11 @@ async function approveTokenForDonation(
       return;
     }
 
-    const amountInUnits = ethers.utils.parseUnits(
-      amount.toString(),
-      token.decimal
-    );
-
     await approveTokenOnContract(
       signerOrProvider,
       votingStrategy,
       token.address,
-      amountInUnits
+      amount
     );
 
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
@@ -242,7 +237,7 @@ async function vote(
   roundId: string,
   token: PayoutToken,
   donations: CartDonation[],
-  totalDonation: number,
+  totalDonation: BigNumber,
   context: QFDonationState
 ): Promise<void> {
   const { setVoteStatus, setTxHash, setTxBlockNumber } = context;
@@ -315,16 +310,11 @@ function encodeQFVotes(
   const encodedVotes: BytesLike[] = [];
 
   donations.map((donation) => {
-    const amountInUnits = ethers.utils.parseUnits(
-      donation.amount.toString(),
-      donationToken.decimal
-    );
-
     const projectAddress = ethers.utils.getAddress(donation.projectAddress);
 
     const vote = [
       donationToken.address,
-      amountInUnits,
+      donation.amount,
       projectAddress,
       donation.projectRegistryId,
       donation.applicationIndex,

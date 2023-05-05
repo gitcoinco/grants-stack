@@ -28,7 +28,6 @@ describe("<CartProvider>", () => {
   });
 
   describe("Cart -> remove", () => {
-
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -128,20 +127,14 @@ describe("<CartProvider>", () => {
 
       expect(saveCartToLocalStorage).toBeCalled();
     });
-
   });
 });
-
-
 
 const testProject: Project = makeApprovedProjectData();
 
 const TestingUseCartComponent = () => {
-  const [
-    cart,
-    handleAddProjectsToCart,
-    handleRemoveProjectsFromCart
-  ] = useCart();
+  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
+    useCart();
 
   return (
     <>

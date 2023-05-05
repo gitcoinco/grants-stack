@@ -26,6 +26,7 @@ import {
 import { renderToPlainText, useTokenPrice } from "common";
 import {
   CartDonation,
+  DonationInput,
   PayoutToken,
   ProgressStatus,
   Project,
@@ -59,19 +60,18 @@ export default function ViewCart() {
   const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
     payoutTokenOptions[0]
   );
-  const [donations, setDonations] = useState<CartDonation[]>([]);
+  const [donations, setDonations] = useState<DonationInput[]>([]);
 
   const totalDonation = useMemo(() => {
     return donations.reduce((acc, donation) => {
-      if (donation.amount == "") {
-        donation.amount = "0";
-      }
-
-      const decimalPlaces =
-        (donation.amount.match(/\.(\d+)/) || [])[1]?.length || 0;
-      return Number((acc + parseFloat(donation.amount)).toFixed(decimalPlaces));
-    }, 0);
-  }, [donations]);
+      return acc.add(
+        ethers.utils.parseUnits(
+          donation.amount === "" ? "0" : donation.amount,
+          selectedPayoutToken.decimal
+        )
+      );
+    }, BigNumber.from(0));
+  }, [donations, selectedPayoutToken.decimal]);
 
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
@@ -79,7 +79,7 @@ export default function ViewCart() {
 
   const [cart, , handleRemoveProjectsFromCart] = useCart();
 
-  const [fixedDonation, setFixedDonation] = useState<number>();
+  const [fixedDonation, setFixedDonation] = useState<string>("");
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
@@ -421,9 +421,8 @@ export default function ViewCart() {
                 id={"input-donationamount"}
                 min="0"
                 value={fixedDonation ?? ""}
-                type="number"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setFixedDonation(Number(e.target.value));
+                  setFixedDonation(e.target.value);
                 }}
                 className="w-16 md:w-24"
               />
@@ -434,7 +433,7 @@ export default function ViewCart() {
                 type="button"
                 $variant="outline"
                 onClick={() => {
-                  updateAllDonations(fixedDonation ?? 0);
+                  updateAllDonations(fixedDonation);
                 }}
                 className="float-right md:float-none text-xs px-1 py-2 text-purple-600 border-0"
               >
@@ -525,7 +524,7 @@ export default function ViewCart() {
               min="0"
               value={
                 donations.find(
-                  (donation: CartDonation) =>
+                  (donation) =>
                     donation.projectRegistryId ===
                     props.project.projectRegistryId
                 )?.amount
@@ -539,20 +538,22 @@ export default function ViewCart() {
                   props.project.applicationIndex
                 );
               }}
-              className="w-24"
+              className="w-48"
             />
             <p className="m-auto">{selectedPayoutToken.name}</p>
             {payoutTokenPrice && (
               <div className="m-auto px-2 min-w-max">
                 <span className="text-[14px] text-grey-400 ">
                   ${" "}
-                  {Number(
-                    donations.find(
-                      (donation: CartDonation) =>
-                        donation.projectRegistryId ===
-                        props.project.projectRegistryId
-                    )?.amount || 0
-                  ) * Number(payoutTokenPrice.toFixed(2))}
+                  {(
+                    Number(
+                      donations.find(
+                        (donation) =>
+                          donation.projectRegistryId ===
+                          props.project.projectRegistryId
+                      )?.amount || 0
+                    ) * payoutTokenPrice
+                  ).toFixed(2)}
                 </span>
               </div>
             )}
@@ -594,7 +595,7 @@ export default function ViewCart() {
               value={fixedDonation ?? ""}
               type="number"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setFixedDonation(Number(e.target.value));
+                setFixedDonation(e.target.value);
               }}
               className="w-16 md:w-24"
             />
@@ -617,7 +618,10 @@ export default function ViewCart() {
 
   function Summary() {
     const totalDonationInUSD =
-      payoutTokenPrice && totalDonation * Number(payoutTokenPrice.toFixed(2));
+      payoutTokenPrice &&
+      Number(
+        ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)
+      ) * Number(payoutTokenPrice.toFixed(2));
 
     return (
       <div className="shrink mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
@@ -626,7 +630,10 @@ export default function ViewCart() {
           <p>Your Contribution</p>
           <p>
             <span data-testid={"totalDonation"} className="mr-2">
-              {totalDonation.toString()}
+              {ethers.utils.formatUnits(
+                totalDonation,
+                selectedPayoutToken.decimal
+              )}
             </span>
             <span data-testid={"summaryPayoutToken"}>
               {selectedPayoutToken.name}
@@ -636,7 +643,7 @@ export default function ViewCart() {
         {payoutTokenPrice && (
           <div className="flex flex-row-reverse mt-2">
             <p className="text-[14px] text-grey-400">
-              $ {totalDonationInUSD?.toString()}
+              $ {totalDonationInUSD?.toFixed(2)}
             </p>
           </div>
         )}
@@ -660,7 +667,12 @@ export default function ViewCart() {
           aria-hidden="true"
         />
         <p className="font-bold">
-          <span className="mr-1">{totalDonation}</span>
+          <span className="mr-1">
+            {ethers.utils.formatUnits(
+              totalDonation,
+              selectedPayoutToken.decimal
+            )}
+          </span>
           <span className="mr-1">{selectedPayoutToken.name}</span>
           <span>Contributed</span>
         </p>
@@ -694,14 +706,14 @@ export default function ViewCart() {
     setDonations(newState);
   }
 
-  function updateAllDonations(amount: number) {
+  function updateAllDonations(amount: string) {
     const newDonations = cart.map((project) => {
       return {
         projectRegistryId: project.projectRegistryId,
-        amount: amount.toString(),
+        amount,
         projectAddress: project.recipient,
         applicationIndex: project.applicationIndex,
-      } as CartDonation;
+      } as DonationInput;
     });
 
     setDonations(newDonations);
@@ -857,12 +869,8 @@ export default function ViewCart() {
 
     // check if signer has enough token balance
     const accountBalance = selectedPayoutTokenBalance.data?.value;
-    const tokenBalance = ethers.utils.parseUnits(
-      totalDonation.toString(),
-      selectedPayoutToken.decimal
-    );
 
-    if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
+    if (!accountBalance || totalDonation.gt(accountBalance)) {
       setInsufficientBalance(true);
       return;
     } else {
@@ -978,9 +986,19 @@ export default function ViewCart() {
         setOpenInfoModal(false);
       }, modalDelayMs);
 
+      const bigNumberDonation = donations.map((donation) => {
+        return {
+          ...donation,
+          amount: ethers.utils.parseUnits(
+            donation.amount,
+            selectedPayoutToken.decimal
+          ),
+        } as CartDonation;
+      });
+
       await submitDonations({
         roundId: roundId,
-        donations: donations,
+        donations: bigNumberDonation,
         donationToken: selectedPayoutToken,
         totalDonation: totalDonation,
         votingStrategy: round.votingStrategy,
