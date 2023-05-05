@@ -345,7 +345,6 @@ export const loadAllChainsProjects =
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
   roundID: string,
-  reactEnv?: any
 ): Promise<any> => {
   const splitApplicationId = applicationId.split(":");
   const projectChainId = Number(splitApplicationId[0]);
@@ -377,8 +376,7 @@ export const fetchProjectApplicationInRound = async (
       {
         projectApplicationID,
         Id,
-      },
-      reactEnv
+      }
     );
 
     if (response.errors) {
@@ -401,7 +399,7 @@ export const fetchProjectApplicationInRound = async (
 };
 
 export const fetchProjectApplications =
-  (projectID: string, projectChainId: number, reactEnv: any /* ProcessEnv */) =>
+  (projectID: string, projectChainId: number) =>
   async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
@@ -441,8 +439,7 @@ export const fetchProjectApplications =
             chain.id,
             {
               projectApplicationID,
-            },
-            reactEnv
+            }
           );
 
           if (response.errors) {

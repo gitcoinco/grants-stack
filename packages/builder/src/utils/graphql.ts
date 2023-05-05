@@ -17,8 +17,6 @@ export enum ChainId {
  */
 const getGraphQLEndpoint = (
   chainId: number,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  reactEnv?: any // ProcessEnv
 ): string | undefined => {
   switch (chainId) {
     case ChainId.MAINNET_CHAIN_ID:
@@ -43,9 +41,8 @@ export const graphqlFetch = async (
   query: string,
   chainId: number,
   variables: object = {},
-  reactEnv?: any // ProcessEnv
 ) => {
-  const endpoint = getGraphQLEndpoint(chainId, reactEnv);
+  const endpoint = getGraphQLEndpoint(chainId);
   if (endpoint) {
     return fetch(endpoint, {
       method: "POST",
