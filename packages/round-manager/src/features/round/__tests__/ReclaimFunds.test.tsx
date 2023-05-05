@@ -6,12 +6,12 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { useTokenPrice } from "../../api/utils";
 import ReclaimFunds from "../ReclaimFunds";
 import { ProgressStatus, Round } from "../../api/types";
 import { useBalance, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
 import ViewRoundPage from "../ViewRoundPage";
 import { useParams } from "react-router-dom";
+import { useTokenPrice } from "common";
 
 jest.mock("wagmi");
 jest.mock("../../common/Auth");
@@ -35,6 +35,10 @@ jest.mock("../../common/Auth", () => ({
 
 jest.mock("../../api/utils", () => ({
   ...jest.requireActual("../../api/utils"),
+}));
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
   useTokenPrice: jest.fn(),
 }));
 

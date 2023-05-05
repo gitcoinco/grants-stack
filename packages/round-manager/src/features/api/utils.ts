@@ -1,6 +1,5 @@
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { BigNumber, ethers } from "ethers";
-import { useMemo, useState } from "react";
 import {
   ApplicationMetadata,
   IPFSObject,
@@ -8,6 +7,7 @@ import {
   MatchingStatsData,
   Program,
 } from "./types";
+import { RedstoneTokenIds } from "common";
 
 export enum ChainId {
   MAINNET = 1,
@@ -52,7 +52,7 @@ export type PayoutToken = {
   address: string;
   logo?: string;
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
-  coingeckoId?: string;
+  redstoneTokenId?: string;
   decimal: number;
 };
 
@@ -70,119 +70,125 @@ export const TokenNamesAndLogos: Record<string, string> = {
   OP: "./logos/optimism-logo.svg",
 };
 
-export const TokenAndCoinGeckoIds: Record<string, string> = {
-  FTM: "fantom",
-  BUSD: "binance-usd",
-  DAI: "dai",
-  ETH: "ethereum",
-};
-
-export const payoutTokens: PayoutToken[] = [
+const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
     address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
     decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
   {
     name: "ETH",
     chainId: ChainId.MAINNET,
     address: ethers.constants.AddressZero,
-    logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
     decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
+];
+
+const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
     decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
   {
     name: "ETH",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     address: ethers.constants.AddressZero,
-    logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
     decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
+];
+
+const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "WFTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-    logo: TokenNamesAndLogos["FTM"],
-    coingeckoId: TokenAndCoinGeckoIds["FTM"],
     decimal: 18,
+    logo: TokenNamesAndLogos["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
   },
   {
     name: "FTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: ethers.constants.AddressZero,
-    logo: TokenNamesAndLogos["FTM"],
-    coingeckoId: TokenAndCoinGeckoIds["FTM"],
     decimal: 18,
+    logo: TokenNamesAndLogos["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
   },
   {
     name: "BUSD",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
-    logo: TokenNamesAndLogos["BUSD"],
-    coingeckoId: TokenAndCoinGeckoIds["BUSD"],
     decimal: 18,
+    logo: TokenNamesAndLogos["BUSD"],
+    redstoneTokenId: RedstoneTokenIds["BUSD"],
   },
   {
     name: "DAI",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
     decimal: 18,
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
-    address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
     logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-    decimal: 18,
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
+];
+
+const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "BUSD",
     chainId: ChainId.GOERLI_CHAIN_ID,
     address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
-    logo: TokenNamesAndLogos["BUSD"],
-    coingeckoId: TokenAndCoinGeckoIds["BUSD"],
     decimal: 18,
+    logo: TokenNamesAndLogos["BUSD"],
+    redstoneTokenId: RedstoneTokenIds["BUSD"],
   },
   {
     name: "DAI",
     chainId: ChainId.GOERLI_CHAIN_ID,
     address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
     decimal: 18,
-  },
-  {
-    name: "LOLG",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D",
     logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-    decimal: 18,
+    redstoneTokenId: RedstoneTokenIds["DAI"],
   },
   {
     name: "ETH",
     chainId: ChainId.GOERLI_CHAIN_ID,
     address: ethers.constants.AddressZero,
-    logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
     decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
+
+const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
+  {
+    name: "DAI",
+    chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
+    address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+];
+
+export const payoutTokens = [
+  ...MAINNET_TOKENS,
+  ...OPTIMISM_MAINNET_TOKENS,
+  ...FANTOM_MAINNET_TOKENS,
+  ...GOERLI_TESTNET_TOKENS,
+  ...FANTOM_TESTNET_TOKENS,
+];
+
 /*TODO: merge this and the above into one list / function*/
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
   switch (chainId) {
@@ -433,53 +439,6 @@ export function typeToText(s: string) {
   if (s == "checkbox") return "Checkboxes";
   return (s.charAt(0).toUpperCase() + s.slice(1)).replace("-", " ");
 }
-
-export const useTokenPrice = (tokenId: string | undefined) => {
-  const [tokenPrice, setTokenPrice] = useState<number>();
-  const [error, setError] = useState<Response | undefined>();
-  const [loading, setLoading] = useState(false);
-
-  useMemo(() => {
-    setLoading(true);
-    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`;
-    fetch(tokenPriceEndpoint, {
-      headers: {
-        method: "GET",
-        Accept: "application/json",
-      },
-      mode: "no-cors",
-    })
-      .then((resp) => {
-        if (resp.ok) {
-          return resp.json();
-        } else {
-          setError(resp);
-          setLoading(false);
-        }
-      })
-      .then((data) => {
-        if (data) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const { usd } = data[tokenId!];
-          setTokenPrice(usd);
-        } else {
-          setError(data.message);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log("error fetching token price", { err });
-        setError(err);
-        setLoading(false);
-      });
-  }, [tokenId]);
-
-  return {
-    data: tokenPrice,
-    error,
-    loading,
-  };
-};
 
 /**
  * Fetch link to contract on Etherscan or other explorer

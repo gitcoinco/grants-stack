@@ -216,5 +216,5 @@ export type PayoutToken = {
   decimal: number;
   logo?: string;
   default?: boolean;
-  coingeckoId?: string;
+  redstoneTokenId?: string;
 };

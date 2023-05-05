@@ -8,12 +8,13 @@ import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useReclaimFunds } from "../../context/round/ReclaimFundsContext";
 import { ProgressStatus, Round } from "../api/types";
-import { payoutTokens, useTokenPrice } from "../api/utils";
+import { payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
+import { useTokenPrice } from "common";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;
@@ -157,7 +158,7 @@ function ReclaimFundsContent(props: {
     props.round &&
     props.round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable;
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.coingeckoId
+    matchingFundPayoutToken?.redstoneTokenId
   );
   const matchingFundsInUSD =
     matchingFunds && data && !loading && !error && matchingFunds * Number(data);
