@@ -27,16 +27,8 @@ export const voteOnRoundContract = async (
       ? nativeTokenAmount
       : BigNumber.from(0);
 
-  const gasPrice = await signer.getGasPrice();
-  const gasLimit = await roundImplementation.estimateGas.vote(encodedVotes, {
-    value: nativeTokenAmount,
-  });
-  const gasLimitWithBuffer = gasLimit.mul(2); // increase gas limit by 2x
-
   const tx = await roundImplementation.vote(encodedVotes, {
-    value: nativeTokenAmount,
-    gasPrice,
-    gasLimit: gasLimitWithBuffer,
+    value: amountInWei,
   });
 
   const receipt = await tx.wait();
@@ -77,17 +69,7 @@ export const approveTokenOnContract = async (
     return;
   }
 
-  const gasPrice = await signer.getGasPrice();
-  const gasLimit = await tokenContract.estimateGas.approve(
-    votingStrategy,
-    amount
-  );
-  const gasLimitWithBuffer = gasLimit.mul(2); // increase gas limit by 2x
-
-  const approveTx = await tokenContract.approve(votingStrategy, amount, {
-    gasPrice,
-    gasLimit: gasLimitWithBuffer,
-  });
+  const approveTx = await tokenContract.approve(votingStrategy, amount);
 
   await approveTx.wait();
 };
