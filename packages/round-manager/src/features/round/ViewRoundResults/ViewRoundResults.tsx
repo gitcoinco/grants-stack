@@ -1,19 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
-import {
-  ExclamationCircleIcon as NoInformationIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/outline";
-import { DownloadIcon } from "@heroicons/react/solid";
-import {
-  DropzoneInputProps,
-  DropzoneRootProps,
-  useDropzone,
-} from "react-dropzone";
-import { RefreshIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
+import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
+import { DownloadIcon, UploadIcon } from "@heroicons/react/solid";
+import { useDropzone } from "react-dropzone";
+import { ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
+import { Button } from "common/src/styles";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
 import {
   MatchingStatsData,
@@ -33,6 +27,11 @@ import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
 import { TransactionResponse } from "@ethersproject/providers";
+import { payoutTokens } from "../../api/utils";
+
+type RevisedMatch = Match & {
+  revisedMatch: bigint;
+};
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -49,13 +48,92 @@ const distributionOptions = [
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
 
+// this hook manages the state of the matching funds,
+// fetching revised matches and merging them with the original matches
+function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
+  const originalMatches = useRoundMatchingFunds(roundId);
+  const revisedMatches = useRoundMatchingFunds(roundId, overridesFile);
+
+  const isRevised = Boolean(overridesFile) && !revisedMatches.isLoading;
+
+  const error = revisedMatches.error || originalMatches.error;
+  const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
+
+  const matches = useMemo(() => {
+    if (!originalMatches.data || !revisedMatches.data || error) {
+      return undefined;
+    }
+
+    const revisedMatchesMap = new Map<string, Match>(
+      (revisedMatches?.data ?? []).map((match) => [match.applicationId, match])
+    );
+
+    const mergedMatches: RevisedMatch[] = originalMatches.data.flatMap(
+      (match) => {
+        const revisedMatch = revisedMatchesMap.get(match.applicationId);
+
+        if (revisedMatch) {
+          return [
+            {
+              ...match,
+              contributionsCount: revisedMatch.contributionsCount,
+              revisedMatch: revisedMatch.matched,
+            },
+          ];
+        }
+
+        return [];
+      }
+    );
+
+    mergedMatches.sort((a, b) => {
+      if (a.matched > b.matched) {
+        return -1;
+      }
+
+      if (a.matched === b.matched) {
+        return 0;
+      }
+
+      return 1;
+    });
+
+    return mergedMatches;
+  }, [originalMatches.data, revisedMatches.data, error]);
+
+  return {
+    matches,
+    isLoading,
+    error,
+    isRevised,
+    mutate() {
+      revisedMatches.mutate();
+      originalMatches.mutate();
+    },
+  };
+}
+
 export default function ViewRoundResults() {
   const { chain } = useNetwork();
   const { id } = useParams();
   const navigate = useNavigate();
   const roundId = utils.getAddress(id as string);
-  const { data: matches, isLoading: isLoadingMatchingFunds } =
-    useRoundMatchingFunds(roundId);
+  const [overridesFileDraft, setOverridesFileDraft] = useState<
+    undefined | File
+  >(undefined);
+  const [overridesFile, setOverridesFile] = useState<undefined | File>(
+    undefined
+  );
+  const matchingTableRef = useRef<HTMLDivElement>(null);
+
+  const {
+    matches,
+    isRevised: areMatchingFundsRevised,
+    error: matchingFundsError,
+    isLoading: isLoadingMatchingFunds,
+    mutate: mutateMatchingFunds,
+  } = useRevisedMatchingFunds(roundId, overridesFile);
+
   const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
@@ -66,33 +144,16 @@ export default function ViewRoundResults() {
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
   );
   const network = useNetwork();
+  const matchToken =
+    round &&
+    payoutTokens.find(
+      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+    );
 
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
   >("keep");
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file: File) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result) {
-          /**/
-        }
-      };
-      reader.readAsText(file);
-    });
-  }, []);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    noClick: true,
-    noKeyboard: true,
-  });
-
-  const onRecalculateResults = () => {
-    // Logic for recalculating results goes here
-  };
 
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
@@ -121,7 +182,7 @@ export default function ViewRoundResults() {
         projectPayoutAddress: match.payoutAddress,
         projectId: match.projectId,
         matchPoolPercentage: 0,
-        matchAmountInToken: BigNumber.from(match.matched),
+        matchAmountInToken: BigNumber.from(match.revisedMatch),
       }));
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
@@ -171,7 +232,7 @@ export default function ViewRoundResults() {
     return <NoInformationContent />;
   }
 
-  if (isLoadingRound || isLoadingMatchingFunds) {
+  if (isLoadingRound) {
     return <Spinner text="We're fetching the matching data." />;
   }
 
@@ -219,72 +280,138 @@ export default function ViewRoundResults() {
                 </a>
               </div>
               <div
-                className="flex flex-col mt-4"
+                className="flex mt-6 pt-6 mb-4 border-t border-gray-100"
                 data-testid="match-stats-title"
+                ref={matchingTableRef}
               >
-                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
-                  Matching Distribution
+                <span className="text-sm leading-5 text-gray-500 font-semibold text-left">
+                  {areMatchingFundsRevised
+                    ? "Revised Matching Distribution"
+                    : "Matching Distribution"}
                 </span>
+                <span className="text-sm leading-5 text-gray-300 text-left ml-2">
+                  Preview
+                </span>
+                {matches && (
+                  <span className="text-sm leading-5 text-violet-400 text-left ml-auto">
+                    ({matches.length}) Projects
+                  </span>
+                )}
               </div>
-              <div className="col-span-3 border rounded p-4 row-span-2 overflow-y-auto max-h-52">
-                <table
-                  className="table-auto border-separate border-spacing-y-4 h-full w-full"
-                  data-testid="match-stats-table"
-                >
-                  <thead>
-                    <tr>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        Projects
-                      </th>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        No. of Contributions
-                      </th>
-                      <th className="text-sm leading-5 text-gray-400 text-left">
-                        Est. Matching %
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {round &&
-                      matches &&
-                      matches.map((match: Match) => {
-                        const percentage =
-                          Number(
-                            (BigInt(1000000) * match.matched) /
-                              round.matchAmount
-                          ) / 10000;
-                        return (
-                          <tr key={match.applicationId}>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                              {match.projectName}
-                            </td>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                              {match.contributionsCount}
-                            </td>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                              {percentage.toString()}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex flex-col mt-4 w-min">
-                <button
-                  onClick={() => {
-                    /* Download matching distribution data as csv */
-                    if (!matches) {
-                      return;
-                    }
+              {isLoadingMatchingFunds ? (
+                <Spinner text="We're fetching the matching data." />
+              ) : (
+                <div>
+                  {matchingFundsError && (
+                    <div className="p-4 bg-red-50 text-red-400 my-4">
+                      <div className="font-bold text-red-500 text-sm">
+                        Something went wrong while loading the matching
+                        distribution:
+                      </div>
+                      {matchingFundsError?.message}
+                    </div>
+                  )}
+                  {matches && (
+                    <>
+                      <div className="col-span-3 border border-gray-100 rounded p-4 row-span-2 overflow-y-auto max-h-80">
+                        <table
+                          className="table-fixed border-separate h-full w-full"
+                          data-testid="match-stats-table"
+                        >
+                          <thead className="font-normal">
+                            <tr>
+                              <th className="text-sm leading-5 pr-2 text-gray-500 text-left">
+                                Project Name
+                              </th>
+                              <th className="text-sm leading-5 px-2 text-gray-500 text-left w-40">
+                                Project ID
+                              </th>
+                              <th className="text-sm leading-5 px-2 text-gray-500 text-left w-40">
+                                No. of Contributions
+                              </th>
+                              <th className="text-sm leading-5 px-2 text-gray-500 text-left">
+                                {areMatchingFundsRevised
+                                  ? "Original Matching Amount"
+                                  : "Matching Amount"}
+                              </th>
+                              {areMatchingFundsRevised && (
+                                <th className="text-sm leading-5 px-2 text-gray-500 text-left">
+                                  New Matching Amount
+                                </th>
+                              )}
+                              <th className="text-sm leading-5 px-2 text-gray-500 text-left w-32">
+                                Matching %
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {round &&
+                              matches &&
+                              matches.map((match) => {
+                                const percentage =
+                                  Number(
+                                    (BigInt(1000000) * match.revisedMatch) /
+                                      round.matchAmount
+                                  ) / 10000;
+                                return (
+                                  <tr key={match.applicationId}>
+                                    <td className="text-sm leading-5 py-2 pr-2 text-gray-400 text-left text-ellipsis overflow-hidden whitespace-nowrap">
+                                      {match.projectName}
+                                    </td>
+                                    <td className="text-sm leading-5 px-2 text-gray-400 text-left text-ellipsis overflow-hidden">
+                                      {match.projectId}
+                                    </td>
+                                    <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                                      {match.contributionsCount}
+                                    </td>
+                                    <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                                      {Number(
+                                        utils.formatUnits(
+                                          match.matched,
+                                          matchToken?.decimal
+                                        )
+                                      ).toFixed(4)}{" "}
+                                      {matchToken?.name}
+                                    </td>
+                                    {areMatchingFundsRevised && (
+                                      <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                                        {Number(
+                                          utils.formatUnits(
+                                            match.revisedMatch,
+                                            matchToken?.decimal
+                                          )
+                                        ).toFixed(4)}{" "}
+                                        {matchToken?.name}
+                                      </td>
+                                    )}
+                                    <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                                      {percentage.toString()}%
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="flex flex-col mt-4 w-min">
+                        <button
+                          onClick={() => {
+                            /* Download matching distribution data as csv */
+                            if (!matches) {
+                              return;
+                            }
 
-                    downloadArrayAsCsv(matches, "matches.csv");
-                  }}
-                  className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
-                >
-                  <DownloadIcon className="h-5 w-5" /> CSV
-                </button>
-              </div>
+                            downloadArrayAsCsv(matches, "matches.csv");
+                          }}
+                          className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
+                        >
+                          <DownloadIcon className="h-5 w-5" /> CSV
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
               <div className="flex flex-col mt-4 gap-1 mb-3">
                 <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1">
                   Round Saturation
@@ -342,6 +469,7 @@ export default function ViewRoundResults() {
                   Upload a CSV with the finalized Vote Coefficient overrides{" "}
                   <b>only</b>. For instructions, click{" "}
                   <a
+                    className="underline"
                     href={
                       "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/program-managers/how-to-view-your-round-results"
                     }
@@ -350,43 +478,69 @@ export default function ViewRoundResults() {
                   </a>
                   .
                 </div>
-                <div className="text-sm leading-5 text-left flex items-start justify-start">
+                <div className="text-sm pt-2 leading-5 text-left flex items-start justify-start">
                   <ExclamationCircleIcon
-                    className={"w-8 h-8 text-gray-500 mr-2.5 -mt-1"}
+                    className={"w-6 h-6 text-gray-500 mr-2.5"}
                   />
                   If you navigate away from this page, your data will be lost.
                   You will be able to re-upload data as much as you’d like, but
                   it will not be saved to the contract until you finalize
                   results.
                 </div>
-                <UploadJSON
-                  rootProps={getRootProps()}
-                  inputProps={getInputProps()}
-                  matchingData={[]}
-                  setCustomMatchingData={() => {
-                    /**/
+                <FileUploader
+                  file={overridesFileDraft}
+                  onSelectFile={(file: File) => {
+                    setOverridesFileDraft(file);
                   }}
                 />
-                <button
-                  onClick={onRecalculateResults}
-                  className="w-fit bg-violet-100 hover:bg-violet-200 text-violet-400 font-medium py-2 px-4 mt-4 rounded flex items-center gap-2"
+                <Button
+                  type="button"
+                  className="mt-4 mr-auto"
+                  $variant="secondary"
+                  onClick={() => {
+                    setOverridesFile(overridesFileDraft);
+                    // force a refresh each time fot better ux
+                    mutateMatchingFunds();
+
+                    // make sure table is in view
+                    if (matchingTableRef.current) {
+                      window.scrollTo({
+                        top: matchingTableRef.current.offsetTop,
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                  disabled={overridesFileDraft === undefined}
                 >
-                  <RefreshIcon className="h-5 w-5" />
-                  Recalculate results
-                </button>
+                  <UploadIcon className="h-5 w-5 inline mr-2" />
+                  <span>Upload and revise</span>
+                </Button>
                 <hr className="my-4" />
                 {!isReadyForPayout && (
                   <>
-                    <button
-                      onClick={() => {
-                        setWarningModalOpen(true);
-                      }}
-                      className="self-end w-fit bg-white hover:bg-pink-200 border border-pink-400 text-pink-400 py-2
-                   mt-2 px-3 rounded flex items-center gap-2"
-                    >
-                      Finalize Results
-                    </button>
-                    <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
+                    <div className="ml-auto">
+                      {areMatchingFundsRevised && (
+                        <button
+                          onClick={() => {
+                            setOverridesFile(undefined);
+                            mutateMatchingFunds();
+                          }}
+                          className="w-fit bg-white border border-gray-100 text-black py-2 mt-2 px-3 rounded gap-2 mr-2"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setWarningModalOpen(true);
+                        }}
+                        className="self-end w-fit bg-violet-400 hover:bg-pink-200 text-white py-2
+                           mt-2 px-3 rounded"
+                      >
+                        Finalize Results
+                      </button>
+                    </div>
+                    <span className="text-sm leading-5 text-gray-400 mt-5 text-right">
                       The contract will be locked once results are finalized.
                       You will not be able to change the results after you
                       finalize.
@@ -443,74 +597,38 @@ export default function ViewRoundResults() {
   );
 }
 
-export function UploadJSON(props: {
-  rootProps: DropzoneRootProps;
-  inputProps: DropzoneInputProps;
-  matchingData: MatchingStatsData[];
-  setCustomMatchingData: (customMatchingStats: MatchingStatsData[]) => void;
+export function FileUploader(props: {
+  file: File | undefined;
+  onSelectFile: (file: File) => void;
 }) {
-  const [projectIDMismatch] = useState(false);
-  const [matchingPerecentMismatch] = useState(false);
+  const { onSelectFile } = props;
 
-  // TODO: implement this when file upload is ready
-  // const projectIDs = props.matchingData?.map((data) => data.projectId);
-  //
-  // const matchingDataSchema = yup.array().of(
-  //   yup.object().shape({
-  //     projectName: yup.string().required(),
-  //     projectId: yup.string().required(),
-  //     uniqueContributorsCount: yup.number().required(),
-  //     matchPoolPercentage: yup.number().required(),
-  //   })
-  // );
+  const onDrop = useCallback(
+    (files: File[]) => {
+      if (files[0]) {
+        onSelectFile(files[0]);
+        return;
+      }
+    },
+    [onSelectFile]
+  );
 
-  /* TODO(1474): adapt this to parse and validate csv instead of JSON + type safety */
-  // const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
-  //   event.preventDefault();
-  //   const fileList = event.dataTransfer.files;
-  //   fileList[0].arrayBuffer().then((buffer) => {
-  //     const decoder = new TextDecoder("utf-8");
-  //     const jsonString = decoder.decode(buffer);
-  //     const jsonData = JSON.parse(jsonString);
-  //     try {
-  //       matchingDataSchema.validateSync(jsonData);
-  //       const jsonProjectIDs = jsonData.map((data: any) => data.projectId);
-  //       const jsonMatchPoolPercentages = jsonData.map(
-  //         (data: any) => data.matchPoolPercentage
-  //       );
-  //       const idMismatch = !projectIDs?.every((projectID) =>
-  //         jsonProjectIDs.includes(projectID)
-  //       );
-  //       const matchPoolPercentageMismatch = !(
-  //         Number(
-  //           jsonMatchPoolPercentages
-  //             ?.reduce(
-  //               (accumulator: number, currentValue: number) =>
-  //                 accumulator + currentValue,
-  //               0
-  //             )
-  //             .toFixed(4)
-  //         ) === 1
-  //       );
-  //       setProjectIDMismatch(idMismatch);
-  //       setMatchingPerecentMismatch(matchPoolPercentageMismatch);
-  //       !idMismatch &&
-  //         !matchPoolPercentageMismatch &&
-  //         props.setCustomMatchingData(jsonData);
-  //     } catch (error) {
-  //       props.setCustomMatchingData([]);
-  //     }
-  //   });
-  // };
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: { "text/csv": [] },
+    noClick: true,
+    noKeyboard: true,
+  });
 
   return (
-    <div className="pt-2 flex flex-col items-start" {...props.rootProps}>
+    <div className="pt-2 flex flex-col items-start" {...getRootProps()}>
       <div
         className="flex items-center justify-center w-2/4 mt-4"
         data-testid="dropzone"
       >
-        <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
+        <label className="flex flex-col rounded-lg border border-dashed border-gray-100 w-full h-42 p-10 group text-center">
           <div className="h-full w-full text-center flex flex-col justify-center items-center  ">
+            <span className="font-bold block mb-4">{props.file?.name}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -525,9 +643,9 @@ export function UploadJSON(props: {
                 d="M24 32.5V19.75m0 0l6 6m-6-6l-6 6M13.5 39.5a9 9 0 01-2.82-17.55 10.5 10.5 0 0120.465-4.66 6 6 0 017.517 7.696A7.504 7.504 0 0136 39.5H13.5z"
               />
             </svg>
-            <p className="pointer-none text-gray-500 ">
+            <p className="pointer-none text-grey-400">
               <span>
-                <a className="text-purple-600 hover:underline">Upload a file</a>{" "}
+                <a className="text-violet-400 hover:underline">Upload a file</a>{" "}
                 or drag and drop
               </span>
               <br />
@@ -538,32 +656,10 @@ export function UploadJSON(props: {
             type="file"
             className="hidden"
             id="file-input"
-            {...props.inputProps}
+            {...getInputProps()}
           />
         </label>
       </div>
-      {projectIDMismatch && (
-        <p
-          data-testid="project-id-mismatch"
-          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm w-2/4"
-        >
-          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-          <span>
-            The project IDs in the JSON file do not match actual project IDs.
-          </span>
-        </p>
-      )}
-      {matchingPerecentMismatch && (
-        <p
-          data-testid="matching-perecent-mismatch"
-          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm w-2/4"
-        >
-          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-          <span>
-            Matching percent decimal in the JSON file does not add up to 1.
-          </span>
-        </p>
-      )}
     </div>
   );
 }
