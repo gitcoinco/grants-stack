@@ -150,11 +150,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   }
 
   const disablePastAndBeforeRoundStartDate = (current: moment.Moment) => {
-    return (
-      disablePastDate(current) &&
-      current.isBefore(roundStartDate) &&
-      current.isBefore(applicationEndDate)
-    );
+    return disablePastDate(current);
   };
 
   function disableBeforeApplicationEndDate(current: moment.Moment) {
