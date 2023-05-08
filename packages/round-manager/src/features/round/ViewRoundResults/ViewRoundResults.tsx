@@ -64,11 +64,8 @@ function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
       return undefined;
     }
 
-    const revisedMatchesMap = new Map<string, bigint>(
-      (revisedMatches?.data ?? []).map((match) => [
-        match.applicationId,
-        match.matched,
-      ])
+    const revisedMatchesMap = new Map<string, Match>(
+      (revisedMatches?.data ?? []).map((match) => [match.applicationId, match])
     );
 
     const mergedMatches: RevisedMatch[] = originalMatches.data.flatMap(
@@ -79,7 +76,8 @@ function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
           return [
             {
               ...match,
-              revisedMatch,
+              contributionsCount: revisedMatch.contributionsCount,
+              revisedMatch: revisedMatch.matched,
             },
           ];
         }
@@ -354,7 +352,7 @@ export default function ViewRoundResults() {
                               matches.map((match) => {
                                 const percentage =
                                   Number(
-                                    (BigInt(1000000) * match.matched) /
+                                    (BigInt(1000000) * match.revisedMatch) /
                                       round.matchAmount
                                   ) / 10000;
                                 return (
