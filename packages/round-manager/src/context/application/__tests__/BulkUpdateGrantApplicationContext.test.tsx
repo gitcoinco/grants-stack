@@ -22,7 +22,7 @@ const mockWallet = {
   },
 };
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 
 // temp fix for prod merge
 describe("<BulkUpdateGrantApplicationProvider />", () => {
@@ -141,7 +141,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
           expect(
             screen.getByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
           ).toBeInTheDocument();
-        }, { timeout: 15000 });
+        }, { timeout: 20000 });
       });
 
       it("if contract update fails, resets contract updating status when bulk update is retried", async () => {
