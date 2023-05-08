@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback, useState, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -27,6 +27,11 @@ import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
 import { TransactionResponse } from "@ethersproject/providers";
+import { payoutTokens } from "../../api/utils";
+
+type RevisedMatch = Match & {
+  revisedMatch: bigint;
+};
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -43,6 +48,73 @@ const distributionOptions = [
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
 
+// this hook manages the state of the matching funds,
+// fetching revised matches and merging them with the original matches
+function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
+  const originalMatches = useRoundMatchingFunds(roundId);
+  const revisedMatches = useRoundMatchingFunds(roundId, overridesFile);
+
+  const isRevised = Boolean(overridesFile) && !revisedMatches.isLoading;
+
+  const error = revisedMatches.error || originalMatches.error;
+  const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
+
+  const matches = useMemo(() => {
+    if (!originalMatches.data || !revisedMatches.data) {
+      return undefined;
+    }
+
+    const revisedMatchesMap = new Map<string, bigint>(
+      (revisedMatches?.data ?? []).map((match) => [
+        match.applicationId,
+        match.matched,
+      ])
+    );
+
+    const mergedMatches: RevisedMatch[] = originalMatches.data.flatMap(
+      (match) => {
+        const revisedMatch = revisedMatchesMap.get(match.applicationId);
+
+        if (revisedMatch) {
+          return [
+            {
+              ...match,
+              revisedMatch,
+            },
+          ];
+        }
+
+        return [];
+      }
+    );
+
+    mergedMatches.sort((a, b) => {
+      if (a.matched > b.matched) {
+        return -1;
+      }
+
+      if (a.matched === b.matched) {
+        return 0;
+      }
+
+      return 1;
+    });
+
+    return mergedMatches;
+  }, [originalMatches.data, revisedMatches.data]);
+
+  return {
+    matches,
+    isLoading,
+    error,
+    isRevised,
+    mutate() {
+      revisedMatches.mutate();
+      originalMatches.mutate();
+    },
+  };
+}
+
 export default function ViewRoundResults() {
   const { chain } = useNetwork();
   const { id } = useParams();
@@ -57,11 +129,13 @@ export default function ViewRoundResults() {
   const matchingTableRef = useRef<HTMLDivElement>(null);
 
   const {
-    data: matches,
+    matches,
+    isRevised: areMatchingFundsRevised,
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
-  } = useRoundMatchingFunds(roundId, overridesFile);
+  } = useRevisedMatchingFunds(roundId, overridesFile);
+
   const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
@@ -72,6 +146,11 @@ export default function ViewRoundResults() {
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
   );
   const network = useNetwork();
+  const matchToken =
+    round &&
+    payoutTokens.find(
+      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+    );
 
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
@@ -105,7 +184,7 @@ export default function ViewRoundResults() {
         projectPayoutAddress: match.payoutAddress,
         projectId: match.projectId,
         matchPoolPercentage: 0,
-        matchAmountInToken: BigNumber.from(match.matched),
+        matchAmountInToken: BigNumber.from(match.revisedMatch),
       }));
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
@@ -159,6 +238,8 @@ export default function ViewRoundResults() {
     return <Spinner text="We're fetching the matching data." />;
   }
 
+  console.log(matches);
+
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
       <p className="text-xl font-semibold leading-6 mb-10">Round Results</p>
@@ -203,13 +284,23 @@ export default function ViewRoundResults() {
                 </a>
               </div>
               <div
-                className="flex flex-col mt-4"
+                className="flex mt-6 pt-6 mb-4 border-t border-gray-100"
                 data-testid="match-stats-title"
                 ref={matchingTableRef}
               >
-                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
-                  Matching Distribution
+                <span className="text-sm leading-5 text-gray-500 font-semibold text-left">
+                  {areMatchingFundsRevised
+                    ? "Revised Matching Distribution"
+                    : "Matching Distribution"}
                 </span>
+                <span className="text-sm leading-5 text-gray-300 text-left ml-2">
+                  Preview
+                </span>
+                {matches && (
+                  <span className="text-sm leading-5 text-violet-400 text-left ml-auto">
+                    ({matches.length}) Projects
+                  </span>
+                )}
               </div>
               {isLoadingMatchingFunds ? (
                 <Spinner text="We're fetching the matching data." />
@@ -225,66 +316,104 @@ export default function ViewRoundResults() {
                     </div>
                   )}
                   {matches && (
-                    <div className="col-span-3 border rounded p-4 row-span-2 overflow-y-auto max-h-52">
-                      <table
-                        className="table-auto border-separate border-spacing-y-4 h-full w-full"
-                        data-testid="match-stats-table"
-                      >
-                        <thead>
-                          <tr>
-                            <th className="text-sm leading-5 text-gray-400 text-left">
-                              Projects
-                            </th>
-                            <th className="text-sm leading-5 text-gray-400 text-left">
-                              No. of Contributions
-                            </th>
-                            <th className="text-sm leading-5 text-gray-400 text-left">
-                              Est. Matching %
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {round &&
-                            matches &&
-                            matches.map((match: Match) => {
-                              const percentage =
-                                Number(
-                                  (BigInt(1000000) * match.matched) /
-                                    round.matchAmount
-                                ) / 10000;
-                              return (
-                                <tr key={match.applicationId}>
-                                  <td className="text-sm leading-5 text-gray-400 text-left">
-                                    {match.projectName}
-                                  </td>
-                                  <td className="text-sm leading-5 text-gray-400 text-left">
-                                    {match.contributionsCount}
-                                  </td>
-                                  <td className="text-sm leading-5 text-gray-400 text-left">
-                                    {percentage.toString()}%
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                  <div className="flex flex-col mt-4 w-min">
-                    <button
-                      onClick={() => {
-                        /* Download matching distribution data as csv */
-                        if (!matches) {
-                          return;
-                        }
+                    <>
+                      <div className="col-span-3 border border-gray-100 rounded p-4 row-span-2 overflow-y-auto max-h-80">
+                        <table
+                          className="table-fixed border-separate h-full w-full"
+                          data-testid="match-stats-table"
+                        >
+                          <thead className="font-normal">
+                            <tr>
+                              <th className="text-sm leading-5 pr-2 text-gray-500 text-left">
+                                Project Name
+                              </th>
+                              <th className="text-sm leading-5 px-2 text-gray-500 text-left w-40">
+                                Project ID
+                              </th>
+                              <th className="text-sm leading-5 px-2 text-gray-500 text-left w-40">
+                                No. of Contributions
+                              </th>
+                              <th className="text-sm leading-5 px-2 text-gray-500 text-left">
+                                {areMatchingFundsRevised
+                                  ? "Original Matching Amount"
+                                  : "Matching Amount"}
+                              </th>
+                              {areMatchingFundsRevised && (
+                                <th className="text-sm leading-5 px-2 text-gray-500 text-left">
+                                  New Matching Amount
+                                </th>
+                              )}
+                              <th className="text-sm leading-5 px-2 text-gray-500 text-left w-32">
+                                Matching %
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {round &&
+                              matches &&
+                              matches.map((match) => {
+                                const percentage =
+                                  Number(
+                                    (BigInt(1000000) * match.matched) /
+                                      round.matchAmount
+                                  ) / 10000;
+                                return (
+                                  <tr key={match.applicationId}>
+                                    <td className="text-sm leading-5 py-2 pr-2 text-gray-400 text-left text-ellipsis overflow-hidden whitespace-nowrap">
+                                      {match.projectName}
+                                    </td>
+                                    <td className="text-sm leading-5 px-2 text-gray-400 text-left text-ellipsis overflow-hidden">
+                                      {match.projectId}
+                                    </td>
+                                    <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                                      {match.contributionsCount}
+                                    </td>
+                                    <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                                      {Number(
+                                        utils.formatUnits(
+                                          match.matched,
+                                          matchToken?.decimal
+                                        )
+                                      ).toFixed(4)}{" "}
+                                      {matchToken?.name}
+                                    </td>
+                                    {areMatchingFundsRevised && (
+                                      <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                                        {Number(
+                                          utils.formatUnits(
+                                            match.revisedMatch,
+                                            matchToken?.decimal
+                                          )
+                                        ).toFixed(4)}{" "}
+                                        {matchToken?.name}
+                                      </td>
+                                    )}
+                                    <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                                      {percentage.toString()}%
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="flex flex-col mt-4 w-min">
+                        <button
+                          onClick={() => {
+                            /* Download matching distribution data as csv */
+                            if (!matches) {
+                              return;
+                            }
 
-                        downloadArrayAsCsv(matches, "matches.csv");
-                      }}
-                      className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
-                    >
-                      <DownloadIcon className="h-5 w-5" /> CSV
-                    </button>
-                  </div>
+                            downloadArrayAsCsv(matches, "matches.csv");
+                          }}
+                          className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
+                        >
+                          <DownloadIcon className="h-5 w-5" /> CSV
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
               <div className="flex flex-col mt-4 gap-1 mb-3">
