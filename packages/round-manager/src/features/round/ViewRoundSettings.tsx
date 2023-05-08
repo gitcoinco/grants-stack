@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -7,7 +8,7 @@ import _ from "lodash";
 import moment from "moment";
 import { useState } from "react";
 import Datetime from "react-datetime";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Control, Controller, SubmitHandler, UseFormHandleSubmit, UseFormRegister, useForm } from "react-hook-form";
 import { useNetwork } from "wagmi";
 import { Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
@@ -18,13 +19,31 @@ import {
   supportTypes,
 } from "./RoundDetailForm";
 
-const ValidationSchema = RoundValidationSchema;
+const ValidationSchema = RoundValidationSchema.shape({
+  // todo:
+});
 
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
   const [editMode, setEditMode] = useState(false);
   const [existingRound,] = useState<Round | undefined>(round);
   const [editedRound, setEditedRound] = useState<Round | undefined>(undefined);
+  
+  const defaultRoundMetadata = {
+    ...((round as Partial<Round>)?.roundMetadata ?? {}),
+  };
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Round>({
+    defaultValues: {
+      ...round,
+      roundMetadata: defaultRoundMetadata,
+    },
+    resolver: yupResolver(ValidationSchema),
+  });
 
   // todo: keep the original data for the round in the UI state for cancel action and comparison
   const submit: SubmitHandler<Round> = async (values: Round) => {
@@ -130,24 +149,39 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
               <DetailsPage
                 round={round}
                 editMode={editMode}
-                onSubmit={onUpdateRound}
+                editedRound={editedRound as Round}
                 setEditedRound={setEditedRound}
+                control={control}
+                register={register}
+                handleSubmit={handleSubmit}
+                submitHandler={submit}
+                errors={errors}
               />
             </Tab.Panel>
             <Tab.Panel>
               <RoundApplicationPeriod
                 round={round}
                 editMode={editMode}
-                onSubmit={onUpdateRound}
+                editedRound={editedRound as Round}
                 setEditedRound={setEditedRound}
+                control={control}
+                register={register}
+                handleSubmit={handleSubmit}
+                submitHandler={submit}
+                errors={errors}
               />
             </Tab.Panel>
             <Tab.Panel>
               <Funding
                 round={round}
                 editMode={editMode}
-                onSubmit={onUpdateRound}
+                editedRound={editedRound as Round}
                 setEditedRound={setEditedRound}
+                control={control}
+                register={register}
+                handleSubmit={handleSubmit}
+                submitHandler={submit}
+                errors={errors}
               />
             </Tab.Panel>
           </Tab.Panels>
@@ -161,29 +195,20 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
 function DetailsPage(props: {
   round: Round;
   editMode: boolean;
-  onSubmit: () => void;
+  editedRound: Round;
   setEditedRound: (round: Round) => void;
+  control: Control<Round, any>;
+  register: UseFormRegister<Round>;
+  handleSubmit: UseFormHandleSubmit<Round>;
+  submitHandler: SubmitHandler<Round>;
+  errors: any;
 }) {
   const { round } = props;
   const { chain } = useNetwork();
-  const defaultRoundMetadata = {
-    ...((round as Partial<Round>)?.roundMetadata ?? {}),
-  };
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Round>({
-    defaultValues: {
-      ...round,
-      roundMetadata: defaultRoundMetadata,
-    },
-    resolver: yupResolver(ValidationSchema),
-  });
+
   return (
     <div className="w-full">
-      <form onSubmit={handleSubmit(props.onSubmit)}>
+      <form onSubmit={props.handleSubmit(props.submitHandler(props.editedRound))}>
         <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
           <div>
             <div
@@ -196,7 +221,7 @@ function DetailsPage(props: {
             <div className={"leading-8 font-normal text-grey-400"}>
               <Controller
                 name="roundMetadata.name"
-                control={control}
+                control={props.control}
                 render={({ field }) => (
                   <input
                     {...field}
@@ -247,7 +272,7 @@ function DetailsPage(props: {
         <div className={"leading-8 font-normal text-grey-400"}>
           <Controller
             name="roundMetadata.eligibility.description"
-            control={control}
+            control={props.control}
             render={({ field }) => (
               <input
                 type="text"
@@ -280,10 +305,10 @@ function DetailsPage(props: {
                 />
               ) : (
                 <SupportTypeDropdown
-                  register={register("roundMetadata.support")}
-                  control={control}
+                  register={props.register("roundMetadata.support")}
+                  control={props.control}
                   supportTypes={supportTypes}
-                  errors={errors}
+                  errors={props.errors}
                 />
               )}
             </div>
@@ -299,7 +324,7 @@ function DetailsPage(props: {
             <div className={"leading-8 font-normal text-grey-400"}>
               <Controller
                 name="roundMetadata.support.info"
-                control={control}
+                control={props.control}
                 render={({ field }) => (
                   <input
                     type="text"
@@ -359,28 +384,19 @@ function DetailsPage(props: {
 function RoundApplicationPeriod(props: {
   round: Round;
   editMode: boolean;
-  onSubmit: (data: Round) => void;
+  editedRound: Round;
   setEditedRound: (round: Round) => void;
+  control: Control<Round, any>;
+  register: UseFormRegister<Round>;
+  handleSubmit: UseFormHandleSubmit<Round>;
+  submitHandler: SubmitHandler<Round>;
+  errors: any;
 }) {
   const { round } = props;
-  const defaultRoundMetadata = {
-    ...((round as Partial<Round>)?.roundMetadata ?? {}),
-  };
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Round>({
-    defaultValues: {
-      ...round,
-      roundMetadata: defaultRoundMetadata,
-    },
-    resolver: yupResolver(ValidationSchema),
-  });
+
   return (
     <div className="w-full">
-      <form onSubmit={handleSubmit(props.onSubmit)}>
+      <form onSubmit={props.handleSubmit(props.submitHandler(props.editedRound))}>
         <span className="mt-4 inline-flex text-sm text-gray-600 mb-8">
           What are the dates for the Applications and Round voting period(s)?
         </span>
@@ -397,7 +413,7 @@ function RoundApplicationPeriod(props: {
               {props.editMode ? (
                 <Controller
                   name="applicationsStartTime"
-                  control={control}
+                  control={props.control}
                   render={({ field }) => (
                     <Datetime
                       {...field}
@@ -444,7 +460,7 @@ function RoundApplicationPeriod(props: {
               {props.editMode ? (
                 <Controller
                   name="applicationsEndTime"
-                  control={control}
+                  control={props.control}
                   render={({ field }) => (
                     <Datetime
                       {...field}
@@ -492,7 +508,7 @@ function RoundApplicationPeriod(props: {
               {props.editMode ? (
                 <Controller
                   name="roundStartTime"
-                  control={control}
+                  control={props.control}
                   render={({ field }) => (
                     <Datetime
                       {...field}
@@ -539,7 +555,7 @@ function RoundApplicationPeriod(props: {
               {props.editMode ? (
                 <Controller
                   name="roundEndTime"
-                  control={control}
+                  control={props.control}
                   render={({ field }) => (
                     <Datetime
                       {...field}
@@ -583,25 +599,15 @@ function RoundApplicationPeriod(props: {
 function Funding(props: {
   round: Round;
   editMode: boolean;
-  onSubmit: (data: Round) => void;
+  editedRound: Round;
   setEditedRound: (round: Round) => void;
+  control: Control<Round, any>;
+  register: UseFormRegister<Round>;
+  handleSubmit: UseFormHandleSubmit<Round>;
+  submitHandler: SubmitHandler<Round>;
+  errors: any;
 }) {
   const { round } = props;
-  const defaultRoundMetadata = {
-    ...((round as Partial<Round>)?.roundMetadata ?? {}),
-  };
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Round>({
-    defaultValues: {
-      ...round,
-      roundMetadata: defaultRoundMetadata,
-    },
-    resolver: yupResolver(ValidationSchema),
-  });
 
   const matchingFundPayoutToken =
     props.round &&
@@ -617,7 +623,7 @@ function Funding(props: {
 
   return (
     <div className="w-full">
-      <form onSubmit={handleSubmit(props.onSubmit)}>
+      <form onSubmit={props.handleSubmit(props.submitHandler(props.editedRound))}>
         <span className="mt-4 inline-flex text-lg font-light text-gray-600 mb-4">
           Funding Amount
         </span>
@@ -655,7 +661,7 @@ function Funding(props: {
                 disabled
               />
               <Controller
-                control={control}
+                control={props.control}
                 name="roundMetadata.quadraticFundingConfig.matchingFundsAvailable"
                 render={({ field }) => (
                   <input

@@ -73,5 +73,5 @@ describe("View Round", () => {
     );
 
     expect(screen.getByText(/Round Settings/i)).toBeInTheDocument();
-  })
+  });
 });
