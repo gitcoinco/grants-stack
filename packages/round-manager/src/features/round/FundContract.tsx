@@ -12,13 +12,12 @@ import { ProgressStatus, Round } from "../api/types";
 import {
   getTxExplorerForContract,
   payoutTokens,
-  useTokenPrice,
 } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { classNames } from "common";
+import { classNames, useTokenPrice } from "common";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -120,7 +119,7 @@ export default function FundContract(props: {
   } = useBalance(tokenDetail);
 
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.coingeckoId
+    matchingFundPayoutToken?.redstoneTokenId
   );
 
   const matchingFunds =

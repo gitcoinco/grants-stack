@@ -36,11 +36,6 @@ jest.mock("react-router-dom", () => ({
   useParams: jest.fn(),
 }));
 
-jest.mock("../../api/api", () => ({
-  ...jest.requireActual("../../api/api"),
-  useRoundMatchData: jest.fn(),
-}));
-
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
     chain: {},

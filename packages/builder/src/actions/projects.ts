@@ -344,8 +344,7 @@ export const loadAllChainsProjects =
 
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
-  roundID: string,
-  reactEnv?: any
+  roundID: string
 ): Promise<any> => {
   const splitApplicationId = applicationId.split(":");
   const projectChainId = Number(splitApplicationId[0]);
@@ -356,15 +355,17 @@ export const fetchProjectApplicationInRound = async (
     projectChainId,
     projectNumber,
     projectRegistryAddress
-  );
+  ).toLowerCase();
+
+  const Id = roundID.toLowerCase();
 
   try {
     const response: any = await graphqlFetch(
-      `query projectApplicationInRound($projectApplicationID: String, $roundID: String) {
+      `query projectApplicationInRound($projectApplicationID: String, $Id: String) {
           roundApplications(
             where: {
               project: $projectApplicationID,
-              round: $roundID
+              round: $Id
             }
           ) {
             status
@@ -374,9 +375,8 @@ export const fetchProjectApplicationInRound = async (
       projectChainId,
       {
         projectApplicationID,
-        roundID,
-      },
-      reactEnv
+        Id,
+      }
     );
 
     if (response.errors) {
@@ -399,8 +399,7 @@ export const fetchProjectApplicationInRound = async (
 };
 
 export const fetchProjectApplications =
-  (projectID: string, projectChainId: number, reactEnv: any /* ProcessEnv */) =>
-  async (dispatch: Dispatch) => {
+  (projectID: string, projectChainId: number) => async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
@@ -439,8 +438,7 @@ export const fetchProjectApplications =
             chain.id,
             {
               projectApplicationID,
-            },
-            reactEnv
+            }
           );
 
           if (response.errors) {

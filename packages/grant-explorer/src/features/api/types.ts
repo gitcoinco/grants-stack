@@ -1,6 +1,7 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { BigNumber } from "ethers";
 
 export type Network = "goerli" | "optimism" | "Fantom";
 
@@ -166,9 +167,16 @@ export type GrantApplicationId = string;
 export type ProjectRegistryId = string;
 export type recipient = string;
 
-export type CartDonation = {
+export type DonationInput = {
   projectRegistryId: ProjectRegistryId;
   amount: string;
+  projectAddress: recipient;
+  applicationIndex: number;
+};
+
+export type CartDonation = {
+  projectRegistryId: ProjectRegistryId;
+  amount: BigNumber;
   projectAddress: recipient;
   applicationIndex: number;
 };
@@ -216,5 +224,5 @@ export type PayoutToken = {
   decimal: number;
   logo?: string;
   default?: boolean;
-  coingeckoId?: string;
+  redstoneTokenId?: string;
 };

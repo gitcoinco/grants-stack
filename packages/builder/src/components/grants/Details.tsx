@@ -42,11 +42,7 @@ export default function Details({
   useEffect(() => {
     if (props.projectID) {
       dispatch(
-        fetchProjectApplications(
-          props.projectID,
-          Number(props.chainId),
-          process.env
-        )
+        fetchProjectApplications(props.projectID, Number(props.chainId))
       );
     }
   }, [dispatch, props.projectID, props.chainId]);

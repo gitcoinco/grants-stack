@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
-import { classNames } from "common";
+import { classNames, useTokenPrice } from "common";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
 import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
-import { formatCurrency, PayoutToken, payoutTokens, useTokenPrice } from "../api/utils";
+import { formatCurrency, PayoutToken, payoutTokens } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
@@ -96,7 +96,7 @@ function FinalizedRoundContent(props: { round: Round }) {
     )[0];
 
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.coingeckoId
+    matchingFundPayoutToken?.redstoneTokenId
   );
 
   useEffect(() => {

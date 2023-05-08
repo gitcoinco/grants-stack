@@ -1,4 +1,3 @@
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -21,6 +20,7 @@ import ProjectForm from "../base/ProjectForm";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import VerificationForm from "../base/VerificationForm";
 import Cross from "../icons/Cross";
+import PurpleNotificationBox from "../base/PurpleNotificationBox";
 
 function EditProject() {
   const params = useParams();
@@ -110,20 +110,10 @@ function EditProject() {
   }
 
   const editNotification = (
-    <div className="flex rounded-md p-4 bg-gitcoin-violet-100 mr-4">
-      <p className="flex">
-        <InformationCircleIcon
-          className="flex text-gitcoin-grey-300 fill-gitcoin-violet-400"
-          color="gitcoin-violet-500"
-          width={20}
-          height={20}
-        />
-      </p>
-      <p className="flex mx-5 text-sm text-gitcoin-violet-500 text=[14px]">
-        Please note that changes to project details will only be reflected on
-        subsequent grant round applications.
-      </p>
-    </div>
+    <PurpleNotificationBox>
+      Please note that changes to project details will only be reflected on
+      subsequent grant round applications.
+    </PurpleNotificationBox>
   );
 
   const currentSubText = (status: ProjectFormStatus) => {

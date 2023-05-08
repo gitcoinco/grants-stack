@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
 import { Provider } from "react-redux";
@@ -33,7 +33,6 @@ import {
   RoundContext,
   RoundState,
 } from "./context/round/RoundContext";
-import { QFDistribution } from "./features/api/api";
 import {
   ApplicationStatus,
   ApprovedProject,
@@ -130,6 +129,15 @@ export const makeApplication = (): GrantApplication => {
   };
 };
 
+export type QFDistribution = {
+  projectId: string;
+  matchAmountInUSD: number;
+  totalContributionsInUSD: number;
+  matchPoolPercentage: number;
+  matchAmountInToken: BigNumber;
+  projectPayoutAddress: string;
+  uniqueContributorsCount: number;
+};
 export const makeQFDistribution = (): QFDistribution => {
   return {
     projectId: faker.finance.ethereumAddress().toString(),
