@@ -16,7 +16,7 @@ export default function LinkManager({ linkProps }: { linkProps: LinkProps }) {
   const isActive =
     linkProps.displayType === RoundDisplayType.Active &&
     linkProps.applicationStatus === "APPROVED";
-  const disableExternalLink = linkProps.applicationStatus === "APPROVED";
+  const disableExternalLink = linkProps.applicationStatus !== "APPROVED";
 
   const isMobile = window.innerWidth < 768;
 
@@ -24,10 +24,8 @@ export default function LinkManager({ linkProps }: { linkProps: LinkProps }) {
     <div className="w-full">
       {linkProps.displayType === RoundDisplayType.Active ? (
         <Button
-          disabled={!disableExternalLink}
-          className={`bg-gitcoin-violet-100 flex p-2 my-4 rounded-md flex text-[12px] mr-1 text-violet-400 ${
-            isActive && "cursor-not-allowed"
-          }`}
+          disabled={disableExternalLink}
+          className="bg-gitcoin-violet-100 flex p-2 my-4 rounded-md flex text-[12px] mr-1 text-violet-400"
           width={isMobile ? "100%" : "auto"}
         >
           {isActive ? (

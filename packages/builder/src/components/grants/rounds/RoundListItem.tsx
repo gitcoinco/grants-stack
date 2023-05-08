@@ -181,7 +181,8 @@ export default function RoundListItem({
           {renderApplicationBadge(displayType!)}
         </Box>
         <Box className="flex-1 my-2">
-          {displayType === RoundDisplayType.Active ? (
+          {displayType === RoundDisplayType.Active &&
+          applicationData?.status ? (
             <LinkManager
               linkProps={{
                 displayType: RoundDisplayType.Active,
@@ -193,7 +194,7 @@ export default function RoundListItem({
               }}
             />
           ) : null}
-          {/* todo: add check for application status */}
+
           {displayType === RoundDisplayType.Current ? (
             <LinkManager
               linkProps={{
@@ -204,17 +205,6 @@ export default function RoundListItem({
               }}
             />
           ) : null}
-          {/* {displayType === RoundDisplayType.Past ? (
-            <LinkManager
-              linkProps={{
-                displayType: RoundDisplayType.Past,
-                link: `https://manager.gitcoin.co/#/round/${props.roundAddress}`,
-                text: "View Stats",
-                enableStats: enableStatusButton(),
-                applicationStatus: applicationData?.status!,
-              }}
-            />
-          ) : null} */}
         </Box>
       </Box>
     </Box>
