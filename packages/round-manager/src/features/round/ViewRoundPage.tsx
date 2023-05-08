@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { datadogLogs } from "@datadog/browser-logs";
 import { Tab } from "@headlessui/react";
 import {
@@ -12,6 +13,7 @@ import {
   InboxIcon,
   UserGroupIcon,
 } from "@heroicons/react/solid";
+import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -19,13 +21,13 @@ import tw from "tailwind-styled-components";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { useRoundById } from "../../context/round/RoundContext";
+import { useDebugMode } from "../../hooks";
 import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
   Round,
 } from "../api/types";
-import { formatUTCDateAsISOString, getUTCTime } from "common";
 import AccessDenied from "../common/AccessDenied";
 import { useWallet } from "../common/Auth";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -40,10 +42,9 @@ import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
 import ViewFundGrantees from "./ViewFundGrantees";
+import ViewRoundResults from "./ViewRoundResults/ViewRoundResults";
 import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
-import ViewRoundResults from "./ViewRoundResults/ViewRoundResults";
-import { useDebugMode } from "../../hooks";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -307,7 +308,7 @@ export default function ViewRoundPage() {
                       <FundContract round={round} roundId={id} />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewRoundSettings round={round} />
+                      <ViewRoundSettings id={round?.id} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewRoundStats />

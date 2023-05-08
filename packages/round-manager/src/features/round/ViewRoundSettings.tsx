@@ -8,8 +8,16 @@ import _ from "lodash";
 import moment from "moment";
 import { useState } from "react";
 import Datetime from "react-datetime";
-import { Control, Controller, SubmitHandler, UseFormHandleSubmit, UseFormRegister, useForm } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  SubmitHandler,
+  UseFormHandleSubmit,
+  UseFormRegister,
+  useForm,
+} from "react-hook-form";
 import { useNetwork } from "wagmi";
+import { useRoundById } from "../../context/round/RoundContext";
 import { Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
 import { horizontalTabStyles } from "../common/Utils";
@@ -23,24 +31,24 @@ const ValidationSchema = RoundValidationSchema.shape({
   // todo:
 });
 
-export default function ViewRoundSettings(props: { round: Round | undefined }) {
-  const { round } = props;
+export default function ViewRoundSettings(props: { id?: string }) {
+  const { round, fetchRoundStatus, error } = useRoundById(
+    props.id?.toLowerCase()
+  );
   const [editMode, setEditMode] = useState(false);
-  const [existingRound,] = useState<Round | undefined>(round);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const [existingRound] = useState<Round>({ ...round! });
   const [editedRound, setEditedRound] = useState<Round | undefined>(undefined);
-  
-  const defaultRoundMetadata = {
-    ...((round as Partial<Round>)?.roundMetadata ?? {}),
-  };
+
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<Round>({
     defaultValues: {
       ...round,
-      roundMetadata: defaultRoundMetadata,
     },
     resolver: yupResolver(ValidationSchema),
   });
@@ -48,7 +56,11 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
   // todo: keep the original data for the round in the UI state for cancel action and comparison
   const submit: SubmitHandler<Round> = async (values: Round) => {
     const data = _.merge(round, values);
-    console.log("submit values merged (prev, new)", { existingRound, mergedRoundData: data });
+    //! log to show the updated round data to be sent to IPFS and onchain
+    console.log("submit values merged (prev, new)", {
+      existingRound,
+      mergedRoundData: data,
+    });
     setEditedRound(data);
   };
 
@@ -60,14 +72,8 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
     : "...";
   const hasRoundStarted = round.roundStartTime < new Date();
 
-  console.log("some testing logs", {
-    round,
-    hasRoundStarted,
-    editMode,
-    editedRound,
-  });
-
   const onCancelEdit = () => {
+    reset(round);
     setEditMode(!editMode);
   };
 
@@ -76,10 +82,9 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
   };
 
   const onUpdateRound = () => {
-    console.log("update round click");
     try {
-      console.log("entering try block");
       submit(editedRound as Round);
+      setEditMode(!editMode);
     } catch (e) {
       console.log("error", e);
     }
@@ -206,9 +211,11 @@ function DetailsPage(props: {
   const { round } = props;
   const { chain } = useNetwork();
 
+  console.log("errooooors", props.errors);
+
   return (
     <div className="w-full">
-      <form onSubmit={props.handleSubmit(props.submitHandler(props.editedRound))}>
+      <form>
         <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
           <div>
             <div
@@ -224,7 +231,7 @@ function DetailsPage(props: {
                 control={props.control}
                 render={({ field }) => (
                   <input
-                    {...field}
+                    {...props.register("roundMetadata.name")}
                     type="text"
                     className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                     defaultValue={round.roundMetadata.name}
@@ -396,7 +403,7 @@ function RoundApplicationPeriod(props: {
 
   return (
     <div className="w-full">
-      <form onSubmit={props.handleSubmit(props.submitHandler(props.editedRound))}>
+      <form>
         <span className="mt-4 inline-flex text-sm text-gray-600 mb-8">
           What are the dates for the Applications and Round voting period(s)?
         </span>
@@ -623,7 +630,7 @@ function Funding(props: {
 
   return (
     <div className="w-full">
-      <form onSubmit={props.handleSubmit(props.submitHandler(props.editedRound))}>
+      <form>
         <span className="mt-4 inline-flex text-lg font-light text-gray-600 mb-4">
           Funding Amount
         </span>
