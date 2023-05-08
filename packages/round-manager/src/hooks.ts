@@ -27,9 +27,9 @@ export function useAlloIndexerClient(): Client {
 }
 
 // TODO: stop ignoring params type
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useRoundMatchingFunds(
   roundId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: any,
   overrides?: Blob
 ) {
