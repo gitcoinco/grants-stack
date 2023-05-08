@@ -28,10 +28,14 @@ export function useAlloIndexerClient(): Client {
 
 // TODO: stop ignoring params type
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useRoundMatchingFunds(roundId: string, params?: any, overrides?: Blob) {
+export function useRoundMatchingFunds(
+  roundId: string,
+  params?: any,
+  overrides?: Blob
+) {
   const client = useAlloIndexerClient();
   return useSWR([roundId, "/matches", overrides], ([roundId]) => {
-    return client.getRoundMatchingFunds(roundId, params, overrides);
+    return client.getRoundMatchingFunds(roundId, overrides, params);
   });
 }
 
