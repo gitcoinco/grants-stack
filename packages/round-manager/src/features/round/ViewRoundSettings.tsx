@@ -23,12 +23,13 @@ const ValidationSchema = RoundValidationSchema;
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
   const [editMode, setEditMode] = useState(false);
+  const [existingRound,] = useState<Round | undefined>(round);
   const [editedRound, setEditedRound] = useState<Round | undefined>(undefined);
 
+  // todo: keep the original data for the round in the UI state for cancel action and comparison
   const submit: SubmitHandler<Round> = async (values: Round) => {
-    console.log("submit values", values);
     const data = _.merge(round, values);
-    console.log("submit values merged", data);
+    console.log("submit values merged (prev, new)", { existingRound, mergedRoundData: data });
     setEditedRound(data);
   };
 
@@ -231,7 +232,7 @@ function DetailsPage(props: {
                 type="text"
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                 defaultValue={chain?.name}
-                disabled={!props.editMode}
+                disabled
               />
             </div>
           </div>
