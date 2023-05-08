@@ -60,7 +60,7 @@ function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
   const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
 
   const matches = useMemo(() => {
-    if (!originalMatches.data || !revisedMatches.data) {
+    if (!originalMatches.data || !revisedMatches.data || error) {
       return undefined;
     }
 
@@ -99,7 +99,7 @@ function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
     });
 
     return mergedMatches;
-  }, [originalMatches.data, revisedMatches.data]);
+  }, [originalMatches.data, revisedMatches.data, error]);
 
   return {
     matches,
@@ -235,8 +235,6 @@ export default function ViewRoundResults() {
   if (isLoadingRound) {
     return <Spinner text="We're fetching the matching data." />;
   }
-
-  console.log(matches);
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -520,16 +518,29 @@ export default function ViewRoundResults() {
                 <hr className="my-4" />
                 {!isReadyForPayout && (
                   <>
-                    <button
-                      onClick={() => {
-                        setWarningModalOpen(true);
-                      }}
-                      className="self-end w-fit bg-white hover:bg-pink-200 border border-pink-400 text-pink-400 py-2
-                   mt-2 px-3 rounded flex items-center gap-2"
-                    >
-                      Finalize Results
-                    </button>
-                    <span className="text-sm leading-5 text-gray-400 mt-5 text-center">
+                    <div className="ml-auto">
+                      {areMatchingFundsRevised && (
+                        <button
+                          onClick={() => {
+                            setOverridesFile(undefined);
+                            mutateMatchingFunds();
+                          }}
+                          className="w-fit bg-white border border-gray-100 text-black py-2 mt-2 px-3 rounded gap-2 mr-2"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setWarningModalOpen(true);
+                        }}
+                        className="self-end w-fit bg-violet-400 hover:bg-pink-200 text-white py-2
+                           mt-2 px-3 rounded"
+                      >
+                        Finalize Results
+                      </button>
+                    </div>
+                    <span className="text-sm leading-5 text-gray-400 mt-5 text-right">
                       The contract will be locked once results are finalized.
                       You will not be able to change the results after you
                       finalize.
