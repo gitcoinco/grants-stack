@@ -19,3 +19,6 @@ beforeEach(() => {
   });
   window.IntersectionObserver = mockIntersectionObserver;
 });
+
+// @ts-expect-error I love jest
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
