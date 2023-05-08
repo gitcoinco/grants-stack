@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useState,
   useRef,
@@ -142,6 +142,9 @@ export default function ViewRoundResults() {
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
   } = useRevisedMatchingFunds(roundId, overrideSaturation, overridesFile);
+
+  const mutateMatchingFundsCallback = useCallback(mutateMatchingFunds, []);
+
   const debugModeEnabled = useDebugMode();
 
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
@@ -167,6 +170,7 @@ export default function ViewRoundResults() {
   const [sumTotalMatch, setSumTotalMatch] = useState<number>(0);
 
   useEffect(() => {
+    mutateMatchingFundsCallback();
     if (round && matches) {
       const sumTotalMatch = matches?.reduce(
         (acc: number, match: Match) => acc + Number(match.matchedUSD),
@@ -177,10 +181,6 @@ export default function ViewRoundResults() {
       setOverrideSaturation(distributionOption === "keep");
     }
   }, [round, matches, distributionOption]);
-
-  useEffect(() => {
-    mutateMatchingFunds();
-  }, [distributionOption, mutateMatchingFunds]);
 
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
