@@ -1,6 +1,15 @@
-import { Fragment, useContext, useState } from "react";
-
+import { Listbox, Transition } from "@headlessui/react";
+import {
+  CheckIcon,
+  InformationCircleIcon,
+  SelectorIcon,
+} from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { classNames } from "common";
+import { Input } from "common/src/styles";
+import _ from "lodash";
+import moment from "moment";
+import { Fragment, useContext, useState } from "react";
 import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
 import {
@@ -8,29 +17,18 @@ import {
   Controller,
   FieldErrors,
   SubmitHandler,
+  UseFormRegisterReturn,
   useController,
   useForm,
-  UseFormRegisterReturn,
 } from "react-hook-form";
-import * as yup from "yup";
-
-import { Listbox, Transition } from "@headlessui/react";
-import {
-  CheckIcon,
-  InformationCircleIcon,
-  SelectorIcon,
-} from "@heroicons/react/solid";
-import { Input } from "common/src/styles";
-import moment from "moment";
 import ReactTooltip from "react-tooltip";
+import * as yup from "yup";
 import { Program, Round } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
-import _ from "lodash";
-import { classNames } from "common";
 
-const ValidationSchema = yup.object().shape({
+export const RoundValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
     name: yup
       .string()
@@ -123,7 +121,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
       ...formData,
       roundMetadata: defaultRoundMetadata,
     },
-    resolver: yupResolver(ValidationSchema),
+    resolver: yupResolver(RoundValidationSchema),
   });
 
   const FormStepper = props.stepper;
@@ -621,11 +619,12 @@ function SupportTypeButton(props: {
   );
 }
 
-function SupportTypeDropdown(props: {
+export function SupportTypeDropdown(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   control: Control<Round>;
   supportTypes: SupportType[];
+  showLabel?: boolean;
 }) {
   const { field } = useController({
     name: "roundMetadata.support.type",
@@ -640,14 +639,17 @@ function SupportTypeDropdown(props: {
       <Listbox {...field}>
         {({ open }) => (
           <div>
-            <Listbox.Label className="text-sm mt-4 mb-2">
-              <p className="text-sm">
-                <span>Support Input</span>
-                <span className="text-right text-violet-400 float-right text-xs mt-1">
-                  *Required
-                </span>
-              </p>
-            </Listbox.Label>
+            {props.showLabel ? (
+              <Listbox.Label className="text-sm mt-4 mb-2">
+                <p className="text-sm">
+                  <span>Support Input</span>
+                  <span className="text-right text-violet-400 float-right text-xs mt-1">
+                    *Required
+                  </span>
+                </p>
+              </Listbox.Label>
+            ) : null}
+
             <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
               <SupportTypeButton
                 errors={props.errors}
@@ -728,50 +730,50 @@ function SupportTypeDropdown(props: {
   );
 }
 
+// TODO: Add regex for URLs
+export const supportTypes: SupportType[] = [
+  {
+    name: "Select what type of input.",
+    regex: "https://www.google.com",
+    default: true,
+  },
+  {
+    name: "Email",
+    regex: "https://www.google.com",
+    default: false,
+  },
+  {
+    name: "Website",
+    regex: "https://www.google.com",
+    default: false,
+  },
+  {
+    name: "Discord Group Invite Link",
+    regex: "https://www.google.com",
+    default: false,
+  },
+  {
+    name: "Telegram Group Invite Link",
+    regex: "https://www.google.com",
+    default: false,
+  },
+  {
+    name: "Google Form Link",
+    regex: "https://www.google.com",
+    default: false,
+  },
+  {
+    name: "Other (please provide a link)",
+    regex: "https://www.google.com",
+    default: false,
+  },
+];
+
 function Support(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   control: Control<Round>;
 }) {
-  // TODO: Add regex for URLs
-  const supportTypes: SupportType[] = [
-    {
-      name: "Select what type of input.",
-      regex: "https://www.google.com",
-      default: true,
-    },
-    {
-      name: "Email",
-      regex: "https://www.google.com",
-      default: false,
-    },
-    {
-      name: "Website",
-      regex: "https://www.google.com",
-      default: false,
-    },
-    {
-      name: "Discord Group Invite Link",
-      regex: "https://www.google.com",
-      default: false,
-    },
-    {
-      name: "Telegram Group Invite Link",
-      regex: "https://www.google.com",
-      default: false,
-    },
-    {
-      name: "Google Form Link",
-      regex: "https://www.google.com",
-      default: false,
-    },
-    {
-      name: "Other (please provide a link)",
-      regex: "https://www.google.com",
-      default: false,
-    },
-  ];
-
   return (
     <SupportTypeDropdown
       register={props.register}

@@ -16,6 +16,7 @@ export const Button = tw.button`
   disabled:text-slate-500
   disabled:border-slate-200
   disabled:shadow-none
+  disabled:cursor-not-allowed
   ${(p: ButtonProps) => {
     if (p.$variant === "outline") {
       return "bg-white text-grey-500 border border-grey-100";
