@@ -184,7 +184,7 @@ export default function ViewRoundResults() {
   const sumOfMatches = useMemo(() => {
     return (
       matches?.reduce(
-        (acc: bigint, match) => acc + match.revisedMatch,
+        (acc: bigint, match) => acc + (match.revisedMatch ?? BigInt(0)),
         BigInt(0)
       ) ?? BigInt(0)
     );
