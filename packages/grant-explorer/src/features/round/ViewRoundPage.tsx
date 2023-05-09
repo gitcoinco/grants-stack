@@ -130,7 +130,7 @@ function AfterRoundStart(props: {
   const { chain } = useNetwork();
 
   useEffect(() => {
-    if (chainId && Number(chainId) !== chain?.id) {
+    if (chain && chainId && Number(chainId) !== chain?.id) {
       setShowChangeNetworkModal(true);
     } else {
       setShowChangeNetworkModal(false);
