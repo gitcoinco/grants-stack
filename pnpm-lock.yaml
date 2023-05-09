@@ -542,7 +542,7 @@ importers:
       '@types/react-gtm-module': ^2.0.1
       '@types/testing-library__jest-dom': ^5.14.5
       add: ^2.0.6
-      allo-indexer-client: github:gitcoinco/allo-indexer-client#3d18c45c4a32b3a20b5c68fb5d5f6af5d64dcb77
+      allo-indexer-client: github:gitcoinco/allo-indexer-client#e29305c4bed7aa7e0ac5d7e663e1719e76f6db15
       autoprefixer: ^10.4.7
       buffer: ^6.0.3
       common: workspace:*
@@ -616,7 +616,7 @@ importers:
       '@testing-library/user-event': 14.4.3
       '@types/jest': 27.5.2
       '@types/node': 17.0.45
-      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/3d18c45c4a32b3a20b5c68fb5d5f6af5d64dcb77
+      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/e29305c4bed7aa7e0ac5d7e663e1719e76f6db15
       buffer: 6.0.3
       common: link:../common
       crypto-browserify: 3.12.0
@@ -23949,8 +23949,8 @@ packages:
       '@types/node': 18.15.5
     dev: false
 
-  github.com/gitcoinco/allo-indexer-client/3d18c45c4a32b3a20b5c68fb5d5f6af5d64dcb77:
-    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/3d18c45c4a32b3a20b5c68fb5d5f6af5d64dcb77}
+  github.com/gitcoinco/allo-indexer-client/48490969985125e89bf1d65725ef9e510c97256a:
+    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/48490969985125e89bf1d65725ef9e510c97256a}
     name: allo-indexer-client
     version: 0.1.0
     hasBin: true
@@ -23959,8 +23959,8 @@ packages:
       '@types/node': 18.15.5
     dev: false
 
-  github.com/gitcoinco/allo-indexer-client/48490969985125e89bf1d65725ef9e510c97256a:
-    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/48490969985125e89bf1d65725ef9e510c97256a}
+  github.com/gitcoinco/allo-indexer-client/e29305c4bed7aa7e0ac5d7e663e1719e76f6db15:
+    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/e29305c4bed7aa7e0ac5d7e663e1719e76f6db15}
     name: allo-indexer-client
     version: 0.1.0
     hasBin: true
