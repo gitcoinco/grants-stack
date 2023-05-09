@@ -25,6 +25,9 @@ const userAddress = faker.finance.ethereumAddress();
 const mockAccount = {
   address: userAddress,
 };
+const mockSwitchNetwork = {
+  chainId: chainId
+}
 
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
@@ -37,6 +40,7 @@ jest.mock("wagmi", () => ({
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
   useNetwork: () => mockNetwork,
+  useSwitchNetwork: () => mockSwitchNetwork,
 }));
 
 jest.mock("react-router-dom", () => ({
