@@ -4,7 +4,6 @@ import { Tab } from "@headlessui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
-import _ from "lodash";
 import moment from "moment";
 import { useState } from "react";
 import Datetime from "react-datetime";
@@ -53,15 +52,17 @@ export default function ViewRoundSettings(props: { id?: string }) {
     resolver: yupResolver(ValidationSchema),
   });
 
-  // todo: keep the original data for the round in the UI state for cancel action and comparison
   const submit: SubmitHandler<Round> = async (values: Round) => {
-    const data = _.merge(round, values);
+    // todo: trigger confirm modal
+    // todo: trigger progress modal
+    // todo: update metadata pointer in IPFS call
+    // todo: categorize tx's
+    // todo: send tx's
     //! log to show the updated round data to be sent to IPFS and onchain
     console.log("submit values merged (prev, new)", {
       existingRound,
-      mergedRoundData: data,
+      mergedRoundData: editedRound,
     });
-    setEditedRound(data);
   };
 
   if (!round) {
@@ -70,10 +71,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const roundStartDateTime = round.roundStartTime
     ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(round.roundStartTime)}`
     : "...";
-  const hasRoundStarted = round.roundStartTime < new Date();
 
   const onCancelEdit = () => {
     reset(round);
+    setEditedRound(round);
     setEditMode(!editMode);
   };
 
@@ -393,12 +394,12 @@ function DetailsPage(props: {
                 )}
               />
             </div>
-            {!props.errors.roundMetadata && (
+            {props.errors.roundMetadata && (
               <p
                 className="text-xs text-pink-500"
                 data-testid="application-end-date-error"
               >
-                {props.errors.roundMetadata.support?.info?.message}
+                {props.errors.roundMetadata?.support?.info?.message}
               </p>
             )}
           </div>
@@ -499,6 +500,14 @@ function RoundApplicationPeriod(props: {
                 />
               )}
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {props.errors.roundMetadata?.applicationsStartTime?.message}
+              </p>
+            )}
           </div>
           <div>
             <div
@@ -546,6 +555,14 @@ function RoundApplicationPeriod(props: {
                 />
               )}
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {props.errors.roundMetadata?.applicationsEndTime?.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -594,6 +611,14 @@ function RoundApplicationPeriod(props: {
                 />
               )}
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {props.errors.roundMetadata?.roundStartTime?.message}
+              </p>
+            )}
           </div>
           <div>
             <div
@@ -641,6 +666,14 @@ function RoundApplicationPeriod(props: {
                 />
               )}
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {props.errors.roundMetadata?.roundEndTime?.message}
+              </p>
+            )}
           </div>
         </div>
       </form>
@@ -726,13 +759,13 @@ function Funding(props: {
                       console.log("Matching Funds Available", e.target.value);
                       field.onChange(e.target.value);
                       props.setEditedRound({
-                        ...props.round,
+                        ...props.editedRound,
                         roundMetadata: {
-                          ...props.round.roundMetadata,
+                          ...props.editedRound?.roundMetadata,
                           quadraticFundingConfig: {
                             matchingFundsAvailable: Number(e.target.value),
                             matchingCap:
-                              props.round.roundMetadata.quadraticFundingConfig
+                              props.editedRound?.roundMetadata.quadraticFundingConfig
                                 .matchingCap,
                           },
                         },
@@ -742,6 +775,17 @@ function Funding(props: {
                 )}
               />
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {
+                  props.errors.roundMetadata?.quadraticFundingConfig
+                    ?.matchingFundsAvailable?.message
+                }
+              </p>
+            )}
           </div>
         </div>
 
@@ -758,29 +802,85 @@ function Funding(props: {
               Do you want a matching cap for projects?
             </div>
             <div className={"leading-8 font-normal text-grey-400"}>
-              <input
-                type="radio"
-                className="mr-2"
-                checked={round.roundMetadata.quadraticFundingConfig.matchingCap}
-                disabled={!props.editMode}
-                onChange={() => {
-                  console.log("Do you want a matching cap for projects? YES");
-                }}
+              <Controller
+                control={props.control}
+                name="roundMetadata.quadraticFundingConfig.matchingCap"
+                render={({ field }) => (
+                  <input
+                    type="radio"
+                    className="mr-2"
+                    value={"yes"}
+                    checked={
+                      props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .matchingCap
+                    }
+                    disabled={!props.editMode}
+                    onChange={(e) => {
+                      console.log(
+                        "Do you want a matching cap for projects? YES"
+                      );
+                      field.onChange(e.target.value);
+                      props.setEditedRound({
+                        ...props.editedRound,
+                        roundMetadata: {
+                          ...props.editedRound?.roundMetadata,
+                          quadraticFundingConfig: {
+                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            matchingCap: e.target.value === "yes",
+                          },
+                        },
+                      });
+                    }}
+                  />
+                )}
               />{" "}
               Yes
-              <input
-                type="radio"
-                className="ml-4 mr-2"
-                checked={
-                  !round.roundMetadata.quadraticFundingConfig.matchingCap
-                }
-                disabled={!props.editMode}
-                onChange={() => {
-                  console.log("Do you want a matching cap for projects? NO");
-                }}
+              <Controller
+                control={props.control}
+                name="roundMetadata.quadraticFundingConfig.matchingCap"
+                render={({ field }) => (
+                  <input
+                    type="radio"
+                    className="ml-4"
+                    value={"no"}
+                    checked={
+                      !props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .matchingCap
+                    }
+                    disabled={!props.editMode}
+                    onChange={(e) => {
+                      console.log(
+                        "Do you want a matching cap for projects? NO"
+                      );
+                      field.onChange(e.target.value);
+                      props.setEditedRound({
+                        ...props.editedRound,
+                        roundMetadata: {
+                          ...props.editedRound?.roundMetadata,
+                          quadraticFundingConfig: {
+                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            matchingCap: e.target.value === "yes",
+                            matchingCapAmount: 0,
+                          },
+                        },
+                      });
+                    }}
+                  />
+                )}
               />{" "}
               No
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {
+                  props.errors.roundMetadata?.quadraticFundingConfig
+                    ?.matchingCap?.message
+                }
+              </p>
+            )}
           </div>
           <div>
             <div
@@ -791,19 +891,54 @@ function Funding(props: {
               If so, how much?
             </div>
             <div className={"leading-8 font-normal text-grey-400"}>
-              <input
-                type="text"
-                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                defaultValue={
-                  round.roundMetadata.quadraticFundingConfig
-                    .matchingCapAmount ?? 0
-                }
-                disabled={!props.editMode}
-                onChange={() => {
-                  console.log("If so, how much?");
-                }}
+              <Controller
+                control={props.control}
+                name="roundMetadata.quadraticFundingConfig.matchingCapAmount"
+                render={({ field }) => (
+                  <input
+                    type="text"
+                    className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                    value={
+                      props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .matchingCap
+                        ? round.roundMetadata.quadraticFundingConfig
+                            .matchingCapAmount
+                        : 0
+                    }
+                    disabled={
+                      !props.editMode ||
+                      !props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .matchingCap
+                    }
+                    onChange={(e) => {
+                      console.log("If so, how much?");
+                      field.onChange(e.target.value);
+                      props.setEditedRound({
+                        ...props.editedRound,
+                        roundMetadata: {
+                          ...props.editedRound?.roundMetadata,
+                          quadraticFundingConfig: {
+                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            matchingCapAmount: Number(e.target.value),
+                          },
+                        },
+                      });
+                    }}
+                  />
+                )}
               />
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {
+                  props.errors.roundMetadata?.quadraticFundingConfig
+                    ?.matchingCapAmount?.message
+                }
+              </p>
+            )}
           </div>
         </div>
         <div>
@@ -830,38 +965,86 @@ function Funding(props: {
               Do you want a minimum donation threshold for projects?
             </div>
             <div className={"leading-8 font-normal text-grey-400"}>
-              <input
-                type="radio"
-                className="mr-2"
-                checked={
-                  round.roundMetadata.quadraticFundingConfig
-                    .minDonationThreshold
-                }
-                disabled={!props.editMode}
-                onChange={() => {
-                  console.log(
-                    "Do you want a minimum donation threshold for projects? YES"
-                  );
-                }}
+              <Controller
+                control={props.control}
+                name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
+                render={({ field }) => (
+                  <input
+                    type="radio"
+                    className="mr-2"
+                    value={"yes"}
+                    checked={
+                      props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .minDonationThreshold
+                    }
+                    disabled={!props.editMode}
+                    onChange={(e) => {
+                      console.log(
+                        "Do you want a minimum donation threshold? YES"
+                      );
+                      field.onChange(e.target.value);
+                      props.setEditedRound({
+                        ...props.editedRound,
+                        roundMetadata: {
+                          ...props.editedRound?.roundMetadata,
+                          quadraticFundingConfig: {
+                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            minDonationThreshold: e.target.value === "yes",
+                          },
+                        },
+                      });
+                    }}
+                  />
+                )}
               />{" "}
               Yes
-              <input
-                type="radio"
-                className="ml-4 mr-2"
-                checked={
-                  !round.roundMetadata.quadraticFundingConfig
-                    .minDonationThreshold
-                }
-                disabled={!props.editMode}
-                onChange={() => {
-                  console.log(
-                    "Do you want a minimum donation threshold for projects? NO"
-                  );
-                }}
+              <Controller
+                control={props.control}
+                name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
+                render={({ field }) => (
+                  <input
+                    type="radio"
+                    className="ml-4"
+                    value={"no"}
+                    checked={
+                      !props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .minDonationThreshold
+                    }
+                    disabled={!props.editMode}
+                    onChange={(e) => {
+                      console.log(
+                        "Do you want a minimum donation threshold? NO"
+                      );
+                      field.onChange(e.target.value);
+                      props.setEditedRound({
+                        ...props.editedRound,
+                        roundMetadata: {
+                          ...props.editedRound?.roundMetadata,
+                          quadraticFundingConfig: {
+                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            matchingCapAmount: 0,
+                            minDonationThreshold: e.target.value === "yes",
+                          },
+                        },
+                      });
+                    }}
+                  />
+                )}
               />{" "}
               No
             </div>
           </div>
+          {props.errors.roundMetadata && (
+            <p
+              className="text-xs text-pink-500"
+              data-testid="application-end-date-error"
+            >
+              {
+                props.errors.roundMetadata?.quadraticFundingConfig
+                  ?.minDonationThreshold?.message
+              }
+            </p>
+          )}
           <div>
             <div
               className={
@@ -871,19 +1054,54 @@ function Funding(props: {
               If so, how much?
             </div>
             <div className={"leading-8 font-normal text-grey-400"}>
-              <input
-                type="text"
-                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                defaultValue={
-                  round.roundMetadata.quadraticFundingConfig
-                    .minDonationThresholdAmount ?? 0
-                }
-                disabled={!props.editMode}
-                onChange={() => {
-                  console.log("If so, how much?");
-                }}
+            <Controller
+                control={props.control}
+                name="roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+                render={({ field }) => (
+                  <input
+                    type="text"
+                    className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                    value={
+                      props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .minDonationThreshold
+                        ? round.roundMetadata.quadraticFundingConfig
+                            .minDonationThresholdAmount
+                        : 0
+                    }
+                    disabled={
+                      !props.editMode ||
+                      !props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .minDonationThreshold
+                    }
+                    onChange={(e) => {
+                      console.log("If so, how much?");
+                      field.onChange(e.target.value);
+                      props.setEditedRound({
+                        ...props.editedRound,
+                        roundMetadata: {
+                          ...props.editedRound.roundMetadata,
+                          quadraticFundingConfig: {
+                            ...props.editedRound.roundMetadata.quadraticFundingConfig,
+                            minDonationThresholdAmount: Number(e.target.value),
+                          },
+                        },
+                      });
+                    }}
+                  />
+                )}
               />
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {
+                  props.errors.roundMetadata?.quadraticFundingConfig
+                    ?.minDonationThresholdAmount?.message
+                }
+              </p>
+            )}
           </div>
         </div>
         <div>
@@ -946,6 +1164,17 @@ function Funding(props: {
               Allow matching for all donation, including potentially sybil ones.
             </div>
           </div>
+          {props.errors.roundMetadata && (
+            <p
+              className="text-xs text-pink-500"
+              data-testid="application-end-date-error"
+            >
+              {
+                props.errors.roundMetadata?.quadraticFundingConfig?.sybilDefense
+                  ?.message
+              }
+            </p>
+          )}
         </div>
       </form>
     </div>
