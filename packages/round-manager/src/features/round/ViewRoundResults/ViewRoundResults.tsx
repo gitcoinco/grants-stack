@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useState,
-  useRef,
-  useEffect,
-  useMemo,
-} from "react";
+import { useCallback, useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -60,15 +54,18 @@ const distributionOptions = [
 // TODO: not any.
 function useRevisedMatchingFunds(
   roundId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: any,
+  ignoreSaturation: boolean,
   overridesFile?: File
 ) {
   const originalMatches = useRoundMatchingFunds(roundId);
-  const revisedMatches = useRoundMatchingFunds(roundId, params, overridesFile);
+  const revisedMatches = useRoundMatchingFunds(
+    roundId,
+    ignoreSaturation,
+    overridesFile
+  );
 
   const isRevised =
-    (Boolean(overridesFile) || params) && !revisedMatches.isLoading;
+    (Boolean(overridesFile) || ignoreSaturation) && !revisedMatches.isLoading;
 
   const error = revisedMatches.error || originalMatches.error;
   const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
@@ -84,8 +81,8 @@ function useRevisedMatchingFunds(
 
     // TODO: fix this any
     const mergedMatches: RevisedMatch[] = originalMatches.data.flatMap(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (match: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (match: any) => {
         const revisedMatch = revisedMatchesMap.get(match.applicationId);
 
         if (revisedMatch) {
@@ -131,15 +128,20 @@ function useRevisedMatchingFunds(
 
 export default function ViewRoundResults() {
   const { chain } = useNetwork();
+  const { data: signer } = useSigner();
   const { id } = useParams();
   const navigate = useNavigate();
   const roundId = utils.getAddress(id as string);
+  const debugModeEnabled = useDebugMode();
+  const network = useNetwork();
+
   const matchingTableRef = useRef<HTMLDivElement>(null);
   const [overridesFileDraft, setOverridesFileDraft] = useState<
     undefined | File
   >(undefined);
   const [overridesFile, setOverridesFile] = useState<undefined | File>();
   const [overrideSaturation, setOverrideSaturation] = useState<boolean>(false);
+
   const {
     matches,
     isRevised: areMatchingFundsRevised,
@@ -147,18 +149,14 @@ export default function ViewRoundResults() {
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
   } = useRevisedMatchingFunds(roundId, overrideSaturation, overridesFile);
-
-  const debugModeEnabled = useDebugMode();
-
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
     (id as string).toLowerCase()
   );
-  const { data: signer } = useSigner();
+
   const isReadyForPayout = Boolean(
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
   );
-  const network = useNetwork();
   const matchToken =
     round &&
     payoutTokens.find(
@@ -171,22 +169,28 @@ export default function ViewRoundResults() {
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
   >("keep");
-
   const [roundSaturation, setRoundSaturation] = useState<number>(0);
   const [sumTotalMatch, setSumTotalMatch] = useState<number>(0);
 
-  const mutateMatchingFundsCallback = useCallback(mutateMatchingFunds, [mutateMatchingFunds]);
+  const mutateMatchingFundsCallback = useCallback(mutateMatchingFunds, [
+    mutateMatchingFunds,
+  ]);
 
   useEffect(() => {
     mutateMatchingFundsCallback();
+    console.log(distributionOption);
     if (round && matches) {
       const sumTotalMatch = matches?.reduce(
-        (acc: number, match: Match) => acc + Number(match.matchedUSD),
+        (acc: number, match) =>
+          acc +
+          (areMatchingFundsRevised
+            ? Number(match.revisedMatch) / 10 ** 18
+            : match.matchedUSD),
         0
       );
       setSumTotalMatch(sumTotalMatch);
       setRoundSaturation(sumTotalMatch / round.matchAmountUSD);
-      setOverrideSaturation(distributionOption === "keep");
+      setOverrideSaturation(distributionOption === "scale");
     }
   }, [round, matches, distributionOption, mutateMatchingFundsCallback]);
 
@@ -456,10 +460,12 @@ export default function ViewRoundResults() {
                   Round Saturation
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`Current round saturation: ${roundSaturation * 100}%`}
+                  {`Current round saturation: ${(roundSaturation * 100).toFixed(
+                    2
+                  )}%`}
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`$${sumTotalMatch} out of the $${round?.matchAmountUSD} matching fund will be distributed to grantees.`}
+                  {`$${sumTotalMatch.toLocaleString()} out of the $${round?.matchAmountUSD.toLocaleString()} matching fund will be distributed to grantees.`}
                 </span>
               </div>
               <RadioGroup
