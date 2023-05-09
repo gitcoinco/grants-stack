@@ -50,7 +50,6 @@ const distributionOptions = [
 
 // this hook manages the state of the matching funds,
 // fetching revised matches and merging them with the original matches
-// TODO: not any.
 function useRevisedMatchingFunds(
   roundId: string,
   ignoreSaturation: boolean,
@@ -78,10 +77,8 @@ function useRevisedMatchingFunds(
       (revisedMatches?.data ?? []).map((match) => [match.applicationId, match])
     );
 
-    // TODO: fix this any
     const mergedMatches: RevisedMatch[] = originalMatches.data.flatMap(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (match: any) => {
+      (match) => {
         const revisedMatch = revisedMatchesMap.get(match.applicationId);
 
         if (revisedMatch) {
@@ -174,7 +171,6 @@ export default function ViewRoundResults() {
 
   useEffect(() => {
     mutateMatchingFundsCallback();
-    console.log(distributionOption);
     if (round && matches) {
       const sumTotalMatch = matches?.reduce(
         (acc: number, match) =>
@@ -188,7 +184,13 @@ export default function ViewRoundResults() {
       setRoundSaturation(sumTotalMatch / round.matchAmountUSD);
       setOverrideSaturation(distributionOption === "scale");
     }
-  }, [round, matches, distributionOption, mutateMatchingFundsCallback]);
+  }, [
+    round,
+    matches,
+    distributionOption,
+    mutateMatchingFundsCallback,
+    areMatchingFundsRevised,
+  ]);
 
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
