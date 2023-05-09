@@ -1,9 +1,9 @@
 import { Tab } from "@headlessui/react";
+import { getUTCDate, getUTCTime } from "common";
 import { useNetwork } from "wagmi";
 import { Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
 import { horizontalTabStyles } from "../common/Utils";
-import { getUTCDate, getUTCTime } from "common";
 
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
@@ -12,9 +12,7 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
     return <></>;
   }
   const roundStartDateTime = round.roundStartTime
-    ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(
-        round.roundStartTime
-      )}`
+    ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(round.roundStartTime)}`
     : "...";
 
   return (
@@ -22,9 +20,15 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
       <p className="text-xl font-semibold leading-6 mb-4 text-base">
         Round Settings
       </p>
-      <p className="text-sm text-gray-600 mb-8">
-        Changes can be made up until the round starts ({roundStartDateTime})
-      </p>
+      <div className="mb-8">
+        <p className="text-sm text-gray-600">
+          Changes can be made up until the round starts ({roundStartDateTime}).
+        </p>
+        <p className="text-sm text-gray-600">
+          Once the round starts, you’ll only be able to change the Round End
+          Date.
+        </p>
+      </div>
 
       <Tab.Group>
         <div className="justify-end grow relative">
