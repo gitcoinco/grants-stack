@@ -58,10 +58,11 @@ export default function ViewRoundSettings(props: { id?: string }) {
     // todo: update metadata pointer in IPFS call
     // todo: categorize tx's
     // todo: send tx's
+    setEditedRound(values);
     //! log to show the updated round data to be sent to IPFS and onchain
     console.log("submit values merged (prev, new)", {
       existingRound,
-      mergedRoundData: editedRound,
+      editedRound,
     });
   };
 
@@ -765,8 +766,8 @@ function Funding(props: {
                           quadraticFundingConfig: {
                             matchingFundsAvailable: Number(e.target.value),
                             matchingCap:
-                              props.editedRound?.roundMetadata.quadraticFundingConfig
-                                .matchingCap,
+                              props.editedRound?.roundMetadata
+                                .quadraticFundingConfig.matchingCap,
                           },
                         },
                       });
@@ -825,7 +826,8 @@ function Funding(props: {
                         roundMetadata: {
                           ...props.editedRound?.roundMetadata,
                           quadraticFundingConfig: {
-                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            ...props.editedRound?.roundMetadata
+                              .quadraticFundingConfig,
                             matchingCap: e.target.value === "yes",
                           },
                         },
@@ -858,7 +860,8 @@ function Funding(props: {
                         roundMetadata: {
                           ...props.editedRound?.roundMetadata,
                           quadraticFundingConfig: {
-                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            ...props.editedRound?.roundMetadata
+                              .quadraticFundingConfig,
                             matchingCap: e.target.value === "yes",
                             matchingCapAmount: 0,
                           },
@@ -918,7 +921,8 @@ function Funding(props: {
                         roundMetadata: {
                           ...props.editedRound?.roundMetadata,
                           quadraticFundingConfig: {
-                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            ...props.editedRound?.roundMetadata
+                              .quadraticFundingConfig,
                             matchingCapAmount: Number(e.target.value),
                           },
                         },
@@ -988,7 +992,8 @@ function Funding(props: {
                         roundMetadata: {
                           ...props.editedRound?.roundMetadata,
                           quadraticFundingConfig: {
-                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
+                            ...props.editedRound?.roundMetadata
+                              .quadraticFundingConfig,
                             minDonationThreshold: e.target.value === "yes",
                           },
                         },
@@ -1021,8 +1026,9 @@ function Funding(props: {
                         roundMetadata: {
                           ...props.editedRound?.roundMetadata,
                           quadraticFundingConfig: {
-                            ...props.editedRound?.roundMetadata.quadraticFundingConfig,
-                            matchingCapAmount: 0,
+                            ...props.editedRound?.roundMetadata
+                              .quadraticFundingConfig,
+                            minDonationThresholdAmount: 0,
                             minDonationThreshold: e.target.value === "yes",
                           },
                         },
@@ -1054,7 +1060,7 @@ function Funding(props: {
               If so, how much?
             </div>
             <div className={"leading-8 font-normal text-grey-400"}>
-            <Controller
+              <Controller
                 control={props.control}
                 name="roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
                 render={({ field }) => (
@@ -1081,7 +1087,8 @@ function Funding(props: {
                         roundMetadata: {
                           ...props.editedRound.roundMetadata,
                           quadraticFundingConfig: {
-                            ...props.editedRound.roundMetadata.quadraticFundingConfig,
+                            ...props.editedRound.roundMetadata
+                              .quadraticFundingConfig,
                             minDonationThresholdAmount: Number(e.target.value),
                           },
                         },
@@ -1107,8 +1114,8 @@ function Funding(props: {
         <div>
           <span className="mt-4 inline-flex text-sm text-gray-600 mb-8">
             Each donation has to be a minimum of{" "}
-            {round.roundMetadata.quadraticFundingConfig
-              .minDonationThresholdAmount ?? 0}{" "}
+            {props.editedRound?.roundMetadata.quadraticFundingConfig
+                  .minDonationThresholdAmount ?? 0}{" "}
             USD equivalent for it to be eligible for matching.
           </span>
         </div>
@@ -1129,16 +1136,34 @@ function Funding(props: {
             <div
               className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
             >
-              <input
-                type="radio"
-                name="sybil"
-                value="yes"
-                checked={
-                  round.roundMetadata.quadraticFundingConfig.sybilDefense
-                }
-                onChange={() => {
-                  console.log("Sybil Defense? YES");
-                }}
+              <Controller
+                control={props.control}
+                name="roundMetadata.quadraticFundingConfig.sybilDefense"
+                render={({ field }) => (
+                  <input
+                    type="radio"
+                    value="yes"
+                    checked={
+                      props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .sybilDefense
+                    }
+                    onChange={(e) => {
+                      console.log("Sybil Defense? YES");
+                      field.onChange(e.target.value);
+                      props.setEditedRound({
+                        ...props.editedRound,
+                        roundMetadata: {
+                          ...props.editedRound?.roundMetadata,
+                          quadraticFundingConfig: {
+                            ...props.editedRound?.roundMetadata
+                              .quadraticFundingConfig,
+                            sybilDefense: e.target.value === "yes",
+                          },
+                        },
+                      });
+                    }}
+                  />
+                )}
               />
               Yes, enable Gitcoin Passport (Recommended)
               <br />
@@ -1148,16 +1173,35 @@ function Funding(props: {
             <div
               className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
             >
-              <input
-                type="radio"
-                name="sybil"
-                value="no"
-                checked={
-                  !round.roundMetadata.quadraticFundingConfig.sybilDefense
-                }
-                onChange={() => {
-                  console.log("Sybil Defense? NO");
-                }}
+              <Controller
+                control={props.control}
+                name="roundMetadata.quadraticFundingConfig.sybilDefense"
+                render={({ field }) => (
+                  <input
+                    disabled={!props.editMode}
+                    type="radio"
+                    value="no"
+                    checked={
+                      !props.editedRound?.roundMetadata.quadraticFundingConfig
+                        .sybilDefense
+                    }
+                    onChange={(e) => {
+                      console.log("Sybil Defense? NO");
+                      field.onChange(e.target.value);
+                      props.setEditedRound({
+                        ...props.editedRound,
+                        roundMetadata: {
+                          ...props.editedRound?.roundMetadata,
+                          quadraticFundingConfig: {
+                            ...props.editedRound?.roundMetadata
+                              .quadraticFundingConfig,
+                            sybilDefense: e.target.value === "yes",
+                          },
+                        },
+                      });
+                    }}
+                  />
+                )}
               />
               No, disable Gitcoin Passport
               <br />
