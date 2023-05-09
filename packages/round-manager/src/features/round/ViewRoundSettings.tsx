@@ -92,7 +92,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
-      <div className="flex flex-row items-center justify-between">
+<div className="flex flex-row items-center justify-between">
         <p className="text-xl font-semibold leading-6 mb-4">Round Settings</p>
         <div>
           {editMode ? (
@@ -123,9 +123,15 @@ export default function ViewRoundSettings(props: { id?: string }) {
         </div>
       </div>
       {/* todo: update the below copy when ready */}
-      <p className="text-sm text-gray-600 mb-8">
-        Changes can be made up until the round starts ({roundStartDateTime})
-      </p>
+      <div className="mb-8">
+        <p className="text-sm text-gray-600">
+          Changes can be made up until the round starts ({roundStartDateTime}).
+        </p>
+        <p className="text-sm text-gray-600">
+          Once the round starts, you’ll only be able to change the Round End
+          Date.
+        </p>
+      </div>
       <Tab.Group>
         <div className="justify-end grow relative">
           <Tab.List className="border-b mb-6 flex items-center justify-between">
