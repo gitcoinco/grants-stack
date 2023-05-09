@@ -46,7 +46,7 @@
     "@testing-library/user-event": "^14.1.1",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.25",
-    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#e29305c4bed7aa7e0ac5d7e663e1719e76f6db15",
+    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#fab892947ad5566e2666b76520ff9dc308158e07",
     "buffer": "^6.0.3",
     "common": "workspace:*",
     "crypto-browserify": "^3.12.0",
