@@ -368,6 +368,7 @@ importers:
       '@types/react-dom': ^18.0.2
       '@types/react-gtm-module': ^2.0.1
       '@types/testing-library__jest-dom': ^5.14.5
+      '@wagmi/core': 0.5.4
       allo-indexer-client: github:gitcoinco/allo-indexer-client#48490969985125e89bf1d65725ef9e510c97256a
       autoprefixer: ^10.4.7
       babel-loader: ^8.3.0
@@ -438,6 +439,7 @@ importers:
       '@testing-library/jest-dom': 5.16.5
       '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
       '@testing-library/user-event': 14.4.3_yxlyej73nftwmh2fiao7paxmlm
+      '@wagmi/core': 0.5.4_ethers@5.6.5+react@18.2.0
       allo-indexer-client: github.com/gitcoinco/allo-indexer-client/48490969985125e89bf1d65725ef9e510c97256a
       babel-loader: 8.3.0_la66t7xldg4uecmyawueag5wkm
       buffer: 6.0.3
