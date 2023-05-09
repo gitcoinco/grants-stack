@@ -167,7 +167,6 @@ describe("View Round", () => {
     expect(screen.getByText("Round Results")).toBeInTheDocument();
     expect(screen.getByText("Fund Grantees")).toBeInTheDocument();
     expect(screen.getByText("Reclaim Funds")).toBeInTheDocument();
-
   });
 
   it("indicates how many of each kind of application there are", () => {

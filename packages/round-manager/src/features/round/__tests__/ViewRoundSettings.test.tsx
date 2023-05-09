@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { render, screen } from "@testing-library/react";
-import { useParams } from "react-router-dom";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { useDisconnect, useNetwork } from "wagmi";
 import {
-    makeRoundData,
-    wrapWithApplicationContext,
-    wrapWithBulkUpdateGrantApplicationContext,
-    wrapWithReadProgramContext,
-    wrapWithRoundContext
+  makeRoundData,
+  wrapWithApplicationContext,
+  wrapWithBulkUpdateGrantApplicationContext,
+  wrapWithReadProgramContext,
+  wrapWithRoundContext,
 } from "../../../test-utils";
 import { Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
@@ -18,6 +17,14 @@ jest.mock("wagmi");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+}));
+
+jest.mock("../../common/Auth", () => ({
+  useWallet: () => ({
+    chain: {},
+    address: mockRoundData.operatorWallets![0],
+    provider: { getNetwork: () => ({ chainId: "0" }) },
+  }),
 }));
 
 Object.assign(navigator, {
@@ -30,38 +37,13 @@ Object.assign(navigator, {
 
 const mockRoundData: Round = makeRoundData();
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useParams: jest.fn(),
-}));
-
-jest.mock("../../api/api", () => ({
-  ...jest.requireActual("../../api/api"),
-  useRoundMatchData: jest.fn(),
-}));
-
-jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({
-    chain: {},
-    address: mockRoundData.operatorWallets![0],
-    provider: { getNetwork: () => ({ chainId: "0" }) },
-  }),
-}));
-
 describe("View Round", () => {
   beforeEach(() => {
-    (useParams as jest.Mock).mockImplementation(() => {
-      return {
-        id: mockRoundData.id,
-      };
-    });
-
-    (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
+    (useNetwork as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
-  // todo: add edit tests
-  it("renders the Round Settings tab", () => {
+  it("when edit is clicked, it enables the imputs for editing and shows the update round button and cancel button", () => {
     render(
       wrapWithApplicationContext(
         wrapWithReadProgramContext(
@@ -73,5 +55,61 @@ describe("View Round", () => {
     );
 
     expect(screen.getByText(/Round Settings/i)).toBeInTheDocument();
+
+    const roundSettingsTab = screen.getByText(/Round Settings/i);
+    roundSettingsTab.click();
+    const editButton = screen.queryByTestId("edit-record-button");
+    editButton?.click();
+  });
+
+  it("when cancel is clicked, it disables the imputs for editing and hides the update round button and cancel button", () => {
+    render(
+      wrapWithApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(
+            wrapWithBulkUpdateGrantApplicationContext(<ViewRoundPage />)
+          )
+        )
+      )
+    );
+    const roundSettingsTab = screen.getByText(/Round Settings/i);
+    expect(roundSettingsTab).toBeInTheDocument();
+    roundSettingsTab.click();
+    const editButton = screen.queryByTestId("edit-record-button");
+    editButton?.click();
+    const cancelButton = screen.queryByTestId("cancel-button");
+    cancelButton?.click();
+  });
+
+  it.only("when update round is clicked, it updates the round", async () => {
+    render(
+      wrapWithApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(
+            wrapWithBulkUpdateGrantApplicationContext(<ViewRoundPage />)
+          )
+        )
+      )
+    );
+
+    expect(screen.getByText(/Round Settings/i)).toBeInTheDocument();
+
+    const roundSettingsTab = screen.getByText(/Round Settings/i);
+    expect(roundSettingsTab).toBeInTheDocument();
+    roundSettingsTab.click();
+    const editButton = screen.queryByTestId("edit-record-button");
+    editButton?.click();
+    // edit a field
+    const roundNameInput = screen.getByTestId("round-name-input");
+    await act(async () => {
+      fireEvent.input(roundNameInput, {
+        target: {
+          value: "new round name",
+        },
+      });
+    });
+    expect(roundNameInput).toHaveValue("new round name");
+
+    // click update round
   });
 });
