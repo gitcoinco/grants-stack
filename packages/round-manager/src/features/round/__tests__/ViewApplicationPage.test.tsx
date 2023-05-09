@@ -44,6 +44,11 @@ jest.mock("../../../constants", () => ({
 
 const mockAddress = "0x0";
 const mockWallet = {
+  provider: {
+    network: {
+      chainId: 1,
+    },
+  },
   address: mockAddress,
   signer: {
     getChainId: () => {

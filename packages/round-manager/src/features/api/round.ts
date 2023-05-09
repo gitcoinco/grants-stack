@@ -125,6 +125,7 @@ export async function getRoundById(
 
     return {
       id: round.id,
+      chainId: chainId,
       roundMetadata,
       applicationMetadata,
       applicationsStartTime: new Date(

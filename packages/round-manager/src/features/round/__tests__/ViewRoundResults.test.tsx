@@ -76,7 +76,11 @@ jest.mock("../../common/Auth", () => ({
         /* do nothing */
       },
     },
-    provider: { getNetwork: () => ({ chainId: "0" }) },
+    provider: {
+      network: {
+        chainId: 1,
+      },
+    },
   }),
 }));
 

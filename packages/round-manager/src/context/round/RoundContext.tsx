@@ -159,7 +159,8 @@ export const useRoundById = (roundId?: string) => {
   useEffect(() => {
     if (roundId) {
       const existingRound = context.state.data.find(
-        (round) => round.id === roundId
+        (round) =>
+          round.id === roundId && round.chainId === provider.network.chainId
       );
 
       if (!existingRound?.token) {
