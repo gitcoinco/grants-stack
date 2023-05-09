@@ -6,7 +6,6 @@ import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
-import _ from "lodash";
 import moment from "moment";
 import { Fragment, useState } from "react";
 import Datetime from "react-datetime";
@@ -148,7 +147,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
       editedRound,
       data,
     });
-    setEditedRound(data);
   };
 
   if (!round) {
