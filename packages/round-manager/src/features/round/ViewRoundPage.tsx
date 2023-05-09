@@ -196,7 +196,10 @@ export default function ViewRoundPage() {
                             }
                           >
                             <AdjustmentsIcon className="h-6 w-6 mr-2" />
-                            <span className="mt-0.5" data-testid="round-stats">
+                            <span
+                              className="mt-0.5"
+                              data-testid="round-settings"
+                            >
                               Round Settings
                             </span>
                           </div>

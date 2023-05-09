@@ -55,14 +55,13 @@ describe("View Round", () => {
     );
 
     expect(screen.getByText(/Round Settings/i)).toBeInTheDocument();
-
-    const roundSettingsTab = screen.getByText(/Round Settings/i);
-    roundSettingsTab.click();
+    fireEvent.click(screen.getByTestId("round-settings"));
     const editButton = screen.queryByTestId("edit-record-button");
+    expect(editButton).toBeInTheDocument();
     editButton?.click();
   });
 
-  it("when cancel is clicked, it disables the imputs for editing and hides the update round button and cancel button", () => {
+  it("when cancel is clicked, it disables the imputs for editing and hides the update round button and cancel button", async () => {
     render(
       wrapWithApplicationContext(
         wrapWithReadProgramContext(
@@ -72,16 +71,16 @@ describe("View Round", () => {
         )
       )
     );
-    const roundSettingsTab = screen.getByText(/Round Settings/i);
-    expect(roundSettingsTab).toBeInTheDocument();
-    roundSettingsTab.click();
+    fireEvent.click(screen.getByTestId("round-settings"));
     const editButton = screen.queryByTestId("edit-record-button");
+    expect(editButton).toBeInTheDocument();
     editButton?.click();
     const cancelButton = screen.queryByTestId("cancel-button");
+    expect(cancelButton).toBeInTheDocument();
     cancelButton?.click();
   });
 
-  it.only("when update round is clicked, it updates the round", async () => {
+  it("when update round is clicked, it updates the round", async () => {
     render(
       wrapWithApplicationContext(
         wrapWithReadProgramContext(
@@ -91,18 +90,18 @@ describe("View Round", () => {
         )
       )
     );
+    fireEvent.click(screen.getByTestId("round-settings"));
 
-    expect(screen.getByText(/Round Settings/i)).toBeInTheDocument();
-
-    const roundSettingsTab = screen.getByText(/Round Settings/i);
-    expect(roundSettingsTab).toBeInTheDocument();
-    roundSettingsTab.click();
     const editButton = screen.queryByTestId("edit-record-button");
+    expect(editButton).toBeInTheDocument();
     editButton?.click();
+
     // edit a field
-    const roundNameInput = screen.getByTestId("round-name-input");
+    const roundNameInput = screen.queryByTestId("round-name-input");
+    expect(roundNameInput).toBeInTheDocument();
+
     await act(async () => {
-      fireEvent.input(roundNameInput, {
+      fireEvent.input(roundNameInput!, {
         target: {
           value: "new round name",
         },

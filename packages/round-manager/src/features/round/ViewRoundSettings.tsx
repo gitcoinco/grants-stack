@@ -237,12 +237,12 @@ function DetailsPage(props: {
                 control={props.control}
                 render={({ field }) => (
                   <input
-                    data-testid={"round-name-input"}
                     {...props.register("roundMetadata.name")}
                     type="text"
                     className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                     defaultValue={round.roundMetadata.name}
                     disabled={!props.editMode}
+                    data-testid={"round-name-input"}
                     onChange={(e) => {
                       field.onChange(e);
                       props.setEditedRound({
