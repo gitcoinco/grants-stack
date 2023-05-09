@@ -236,7 +236,7 @@ export default function ViewRoundResults() {
     return <NoInformationContent />;
   }
 
-  if (isLoadingRound || !round) {
+  if (isLoadingRound) {
     return <Spinner text="We're fetching the matching data." />;
   }
 
@@ -601,11 +601,12 @@ export default function ViewRoundResults() {
                   e.preventDefault();
                   try {
                     setIsExportingApplicationsCSV(true);
-                    await exportAndDownloadApplicationsCSV(
-                      round.id,
-                      chain.id,
-                      chain.name
-                    );
+                    round &&
+                      (await exportAndDownloadApplicationsCSV(
+                        round.id,
+                        chain.id,
+                        chain.name
+                      ));
                   } finally {
                     setIsExportingApplicationsCSV(false);
                   }
