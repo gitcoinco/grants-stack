@@ -48,8 +48,9 @@ const distributionOptions = [
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
 
-// this hook manages the state of the matching funds,
-// fetching revised matches and merging them with the original matches
+/** Manages the state of the matching funds,
+ * fetching revised matches and merging them with the original matches
+ */
 function useRevisedMatchingFunds(
   roundId: string,
   ignoreSaturation: boolean,
