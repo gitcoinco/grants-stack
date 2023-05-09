@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { render, screen } from "@testing-library/react";
+import { useParams } from "react-router-dom";
+import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
   makeGrantApplicationData,
   makeRoundData,
@@ -11,8 +13,6 @@ import {
 } from "../../../test-utils";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-import { chainId, useDisconnect, useSwitchNetwork } from "wagmi";
-import { useParams } from "react-router-dom";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");

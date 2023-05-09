@@ -112,12 +112,12 @@ export default function ViewRoundSettings(props: { id?: string }) {
             </>
           ) : (
             <Button
-              data-testid="edit-record-button"
+              data-testid="edit-round-button"
               type="button"
               $variant="outline"
               onClick={onEditClick}
             >
-              Edit Record
+              Edit Round
             </Button>
           )}
         </div>
