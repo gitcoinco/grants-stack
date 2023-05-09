@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef, useEffect, useMemo } from "react";
+import { useCallback, useState, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -137,7 +137,10 @@ export default function ViewRoundResults() {
     undefined | File
   >(undefined);
   const [overridesFile, setOverridesFile] = useState<undefined | File>();
-  const [overrideSaturation, setOverrideSaturation] = useState<boolean>(false);
+
+  const [distributionOption, setDistributionOption] = useState<
+    "keep" | "scale"
+  >("keep");
 
   const {
     matches,
@@ -145,7 +148,12 @@ export default function ViewRoundResults() {
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
-  } = useRevisedMatchingFunds(roundId, overrideSaturation, overridesFile);
+  } = useRevisedMatchingFunds(
+    roundId,
+    distributionOption === "scale",
+    overridesFile
+  );
+
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
     (id as string).toLowerCase()
@@ -160,40 +168,22 @@ export default function ViewRoundResults() {
       (t) => t.address.toLowerCase() == round.token.toLowerCase()
     );
 
-  const [distributionOption, setDistributionOption] = useState<
-    "keep" | "scale"
-  >("keep");
-  const [roundSaturation, setRoundSaturation] = useState<number>(0);
-  const [sumTotalMatch, setSumTotalMatch] = useState<number>(0);
-
-  const mutateMatchingFundsCallback = useCallback(mutateMatchingFunds, [
-    mutateMatchingFunds,
-  ]);
-
-  useEffect(() => {
-    mutateMatchingFundsCallback();
-    if (round && matches) {
-      const sumTotalMatch = matches?.reduce(
-        (acc: number, match) =>
-          acc +
-          (areMatchingFundsRevised
-            ? Number(match.revisedMatch) / 10 ** 18
-            : match.matchedUSD),
-        0
-      );
-      setSumTotalMatch(sumTotalMatch);
-      setRoundSaturation(sumTotalMatch / round.matchAmountUSD);
-      setOverrideSaturation(distributionOption === "scale");
-    }
-  }, [
-    round,
-    matches,
-    distributionOption,
-    mutateMatchingFundsCallback,
-    areMatchingFundsRevised,
-  ]);
+  function formatUnits(value: bigint) {
+    return `${Number(utils.formatUnits(value, matchToken?.decimal)).toFixed(
+      4
+    )} ${matchToken?.name}`;
+  }
 
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
+
+  const sumOfMatches = useMemo(() => {
+    return (
+      matches?.reduce(
+        (acc: bigint, match) => acc + match.revisedMatch,
+        BigInt(0)
+      ) ?? BigInt(0)
+    );
+  }, [matches]);
 
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
@@ -274,9 +264,16 @@ export default function ViewRoundResults() {
     return <NoInformationContent />;
   }
 
-  if (isLoadingRound) {
+  if (isLoadingRound || !round) {
     return <Spinner text="We're fetching the matching data." />;
   }
+
+  const roundSaturation =
+    Number(
+      ((sumOfMatches * BigInt(10000)) / round.matchAmount) * BigInt(10000)
+    ) / 1000000;
+
+  const disableRoundSaturationControls = roundSaturation >= 100;
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -459,18 +456,18 @@ export default function ViewRoundResults() {
                   Round Saturation
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`Current round saturation: ${(roundSaturation * 100).toFixed(
-                    2
-                  )}%`}
+                  {`Current round saturation: ${roundSaturation.toFixed(2)}%`}
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`$${sumTotalMatch.toLocaleString()} out of the $${round?.matchAmountUSD.toLocaleString()} matching fund will be distributed to grantees.`}
+                  {`${formatUnits(sumOfMatches)} out of the ${formatUnits(
+                    round.matchAmount
+                  )} matching fund will be distributed to grantees.`}
                 </span>
               </div>
               <RadioGroup
                 value={distributionOption}
                 onChange={setDistributionOption}
-                disabled={roundSaturation >= 1}
+                disabled={disableRoundSaturationControls}
               >
                 <RadioGroup.Label className="sr-only">
                   Distribution options
@@ -483,7 +480,7 @@ export default function ViewRoundResults() {
                       className={() =>
                         classNames(
                           "cursor-pointer flex items-center",
-                          roundSaturation >= 1 &&
+                          disableRoundSaturationControls &&
                             "opacity-50 cursor-not-allowed"
                         )
                       }
