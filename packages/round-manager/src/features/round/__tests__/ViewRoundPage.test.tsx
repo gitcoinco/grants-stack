@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { render, screen } from "@testing-library/react";
-import { useParams } from "react-router-dom";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
   makeGrantApplicationData,
   makeRoundData,
@@ -13,6 +11,8 @@ import {
 } from "../../../test-utils";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
+import { chainId, useDisconnect, useSwitchNetwork } from "wagmi";
+import { useParams } from "react-router-dom";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
@@ -38,9 +38,23 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
-    chain: {},
+    chain: {
+      name: "Ethereum",
+    },
     address: mockRoundData.operatorWallets![0],
-    provider: { getNetwork: () => ({ chainId: "0" }) },
+    signer: {
+      getChainId: () => {
+        /* do nothing */
+      },
+    },
+    provider: {
+      network: {
+        chainId: 1,
+      },
+      getNetwork: () => {
+        return { chainId: 1 };
+      },
+    },
   }),
 }));
 
@@ -233,6 +247,7 @@ describe("View Round", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           })
         )
       )

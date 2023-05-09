@@ -79,8 +79,17 @@ export default function ViewRoundPage() {
       } else {
         setHasAccess(true);
       }
+    } else if (!round && fetchRoundStatus != ProgressStatus.IN_PROGRESS) {
+      setRoundExists(false);
     }
-  }, [isRoundsFetched, round, address, debugModeEnabled]);
+  }, [
+    isRoundsFetched,
+    round,
+    address,
+    debugModeEnabled,
+    chain,
+    fetchRoundStatus,
+  ]);
 
   return (
     <>
