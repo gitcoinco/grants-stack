@@ -92,7 +92,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
-<div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <p className="text-xl font-semibold leading-6 mb-4">Round Settings</p>
         <div>
           {editMode ? (
@@ -263,6 +263,14 @@ function DetailsPage(props: {
                 )}
               />
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {props.errors.roundMetadata.name?.message}
+              </p>
+            )}
           </div>
           <div>
             <div
@@ -302,6 +310,14 @@ function DetailsPage(props: {
               />
             )}
           />
+          {props.errors.roundMetadata && (
+            <p
+              className="text-xs text-pink-500"
+              data-testid="application-end-date-error"
+            >
+              {props.errors.eligibility.description?.message}
+            </p>
+          )}
         </div>
         <span className="mt-8 inline-flex text-sm text-gray-600 mb-8">
           Where can applicants reach you and/or your team if support is needed?
@@ -332,6 +348,14 @@ function DetailsPage(props: {
                 />
               )}
             </div>
+            {props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {props.errors.roundMetadata.support?.type?.message}
+              </p>
+            )}
           </div>
           <div>
             <div
@@ -369,6 +393,14 @@ function DetailsPage(props: {
                 )}
               />
             </div>
+            {!props.errors.roundMetadata && (
+              <p
+                className="text-xs text-pink-500"
+                data-testid="application-end-date-error"
+              >
+                {props.errors.roundMetadata.support?.info?.message}
+              </p>
+            )}
           </div>
         </div>
         {/* todo: */}
