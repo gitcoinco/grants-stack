@@ -1,10 +1,36 @@
 import { stringify as stringifyCsv } from "csv-stringify";
 import { Lit } from "./lit";
+import { Application } from "allo-indexer-client";
+
+type ApplicationWithMetadata = Application & {
+  metadata?: {
+    signature: string;
+    application: {
+      project: {
+        title: string;
+        website: string;
+        projectTwitter: string;
+        projectGithub: string;
+        userGithub: string;
+      };
+      recipient: string;
+      answers: {
+        question: string;
+        answer?: string;
+        encryptedAnswer?: {
+          ciphertext: string;
+          encryptedSymmetricKey: string;
+        };
+      }[];
+    };
+  };
+};
 
 export async function roundApplicationsToCSV(
   roundId: string,
   chainId: number,
-  chainName: string
+  chainName: string,
+  approvedOnly?: boolean
 ) {
   const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.json`;
 
@@ -15,7 +41,13 @@ export async function roundApplicationsToCSV(
     throw new Error(`Failed to fetch applications from ${remoteUrl}`);
   }
 
-  const applications = await response.json();
+  let applications: ApplicationWithMetadata[] = await response.json();
+
+  if (approvedOnly) {
+    applications = applications.filter(
+      (application) => application.status === "APPROVED"
+    );
+  }
 
   const lit = new Lit({
     chain: chainName.toLowerCase(),

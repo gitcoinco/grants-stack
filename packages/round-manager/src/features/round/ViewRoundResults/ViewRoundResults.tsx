@@ -15,7 +15,7 @@ import {
   ProgressStep,
 } from "../../api/types";
 import { Match } from "allo-indexer-client";
-import { Spinner } from "../../common/Spinner";
+import { Spinner, LoadingRing } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
 import { useNetwork, useSigner } from "wagmi";
@@ -150,6 +150,9 @@ export default function ViewRoundResults() {
     payoutTokens.find(
       (t) => t.address.toLowerCase() == round.token.toLowerCase()
     );
+
+  const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
+    useState(false);
 
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
@@ -591,21 +594,30 @@ export default function ViewRoundResults() {
                 <span className="w-40">Raw Votes</span>
                 <DownloadIcon className="h-5 w-5" />
               </a>
-              <a
-                className="flex items-center mb-4"
-                href="#"
-                onClick={(e) => {
+              <button
+                className="flex items-center mb-4 text-left"
+                disabled={isExportingApplicationsCSV}
+                onClick={async (e) => {
                   e.preventDefault();
-                  exportAndDownloadApplicationsCSV(
-                    round.id,
-                    chain.id,
-                    chain.name
-                  );
+                  try {
+                    setIsExportingApplicationsCSV(true);
+                    await exportAndDownloadApplicationsCSV(
+                      round.id,
+                      chain.id,
+                      chain.name
+                    );
+                  } finally {
+                    setIsExportingApplicationsCSV(false);
+                  }
                 }}
               >
                 <span className="w-40">Projects</span>
-                <DownloadIcon className="h-5 w-5" />
-              </a>
+                {isExportingApplicationsCSV ? (
+                  <LoadingRing className="h-5 w-5 animate-spin" />
+                ) : (
+                  <DownloadIcon className="h-5 w-5" />
+                )}
+              </button>
               <a
                 className="flex items-center mb-4"
                 href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/round`}
@@ -776,11 +788,11 @@ async function exportAndDownloadApplicationsCSV(
   chainId: number,
   chainName: string
 ) {
-  const csv = await roundApplicationsToCSV(roundId, chainId, chainName);
+  const csv = await roundApplicationsToCSV(roundId, chainId, chainName, true);
   // create a download link and click it
   const blob = new Blob([csv], {
     type: "text/csv;charset=utf-8;",
   });
 
-  downloadFile(blob, `projects-${roundId}.csv`);
+  return downloadFile(blob, `projects-${roundId}.csv`);
 }
