@@ -1,11 +1,14 @@
-import { useCallback, useState, useRef, useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
-import { DownloadIcon, UploadIcon } from "@heroicons/react/solid";
+import {
+  DownloadIcon,
+  ExclamationCircleIcon,
+  UploadIcon,
+} from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
@@ -200,7 +203,7 @@ export default function ViewRoundResults() {
   const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
     useState<TransactionResponse>();
 
-  const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
+  const { finalizeRound, finalizeRoundToContractStatus, IPFSCurrentStatus } =
     useFinalizeRound();
 
   const onFinalizeResults = async () => {
@@ -249,21 +252,32 @@ export default function ViewRoundResults() {
 
   const progressSteps: ProgressStep[] = [
     {
+      name: "uploading to IPFS",
+      description: "The matching distribution is being uploaded to IPFS.",
+      status: IPFSCurrentStatus,
+    },
+    {
       name: "saving",
       description:
         "The matching distribution is being saved onto the contract.",
-      status: IPFSCurrentStatus,
+      status: finalizeRoundToContractStatus,
     },
     {
       name: "Finalizing",
       description: `The contract is being marked as eligible for payouts.`,
-      status: finalizeRoundToContractStatus,
+      status:
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+          ? readyForPayoutTransaction
+            ? ProgressStatus.IS_SUCCESS
+            : ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
     },
     {
       name: "finishing up",
       description: "We’re wrapping up.",
       status:
-        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS &&
+        readyForPayoutTransaction !== undefined
           ? ProgressStatus.IN_PROGRESS
           : ProgressStatus.NOT_STARTED,
     },
@@ -279,10 +293,17 @@ export default function ViewRoundResults() {
 
   const roundSaturation =
     Number(
-      ((sumOfMatches * BigInt(10000)) / round.matchAmount) * BigInt(10000)
-    ) / 1000000;
+      ((sumOfMatches * BigInt(10_000)) / round.matchAmount) * BigInt(10_000)
+    ) / 1_000_000;
 
-  const disableRoundSaturationControls = roundSaturation >= 100;
+  const disableRoundSaturationControls = Math.round(roundSaturation) >= 100;
+
+  console.log(
+    "Finalize eround status",
+    finalizeRoundToContractStatus,
+    " ready for payout status ",
+    readyForPayoutTransaction
+  );
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
