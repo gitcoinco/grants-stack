@@ -252,9 +252,9 @@ function DetailsPage(props: {
                     onChange={(e) => {
                       field.onChange(e);
                       props.setEditedRound({
-                        ...round,
+                        ...props.editedRound,
                         roundMetadata: {
-                          ...round.roundMetadata,
+                          ...props.editedRound.roundMetadata,
                           name: e.target.value,
                         },
                       });
@@ -299,6 +299,21 @@ function DetailsPage(props: {
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                 defaultValue={round.roundMetadata.eligibility?.description}
                 disabled={!props.editMode}
+                onChange={(e) => {
+                  field.onChange(e);
+                  props.setEditedRound({
+                    ...props.editedRound,
+                    roundMetadata: {
+                      ...props.editedRound.roundMetadata,
+                      eligibility: {
+                        description: e.target.value,
+                        requirements:
+                          props.editedRound.roundMetadata.eligibility
+                            ?.requirements ?? [],
+                      },
+                    },
+                  });
+                }}
               />
             )}
           />
@@ -325,7 +340,7 @@ function DetailsPage(props: {
                 />
               ) : (
                 <SupportTypeDropdown
-                  register={props.register("roundMetadata.support")}
+                  register={props.register("roundMetadata.support.type")}
                   control={props.control}
                   supportTypes={supportTypes}
                   errors={props.errors}
@@ -354,12 +369,14 @@ function DetailsPage(props: {
                     onChange={(e) => {
                       field.onChange(e);
                       props.setEditedRound({
-                        ...round,
+                        ...props.editedRound,
                         roundMetadata: {
-                          ...round.roundMetadata,
+                          ...props.editedRound.roundMetadata,
                           support: {
-                            ...round.roundMetadata.support,
-                            type: round.roundMetadata.support?.type ?? "",
+                            ...props.editedRound.roundMetadata.support,
+                            type:
+                              props.editedRound.roundMetadata.support?.type ??
+                              "",
                             info: e.target.value ?? "",
                           },
                         },
@@ -440,7 +457,7 @@ function RoundApplicationPeriod(props: {
                       onChange={(date) => {
                         field.onChange(moment(date).toDate());
                         props.setEditedRound({
-                          ...round,
+                          ...props.editedRound,
                           applicationsStartTime: moment(date).toDate(),
                         });
                       }}
@@ -461,7 +478,8 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                   defaultValue={`${getUTCDate(
-                    round.applicationsStartTime
+                    props.editedRound.applicationsStartTime ??
+                      round.applicationsStartTime
                   )} ${getUTCTime(round.applicationsStartTime)}`}
                   disabled={!props.editMode}
                 />
@@ -508,7 +526,8 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                   defaultValue={`${getUTCDate(
-                    round.applicationsEndTime
+                    props.editedRound.applicationsEndTime ??
+                      round.applicationsEndTime
                   )} ${getUTCTime(round.applicationsEndTime)}`}
                   disabled={!props.editMode}
                 />
@@ -535,7 +554,7 @@ function RoundApplicationPeriod(props: {
                       onChange={(date) => {
                         field.onChange(moment(date).toDate());
                         props.setEditedRound({
-                          ...round,
+                          ...props.editedRound,
                           roundStartTime: moment(date).toDate(),
                         });
                       }}
@@ -556,7 +575,7 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                   defaultValue={`${getUTCDate(
-                    round.roundStartTime
+                    props.editedRound.roundStartTime ?? round.roundStartTime
                   )} ${getUTCTime(round.roundStartTime)}`}
                   disabled={!props.editMode}
                 />
@@ -603,7 +622,7 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                   defaultValue={`${getUTCDate(round.roundEndTime)} ${getUTCTime(
-                    round.roundEndTime
+                    props.editedRound.roundEndTime ?? round.roundEndTime
                   )}`}
                   disabled={!props.editMode}
                 />
@@ -857,7 +876,7 @@ function Funding(props: {
         <div>
           <span className="mt-4 inline-flex text-sm text-gray-600 mb-8">
             Each donation has to be a minimum of{" "}
-            {round.roundMetadata.quadraticFundingConfig
+            {props.editedRound?.roundMetadata.quadraticFundingConfig
               .minDonationThresholdAmount ?? 0}{" "}
             USD equivalent for it to be eligible for matching.
           </span>
