@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useState,
-  useRef,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useCallback, useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -57,13 +51,9 @@ const distributionOptions = [
 
 // this hook manages the state of the matching funds,
 // fetching revised matches and merging them with the original matches
-function useRevisedMatchingFunds(
-  roundId: string,
-  params: any,
-  overridesFile?: File
-) {
+function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
   const originalMatches = useRoundMatchingFunds(roundId);
-  const revisedMatches = useRoundMatchingFunds(roundId, params, overridesFile);
+  const revisedMatches = useRoundMatchingFunds(roundId, overridesFile);
 
   const isRevised = Boolean(overridesFile) && !revisedMatches.isLoading;
 
@@ -133,7 +123,9 @@ export default function ViewRoundResults() {
   const [overridesFileDraft, setOverridesFileDraft] = useState<
     undefined | File
   >(undefined);
-  const [overridesFile, setOverridesFile] = useState<undefined | File>();
+  const [overridesFile, setOverridesFile] = useState<undefined | File>(
+    undefined
+  );
   const [overrideSaturation, setOverrideSaturation] = useState<boolean>(false);
   const {
     matches,
@@ -187,7 +179,7 @@ export default function ViewRoundResults() {
 
   useEffect(() => {
     mutateMatchingFunds();
-  }, [distributionOption]);
+  }, [distributionOption, mutateMatchingFunds]);
 
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
@@ -213,15 +205,13 @@ export default function ViewRoundResults() {
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      const matchingJson: MatchingStatsData[] = matches.map(
-        (match: RevisedMatch) => ({
-          uniqueContributorsCount: 0,
-          projectPayoutAddress: match.payoutAddress,
-          projectId: match.projectId,
-          matchPoolPercentage: 0,
-          matchAmountInToken: BigNumber.from(match.revisedMatch),
-        })
-      );
+      const matchingJson: MatchingStatsData[] = matches.map((match: Match) => ({
+        uniqueContributorsCount: 0,
+        projectPayoutAddress: match.payoutAddress,
+        projectId: match.projectId,
+        matchPoolPercentage: 0,
+        matchAmountInToken: BigNumber.from(match.revisedMatch),
+      }));
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
 
@@ -475,10 +465,8 @@ export default function ViewRoundResults() {
                       key={option.value}
                       value={option.value}
                       className={() =>
-                        classNames(
-                          "cursor-pointer flex items-center",
-                          roundSaturation >= 1 &&
-                            "opacity-50 cursor-not-allowed"
+                        classNames("cursor-pointer flex items-center",
+                          roundSaturation >= 1 && "opacity-50 cursor-not-allowed"
                         )
                       }
                     >
