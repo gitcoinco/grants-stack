@@ -1,38 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Tab } from "@headlessui/react";
+import { Listbox, Tab, Transition } from "@headlessui/react";
+import { CheckIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { getUTCDate, getUTCTime } from "common";
+import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
+import _ from "lodash";
 import moment from "moment";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Datetime from "react-datetime";
 import {
   Control,
   Controller,
+  FieldErrors,
   SubmitHandler,
   UseFormHandleSubmit,
   UseFormRegister,
+  UseFormRegisterReturn,
   useForm,
 } from "react-hook-form";
 import { useNetwork } from "wagmi";
 import { useRoundById } from "../../context/round/RoundContext";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
-import { payoutTokens } from "../api/utils";
+import { SupportType, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { horizontalTabStyles } from "../common/Utils";
 import {
   RoundValidationSchema,
-  SupportTypeDropdown,
+  SupportTypeButton,
   supportTypes,
 } from "./RoundDetailForm";
-import _ from "lodash";
 
-const ValidationSchema = RoundValidationSchema.shape({
-  // todo:
-});
+const ValidationSchema = RoundValidationSchema;
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round, fetchRoundStatus, error } = useRoundById(
@@ -42,6 +43,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const [existingRound] = useState<Round>({ ...round! });
   const [editedRound, setEditedRound] = useState<Round | undefined>({
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ...round!,
   });
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -66,7 +68,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     // todo: update metadata pointer in IPFS call
     // todo: send tx's
     const data = _.merge(round, values);
-    console.log("submit values merged (prev, new)", {
+    console.log("submit values", {
       existingRound,
       editedRound,
     });
@@ -79,7 +81,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const roundStartDateTime = round.roundStartTime
     ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(round.roundStartTime)}`
     : "...";
-  // const hasRoundStarted = round.roundStartTime < new Date();
 
   const onCancelEdit = () => {
     reset(round);
@@ -114,6 +115,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     </p>
   );
 
+  // todo: update status's
   const progressSteps: ProgressStep[] = [
     {
       name: "Saving",
@@ -264,6 +266,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
         }}
         cancelButtonAction={() => {
           setIsConfirmationModalOpen(false);
+          onCancelEdit();
         }}
       />
       <ProgressModal
@@ -382,6 +385,7 @@ function DetailsPage(props: {
             control={props.control}
             render={({ field }) => (
               <input
+                {...props.register("roundMetadata.eligibility.description")}
                 type="text"
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                 defaultValue={
@@ -436,11 +440,20 @@ function DetailsPage(props: {
                   disabled={!props.editMode}
                 />
               ) : (
-                <SupportTypeDropdown
-                  register={props.register("roundMetadata.support.type")}
+                <Controller
                   control={props.control}
-                  supportTypes={supportTypes}
-                  errors={props.errors}
+                  name="roundMetadata.support.type"
+                  render={({ field }) => (
+                    <SupportTypeDropdown
+                      register={props.register("roundMetadata.support.type")}
+                      control={props.control}
+                      supportTypes={supportTypes}
+                      errors={props.errors}
+                      editedRound={props.editedRound}
+                      setEditedRound={props.setEditedRound}
+                      field={field}
+                    />
+                  )}
                 />
               )}
             </div>
@@ -524,7 +537,10 @@ function DetailsPage(props: {
                       <input
                         type="text"
                         className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                        defaultValue={req.requirement}
+                        defaultValue={
+                          round.roundMetadata.eligibility?.requirements[i]
+                            .requirement
+                        }
                         disabled={!props.editMode}
                         onChange={(e) => {
                           field.onChange(e);
@@ -578,6 +594,128 @@ function DetailsPage(props: {
           )
         )}
       </form>
+    </div>
+  );
+}
+
+function SupportTypeDropdown(props: {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  control: Control<Round>;
+  supportTypes: SupportType[];
+  showLabel?: boolean;
+  editedRound: Round;
+  setEditedRound: (round: Round) => void;
+  field: any;
+}) {
+  return (
+    <div className="col-span-6 sm:col-span-3 relative mt-2">
+      <Listbox
+        {...props.field}
+        onChange={(e: any) => {
+          console.log("ddl", e);
+          props.field.onChange(e);
+          props.setEditedRound({
+            ...props.editedRound,
+            roundMetadata: {
+              ...props.editedRound?.roundMetadata,
+              support: {
+                info: props.editedRound?.roundMetadata.support?.info ?? "",
+                type: e,
+              },
+            },
+          })
+        }}
+      >
+        {({ open }) => (
+          <div>
+            {props.showLabel ? (
+              <Listbox.Label className="text-sm mt-4 mb-2">
+                <p className="text-sm">
+                  <span>Support Input</span>
+                  <span className="text-right text-violet-400 float-right text-xs mt-1">
+                    *Required
+                  </span>
+                </p>
+              </Listbox.Label>
+            ) : null}
+
+            <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+              <SupportTypeButton
+                errors={props.errors}
+                supportType={props.supportTypes.find(
+                  (supportType) => supportType.name === props.field.value
+                )}
+              />
+              <Transition
+                show={open}
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  {props.supportTypes.map(
+                    (type) =>
+                      !type.default && (
+                        <Listbox.Option
+                          key={type.name}
+                          className={({ active }) =>
+                            classNames(
+                              active
+                                ? "text-white bg-indigo-600"
+                                : "text-gray-900",
+                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                            )
+                          }
+                          value={type.name}
+                          data-testid="support-type-option"
+                        >
+                          {({ selected, active }) => (
+                            <>
+                              <div className="flex items-center">
+                                <span
+                                  className={classNames(
+                                    selected ? "font-semibold" : "font-normal",
+                                    "ml-3 block truncate"
+                                  )}
+                                >
+                                  {type.name}
+                                </span>
+                              </div>
+
+                              {selected ? (
+                                <span
+                                  className={classNames(
+                                    active ? "text-white" : "text-indigo-600",
+                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                  )}
+                                >
+                                  <CheckIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      )
+                  )}
+                </Listbox.Options>
+              </Transition>
+            </div>
+            {props.errors.roundMetadata?.support?.type && (
+              <p className="mt-2 text-xs text-pink-500">
+                {
+                  "You must select a support type."
+                  // TODO: Use YUP for error message
+                }
+              </p>
+            )}
+          </div>
+        )}
+      </Listbox>
     </div>
   );
 }

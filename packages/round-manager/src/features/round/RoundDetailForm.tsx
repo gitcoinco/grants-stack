@@ -588,7 +588,7 @@ function ContactInformation(props: {
   );
 }
 
-function SupportTypeButton(props: {
+export function SupportTypeButton(props: {
   errors: FieldErrors<Round>;
   supportType?: SupportType;
 }) {
@@ -619,7 +619,7 @@ function SupportTypeButton(props: {
   );
 }
 
-export function SupportTypeDropdown(props: {
+function SupportTypeDropdown(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   control: Control<Round>;
