@@ -582,7 +582,6 @@ export default function ViewRoundResults() {
                         </button>
                       )}
                       <button
-                        data-testid="finalize-results-button"
                         onClick={() => {
                           setWarningModalOpen(true);
                         }}

@@ -129,7 +129,7 @@ describe("View Round Results before distribution data is finalized to contract",
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
 
-      (useRound as jest.Mock).mockReturnValue({data: {
+      (useRound as jest.Mock).mockReturnValue({
         id: mockRoundData.id,
         applicationsStartTime,
         applicationsEndTime,
@@ -140,8 +140,7 @@ describe("View Round Results before distribution data is finalized to contract",
         votes: 1,
         matchAmount: BigInt(10),
         uniqueContributors: 1,
-        token: faker.finance.ethereumAddress(),
-      }, isLoading: false});
+      } as IndexerRound);
 
       const approvedProjects = [
         makeApprovedProjectData(),
@@ -240,8 +239,10 @@ describe("View Round Results before distribution data is finalized to contract",
 
       fireEvent.click(roundResultsTab);
       expect(
-          screen.getByTestId("finalize-results-button")
-      ).toBeInTheDocument()
+        screen.getByRole("button", {
+          name: /Finalize Results/i,
+        })
+      ).toBeInTheDocument();
     });
   });
 });

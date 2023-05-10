@@ -138,10 +138,6 @@ export type QFDistribution = {
   matchAmountInToken: BigNumber;
   projectPayoutAddress: string;
   uniqueContributorsCount: number;
-  revisedMatch: bigint;
-  contributionsCount: number;
-  matched: bigint;
-  revisedContributionCount: number;
 };
 export const makeQFDistribution = (): QFDistribution => {
   return {
@@ -152,10 +148,6 @@ export const makeQFDistribution = (): QFDistribution => {
     matchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
     uniqueContributorsCount: faker.datatype.number(),
-    revisedMatch: BigInt(1),
-    contributionsCount: faker.datatype.number(),
-    matched: BigInt(1),
-    revisedContributionCount: faker.datatype.number(),
   };
 };
 
