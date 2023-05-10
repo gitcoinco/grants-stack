@@ -392,12 +392,10 @@ function DetailsPage(props: {
           control={props.control}
           render={({ field }) => (
             <input
+              {...field}
               {...props.register("roundMetadata.eligibility.description")}
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-              defaultValue={
-                props.editedRound?.roundMetadata.eligibility?.description
-              }
               disabled={!props.editMode}
               onChange={(e) => {
                 field.onChange(e);
@@ -699,14 +697,6 @@ function SupportTypeDropdown(props: {
                 </Listbox.Options>
               </Transition>
             </div>
-            {props.errors.roundMetadata?.support?.type && (
-              <p className="mt-2 text-xs text-pink-500">
-                {
-                  "You must select a support type."
-                  // TODO: Use YUP for error message
-                }
-              </p>
-            )}
           </div>
         )}
       </Listbox>
