@@ -341,7 +341,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {props.projects.map((project: MatchingStatsData) => (
                     <tr
-                      key={project.projectPayoutAddress}
+                      key={project.projectId}
                       className={
                         selectedProjects.includes(project)
                           ? "bg-gray-50"
