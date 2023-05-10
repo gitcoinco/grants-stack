@@ -32,6 +32,7 @@ import ThankYou from "./features/round/ThankYou";
 import ViewCart from "./features/round/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
+import ViewCollection from "./features/collection/ViewCollection";
 
 // Initialize sentry
 initSentry();
@@ -63,6 +64,9 @@ root.render(
 
                   {/* Apply Now Page */}
                   <Route path="/apply-now" element={<ApplyNowPage />} />
+
+                  {/* Collection */}
+                  <Route path="/collection" element={<ViewCollection />} />
 
                   {/* Round Routes */}
                   <Route
