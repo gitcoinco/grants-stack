@@ -26,18 +26,11 @@ export function useAlloIndexerClient(): Client {
   }, [chain.id]);
 }
 
-export function useRoundMatchingFunds(
-  roundId: string,
-  ignoreSaturation?: boolean,
-  overrides?: Blob
-) {
+export function useRoundMatchingFunds(roundId: string, overrides?: Blob) {
   const client = useAlloIndexerClient();
-  return useSWR(
-    [roundId, "/matches", overrides, ignoreSaturation],
-    ([roundId]) => {
-      return client.getRoundMatchingFunds(roundId, overrides, ignoreSaturation);
-    }
-  );
+  return useSWR([roundId, "/matches", overrides], ([roundId]) => {
+    return client.getRoundMatchingFunds(roundId, overrides);
+  });
 }
 
 export function useRound(roundId: string) {
