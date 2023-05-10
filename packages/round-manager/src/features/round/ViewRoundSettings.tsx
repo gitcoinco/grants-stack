@@ -18,8 +18,11 @@ import {
 } from "react-hook-form";
 import { useNetwork } from "wagmi";
 import { useRoundById } from "../../context/round/RoundContext";
-import { Round } from "../api/types";
+import { ProgressStatus, ProgressStep, Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
+import ConfirmationModal from "../common/ConfirmationModal";
+import ErrorModal from "../common/ErrorModal";
+import ProgressModal from "../common/ProgressModal";
 import { horizontalTabStyles } from "../common/Utils";
 import {
   RoundValidationSchema,
@@ -39,6 +42,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const [existingRound] = useState<Round>({ ...round! });
   const [editedRound, setEditedRound] = useState<Round | undefined>(undefined);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
   const {
     control,
@@ -53,10 +59,13 @@ export default function ViewRoundSettings(props: { id?: string }) {
     resolver: yupResolver(ValidationSchema),
   });
 
-  // todo: keep the original data for the round in the UI state for cancel action and comparison
   const submit: SubmitHandler<Round> = async (values: Round) => {
+    // todo: trigger confirm modal
+    // todo: trigger progress modal
+    // todo: update metadata pointer in IPFS call
+    // todo: categorize tx's
+    // todo: send tx's
     const data = _.merge(round, values);
-    //! log to show the updated round data to be sent to IPFS and onchain
     console.log("submit values merged (prev, new)", {
       existingRound,
       mergedRoundData: data,
@@ -70,7 +79,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const roundStartDateTime = round.roundStartTime
     ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(round.roundStartTime)}`
     : "...";
-  const hasRoundStarted = round.roundStartTime < new Date();
+  // const hasRoundStarted = round.roundStartTime < new Date();
 
   const onCancelEdit = () => {
     reset(round);
@@ -81,18 +90,55 @@ export default function ViewRoundSettings(props: { id?: string }) {
     setEditMode(!editMode);
   };
 
-  const onUpdateRound = () => {
+  const updateRound = async () => {
     try {
       submit(editedRound as Round);
       setEditMode(!editMode);
+      setIsConfirmationModalOpen(false);
+      setIsProgressModalOpen(true);
     } catch (e) {
       console.log("error", e);
     }
+  }
+
+  const onUpdateRound = () => {
+    setIsConfirmationModalOpen(true);
   };
+
+  const confirmationModalBody = (
+    <p className="text-md">
+      You will need to sign 3 transactions to update your round with the latest
+      changes. Please note that once the round starts, you will not be able to
+      make any more changes to your round settings.
+    </p>
+  );
+
+  const progressSteps: ProgressStep[] = [
+    {
+      name: "Saving",
+      description: `The round settings is being saved.`,
+      status: ProgressStatus.IN_PROGRESS,
+    },
+    {
+      name: "Submitting",
+      description: `Sending transaction to update the round contract.`,
+      status: ProgressStatus.IN_PROGRESS,
+    },
+    {
+      name: "Reindexing",
+      description: "Making sure our data is up to date.",
+      status: ProgressStatus.IN_PROGRESS,
+    },
+    {
+      name: "Finishing Up",
+      description: "We’re wrapping up.",
+      status: ProgressStatus.IS_SUCCESS,
+    },
+  ];
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
-<div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <p className="text-xl font-semibold leading-6 mb-4">Round Settings</p>
         <div>
           {editMode ? (
@@ -204,6 +250,38 @@ export default function ViewRoundSettings(props: { id?: string }) {
           </Tab.Panels>
         </div>
       </Tab.Group>
+      <ConfirmationModal
+        title={"Update Round?"}
+        body={confirmationModalBody}
+        isOpen={isConfirmationModalOpen}
+        setIsOpen={() => {
+          /**/
+        }}
+        confirmButtonText={"Proceed to Update"}
+        confirmButtonAction={() => {
+          updateRound();
+        }}
+        cancelButtonAction={() => {
+          setIsConfirmationModalOpen(false);
+        }}
+      />
+      <ProgressModal
+        isOpen={isProgressModalOpen}
+        subheading="Please hold while we update your round settings"
+        steps={progressSteps}
+      />
+      <ErrorModal
+        isOpen={isErrorModalOpen}
+        setIsOpen={() => {
+          /**/
+        }}
+        tryAgainFn={() => {
+          /**/
+        }}
+        doneFn={() => {
+          setIsErrorModalOpen(false);
+        }}
+      />
     </div>
   );
 }
