@@ -26,19 +26,18 @@ export function useAlloIndexerClient(): Client {
   }, [chain.id]);
 }
 
+// TODO: stop ignoring params type
 export function useRoundMatchingFunds(
   roundId: string,
-  ignoreSaturation?: boolean,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  params?: any,
   overrides?: Blob
 ) {
   const client = useAlloIndexerClient();
-  return useSWR(
-    [roundId, "/matches", overrides, ignoreSaturation],
-    ([roundId]) => {
-      console.log("hook called", ignoreSaturation);
-      return client.getRoundMatchingFunds(roundId, overrides, ignoreSaturation);
-    }
-  );
+  return useSWR([roundId, "/matches", overrides, params], ([roundId]) => {
+    console.log("hook called", params);
+    return client.getRoundMatchingFunds(roundId, overrides, params);
+  });
 }
 
 export function useRound(roundId: string) {
