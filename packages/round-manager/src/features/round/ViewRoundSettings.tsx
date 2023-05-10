@@ -12,6 +12,7 @@ import Datetime from "react-datetime";
 import {
   Control,
   Controller,
+  ControllerRenderProps,
   FieldErrors,
   SubmitHandler,
   UseFormHandleSubmit,
@@ -59,6 +60,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   } = useForm<Round>({
     defaultValues: {
       ...round,
+      roundMetadata: round?.roundMetadata,
     },
     resolver: yupResolver(ValidationSchema),
   });
@@ -94,7 +96,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const updateRound = async () => {
     try {
-      submit(editedRound as Round);
+      handleSubmit(submit(editedRound as Round));
       setEditMode(!editMode);
       setIsConfirmationModalOpen(false);
       setIsProgressModalOpen(true);
@@ -104,7 +106,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
   };
 
   const onUpdateRound = () => {
-    setIsConfirmationModalOpen(true);
+    handleSubmit(submit(editedRound as Round));
+    // setIsConfirmationModalOpen(true);
   };
 
   const confirmationModalBody = (
@@ -220,7 +223,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 control={control}
                 register={register}
                 handleSubmit={handleSubmit}
-                submitHandler={submit}
+                onSubmit={submit}
                 errors={errors}
               />
             </Tab.Panel>
@@ -233,7 +236,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 control={control}
                 register={register}
                 handleSubmit={handleSubmit}
-                submitHandler={submit}
+                onSubmit={submit}
                 errors={errors}
               />
             </Tab.Panel>
@@ -246,7 +249,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 control={control}
                 register={register}
                 handleSubmit={handleSubmit}
-                submitHandler={submit}
+                onSubmit={submit}
                 errors={errors}
               />
             </Tab.Panel>
@@ -299,8 +302,8 @@ function DetailsPage(props: {
   control: Control<Round, any>;
   register: UseFormRegister<Round>;
   handleSubmit: UseFormHandleSubmit<Round>;
-  submitHandler: SubmitHandler<Round>;
-  errors: any;
+  onSubmit: SubmitHandler<Round>;
+  errors: FieldErrors<Round>;
 }) {
   const { round } = props;
   const { chain } = useNetwork();
@@ -415,7 +418,7 @@ function DetailsPage(props: {
               className="text-xs text-pink-500"
               data-testid="application-end-date-error"
             >
-              {props.errors.eligibility.description?.message}
+              {props.errors.roundMetadata.eligibility?.description?.message}
             </p>
           )}
         </div>
@@ -462,7 +465,7 @@ function DetailsPage(props: {
                 className="text-xs text-pink-500"
                 data-testid="application-end-date-error"
               >
-                {props.errors.roundMetadata.support?.type?.message}
+                {props.errors.roundMetadata.support?.types?.message}
               </p>
             )}
           </div>
@@ -480,12 +483,12 @@ function DetailsPage(props: {
                 control={props.control}
                 render={({ field }) => (
                   <input
+                    {...props.register("roundMetadata.support.info")}
                     type="text"
                     className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                    defaultValue={round.roundMetadata.support?.info}
                     disabled={!props.editMode}
                     onChange={(e) => {
-                      field.onChange(e);
+                      field.onChange(e.target.value);
                       props.setEditedRound({
                         ...props.editedRound,
                         roundMetadata: {
@@ -579,15 +582,14 @@ function DetailsPage(props: {
                   className="text-xs text-pink-500"
                   data-testid="application-end-date-error"
                 >
-                  {props.errors.roundMetadata?.eligibility?.requirements.map(
+                  {/* {props.errors.roundMetadata?.eligibility?.requirements?.map(
                     (err: any, i: number) => {
                       // now what?
-                      console.log("error with requirements", {
-                        errror: err,
-                        index: i,
-                      });
+                      return (
+                        <>Hello9</>
+                      )
                     }
-                  )}
+                  )} */}
                 </p>
               )}
             </div>
@@ -606,7 +608,7 @@ function SupportTypeDropdown(props: {
   showLabel?: boolean;
   editedRound: Round;
   setEditedRound: (round: Round) => void;
-  field: any;
+  field: ControllerRenderProps<Round, "roundMetadata.support.type">;
 }) {
   return (
     <div className="col-span-6 sm:col-span-3 relative mt-2">
@@ -624,22 +626,11 @@ function SupportTypeDropdown(props: {
                 type: e,
               },
             },
-          })
+          });
         }}
       >
         {({ open }) => (
           <div>
-            {props.showLabel ? (
-              <Listbox.Label className="text-sm mt-4 mb-2">
-                <p className="text-sm">
-                  <span>Support Input</span>
-                  <span className="text-right text-violet-400 float-right text-xs mt-1">
-                    *Required
-                  </span>
-                </p>
-              </Listbox.Label>
-            ) : null}
-
             <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
               <SupportTypeButton
                 errors={props.errors}
@@ -728,7 +719,7 @@ function RoundApplicationPeriod(props: {
   control: Control<Round, any>;
   register: UseFormRegister<Round>;
   handleSubmit: UseFormHandleSubmit<Round>;
-  submitHandler: SubmitHandler<Round>;
+  onSubmit: SubmitHandler<Round>;
   errors: any;
 }) {
   const { round } = props;
@@ -977,7 +968,7 @@ function Funding(props: {
   control: Control<Round, any>;
   register: UseFormRegister<Round>;
   handleSubmit: UseFormHandleSubmit<Round>;
-  submitHandler: SubmitHandler<Round>;
+  onSubmit: SubmitHandler<Round>;
   errors: any;
 }) {
   const { round } = props;
