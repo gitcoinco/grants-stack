@@ -450,14 +450,27 @@ export default function ViewRoundResults() {
         <Tab.Panels className="mt-2">
           <Tab.Panel>
             <div className="overflow-y-auto">
-              <div className="flex flex-col">
-                <span className="text-sm leading-5 text-gray-400 text-left">
-                  Finalize your round results here. Doing so will allow you to
-                  fund your grantees.
-                </span>
-              </div>
+              {!readyForPayoutTransactionHash && (
+                <div className="flex flex-col">
+                  <span className="text-sm leading-5 text-gray-400 text-left">
+                    Finalize your round results here. Doing so will allow you to
+                    fund your grantees.
+                  </span>
+                </div>
+              )}
+              {readyForPayoutTransactionHash && (
+                <div className="flex flex-col mb-6">
+                  <span className="text-md leading-5 text-gray-500 font-semibold text-left mb-3 mt-2">
+                    Finalized Round Results
+                  </span>
+                  <span className="text-sm leading-5 text-gray-400 text-left">
+                    Round results have been finalized. Grantees can now be paid
+                    out their funds.
+                  </span>
+                </div>
+              )}
               <div className="flex flex-col mt-4">
-                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
+                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-2 mt-2">
                   Vote Coefficients
                 </span>
                 <span className="text-sm leading-5 text-gray-400 text-left">
