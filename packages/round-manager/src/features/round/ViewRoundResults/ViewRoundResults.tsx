@@ -168,7 +168,8 @@ function useRevisedMatchingFunds(
     };
 
     async function load() {
-      if (!signer) return;
+      // TODO: ~signer.call is a check to avoid calling contracts on a mocked signer
+      if (!signer || !signer.call) return;
 
       try {
         setFinalizedMatchesLoading(true);
