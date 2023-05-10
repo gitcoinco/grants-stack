@@ -61,7 +61,7 @@ jest.mock("../../../hooks", () => ({
     data: [],
     error: null,
     loading: false,
-    mutate: jest.fn(),
+    mutate: jest.fn(), 
   })),
 }));
 
@@ -111,8 +111,8 @@ describe("View Round Results before distribution data is finalized to contract",
       (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
-        loading: false,
-        mutate: jest.fn(),
+        loading: false, 
+        mutate: jest.fn(), 
       }));
 
       (
@@ -138,7 +138,7 @@ describe("View Round Results before distribution data is finalized to contract",
         amountUSD: 10,
         matchAmountUSD: 10,
         votes: 1,
-        matchAmount: BigInt(10),
+        matchAmount: "10",
         uniqueContributors: 1,
       } as IndexerRound);
 
@@ -183,7 +183,7 @@ describe("View Round Results before distribution data is finalized to contract",
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
         loading: false,
-        mutate: jest.fn(),
+        mutate: jest.fn(), 
       }));
 
       (
@@ -211,7 +211,7 @@ describe("View Round Results before distribution data is finalized to contract",
         amountUSD: 10,
         matchAmountUSD: 10,
         votes: 1,
-        matchAmount: BigInt(10),
+        matchAmount: "10",
         uniqueContributors: 1,
       } as IndexerRound);
       render(
@@ -264,7 +264,7 @@ describe("View Round Results after distribution data is finalized to contract", 
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
-      mutate: jest.fn(),
+      mutate: jest.fn(), 
     }));
 
     (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
@@ -293,7 +293,7 @@ describe("View Round Results after distribution data is finalized to contract", 
       amountUSD: 10,
       matchAmountUSD: 10,
       votes: 1,
-      matchAmount: BigInt(10),
+      matchAmount: "10",
       uniqueContributors: 1,
     } as IndexerRound);
 
