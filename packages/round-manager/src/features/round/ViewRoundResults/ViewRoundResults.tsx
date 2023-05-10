@@ -92,7 +92,7 @@ function useRevisedMatchingFunds(
 
       if (originalMatch) {
         mergedMatchesMap[match.applicationId] = {
-          ...originalMatch,
+          ...match,
           revisedContributionCount: match.contributionsCount,
           revisedMatch: match.matched,
         };
