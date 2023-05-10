@@ -18,7 +18,6 @@ import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrate
 import { ProgressStatus } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
 import { useRound, useRoundMatchingFunds } from "../../../hooks";
-import { Round as IndexerRound } from "allo-indexer-client";
 import { Round } from "../../api/types";
 
 jest.mock("../../common/Auth");
@@ -129,19 +128,22 @@ describe("View Round Results before distribution data is finalized to contract",
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
 
-      (useRound as jest.Mock).mockReturnValue({data: {
-        id: mockRoundData.id,
-        applicationsStartTime,
-        applicationsEndTime,
-        roundEndTime,
-        roundStartTime,
-        amountUSD: 10,
-        matchAmountUSD: 10,
-        votes: 1,
-        matchAmount: BigInt(10),
-        uniqueContributors: 1,
-        token: faker.finance.ethereumAddress(),
-      }, isLoading: false});
+      (useRound as jest.Mock).mockReturnValue({
+        data: {
+          id: mockRoundData.id,
+          applicationsStartTime,
+          applicationsEndTime,
+          roundEndTime,
+          roundStartTime,
+          amountUSD: 10,
+          matchAmountUSD: 10,
+          votes: 1,
+          matchAmount: BigInt(10),
+          uniqueContributors: 1,
+          token: faker.finance.ethereumAddress(),
+        },
+        isLoading: false,
+      });
 
       const approvedProjects = [
         makeApprovedProjectData(),
@@ -203,7 +205,8 @@ describe("View Round Results before distribution data is finalized to contract",
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
 
-      (useRound as jest.Mock).mockReturnValue({data: {
+      (useRound as jest.Mock).mockReturnValue({
+        data: {
           id: mockRoundData.id,
           applicationsStartTime,
           applicationsEndTime,
@@ -215,7 +218,9 @@ describe("View Round Results before distribution data is finalized to contract",
           matchAmount: BigInt(10),
           uniqueContributors: 1,
           token: faker.finance.ethereumAddress(),
-        }, isLoading: false});
+        },
+        isLoading: false,
+      });
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithFinalizeRoundContext(
@@ -240,9 +245,7 @@ describe("View Round Results before distribution data is finalized to contract",
       const roundResultsTab = screen.getByTestId("round-results");
 
       fireEvent.click(roundResultsTab);
-      expect(
-          screen.getByTestId("finalize-results-button")
-      ).toBeInTheDocument()
+      expect(screen.getByTestId("finalize-results-button")).toBeInTheDocument();
     });
   });
 });
@@ -291,7 +294,8 @@ describe("View Round Results after distribution data is finalized to contract", 
       mutate: jest.fn(),
     }));
 
-    (useRound as jest.Mock).mockReturnValue({data: {
+    (useRound as jest.Mock).mockReturnValue({
+      data: {
         id: mockRoundData.id,
         applicationsStartTime,
         applicationsEndTime,
@@ -303,7 +307,9 @@ describe("View Round Results after distribution data is finalized to contract", 
         matchAmount: BigInt(10),
         uniqueContributors: 1,
         token: faker.finance.ethereumAddress(),
-      }, isLoading: false});
+      },
+      isLoading: false,
+    });
 
     const approvedProjects = [
       makeApprovedProjectData(),
