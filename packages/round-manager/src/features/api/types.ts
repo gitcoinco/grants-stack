@@ -238,11 +238,12 @@ export interface Round {
 
 export type MatchingStatsData = {
   index?: number;
-  projectName?: string;
-  uniqueContributorsCount: number;
+  projectName: string;
+  uniqueContributorsCount?: number;
   contributionsCount: number;
   matchPoolPercentage: number;
   projectId: string;
+  applicationId: string;
   matchAmountInToken: BigNumber;
   originalMatchAmountInToken: BigNumber;
   projectPayoutAddress: string;

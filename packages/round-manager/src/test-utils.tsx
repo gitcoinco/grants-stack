@@ -105,6 +105,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 export const makeMatchingStatsData = (): MatchingStatsData => {
   return {
     projectName: faker.company.name(),
+    applicationId: faker.datatype.number().toString(),
     projectId: formatBytes32String(faker.company.name().slice(0, 31)),
     uniqueContributorsCount: faker.datatype.number(),
     contributionsCount: faker.datatype.number(),
