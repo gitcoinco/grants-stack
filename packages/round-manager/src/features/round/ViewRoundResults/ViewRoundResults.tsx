@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { BigNumber, utils } from "ethers";
+import { useCallback, useState, useRef, useMemo, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { BigNumber, ethers, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
 import {
@@ -17,7 +17,6 @@ import {
   ProgressStatus,
   ProgressStep,
 } from "../../api/types";
-import { Match } from "allo-indexer-client";
 import { LoadingRing, Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
@@ -29,13 +28,24 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
-import { TransactionResponse } from "@ethersproject/providers";
-import { payoutTokens } from "../../api/utils";
+import { payoutTokens, fetchFromIPFS } from "../../api/utils";
 import { roundApplicationsToCSV } from "../../api/exports";
+import { Signer } from "@ethersproject/abstract-signer";
+import {
+  merklePayoutStrategyImplementationContract,
+  roundImplementationContract,
+} from "../../api/contracts";
+import { TransactionResponse } from "@ethersproject/providers";
 
-type RevisedMatch = Match & {
+type RevisedMatch = {
   revisedContributionCount: number;
   revisedMatch: bigint;
+  matched: bigint;
+  contributionsCount: number;
+  projectId: string;
+  applicationId: string;
+  projectName: string;
+  payoutAddress: string;
 };
 
 // CHECK: should this be in common? Josef: yes indeed
@@ -53,11 +63,76 @@ const distributionOptions = [
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
 
+type FinalizedMatches = {
+  readyForPayoutTransactionHash: string;
+  matches: RevisedMatch[];
+};
+
+async function fetchFinalizedMatches(
+  roundId: string,
+  signer: Signer
+): Promise<FinalizedMatches | undefined> {
+  const roundImplementation = new ethers.Contract(
+    roundId,
+    roundImplementationContract.abi,
+    signer
+  );
+
+  const filter =
+    roundImplementation.filters.PayFeeAndEscrowFundsToPayoutContract();
+
+  const payoutEvents = await roundImplementation.provider.getLogs({
+    ...filter,
+    fromBlock: 0,
+    toBlock: "latest",
+  });
+
+  if (payoutEvents.length > 0) {
+    const readyForPayoutTransactionHash = payoutEvents[0].transactionHash;
+
+    const payoutStrategyAddress = await roundImplementation.payoutStrategy();
+
+    const payoutStrategy = new ethers.Contract(
+      payoutStrategyAddress,
+      merklePayoutStrategyImplementationContract.abi,
+      signer
+    );
+
+    const distributionMetaPtr = await payoutStrategy.distributionMetaPtr();
+
+    const distribution = await fetchFromIPFS(distributionMetaPtr.pointer);
+
+    const distributionMatches =
+      distribution.matchingDistribution as MatchingStatsData[];
+
+    const matches: RevisedMatch[] = distributionMatches.map((m) => {
+      return {
+        applicationId: m.applicationId,
+        payoutAddress: m.projectPayoutAddress,
+        projectId: m.projectId,
+        projectName: m.projectName,
+        contributionsCount: 0,
+        revisedContributionCount: m.contributionsCount,
+        matched: BigNumber.from(m.originalMatchAmountInToken ?? 0).toBigInt(),
+        revisedMatch: BigNumber.from(m.matchAmountInToken ?? 0).toBigInt(),
+      };
+    });
+
+    return {
+      readyForPayoutTransactionHash,
+      matches,
+    };
+  }
+
+  return undefined;
+}
+
 /** Manages the state of the matching funds,
  * fetching revised matches and merging them with the original matches
  */
 function useRevisedMatchingFunds(
   roundId: string,
+  signer: Signer | undefined,
   ignoreSaturation: boolean,
   overridesFile?: File
 ) {
@@ -67,16 +142,65 @@ function useRevisedMatchingFunds(
     ignoreSaturation,
     overridesFile
   );
+  const [finalizedMatchesLoading, setFinalizedMatchesLoading] =
+    useState<boolean>(false);
+  const [finalizedMatches, setFinalizedMatches] = useState<
+    FinalizedMatches | undefined
+  >(undefined);
+
+  async function reloadFinalizedMatches() {
+    if (!signer) return;
+    try {
+      setFinalizedMatchesLoading(true);
+      const res = await fetchFinalizedMatches(roundId, signer);
+      setFinalizedMatches(res);
+    } finally {
+      setFinalizedMatchesLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    let active = true;
+
+    load();
+
+    return () => {
+      active = false;
+    };
+
+    async function load() {
+      // TODO: ~signer.call is a check to avoid calling contracts on a mocked signer
+      if (!signer || !signer.call) return;
+
+      try {
+        setFinalizedMatchesLoading(true);
+        const res = await fetchFinalizedMatches(roundId, signer);
+        setFinalizedMatches(res);
+        if (!active) {
+          return;
+        }
+      } finally {
+        setFinalizedMatchesLoading(false);
+      }
+    }
+  }, [signer, roundId]);
 
   const isRevised =
     (Boolean(overridesFile) || ignoreSaturation) && !revisedMatches.isLoading;
 
   const error = revisedMatches.error || originalMatches.error;
-  const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
+  const isLoading =
+    revisedMatches.isLoading ||
+    originalMatches.isLoading ||
+    finalizedMatchesLoading;
 
   const matches = useMemo(() => {
     if (!originalMatches.data || !revisedMatches.data || error) {
       return undefined;
+    }
+
+    if (finalizedMatches) {
+      return finalizedMatches.matches;
     }
 
     const mergedMatchesMap: Record<string, RevisedMatch> = {};
@@ -118,14 +242,17 @@ function useRevisedMatchingFunds(
     });
 
     return mergedMatches;
-  }, [originalMatches.data, revisedMatches.data, error]);
+  }, [originalMatches.data, revisedMatches.data, finalizedMatches, error]);
 
   return {
     matches,
     isLoading,
     error,
     isRevised,
+    readyForPayoutTransactionHash:
+      finalizedMatches?.readyForPayoutTransactionHash,
     mutate() {
+      reloadFinalizedMatches();
       revisedMatches.mutate();
       originalMatches.mutate();
     },
@@ -136,7 +263,6 @@ export default function ViewRoundResults() {
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
   const { id } = useParams();
-  const navigate = useNavigate();
   const roundId = utils.getAddress(id as string);
   const debugModeEnabled = useDebugMode();
   const network = useNetwork();
@@ -154,14 +280,19 @@ export default function ViewRoundResults() {
   const {
     matches,
     isRevised: areMatchingFundsRevised,
+    readyForPayoutTransactionHash,
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
-    mutate: mutateMatchingFunds,
+    mutate: reloadMatchingFunds,
   } = useRevisedMatchingFunds(
     roundId,
+    signer as Signer | undefined,
     distributionOption === "scale",
     overridesFile
   );
+
+  const shouldShowRevisedTable =
+    areMatchingFundsRevised || Boolean(readyForPayoutTransactionHash);
 
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
@@ -200,6 +331,7 @@ export default function ViewRoundResults() {
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
+
   const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
     useState<TransactionResponse>();
 
@@ -219,15 +351,16 @@ export default function ViewRoundResults() {
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      const matchingJson: MatchingStatsData[] = matches.map(
-        (match: RevisedMatch) => ({
-          uniqueContributorsCount: 0,
-          projectPayoutAddress: match.payoutAddress,
-          projectId: match.projectId,
-          matchPoolPercentage: 0,
-          matchAmountInToken: BigNumber.from(match.revisedMatch),
-        })
-      );
+      const matchingJson: MatchingStatsData[] = matches.map((match) => ({
+        contributionsCount: match.contributionsCount,
+        projectPayoutAddress: match.payoutAddress,
+        applicationId: match.applicationId,
+        projectId: match.projectId,
+        matchPoolPercentage: 0,
+        projectName: match.projectName,
+        matchAmountInToken: BigNumber.from(match.revisedMatch),
+        originalMatchAmountInToken: BigNumber.from(match.matched),
+      }));
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
 
@@ -237,6 +370,7 @@ export default function ViewRoundResults() {
       });
 
       setReadyforPayoutTransaction(setReadyForPayoutTx);
+      reloadMatchingFunds();
 
       setTimeout(() => {
         setProgressModalOpen(false);
@@ -298,13 +432,6 @@ export default function ViewRoundResults() {
 
   const disableRoundSaturationControls = Math.round(roundSaturation) >= 100;
 
-  console.log(
-    "Finalize eround status",
-    finalizeRoundToContractStatus,
-    " ready for payout status ",
-    readyForPayoutTransaction
-  );
-
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
       <p className="text-xl font-semibold leading-6 mb-10">Round Results</p>
@@ -322,14 +449,27 @@ export default function ViewRoundResults() {
         <Tab.Panels className="mt-2">
           <Tab.Panel>
             <div className="overflow-y-auto">
-              <div className="flex flex-col">
-                <span className="text-sm leading-5 text-gray-400 text-left">
-                  Finalize your round results here. Doing so will allow you to
-                  fund your grantees.
-                </span>
-              </div>
+              {!readyForPayoutTransactionHash && (
+                <div className="flex flex-col">
+                  <span className="text-sm leading-5 text-gray-400 text-left">
+                    Finalize your round results here. Doing so will allow you to
+                    fund your grantees.
+                  </span>
+                </div>
+              )}
+              {readyForPayoutTransactionHash && (
+                <div className="flex flex-col mb-6">
+                  <span className="text-md leading-5 text-gray-500 font-semibold text-left mb-3 mt-2">
+                    Finalized Round Results
+                  </span>
+                  <span className="text-sm leading-5 text-gray-400 text-left">
+                    Round results have been finalized. Grantees can now be paid
+                    out their funds.
+                  </span>
+                </div>
+              )}
               <div className="flex flex-col mt-4">
-                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
+                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-2 mt-2">
                   Vote Coefficients
                 </span>
                 <span className="text-sm leading-5 text-gray-400 text-left">
@@ -399,11 +539,11 @@ export default function ViewRoundResults() {
                                 No. of Contributions
                               </th>
                               <th className="text-sm leading-5 px-2 text-gray-500 text-left">
-                                {areMatchingFundsRevised
+                                {shouldShowRevisedTable
                                   ? "Original Matching Amount"
                                   : "Matching Amount"}
                               </th>
-                              {areMatchingFundsRevised && (
+                              {shouldShowRevisedTable && (
                                 <th className="text-sm leading-5 px-2 text-gray-500 text-left">
                                   New Matching Amount
                                 </th>
@@ -442,7 +582,7 @@ export default function ViewRoundResults() {
                                       ).toFixed(4)}{" "}
                                       {matchToken?.name}
                                     </td>
-                                    {areMatchingFundsRevised && (
+                                    {shouldShowRevisedTable && (
                                       <td className="text-sm leading-5 px-2 text-gray-400 text-left">
                                         {Number(
                                           utils.formatUnits(
@@ -494,157 +634,154 @@ export default function ViewRoundResults() {
                   )} matching fund will be distributed to grantees.`}
                 </span>
               </div>
-              <RadioGroup
-                value={distributionOption}
-                onChange={setDistributionOption}
-                disabled={disableRoundSaturationControls}
-              >
-                <RadioGroup.Label className="sr-only">
-                  Distribution options
-                </RadioGroup.Label>
-                <div className="space-y-2">
-                  {distributionOptions.map((option) => (
-                    <RadioGroup.Option
-                      key={option.value}
-                      value={option.value}
-                      className={() =>
-                        classNames(
-                          "cursor-pointer flex items-center",
-                          disableRoundSaturationControls &&
-                            "opacity-50 cursor-not-allowed"
-                        )
-                      }
-                    >
-                      {({ checked }) => (
-                        <>
-                          <input
-                            type="radio"
-                            className="text-indigo-600 focus:ring-indigo-500"
-                            checked={checked}
-                            readOnly
-                          />
-                          <span
-                            className={classNames(
-                              "ml-2 font-medium text-gray-900",
-                              checked && "text-indigo-900"
-                            )}
-                          >
-                            {option.label}
-                          </span>
-                        </>
-                      )}
-                    </RadioGroup.Option>
-                  ))}
-                </div>
-              </RadioGroup>
-              <div className="flex flex-col mt-4">
-                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
-                  Revise Results
-                </span>
-                <div className="text-sm leading-5 text-left mb-1">
-                  Upload a CSV with the finalized Vote Coefficient overrides{" "}
-                  <b>only</b>. For instructions, click{" "}
-                  <a
-                    className="underline"
-                    href={
-                      "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/program-managers/how-to-view-your-round-results"
-                    }
+              {!readyForPayoutTransactionHash && (
+                <>
+                  <RadioGroup
+                    value={distributionOption}
+                    onChange={setDistributionOption}
+                    disabled={disableRoundSaturationControls}
                   >
-                    here
-                  </a>
-                  .
-                </div>
-                <div className="text-sm pt-2 leading-5 text-left flex items-start justify-start">
-                  <ExclamationCircleIcon
-                    className={"w-6 h-6 text-gray-500 mr-2.5"}
-                  />
-                  If you navigate away from this page, your data will be lost.
-                  You will be able to re-upload data as much as you’d like, but
-                  it will not be saved to the contract until you finalize
-                  results.
-                </div>
-                <FileUploader
-                  file={overridesFileDraft}
-                  onSelectFile={(file: File) => {
-                    setOverridesFileDraft(file);
-                  }}
-                />
-                <Button
-                  type="button"
-                  className="mt-4 mr-auto"
-                  $variant="secondary"
-                  onClick={() => {
-                    setOverridesFile(overridesFileDraft);
-                    // force a refresh each time fot better ux
-                    mutateMatchingFunds();
-
-                    // make sure table is in view
-                    if (matchingTableRef.current) {
-                      window.scrollTo({
-                        top: matchingTableRef.current.offsetTop,
-                        behavior: "smooth",
-                      });
-                    }
-                  }}
-                  disabled={overridesFileDraft === undefined}
-                >
-                  <UploadIcon className="h-5 w-5 inline mr-2" />
-                  <span>Upload and revise</span>
-                </Button>
-                <hr className="my-4" />
-                {!isReadyForPayout && (
-                  <>
-                    <div className="ml-auto">
-                      {areMatchingFundsRevised && (
-                        <button
-                          onClick={() => {
-                            setOverridesFile(undefined);
-                            mutateMatchingFunds();
-                          }}
-                          className="w-fit bg-white border border-gray-100 text-black py-2 mt-2 px-3 rounded gap-2 mr-2"
+                    <RadioGroup.Label className="sr-only">
+                      Distribution options
+                    </RadioGroup.Label>
+                    <div className="space-y-2">
+                      {distributionOptions.map((option) => (
+                        <RadioGroup.Option
+                          key={option.value}
+                          value={option.value}
+                          className={() =>
+                            classNames(
+                              "cursor-pointer flex items-center",
+                              disableRoundSaturationControls &&
+                                "opacity-50 cursor-not-allowed"
+                            )
+                          }
                         >
-                          Cancel
-                        </button>
-                      )}
-                      <button
-                        data-testid="finalize-results-button"
-                        onClick={() => {
-                          setWarningModalOpen(true);
-                        }}
-                        className="self-end w-fit bg-violet-400 hover:bg-pink-200 text-white py-2
-                           mt-2 px-3 rounded"
-                      >
-                        Finalize Results
-                      </button>
+                          {({ checked }) => (
+                            <>
+                              <input
+                                type="radio"
+                                className="text-indigo-600 focus:ring-indigo-500"
+                                checked={checked}
+                                readOnly
+                              />
+                              <span
+                                className={classNames(
+                                  "ml-2 font-medium text-gray-900",
+                                  checked && "text-indigo-900"
+                                )}
+                              >
+                                {option.label}
+                              </span>
+                            </>
+                          )}
+                        </RadioGroup.Option>
+                      ))}
                     </div>
-                    <span className="text-sm leading-5 text-gray-400 mt-5 text-right">
-                      The contract will be locked once results are finalized.
-                      You will not be able to change the results after you
-                      finalize.
+                  </RadioGroup>
+                  <div className="flex flex-col mt-4">
+                    <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
+                      Revise Results
                     </span>
-                  </>
-                )}
-                {readyForPayoutTransaction && (
-                  <>
-                    <button
+                    <div className="text-sm leading-5 text-left mb-1">
+                      Upload a CSV with the finalized Vote Coefficient overrides{" "}
+                      <b>only</b>. For instructions, click{" "}
+                      <a
+                        className="underline"
+                        href={
+                          "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/program-managers/how-to-view-your-round-results"
+                        }
+                      >
+                        here
+                      </a>
+                      .
+                    </div>
+                    <div className="text-sm pt-2 leading-5 text-left flex items-start justify-start">
+                      <ExclamationCircleIcon
+                        className={"w-6 h-6 text-gray-500 mr-2.5"}
+                      />
+                      If you navigate away from this page, your data will be
+                      lost. You will be able to re-upload data as much as you’d
+                      like, but it will not be saved to the contract until you
+                      finalize results.
+                    </div>
+                    <FileUploader
+                      file={overridesFileDraft}
+                      onSelectFile={(file: File) => {
+                        setOverridesFileDraft(file);
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      className="mt-4 mr-auto"
+                      $variant="secondary"
                       onClick={() => {
-                        if (
-                          network.chain?.blockExplorers &&
-                          readyForPayoutTransaction
-                        ) {
-                          navigate(
-                            `${network.chain.blockExplorers.default.url}/tx/${readyForPayoutTransaction.hash}`
-                          );
+                        setOverridesFile(overridesFileDraft);
+                        // force a refresh each time fot better ux
+                        reloadMatchingFunds();
+
+                        // make sure table is in view
+                        if (matchingTableRef.current) {
+                          window.scrollTo({
+                            top: matchingTableRef.current.offsetTop,
+                            behavior: "smooth",
+                          });
                         }
                       }}
-                      className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
-                   mt-2 px-3 rounded flex items-center gap-2"
+                      disabled={overridesFileDraft === undefined}
                     >
-                      View on Etherscan
-                    </button>
-                  </>
-                )}
-              </div>
+                      <UploadIcon className="h-5 w-5 inline mr-2" />
+                      <span>Upload and revise</span>
+                    </Button>
+                    <hr className="my-4" />
+                    {!isReadyForPayout && (
+                      <>
+                        <div className="ml-auto">
+                          {shouldShowRevisedTable && (
+                            <button
+                              onClick={() => {
+                                setOverridesFile(undefined);
+                                reloadMatchingFunds();
+                              }}
+                              className="w-fit bg-white border border-gray-100 text-black py-2 mt-2 px-3 rounded gap-2 mr-2"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                          <button
+                            data-testid="finalize-results-button"
+                            onClick={() => {
+                              setWarningModalOpen(true);
+                            }}
+                            className="self-end w-fit bg-violet-400 text-white py-2
+                           mt-2 px-3 rounded"
+                          >
+                            Finalize Results
+                          </button>
+                        </div>
+                        <span className="text-sm leading-5 text-gray-400 mt-5 text-right">
+                          The contract will be locked once results are
+                          finalized. You will not be able to change the results
+                          after you finalize.
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+              {readyForPayoutTransactionHash && (
+                <>
+                  <hr className="my-4 mt-8" />
+                  <a
+                    href={`${network.chain?.blockExplorers?.default.url}/tx/${readyForPayoutTransactionHash}`}
+                    target="_blank"
+                    className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
+                   mt-2 px-3 rounded flex items-center gap-2 ml-auto"
+                  >
+                    View on Etherscan
+                  </a>
+                </>
+              )}
             </div>
           </Tab.Panel>
           <Tab.Panel>
