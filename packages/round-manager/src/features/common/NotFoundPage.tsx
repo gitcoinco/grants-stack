@@ -21,6 +21,9 @@ export default function NotFoundPage() {
             <p className="text-grey-400 mb-0">
               It looks like the page you’re looking for doesn’t exist.
             </p>
+            <p className="text-grey-400 mt-1">
+              Check if you're connected to the right network
+            </p>
             <p className="text-grey-400 mt-1 mb-5">
               For support, contact us on{" "}
               <a href="https://discord.com/invite/gitcoin">Discord.</a>

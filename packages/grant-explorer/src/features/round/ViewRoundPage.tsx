@@ -8,6 +8,7 @@ import {
 import { Button, Input } from "common/src/styles";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
@@ -15,6 +16,7 @@ import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import { Project, Requirement, Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
+import ConfirmationModal from "../common/ConfirmationModal";
 import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
@@ -123,6 +125,47 @@ function AfterRoundStart(props: {
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
 
+  const [showChangeNetworkModal, setShowChangeNetworkModal] = useState(false);
+  const { switchNetwork } = useSwitchNetwork();
+  const { chain } = useNetwork();
+
+  useEffect(() => {
+    if (chain && chainId && Number(chainId) !== chain?.id) {
+      setShowChangeNetworkModal(true);
+    } else {
+      setShowChangeNetworkModal(false);
+    }
+  }, [chainId, chain]);
+
+  const onSwitchNetwork = () => {
+    switchNetwork?.(Number(chainId));
+  };
+
+  function ConfirmationModalBody() {
+    return (
+      <>
+        <p className="text-sm text-grey-400">
+          To view and donate to projects on this round, you need to switch the
+          network on your wallet.
+        </p>
+      </>
+    );
+  }
+
+  const renderNetworkChangeModal = () => {
+    return (
+      // eslint-disable-next-line
+      <ConfirmationModal
+        isOpen={showChangeNetworkModal}
+        setIsOpen={setShowChangeNetworkModal}
+        confirmButtonAction={onSwitchNetwork}
+        title="Switch Network to Continue"
+        body={<ConfirmationModalBody />}
+        modalStyle="wide"
+      />
+    );
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
@@ -170,6 +213,7 @@ function AfterRoundStart(props: {
 
   return (
     <>
+      {showChangeNetworkModal && renderNetworkChangeModal()}
       <Navbar
         roundUrlPath={`/round/${chainId}/${roundId}`}
         isBeforeRoundEndDate={props.isBeforeRoundEndDate}

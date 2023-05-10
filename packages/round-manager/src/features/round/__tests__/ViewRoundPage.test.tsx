@@ -11,7 +11,7 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { chainId, useDisconnect, useSwitchNetwork } from "wagmi";
 import { useParams } from "react-router-dom";
 
 jest.mock("../../common/Auth");
@@ -38,9 +38,23 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
-    chain: {},
+    chain: {
+      name: "Ethereum",
+    },
     address: mockRoundData.operatorWallets![0],
-    provider: { getNetwork: () => ({ chainId: "0" }) },
+    signer: {
+      getChainId: () => {
+        /* do nothing */
+      },
+    },
+    provider: {
+      network: {
+        chainId: 1,
+      },
+      getNetwork: () => {
+        return { chainId: 1 };
+      },
+    },
   }),
 }));
 
@@ -228,6 +242,7 @@ describe("View Round", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           })
         )
       )

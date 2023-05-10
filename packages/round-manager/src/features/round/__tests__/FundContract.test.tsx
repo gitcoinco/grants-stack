@@ -42,7 +42,11 @@ jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
     chain: {},
     address: mockRoundData.operatorWallets![0],
-    provider: { getNetwork: () => ({ chainId: "0" }) },
+    provider: {
+      network: {
+        chainId: 1,
+      },
+    },
   }),
 }));
 

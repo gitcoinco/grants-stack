@@ -3,6 +3,9 @@ import useSWR from "swr";
 import { isAddress } from "viem";
 import { useMemo, useState } from "react";
 
+export * from "./icons";
+export * from "./markdown";
+
 export enum ChainId {
   MAINNET = 1,
   GOERLI_CHAIN_ID = 5,
@@ -287,9 +290,6 @@ export function formatDateWithOrdinal(date: Date) {
   )}`;
 }
 
-export * from "./icons";
-export * from "./markdown";
-
 export enum VerifiedCredentialState {
   VALID,
   INVALID,
@@ -351,7 +351,6 @@ export const getUTCDate = (date: Date): string => {
 
   return utcDate.join("/");
 };
-
 
 export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;

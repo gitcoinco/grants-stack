@@ -283,20 +283,24 @@ importers:
       '@types/react': ^18.0.31
       '@types/react-dom': ^18.0.11
       dompurify: ^2.4.3
+      framer-motion: ^10.12.7
       markdown-it: ^13.0.1
       react: ^18.2.0
       react-hook-form: ^7.42.1
       react-router: ^6
+      react-router-dom: ^6.11.1
       swr: ^2.0.1
       tailwind-styled-components: ^2.2.0
       typescript: latest
       viem: ^0.1.22
     dependencies:
       dompurify: 2.4.3
+      framer-motion: 10.12.7_react@18.2.0
       markdown-it: 13.0.1
       react: 18.2.0
       react-hook-form: 7.42.1_react@18.2.0
       react-router: 6.7.0_react@18.2.0
+      react-router-dom: 6.11.1_react@18.2.0
       swr: 2.0.1_react@18.2.0
       tailwind-styled-components: 2.2.0_react@18.2.0
       typescript: 5.0.4
@@ -335,8 +339,6 @@ importers:
       '@craco/craco': ^7.0.0
       '@datadog/browser-logs': ^4.19.0
       '@datadog/browser-rum': ^4.19.0
-      '@emotion/react': ^11
-      '@emotion/styled': ^11
       '@ethersproject/abstract-signer': ^5.7.0
       '@ethersproject/providers': ^5.7.2
       '@faker-js/faker': ^7.5.0
@@ -366,6 +368,7 @@ importers:
       '@types/react-dom': ^18.0.2
       '@types/react-gtm-module': ^2.0.1
       '@types/testing-library__jest-dom': ^5.14.5
+      '@wagmi/core': 0.5.4
       allo-indexer-client: github:gitcoinco/allo-indexer-client#48490969985125e89bf1d65725ef9e510c97256a
       autoprefixer: ^10.4.7
       babel-loader: ^8.3.0
@@ -376,7 +379,6 @@ importers:
       eslint: '>=8.1.0 <9.0.0'
       eslint-config-gitcoin: workspace:*
       ethers: ^5.6.5
-      framer-motion: ^6
       history: ^5.3.0
       html-react-parser: ^3.0.7
       https-browserify: ^1.0.0
@@ -418,8 +420,6 @@ importers:
       '@craco/craco': 7.0.0_iihpyunhlvq2lijfgduptyp3ja
       '@datadog/browser-logs': 4.30.1_7nwqccnzuve4t7hwidkd2in2be
       '@datadog/browser-rum': 4.30.1_25ad6ujv2hpt3baw5lupcax7q4
-      '@emotion/react': 11.10.5_yxdp3dl3eazy3vwpbmv4fq727a
-      '@emotion/styled': 11.10.5_4erqsq3n444jecyuvaxwc5b3vi
       '@ethersproject/abstract-signer': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@gitcoinco/passport-sdk-verifier': 0.2.2
@@ -439,6 +439,7 @@ importers:
       '@testing-library/jest-dom': 5.16.5
       '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
       '@testing-library/user-event': 14.4.3_yxlyej73nftwmh2fiao7paxmlm
+      '@wagmi/core': 0.5.4_ethers@5.6.5+react@18.2.0
       allo-indexer-client: github.com/gitcoinco/allo-indexer-client/48490969985125e89bf1d65725ef9e510c97256a
       babel-loader: 8.3.0_la66t7xldg4uecmyawueag5wkm
       buffer: 6.0.3
@@ -447,7 +448,6 @@ importers:
       date-fns: 2.29.3
       eslint: 8.32.0
       ethers: 5.6.5
-      framer-motion: 6.5.1_biqbaboplfbrettd7655fr4n2y
       history: 5.3.0
       html-react-parser: 3.0.8_react@18.2.0
       https-browserify: 1.0.0
@@ -542,7 +542,7 @@ importers:
       '@types/react-gtm-module': ^2.0.1
       '@types/testing-library__jest-dom': ^5.14.5
       add: ^2.0.6
-      allo-indexer-client: github:gitcoinco/allo-indexer-client#8fef5b397f881f2f453d096f872720267f8bf3b4
+      allo-indexer-client: github:gitcoinco/allo-indexer-client#fab892947ad5566e2666b76520ff9dc308158e07
       autoprefixer: ^10.4.7
       buffer: ^6.0.3
       common: workspace:*
@@ -616,7 +616,7 @@ importers:
       '@testing-library/user-event': 14.4.3
       '@types/jest': 27.5.2
       '@types/node': 17.0.45
-      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/8fef5b397f881f2f453d096f872720267f8bf3b4
+      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/fab892947ad5566e2666b76520ff9dc308158e07
       buffer: 6.0.3
       common: link:../common
       crypto-browserify: 3.12.0
@@ -5860,6 +5860,11 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
+  /@remix-run/router/1.6.1:
+    resolution: {integrity: sha512-YUkWj+xs0oOzBe74OgErsuR3wVn+efrFhXBWrit50kOiED+pvQe2r6MWY0iJMQU/mSVKxvNzL4ZaYvjdX+G7ZA==}
+    engines: {node: '>=14'}
+    dev: false
+
   /@rollup/plugin-babel/5.3.1_3dsfpkpoyvuuxyfgdbpn4j4uzm:
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
     engines: {node: '>= 10.0.0'}
@@ -6625,7 +6630,7 @@ packages:
   /@types/express-serve-static-core/4.17.32:
     resolution: {integrity: sha512-aI5h/VOkxOF2Z1saPy0Zsxs5avets/iaiAJYznQFm5By/pamU31xWKL//epiF4OfUA2qTOc9PV6tCUjhO8wlZA==}
     dependencies:
-      '@types/node': 17.0.45
+      '@types/node': 18.15.5
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
 
@@ -6858,7 +6863,7 @@ packages:
     resolution: {integrity: sha512-z5xyF6uh8CbjAu9760KDKsH2FcDxZ2tFCsA4HIMWE6IkiYMXfVoa+4f9KX+FN0ZLsaMw1WNG2ETLA6N+/YA+cg==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 17.0.45
+      '@types/node': 18.15.5
 
   /@types/set-cookie-parser/2.4.2:
     resolution: {integrity: sha512-fBZgytwhYAUkj/jC/FAV4RQ5EerRup1YQsXQCh8rZfiHkc4UahC192oH0smGwsXol3cL3A5oETuAHeQHmhXM4w==}
@@ -9730,7 +9735,7 @@ packages:
     dev: false
 
   /concat-map/0.0.1:
-    resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
+    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   /concat-stream/1.6.2:
     resolution: {integrity: sha512-27HBghJxjiZtIk3Ycvn/4kbJk/1uZuJFfuPEns6LaEvpvG1f0hTea8lilrouyo9mVc2GWdcEZ8OLoGmSADlrCw==}
@@ -12781,6 +12786,23 @@ packages:
     dependencies:
       map-cache: 0.2.2
 
+  /framer-motion/10.12.7_react@18.2.0:
+    resolution: {integrity: sha512-awOlKkDvcQpv92Pzw5KCWFehxzvqtGYZqnLvHWZvQFpIxaPsRMypRX+vhugpciOzQPkZbc37X4dJLIZLfGM/CQ==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      tslib: 2.4.1
+    optionalDependencies:
+      '@emotion/is-prop-valid': 0.8.8
+    dev: false
+
   /framer-motion/6.5.1_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-o1BGqqposwi7cgDrtg0dNONhkmPsUFDaLcKXigzuTFC5x58mE8iyTazxSudFzmT6MEyJKfjjU8ItoMe3W+3fiw==}
     peerDependencies:
@@ -15149,7 +15171,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.45
+      '@types/node': 18.15.5
       jest-mock: 27.5.1
       jest-util: 27.5.1
       jsdom: 16.7.0
@@ -20083,6 +20105,18 @@ packages:
       use-sidecar: 1.1.2_3stiutgnnbnfnf3uowm5cip22i
     dev: false
 
+  /react-router-dom/6.11.1_react@18.2.0:
+    resolution: {integrity: sha512-dPC2MhoPeTQ1YUOt5uIK376SMNWbwUxYRWk2ZmTT4fZfwlOvabF8uduRKKJIyfkCZvMgiF0GSCQckmkGGijIrg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.6.1
+      react: 18.2.0
+      react-router: 6.11.1_react@18.2.0
+    dev: false
+
   /react-router-dom/6.7.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-jQtXUJyhso3kFw430+0SPCbmCmY1/kJv8iRffGHwHy3CkoomGxeYzMkmeSPYo6Egzh3FKJZRAL22yg5p2tXtfg==}
     engines: {node: '>=14'}
@@ -20094,6 +20128,16 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-router: 6.7.0_react@18.2.0
+    dev: false
+
+  /react-router/6.11.1_react@18.2.0:
+    resolution: {integrity: sha512-OZINSdjJ2WgvAi7hgNLazrEV8SGn6xrKA+MkJe9wVDMZ3zQ6fdJocUjpCUCI0cNrelWjcvon0S/QK/j0NzL3KA==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.6.1
+      react: 18.2.0
     dev: false
 
   /react-router/6.7.0_react@18.2.0:
@@ -23959,8 +24003,8 @@ packages:
       '@types/node': 18.15.5
     dev: false
 
-  github.com/gitcoinco/allo-indexer-client/8fef5b397f881f2f453d096f872720267f8bf3b4:
-    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/8fef5b397f881f2f453d096f872720267f8bf3b4}
+  github.com/gitcoinco/allo-indexer-client/fab892947ad5566e2666b76520ff9dc308158e07:
+    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/fab892947ad5566e2666b76520ff9dc308158e07}
     name: allo-indexer-client
     version: 0.1.0
     hasBin: true
