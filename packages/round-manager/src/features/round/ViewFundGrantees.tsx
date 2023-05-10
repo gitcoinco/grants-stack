@@ -341,7 +341,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {props.projects.map((project: MatchingStatsData) => (
                     <tr
-                      key={project.projectPayoutAddress}
+                      key={project.projectId}
                       className={
                         selectedProjects.includes(project)
                           ? "bg-gray-50"
@@ -390,7 +390,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) && " ($" +
                           formatCurrency(
-                            project.matchAmountInToken.mul(props.price * 100).div(100),
+                            project.matchAmountInToken.mul(Math.trunc(props.price * 10000)).div(10000),
                             props.token.decimal, 2)
                           + " USD) "}
                       </td>
@@ -556,7 +556,7 @@ export function PaidProjectsTable(props: {
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) && " ($" +
                           formatCurrency(
-                            project.matchAmountInToken.mul(props.price * 100).div(100),
+                            project.matchAmountInToken.mul(Math.trunc(props.price * 10000)).div(10000),
                             props.token.decimal, 2)
                           + " USD) "}
                       </td>
