@@ -15,7 +15,7 @@ import {
   ProgressStep,
 } from "../../api/types";
 import { Match } from "allo-indexer-client";
-import { Spinner } from "../../common/Spinner";
+import {LoadingRing, Spinner} from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
 import { useNetwork, useSigner } from "wagmi";
@@ -28,6 +28,7 @@ import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
 import { TransactionResponse } from "@ethersproject/providers";
 import { payoutTokens } from "../../api/utils";
+import {roundApplicationsToCSV} from "../../api/exports";
 
 type RevisedMatch = Match & {
   revisedContributionCount: number;
@@ -172,6 +173,10 @@ export default function ViewRoundResults() {
     payoutTokens.find(
       (t) => t.address.toLowerCase() == round.token.toLowerCase()
     );
+
+  const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
+      useState(false);
+
 
   function formatUnits(value: bigint) {
     return `${Number(utils.formatUnits(value, matchToken?.decimal)).toFixed(
@@ -623,7 +628,65 @@ export default function ViewRoundResults() {
             </div>
           </Tab.Panel>
           <Tab.Panel>
-            <div>{/* raw round data content here */}</div>
+            <div className="text-sm leading-5 text-gray-400 text-left pb-4">
+              Download and use the data models provided to analyze your round
+              results in-depth.
+            </div>
+            <div className="text-sm leading-5 text-gray-500 font-semibold text-left mb-3 mt-2">
+              Round Generated Data
+            </div>
+            <div className="text-sm leading-5 text-gray-400 text-left">
+              Download the raw data for your round, which is separated into four
+              data tables: raw votes, projects, round, and prices.
+            </div>
+            <div className="pt-6">
+              <a
+                  className="flex items-center mb-4"
+                  href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/votes`}
+              >
+                <span className="w-40">Raw Votes</span>
+                <DownloadIcon className="h-5 w-5" />
+              </a>
+              <button
+                  className="flex items-center mb-4 text-left"
+                  disabled={isExportingApplicationsCSV}
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    try {
+                      setIsExportingApplicationsCSV(true);
+                      round &&
+                      (await exportAndDownloadApplicationsCSV(
+                          round.id,
+                          chain.id,
+                          chain.name
+                      ));
+                    } finally {
+                      setIsExportingApplicationsCSV(false);
+                    }
+                  }}
+              >
+                <span className="w-40">Projects</span>
+                {isExportingApplicationsCSV ? (
+                    <LoadingRing className="h-5 w-5 animate-spin" />
+                ) : (
+                    <DownloadIcon className="h-5 w-5" />
+                )}
+              </button>
+              <a
+                  className="flex items-center mb-4"
+                  href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/round`}
+              >
+                <span className="w-40">Round</span>
+                <DownloadIcon className="h-5 w-5" />
+              </a>
+              <a
+                  className="flex items-center mb-4"
+                  href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/prices`}
+              >
+                <span className="w-40">Prices</span>
+                <DownloadIcon className="h-5 w-5" />
+              </a>
+            </div>
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
@@ -725,6 +788,20 @@ function NoInformationContent() {
       <NoInformationMessage />
     </div>
   );
+}
+
+async function exportAndDownloadApplicationsCSV(
+    roundId: string,
+    chainId: number,
+    chainName: string
+) {
+  const csv = await roundApplicationsToCSV(roundId, chainId, chainName, true);
+  // create a download link and click it
+  const blob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  return downloadFile(blob, `projects-${roundId}.csv`);
 }
 
 function NoInformationMessage() {
