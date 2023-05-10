@@ -74,6 +74,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     roundMetadata: {
       name: faker.company.name(),
       programContractAddress: faker.finance.ethereumAddress(),
+      roundType: "private",
       quadraticFundingConfig: {
         matchingCap: true,
         matchingCapAmount: 100,

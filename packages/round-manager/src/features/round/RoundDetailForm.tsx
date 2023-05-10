@@ -14,7 +14,7 @@ import {
 } from "react-hook-form";
 import * as yup from "yup";
 
-import { Listbox, Transition } from "@headlessui/react";
+import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import {
   CheckIcon,
   InformationCircleIcon,
@@ -178,7 +178,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
             onSubmit={handleSubmit(next)}
             className="shadow-sm text-grey-500"
           >
-            <div className="pt-7 pb-10 sm:px-6 bg-white">
+            <div className="pt-7 sm:px-6 bg-white">
               <div className="grid grid-cols-6 gap-6">
                 <RoundName
                   register={register("roundMetadata.name")}
@@ -474,6 +474,23 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                     </p>
                   )}
                 </div>
+              </div>
+            </div>
+
+            {/* Round Type */}
+            <div className="p-6 bg-white">
+              <div className="grid grid-rows-1">
+                <p>
+                  Do you want to show your round on the Gitcoin Explorer
+                  homepage?
+                </p>
+              </div>
+              <div className="flex mt-4">
+                <RoundType
+                  errors={errors}
+                  register={register("roundMetadata.roundType")}
+                  control={control}
+                />
               </div>
             </div>
 
@@ -796,6 +813,90 @@ function ApplicationDatesInformation() {
       >
         <p className="text-xs">All dates are in UTC.</p>
       </ReactTooltip>
+    </>
+  );
+}
+
+function RoundType(props: {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  control?: Control<Round>;
+}) {
+  const { field: roundTypeField } = useController({
+    name: "roundMetadata.roundType",
+    defaultValue: "",
+    control: props.control,
+    rules: {
+      required: true,
+    },
+  });
+
+  return (
+    <>
+      {" "}
+      <div className="col-span-6 sm:col-span-3">
+        <RadioGroup {...roundTypeField} data-testid="round-type-selection">
+          <div>
+            <RadioGroup.Option value="public" className="mb-2">
+              {({ checked, active }) => (
+                <span className="flex items-center text-sm">
+                  <span
+                    className={classNames(
+                      checked
+                        ? "bg-indigo-600 border-transparent"
+                        : "bg-white border-gray-300",
+                      active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                    )}
+                    aria-hidden="true"
+                  >
+                    <span className="rounded-full bg-white w-1.5 h-1.5" />
+                  </span>
+                  <RadioGroup.Label
+                    as="span"
+                    className="ml-3 block text-sm text-gray-700"
+                    data-testid="round-type-public"
+                  >
+                    Yes, make my round public
+                    <p className="text-xs text-gray-400">
+                      Anyone on the Gitcoin Explorer homepage will be able to
+                      see your round
+                    </p>
+                  </RadioGroup.Label>
+                </span>
+              )}
+            </RadioGroup.Option>
+            <RadioGroup.Option value="private">
+              {({ checked, active }) => (
+                <span className="flex items-center text-sm">
+                  <span
+                    className={classNames(
+                      checked
+                        ? "bg-indigo-600 border-transparent"
+                        : "bg-white border-gray-300",
+                      active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                    )}
+                    aria-hidden="true"
+                  >
+                    <span className="rounded-full bg-white w-1.5 h-1.5" />
+                  </span>
+                  <RadioGroup.Label
+                    as="span"
+                    className="ml-3 block text-sm text-gray-700"
+                    data-testid="round-type-private"
+                  >
+                    No, keep my round private
+                    <p className="text-xs text-gray-400">
+                      Only people with the round link can see your round.
+                    </p>
+                  </RadioGroup.Label>
+                </span>
+              )}
+            </RadioGroup.Option>
+          </div>
+        </RadioGroup>
+      </div>
     </>
   );
 }
