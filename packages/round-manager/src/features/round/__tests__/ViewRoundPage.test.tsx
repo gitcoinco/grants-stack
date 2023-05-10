@@ -11,7 +11,7 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { chainId, useDisconnect, useSwitchNetwork } from "wagmi";
+import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { useParams } from "react-router-dom";
 
 jest.mock("../../common/Auth");
