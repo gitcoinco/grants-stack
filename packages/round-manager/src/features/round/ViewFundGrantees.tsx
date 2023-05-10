@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
-import { classNames } from "common";
+import { classNames, useTokenPrice } from "common";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
 import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
-import { formatCurrency, PayoutToken, payoutTokens, useTokenPrice } from "../api/utils";
+import { formatCurrency, PayoutToken, payoutTokens } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
@@ -96,7 +96,7 @@ function FinalizedRoundContent(props: { round: Round }) {
     )[0];
 
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.coingeckoId
+    matchingFundPayoutToken?.redstoneTokenId
   );
 
   useEffect(() => {
@@ -341,7 +341,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {props.projects.map((project: MatchingStatsData) => (
                     <tr
-                      key={project.projectPayoutAddress}
+                      key={project.projectId}
                       className={
                         selectedProjects.includes(project)
                           ? "bg-gray-50"
@@ -390,7 +390,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) && " ($" +
                           formatCurrency(
-                            project.matchAmountInToken.mul(props.price * 100).div(100),
+                            project.matchAmountInToken.mul(Math.trunc(props.price * 10000)).div(10000),
                             props.token.decimal, 2)
                           + " USD) "}
                       </td>
@@ -556,7 +556,7 @@ export function PaidProjectsTable(props: {
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) && " ($" +
                           formatCurrency(
-                            project.matchAmountInToken.mul(props.price * 100).div(100),
+                            project.matchAmountInToken.mul(Math.trunc(props.price * 10000)).div(10000),
                             props.token.decimal, 2)
                           + " USD) "}
                       </td>

@@ -319,7 +319,7 @@ export const submitApplication =
         projectId: projectID,
       });
       dispatch<any>(
-        fetchProjectApplications(projectID, Number(projectChainId), process.env)
+        fetchProjectApplications(projectID, Number(projectChainId))
       );
     } catch (e: any) {
       dispatchAndLogApplicationError(

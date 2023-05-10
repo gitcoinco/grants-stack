@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ReactComponent as LandingBannerLogo } from "../../assets/landing-banner.svg";
+import { lazy, Suspense, useEffect, useState } from "react";
+const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 import { RoundOverview, getRoundsInApplicationPhase } from "../api/rounds";
 import Breadcrumb from "../common/Breadcrumb";
 import Navbar from "../common/Navbar";
@@ -23,12 +23,16 @@ const ApplyNowPage = () => {
 
   function sortRoundsByTime(rounds: RoundOverview[], order: string) {
     // If order is round_asc, sort in ascending order. Otherwise, sort in descending order.
-    const isAscending = order === 'round_asc';
+    const isAscending = order === "round_asc";
 
     // Use the sort method to sort the rounds array based on the start or end time
     rounds.sort((a: RoundOverview, b: RoundOverview) => {
-      const timeA = isAscending ? Number(a.roundStartTime) : Number(a.roundEndTime);
-      const timeB = isAscending ? Number(b.roundStartTime) : Number(b.roundEndTime);
+      const timeA = isAscending
+        ? Number(a.roundStartTime)
+        : Number(a.roundEndTime);
+      const timeB = isAscending
+        ? Number(b.roundStartTime)
+        : Number(b.roundEndTime);
       return timeA - timeB;
     });
 
@@ -71,7 +75,7 @@ const ApplyNowPage = () => {
           ?.toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         round.roundMetadata?.name?.toLocaleLowerCase() !==
-        query.toLocaleLowerCase()
+          query.toLocaleLowerCase()
     );
 
     setFilteredRoundsInApplicationPhase([
@@ -116,7 +120,18 @@ const ApplyNowPage = () => {
   return (
     <>
       <Navbar roundUrlPath={"/"} showWalletInteraction={false} />
-      <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
+      <Suspense
+        fallback={
+          <div
+            style={{
+              width: "100%",
+              height: "560px",
+            }}
+          />
+        }
+      >
+        <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
+      </Suspense>
       <div className="container px-4 md:px-0 md:mx-auto mt-4">
         <div className="my-4">
           <Breadcrumb items={breadcrumbItems} />
@@ -144,9 +159,11 @@ const ApplyNowPage = () => {
           <Spinner />
         ) : applyNowRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
-            {sortRoundsByTime(filteredRoundsInApplicationPhase, order).map((round, index) => {
-              return <RoundCard key={index} round={round} />;
-            })}
+            {sortRoundsByTime(filteredRoundsInApplicationPhase, order).map(
+              (round, index) => {
+                return <RoundCard key={index} round={round} />;
+              }
+            )}
           </div>
         ) : (
           <NoRounds type="apply" />

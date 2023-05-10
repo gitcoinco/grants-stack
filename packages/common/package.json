@@ -9,10 +9,12 @@
   "private": false,
   "dependencies": {
     "dompurify": "^2.4.3",
+    "framer-motion": "^10.12.7",
     "markdown-it": "^13.0.1",
     "react": "^18.2.0",
     "react-hook-form": "^7.42.1",
     "react-router": "^6",
+    "react-router-dom": "^6.11.1",
     "swr": "^2.0.1",
     "tailwind-styled-components": "^2.2.0",
     "typescript": "latest",
@@ -20,9 +22,9 @@
   },
   "devDependencies": {
     "@types/dompurify": "^2.4.0",
+    "@types/markdown-it": "^12.2.3",
     "@types/node": "^18.15.5",
     "@types/react": "^18.0.31",
-    "@types/react-dom": "^18.0.11",
-    "@types/markdown-it": "^12.2.3"
+    "@types/react-dom": "^18.0.11"
   }
 }

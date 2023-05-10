@@ -1,6 +1,10 @@
 import { useParams } from "react-router";
 import useSWR from "swr";
 import { isAddress } from "viem";
+import { useMemo, useState } from "react";
+
+export * from "./icons";
+export * from "./markdown";
 
 export enum ChainId {
   MAINNET = 1,
@@ -286,9 +290,6 @@ export function formatDateWithOrdinal(date: Date) {
   )}`;
 }
 
-export * from "./icons";
-export * from "./markdown";
-
 export enum VerifiedCredentialState {
   VALID,
   INVALID,
@@ -351,7 +352,59 @@ export const getUTCDate = (date: Date): string => {
   return utcDate.join("/");
 };
 
-
 export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
+};
+
+export const RedstoneTokenIds: Record<string, string> = {
+  FTM: "FTM",
+  BUSD: "BUSD",
+  DAI: "DAI",
+  ETH: "ETH",
+};
+
+export const useTokenPrice = (tokenId: string|undefined) => {
+  const [tokenPrice, setTokenPrice] = useState<number>();
+  const [error, setError] = useState<Response | undefined>();
+  const [loading, setLoading] = useState(false);
+
+  if (!tokenId) return {
+    data: 0,
+    error,
+    loading,
+  };
+
+  useMemo(async () => {
+    setLoading(true);
+
+    const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
+    fetch(tokenPriceEndpoint).then(resp => {
+      if (resp.ok) {
+        return resp.json();
+      } else {
+        setError(resp);
+        setLoading(false);
+      }
+    }).then(data => {
+
+      if (data) {
+        setTokenPrice(data[0].value);
+      } else {
+        setError(data);
+      }
+
+      setLoading(false);
+    }).catch((err) => {
+      console.log("error fetching token price", { err });
+      setError(err);
+      setLoading(false);
+    });
+
+  }, [tokenId]);
+
+  return {
+    data: tokenPrice,
+    error,
+    loading,
+  };
 };

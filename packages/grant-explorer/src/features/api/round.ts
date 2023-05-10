@@ -5,7 +5,7 @@ import { ApplicationStatus, Eligibility, MetadataPointer, Project, Round } from 
 /**
  * Shape of subgraph response
  */
-interface GetRoundByIdResult {
+export interface GetRoundByIdResult {
   data: {
     rounds: RoundResult[]
   }

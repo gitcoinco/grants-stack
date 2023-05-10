@@ -15,6 +15,7 @@ import { utils } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useSWR from "swr";
+import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
@@ -116,6 +117,20 @@ export default function ViewProjectDetails() {
           {!isLoading && projectToRender && (
             <>
               <Header projectMetadata={projectToRender.projectMetadata} />
+              <div className="flex flex-col w-full md:invisible sm:-mt-[230px]">
+                <Sidebar
+                  isAlreadyInCart={isAlreadyInCart}
+                  isBeforeRoundEndDate={isBeforeRoundEndDate}
+                  removeFromCart={() => {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    handleRemoveProjectsFromCart([projectToRender], roundId!);
+                  }}
+                  addToCart={() => {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    handleAddProjectsToCart([projectToRender], roundId!);
+                  }}
+                />
+              </div>
               <div className="flex flex-col md:flex-row">
                 <div className="grow">
                   <div>
@@ -135,16 +150,20 @@ export default function ViewProjectDetails() {
                     />
                   </div>
                 </div>
-                <Sidebar
-                  isAlreadyInCart={isAlreadyInCart}
-                  isBeforeRoundEndDate={isBeforeRoundEndDate}
-                  removeFromCart={() => {
-                    handleRemoveProjectsFromCart([projectToRender]);
-                  }}
-                  addToCart={() => {
-                    handleAddProjectsToCart([projectToRender]);
-                  }}
-                />
+                <div className="md:visible invisible">
+                  <Sidebar
+                    isAlreadyInCart={isAlreadyInCart}
+                    isBeforeRoundEndDate={isBeforeRoundEndDate}
+                    removeFromCart={() => {
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      handleRemoveProjectsFromCart([projectToRender], roundId!);
+                    }}
+                    addToCart={() => {
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      handleAddProjectsToCart([projectToRender], roundId!);
+                    }}
+                  />
+                </div>
               </div>
             </>
           )}
@@ -200,6 +219,9 @@ function AboutProject(props: { projectToRender: Project }) {
     projectToRender.recipient.slice(0, 6) +
     "..." +
     projectToRender.recipient.slice(-4);
+  const { data: ensName } = useEnsName({
+    address: projectToRender.recipient ?? "",
+  });
   const projectWebsite = projectToRender.projectMetadata.website;
   const projectTwitter = projectToRender.projectMetadata.projectTwitter;
   const userGithub = projectToRender.projectMetadata.userGithub;
@@ -260,7 +282,7 @@ function AboutProject(props: { projectToRender: Project }) {
         <span className="flex items-center mt-4 gap-1">
           <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
           <DetailSummary
-            text={`${projectRecipient}`}
+            text={`${ensName ? ensName : projectRecipient}`}
             testID="project-recipient"
             sm={true}
           />
@@ -449,7 +471,7 @@ function Sidebar(props: {
   addToCart: () => void;
 }) {
   return (
-    <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6">
+    <div className="mt-2 md:self-auto md:ml-6">
       <ProjectStats />
       {props.isBeforeRoundEndDate && (
         <CartButtonToggle
@@ -506,7 +528,11 @@ export function ProjectStats() {
     : null;
 
   return (
-    <div className={"rounded bg-gray-50 mb-4 p-4 gap-4 flex flex-col"}>
+    <div
+      className={
+        "rounded bg-gray-50 mb-4 p-4 gap-4 grid grid-cols-3 md:flex md:flex-col"
+      }
+    >
       <div>
         <h3>${application?.amountUSD.toFixed(2) ?? "-"}</h3>
         <p>funding received in current round</p>
@@ -545,7 +571,7 @@ function CartButtonToggle(props: {
         data-testid="remove-from-cart"
         onClick={props.removeFromCart}
         className={
-          "w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
+          "w-full md:w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
         }
       >
         Remove from Cart
@@ -560,7 +586,7 @@ function CartButtonToggle(props: {
         props.addToCart();
       }}
       className={
-        "w-80 bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"
+        "w-full md:w-80 bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"
       }
     >
       Add to Cart

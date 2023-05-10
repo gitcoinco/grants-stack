@@ -33,6 +33,6 @@ describe("<ProjectBanner>", () => {
       name: /project banner/i,
     }) as HTMLImageElement;
 
-    expect(img.src).toContain("default_banner.png");
+    expect(img.src).toContain("default_banner.jpg");
   });
 });

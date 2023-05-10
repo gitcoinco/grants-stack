@@ -46,7 +46,7 @@
     "@testing-library/user-event": "^14.1.1",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.25",
-    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#52be896010b22083390ca3ec6e05da9f97a4dd19",
+    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#fab892947ad5566e2666b76520ff9dc308158e07",
     "buffer": "^6.0.3",
     "common": "workspace:*",
     "crypto-browserify": "^3.12.0",
@@ -90,7 +90,10 @@
   "jest": {
     "transformIgnorePatterns": [
       "/round-manager/node_modules/(?!(@spruceid))/"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^csv-stringify/sync": "<rootDir>/node_modules/csv-stringify/dist/cjs/sync.cjs"
+    }
   },
   "browserslist": {
     "production": [

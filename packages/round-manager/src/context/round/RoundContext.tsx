@@ -159,7 +159,8 @@ export const useRoundById = (roundId?: string) => {
   useEffect(() => {
     if (roundId) {
       const existingRound = context.state.data.find(
-        (round) => round.id === roundId
+        (round) =>
+          round.id === roundId && round.chainId === provider.network.chainId
       );
 
       if (!existingRound?.token) {
@@ -169,7 +170,6 @@ export const useRoundById = (roundId?: string) => {
   }, [provider, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const round = context.state.data.find((round) => round.id === roundId);
-
   return {
     round,
     fetchRoundStatus: context.state.fetchRoundStatus,

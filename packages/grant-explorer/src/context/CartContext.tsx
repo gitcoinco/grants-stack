@@ -61,8 +61,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 /* Custom Hooks */
 type UseCart = [
   cart: CartContextState["cart"],
-  handleAddProjectsToCart: (projects: Project[]) => void,
-  handleRemoveProjectsFromCart: (projects: Project[]) => void
+  handleAddProjectsToCart: (projects: Project[], roundId: string) => void,
+  handleRemoveProjectsFromCart: (projects: Project[], roundId: string) => void
 ];
 
 export const useCart = (): UseCart => {
@@ -73,7 +73,12 @@ export const useCart = (): UseCart => {
 
   const { cart, setCart } = context;
 
-  const handleAddProjectsToCart = (projectsToAdd: Project[]): void => {
+  const handleAddProjectsToCart = (
+    projectsToAdd: Project[],
+    roundId: string
+  ): void => {
+    const currentCart = loadCartFromLocalStorage(roundId) ?? [];
+
     // Add projects to the cart if they are not already present
     const newCart = projectsToAdd.reduce((acc, projectToAdd) => {
       const isProjectAlreadyInCart = acc.find(
@@ -81,21 +86,29 @@ export const useCart = (): UseCart => {
           project.projectRegistryId === projectToAdd.projectRegistryId
       );
       return isProjectAlreadyInCart ? acc : acc.concat(projectToAdd);
-    }, cart);
+    }, currentCart);
 
     setCart(newCart);
+    saveCartToLocalStorage(newCart, roundId);
   };
 
-  const handleRemoveProjectsFromCart = (projectsToRemove: Project[]): void => {
+  const handleRemoveProjectsFromCart = (
+    projectsToRemove: Project[],
+    roundId: string
+  ): void => {
+    const currentCart = loadCartFromLocalStorage(roundId) ?? [];
+
     // Remove projects from the cart if they are present
-    const newCart = cart.filter(
+    const newCart = currentCart.filter(
       (project) =>
         !projectsToRemove.find(
           (projectToRemove) =>
             projectToRemove.projectRegistryId === project.projectRegistryId
         )
     );
+
     setCart(newCart);
+    saveCartToLocalStorage(newCart, roundId);
   };
 
   return [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart];

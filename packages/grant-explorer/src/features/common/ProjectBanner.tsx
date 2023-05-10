@@ -1,5 +1,5 @@
 import { ProjectMetadata } from "../api/types";
-import DefaultBannerImage from "../../assets/default_banner.png";
+import DefaultBannerImage from "../../assets/default_banner.jpg";
 
 export function ProjectBanner(props: {
   projectMetadata: ProjectMetadata;

@@ -141,6 +141,9 @@ export interface Round {
    * The on-chain unique round ID
    */
   id?: string;
+
+  chainId?: number;
+
   /**
    * Metadata of the Round to be stored off-chain
    */
@@ -235,11 +238,14 @@ export interface Round {
 
 export type MatchingStatsData = {
   index?: number;
-  projectName?: string;
-  uniqueContributorsCount: number;
+  projectName: string;
+  uniqueContributorsCount?: number;
+  contributionsCount: number;
   matchPoolPercentage: number;
   projectId: string;
+  applicationId: string;
   matchAmountInToken: BigNumber;
+  originalMatchAmountInToken: BigNumber;
   projectPayoutAddress: string;
   status?: string;
   hash?: string;

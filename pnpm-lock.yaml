@@ -402,34 +402,35 @@ importers:
         version: 2.8.3
 
   packages/common:
+    specifiers:
+      '@types/dompurify': ^2.4.0
+      '@types/markdown-it': ^12.2.3
+      '@types/node': ^18.15.5
+      '@types/react': ^18.0.31
+      '@types/react-dom': ^18.0.11
+      dompurify: ^2.4.3
+      framer-motion: ^10.12.7
+      markdown-it: ^13.0.1
+      react: ^18.2.0
+      react-hook-form: ^7.42.1
+      react-router: ^6
+      react-router-dom: ^6.11.1
+      swr: ^2.0.1
+      tailwind-styled-components: ^2.2.0
+      typescript: latest
+      viem: ^0.1.22
     dependencies:
-      dompurify:
-        specifier: ^2.4.3
-        version: 2.4.3
-      markdown-it:
-        specifier: ^13.0.1
-        version: 13.0.1
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-hook-form:
-        specifier: ^7.42.1
-        version: 7.42.1(react@18.2.0)
-      react-router:
-        specifier: ^6
-        version: 6.7.0(react@18.2.0)
-      swr:
-        specifier: ^2.0.1
-        version: 2.0.1(react@18.2.0)
-      tailwind-styled-components:
-        specifier: ^2.2.0
-        version: 2.2.0(react-dom@18.2.0)(react@18.2.0)
-      typescript:
-        specifier: latest
-        version: 5.0.4
-      viem:
-        specifier: ^0.1.22
-        version: 0.1.22(typescript@5.0.4)
+      dompurify: 2.4.3
+      framer-motion: 10.12.7_react@18.2.0
+      markdown-it: 13.0.1
+      react: 18.2.0
+      react-hook-form: 7.42.1_react@18.2.0
+      react-router: 6.7.0_react@18.2.0
+      react-router-dom: 6.11.1_react@18.2.0
+      swr: 2.0.1_react@18.2.0
+      tailwind-styled-components: 2.2.0_react@18.2.0
+      typescript: 5.0.4
+      viem: 0.1.22_typescript@5.0.4
     devDependencies:
       '@types/dompurify':
         specifier: ^2.4.0
@@ -469,226 +470,157 @@ importers:
         version: 4.6.0(eslint@8.32.0)
 
   packages/grant-explorer:
+    specifiers:
+      '@babel/core': ^7.20.12
+      '@babel/plugin-syntax-flow': ^7.14.5
+      '@babel/plugin-transform-react-jsx': ^7.14.9
+      '@babel/preset-env': ^7.20.2
+      '@babel/preset-react': ^7.18.6
+      '@babel/preset-typescript': ^7.21.0
+      '@craco/craco': ^7.0.0
+      '@datadog/browser-logs': ^4.19.0
+      '@datadog/browser-rum': ^4.19.0
+      '@ethersproject/abstract-signer': ^5.7.0
+      '@ethersproject/providers': ^5.7.2
+      '@faker-js/faker': ^7.5.0
+      '@gitcoinco/passport-sdk-types': ^0.2.0
+      '@gitcoinco/passport-sdk-verifier': ^0.2.2
+      '@headlessui/react': ^1.7.4
+      '@heroicons/react': ^2.0.13
+      '@lagunovsky/redux-react-router': ^3.1.0
+      '@rainbow-me/rainbowkit': 0.7.4
+      '@reduxjs/toolkit': ^1.8.1
+      '@sentry/integrations': ^7.28.0
+      '@sentry/react': ^7.27.0
+      '@sentry/tracing': ^7.26.0
+      '@sentry/webpack-plugin': ^1.20.0
+      '@tailwindcss/forms': ^0.5.3
+      '@tailwindcss/line-clamp': ^0.4.2
+      '@tailwindcss/typography': ^0.5.9
+      '@tanstack/query-core': 4.22.0
+      '@testing-library/dom': '>=7.21.4 '
+      '@testing-library/jest-dom': ^5.16.4
+      '@testing-library/react': ^13.0.1
+      '@testing-library/user-event': ^14.1.1
+      '@types/dompurify': ^2.4.0
+      '@types/jest': ^27.4.1
+      '@types/node': ^17.0.25
+      '@types/react': ^18.0.6
+      '@types/react-dom': ^18.0.2
+      '@types/react-gtm-module': ^2.0.1
+      '@types/testing-library__jest-dom': ^5.14.5
+      '@wagmi/core': 0.5.4
+      allo-indexer-client: github:gitcoinco/allo-indexer-client#48490969985125e89bf1d65725ef9e510c97256a
+      autoprefixer: ^10.4.7
+      babel-loader: ^8.3.0
+      buffer: ^6.0.3
+      common: workspace:*
+      crypto-browserify: ^3.12.0
+      date-fns: ^2.29.3
+      eslint: '>=8.1.0 <9.0.0'
+      eslint-config-gitcoin: workspace:*
+      ethers: ^5.6.5
+      history: ^5.3.0
+      html-react-parser: ^3.0.7
+      https-browserify: ^1.0.0
+      ipfs-core: ^0.14.3
+      ipfs-core-types: ^0.14.0
+      jest-fetch-mock: ^3.0.3
+      jest-localstorage-mock: ^2.4.22
+      moment: ^2.29.3
+      msw: ^0.47.4
+      node-fetch: ^3.3.1
+      os-browserify: ^0.3.0
+      postcss: ^8.4.14
+      prettier: ^2.8.3
+      process: ^0.11.10
+      react: ^18.1.0
+      react-datetime: ^3.1.1
+      react-dom: ^18.1.0
+      react-gtm-module: ^2.0.11
+      react-hook-form: ^7.31.3
+      react-redux: ^8.0.1
+      react-router: ^6
+      react-router-dom: '6'
+      react-scripts: 5.0.1
+      react-tooltip: ^4.5.0
+      redux: latest
+      redux-thunk: latest
+      stream-browserify: ^3.0.0
+      stream-http: ^3.2.0
+      swr: ^2.0.0
+      tailwind-styled-components: ^2.1.7
+      tailwindcss: ^3.0.24
+      typescript: ^4.6.0
+      url: ^0.11.0
+      util: ^0.12.4
+      wagmi: 0.6.8
+      web-vitals: ^2.1.0
+      webpack: '>=2'
     dependencies:
-      '@craco/craco':
-        specifier: ^7.0.0
-        version: 7.0.0(@types/node@17.0.45)(postcss@8.4.21)(react-scripts@5.0.1)(typescript@4.9.4)
-      '@datadog/browser-logs':
-        specifier: ^4.19.0
-        version: 4.30.1(@datadog/browser-rum@4.30.1)
-      '@datadog/browser-rum':
-        specifier: ^4.19.0
-        version: 4.30.1(@datadog/browser-logs@4.30.1)
-      '@emotion/react':
-        specifier: ^11
-        version: 11.10.5(@babel/core@7.20.12)(@types/react@18.0.27)(react@18.2.0)
-      '@emotion/styled':
-        specifier: ^11
-        version: 11.10.5(@babel/core@7.20.12)(@emotion/react@11.10.5)(@types/react@18.0.27)(react@18.2.0)
-      '@ethersproject/abstract-signer':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/providers':
-        specifier: ^5.7.2
-        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-      '@gitcoinco/passport-sdk-verifier':
-        specifier: ^0.2.2
-        version: 0.2.2
-      '@headlessui/react':
-        specifier: ^1.7.4
-        version: 1.7.7(react-dom@18.2.0)(react@18.2.0)
-      '@heroicons/react':
-        specifier: ^2.0.13
-        version: 2.0.13(react@18.2.0)
-      '@lagunovsky/redux-react-router':
-        specifier: ^3.1.0
-        version: 3.2.0(history@5.3.0)(react-dom@18.2.0)(react-redux@8.0.5)(react-router@6.7.0)(react@18.2.0)(redux@4.2.1)
-      '@rainbow-me/rainbowkit':
-        specifier: 0.7.4
-        version: 0.7.4(@types/react@18.0.27)(ethers@5.6.5)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.6.8)
-      '@reduxjs/toolkit':
-        specifier: ^1.8.1
-        version: 1.9.1(react-redux@8.0.5)(react@18.2.0)
-      '@sentry/integrations':
-        specifier: ^7.28.0
-        version: 7.31.1
-      '@sentry/react':
-        specifier: ^7.27.0
-        version: 7.31.1(react@18.2.0)
-      '@sentry/tracing':
-        specifier: ^7.26.0
-        version: 7.31.1
-      '@sentry/webpack-plugin':
-        specifier: ^1.20.0
-        version: 1.20.0
-      '@tailwindcss/forms':
-        specifier: ^0.5.3
-        version: 0.5.3(tailwindcss@3.2.4)
-      '@tailwindcss/line-clamp':
-        specifier: ^0.4.2
-        version: 0.4.2(tailwindcss@3.2.4)
-      '@tailwindcss/typography':
-        specifier: ^0.5.9
-        version: 0.5.9(tailwindcss@3.2.4)
-      '@tanstack/query-core':
-        specifier: 4.22.0
-        version: 4.22.0
-      '@testing-library/jest-dom':
-        specifier: ^5.16.4
-        version: 5.16.5
-      '@testing-library/react':
-        specifier: ^13.0.1
-        version: 13.4.0(react-dom@18.2.0)(react@18.2.0)
-      '@testing-library/user-event':
-        specifier: ^14.1.1
-        version: 14.4.3(@testing-library/dom@8.20.0)
-      '@types/crypto-js':
-        specifier: ^4.1.1
-        version: 4.1.1
-      '@types/uuid':
-        specifier: ^9.0.1
-        version: 9.0.1
-      allo-indexer-client:
-        specifier: github:gitcoinco/allo-indexer-client#0487c02c9bb89307b12ffe75f5bfb578278994a1
-        version: github.com/gitcoinco/allo-indexer-client/0487c02c9bb89307b12ffe75f5bfb578278994a1
-      babel-loader:
-        specifier: ^8.3.0
-        version: 8.3.0(@babel/core@7.20.12)(webpack@5.75.0)
-      buffer:
-        specifier: ^6.0.3
-        version: 6.0.3
-      classnames:
-        specifier: ^2.3.2
-        version: 2.3.2
-      common:
-        specifier: workspace:*
-        version: link:../common
-      crypto-browserify:
-        specifier: ^3.12.0
-        version: 3.12.0
-      crypto-js:
-        specifier: ^4.1.1
-        version: 4.1.1
-      date-fns:
-        specifier: ^2.29.3
-        version: 2.29.3
-      eslint:
-        specifier: '>=8.1.0 <9.0.0'
-        version: 8.32.0
-      ethers:
-        specifier: ^5.6.5
-        version: 5.6.5
-      framer-motion:
-        specifier: ^6
-        version: 6.5.1(react-dom@18.2.0)(react@18.2.0)
-      history:
-        specifier: ^5.3.0
-        version: 5.3.0
-      html-react-parser:
-        specifier: ^3.0.7
-        version: 3.0.8(react@18.2.0)
-      https-browserify:
-        specifier: ^1.0.0
-        version: 1.0.0
-      ipfs-core:
-        specifier: ^0.14.3
-        version: 0.14.3(node-fetch@3.3.1)
-      ipfs-core-types:
-        specifier: ^0.14.0
-        version: 0.14.0
-      jest-fetch-mock:
-        specifier: ^3.0.3
-        version: 3.0.3
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      moment:
-        specifier: ^2.29.3
-        version: 2.29.4
-      msw:
-        specifier: ^0.47.4
-        version: 0.47.4(typescript@4.9.4)
-      node-fetch:
-        specifier: ^3.3.1
-        version: 3.3.1
-      os-browserify:
-        specifier: ^0.3.0
-        version: 0.3.0
-      process:
-        specifier: ^0.11.10
-        version: 0.11.10
-      react:
-        specifier: ^18.1.0
-        version: 18.2.0
-      react-datetime:
-        specifier: ^3.1.1
-        version: 3.2.0(moment@2.29.4)(react@18.2.0)
-      react-dom:
-        specifier: ^18.1.0
-        version: 18.2.0(react@18.2.0)
-      react-gtm-module:
-        specifier: ^2.0.11
-        version: 2.0.11
-      react-hook-form:
-        specifier: ^7.31.3
-        version: 7.42.1(react@18.2.0)
-      react-loading-spin:
-        specifier: ^2.1.9
-        version: 2.1.9
-      react-redux:
-        specifier: ^8.0.1
-        version: 8.0.5(@types/react-dom@18.0.10)(@types/react@18.0.27)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
-      react-router:
-        specifier: ^6
-        version: 6.7.0(react@18.2.0)
-      react-router-dom:
-        specifier: '6'
-        version: 6.7.0(react-dom@18.2.0)(react@18.2.0)
-      react-scripts:
-        specifier: 5.0.1
-        version: 5.0.1(@babel/plugin-syntax-flow@7.18.6)(@babel/plugin-transform-react-jsx@7.20.7)(esbuild@0.16.17)(eslint@8.32.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.4)
-      react-select:
-        specifier: 5.7.3
-        version: 5.7.3(@babel/core@7.20.12)(@types/react@18.0.27)(react-dom@18.2.0)(react@18.2.0)
-      react-tooltip:
-        specifier: ^4.5.0
-        version: 4.5.1(react-dom@18.2.0)(react@18.2.0)
-      redux:
-        specifier: latest
-        version: 4.2.1
-      redux-thunk:
-        specifier: latest
-        version: 2.4.2(redux@4.2.1)
-      stream-browserify:
-        specifier: ^3.0.0
-        version: 3.0.0
-      stream-http:
-        specifier: ^3.2.0
-        version: 3.2.0
-      swr:
-        specifier: ^2.0.0
-        version: 2.0.1(react@18.2.0)
-      typescript:
-        specifier: ^4.6.0
-        version: 4.9.4
-      url:
-        specifier: ^0.11.0
-        version: 0.11.0
-      util:
-        specifier: ^0.12.4
-        version: 0.12.5
-      uuid:
-        specifier: ^9.0.0
-        version: 9.0.0
-      wagmi:
-        specifier: 0.6.8
-        version: 0.6.8(@babel/core@7.20.12)(@tanstack/query-core@4.22.0)(ethers@5.6.5)(react-dom@18.2.0)(react@18.2.0)
-      web-vitals:
-        specifier: ^2.1.0
-        version: 2.1.4
-      webpack:
-        specifier: '>=2'
-        version: 5.75.0(esbuild@0.16.17)
+      '@craco/craco': 7.0.0_iihpyunhlvq2lijfgduptyp3ja
+      '@datadog/browser-logs': 4.30.1_7nwqccnzuve4t7hwidkd2in2be
+      '@datadog/browser-rum': 4.30.1_25ad6ujv2hpt3baw5lupcax7q4
+      '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/providers': 5.7.2
+      '@gitcoinco/passport-sdk-verifier': 0.2.2
+      '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
+      '@heroicons/react': 2.0.13_react@18.2.0
+      '@lagunovsky/redux-react-router': 3.2.0_eiavg4dsatqdtmk3scirxx7bdi
+      '@rainbow-me/rainbowkit': 0.7.4_xzz3pppknljvue5rks2i3ror4m
+      '@reduxjs/toolkit': 1.9.1_k4ae6lp43ej6mezo3ztvx6pykq
+      '@sentry/integrations': 7.31.1
+      '@sentry/react': 7.31.1_react@18.2.0
+      '@sentry/tracing': 7.31.1
+      '@sentry/webpack-plugin': 1.20.0
+      '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.4
+      '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4
+      '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.4
+      '@tanstack/query-core': 4.22.0
+      '@testing-library/jest-dom': 5.16.5
+      '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
+      '@testing-library/user-event': 14.4.3_yxlyej73nftwmh2fiao7paxmlm
+      '@wagmi/core': 0.5.4_ethers@5.6.5+react@18.2.0
+      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/48490969985125e89bf1d65725ef9e510c97256a
+      babel-loader: 8.3.0_la66t7xldg4uecmyawueag5wkm
+      buffer: 6.0.3
+      common: link:../common
+      crypto-browserify: 3.12.0
+      date-fns: 2.29.3
+      eslint: 8.32.0
+      ethers: 5.6.5
+      history: 5.3.0
+      html-react-parser: 3.0.8_react@18.2.0
+      https-browserify: 1.0.0
+      ipfs-core: 0.14.3_node-fetch@3.3.1
+      ipfs-core-types: 0.14.0
+      jest-fetch-mock: 3.0.3
+      moment: 2.29.4
+      msw: 0.47.4_typescript@4.9.4
+      node-fetch: 3.3.1
+      os-browserify: 0.3.0
+      process: 0.11.10
+      react: 18.2.0
+      react-datetime: 3.2.0_moment@2.29.4+react@18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-gtm-module: 2.0.11
+      react-hook-form: 7.42.1_react@18.2.0
+      react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
+      react-router: 6.7.0_react@18.2.0
+      react-router-dom: 6.7.0_biqbaboplfbrettd7655fr4n2y
+      react-scripts: 5.0.1_nxhyxwde3eoe75duibejr53p3m
+      react-tooltip: 4.5.1_biqbaboplfbrettd7655fr4n2y
+      redux: 4.2.1
+      redux-thunk: 2.4.2_redux@4.2.1
+      stream-browserify: 3.0.0
+      stream-http: 3.2.0
+      swr: 2.0.1_react@18.2.0
+      typescript: 4.9.4
+      url: 0.11.0
+      util: 0.12.5
+      wagmi: 0.6.8_2zvkf7ysi4hsi53ibmhvnxyxrq
+      web-vitals: 2.1.4
+      webpack: 5.75.0
     devDependencies:
       '@babel/core':
         specifier: ^7.20.12
@@ -767,205 +699,156 @@ importers:
         version: 3.2.4(postcss@8.4.21)(ts-node@10.9.1)
 
   packages/round-manager:
+    specifiers:
+      '@babel/core': ^7.20.12
+      '@craco/craco': ^6.4.5
+      '@datadog/browser-logs': ^4.17.1
+      '@datadog/browser-rum': ^4.17.1
+      '@ethersproject/abstract-signer': ^5.7.0
+      '@ethersproject/providers': ^5.7.2
+      '@faker-js/faker': ^7.4.0
+      '@gitcoinco/passport-sdk-types': ^0.1.2
+      '@gitcoinco/passport-sdk-verifier': ^0.1.2
+      '@headlessui/react': ^1.6.6
+      '@heroicons/react': ^1.0.6
+      '@hookform/resolvers': ^2.9.2
+      '@lagunovsky/redux-react-router': ^3.1.0
+      '@openzeppelin/merkle-tree': ^1.0.2
+      '@rainbow-me/rainbowkit': 0.7.4
+      '@reduxjs/toolkit': ^1.8.1
+      '@sentry/integrations': ^7.28.0
+      '@sentry/react': ^7.27.0
+      '@sentry/tracing': ^7.26.0
+      '@sentry/webpack-plugin': ^1.20.0
+      '@tailwindcss/forms': ^0.5.2
+      '@tailwindcss/line-clamp': ^0.4.0
+      '@tailwindcss/typography': ^0.5.9
+      '@tanstack/query-core': 4.22.0
+      '@testing-library/jest-dom': ^5.16.4
+      '@testing-library/react': ^13.0.1
+      '@testing-library/user-event': ^14.1.1
+      '@types/jest': ^27.4.1
+      '@types/lodash': ^4.14.192
+      '@types/node': ^17.0.25
+      '@types/react': ^18.0.26
+      '@types/react-dom': ^18.0.10
+      '@types/react-gtm-module': ^2.0.1
+      '@types/testing-library__jest-dom': ^5.14.5
+      add: ^2.0.6
+      allo-indexer-client: github:gitcoinco/allo-indexer-client#fab892947ad5566e2666b76520ff9dc308158e07
+      autoprefixer: ^10.4.7
+      buffer: ^6.0.3
+      common: workspace:*
+      craco-esbuild: ^0.5.2
+      crypto-browserify: ^3.12.0
+      csv-parse: ^5.3.8
+      csv-stringify: ^6.3.2
+      deepmerge: ^4.3.1
+      eslint-config-gitcoin: workspace:*
+      ethers: ^5.6.5
+      history: ^5.3.0
+      html-react-parser: ^3.0.7
+      https-browserify: ^1.0.0
+      husky: ^8.0.1
+      jest-fetch-mock: ^3.0.3
+      lit-js-sdk: ^1.1.203
+      lodash: ^4.17.21
+      moment: ^2.29.3
+      os-browserify: ^0.3.0
+      postcss: ^8.4.14
+      prettier: ^2.7.1
+      process: ^0.11.10
+      react: ^18.1.0
+      react-datetime: ^3.1.1
+      react-dom: ^18.1.0
+      react-dropzone: ^14.2.3
+      react-gtm-module: ^2.0.11
+      react-hook-form: ^7.31.3
+      react-icons: ^4.7.1
+      react-redux: ^8.0.1
+      react-router-dom: '6'
+      react-scripts: 5.0.1
+      react-tooltip: ^4.4.2
+      redux: ^4.2.0
+      redux-thunk: ^2.4.2
+      stream-browserify: ^3.0.0
+      stream-http: ^3.2.0
+      swr: ^2.0.0
+      tailwind-styled-components: 2.1.6
+      tailwindcss: ^3.0.24
+      typescript: ^4.6.0
+      url: ^0.11.0
+      util: ^0.12.4
+      wagmi: 0.6.8
+      web-vitals: ^2.1.0
+      yup: ^0.32.11
     dependencies:
-      '@babel/core':
-        specifier: ^7.20.12
-        version: 7.20.12
-      '@craco/craco':
-        specifier: ^6.4.5
-        version: 6.4.5(@types/node@17.0.45)(react-scripts@5.0.1)(typescript@4.9.4)
-      '@datadog/browser-logs':
-        specifier: ^4.17.1
-        version: 4.30.1(@datadog/browser-rum@4.30.1)
-      '@datadog/browser-rum':
-        specifier: ^4.17.1
-        version: 4.30.1(@datadog/browser-logs@4.30.1)
-      '@ethersproject/abstract-signer':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/providers':
-        specifier: ^5.7.2
-        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-      '@gitcoinco/passport-sdk-verifier':
-        specifier: ^0.1.2
-        version: 0.1.2
-      '@headlessui/react':
-        specifier: ^1.6.6
-        version: 1.7.7(react-dom@18.2.0)(react@18.2.0)
-      '@heroicons/react':
-        specifier: ^1.0.6
-        version: 1.0.6(react@18.2.0)
-      '@hookform/resolvers':
-        specifier: ^2.9.2
-        version: 2.9.10(react-hook-form@7.42.1)
-      '@lagunovsky/redux-react-router':
-        specifier: ^3.1.0
-        version: 3.2.0(history@5.3.0)(react-dom@18.2.0)(react-redux@8.0.5)(react-router@6.7.0)(react@18.2.0)(redux@4.2.0)
-      '@openzeppelin/merkle-tree':
-        specifier: ^1.0.2
-        version: 1.0.2
-      '@rainbow-me/rainbowkit':
-        specifier: 0.7.4
-        version: 0.7.4(@types/react@18.0.27)(ethers@5.6.5)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.6.8)
-      '@reduxjs/toolkit':
-        specifier: ^1.8.1
-        version: 1.9.1(react-redux@8.0.5)(react@18.2.0)
-      '@sentry/integrations':
-        specifier: ^7.28.0
-        version: 7.31.1
-      '@sentry/react':
-        specifier: ^7.27.0
-        version: 7.31.1(react@18.2.0)
-      '@sentry/tracing':
-        specifier: ^7.26.0
-        version: 7.31.1
-      '@sentry/webpack-plugin':
-        specifier: ^1.20.0
-        version: 1.20.0
-      '@tailwindcss/forms':
-        specifier: ^0.5.2
-        version: 0.5.3(tailwindcss@3.2.4)
-      '@tailwindcss/typography':
-        specifier: ^0.5.9
-        version: 0.5.9(tailwindcss@3.2.4)
-      '@tanstack/query-core':
-        specifier: 4.22.0
-        version: 4.22.0
-      '@testing-library/jest-dom':
-        specifier: ^5.16.4
-        version: 5.16.5
-      '@testing-library/react':
-        specifier: ^13.0.1
-        version: 13.4.0(react-dom@18.2.0)(react@18.2.0)
-      '@testing-library/user-event':
-        specifier: ^14.1.1
-        version: 14.4.3(@testing-library/dom@8.20.0)
-      '@types/jest':
-        specifier: ^27.4.1
-        version: 27.5.2
-      '@types/node':
-        specifier: ^17.0.25
-        version: 17.0.45
-      allo-indexer-client:
-        specifier: github:gitcoinco/allo-indexer-client#52be896010b22083390ca3ec6e05da9f97a4dd19
-        version: github.com/gitcoinco/allo-indexer-client/52be896010b22083390ca3ec6e05da9f97a4dd19
-      buffer:
-        specifier: ^6.0.3
-        version: 6.0.3
-      common:
-        specifier: workspace:*
-        version: link:../common
-      crypto-browserify:
-        specifier: ^3.12.0
-        version: 3.12.0
-      csv-parse:
-        specifier: ^5.3.8
-        version: 5.3.8
-      csv-stringify:
-        specifier: ^6.3.2
-        version: 6.3.2
-      deepmerge:
-        specifier: ^4.3.1
-        version: 4.3.1
-      eslint-config-gitcoin:
-        specifier: workspace:*
-        version: link:../eslint-config-gitcoin
-      ethers:
-        specifier: ^5.6.5
-        version: 5.6.5
-      history:
-        specifier: ^5.3.0
-        version: 5.3.0
-      html-react-parser:
-        specifier: ^3.0.7
-        version: 3.0.8(react@18.2.0)
-      https-browserify:
-        specifier: ^1.0.0
-        version: 1.0.0
-      jest-fetch-mock:
-        specifier: ^3.0.3
-        version: 3.0.3
-      lit-js-sdk:
-        specifier: ^1.1.203
-        version: 1.1.242
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      moment:
-        specifier: ^2.29.3
-        version: 2.29.4
-      os-browserify:
-        specifier: ^0.3.0
-        version: 0.3.0
-      process:
-        specifier: ^0.11.10
-        version: 0.11.10
-      react:
-        specifier: ^18.1.0
-        version: 18.2.0
-      react-datetime:
-        specifier: ^3.1.1
-        version: 3.2.0(moment@2.29.4)(react@18.2.0)
-      react-dom:
-        specifier: ^18.1.0
-        version: 18.2.0(react@18.2.0)
-      react-dropzone:
-        specifier: ^14.2.3
-        version: 14.2.3(react@18.2.0)
-      react-gtm-module:
-        specifier: ^2.0.11
-        version: 2.0.11
-      react-hook-form:
-        specifier: ^7.31.3
-        version: 7.42.1(react@18.2.0)
-      react-icons:
-        specifier: ^4.7.1
-        version: 4.7.1(react@18.2.0)
-      react-redux:
-        specifier: ^8.0.1
-        version: 8.0.5(@types/react-dom@18.0.10)(@types/react@18.0.27)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.0)
-      react-router-dom:
-        specifier: '6'
-        version: 6.7.0(react-dom@18.2.0)(react@18.2.0)
-      react-scripts:
-        specifier: 5.0.1
-        version: 5.0.1(@babel/plugin-syntax-flow@7.18.6)(@babel/plugin-transform-react-jsx@7.20.7)(esbuild@0.16.17)(eslint@8.38.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.4)
-      react-tooltip:
-        specifier: ^4.4.2
-        version: 4.5.1(react-dom@18.2.0)(react@18.2.0)
-      redux:
-        specifier: ^4.2.0
-        version: 4.2.0
-      redux-thunk:
-        specifier: ^2.4.2
-        version: 2.4.2(redux@4.2.0)
-      stream-browserify:
-        specifier: ^3.0.0
-        version: 3.0.0
-      stream-http:
-        specifier: ^3.2.0
-        version: 3.2.0
-      swr:
-        specifier: ^2.0.0
-        version: 2.0.1(react@18.2.0)
-      typescript:
-        specifier: ^4.6.0
-        version: 4.9.4
-      url:
-        specifier: ^0.11.0
-        version: 0.11.0
-      util:
-        specifier: ^0.12.4
-        version: 0.12.5
-      wagmi:
-        specifier: 0.6.8
-        version: 0.6.8(@babel/core@7.20.12)(@tanstack/query-core@4.22.0)(ethers@5.6.5)(react-dom@18.2.0)(react@18.2.0)
-      web-vitals:
-        specifier: ^2.1.0
-        version: 2.1.4
-      yup:
-        specifier: ^0.32.11
-        version: 0.32.11
+      '@babel/core': 7.20.12
+      '@craco/craco': 6.4.5_lriwyjhu5xzjovuk7emq6dygyy
+      '@datadog/browser-logs': 4.30.1_7nwqccnzuve4t7hwidkd2in2be
+      '@datadog/browser-rum': 4.30.1_25ad6ujv2hpt3baw5lupcax7q4
+      '@ethersproject/abstract-signer': 5.7.0
+      '@ethersproject/providers': 5.7.2
+      '@gitcoinco/passport-sdk-verifier': 0.1.2
+      '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
+      '@heroicons/react': 1.0.6_react@18.2.0
+      '@hookform/resolvers': 2.9.10_react-hook-form@7.42.1
+      '@lagunovsky/redux-react-router': 3.2.0_4f37j57hce2aunfryv3enf4dbm
+      '@openzeppelin/merkle-tree': 1.0.2
+      '@rainbow-me/rainbowkit': 0.7.4_xzz3pppknljvue5rks2i3ror4m
+      '@reduxjs/toolkit': 1.9.1_k4ae6lp43ej6mezo3ztvx6pykq
+      '@sentry/integrations': 7.31.1
+      '@sentry/react': 7.31.1_react@18.2.0
+      '@sentry/tracing': 7.31.1
+      '@sentry/webpack-plugin': 1.20.0
+      '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.4
+      '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.4
+      '@tanstack/query-core': 4.22.0
+      '@testing-library/jest-dom': 5.16.5
+      '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
+      '@testing-library/user-event': 14.4.3
+      '@types/jest': 27.5.2
+      '@types/node': 17.0.45
+      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/fab892947ad5566e2666b76520ff9dc308158e07
+      buffer: 6.0.3
+      common: link:../common
+      crypto-browserify: 3.12.0
+      csv-parse: 5.3.8
+      csv-stringify: 6.3.2
+      deepmerge: 4.3.1
+      eslint-config-gitcoin: link:../eslint-config-gitcoin
+      ethers: 5.6.5
+      history: 5.3.0
+      html-react-parser: 3.0.8_react@18.2.0
+      https-browserify: 1.0.0
+      jest-fetch-mock: 3.0.3
+      lit-js-sdk: 1.1.242
+      lodash: 4.17.21
+      moment: 2.29.4
+      os-browserify: 0.3.0
+      process: 0.11.10
+      react: 18.2.0
+      react-datetime: 3.2.0_moment@2.29.4+react@18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-dropzone: 14.2.3_react@18.2.0
+      react-gtm-module: 2.0.11
+      react-hook-form: 7.42.1_react@18.2.0
+      react-icons: 4.7.1_react@18.2.0
+      react-redux: 8.0.5_sfvtgtw6zg4uu5uf4vg7hgzorm
+      react-router-dom: 6.7.0_biqbaboplfbrettd7655fr4n2y
+      react-scripts: 5.0.1_o77wnou4wwnegu5woljtklrzru
+      react-tooltip: 4.5.1_biqbaboplfbrettd7655fr4n2y
+      redux: 4.2.0
+      redux-thunk: 2.4.2_redux@4.2.0
+      stream-browserify: 3.0.0
+      stream-http: 3.2.0
+      swr: 2.0.1_react@18.2.0
+      typescript: 4.9.4
+      url: 0.11.0
+      util: 0.12.5
+      wagmi: 0.6.8_2zvkf7ysi4hsi53ibmhvnxyxrq
+      web-vitals: 2.1.4
+      yup: 0.32.11
     devDependencies:
       '@faker-js/faker':
         specifier: ^7.4.0
@@ -6203,8 +6086,12 @@ packages:
     resolution: {integrity: sha512-nwQoYb3m4DDpHTeOwpJEuDt8lWVcujhYYSFGLluC+9es2PyLjm+jjq3IeRBQbwBtPLJE/lkuHuGHr8uQLgmJRA==}
     engines: {node: '>=14'}
     dev: false
+  /@remix-run/router/1.6.1:
+    resolution: {integrity: sha512-YUkWj+xs0oOzBe74OgErsuR3wVn+efrFhXBWrit50kOiED+pvQe2r6MWY0iJMQU/mSVKxvNzL4ZaYvjdX+G7ZA==}
+    engines: {node: '>=14'}
+    dev: false
 
-  /@rollup/plugin-babel@5.3.1(@babel/core@7.20.12)(rollup@2.79.1):
+  /@rollup/plugin-babel/5.3.1_3dsfpkpoyvuuxyfgdbpn4j4uzm:
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
     engines: {node: '>= 10.0.0'}
     peerDependencies:
@@ -8752,6 +8639,15 @@ packages:
       follow-redirects: 1.15.2(debug@4.3.4)
     transitivePeerDependencies:
       - debug
+    dev: false
+
+  /axios/0.21.4_debug@4.3.4:
+    resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
+    dependencies:
+      follow-redirects: 1.15.2_debug@4.3.4
+    transitivePeerDependencies:
+      - debug
+    dev: true
 
   /axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
@@ -9921,8 +9817,8 @@ packages:
     resolution: {integrity: sha512-mKDjINe3tc6hGelUMNDzuhorIUZ7kS7BwyY0r2wQd2HOH2tRuJykiC06iSEX8y1TuhNzvz4GcJnK16mM2J1NMQ==}
     dev: false
 
-  /concat-map@0.0.1:
-    resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
+  /concat-map/0.0.1:
+    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   /concat-stream@1.6.2:
     resolution: {integrity: sha512-27HBghJxjiZtIk3Ycvn/4kbJk/1uZuJFfuPEns6LaEvpvG1f0hTea8lilrouyo9mVc2GWdcEZ8OLoGmSADlrCw==}
@@ -12883,7 +12779,19 @@ packages:
     dependencies:
       debug: 4.3.4
 
-  /for-each@0.3.3:
+  /follow-redirects/1.15.2_debug@4.3.4:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
+    dev: true
+
+  /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
     dependencies:
       is-callable: 1.2.7
@@ -13039,7 +12947,24 @@ packages:
     dependencies:
       map-cache: 0.2.2
 
-  /framer-motion@6.5.1(react-dom@18.2.0)(react@18.2.0):
+  /framer-motion/10.12.7_react@18.2.0:
+    resolution: {integrity: sha512-awOlKkDvcQpv92Pzw5KCWFehxzvqtGYZqnLvHWZvQFpIxaPsRMypRX+vhugpciOzQPkZbc37X4dJLIZLfGM/CQ==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      tslib: 2.4.1
+    optionalDependencies:
+      '@emotion/is-prop-valid': 0.8.8
+    dev: false
+
+  /framer-motion/6.5.1_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-o1BGqqposwi7cgDrtg0dNONhkmPsUFDaLcKXigzuTFC5x58mE8iyTazxSudFzmT6MEyJKfjjU8ItoMe3W+3fiw==}
     peerDependencies:
       react: '>=16.8 || ^17.0.0 || ^18.0.0'
@@ -19852,6 +19777,7 @@ packages:
   /punycode@2.1.1:
     resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}
     engines: {node: '>=6'}
+    dev: false
 
   /punycode@2.3.0:
     resolution: {integrity: sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==}
@@ -20391,7 +20317,19 @@ packages:
       use-sidecar: 1.1.2(@types/react@18.0.27)(react@18.2.0)
     dev: false
 
-  /react-router-dom@6.7.0(react-dom@18.2.0)(react@18.2.0):
+  /react-router-dom/6.11.1_react@18.2.0:
+    resolution: {integrity: sha512-dPC2MhoPeTQ1YUOt5uIK376SMNWbwUxYRWk2ZmTT4fZfwlOvabF8uduRKKJIyfkCZvMgiF0GSCQckmkGGijIrg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.6.1
+      react: 18.2.0
+      react-router: 6.11.1_react@18.2.0
+    dev: false
+
+  /react-router-dom/6.7.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-jQtXUJyhso3kFw430+0SPCbmCmY1/kJv8iRffGHwHy3CkoomGxeYzMkmeSPYo6Egzh3FKJZRAL22yg5p2tXtfg==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -20404,7 +20342,17 @@ packages:
       react-router: 6.7.0(react@18.2.0)
     dev: false
 
-  /react-router@6.7.0(react@18.2.0):
+  /react-router/6.11.1_react@18.2.0:
+    resolution: {integrity: sha512-OZINSdjJ2WgvAi7hgNLazrEV8SGn6xrKA+MkJe9wVDMZ3zQ6fdJocUjpCUCI0cNrelWjcvon0S/QK/j0NzL3KA==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.6.1
+      react: 18.2.0
+    dev: false
+
+  /react-router/6.7.0_react@18.2.0:
     resolution: {integrity: sha512-KNWlG622ddq29MAM159uUsNMdbX8USruoKnwMMQcs/QWZgFUayICSn2oB7reHce1zPj6CG18kfkZIunSSRyGHg==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -22625,7 +22573,7 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       psl: 1.9.0
-      punycode: 2.1.1
+      punycode: 2.3.0
       universalify: 0.2.0
       url-parse: 1.5.10
 
@@ -24297,8 +24245,18 @@ packages:
       '@types/node': 18.15.11
     dev: false
 
-  github.com/gitcoinco/allo-indexer-client/52be896010b22083390ca3ec6e05da9f97a4dd19:
-    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/52be896010b22083390ca3ec6e05da9f97a4dd19}
+  github.com/gitcoinco/allo-indexer-client/48490969985125e89bf1d65725ef9e510c97256a:
+    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/48490969985125e89bf1d65725ef9e510c97256a}
+    name: allo-indexer-client
+    version: 0.1.0
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@types/node': 18.15.5
+    dev: false
+
+  github.com/gitcoinco/allo-indexer-client/fab892947ad5566e2666b76520ff9dc308158e07:
+    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/fab892947ad5566e2666b76520ff9dc308158e07}
     name: allo-indexer-client
     version: 0.1.0
     hasBin: true

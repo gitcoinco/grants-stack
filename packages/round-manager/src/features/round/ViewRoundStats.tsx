@@ -8,6 +8,7 @@ import {
   useRoundMatchingFunds,
 } from "../../hooks";
 import { getUTCDate } from "common";
+import { payoutTokens } from "../api/utils";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
@@ -22,8 +23,11 @@ export default function ViewRoundStats() {
   }, [applications]);
 
   const { data: matches } = useRoundMatchingFunds(roundId);
-
-  const matchAmountUSD = round?.matchAmountUSD;
+  const matchToken =
+    round &&
+    payoutTokens.find(
+      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+    );
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -42,11 +46,10 @@ export default function ViewRoundStats() {
         />
         <StatsCard
           text={
-            matchAmountUSD &&
-            new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(matchAmountUSD)
+            round &&
+            `${utils.formatUnits(round.matchAmount, matchToken?.decimal)} ${
+              matchToken?.name
+            }`
           }
           title={"Matching Funds Available"}
         />
@@ -62,7 +65,7 @@ export default function ViewRoundStats() {
         <div className="col-span-1 row-span-2 flex items-center">
           Matching Funds
         </div>
-        <div className="col-span-3 border  rounded p-4 row-span-2 overflow-y-auto max-h-52">
+        <div className="col-span-3 border rounded p-4 row-span-2 overflow-y-auto max-h-52">
           <table
             className={
               "table-auto border-separate border-spacing-y-4 h-full w-full"
@@ -90,8 +93,14 @@ export default function ViewRoundStats() {
               </tr>
             </thead>
             <tbody>
-              {matches &&
+              {round &&
+                matches &&
                 matches.map((match: Match) => {
+                  const percentage =
+                    Number(
+                      (BigInt(1000000) * match.matched) / round.matchAmount
+                    ) / 10000;
+
                   return (
                     <tr key={match.applicationId}>
                       <td className="text-sm leading-5 text-gray-400 text-left">
@@ -101,9 +110,7 @@ export default function ViewRoundStats() {
                         {match.contributionsCount}
                       </td>
                       <td className="text-sm leading-5 text-gray-400 text-left">
-                        {matchAmountUSD &&
-                          Math.trunc((match.matched / matchAmountUSD) * 100)}
-                        %
+                        {percentage.toString()}%
                       </td>
                     </tr>
                   );

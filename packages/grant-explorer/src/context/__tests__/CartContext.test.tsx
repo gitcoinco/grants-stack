@@ -27,7 +27,37 @@ describe("<CartProvider>", () => {
     });
   });
 
-  describe("Cart", () => {
+  describe("Cart -> remove", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should update the cart when removing the project from the cart", () => {
+      render(
+        <CartProvider>
+          <TestingUseCartComponent />
+        </CartProvider>
+      );
+      fireEvent.click(screen.getByTestId("add-project-to-cart"));
+      expect(screen.getAllByTestId("cart-project")).toHaveLength(1);
+
+      fireEvent.click(screen.getByTestId("remove-project-from-cart"));
+      expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
+    });
+
+    it("does not error when trying to remove a project not in the cart", () => {
+      render(
+        <CartProvider>
+          <TestingUseCartComponent />
+        </CartProvider>
+      );
+
+      fireEvent.click(screen.getByTestId("remove-project-from-cart"));
+      expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
+    });
+  });
+
+  describe("Cart -> Add", () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -97,30 +127,6 @@ describe("<CartProvider>", () => {
 
       expect(saveCartToLocalStorage).toBeCalled();
     });
-
-    it("should update the cart when removing the project from the cart", () => {
-      render(
-        <CartProvider>
-          <TestingUseCartComponent />
-        </CartProvider>
-      );
-      fireEvent.click(screen.getByTestId("add-project-to-cart"));
-      expect(screen.getAllByTestId("cart-project")).toHaveLength(1);
-
-      fireEvent.click(screen.getByTestId("remove-project-from-cart"));
-      expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
-    });
-
-    it("does not error when trying to remove a project not in the cart", () => {
-      render(
-        <CartProvider>
-          <TestingUseCartComponent />
-        </CartProvider>
-      );
-
-      fireEvent.click(screen.getByTestId("remove-project-from-cart"));
-      expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
-    });
   });
 });
 
@@ -147,14 +153,14 @@ const TestingUseCartComponent = () => {
 
       <button
         data-testid="add-project-to-cart"
-        onClick={() => handleAddProjectsToCart([testProject])}
+        onClick={() => handleAddProjectsToCart([testProject], "1")}
       >
         Add Project To Cart
       </button>
 
       <button
         data-testid="remove-project-from-cart"
-        onClick={() => handleRemoveProjectsFromCart([testProject])}
+        onClick={() => handleRemoveProjectsFromCart([testProject], "1")}
       >
         Remove Project From Cart
       </button>

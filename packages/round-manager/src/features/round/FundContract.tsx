@@ -12,13 +12,12 @@ import { ProgressStatus, Round } from "../api/types";
 import {
   getTxExplorerForContract,
   payoutTokens,
-  useTokenPrice,
 } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { classNames } from "common";
+import { classNames, useTokenPrice } from "common";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -120,7 +119,7 @@ export default function FundContract(props: {
   } = useBalance(tokenDetail);
 
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.coingeckoId
+    matchingFundPayoutToken?.redstoneTokenId
   );
 
   const matchingFunds =
@@ -138,8 +137,9 @@ export default function FundContract(props: {
   const amountLeftToFundInUSD =
     amountLeftToFund && amountLeftToFund * Number(data ?? 0);
 
-  const roundFeePercentage = props.round?.roundFeePercentage ?? 0;
-  const protocolFeePercentage = props.round?.protocolFeePercentage ?? 0;
+  // NOTE: round and protocol fee percentages are stored as decimals
+  const roundFeePercentage = (props.round?.roundFeePercentage ?? 0) * 100;
+  const protocolFeePercentage = (props.round?.protocolFeePercentage ?? 0) * 100;
   const combinedFees =
     ((roundFeePercentage + protocolFeePercentage) * matchingFunds) / 100;
   const contractBalance = ethers.utils.formatEther(
@@ -304,7 +304,7 @@ export default function FundContract(props: {
               </ReactTooltip>
             </span>
           </p>
-          <p className="text-sm">{props.round.protocolFeePercentage ?? 0}%</p>
+          <p className="text-sm">{protocolFeePercentage}%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="flex flex-row text-sm w-1/3">

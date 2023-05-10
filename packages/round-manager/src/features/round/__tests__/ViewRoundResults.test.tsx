@@ -15,16 +15,35 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
-import { ProgressStatus, Round } from "../../api/types";
+import { ProgressStatus } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-import { useRoundMatchingFunds } from "../../../hooks";
+import { useRound, useRoundMatchingFunds } from "../../../hooks";
+import { Round } from "../../api/types";
 
 jest.mock("../../common/Auth");
 jest.mock("../../api/round");
-jest.mock("wagmi");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+}));
+
+export const mockNetwork = {
+  chain: { id: 5, name: "Goerli" },
+  chains: [
+    { id: 10, name: "Optimism" },
+    { id: 5, name: "Goerli" },
+  ],
+};
+const mockSigner = {
+  getChainId: () => {
+    /* do nothing.*/
+  },
+};
+jest.mock("wagmi", () => ({
+  useNetwork: () => mockNetwork,
+  useSigner: () => ({ data: mockSigner }),
+  useDisconnect: jest.fn(),
+  useSwitchNetwork: jest.fn(),
 }));
 
 let mockRoundData: Round = makeRoundData();
@@ -36,16 +55,18 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("../../../hooks", () => ({
   ...jest.requireActual("../../../hooks"),
-  useRoundMatchingFunds: jest.fn(),
+  useRound: jest.fn(),
+  useRoundMatchingFunds: jest.fn(() => ({
+    data: [],
+    error: null,
+    loading: false,
+    mutate: jest.fn(),
+  })),
 }));
 
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
   ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
   useFetchMatchingDistributionFromContract: jest.fn(),
-}));
-
-jest.mock("../../../context/round/FinalizeRoundContext", () => ({
-  ...jest.requireActual("../../../context/round/FinalizeRoundContext"),
 }));
 
 jest.mock("../../common/Auth", () => ({
@@ -59,7 +80,11 @@ jest.mock("../../common/Auth", () => ({
         /* do nothing */
       },
     },
-    provider: { getNetwork: () => ({ chainId: "0" }) },
+    provider: {
+      network: {
+        chainId: 1,
+      },
+    },
   }),
 }));
 
@@ -86,6 +111,7 @@ describe("View Round Results before distribution data is finalized to contract",
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
         loading: false,
+        mutate: jest.fn(),
       }));
 
       (
@@ -102,11 +128,29 @@ describe("View Round Results before distribution data is finalized to contract",
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
 
+      (useRound as jest.Mock).mockReturnValue({
+        data: {
+          id: mockRoundData.id,
+          applicationsStartTime,
+          applicationsEndTime,
+          roundEndTime,
+          roundStartTime,
+          amountUSD: 10,
+          matchAmountUSD: 10,
+          votes: 1,
+          matchAmount: BigInt(10),
+          uniqueContributors: 1,
+          token: faker.finance.ethereumAddress(),
+        },
+        isLoading: false,
+      });
+
       const approvedProjects = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
         makeApprovedProjectData(),
       ];
+
       mockRoundData = makeRoundData({
         applicationsStartTime,
         applicationsEndTime,
@@ -114,6 +158,7 @@ describe("View Round Results before distribution data is finalized to contract",
         roundEndTime,
         approvedProjects,
       });
+
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
@@ -141,6 +186,7 @@ describe("View Round Results before distribution data is finalized to contract",
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
         loading: false,
+        mutate: jest.fn(),
       }));
 
       (
@@ -154,6 +200,27 @@ describe("View Round Results before distribution data is finalized to contract",
 
       const roundEndTime = faker.date.past();
       mockRoundData = makeRoundData({ roundEndTime });
+
+      const roundStartTime = faker.date.past(1, roundEndTime);
+      const applicationsEndTime = faker.date.past(1, roundStartTime);
+      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+
+      (useRound as jest.Mock).mockReturnValue({
+        data: {
+          id: mockRoundData.id,
+          applicationsStartTime,
+          applicationsEndTime,
+          roundEndTime,
+          roundStartTime,
+          amountUSD: 10,
+          matchAmountUSD: 10,
+          votes: 1,
+          matchAmount: BigInt(10),
+          uniqueContributors: 1,
+          token: faker.finance.ethereumAddress(),
+        },
+        isLoading: false,
+      });
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithFinalizeRoundContext(
@@ -176,12 +243,9 @@ describe("View Round Results before distribution data is finalized to contract",
     });
     it("displays the finalize button", async () => {
       const roundResultsTab = screen.getByTestId("round-results");
+
       fireEvent.click(roundResultsTab);
-      expect(
-        screen.getByRole("button", {
-          name: /Finalize Results/i,
-        })
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("finalize-results-button")).toBeInTheDocument();
     });
   });
 });
@@ -203,6 +267,7 @@ describe("View Round Results after distribution data is finalized to contract", 
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
+      mutate: jest.fn(),
     }));
 
     (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
@@ -221,6 +286,30 @@ describe("View Round Results after distribution data is finalized to contract", 
     const roundStartTime = faker.date.past(1, roundEndTime);
     const applicationsEndTime = faker.date.past(1, roundStartTime);
     const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+
+    (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
+      data: [makeQFDistribution(), makeQFDistribution()],
+      error: null,
+      loading: false,
+      mutate: jest.fn(),
+    }));
+
+    (useRound as jest.Mock).mockReturnValue({
+      data: {
+        id: mockRoundData.id,
+        applicationsStartTime,
+        applicationsEndTime,
+        roundEndTime,
+        roundStartTime,
+        amountUSD: 10,
+        matchAmountUSD: 10,
+        votes: 1,
+        matchAmount: BigInt(10),
+        uniqueContributors: 1,
+        token: faker.finance.ethereumAddress(),
+      },
+      isLoading: false,
+    });
 
     const approvedProjects = [
       makeApprovedProjectData(),

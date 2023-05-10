@@ -4,11 +4,7 @@ import {
   ProgressStatus,
   Web3Instance,
 } from "../../features/api/types";
-import React, {
-  createContext,
-  useContext,
-  useReducer,
-} from "react";
+import React, { createContext, useContext, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { saveToIPFS } from "../../features/api/ipfs";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -114,12 +110,10 @@ const _finalizeRound = async ({
   matchingJSON,
   signerOrProvider,
 }: _finalizeRoundParams) => {
-
   dispatch({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
   try {
-
     if (!matchingJSON) {
       throw new Error("matchingJSON is undefined");
     }
@@ -229,7 +223,7 @@ async function finalizeToContract(
     const encodedDistribution = encodeDistributionParameters(
       merkleRoot,
       distributionMetaPtr
-    )
+    );
 
     const { transactionBlockNumber } = await updateDistributionToContract({
       payoutStrategy,

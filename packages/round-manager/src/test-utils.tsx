@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
 import { Provider } from "react-redux";
@@ -33,7 +33,6 @@ import {
   RoundContext,
   RoundState,
 } from "./context/round/RoundContext";
-import { QFDistribution } from "./features/api/api";
 import {
   ApplicationStatus,
   ApprovedProject,
@@ -71,6 +70,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const protocolFeePercentage = 10000;
   return {
     id: faker.finance.ethereumAddress(),
+    chainId: 1,
     roundMetadata: {
       name: faker.company.name(),
       programContractAddress: faker.finance.ethereumAddress(),
@@ -105,10 +105,13 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 export const makeMatchingStatsData = (): MatchingStatsData => {
   return {
     projectName: faker.company.name(),
+    applicationId: faker.datatype.number().toString(),
     projectId: formatBytes32String(faker.company.name().slice(0, 31)),
     uniqueContributorsCount: faker.datatype.number(),
+    contributionsCount: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
     matchAmountInToken: parseEther(faker.datatype.number().toString()),
+    originalMatchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
   };
 };
@@ -130,6 +133,19 @@ export const makeApplication = (): GrantApplication => {
   };
 };
 
+export type QFDistribution = {
+  projectId: string;
+  matchAmountInUSD: number;
+  totalContributionsInUSD: number;
+  matchPoolPercentage: number;
+  matchAmountInToken: BigNumber;
+  projectPayoutAddress: string;
+  uniqueContributorsCount: number;
+  revisedMatch: bigint;
+  contributionsCount: number;
+  matched: bigint;
+  revisedContributionCount: number;
+};
 export const makeQFDistribution = (): QFDistribution => {
   return {
     projectId: faker.finance.ethereumAddress().toString(),
@@ -139,6 +155,10 @@ export const makeQFDistribution = (): QFDistribution => {
     matchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
     uniqueContributorsCount: faker.datatype.number(),
+    revisedMatch: BigInt(1),
+    contributionsCount: faker.datatype.number(),
+    matched: BigInt(1),
+    revisedContributionCount: faker.datatype.number(),
   };
 };
 

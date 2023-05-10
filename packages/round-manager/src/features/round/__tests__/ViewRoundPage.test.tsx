@@ -36,16 +36,25 @@ jest.mock("react-router-dom", () => ({
   useParams: jest.fn(),
 }));
 
-jest.mock("../../api/api", () => ({
-  ...jest.requireActual("../../api/api"),
-  useRoundMatchData: jest.fn(),
-}));
-
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
-    chain: {},
+    chain: {
+      name: "Ethereum",
+    },
     address: mockRoundData.operatorWallets![0],
-    provider: { getNetwork: () => ({ chainId: "0" }) },
+    signer: {
+      getChainId: () => {
+        /* do nothing */
+      },
+    },
+    provider: {
+      network: {
+        chainId: 1,
+      },
+      getNetwork: () => {
+        return { chainId: 1 };
+      },
+    },
   }),
 }));
 
@@ -233,6 +242,7 @@ describe("View Round", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           })
         )
       )

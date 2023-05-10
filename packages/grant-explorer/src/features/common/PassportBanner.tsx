@@ -1,5 +1,8 @@
-import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import { ArrowRightIcon, CheckBadgeIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowRightIcon,
+  CheckBadgeIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/24/solid";
 import { getUTCDateTime } from "common";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -89,9 +92,9 @@ export default function PassportBanner(props: {
   }, [address, isConnected]);
 
   const ViewScoreButton = () => (
-    <>
+    <div className="flex flex-row items-center mt-2 md:mt-0">
       <button
-        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
+        className="md:ml-3 font-medium text-sm underline md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -102,13 +105,13 @@ export default function PassportBanner(props: {
       <div className="pl-1">
         <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
       </div>
-    </>
+    </div>
   );
 
   const UpdateScoreButton = () => (
-    <>
+    <div className="flex flex-row items-center mt-2 md:mt-0">
       <button
-        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
+        className="md:ml-3 font-medium text-sm underline md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -119,13 +122,13 @@ export default function PassportBanner(props: {
       <div className="pl-1">
         <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
       </div>
-    </>
+    </div>
   );
 
   const CreatePassportButton = () => (
-    <>
+    <div className="flex flex-row items-center mt-2 md:mt-0">
       <button
-        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
+        className="md:ml-3 font-medium text-sm underline md:mt-0"
         data-testid="view-score-button"
         onClick={() =>
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
@@ -136,13 +139,13 @@ export default function PassportBanner(props: {
       <div className="pl-1">
         <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
       </div>
-    </>
+    </div>
   );
 
   const ConnectWalletButton = () => (
-    <>
+    <div className="flex flex-row items-center mt-2 md:mt-0">
       <button
-        className="md:ml-3 font-medium text-sm underline mt-2 md:mt-0"
+        className="flex md:ml-3 font-medium text-sm underline md:mt-0"
         onClick={() => {
           document
             .getElementById("connect-wallet-button")
@@ -156,12 +159,12 @@ export default function PassportBanner(props: {
       <div className="pl-1">
         <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
       </div>
-    </>
+    </div>
   );
 
   const AlertIcon = () => {
     return (
-      <div className="hidden md:block flex md:justify-center items-center h-7 w-7 relative text-white items-center rounded-full bg-yellow-400">
+      <div className="hidden md:block md:justify-center h-7 w-7 relative text-white items-center rounded-full bg-yellow-400">
         <ExclamationCircleIcon className="fill-yellow-400 stroke-yellow-100 h-4 w-4 relative text-white items-center rounded-full" />
       </div>
     );
@@ -170,13 +173,13 @@ export default function PassportBanner(props: {
   const bannerConfig = {
     [PassportState.NOT_CONNECTED]: {
       icon: (
-        <ExclamationCircleIcon className="fill-purple-500 stroke-purple-200 h-7 w-7 relative text-white items-center rounded-full" />
+        <ExclamationCircleIcon className="sm:flex fill-violet-400 stroke-violet-200 h-7 w-7 relative text-white items-center rounded-full" />
       ),
-      color: "bg-purple-200",
+      color: "bg-violet-100",
       testId: "wallet-not-connected",
       body: `Want to make sure your donations get matched? Verify your Gitcoin Passport by ${getUTCDateTime(
         props.round.roundEndTime
-      )}.`,
+      )}`,
       button: <ConnectWalletButton />,
     },
     [PassportState.MATCH_ELIGIBLE]: {
@@ -237,15 +240,19 @@ export default function PassportBanner(props: {
     <div className="relative top-16">
       <div className={bannerConfig[passportState].color}>
         <div className="max-w-full py-3 px-3 sm:px-6 lg:px-8 z-0">
-          <div className="flex flex-row flex-wrap items-center md:justify-center">
-            <div className="relative">{bannerConfig[passportState].icon}</div>
-            <span
-              data-testid={bannerConfig[passportState].testId}
-              className="font-medium text-sm"
-            >
-              {bannerConfig[passportState].body}
-            </span>
-            {bannerConfig[passportState].button}
+          <div className="flex flex-row justify-center items-center items-left">
+            <div className="flex mb-10 lg:mb-0 mr-2">
+              {bannerConfig[passportState].icon}
+            </div>
+            <div className="lg:flex">
+              <span
+                data-testid={bannerConfig[passportState].testId}
+                className="font-medium text-sm sm:flex sm:flex-col"
+              >
+                {bannerConfig[passportState].body}
+              </span>
+              {bannerConfig[passportState].button}
+            </div>
           </div>
         </div>
       </div>

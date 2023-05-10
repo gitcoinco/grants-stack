@@ -12,6 +12,7 @@ import {
   QFDonationProvider,
   useQFDonation,
 } from "../QFDonationContext";
+import { BigNumber } from "ethers";
 
 const mockWallet = {
   address: "0x0",
@@ -33,7 +34,7 @@ jest.mock("wagmi", () => ({
 
 const roundId = faker.finance.ethereumAddress();
 const donationToken = getPayoutTokenOptions("5")[0];
-const totalDonation = 10;
+const totalDonation = BigNumber.from(10);
 
 describe("<QFDonationProvider />", () => {
   beforeEach(() => {

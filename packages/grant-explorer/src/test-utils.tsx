@@ -7,10 +7,11 @@ import { MemoryRouter } from "react-router-dom";
 import { store } from "./app/store";
 import { CartProvider } from "./context/CartContext";
 import {
-  initialRoundState,
   RoundContext,
   RoundState,
+  initialRoundState,
 } from "./context/RoundContext";
+import { RoundMetadata } from "./features/api/round";
 import { RoundOverview } from "./features/api/rounds";
 import {
   ApplicationStatus,
@@ -19,7 +20,6 @@ import {
   Round,
 } from "./features/api/types";
 import history from "./history";
-import { RoundMetadata } from "./features/api/round";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -179,4 +179,35 @@ export const mockNetwork = {
     { id: 10, name: "Optimism" },
     { id: 5, name: "Goerli" },
   ],
+};
+
+export const setWindowDimensions = (width: number, height: number): void => {
+  Object.defineProperty(window, "innerWidth", {
+    writable: true,
+    configurable: true,
+    value: width,
+  });
+
+  Object.defineProperty(window, "innerHeight", {
+    writable: true,
+    configurable: true,
+    value: height,
+  });
+
+  window.dispatchEvent(new Event("resize"));
+};
+
+// deviceRenderer.ts
+export type DeviceType = "mobile" | "tablet" | "desktop";
+
+export const renderComponentsBasedOnDeviceSize = (): DeviceType => {
+  const deviceWidth = window.innerWidth;
+
+  if (deviceWidth <= 480) {
+    return "mobile";
+  } else if (deviceWidth > 480 && deviceWidth <= 1024) {
+    return "tablet";
+  } else {
+    return "desktop";
+  }
 };

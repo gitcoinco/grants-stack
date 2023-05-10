@@ -17,8 +17,8 @@ import {
   useSigner,
 } from "wagmi";
 import { useParams } from "react-router-dom";
-import { useTokenPrice } from "../../api/utils";
 import { faker } from "@faker-js/faker";
+import { useTokenPrice } from "common";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -42,12 +42,20 @@ jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
     chain: {},
     address: mockRoundData.operatorWallets![0],
-    provider: { getNetwork: () => ({ chainId: "0" }) },
+    provider: {
+      network: {
+        chainId: 1,
+      },
+    },
   }),
 }));
 
 jest.mock("../../api/utils", () => ({
   ...jest.requireActual("../../api/utils"),
+}));
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
   useTokenPrice: jest.fn(),
 }));
 

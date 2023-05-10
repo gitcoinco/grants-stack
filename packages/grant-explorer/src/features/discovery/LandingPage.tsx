@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { ReactComponent as LandingBannerLogo } from "../../assets/landing-banner.svg";
+import { lazy, Suspense, useEffect, useState } from "react";
+
+const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 import {
   RoundOverview,
   getActiveRounds,
@@ -104,7 +105,18 @@ const LandingPage = () => {
   return (
     <>
       <Navbar roundUrlPath={"/"} showWalletInteraction={false} />
-      <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
+      <Suspense
+        fallback={
+          <div
+            style={{
+              width: "100%",
+              height: "560px",
+            }}
+          />
+        }
+      >
+        <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
+      </Suspense>
       <div className="container px-4 md:px-0 md:mx-auto">
         <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
           Browse through active rounds

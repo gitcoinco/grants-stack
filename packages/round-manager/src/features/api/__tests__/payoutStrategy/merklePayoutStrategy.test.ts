@@ -20,23 +20,20 @@ jest.mock("../../utils", () => ({
   fetchFromIPFS: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
   useOutletContext: () => ({
     data: {},
   }),
 }));
 
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
   useState: jest.fn(),
   useEffect: jest.fn(),
-}))
+}));
 
-const paidProjects = [
-  makeQFDistribution(),
-  makeQFDistribution(),
-];
+const paidProjects = [makeQFDistribution(), makeQFDistribution()];
 
 const unProjects = [
   makeQFDistribution(),
@@ -44,7 +41,7 @@ const unProjects = [
   makeQFDistribution(),
 ];
 
-describe('merklePayoutStrategy', () => {
+describe("merklePayoutStrategy", () => {
   const setState = jest.fn();
 
   // clean up function
@@ -52,9 +49,9 @@ describe('merklePayoutStrategy', () => {
     (useStateMock as any).mockImplementation((init: any) => [init, setState]);
   });
 
-  describe.only('useGroupProjectsByPaymentStatus', () => {
-    it('SHOULD group projects into paid and unpaid arrays', () => {
-      const returnValue = {paid: [], unpaid: []};
+  describe.only("useGroupProjectsByPaymentStatus", () => {
+    it("SHOULD group projects into paid and unpaid arrays", () => {
+      const returnValue = { paid: [], unpaid: [] };
       const useStateSpy = jest.spyOn(React, "useState");
       useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
       useStateSpy.mockImplementationOnce(() => [paidProjects, setState]);
@@ -64,15 +61,18 @@ describe('merklePayoutStrategy', () => {
 
       const projects = [...paidProjects, ...unProjects];
       // TODO: Fix this test
-      (fetchProjectPaidInARound as any).mockImplementation(() => ({paidProjects}));
+      (fetchProjectPaidInARound as any).mockImplementation(() => ({
+        paidProjects,
+      }));
       (fetchMatchingDistribution as any).mockImplementation(() => ({
         distributionMetaPtr: "",
-        matchingDistribution: projects
+        matchingDistribution: projects,
       }));
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = useGroupProjectsByPaymentStatus(chainId, round.id!);
 
+      // FIXME: hans pls
       // expect(result.paid).toEqual(paidProjects);
       // expect(result.paid).toEqual(unProjects);
     });

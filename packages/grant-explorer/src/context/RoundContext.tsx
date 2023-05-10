@@ -36,7 +36,7 @@ type Dispatch = (action: Action) => void;
 
 export const initialRoundState: RoundState = {
   rounds: [],
-  isLoading: false,
+  isLoading: true,
 };
 
 export const RoundContext = createContext<
