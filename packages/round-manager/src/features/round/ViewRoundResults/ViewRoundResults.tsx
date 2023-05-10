@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef, useMemo } from "react";
+import { useCallback, useState, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -15,7 +15,7 @@ import {
   ProgressStep,
 } from "../../api/types";
 import { Match } from "allo-indexer-client";
-import { Spinner, LoadingRing } from "../../common/Spinner";
+import { Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
 import { useNetwork, useSigner } from "wagmi";
@@ -28,9 +28,9 @@ import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
 import { TransactionResponse } from "@ethersproject/providers";
 import { payoutTokens } from "../../api/utils";
-import { roundApplicationsToCSV } from "../../api/exports";
 
 type RevisedMatch = Match & {
+  revisedContributionCount: number;
   revisedMatch: bigint;
 };
 
@@ -49,13 +49,23 @@ const distributionOptions = [
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
 
-// this hook manages the state of the matching funds,
-// fetching revised matches and merging them with the original matches
-function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
+/** Manages the state of the matching funds,
+ * fetching revised matches and merging them with the original matches
+ */
+function useRevisedMatchingFunds(
+  roundId: string,
+  ignoreSaturation: boolean,
+  overridesFile?: File
+) {
   const originalMatches = useRoundMatchingFunds(roundId);
-  const revisedMatches = useRoundMatchingFunds(roundId, overridesFile);
+  const revisedMatches = useRoundMatchingFunds(
+    roundId,
+    ignoreSaturation,
+    overridesFile
+  );
 
-  const isRevised = Boolean(overridesFile) && !revisedMatches.isLoading;
+  const isRevised =
+    (Boolean(overridesFile) || ignoreSaturation) && !revisedMatches.isLoading;
 
   const error = revisedMatches.error || originalMatches.error;
   const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
@@ -65,27 +75,31 @@ function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
       return undefined;
     }
 
-    const revisedMatchesMap = new Map<string, Match>(
-      (revisedMatches?.data ?? []).map((match) => [match.applicationId, match])
-    );
+    const mergedMatchesMap: Record<string, RevisedMatch> = {};
 
-    const mergedMatches: RevisedMatch[] = originalMatches.data.flatMap(
-      (match) => {
-        const revisedMatch = revisedMatchesMap.get(match.applicationId);
+    // push original matches
+    for (const match of originalMatches.data) {
+      mergedMatchesMap[match.applicationId] = {
+        ...match,
+        revisedContributionCount: 0,
+        revisedMatch: BigInt(0),
+      };
+    }
 
-        if (revisedMatch) {
-          return [
-            {
-              ...match,
-              contributionsCount: revisedMatch.contributionsCount,
-              revisedMatch: revisedMatch.matched,
-            },
-          ];
-        }
+    // set revised match values
+    for (const match of revisedMatches.data) {
+      const originalMatch = mergedMatchesMap[match.applicationId];
 
-        return [];
+      if (originalMatch) {
+        mergedMatchesMap[match.applicationId] = {
+          ...originalMatch,
+          revisedContributionCount: match.contributionsCount,
+          revisedMatch: match.matched,
+        };
       }
-    );
+    }
+
+    const mergedMatches = Object.values(mergedMatchesMap);
 
     mergedMatches.sort((a, b) => {
       if (a.matched > b.matched) {
@@ -116,16 +130,22 @@ function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
 
 export default function ViewRoundResults() {
   const { chain } = useNetwork();
+  const { data: signer } = useSigner();
   const { id } = useParams();
   const navigate = useNavigate();
   const roundId = utils.getAddress(id as string);
+  const debugModeEnabled = useDebugMode();
+  const network = useNetwork();
+
+  const matchingTableRef = useRef<HTMLDivElement>(null);
   const [overridesFileDraft, setOverridesFileDraft] = useState<
     undefined | File
   >(undefined);
-  const [overridesFile, setOverridesFile] = useState<undefined | File>(
-    undefined
-  );
-  const matchingTableRef = useRef<HTMLDivElement>(null);
+  const [overridesFile, setOverridesFile] = useState<undefined | File>();
+
+  const [distributionOption, setDistributionOption] = useState<
+    "keep" | "scale"
+  >("keep");
 
   const {
     matches,
@@ -133,31 +153,42 @@ export default function ViewRoundResults() {
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
-  } = useRevisedMatchingFunds(roundId, overridesFile);
+  } = useRevisedMatchingFunds(
+    roundId,
+    distributionOption === "scale",
+    overridesFile
+  );
 
-  const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
     (id as string).toLowerCase()
   );
-  const { data: signer } = useSigner();
+
   const isReadyForPayout = Boolean(
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
   );
-  const network = useNetwork();
   const matchToken =
     round &&
     payoutTokens.find(
       (t) => t.address.toLowerCase() == round.token.toLowerCase()
     );
 
-  const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
-    useState(false);
+  function formatUnits(value: bigint) {
+    return `${Number(utils.formatUnits(value, matchToken?.decimal)).toFixed(
+      4
+    )} ${matchToken?.name}`;
+  }
 
-  const [distributionOption, setDistributionOption] = useState<
-    "keep" | "scale"
-  >("keep");
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
+
+  const sumOfMatches = useMemo(() => {
+    return (
+      matches?.reduce(
+        (acc: bigint, match) => acc + (match.revisedMatch ?? BigInt(0)),
+        BigInt(0)
+      ) ?? BigInt(0)
+    );
+  }, [matches]);
 
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
@@ -181,13 +212,15 @@ export default function ViewRoundResults() {
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      const matchingJson: MatchingStatsData[] = matches.map((match) => ({
-        uniqueContributorsCount: 0,
-        projectPayoutAddress: match.payoutAddress,
-        projectId: match.projectId,
-        matchPoolPercentage: 0,
-        matchAmountInToken: BigNumber.from(match.revisedMatch),
-      }));
+      const matchingJson: MatchingStatsData[] = matches.map(
+        (match: RevisedMatch) => ({
+          uniqueContributorsCount: 0,
+          projectPayoutAddress: match.payoutAddress,
+          projectId: match.projectId,
+          matchPoolPercentage: 0,
+          matchAmountInToken: BigNumber.from(match.revisedMatch),
+        })
+      );
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
 
@@ -232,13 +265,20 @@ export default function ViewRoundResults() {
     },
   ];
 
-  if (!chain || (isBeforeRoundEndDate && !debugModeEnabled)) {
+  if (isBeforeRoundEndDate && !debugModeEnabled) {
     return <NoInformationContent />;
   }
 
-  if (isLoadingRound) {
+  if (isLoadingRound || !round) {
     return <Spinner text="We're fetching the matching data." />;
   }
+
+  const roundSaturation =
+    Number(
+      ((sumOfMatches * BigInt(10000)) / round.matchAmount) * BigInt(10000)
+    ) / 1000000;
+
+  const disableRoundSaturationControls = roundSaturation >= 100;
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -276,7 +316,7 @@ export default function ViewRoundResults() {
               <div className="flex flex-col mt-4 w-min">
                 <a
                   role={"link"}
-                  href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/vote_coefficients`}
+                  href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${roundId}/vote_coefficients.csv`}
                   className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
                 >
                   <DownloadIcon className="h-5 w-5" />
@@ -421,15 +461,18 @@ export default function ViewRoundResults() {
                   Round Saturation
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`Current round saturation: ${-99}%`}
+                  {`Current round saturation: ${roundSaturation.toFixed(2)}%`}
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`$${0} out of the $${0} matching fund will be distributed to grantees.`}
+                  {`${formatUnits(sumOfMatches)} out of the ${formatUnits(
+                    round.matchAmount
+                  )} matching fund will be distributed to grantees.`}
                 </span>
               </div>
               <RadioGroup
                 value={distributionOption}
                 onChange={setDistributionOption}
+                disabled={disableRoundSaturationControls}
               >
                 <RadioGroup.Label className="sr-only">
                   Distribution options
@@ -440,7 +483,11 @@ export default function ViewRoundResults() {
                       key={option.value}
                       value={option.value}
                       className={() =>
-                        classNames("cursor-pointer flex items-center")
+                        classNames(
+                          "cursor-pointer flex items-center",
+                          disableRoundSaturationControls &&
+                            "opacity-50 cursor-not-allowed"
+                        )
                       }
                     >
                       {({ checked }) => (
@@ -535,6 +582,7 @@ export default function ViewRoundResults() {
                         </button>
                       )}
                       <button
+                        data-testid="finalize-results-button"
                         onClick={() => {
                           setWarningModalOpen(true);
                         }}
@@ -575,65 +623,7 @@ export default function ViewRoundResults() {
             </div>
           </Tab.Panel>
           <Tab.Panel>
-            <div className="text-sm leading-5 text-gray-400 text-left pb-4">
-              Download and use the data models provided to analyze your round
-              results in-depth.
-            </div>
-            <div className="text-sm leading-5 text-gray-500 font-semibold text-left mb-3 mt-2">
-              Round Generated Data
-            </div>
-            <div className="text-sm leading-5 text-gray-400 text-left">
-              Download the raw data for your round, which is separated into four
-              data tables: raw votes, projects, round, and prices.
-            </div>
-            <div className="pt-6">
-              <a
-                className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/votes`}
-              >
-                <span className="w-40">Raw Votes</span>
-                <DownloadIcon className="h-5 w-5" />
-              </a>
-              <button
-                className="flex items-center mb-4 text-left"
-                disabled={isExportingApplicationsCSV}
-                onClick={async (e) => {
-                  e.preventDefault();
-                  try {
-                    setIsExportingApplicationsCSV(true);
-                    round &&
-                      (await exportAndDownloadApplicationsCSV(
-                        round.id,
-                        chain.id,
-                        chain.name
-                      ));
-                  } finally {
-                    setIsExportingApplicationsCSV(false);
-                  }
-                }}
-              >
-                <span className="w-40">Projects</span>
-                {isExportingApplicationsCSV ? (
-                  <LoadingRing className="h-5 w-5 animate-spin" />
-                ) : (
-                  <DownloadIcon className="h-5 w-5" />
-                )}
-              </button>
-              <a
-                className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/round`}
-              >
-                <span className="w-40">Round</span>
-                <DownloadIcon className="h-5 w-5" />
-              </a>
-              <a
-                className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/prices`}
-              >
-                <span className="w-40">Prices</span>
-                <DownloadIcon className="h-5 w-5" />
-              </a>
-            </div>
+            <div>{/* raw round data content here */}</div>
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
@@ -782,18 +772,4 @@ export function downloadFile(data: BlobPart, filename: string): void {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
-
-async function exportAndDownloadApplicationsCSV(
-  roundId: string,
-  chainId: number,
-  chainName: string
-) {
-  const csv = await roundApplicationsToCSV(roundId, chainId, chainName, true);
-  // create a download link and click it
-  const blob = new Blob([csv], {
-    type: "text/csv;charset=utf-8;",
-  });
-
-  return downloadFile(blob, `projects-${roundId}.csv`);
 }
