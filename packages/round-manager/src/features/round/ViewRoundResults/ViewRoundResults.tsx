@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef, useEffect, useMemo } from "react";
+import React, { useCallback, useState, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BigNumber, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
@@ -119,19 +119,13 @@ export default function ViewRoundResults() {
   const { id } = useParams();
   const navigate = useNavigate();
   const roundId = utils.getAddress(id as string);
-  const matchingTableRef = useRef<HTMLDivElement>(null);
   const [overridesFileDraft, setOverridesFileDraft] = useState<
     undefined | File
   >(undefined);
   const [overridesFile, setOverridesFile] = useState<undefined | File>(
     undefined
   );
-  const [overrideSaturation, setOverrideSaturation] = useState<boolean>(false);
-  const overridesJSON = JSON.stringify({
-    overrideSaturation,
-    overridesFile,
-  });
-  const overridesBlob = new Blob([overridesJSON], { type: 'application/json' });
+  const matchingTableRef = useRef<HTMLDivElement>(null);
 
   const {
     matches,
@@ -139,9 +133,9 @@ export default function ViewRoundResults() {
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
-  } = useRevisedMatchingFunds(roundId, overridesFile); // TODO: This should be the overrides JSON blob of both saturation and overrides file
-  const debugModeEnabled = useDebugMode();
+  } = useRevisedMatchingFunds(roundId, overridesFile);
 
+  const debugModeEnabled = useDebugMode();
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
     (id as string).toLowerCase()
@@ -163,28 +157,6 @@ export default function ViewRoundResults() {
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
   >("keep");
-
-  const [roundSaturation, setRoundSaturation] = useState<number>(0);
-  const [sumTotalMatch, setSumTotalMatch] = useState<number>(0);
-
-  useEffect(() => {
-    if (round && matches) {
-      const sumTotalMatch = matches?.reduce(
-        (acc, match) => acc + Number(match.matchedUSD),
-        0
-      );
-      setSumTotalMatch(sumTotalMatch);
-      setRoundSaturation(sumTotalMatch / round.matchAmountUSD);
-    }
-  }, [round, matches]);
-
-
-  useEffect(() => {
-    // when distribution option is keep -> ignoreSaturation=true else false
-    setOverrideSaturation(distributionOption === "keep");
-  }, [distributionOption]);
-
-
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
   const [warningModalOpen, setWarningModalOpen] = useState(false);
@@ -449,16 +421,15 @@ export default function ViewRoundResults() {
                   Round Saturation
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`Current round saturation: ${roundSaturation * 100}%`}
+                  {`Current round saturation: ${-99}%`}
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`$${sumTotalMatch} out of the $${round?.matchAmountUSD} matching fund will be distributed to grantees.`}
+                  {`$${0} out of the $${0} matching fund will be distributed to grantees.`}
                 </span>
               </div>
               <RadioGroup
                 value={distributionOption}
                 onChange={setDistributionOption}
-                disabled={roundSaturation >= 1}
               >
                 <RadioGroup.Label className="sr-only">
                   Distribution options
@@ -469,9 +440,7 @@ export default function ViewRoundResults() {
                       key={option.value}
                       value={option.value}
                       className={() =>
-                        classNames("cursor-pointer flex items-center",
-                          roundSaturation >= 1 && "opacity-50 cursor-not-allowed"
-                        )
+                        classNames("cursor-pointer flex items-center")
                       }
                     >
                       {({ checked }) => (
