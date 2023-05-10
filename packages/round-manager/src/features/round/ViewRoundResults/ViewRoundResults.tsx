@@ -127,17 +127,19 @@ export default function ViewRoundResults() {
     undefined
   );
   const [overrideSaturation, setOverrideSaturation] = useState<boolean>(false);
+  const overridesJSON = JSON.stringify({
+    overrideSaturation,
+    overridesFile,
+  });
+  const overridesBlob = new Blob([overridesJSON], { type: 'application/json' });
+
   const {
     matches,
     isRevised: areMatchingFundsRevised,
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
-  } = useRevisedMatchingFunds(
-    roundId,
-    { query: { ignoreSaturation: overrideSaturation } },
-    overridesFile
-  );
+  } = useRevisedMatchingFunds(roundId, overridesFile); // TODO: This should be the overrides JSON blob of both saturation and overrides file
   const debugModeEnabled = useDebugMode();
 
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
@@ -168,18 +170,20 @@ export default function ViewRoundResults() {
   useEffect(() => {
     if (round && matches) {
       const sumTotalMatch = matches?.reduce(
-        (acc: number, match: Match) => acc + Number(match.matchedUSD),
+        (acc, match) => acc + Number(match.matchedUSD),
         0
       );
       setSumTotalMatch(sumTotalMatch);
       setRoundSaturation(sumTotalMatch / round.matchAmountUSD);
-      setOverrideSaturation(distributionOption === "keep");
     }
-  }, [round, matches, distributionOption]);
+  }, [round, matches]);
+
 
   useEffect(() => {
-    mutateMatchingFunds();
-  }, [distributionOption, mutateMatchingFunds]);
+    // when distribution option is keep -> ignoreSaturation=true else false
+    setOverrideSaturation(distributionOption === "keep");
+  }, [distributionOption]);
+
 
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 
@@ -205,7 +209,7 @@ export default function ViewRoundResults() {
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      const matchingJson: MatchingStatsData[] = matches.map((match: Match) => ({
+      const matchingJson: MatchingStatsData[] = matches.map((match) => ({
         uniqueContributorsCount: 0,
         projectPayoutAddress: match.payoutAddress,
         projectId: match.projectId,

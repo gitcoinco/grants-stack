@@ -26,10 +26,10 @@ export function useAlloIndexerClient(): Client {
   }, [chain.id]);
 }
 
-export function useRoundMatchingFunds(roundId: string, params?: any, overrides?: Blob) {
+export function useRoundMatchingFunds(roundId: string, overrides?: Blob) {
   const client = useAlloIndexerClient();
   return useSWR([roundId, "/matches", overrides], ([roundId]) => {
-    return client.getRoundMatchingFunds(roundId, params, overrides);
+    return client.getRoundMatchingFunds(roundId, overrides);
   });
 }
 
