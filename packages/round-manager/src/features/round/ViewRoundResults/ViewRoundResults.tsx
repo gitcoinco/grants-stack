@@ -270,7 +270,7 @@ export default function ViewRoundResults() {
     },
   ];
 
-  if (isBeforeRoundEndDate && !debugModeEnabled) {
+  if (!chain || (isBeforeRoundEndDate && !debugModeEnabled)) {
     return <NoInformationContent />;
   }
 
@@ -321,7 +321,7 @@ export default function ViewRoundResults() {
               <div className="flex flex-col mt-4 w-min">
                 <a
                   role={"link"}
-                  href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${roundId}/vote_coefficients.csv`}
+                  href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/vote_coefficients`}
                   className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
                 >
                   <DownloadIcon className="h-5 w-5" />
