@@ -356,7 +356,9 @@ export default function ViewRoundResults() {
         projectPayoutAddress: match.payoutAddress,
         applicationId: match.applicationId,
         projectId: match.projectId,
-        matchPoolPercentage: 0,
+        matchPoolPercentage:
+          Number((BigInt(1000000) * match.revisedMatch) / round.matchAmount) /
+          1000000,
         projectName: match.projectName,
         matchAmountInToken: BigNumber.from(match.revisedMatch),
         originalMatchAmountInToken: BigNumber.from(match.matched),
@@ -562,6 +564,7 @@ export default function ViewRoundResults() {
                                     (BigInt(1000000) * match.revisedMatch) /
                                       round.matchAmount
                                   ) / 10000;
+
                                 return (
                                   <tr key={match.applicationId}>
                                     <td className="text-sm leading-5 py-2 pr-2 text-gray-400 text-left text-ellipsis overflow-hidden whitespace-nowrap">
