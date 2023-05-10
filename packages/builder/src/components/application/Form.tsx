@@ -2,7 +2,6 @@ import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import {
-  BoltIcon,
   ExclamationTriangleIcon,
   GlobeAltIcon,
   InformationCircleIcon,
@@ -38,7 +37,11 @@ import {
   RoundApplicationMetadata,
 } from "../../types/roundApplication";
 import { getProjectURIComponents } from "../../utils/utils";
-import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
+import {
+  getNetworkIcon,
+  getPayoutIcon,
+  networkPrettyName,
+} from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
 import ErrorModal from "../base/ErrorModal";
@@ -98,8 +101,9 @@ function AboutProject(props: {
   projectToRender: Metadata;
   questions: RoundApplicationQuestion[];
   answers: RoundApplicationAnswers;
+  chainId: number;
 }) {
-  const { projectToRender, answers, questions } = props;
+  const { projectToRender, answers, questions, chainId } = props;
 
   const { website, projectTwitter, projectGithub, userGithub, credentials } =
     projectToRender;
@@ -127,7 +131,13 @@ function AboutProject(props: {
     <div className="grid grid-cols-1 sm:grid-cols-2 pt-2 pb-6">
       {recipient && (
         <span className="flex items-center mt-4 gap-1">
-          <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <div className="w-5 h-5 rounded-full overflow-hidden">
+            <img
+              src={getPayoutIcon(chainId)}
+              alt="circle"
+              className="w-full h-full object-cover"
+            />
+          </div>
           <DetailSummary
             text={`${
               ensName || `${recipient.slice(0, 6)}...${recipient.slice(-4)}`
@@ -221,6 +231,7 @@ function FullPreview(props: {
   handleSubmitApplication: Function;
   setPreview: Function;
   disableSubmit: boolean;
+  chainId: number;
 }) {
   const {
     project,
@@ -229,6 +240,7 @@ function FullPreview(props: {
     setPreview,
     handleSubmitApplication,
     disableSubmit,
+    chainId,
   } = props;
   const ipfsPrefix = `${process.env.REACT_APP_PINATA_GATEWAY!}/ipfs/`;
 
@@ -279,6 +291,7 @@ function FullPreview(props: {
               projectToRender={project}
               questions={questions}
               answers={answers}
+              chainId={chainId}
             />
           </div>
           <div>
@@ -645,6 +658,7 @@ export default function Form({
           setPreview={setPreview}
           handleSubmitApplication={handleSubmitApplication}
           disableSubmit={disableSubmit}
+          chainId={chainInfo?.id || 1}
         />
       )}
       <div
