@@ -28,6 +28,7 @@ import {
   SupportTypeDropdown,
   supportTypes,
 } from "./RoundDetailForm";
+import _ from "lodash";
 
 const ValidationSchema = RoundValidationSchema.shape({
   // todo:
@@ -588,7 +589,7 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                   defaultValue={`${getUTCDate(
-                    props.editedRound.applicationsStartTime ??
+                    props.editedRound?.applicationsStartTime ??
                       round.applicationsStartTime
                   )} ${getUTCTime(round.applicationsStartTime)}`}
                   disabled={!props.editMode}
@@ -644,7 +645,7 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                   defaultValue={`${getUTCDate(
-                    props.editedRound.applicationsEndTime ??
+                    props.editedRound?.applicationsEndTime ??
                       round.applicationsEndTime
                   )} ${getUTCTime(round.applicationsEndTime)}`}
                   disabled={!props.editMode}
@@ -701,7 +702,7 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                   defaultValue={`${getUTCDate(
-                    props.editedRound.roundStartTime ?? round.roundStartTime
+                    props.editedRound?.roundStartTime ?? round.roundStartTime
                   )} ${getUTCTime(round.roundStartTime)}`}
                   disabled={!props.editMode}
                 />
@@ -756,7 +757,7 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                   defaultValue={`${getUTCDate(round.roundEndTime)} ${getUTCTime(
-                    props.editedRound.roundEndTime ?? round.roundEndTime
+                    props.editedRound?.roundEndTime ?? round.roundEndTime
                   )}`}
                   disabled={!props.editMode}
                 />
