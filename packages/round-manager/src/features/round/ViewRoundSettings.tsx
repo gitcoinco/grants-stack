@@ -41,7 +41,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [editMode, setEditMode] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const [existingRound] = useState<Round>({ ...round! });
-  const [editedRound, setEditedRound] = useState<Round | undefined>(undefined);
+  const [editedRound, setEditedRound] = useState<Round | undefined>({
+    ...round!,
+  });
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -60,10 +62,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
   });
 
   const submit: SubmitHandler<Round> = async (values: Round) => {
-    // todo: trigger confirm modal
-    // todo: trigger progress modal
-    // todo: update metadata pointer in IPFS call
     // todo: categorize tx's
+    // todo: update metadata pointer in IPFS call
     // todo: send tx's
     const data = _.merge(round, values);
     console.log("submit values merged (prev, new)", {
@@ -100,7 +100,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     } catch (e) {
       console.log("error", e);
     }
-  }
+  };
 
   const onUpdateRound = () => {
     setIsConfirmationModalOpen(true);
@@ -325,7 +325,7 @@ function DetailsPage(props: {
                     {...props.register("roundMetadata.name")}
                     type="text"
                     className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                    defaultValue={round.roundMetadata.name}
+                    defaultValue={props.editedRound?.roundMetadata.name}
                     disabled={!props.editMode}
                     data-testid={"round-name-input"}
                     onChange={(e) => {
@@ -384,7 +384,9 @@ function DetailsPage(props: {
               <input
                 type="text"
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                defaultValue={round.roundMetadata.eligibility?.description}
+                defaultValue={
+                  props.editedRound?.roundMetadata.eligibility?.description
+                }
                 disabled={!props.editMode}
                 onChange={(e) => {
                   field.onChange(e);
@@ -503,27 +505,78 @@ function DetailsPage(props: {
         <span className="mt-8 inline-flex text-sm text-gray-600 mb-8">
           What requirements do you have for applicants?
         </span>
-        {round.roundMetadata.eligibility?.requirements?.map((req, i) => (
-          <div key={i} className="grid grid-cols-1 grid-rows-1 gap-4 mb-4">
-            <div>
-              <div
-                className={
-                  "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
-                }
-              >
-                Requirement {i + 1}
+        {props.editedRound?.roundMetadata.eligibility?.requirements?.map(
+          (req, i) => (
+            <div key={i} className="grid grid-cols-1 grid-rows-1 gap-4 mb-4">
+              <div>
+                <div
+                  className={
+                    "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+                  }
+                >
+                  Requirement {i + 1}
+                </div>
+                <div className={"leading-8 font-normal text-grey-400"}>
+                  <Controller
+                    control={props.control}
+                    name={`roundMetadata.eligibility.requirements.${i}.requirement`}
+                    render={({ field }) => (
+                      <input
+                        type="text"
+                        className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                        defaultValue={req.requirement}
+                        disabled={!props.editMode}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          props.setEditedRound({
+                            ...props.editedRound,
+                            roundMetadata: {
+                              ...props.editedRound?.roundMetadata,
+                              eligibility: {
+                                ...props.editedRound?.roundMetadata.eligibility,
+                                requirements: [
+                                  ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
+                                    0,
+                                    i
+                                  ) || []),
+                                  {
+                                    requirement: e.target.value,
+                                  },
+                                  ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
+                                    i + 1
+                                  ) || []),
+                                ],
+                                description:
+                                  props.editedRound?.roundMetadata.eligibility
+                                    ?.description || "",
+                              },
+                            },
+                          });
+                        }}
+                      />
+                    )}
+                  />
+                </div>
               </div>
-              <div className={"leading-8 font-normal text-grey-400"}>
-                <input
-                  type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                  defaultValue={req.requirement}
-                  disabled={!props.editMode}
-                />
-              </div>
+              {props.errors.roundMetadata && (
+                <p
+                  className="text-xs text-pink-500"
+                  data-testid="application-end-date-error"
+                >
+                  {props.errors.roundMetadata?.eligibility?.requirements.map(
+                    (err: any, i: number) => {
+                      // now what?
+                      console.log("error with requirements", {
+                        errror: err,
+                        index: i,
+                      });
+                    }
+                  )}
+                </p>
+              )}
             </div>
-          </div>
-        ))}
+          )
+        )}
       </form>
     </div>
   );
