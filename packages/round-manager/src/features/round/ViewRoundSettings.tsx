@@ -134,6 +134,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   } = useForm<Round>({
     defaultValues: {
       ...round,
+      roundMetadata: round?.roundMetadata,
     },
     resolver: yupResolver(ValidationSchema),
   });
@@ -180,7 +181,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
   };
 
   const onUpdateRound = () => {
-    setIsConfirmationModalOpen(true);
+    handleSubmit(submit(editedRound as Round));
+    // setIsConfirmationModalOpen(true);
   };
 
   // todo: update number of transactions based on actual number of transactions.
