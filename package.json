@@ -29,6 +29,7 @@
     "api-build": "turbo run build --filter=api",
     "api-test": "turbo run test --filter=api",
     "api-start": "pnpm --filter api run start",
+    "api-gen": "pnpm --filter api run prisma:generate",
     "lint-staged": "lint-staged",
     "lint:builder": "pnpm --filter=builder run lint"
   },

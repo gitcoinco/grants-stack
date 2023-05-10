@@ -30,6 +30,15 @@ import {
 } from "common";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
+import { ReactComponent as BookmarkIcon } from "../../assets/icons/bookmark.svg";
+import useCollections from '../collection/useCollections';
+import { Tab } from "@headlessui/react";
+import AllCollectionsView from "../collection/AllCollections";
+import { getAllCollectionsForRound } from "../api/collections";
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
+}
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -122,6 +131,8 @@ function AfterRoundStart(props: {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const [collections, setCollections] = useState<string[]>([])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -140,6 +151,10 @@ function AfterRoundStart(props: {
     }
   });
 
+  useEffect(() => {
+    setCollections(getAllCollectionsForRound(`${chainId}:${roundId}`))
+  }, [chainId, roundId])
+
   const filterProjectsByTitle = (query: string) => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
@@ -156,7 +171,7 @@ function AfterRoundStart(props: {
           .toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         project.projectMetadata.title.toLocaleLowerCase() !==
-          query.toLocaleLowerCase()
+        query.toLocaleLowerCase()
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setProjects([...exactMatches!, ...nonExactMatches!]);
@@ -167,6 +182,11 @@ function AfterRoundStart(props: {
     payoutTokens.filter(
       (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
     )[0].name;
+
+  const tabs = [
+    { title: `All Projects (${projects ? projects.length : 0})`, key: 'projects' },
+    { title: `My Collections (${collections ? collections.length : 0})`, key: 'collections' }
+  ]
 
   return (
     <>
@@ -215,41 +235,69 @@ function AfterRoundStart(props: {
             {round.roundMetadata?.eligibility?.description}
           </p>
           <hr className="mt-4 mb-8" />
-          <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
-            <p className="text-2xl mb-4">
-              All Projects ({projects ? projects.length : 0})
-            </p>
-            <div className="relative">
-              <Search className="absolute h-4 w-4 mt-3 ml-3" />
-              <Input
-                className="w-full lg:w-64 h-8 rounded-full pl-10"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+          <Tab.Group onChange={(index) => setActiveTab(index)}>
+            <div className="flex flex-col lg:flex-row mb-2 w-full justify-between items-center">
+              <Tab.List className="flex space-x-1 rounded-xl bg-gray-400/20 p-1">
+                {tabs.map((tab) => <Tab
+                  key={tab.key}
+                  className={({ selected }) =>
+                    classNames(
+                      'w-full rounded-lg py-2.5 text-md font-medium leading-5',
+                      'ring-white ring-opacity-60 ring-offset-2 ring-offset-gray-800 focus:outline-none focus:ring-2',
+                      selected
+                        ? 'bg-white shadow'
+                        : 'text-gray-800 hover:bg-white/[0.12] hover:text-gray-600'
+                    )
+                  }
+                >
+                  <div className="whitespace-nowrap mx-6">{tab.title}</div>
+                </Tab>)}
+              </Tab.List>
+              {activeTab === 0 && <div className="relative">
+                <Search className="absolute h-4 w-4 mt-3 ml-3" />
+                <Input
+                  className="w-full lg:w-64 h-8 rounded-full pl-10"
+                  type="text"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>}
             </div>
-          </div>
-          {projects && (
-            <ProjectList
-              projects={projects}
-              roundRoutePath={`/round/${chainId}/${roundId}`}
-              isBeforeRoundEndDate={props.isBeforeRoundEndDate}
-            />
-          )}
+
+            <div className="w-full mt-4">
+              <Tab.Panel
+                key="0"
+              >
+                {projects && (
+                  <ProjectList
+                    projects={projects}
+                    roundRoutePath={`/round/${chainId}/${roundId}`}
+                    isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+                    canUseCollections
+                  />
+                )}
+              </Tab.Panel>
+              <Tab.Panel>
+                <AllCollectionsView projects={projects} />
+              </Tab.Panel>
+            </div>
+          </Tab.Group>
         </main>
         <Footer />
-      </div>
+      </div >
     </>
   );
 }
 
-const ProjectList = (props: {
+export const ProjectList = (props: {
   projects: Project[];
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
+  canUseCollections?: boolean
 }): JSX.Element => {
   const { projects, roundRoutePath } = props;
+  const { setActiveProject, renderModal } = useCollections();
 
   return (
     <CardsContainer>
@@ -260,18 +308,21 @@ const ProjectList = (props: {
             project={project}
             roundRoutePath={roundRoutePath}
             isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+            addToCollection={props.canUseCollections ? () => setActiveProject(project) : undefined}
           />
         );
       })}
+      {props.canUseCollections && renderModal()}
     </CardsContainer>
   );
 };
 
-function ProjectCard(props: {
+export const ProjectCard = (props: {
   project: Project;
   roundRoutePath: string;
+  addToCollection?: () => void;
   isBeforeRoundEndDate?: boolean;
-}) {
+}) => {
   const { project, roundRoutePath } = props;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
@@ -284,6 +335,8 @@ function ProjectCard(props: {
       cartProject.grantApplicationId === project.grantApplicationId
   );
 
+  const isAlreadyInCollection = false;
+
   return (
     <BasicCard className="relative" data-testid="project-card">
       <Link
@@ -291,6 +344,15 @@ function ProjectCard(props: {
         data-testid="project-detail-link"
       >
         <CardHeader>
+          {props.addToCollection && <div className={`inline-flex absolute right-2 top-3 ${isAlreadyInCollection ? "text-red-600" : "text-gray-200"}`}>
+            <BookmarkIcon fill="currentColor" aria-role="button" onClick={async (e) => {
+              e.preventDefault()
+              e.stopPropagation()
+
+              // handle bookmarking here
+              props.addToCollection && props.addToCollection()
+            }} />
+          </div>}
           <ProjectBanner
             projectMetadata={project.projectMetadata}
             classNameOverride={
