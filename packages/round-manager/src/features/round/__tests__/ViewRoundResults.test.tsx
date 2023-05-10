@@ -57,12 +57,7 @@ jest.mock("react-router-dom", () => ({
 jest.mock("../../../hooks", () => ({
   ...jest.requireActual("../../../hooks"),
   useRound: jest.fn(),
-  useRoundMatchingFunds: jest.fn(() => ({
-    data: [],
-    error: null,
-    loading: false,
-    mutate: jest.fn(), 
-  })),
+  useRoundMatchingFunds: jest.fn(),
 }));
 
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
@@ -111,8 +106,7 @@ describe("View Round Results before distribution data is finalized to contract",
       (useRoundMatchingFunds as jest.Mock).mockImplementation(() => ({
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
-        loading: false, 
-        mutate: jest.fn(), 
+        loading: false,
       }));
 
       (
@@ -183,7 +177,6 @@ describe("View Round Results before distribution data is finalized to contract",
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
         loading: false,
-        mutate: jest.fn(), 
       }));
 
       (
@@ -264,7 +257,6 @@ describe("View Round Results after distribution data is finalized to contract", 
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
       loading: false,
-      mutate: jest.fn(), 
     }));
 
     (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
