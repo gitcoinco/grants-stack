@@ -65,8 +65,7 @@ function useRevisedMatchingFunds(
   const originalMatches = useRoundMatchingFunds(roundId);
   const revisedMatches = useRoundMatchingFunds(roundId, params, overridesFile);
 
-  const isRevised =
-    (Boolean(overridesFile) || params) && !revisedMatches.isLoading;
+  const isRevised = Boolean(overridesFile) && !revisedMatches.isLoading;
 
   const error = revisedMatches.error || originalMatches.error;
   const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
@@ -142,7 +141,11 @@ export default function ViewRoundResults() {
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: mutateMatchingFunds,
-  } = useRevisedMatchingFunds(roundId, overrideSaturation, overridesFile);
+  } = useRevisedMatchingFunds(
+    roundId,
+    { query: { ignoreSaturation: overrideSaturation } },
+    overridesFile
+  );
   const debugModeEnabled = useDebugMode();
 
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
@@ -184,7 +187,7 @@ export default function ViewRoundResults() {
 
   useEffect(() => {
     mutateMatchingFunds();
-  }, [distributionOption, mutateMatchingFunds]);
+  }, [distributionOption]);
 
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
 

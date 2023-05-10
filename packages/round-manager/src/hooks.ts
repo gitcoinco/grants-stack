@@ -34,8 +34,7 @@ export function useRoundMatchingFunds(
   overrides?: Blob
 ) {
   const client = useAlloIndexerClient();
-  return useSWR([roundId, "/matches", overrides, params], ([roundId]) => {
-    console.log("hook called", params);
+  return useSWR([roundId, "/matches", overrides], ([roundId]) => {
     return client.getRoundMatchingFunds(roundId, overrides, params);
   });
 }
