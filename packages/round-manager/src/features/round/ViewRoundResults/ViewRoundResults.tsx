@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useState, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BigNumber, utils } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
 import {
@@ -32,6 +32,10 @@ import { useRoundById } from "../../../context/round/RoundContext";
 import { TransactionResponse } from "@ethersproject/providers";
 import { payoutTokens } from "../../api/utils";
 import { roundApplicationsToCSV } from "../../api/exports";
+import {
+  merklePayoutStrategyImplementationContract,
+  roundImplementationContract,
+} from "../../api/contracts";
 
 type RevisedMatch = Match & {
   revisedContributionCount: number;
@@ -177,6 +181,45 @@ export default function ViewRoundResults() {
       (t) => t.address.toLowerCase() == round.token.toLowerCase()
     );
 
+  // fetch distributionMetaPtr
+  // TEMPRORARY MOVE INTO MATCHING FUNDS HOOK
+  (async () => {
+    if (!signer) {
+      return;
+    }
+
+    const roundImplementation = new ethers.Contract(
+      roundId,
+      roundImplementationContract.abi,
+      signer
+    );
+
+    const filter =
+      roundImplementation.filters.PayFeeAndEscrowFundsToPayoutContract();
+
+    const payoutEvents = await roundImplementation.provider.getLogs({
+      ...filter,
+      fromBlock: 0,
+      toBlock: "latest",
+    });
+
+    if (payoutEvents.length > 0) {
+      const payoutStrategyAddress = await roundImplementation.payoutStrategy();
+
+      const payoutStrategy = new ethers.Contract(
+        roundId,
+        merklePayoutStrategyImplementationContract.abi,
+        signer
+      );
+
+      const distributionMetaPtr = await payoutStrategy.distributionMetaPtr();
+
+      console.log("metaPtr", distributionMetaPtr);
+    }
+
+    console.log(event);
+  })();
+
   const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
     useState(false);
 
@@ -219,15 +262,16 @@ export default function ViewRoundResults() {
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      const matchingJson: MatchingStatsData[] = matches.map(
-        (match: RevisedMatch) => ({
-          uniqueContributorsCount: 0,
-          projectPayoutAddress: match.payoutAddress,
-          projectId: match.projectId,
-          matchPoolPercentage: 0,
-          matchAmountInToken: BigNumber.from(match.revisedMatch),
-        })
-      );
+      const matchingJson: MatchingStatsData[] = matches.map((match) => ({
+        uniqueContributorsCount: 0,
+        contributionsCount: match.contributionsCount,
+        projectPayoutAddress: match.payoutAddress,
+        projectId: match.projectId,
+        projectName: match.projectName,
+        matchPoolPercentage: 0,
+        matchAmountInToken: BigNumber.from(match.revisedMatch),
+        originalMatchAmountInToken: BigNumber.from(match.matched),
+      }));
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
 

@@ -107,8 +107,10 @@ export const makeMatchingStatsData = (): MatchingStatsData => {
     projectName: faker.company.name(),
     projectId: formatBytes32String(faker.company.name().slice(0, 31)),
     uniqueContributorsCount: faker.datatype.number(),
+    contributionsCount: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
     matchAmountInToken: parseEther(faker.datatype.number().toString()),
+    originalMatchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
   };
 };

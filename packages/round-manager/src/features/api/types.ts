@@ -240,9 +240,11 @@ export type MatchingStatsData = {
   index?: number;
   projectName?: string;
   uniqueContributorsCount: number;
+  contributionsCount: number;
   matchPoolPercentage: number;
   projectId: string;
   matchAmountInToken: BigNumber;
+  originalMatchAmountInToken: BigNumber;
   projectPayoutAddress: string;
   status?: string;
   hash?: string;
