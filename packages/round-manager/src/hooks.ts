@@ -26,7 +26,7 @@ export function useAlloIndexerClient(): Client {
   }, [chain.id]);
 }
 
-export function useRoundMatchingFunds(roundId: string, params?: {query: string | boolean}, overrides?: Blob) {
+export function useRoundMatchingFunds(roundId: string, params?: any, overrides?: Blob) {
   const client = useAlloIndexerClient();
   return useSWR([roundId, "/matches", overrides], ([roundId]) => {
     return client.getRoundMatchingFunds(roundId, params, overrides);
