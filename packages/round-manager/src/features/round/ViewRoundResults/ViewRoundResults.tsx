@@ -117,8 +117,6 @@ async function fetchFinalizedMatches(
       };
     });
 
-    console.log(distributionMatches, matches);
-
     return {
       readyForPayoutTransactionHash,
       matches,
@@ -143,14 +141,21 @@ function useRevisedMatchingFunds(
     ignoreSaturation,
     overridesFile
   );
+  const [finalizedMatchesLoading, setFinalizedMatchesLoading] =
+    useState<boolean>(false);
   const [finalizedMatches, setFinalizedMatches] = useState<
     FinalizedMatches | undefined
   >(undefined);
 
   async function reloadFinalizedMatches() {
     if (!signer) return;
-    const res = await fetchFinalizedMatches(roundId, signer);
-    setFinalizedMatches(res);
+    try {
+      setFinalizedMatchesLoading(true);
+      const res = await fetchFinalizedMatches(roundId, signer);
+      setFinalizedMatches(res);
+    } finally {
+      setFinalizedMatchesLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -165,11 +170,16 @@ function useRevisedMatchingFunds(
     async function load() {
       if (!signer) return;
 
-      const res = await fetchFinalizedMatches(roundId, signer);
-      if (!active) {
-        return;
+      try {
+        setFinalizedMatchesLoading(true);
+        const res = await fetchFinalizedMatches(roundId, signer);
+        setFinalizedMatches(res);
+        if (!active) {
+          return;
+        }
+      } finally {
+        setFinalizedMatchesLoading(false);
       }
-      setFinalizedMatches(res);
     }
   }, [signer, roundId]);
 
@@ -177,7 +187,10 @@ function useRevisedMatchingFunds(
     (Boolean(overridesFile) || ignoreSaturation) && !revisedMatches.isLoading;
 
   const error = revisedMatches.error || originalMatches.error;
-  const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
+  const isLoading =
+    revisedMatches.isLoading ||
+    originalMatches.isLoading ||
+    finalizedMatchesLoading;
 
   const matches = useMemo(() => {
     if (!originalMatches.data || !revisedMatches.data || error) {
