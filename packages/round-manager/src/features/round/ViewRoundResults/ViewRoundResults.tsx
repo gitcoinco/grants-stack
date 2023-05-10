@@ -35,6 +35,7 @@ import {
   merklePayoutStrategyImplementationContract,
   roundImplementationContract,
 } from "../../api/contracts";
+import { TransactionResponse } from "@ethersproject/providers";
 
 type RevisedMatch = {
   revisedContributionCount: number;
@@ -331,6 +332,9 @@ export default function ViewRoundResults() {
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
 
+  const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
+    useState<TransactionResponse>();
+
   const { finalizeRound, finalizeRoundToContractStatus, IPFSCurrentStatus } =
     useFinalizeRound();
 
@@ -360,11 +364,12 @@ export default function ViewRoundResults() {
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
 
-      await setReadyForPayout({
+      const setReadyForPayoutTx = await setReadyForPayout({
         roundId: round.id,
         signerOrProvider: signer,
       });
 
+      setReadyforPayoutTransaction(setReadyForPayoutTx);
       reloadMatchingFunds();
 
       setTimeout(() => {
@@ -426,13 +431,6 @@ export default function ViewRoundResults() {
     ) / 1_000_000;
 
   const disableRoundSaturationControls = Math.round(roundSaturation) >= 100;
-
-  console.log(
-    "Finalize eround status",
-    finalizeRoundToContractStatus,
-    " ready for payout status ",
-    readyForPayoutTransaction
-  );
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
