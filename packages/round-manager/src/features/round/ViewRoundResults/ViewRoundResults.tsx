@@ -30,7 +30,6 @@ import { TransactionResponse } from "@ethersproject/providers";
 import { payoutTokens } from "../../api/utils";
 
 type RevisedMatch = Match & {
-  revisedContributionCount: number;
   revisedMatch: bigint;
 };
 
@@ -75,31 +74,27 @@ function useRevisedMatchingFunds(
       return undefined;
     }
 
-    const mergedMatchesMap: Record<string, RevisedMatch> = {};
+    const revisedMatchesMap = new Map<string, Match>(
+      (revisedMatches?.data ?? []).map((match) => [match.applicationId, match])
+    );
 
-    // push original matches
-    for (const match of originalMatches.data) {
-      mergedMatchesMap[match.applicationId] = {
-        ...match,
-        revisedContributionCount: 0,
-        revisedMatch: BigInt(0),
-      };
-    }
+    const mergedMatches: RevisedMatch[] = originalMatches.data.flatMap(
+      (match) => {
+        const revisedMatch = revisedMatchesMap.get(match.applicationId);
 
-    // set revised match values
-    for (const match of revisedMatches.data) {
-      const originalMatch = mergedMatchesMap[match.applicationId];
+        if (revisedMatch) {
+          return [
+            {
+              ...match,
+              contributionsCount: revisedMatch.contributionsCount,
+              revisedMatch: revisedMatch.matched,
+            },
+          ];
+        }
 
-      if (originalMatch) {
-        mergedMatchesMap[match.applicationId] = {
-          ...match,
-          revisedContributionCount: match.contributionsCount,
-          revisedMatch: match.matched,
-        };
+        return [];
       }
-    }
-
-    const mergedMatches = Object.values(mergedMatchesMap);
+    );
 
     mergedMatches.sort((a, b) => {
       if (a.matched > b.matched) {
