@@ -754,7 +754,7 @@ export default function ViewRoundResults() {
                             onClick={() => {
                               setWarningModalOpen(true);
                             }}
-                            className="self-end w-fit bg-violet-400 hover:bg-pink-200 text-white py-2
+                            className="self-end w-fit bg-violet-400 text-white py-2
                            mt-2 px-3 rounded"
                           >
                             Finalize Results
