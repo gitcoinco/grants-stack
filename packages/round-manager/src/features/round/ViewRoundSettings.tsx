@@ -22,6 +22,7 @@ import {
 } from "react-hook-form";
 import { FaEdit, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { useNetwork } from "wagmi";
+import * as yup from "yup";
 import { useRoundById } from "../../context/round/RoundContext";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
 import { SupportType, payoutTokens } from "../api/utils";
@@ -34,10 +35,6 @@ import {
   SupportTypeButton,
   supportTypes,
 } from "./RoundDetailForm";
-
-const ValidationSchema = RoundValidationSchema.shape({
-  // todo: any overrides for validation schema here...
-});
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round, fetchRoundStatus, error } = useRoundById(
@@ -52,6 +49,39 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+
+  const ValidationSchema = RoundValidationSchema.shape({
+    // Overrides for validation schema that was not included in imported schema.
+    roundMetadata: yup.object({
+      quadraticFundingConfig: yup.object({
+        matchingFundsAvailable: yup
+          .number()
+          .min(
+            round?.roundMetadata?.quadraticFundingConfig
+              ?.matchingFundsAvailable ?? 0,
+            `Must be greater than previous value of ${round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}.`
+          ),
+        matchingCapAmount: yup.number().when("matchingCap", {
+          is: (val: any) => val === "yes",
+          then: yup
+            .number()
+            .required("This field is required.")
+            .moreThan(0, "Must be greater than 0"),
+          otherwise: yup.number().notRequired(),
+        }),
+        minDonationThresholdAmount: yup
+          .number()
+          .when("mindonatationThreshold", {
+            is: (val: any) => val === "yes",
+            then: yup
+              .number()
+              .required("This field is required")
+              .moreThan(0, "Must be greater than 0"),
+            otherwise: yup.number().notRequired(),
+          }),
+      }),
+    }),
+  });
 
   const {
     control,
@@ -122,7 +152,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const addRequirement = () => {
     console.log("add requirement");
-    // todo: add the requirement to the editedRound
     const newRequirements = [
       ...(editedRound?.roundMetadata?.eligibility?.requirements || []),
       { requirement: "test requirement" },
@@ -931,7 +960,10 @@ function RoundApplicationPeriod(props: {
                       : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
                   }`}
                 >
-                  <label htmlFor="roundStartTime" className="block text-[10px]">
+                  <label
+                    htmlFor="applicationsEndTime"
+                    className="block text-[10px]"
+                  >
                     End Date
                   </label>
                   <Controller
@@ -1021,7 +1053,7 @@ function RoundApplicationPeriod(props: {
                   }`}
                 >
                   <label htmlFor="roundStartTime" className="block text-[10px]">
-                    End Date
+                    Start Date
                   </label>
                   <Controller
                     name="roundStartTime"
@@ -1285,7 +1317,7 @@ function Funding(props: {
               data-testid="application-end-date-error"
             >
               {
-                props.errors.roundMetadata?.quadraticFundingConfig
+                props.errors.roundMetadata.quadraticFundingConfig
                   ?.matchingFundsAvailable?.message
               }
             </p>
@@ -1538,7 +1570,7 @@ function Funding(props: {
                   value={"no"}
                   checked={
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .minDonationThreshold
+                      .minDonationThreshold || false
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
