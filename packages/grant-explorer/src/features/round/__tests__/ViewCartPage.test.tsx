@@ -96,6 +96,12 @@ describe("View Cart Page", () => {
 
       expect(setCart).toHaveBeenCalled();
     });
+   
+    it("displays the bread crumbs", async () => {
+      renderWrapped();
+
+      expect(await screen.findByTestId("bread-crumbs")).toBeInTheDocument();
+    });
   });
 
   describe("Summary", () => {

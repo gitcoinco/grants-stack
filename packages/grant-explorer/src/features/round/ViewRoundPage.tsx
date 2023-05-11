@@ -248,7 +248,12 @@ function AfterRoundStart(props: {
           />
         </div>
         <main>
-          <p className="text-3xl my-5">{round.roundMetadata?.name}</p>
+          <p 
+            data-testid="round-title" 
+            className="text-3xl my-5"
+          >
+            {round.roundMetadata?.name}
+          </p>
           <div className="flex text-grey-400 mb-3">
             <p className="mr-4 text-sm">
               <span className="mr-1">Round starts on:</span>
