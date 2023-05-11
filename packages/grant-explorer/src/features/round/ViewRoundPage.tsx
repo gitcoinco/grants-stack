@@ -33,6 +33,7 @@ import {
   CardTitle,
   CardsContainer,
 } from "../common/styles";
+import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -211,6 +212,17 @@ function AfterRoundStart(props: {
       (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
     )[0].name;
 
+  const breadCrumbs = [
+    {
+      name: "Explorer Home",
+      path: "/",
+    },
+    {
+      name: round.roundMetadata?.name,
+      path: `/round/${chainId}/${roundId}`,
+    },
+  ] as BreadcrumbItem[]
+
   return (
     <>
       {showChangeNetworkModal && renderNetworkChangeModal()}
@@ -227,9 +239,16 @@ function AfterRoundStart(props: {
         </div>
       )}
       <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
+        <div 
+          className="flex flex-col pb-4"
+          data-testid="bread-crumbs"
+        >
+          <Breadcrumb
+            items={breadCrumbs}
+          />
+        </div>
         <main>
           <p className="text-3xl my-5">{round.roundMetadata?.name}</p>
-
           <div className="flex text-grey-400 mb-3">
             <p className="mr-4 text-sm">
               <span className="mr-1">Round starts on:</span>
