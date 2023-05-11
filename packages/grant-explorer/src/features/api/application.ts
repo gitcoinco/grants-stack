@@ -40,10 +40,11 @@ export const voteOnRoundContract = async (
   } else {
     console.log("✅ Transaction hash: ", result.txHash);
 
-    return {
-      txBlockNumber: result.txBlockNumber!,
-      txHash: result.txHash!,
-    };
+    // eslint-disable @typescript-eslint/no-non-null-assertion
+      return {
+        txBlockNumber: result.txBlockNumber!,
+        txHash: result.txHash!,
+      };
   }
 };
 

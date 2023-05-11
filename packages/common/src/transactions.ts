@@ -10,7 +10,7 @@ export type TransactionResult =
   | {
       txHash: string;
       txBlockNumber: number;
-      error?: undefined;
+      error: undefined;
     };
 
 // This function is used to handle replaced transactions
@@ -21,7 +21,7 @@ export const handleTransaction = async (
     // Wait for the transaction to be mined
     const receipt = await tx.wait();
     // The transactions was mined without issue
-    return { txHash: tx.hash, txBlockNumber: receipt.blockNumber };
+    return { txHash: tx.hash, txBlockNumber: receipt.blockNumber, error: undefined };
   } catch (error: any) {
     if (error.code === Logger.errors.TRANSACTION_REPLACED) {
       if (error.cancelled) {
@@ -33,6 +33,7 @@ export const handleTransaction = async (
         return {
           txHash: error.replacement.hash,
           txBlockNumber: error.receipt.blockNumber,
+          error: undefined,
         };
       }
     } else {
