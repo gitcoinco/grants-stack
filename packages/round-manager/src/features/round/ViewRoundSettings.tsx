@@ -6,7 +6,7 @@ import { CheckIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
-// import _ from "lodash";
+import _ from "lodash";
 import moment from "moment";
 import { Fragment, useState } from "react";
 import Datetime from "react-datetime";
@@ -36,7 +36,9 @@ import {
   supportTypes,
 } from "./RoundDetailForm";
 
-const ValidationSchema = RoundValidationSchema;
+const ValidationSchema = RoundValidationSchema.shape({
+  // todo: any overrides for validation schema here...
+});
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round, fetchRoundStatus, error } = useRoundById(
@@ -61,20 +63,22 @@ export default function ViewRoundSettings(props: { id?: string }) {
   } = useForm<Round>({
     defaultValues: {
       ...round,
-      roundMetadata: round?.roundMetadata,
     },
     resolver: yupResolver(ValidationSchema),
   });
 
   const submit: SubmitHandler<Round> = async (values: Round) => {
+    // todo: compare changes
     // todo: categorize tx's
     // todo: update metadata pointer in IPFS call
     // todo: send tx's
-    // const data = _.merge(round, values);
+    const data = _.merge(editedRound, values);
     console.log("submit values", {
+      values,
       editedRound,
+      data,
     });
-    setEditedRound(values);
+    setEditedRound(data);
   };
 
   if (!round) {
@@ -106,8 +110,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   };
 
   const onUpdateRound = () => {
-    handleSubmit(submit(editedRound as Round));
-    // setIsConfirmationModalOpen(true);
+    setIsConfirmationModalOpen(true);
   };
 
   const confirmationModalBody = (
@@ -499,7 +502,7 @@ function DetailsPage(props: {
               <input
                 type="text"
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                defaultValue={round.roundMetadata.support?.type}
+                defaultValue={props.editedRound?.roundMetadata.support?.type}
                 disabled={!props.editMode}
               />
             ) : (
@@ -727,7 +730,6 @@ function SupportTypeDropdown(props: {
       <Listbox
         {...props.field}
         onChange={(e: any) => {
-          console.log("ddl", e);
           props.field.onChange(e);
           props.setEditedRound({
             ...props.editedRound,
@@ -824,7 +826,7 @@ function RoundApplicationPeriod(props: {
   register: UseFormRegister<Round>;
   handleSubmit: UseFormHandleSubmit<Round>;
   onSubmit: SubmitHandler<Round>;
-  errors: any;
+  errors: FieldErrors<Round>;
 }) {
   const { round } = props;
 
@@ -877,7 +879,10 @@ function RoundApplicationPeriod(props: {
                 defaultValue={`${getUTCDate(
                   props.editedRound?.applicationsStartTime ??
                     round.applicationsStartTime
-                )} ${getUTCTime(round.applicationsStartTime)}`}
+                )} ${getUTCTime(
+                  props.editedRound?.applicationsStartTime ??
+                    round.applicationsStartTime
+                )}`}
                 disabled={!props.editMode}
               />
             )}
@@ -910,7 +915,7 @@ function RoundApplicationPeriod(props: {
                     onChange={(date) => {
                       field.onChange(moment(date).toDate());
                       props.setEditedRound({
-                        ...round,
+                        ...props.editedRound,
                         applicationsEndTime: moment(date).toDate(),
                       });
                     }}
@@ -933,7 +938,10 @@ function RoundApplicationPeriod(props: {
                 defaultValue={`${getUTCDate(
                   props.editedRound?.applicationsEndTime ??
                     round.applicationsEndTime
-                )} ${getUTCTime(round.applicationsEndTime)}`}
+                )} ${getUTCTime(
+                  props.editedRound?.applicationsEndTime ??
+                    round.applicationsEndTime
+                )}`}
                 disabled={!props.editMode}
               />
             )}
@@ -989,12 +997,14 @@ function RoundApplicationPeriod(props: {
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                 defaultValue={`${getUTCDate(
                   props.editedRound?.roundStartTime ?? round.roundStartTime
-                )} ${getUTCTime(round.roundStartTime)}`}
+                )} ${getUTCTime(
+                  props.editedRound?.roundStartTime ?? round.roundStartTime
+                )}`}
                 disabled={!props.editMode}
               />
             )}
           </div>
-          {props.errors.roundMetadata && (
+          {props.errors.roundStartTime && (
             <p
               className="text-xs text-pink-500"
               data-testid="application-end-date-error"
@@ -1022,7 +1032,7 @@ function RoundApplicationPeriod(props: {
                     onChange={(date) => {
                       field.onChange(moment(date).toDate());
                       props.setEditedRound({
-                        ...round,
+                        ...props.editedRound,
                         roundEndTime: moment(date).toDate(),
                       });
                     }}
@@ -1042,7 +1052,9 @@ function RoundApplicationPeriod(props: {
               <input
                 type="text"
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                defaultValue={`${getUTCDate(round.roundEndTime)} ${getUTCTime(
+                defaultValue={`${getUTCDate(
+                  props.editedRound?.roundEndTime ?? round.roundEndTime
+                )} ${getUTCTime(
                   props.editedRound?.roundEndTime ?? round.roundEndTime
                 )}`}
                 disabled={!props.editMode}
@@ -1134,13 +1146,15 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.matchingFundsAvailable"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.matchingFundsAvailable"
+                  )}
                   type="text"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                  defaultValue={matchingFunds}
                   disabled={!props.editMode}
                   onChange={(e) => {
                     // todo: matching funds available cannot be changed to be less than the amount already allocated
-                    console.log("Matching Funds Available", e.target.value);
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1194,6 +1208,10 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.matchingCap"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.matchingCap"
+                  )}
                   type="radio"
                   className="mr-2"
                   value={"yes"}
@@ -1203,7 +1221,6 @@ function Funding(props: {
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
-                    console.log("Do you want a matching cap for projects? YES");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1226,6 +1243,10 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.matchingCap"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.matchingCap"
+                  )}
                   type="radio"
                   className="ml-4"
                   value={"no"}
@@ -1235,7 +1256,6 @@ function Funding(props: {
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
-                    console.log("Do you want a matching cap for projects? NO");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1287,6 +1307,10 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.matchingCapAmount"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.matchingCapAmount"
+                  )}
                   type="text"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   value={
@@ -1302,7 +1326,6 @@ function Funding(props: {
                       .matchingCap
                   }
                   onChange={(e) => {
-                    console.log("If so, how much?");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1365,6 +1388,10 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.minDonationThreshold"
+                  )}
                   type="radio"
                   className="mr-2"
                   value={"yes"}
@@ -1374,9 +1401,6 @@ function Funding(props: {
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
-                    console.log(
-                      "Do you want a minimum donation threshold? YES"
-                    );
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1399,6 +1423,10 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.minDonationThreshold"
+                  )}
                   type="radio"
                   className="ml-4"
                   value={"no"}
@@ -1408,7 +1436,6 @@ function Funding(props: {
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
-                    console.log("Do you want a minimum donation threshold? NO");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1460,6 +1487,10 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+                  )}
                   type="text"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   value={
@@ -1475,7 +1506,6 @@ function Funding(props: {
                       .minDonationThreshold
                   }
                   onChange={(e) => {
-                    console.log("If so, how much?");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1536,6 +1566,11 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.sybilDefense"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.sybilDefense"
+                  )}
+                  disabled={!props.editMode}
                   type="radio"
                   value="yes"
                   checked={
@@ -1543,7 +1578,6 @@ function Funding(props: {
                       .sybilDefense
                   }
                   onChange={(e) => {
-                    console.log("Sybil Defense? YES");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1573,6 +1607,10 @@ function Funding(props: {
               name="roundMetadata.quadraticFundingConfig.sybilDefense"
               render={({ field }) => (
                 <input
+                  {...field}
+                  {...props.register(
+                    "roundMetadata.quadraticFundingConfig.sybilDefense"
+                  )}
                   disabled={!props.editMode}
                   type="radio"
                   value="no"
@@ -1581,7 +1619,6 @@ function Funding(props: {
                       .sybilDefense
                   }
                   onChange={(e) => {
-                    console.log("Sybil Defense? NO");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
