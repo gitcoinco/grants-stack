@@ -3,6 +3,7 @@ import tw from "tailwind-styled-components";
 
 type ButtonProps = {
   $variant?: "solid" | "outline" | "secondary";
+  $hidden?: boolean;
 };
 
 export const Button = tw.button`
@@ -26,6 +27,7 @@ export const Button = tw.button`
       return "bg-violet-400 text-white";
     }
   }}
+  ${(p: ButtonProps) => (p.$hidden ? "hidden" : "")}
 `;
 
 type InputProps = {

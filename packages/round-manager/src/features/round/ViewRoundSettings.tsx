@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Listbox, Tab, Transition } from "@headlessui/react";
@@ -20,7 +21,7 @@ import {
   UseFormRegisterReturn,
   useForm,
 } from "react-hook-form";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { useNetwork } from "wagmi";
 import { useRoundById } from "../../context/round/RoundContext";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
@@ -116,6 +117,27 @@ export default function ViewRoundSettings(props: { id?: string }) {
       make any more changes to your round settings.
     </p>
   );
+
+  const addRequirement = () => {
+    console.log("add requirement");
+    // todo: add the requirement to the editedRound
+    const newRequirements = [
+      ...(editedRound?.roundMetadata?.eligibility?.requirements || []),
+      { requirement: "test requirement" },
+    ];
+    setEditedRound({
+      ...editedRound!,
+      roundMetadata: {
+        ...editedRound!.roundMetadata,
+        eligibility: {
+          ...editedRound?.roundMetadata.eligibility,
+          description:
+            editedRound?.roundMetadata?.eligibility?.description ?? "",
+          requirements: newRequirements,
+        },
+      },
+    });
+  };
 
   // todo: update status's
   const progressSteps: ProgressStep[] = [
@@ -233,6 +255,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   handleSubmit={handleSubmit}
                   onSubmit={submit}
                   errors={errors}
+                  onAddRequirement={() => {
+                    addRequirement();
+                  }}
                 />
               </Tab.Panel>
               <Tab.Panel>
@@ -298,6 +323,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           }}
         />
       </form>
+      <hr className="mt-4" />
     </div>
   );
 }
@@ -313,6 +339,7 @@ function DetailsPage(props: {
   handleSubmit: UseFormHandleSubmit<Round>;
   onSubmit: SubmitHandler<Round>;
   errors: FieldErrors<Round>;
+  onAddRequirement: () => void;
 }) {
   const { round } = props;
   const { chain } = useNetwork();
@@ -374,9 +401,16 @@ function DetailsPage(props: {
             Program Chain
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
+            {/* todo: add image for chain */}
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+              className="w-1/12 rounded-l-md border border-r-0 border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={""}
+              disabled
+            />
+            <input
+              type="text"
+              className="w-10/12 rounded-r-md border border-l-0 border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={chain?.name}
               disabled
             />
@@ -523,7 +557,6 @@ function DetailsPage(props: {
           )}
         </div>
       </div>
-      {/* todo: */}
       <span className="mt-8 inline-flex text-sm text-gray-600 mb-8">
         What requirements do you have for applicants?
       </span>
@@ -601,6 +634,22 @@ function DetailsPage(props: {
           </div>
         )
       )}
+      <Button
+        type="button"
+        disabled={!props.editMode}
+        $variant="secondary"
+        $hidden={!props.editMode}
+        className="mb-4"
+        data-testid="add-requirement-button"
+        onClick={() => {
+          props.onAddRequirement();
+        }}
+      >
+        <span className="flex flex-row items-center">
+          <FaPlus className="mr-2 mb-1" />
+          Add A Requirement
+        </span>
+      </Button>
     </div>
   );
 }
@@ -993,7 +1042,10 @@ function Funding(props: {
               "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
             }
           >
-            Payout Token
+            <span className="flex flex-row items-center">
+              Payout Token
+              <FaInfoCircle className="ml-2" />
+            </span>
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
@@ -1015,7 +1067,7 @@ function Funding(props: {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={matchingFundPayoutToken.name}
               disabled
             />
@@ -1073,7 +1125,10 @@ function Funding(props: {
               "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
             }
           >
-            Do you want a matching cap for projects?
+            <span className="flex flex-row items-center">
+              Do you want a matching cap for projects?
+              <FaInfoCircle className="ml-2" />
+            </span>
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
             <Controller
@@ -1163,13 +1218,19 @@ function Funding(props: {
             If so, how much?
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={"%"}
+              disabled
+            />
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.matchingCapAmount"
               render={({ field }) => (
                 <input
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                  className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   value={
                     props.editedRound?.roundMetadata.quadraticFundingConfig
                       .matchingCap
@@ -1215,7 +1276,7 @@ function Funding(props: {
         </div>
       </div>
       <div>
-        <span className="mt-4 inline-flex text-sm text-gray-600 mb-8">
+        <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
           A single project can only receive a maximum of{" "}
           {round.roundMetadata.quadraticFundingConfig.matchingCapAmount ?? 0}%
           of the matching fund (
@@ -1235,7 +1296,10 @@ function Funding(props: {
               "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
             }
           >
-            Do you want a minimum donation threshold for projects?
+            <span className="flex flex-row items-center">
+              Do you want a minimum donation threshold for projects?
+              <FaInfoCircle className="ml-2" />
+            </span>
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
             <Controller
@@ -1327,13 +1391,19 @@ function Funding(props: {
             If so, how much?
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={"USD"}
+              disabled
+            />
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
               render={({ field }) => (
                 <input
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                  className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   value={
                     props.editedRound?.roundMetadata.quadraticFundingConfig
                       .minDonationThreshold
@@ -1379,7 +1449,7 @@ function Funding(props: {
         </div>
       </div>
       <div>
-        <span className="mt-4 inline-flex text-sm text-gray-600 mb-8">
+        <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
           Each donation has to be a minimum of{" "}
           {props.editedRound?.roundMetadata.quadraticFundingConfig
             .minDonationThresholdAmount ?? 0}{" "}
@@ -1388,7 +1458,7 @@ function Funding(props: {
       </div>
 
       <div>
-        <span className="mt-4 inline-flex text-lg font-light text-gray-600 mb-2">
+        <span className="mt-2 inline-flex text-lg font-light text-gray-600 mb-2">
           Sybil Defense
         </span>
       </div>

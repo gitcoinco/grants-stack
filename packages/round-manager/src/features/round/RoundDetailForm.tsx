@@ -523,7 +523,7 @@ function RoundName(props: {
   );
 }
 
-function ProgramChain(props: { program: Program }) {
+export function ProgramChain(props: { program: Program }) {
   const { program } = props;
   return (
     <div className="col-span-6 sm:col-span-3 opacity-50">
