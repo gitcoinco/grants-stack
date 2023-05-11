@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-interface BreadcrumbItem {
+export interface BreadcrumbItem {
   name: string;
   path: string;
 }
@@ -13,7 +13,7 @@ interface BreadcrumbProps {
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
   return (
-    <nav className="flex flex-wrap items-center text-sm text-gray-400">
+    <nav className="flex flex-wrap items-center text-sm text-gray-400 font-bold">
       {items.map((item, index) => (
         <React.Fragment key={index}>
           <Link

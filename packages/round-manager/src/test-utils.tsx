@@ -74,6 +74,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     roundMetadata: {
       name: faker.company.name(),
       programContractAddress: faker.finance.ethereumAddress(),
+      roundType: "private",
       quadraticFundingConfig: {
         matchingCap: true,
         matchingCapAmount: 100,
@@ -105,10 +106,13 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 export const makeMatchingStatsData = (): MatchingStatsData => {
   return {
     projectName: faker.company.name(),
+    applicationId: faker.datatype.number().toString(),
     projectId: formatBytes32String(faker.company.name().slice(0, 31)),
     uniqueContributorsCount: faker.datatype.number(),
+    contributionsCount: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
     matchAmountInToken: parseEther(faker.datatype.number().toString()),
+    originalMatchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
   };
 };
@@ -138,6 +142,10 @@ export type QFDistribution = {
   matchAmountInToken: BigNumber;
   projectPayoutAddress: string;
   uniqueContributorsCount: number;
+  revisedMatch: bigint;
+  contributionsCount: number;
+  matched: bigint;
+  revisedContributionCount: number;
 };
 export const makeQFDistribution = (): QFDistribution => {
   return {
@@ -148,6 +156,10 @@ export const makeQFDistribution = (): QFDistribution => {
     matchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
     uniqueContributorsCount: faker.datatype.number(),
+    revisedMatch: BigInt(1),
+    contributionsCount: faker.datatype.number(),
+    matched: BigInt(1),
+    revisedContributionCount: faker.datatype.number(),
   };
 };
 
