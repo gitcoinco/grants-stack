@@ -15,6 +15,7 @@ export interface NavbarProps {
 export default function Navbar(props: NavbarProps) {
   const [cart] = useCart();
   const showWalletInteraction = props.showWalletInteraction ?? true;
+  const currentOrigin = window.location.origin;
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
@@ -22,11 +23,7 @@ export default function Navbar(props: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <a
-              href={
-                process.env.REACT_APP_ENV === "production"
-                  ? "https://grants.gitcoin.co/"
-                  : "/"
-              }
+              href={`${currentOrigin}#${props.roundUrlPath}`}
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
