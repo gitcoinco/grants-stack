@@ -40,11 +40,12 @@ export const voteOnRoundContract = async (
   } else {
     console.log("✅ Transaction hash: ", result.txHash);
 
-    // eslint-disable @typescript-eslint/no-non-null-assertion
-      return {
-        txBlockNumber: result.txBlockNumber!,
-        txHash: result.txHash!,
-      };
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      txBlockNumber: result.txBlockNumber!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      txHash: result.txHash!,
+    };
   }
 };
 
