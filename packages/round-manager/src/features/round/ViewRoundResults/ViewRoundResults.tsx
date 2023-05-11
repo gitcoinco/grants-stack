@@ -1,11 +1,14 @@
-import React, { useCallback, useState, useRef, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { BigNumber, utils } from "ethers";
+import { useCallback, useState, useRef, useMemo, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { BigNumber, ethers, utils } from "ethers";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
-import { DownloadIcon, UploadIcon } from "@heroicons/react/solid";
+import {
+  DownloadIcon,
+  ExclamationCircleIcon,
+  UploadIcon,
+} from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { ExclamationCircleIcon } from "@heroicons/react/solid";
 import { classNames } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
@@ -14,8 +17,7 @@ import {
   ProgressStatus,
   ProgressStep,
 } from "../../api/types";
-import { Match } from "allo-indexer-client";
-import { Spinner } from "../../common/Spinner";
+import { LoadingRing, Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
 import { useNetwork, useSigner } from "wagmi";
@@ -26,11 +28,24 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
+import { payoutTokens, fetchFromIPFS } from "../../api/utils";
+import { roundApplicationsToCSV } from "../../api/exports";
+import { Signer } from "@ethersproject/abstract-signer";
+import {
+  merklePayoutStrategyImplementationContract,
+  roundImplementationContract,
+} from "../../api/contracts";
 import { TransactionResponse } from "@ethersproject/providers";
-import { payoutTokens } from "../../api/utils";
 
-type RevisedMatch = Match & {
+type RevisedMatch = {
+  revisedContributionCount: number;
   revisedMatch: bigint;
+  matched: bigint;
+  contributionsCount: number;
+  projectId: string;
+  applicationId: string;
+  projectName: string;
+  payoutAddress: string;
 };
 
 // CHECK: should this be in common? Josef: yes indeed
@@ -48,43 +63,171 @@ const distributionOptions = [
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
 
-// this hook manages the state of the matching funds,
-// fetching revised matches and merging them with the original matches
-function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
-  const originalMatches = useRoundMatchingFunds(roundId);
-  const revisedMatches = useRoundMatchingFunds(roundId, overridesFile);
+type FinalizedMatches = {
+  readyForPayoutTransactionHash: string;
+  matches: RevisedMatch[];
+};
 
-  const isRevised = Boolean(overridesFile) && !revisedMatches.isLoading;
+async function fetchFinalizedMatches(
+  roundId: string,
+  signer: Signer
+): Promise<FinalizedMatches | undefined> {
+  const roundImplementation = new ethers.Contract(
+    roundId,
+    roundImplementationContract.abi,
+    signer
+  );
+
+  const filter =
+    roundImplementation.filters.PayFeeAndEscrowFundsToPayoutContract();
+
+  const payoutEvents = await roundImplementation.provider.getLogs({
+    ...filter,
+    fromBlock: 0,
+    toBlock: "latest",
+  });
+
+  if (payoutEvents.length > 0) {
+    const readyForPayoutTransactionHash = payoutEvents[0].transactionHash;
+
+    const payoutStrategyAddress = await roundImplementation.payoutStrategy();
+
+    const payoutStrategy = new ethers.Contract(
+      payoutStrategyAddress,
+      merklePayoutStrategyImplementationContract.abi,
+      signer
+    );
+
+    const distributionMetaPtr = await payoutStrategy.distributionMetaPtr();
+
+    const distribution = await fetchFromIPFS(distributionMetaPtr.pointer);
+
+    const distributionMatches =
+      distribution.matchingDistribution as MatchingStatsData[];
+
+    const matches: RevisedMatch[] = distributionMatches.map((m) => {
+      return {
+        applicationId: m.applicationId,
+        payoutAddress: m.projectPayoutAddress,
+        projectId: m.projectId,
+        projectName: m.projectName,
+        contributionsCount: 0,
+        revisedContributionCount: m.contributionsCount,
+        matched: BigNumber.from(m.originalMatchAmountInToken ?? 0).toBigInt(),
+        revisedMatch: BigNumber.from(m.matchAmountInToken ?? 0).toBigInt(),
+      };
+    });
+
+    return {
+      readyForPayoutTransactionHash,
+      matches,
+    };
+  }
+
+  return undefined;
+}
+
+/** Manages the state of the matching funds,
+ * fetching revised matches and merging them with the original matches
+ */
+function useRevisedMatchingFunds(
+  roundId: string,
+  signer: Signer | undefined,
+  ignoreSaturation: boolean,
+  overridesFile?: File
+) {
+  const originalMatches = useRoundMatchingFunds(roundId);
+  const revisedMatches = useRoundMatchingFunds(
+    roundId,
+    ignoreSaturation,
+    overridesFile
+  );
+  const [finalizedMatchesLoading, setFinalizedMatchesLoading] =
+    useState<boolean>(false);
+  const [finalizedMatches, setFinalizedMatches] = useState<
+    FinalizedMatches | undefined
+  >(undefined);
+
+  async function reloadFinalizedMatches() {
+    if (!signer) return;
+    try {
+      setFinalizedMatchesLoading(true);
+      const res = await fetchFinalizedMatches(roundId, signer);
+      setFinalizedMatches(res);
+    } finally {
+      setFinalizedMatchesLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    let active = true;
+
+    load();
+
+    return () => {
+      active = false;
+    };
+
+    async function load() {
+      // TODO: ~signer.call is a check to avoid calling contracts on a mocked signer
+      if (!signer || !signer.call) return;
+
+      try {
+        setFinalizedMatchesLoading(true);
+        const res = await fetchFinalizedMatches(roundId, signer);
+        setFinalizedMatches(res);
+        if (!active) {
+          return;
+        }
+      } finally {
+        setFinalizedMatchesLoading(false);
+      }
+    }
+  }, [signer, roundId]);
+
+  const isRevised =
+    (Boolean(overridesFile) || ignoreSaturation) && !revisedMatches.isLoading;
 
   const error = revisedMatches.error || originalMatches.error;
-  const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
+  const isLoading =
+    revisedMatches.isLoading ||
+    originalMatches.isLoading ||
+    finalizedMatchesLoading;
 
   const matches = useMemo(() => {
     if (!originalMatches.data || !revisedMatches.data || error) {
       return undefined;
     }
 
-    const revisedMatchesMap = new Map<string, Match>(
-      (revisedMatches?.data ?? []).map((match) => [match.applicationId, match])
-    );
+    if (finalizedMatches) {
+      return finalizedMatches.matches;
+    }
 
-    const mergedMatches: RevisedMatch[] = originalMatches.data.flatMap(
-      (match) => {
-        const revisedMatch = revisedMatchesMap.get(match.applicationId);
+    const mergedMatchesMap: Record<string, RevisedMatch> = {};
 
-        if (revisedMatch) {
-          return [
-            {
-              ...match,
-              contributionsCount: revisedMatch.contributionsCount,
-              revisedMatch: revisedMatch.matched,
-            },
-          ];
-        }
+    // push original matches
+    for (const match of originalMatches.data) {
+      mergedMatchesMap[match.applicationId] = {
+        ...match,
+        revisedContributionCount: 0,
+        revisedMatch: BigInt(0),
+      };
+    }
 
-        return [];
+    // set revised match values
+    for (const match of revisedMatches.data) {
+      const originalMatch = mergedMatchesMap[match.applicationId];
+
+      if (originalMatch) {
+        mergedMatchesMap[match.applicationId] = {
+          ...originalMatch,
+          revisedContributionCount: match.contributionsCount,
+          revisedMatch: match.matched,
+        };
       }
-    );
+    }
+
+    const mergedMatches = Object.values(mergedMatchesMap);
 
     mergedMatches.sort((a, b) => {
       if (a.matched > b.matched) {
@@ -99,14 +242,17 @@ function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
     });
 
     return mergedMatches;
-  }, [originalMatches.data, revisedMatches.data, error]);
+  }, [originalMatches.data, revisedMatches.data, finalizedMatches, error]);
 
   return {
     matches,
     isLoading,
     error,
     isRevised,
+    readyForPayoutTransactionHash:
+      finalizedMatches?.readyForPayoutTransactionHash,
     mutate() {
+      reloadFinalizedMatches();
       revisedMatches.mutate();
       originalMatches.mutate();
     },
@@ -115,53 +261,81 @@ function useRevisedMatchingFunds(roundId: string, overridesFile?: File) {
 
 export default function ViewRoundResults() {
   const { chain } = useNetwork();
+  const { data: signer } = useSigner();
   const { id } = useParams();
-  const navigate = useNavigate();
   const roundId = utils.getAddress(id as string);
+  const debugModeEnabled = useDebugMode();
+  const network = useNetwork();
+
+  const matchingTableRef = useRef<HTMLDivElement>(null);
   const [overridesFileDraft, setOverridesFileDraft] = useState<
     undefined | File
   >(undefined);
-  const [overridesFile, setOverridesFile] = useState<undefined | File>(
-    undefined
-  );
-  const matchingTableRef = useRef<HTMLDivElement>(null);
+  const [overridesFile, setOverridesFile] = useState<undefined | File>();
+
+  const [distributionOption, setDistributionOption] = useState<
+    "keep" | "scale"
+  >("keep");
 
   const {
     matches,
     isRevised: areMatchingFundsRevised,
+    readyForPayoutTransactionHash,
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
-    mutate: mutateMatchingFunds,
-  } = useRevisedMatchingFunds(roundId, overridesFile);
+    mutate: reloadMatchingFunds,
+  } = useRevisedMatchingFunds(
+    roundId,
+    signer as Signer | undefined,
+    distributionOption === "scale",
+    overridesFile
+  );
 
-  const debugModeEnabled = useDebugMode();
+  const shouldShowRevisedTable =
+    areMatchingFundsRevised || Boolean(readyForPayoutTransactionHash);
+
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
     (id as string).toLowerCase()
   );
-  const { data: signer } = useSigner();
+
   const isReadyForPayout = Boolean(
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
   );
-  const network = useNetwork();
   const matchToken =
     round &&
     payoutTokens.find(
       (t) => t.address.toLowerCase() == round.token.toLowerCase()
     );
 
-  const [distributionOption, setDistributionOption] = useState<
-    "keep" | "scale"
-  >("keep");
+  const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
+    useState(false);
+
+  function formatUnits(value: bigint) {
+    return `${Number(utils.formatUnits(value, matchToken?.decimal)).toFixed(
+      4
+    )} ${matchToken?.name}`;
+  }
+
   const isBeforeRoundEndDate = round && new Date() < round.roundEndTime;
+
+  const sumOfMatches = useMemo(() => {
+    return (
+      matches?.reduce(
+        (acc: bigint, match) => acc + (match.revisedMatch ?? BigInt(0)),
+        BigInt(0)
+      ) ?? BigInt(0)
+    );
+  }, [matches]);
 
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
+
   const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
     useState<TransactionResponse>();
 
-  const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
+  const { finalizeRound, finalizeRoundToContractStatus, IPFSCurrentStatus } =
     useFinalizeRound();
 
   const onFinalizeResults = async () => {
@@ -178,11 +352,16 @@ export default function ViewRoundResults() {
     setProgressModalOpen(true);
     try {
       const matchingJson: MatchingStatsData[] = matches.map((match) => ({
-        uniqueContributorsCount: 0,
+        contributionsCount: match.contributionsCount,
         projectPayoutAddress: match.payoutAddress,
+        applicationId: match.applicationId,
         projectId: match.projectId,
-        matchPoolPercentage: 0,
+        matchPoolPercentage:
+          Number((BigInt(1000000) * match.revisedMatch) / round.matchAmount) /
+          1000000,
+        projectName: match.projectName,
         matchAmountInToken: BigNumber.from(match.revisedMatch),
+        originalMatchAmountInToken: BigNumber.from(match.matched),
       }));
 
       await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
@@ -193,6 +372,7 @@ export default function ViewRoundResults() {
       });
 
       setReadyforPayoutTransaction(setReadyForPayoutTx);
+      reloadMatchingFunds();
 
       setTimeout(() => {
         setProgressModalOpen(false);
@@ -208,33 +388,51 @@ export default function ViewRoundResults() {
 
   const progressSteps: ProgressStep[] = [
     {
+      name: "uploading to IPFS",
+      description: "The matching distribution is being uploaded to IPFS.",
+      status: IPFSCurrentStatus,
+    },
+    {
       name: "saving",
       description:
         "The matching distribution is being saved onto the contract.",
-      status: IPFSCurrentStatus,
+      status: finalizeRoundToContractStatus,
     },
     {
       name: "Finalizing",
       description: `The contract is being marked as eligible for payouts.`,
-      status: finalizeRoundToContractStatus,
+      status:
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+          ? readyForPayoutTransaction
+            ? ProgressStatus.IS_SUCCESS
+            : ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
     },
     {
       name: "finishing up",
       description: "We’re wrapping up.",
       status:
-        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS &&
+        readyForPayoutTransaction !== undefined
           ? ProgressStatus.IN_PROGRESS
           : ProgressStatus.NOT_STARTED,
     },
   ];
 
-  if (isBeforeRoundEndDate && !debugModeEnabled) {
+  if (!chain || (isBeforeRoundEndDate && !debugModeEnabled)) {
     return <NoInformationContent />;
   }
 
-  if (isLoadingRound) {
+  if (isLoadingRound || !round) {
     return <Spinner text="We're fetching the matching data." />;
   }
+
+  const roundSaturation =
+    Number(
+      ((sumOfMatches * BigInt(10_000)) / round.matchAmount) * BigInt(10_000)
+    ) / 1_000_000;
+
+  const disableRoundSaturationControls = Math.round(roundSaturation) >= 100;
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -253,14 +451,27 @@ export default function ViewRoundResults() {
         <Tab.Panels className="mt-2">
           <Tab.Panel>
             <div className="overflow-y-auto">
-              <div className="flex flex-col">
-                <span className="text-sm leading-5 text-gray-400 text-left">
-                  Finalize your round results here. Doing so will allow you to
-                  fund your grantees.
-                </span>
-              </div>
+              {!readyForPayoutTransactionHash && (
+                <div className="flex flex-col">
+                  <span className="text-sm leading-5 text-gray-400 text-left">
+                    Finalize your round results here. Doing so will allow you to
+                    fund your grantees.
+                  </span>
+                </div>
+              )}
+              {readyForPayoutTransactionHash && (
+                <div className="flex flex-col mb-6">
+                  <span className="text-md leading-5 text-gray-500 font-semibold text-left mb-3 mt-2">
+                    Finalized Round Results
+                  </span>
+                  <span className="text-sm leading-5 text-gray-400 text-left">
+                    Round results have been finalized. Grantees can now be paid
+                    out their funds.
+                  </span>
+                </div>
+              )}
               <div className="flex flex-col mt-4">
-                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
+                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-2 mt-2">
                   Vote Coefficients
                 </span>
                 <span className="text-sm leading-5 text-gray-400 text-left">
@@ -272,7 +483,7 @@ export default function ViewRoundResults() {
               <div className="flex flex-col mt-4 w-min">
                 <a
                   role={"link"}
-                  href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${roundId}/vote_coefficients.csv`}
+                  href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/vote_coefficients`}
                   className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
                 >
                   <DownloadIcon className="h-5 w-5" />
@@ -330,11 +541,11 @@ export default function ViewRoundResults() {
                                 No. of Contributions
                               </th>
                               <th className="text-sm leading-5 px-2 text-gray-500 text-left">
-                                {areMatchingFundsRevised
+                                {shouldShowRevisedTable
                                   ? "Original Matching Amount"
                                   : "Matching Amount"}
                               </th>
-                              {areMatchingFundsRevised && (
+                              {shouldShowRevisedTable && (
                                 <th className="text-sm leading-5 px-2 text-gray-500 text-left">
                                   New Matching Amount
                                 </th>
@@ -353,6 +564,7 @@ export default function ViewRoundResults() {
                                     (BigInt(1000000) * match.revisedMatch) /
                                       round.matchAmount
                                   ) / 10000;
+
                                 return (
                                   <tr key={match.applicationId}>
                                     <td className="text-sm leading-5 py-2 pr-2 text-gray-400 text-left text-ellipsis overflow-hidden whitespace-nowrap">
@@ -373,7 +585,7 @@ export default function ViewRoundResults() {
                                       ).toFixed(4)}{" "}
                                       {matchToken?.name}
                                     </td>
-                                    {areMatchingFundsRevised && (
+                                    {shouldShowRevisedTable && (
                                       <td className="text-sm leading-5 px-2 text-gray-400 text-left">
                                         {Number(
                                           utils.formatUnits(
@@ -417,161 +629,224 @@ export default function ViewRoundResults() {
                   Round Saturation
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`Current round saturation: ${-99}%`}
+                  {`Current round saturation: ${roundSaturation.toFixed(2)}%`}
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
-                  {`$${0} out of the $${0} matching fund will be distributed to grantees.`}
+                  {`${formatUnits(sumOfMatches)} out of the ${formatUnits(
+                    round.matchAmount
+                  )} matching fund will be distributed to grantees.`}
                 </span>
               </div>
-              <RadioGroup
-                value={distributionOption}
-                onChange={setDistributionOption}
-              >
-                <RadioGroup.Label className="sr-only">
-                  Distribution options
-                </RadioGroup.Label>
-                <div className="space-y-2">
-                  {distributionOptions.map((option) => (
-                    <RadioGroup.Option
-                      key={option.value}
-                      value={option.value}
-                      className={() =>
-                        classNames("cursor-pointer flex items-center")
-                      }
-                    >
-                      {({ checked }) => (
-                        <>
-                          <input
-                            type="radio"
-                            className="text-indigo-600 focus:ring-indigo-500"
-                            checked={checked}
-                            readOnly
-                          />
-                          <span
-                            className={classNames(
-                              "ml-2 font-medium text-gray-900",
-                              checked && "text-indigo-900"
-                            )}
-                          >
-                            {option.label}
-                          </span>
-                        </>
-                      )}
-                    </RadioGroup.Option>
-                  ))}
-                </div>
-              </RadioGroup>
-              <div className="flex flex-col mt-4">
-                <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
-                  Revise Results
-                </span>
-                <div className="text-sm leading-5 text-left mb-1">
-                  Upload a CSV with the finalized Vote Coefficient overrides{" "}
-                  <b>only</b>. For instructions, click{" "}
-                  <a
-                    className="underline"
-                    href={
-                      "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/program-managers/how-to-view-your-round-results"
-                    }
+              {!readyForPayoutTransactionHash && (
+                <>
+                  <RadioGroup
+                    value={distributionOption}
+                    onChange={setDistributionOption}
+                    disabled={disableRoundSaturationControls}
                   >
-                    here
-                  </a>
-                  .
-                </div>
-                <div className="text-sm pt-2 leading-5 text-left flex items-start justify-start">
-                  <ExclamationCircleIcon
-                    className={"w-6 h-6 text-gray-500 mr-2.5"}
-                  />
-                  If you navigate away from this page, your data will be lost.
-                  You will be able to re-upload data as much as you’d like, but
-                  it will not be saved to the contract until you finalize
-                  results.
-                </div>
-                <FileUploader
-                  file={overridesFileDraft}
-                  onSelectFile={(file: File) => {
-                    setOverridesFileDraft(file);
-                  }}
-                />
-                <Button
-                  type="button"
-                  className="mt-4 mr-auto"
-                  $variant="secondary"
-                  onClick={() => {
-                    setOverridesFile(overridesFileDraft);
-                    // force a refresh each time fot better ux
-                    mutateMatchingFunds();
-
-                    // make sure table is in view
-                    if (matchingTableRef.current) {
-                      window.scrollTo({
-                        top: matchingTableRef.current.offsetTop,
-                        behavior: "smooth",
-                      });
-                    }
-                  }}
-                  disabled={overridesFileDraft === undefined}
-                >
-                  <UploadIcon className="h-5 w-5 inline mr-2" />
-                  <span>Upload and revise</span>
-                </Button>
-                <hr className="my-4" />
-                {!isReadyForPayout && (
-                  <>
-                    <div className="ml-auto">
-                      {areMatchingFundsRevised && (
-                        <button
-                          onClick={() => {
-                            setOverridesFile(undefined);
-                            mutateMatchingFunds();
-                          }}
-                          className="w-fit bg-white border border-gray-100 text-black py-2 mt-2 px-3 rounded gap-2 mr-2"
+                    <RadioGroup.Label className="sr-only">
+                      Distribution options
+                    </RadioGroup.Label>
+                    <div className="space-y-2">
+                      {distributionOptions.map((option) => (
+                        <RadioGroup.Option
+                          key={option.value}
+                          value={option.value}
+                          className={() =>
+                            classNames(
+                              "cursor-pointer flex items-center",
+                              disableRoundSaturationControls &&
+                                "opacity-50 cursor-not-allowed"
+                            )
+                          }
                         >
-                          Cancel
-                        </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          setWarningModalOpen(true);
-                        }}
-                        className="self-end w-fit bg-violet-400 hover:bg-pink-200 text-white py-2
-                           mt-2 px-3 rounded"
-                      >
-                        Finalize Results
-                      </button>
+                          {({ checked }) => (
+                            <>
+                              <input
+                                type="radio"
+                                className="text-indigo-600 focus:ring-indigo-500"
+                                checked={checked}
+                                readOnly
+                              />
+                              <span
+                                className={classNames(
+                                  "ml-2 font-medium text-gray-900",
+                                  checked && "text-indigo-900"
+                                )}
+                              >
+                                {option.label}
+                              </span>
+                            </>
+                          )}
+                        </RadioGroup.Option>
+                      ))}
                     </div>
-                    <span className="text-sm leading-5 text-gray-400 mt-5 text-right">
-                      The contract will be locked once results are finalized.
-                      You will not be able to change the results after you
-                      finalize.
+                  </RadioGroup>
+                  <div className="flex flex-col mt-4">
+                    <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
+                      Revise Results
                     </span>
-                  </>
-                )}
-                {readyForPayoutTransaction && (
-                  <>
-                    <button
+                    <div className="text-sm leading-5 text-left mb-1">
+                      Upload a CSV with the finalized Vote Coefficient overrides{" "}
+                      <b>only</b>. For instructions, click{" "}
+                      <a
+                        className="underline"
+                        href={
+                          "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/program-managers/how-to-view-your-round-results"
+                        }
+                      >
+                        here
+                      </a>
+                      .
+                    </div>
+                    <div className="text-sm pt-2 leading-5 text-left flex items-start justify-start">
+                      <ExclamationCircleIcon
+                        className={"w-6 h-6 text-gray-500 mr-2.5"}
+                      />
+                      If you navigate away from this page, your data will be
+                      lost. You will be able to re-upload data as much as you’d
+                      like, but it will not be saved to the contract until you
+                      finalize results.
+                    </div>
+                    <FileUploader
+                      file={overridesFileDraft}
+                      onSelectFile={(file: File) => {
+                        setOverridesFileDraft(file);
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      className="mt-4 mr-auto"
+                      $variant="secondary"
                       onClick={() => {
-                        if (
-                          network.chain?.blockExplorers &&
-                          readyForPayoutTransaction
-                        ) {
-                          navigate(
-                            `${network.chain.blockExplorers.default.url}/tx/${readyForPayoutTransaction.hash}`
-                          );
+                        setOverridesFile(overridesFileDraft);
+                        // force a refresh each time fot better ux
+                        reloadMatchingFunds();
+
+                        // make sure table is in view
+                        if (matchingTableRef.current) {
+                          window.scrollTo({
+                            top: matchingTableRef.current.offsetTop,
+                            behavior: "smooth",
+                          });
                         }
                       }}
-                      className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
-                   mt-2 px-3 rounded flex items-center gap-2"
+                      disabled={overridesFileDraft === undefined}
                     >
-                      View on Etherscan
-                    </button>
-                  </>
-                )}
-              </div>
+                      <UploadIcon className="h-5 w-5 inline mr-2" />
+                      <span>Upload and revise</span>
+                    </Button>
+                    <hr className="my-4" />
+                    {!isReadyForPayout && (
+                      <>
+                        <div className="ml-auto">
+                          {shouldShowRevisedTable && (
+                            <button
+                              onClick={() => {
+                                setOverridesFile(undefined);
+                                reloadMatchingFunds();
+                              }}
+                              className="w-fit bg-white border border-gray-100 text-black py-2 mt-2 px-3 rounded gap-2 mr-2"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                          <button
+                            data-testid="finalize-results-button"
+                            onClick={() => {
+                              setWarningModalOpen(true);
+                            }}
+                            className="self-end w-fit bg-violet-400 text-white py-2
+                           mt-2 px-3 rounded"
+                          >
+                            Finalize Results
+                          </button>
+                        </div>
+                        <span className="text-sm leading-5 text-gray-400 mt-5 text-right">
+                          The contract will be locked once results are
+                          finalized. You will not be able to change the results
+                          after you finalize.
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+              {readyForPayoutTransactionHash && (
+                <>
+                  <hr className="my-4 mt-8" />
+                  <a
+                    href={`${network.chain?.blockExplorers?.default.url}/tx/${readyForPayoutTransactionHash}`}
+                    target="_blank"
+                    className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
+                   mt-2 px-3 rounded flex items-center gap-2 ml-auto"
+                  >
+                    View on Etherscan
+                  </a>
+                </>
+              )}
             </div>
           </Tab.Panel>
           <Tab.Panel>
-            <div>{/* raw round data content here */}</div>
+            <div className="text-sm leading-5 text-gray-400 text-left pb-4">
+              Download and use the data models provided to analyze your round
+              results in-depth.
+            </div>
+            <div className="text-sm leading-5 text-gray-500 font-semibold text-left mb-3 mt-2">
+              Round Generated Data
+            </div>
+            <div className="text-sm leading-5 text-gray-400 text-left">
+              Download the raw data for your round, which is separated into four
+              data tables: raw votes, projects, round, and prices.
+            </div>
+            <div className="pt-6">
+              <a
+                className="flex items-center mb-4"
+                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/votes`}
+              >
+                <span className="w-40">Raw Votes</span>
+                <DownloadIcon className="h-5 w-5" />
+              </a>
+              <button
+                className="flex items-center mb-4 text-left"
+                disabled={isExportingApplicationsCSV}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  try {
+                    setIsExportingApplicationsCSV(true);
+                    round &&
+                      (await exportAndDownloadApplicationsCSV(
+                        round.id,
+                        chain.id,
+                        chain.name
+                      ));
+                  } finally {
+                    setIsExportingApplicationsCSV(false);
+                  }
+                }}
+              >
+                <span className="w-40">Projects</span>
+                {isExportingApplicationsCSV ? (
+                  <LoadingRing className="h-5 w-5 animate-spin" />
+                ) : (
+                  <DownloadIcon className="h-5 w-5" />
+                )}
+              </button>
+              <a
+                className="flex items-center mb-4"
+                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/round`}
+              >
+                <span className="w-40">Round</span>
+                <DownloadIcon className="h-5 w-5" />
+              </a>
+              <a
+                className="flex items-center mb-4"
+                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/prices`}
+              >
+                <span className="w-40">Prices</span>
+                <DownloadIcon className="h-5 w-5" />
+              </a>
+            </div>
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
@@ -673,6 +948,20 @@ function NoInformationContent() {
       <NoInformationMessage />
     </div>
   );
+}
+
+async function exportAndDownloadApplicationsCSV(
+  roundId: string,
+  chainId: number,
+  chainName: string
+) {
+  const csv = await roundApplicationsToCSV(roundId, chainId, chainName, true);
+  // create a download link and click it
+  const blob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  return downloadFile(blob, `projects-${roundId}.csv`);
 }
 
 function NoInformationMessage() {
