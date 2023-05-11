@@ -3,7 +3,6 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   BoltIcon,
-  ChevronLeftIcon,
   GlobeAltIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
@@ -13,7 +12,7 @@ import { Button } from "common/src/styles";
 import { formatDistanceToNowStrict } from "date-fns";
 import { utils } from "ethers";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
