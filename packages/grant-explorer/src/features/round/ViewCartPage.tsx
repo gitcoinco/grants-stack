@@ -1,7 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import {
   CheckIcon,
-  ChevronLeftIcon,
   ChevronUpDownIcon,
   EyeIcon,
   InformationCircleIcon,
@@ -292,7 +291,7 @@ export default function ViewCart() {
           />
         </div>
         <main>
-          {Header(chainId, roundId)}
+          {Header()}
           <div className="flex flex-col md:flex-row gap-5">
             {cart.length == 0 ? EmptyCart() : CartWithProjects(cart)}
             {SummaryContainer()}
@@ -408,7 +407,7 @@ export default function ViewCart() {
     );
   }
 
-  function Header(chainId?: string, roundId?: string) {
+  function Header() {
     return (
       <div>
 
