@@ -10,19 +10,8 @@ import { FormInputs, Metadata, Project } from "../../types";
 import { formatDateFromMs } from "../../utils/components";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
-import Shield from "../icons/Shield";
 import ApplicationCard from "./ApplicationCard";
-
-function Verified() {
-  return (
-    <div className="flex rounded bg-green-text/25 px-2 py-0.5 mt-1">
-      <Shield dimension={16} color={colors["green-text"]} />{" "}
-      <p className="pl-2 text-green-text text-xs font-normal mt-0.5">
-        Verified
-      </p>
-    </div>
-  );
-}
+import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 
 export default function About({
   project,
@@ -116,7 +105,7 @@ export default function About({
                 >
                   {project?.projectTwitter}
                 </a>
-                {validTwitterCredential && <Verified />}
+                {validTwitterCredential && <GreenVerifiedBadge />}
               </div>
             )}
             {project?.projectGithub && (
@@ -130,7 +119,7 @@ export default function About({
                 >
                   {project?.projectGithub}
                 </a>
-                {validGithubCredential && <Verified />}
+                {validGithubCredential && <GreenVerifiedBadge />}
               </div>
             )}
           </div>

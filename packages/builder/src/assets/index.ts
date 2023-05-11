@@ -25,6 +25,7 @@ import SwitchToOptimism from "./switch-to-optimism.svg";
 import TwitterLogo from "./twitter_logo.svg";
 import BuilderLogo from "./builder-logo.svg";
 import BuilderLandingBackground from "./builder-landing-background.svg";
+import WhiteEthIconFilledCircle from "./white-eth-icon-filled-circle.png";
 
 export {
   FourZeroFour,
@@ -54,4 +55,5 @@ export {
   TwitterLogo,
   BuilderLogo,
   BuilderLandingBackground,
+  WhiteEthIconFilledCircle,
 };
