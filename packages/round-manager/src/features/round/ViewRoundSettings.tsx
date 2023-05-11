@@ -6,7 +6,7 @@ import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
-// import _ from "lodash";
+import _ from "lodash";
 import moment from "moment";
 import { Fragment, useState } from "react";
 import Datetime from "react-datetime";
@@ -134,7 +134,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
   } = useForm<Round>({
     defaultValues: {
       ...round,
-      roundMetadata: round?.roundMetadata,
     },
     resolver: yupResolver(ValidationSchema),
   });
@@ -181,8 +180,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   };
 
   const onUpdateRound = () => {
-    handleSubmit(submit(editedRound as Round));
-    // setIsConfirmationModalOpen(true);
+    setIsConfirmationModalOpen(true);
   };
 
   // todo: update number of transactions based on actual number of transactions.
