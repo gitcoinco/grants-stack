@@ -20,6 +20,7 @@ import {
   UseFormRegisterReturn,
   useForm,
 } from "react-hook-form";
+import { FaEdit } from "react-icons/fa";
 import { useNetwork } from "wagmi";
 import { useRoundById } from "../../context/round/RoundContext";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
@@ -166,7 +167,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 $variant="outline"
                 onClick={onEditClick}
               >
-                Edit Round
+                <span className="flex flex-row items-center">
+                  <FaEdit className="mr-2 mb-1" />
+                  <span>Edit Round</span>
+                </span>
               </Button>
             )}
           </div>

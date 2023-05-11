@@ -19,7 +19,7 @@ export const Button = tw.button`
   disabled:cursor-not-allowed
   ${(p: ButtonProps) => {
     if (p.$variant === "outline") {
-      return "bg-white text-grey-500 border border-grey-100";
+      return "bg-white text-grey-500 border border-grey-100 hover:border-grey-300";
     } else if (p.$variant === "secondary") {
       return "bg-violet-100 text-violet-400 hover:bg-violet-50 hover:brightness-100";
     } else {
