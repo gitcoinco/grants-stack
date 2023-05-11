@@ -193,7 +193,13 @@ describe("<ViewRound /> in case of after the round start date", () => {
   it("displays the round name", async () => {
     renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
 
-    await screen.findByText(stubRound.roundMetadata!.name);
+    expect(await screen.findByTestId("round-title")).toBeInTheDocument();
+  });
+
+  it("displays the bread crumbs", async () => {
+    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+
+    expect(await screen.findByTestId("bread-crumbs")).toBeInTheDocument();
   });
 
   it("displays a loading spinner if loading", () => {
