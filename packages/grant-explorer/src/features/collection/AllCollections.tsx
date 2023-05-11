@@ -11,9 +11,9 @@ type Props = {
   projects?: Project[]
 }
 
-function formatAddress(address: `0x${string}`): string {
-  return `${address.slice(0, 6)}...${address.slice(-6)}`
-}
+// function formatAddress(address: `0x${string}`): string {
+//   return `${address.slice(0, 6)}...${address.slice(-6)}`
+// }
 
 type CollectionItemProps = {
   collection: Collection
@@ -58,9 +58,9 @@ function CollectionItem({ collection }: CollectionItemProps) {
         <CardTitle data-testid="project-title">
           {collection.title}
         </CardTitle>
-        <CardDescription className="mb-2 mt-0" data-testid="project-owner">
+        {/* <CardDescription className="mb-2 mt-0" data-testid="project-owner">
           by {formatAddress(collection.owner)}
-        </CardDescription>
+        </CardDescription> */}
         {/* <CardDescription
       data-testid="project-description"
       className="h-[150px] overflow-hidden mb-1"
