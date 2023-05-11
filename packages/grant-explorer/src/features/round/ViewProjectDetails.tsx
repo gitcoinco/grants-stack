@@ -32,6 +32,7 @@ import Navbar from "../common/Navbar";
 import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
+import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -90,6 +91,21 @@ export default function ViewProjectDetails() {
     (project) => project.grantApplicationId === applicationId
   );
 
+  const breadCrumbs = [
+    {
+      name: "Explorer Home",
+      path: "/",
+    },
+    {
+      name: round?.roundMetadata?.name,
+      path: `/round/${chainId}/${roundId}`,
+    },
+    {
+      name: "Project Details",
+      path: `/round/${chainId}/${roundId}/${applicationId}`,
+    },
+  ] as BreadcrumbItem[]
+
   return (
     <>
       <Navbar
@@ -107,13 +123,15 @@ export default function ViewProjectDetails() {
         </div>
       )}
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
+        <div 
+          className="flex flex-col pb-6"
+          data-testid="bread-crumbs"
+        >
+          <Breadcrumb
+            items={breadCrumbs}
+          />
+        </div>
         <main>
-          <div className="flex flex-row items-center gap-3 text-sm">
-            <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
-            <Link to={`/round/${chainId}/${roundId}`}>
-              <span className="font-normal">Back to Grants</span>
-            </Link>
-          </div>
           {!isLoading && projectToRender && (
             <>
               <Header projectMetadata={projectToRender.projectMetadata} />

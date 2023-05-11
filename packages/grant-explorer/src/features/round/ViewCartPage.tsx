@@ -45,6 +45,7 @@ import { Logger } from "ethers/lib.esm/utils";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { classNames } from "common";
 import ReactTooltip from "react-tooltip";
+import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 
 export default function ViewCart() {
   const { chainId, roundId } = useParams();
@@ -250,6 +251,21 @@ export default function ViewCart() {
     },
   ];
 
+  const breadCrumbs = [
+    {
+      name: "Explorer Home",
+      path: "/",
+    },
+    {
+      name: round?.roundMetadata?.name,
+      path: `/round/${chainId}/${roundId}`,
+    },
+    {
+      name: "Cart", 
+      path: `/round/${chainId}/${roundId}/cart`,
+    },
+  ] as BreadcrumbItem[]
+
   return (
     <>
       <Navbar
@@ -267,6 +283,14 @@ export default function ViewCart() {
       )}
       {}
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
+        <div 
+          className="flex flex-col pb-4"
+          data-testid="bread-crumbs"
+        >
+          <Breadcrumb
+            items={breadCrumbs}
+          />
+        </div>
         <main>
           {Header(chainId, roundId)}
           <div className="flex flex-col md:flex-row gap-5">
@@ -387,14 +411,8 @@ export default function ViewCart() {
   function Header(chainId?: string, roundId?: string) {
     return (
       <div>
-        <div className="flex flex-row items-center gap-3 text-sm">
-          <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6 cursor-pointer" />
-          <Link to={`/round/${chainId}/${roundId}`}>
-            <span className="font-normal">Back</span>
-          </Link>
-        </div>
 
-        <h1 className="text-3xl mt-6 font-thin border-b-2 pb-2">Cart</h1>
+        <h1 className="text-3xl mt-5 font-thin border-b-2 pb-2">Cart</h1>
 
         <p className="mt-5">
           Each cart is specific to a selected round (e.g., Web3 Open Source
