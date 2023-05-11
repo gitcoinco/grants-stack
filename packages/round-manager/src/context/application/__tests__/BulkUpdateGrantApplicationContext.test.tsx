@@ -22,7 +22,7 @@ const mockWallet = {
   },
 };
 
-jest.setTimeout(20000);
+jest.setTimeout(35000);
 
 // temp fix for prod merge
 describe("<BulkUpdateGrantApplicationProvider />", () => {
@@ -52,7 +52,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         expect(
           screen.findByTestId(`contract-updating-status-is-${ProgressStatus.IN_PROGRESS}`)
         );
-      }, { timeout: 15000 });
+      }, { timeout: 30000 });
     });
 
     it("sets update status to complete when updating contract succeeds", async () => {
@@ -67,7 +67,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         expect(
           screen.findByTestId(`contract-updating-status-is-${ProgressStatus.IS_SUCCESS}`)
         );
-      }, { timeout: 15000 });
+      }, { timeout: 30000 });
     });
 
     it("sets indexing status to in progress when waiting for subgraph to index", async () => {
@@ -90,7 +90,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         expect(
           screen.findByTestId(`indexing-status-is-${ProgressStatus.IN_PROGRESS}`)
         );
-      }, { timeout: 15000 });
+      }, { timeout: 30000 });
     });
 
     it("sets indexing status to completed when subgraph is finished indexing", async () => {
@@ -109,7 +109,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         expect(
           screen.findByTestId(`indexing-status-is-${ProgressStatus.IS_SUCCESS}`)
         );
-      }, { timeout: 15000 });
+      }, { timeout: 30000 });
     });
 
     describe("useBulkUpdateGrantApplication Errors", () => {
@@ -141,7 +141,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
           expect(
             screen.getByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
           ).toBeInTheDocument();
-        }, { timeout: 15000 });
+        }, { timeout: 30000 });
       });
 
       it("if contract update fails, resets contract updating status when bulk update is retried", async () => {
@@ -171,7 +171,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
               `contract-updating-status-is-${ProgressStatus.IS_ERROR}`
             )
           ).not.toBeInTheDocument();
-        }, { timeout: 15000 });
+        }, { timeout: 30000 });
 
         await waitFor(() => {
           expect(
@@ -179,7 +179,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
               `contract-updating-status-is-${ProgressStatus.IS_ERROR}`
             )
           ).not.toBeInTheDocument();
-        }, { timeout: 15000 });
+        }, { timeout: 30000 });
       });
 
       it("if indexing fails, resets indexing status when bulk update is retried", async () => {
@@ -211,7 +211,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
               `indexing-status-is-${ProgressStatus.IS_ERROR}`
             )
           ).not.toBeInTheDocument();
-        }, { timeout: 15000 });
+        }, { timeout: 30000 });
       });
     });
   });

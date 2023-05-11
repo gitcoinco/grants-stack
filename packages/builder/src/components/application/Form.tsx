@@ -10,7 +10,7 @@ import { renderToHTML } from "common";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useNetwork } from "wagmi";
+import { useEnsName, useNetwork } from "wagmi";
 import { ValidationError } from "yup";
 import { fetchProjectApplicationInRound } from "../../actions/projects";
 import { resetApplicationError } from "../../actions/roundApplication";
@@ -37,7 +37,11 @@ import {
   RoundApplicationMetadata,
 } from "../../types/roundApplication";
 import { getProjectURIComponents } from "../../utils/utils";
-import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
+import {
+  getNetworkIcon,
+  getPayoutIcon,
+  networkPrettyName,
+} from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
 import ErrorModal from "../base/ErrorModal";
@@ -56,6 +60,7 @@ import {
   TextInputAddress,
 } from "../grants/inputs";
 import Calendar from "../icons/Calendar";
+import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 
 const validation = {
   messages: [""],
@@ -92,14 +97,56 @@ function DetailSummary(props: { text: string; testID: string; sm?: boolean }) {
   );
 }
 
-function AboutProject(props: { projectToRender: Metadata }) {
-  const { projectToRender } = props;
+function AboutProject(props: {
+  projectToRender: Metadata;
+  questions: RoundApplicationQuestion[];
+  answers: RoundApplicationAnswers;
+  chainId: number;
+}) {
+  const { projectToRender, answers, questions, chainId } = props;
 
-  const { website, projectTwitter, projectGithub, userGithub } =
+  const { website, projectTwitter, projectGithub, userGithub, credentials } =
     projectToRender;
+
+  const { isValid: validTwitterCredential } = useValidateCredential(
+    credentials?.twitter,
+    projectTwitter
+  );
+
+  const { isValid: validGithubCredential } = useValidateCredential(
+    credentials?.github,
+    projectGithub
+  );
+
+  const recipientQuestion = questions.find((item) => item.type === "recipient");
+  const recipient = recipientQuestion
+    ? answers[recipientQuestion.id.toString()].toString()
+    : undefined;
+
+  const { data: ensName } = useEnsName({
+    address: recipient ?? "",
+  });
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 pt-2 pb-6">
+      {recipient && (
+        <span className="flex items-center mt-4 gap-1">
+          <div className="w-5 h-5 rounded-full overflow-hidden">
+            <img
+              src={getPayoutIcon(chainId)}
+              alt="circle"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <DetailSummary
+            text={`${
+              ensName || `${recipient.slice(0, 6)}...${recipient.slice(-4)}`
+            }`}
+            testID="project-recipient"
+            sm
+          />
+        </span>
+      )}
       {website && (
         <span className="flex items-center mt-4 gap-1">
           <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
@@ -127,27 +174,27 @@ function AboutProject(props: { projectToRender: Metadata }) {
               testID="project-twitter"
             />
           </a>
+          {validTwitterCredential && <GreenVerifiedBadge />}
         </span>
       )}
       {projectToRender.createdAt && (
-        <span className="flex items-center mt-4 gap-1">
+        <span className="flex items-center mt-4 gap-2">
           {/* <CalendarIcon className="h-4 w-4 mr-1 opacity-80" /> */}
           <Calendar color={colors["secondary-text"]} />
           <DetailSummary
-            text={`${new Date(projectToRender.createdAt).toLocaleDateString(
-              "en-US",
-              {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              }
-            )}`}
+            text={`Created: ${new Date(
+              projectToRender.createdAt
+            ).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}`}
             testID="project-createdAt"
           />
         </span>
       )}
       {userGithub && (
-        <span className="flex items-center mt-4 gap-1">
+        <span className="flex items-center mt-4 gap-2">
           <img src={GithubLogo} className="h-4" alt="GitHub Logo" />
           <a
             href={`https://github.com/${userGithub}`}
@@ -157,6 +204,7 @@ function AboutProject(props: { projectToRender: Metadata }) {
           >
             <DetailSummary text={`${userGithub}`} testID="user-github" />
           </a>
+          {validGithubCredential && <GreenVerifiedBadge />}
         </span>
       )}
       {projectGithub && (
@@ -183,6 +231,7 @@ function FullPreview(props: {
   handleSubmitApplication: Function;
   setPreview: Function;
   disableSubmit: boolean;
+  chainId: number;
 }) {
   const {
     project,
@@ -191,6 +240,7 @@ function FullPreview(props: {
     setPreview,
     handleSubmitApplication,
     disableSubmit,
+    chainId,
   } = props;
   const ipfsPrefix = `${process.env.REACT_APP_PINATA_GATEWAY!}/ipfs/`;
 
@@ -200,12 +250,12 @@ function FullPreview(props: {
         <div>
           <div>
             <img
-              className="h-[120px] w-full object-cover rounded-t"
-              src={
+              className="h-32 w-full object-cover lg:h-80 rounded"
+              src={`${
                 project.bannerImg
                   ? ipfsPrefix + project.bannerImg
                   : DefaultProjectBanner
-              }
+              }?img-height=320`}
               alt="Project Banner"
             />
           </div>
@@ -237,7 +287,12 @@ function FullPreview(props: {
         <div className="grow">
           <div>
             <ProjectTitle projectMetadata={project} />
-            <AboutProject projectToRender={project} />
+            <AboutProject
+              projectToRender={project}
+              questions={questions}
+              answers={answers}
+              chainId={chainId}
+            />
           </div>
           <div>
             <h1 className="text-2xl mt-8 font-thin text-black">About</h1>
@@ -603,6 +658,7 @@ export default function Form({
           setPreview={setPreview}
           handleSubmitApplication={handleSubmitApplication}
           disableSubmit={disableSubmit}
+          chainId={chainInfo?.id || 1}
         />
       )}
       <div
