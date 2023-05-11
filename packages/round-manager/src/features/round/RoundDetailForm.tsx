@@ -61,21 +61,13 @@ export const RoundValidationSchema = yup.object().shape({
   applicationsStartTime: yup
     .date()
     .required("This field is required.")
-    .min(new Date(), "You must enter a date and time in the future.")
-    .max(
-      yup.ref("applicationsEndTime"),
-      "Applications start date must be earlier than the applications end date"
-    ),
+    .min(new Date(), "You must enter a date and time in the future."),
   applicationsEndTime: yup
     .date()
     .required("This field is required.")
     .min(
       yup.ref("applicationsStartTime"),
       "Applications end date must be later than applications start date"
-    )
-    .max(
-      yup.ref("roundStartTime"),
-      "Applications end date must be earlier than the round start date"
     ),
   roundStartTime: yup
     .date()

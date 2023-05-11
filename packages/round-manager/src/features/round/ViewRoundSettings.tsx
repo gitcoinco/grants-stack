@@ -346,6 +346,26 @@ function DetailsPage(props: {
 
   console.log("errooooors", props.errors);
 
+  function Cross({ color, size = "12" }: { color: string; size?: string }) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 12 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          // eslint-disable-next-line max-len
+          d="M0.292893 0.292893C0.683417 -0.0976311 1.31658 -0.0976311 1.70711 0.292893L6 4.58579L10.2929 0.292893C10.6834 -0.0976311 11.3166 -0.0976311 11.7071 0.292893C12.0976 0.683417 12.0976 1.31658 11.7071 1.70711L7.41421 6L11.7071 10.2929C12.0976 10.6834 12.0976 11.3166 11.7071 11.7071C11.3166 12.0976 10.6834 12.0976 10.2929 11.7071L6 7.41421L1.70711 11.7071C1.31658 12.0976 0.683417 12.0976 0.292893 11.7071C-0.0976311 11.3166 -0.0976311 10.6834 0.292893 10.2929L4.58579 6L0.292893 1.70711C-0.0976311 1.31658 -0.0976311 0.683417 0.292893 0.292893Z"
+          fill={color}
+        />
+      </svg>
+    );
+  }
+
   return (
     <div className="w-full">
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
@@ -410,7 +430,7 @@ function DetailsPage(props: {
             />
             <input
               type="text"
-              className="w-10/12 rounded-r-md border border-l-0 border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-11/12 rounded-r-md border border-l-0 border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={chain?.name}
               disabled
             />
@@ -557,11 +577,11 @@ function DetailsPage(props: {
           )}
         </div>
       </div>
-      <span className="mt-8 inline-flex text-sm text-gray-600 mb-8">
+      <span className="mt-8 flex flex-col text-sm text-gray-600 mb-8">
         What requirements do you have for applicants?
       </span>
       {props.editedRound?.roundMetadata.eligibility?.requirements?.map(
-        (req, i) => (
+        (_req, i) => (
           <div key={i} className="grid grid-cols-1 grid-rows-1 gap-4 mb-4">
             <div>
               <div
@@ -576,42 +596,80 @@ function DetailsPage(props: {
                   control={props.control}
                   name={`roundMetadata.eligibility.requirements.${i}.requirement`}
                   render={({ field }) => (
-                    <input
-                      {...field}
-                      {...props.register(
-                        `roundMetadata.eligibility.requirements.${i}.requirement`
-                      )}
-                      type="text"
-                      className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                      disabled={!props.editMode}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        props.setEditedRound({
-                          ...props.editedRound,
-                          roundMetadata: {
-                            ...props.editedRound?.roundMetadata,
-                            eligibility: {
-                              ...props.editedRound?.roundMetadata.eligibility,
-                              requirements: [
-                                ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
-                                  0,
-                                  i
-                                ) || []),
-                                {
-                                  requirement: e.target.value,
-                                },
-                                ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
-                                  i + 1
-                                ) || []),
-                              ],
-                              description:
-                                props.editedRound?.roundMetadata.eligibility
-                                  ?.description || "",
+                    <div className="flex flex-row">
+                      <input
+                        {...field}
+                        {...props.register(
+                          `roundMetadata.eligibility.requirements.${i}.requirement`
+                        )}
+                        type="text"
+                        className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                        disabled={!props.editMode}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          props.setEditedRound({
+                            ...props.editedRound,
+                            roundMetadata: {
+                              ...props.editedRound?.roundMetadata,
+                              eligibility: {
+                                ...props.editedRound?.roundMetadata.eligibility,
+                                requirements: [
+                                  ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
+                                    0,
+                                    i
+                                  ) || []),
+                                  {
+                                    requirement: e.target.value,
+                                  },
+                                  ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
+                                    i + 1
+                                  ) || []),
+                                ],
+                                description:
+                                  props.editedRound?.roundMetadata.eligibility
+                                    ?.description || "",
+                              },
                             },
-                          },
-                        });
-                      }}
-                    />
+                          });
+                        }}
+                      />
+                      {props.editMode && (
+                        <button
+                          data-testid="remove-requirement-button"
+                          className="ml-4"
+                          onClick={(e) => {
+                            console.log("remove requirement", {
+                              event: e,
+                              index: i,
+                            });
+                            props.setEditedRound({
+                              ...props.editedRound,
+                              roundMetadata: {
+                                ...props.editedRound?.roundMetadata,
+                                eligibility: {
+                                  ...props.editedRound?.roundMetadata
+                                    .eligibility,
+                                  requirements: [
+                                    ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
+                                      0,
+                                      i
+                                    ) || []),
+                                    ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
+                                      i + 1
+                                    ) || []),
+                                  ],
+                                  description:
+                                    props.editedRound?.roundMetadata.eligibility
+                                      ?.description || "",
+                                },
+                              },
+                            });
+                          }}
+                        >
+                          <Cross color="red" />
+                        </button>
+                      )}
+                    </div>
                   )}
                 />
               </div>
