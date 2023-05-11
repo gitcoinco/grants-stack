@@ -1,4 +1,3 @@
-import { Listbox, Transition } from "@headlessui/react";
 import {
   CheckIcon,
   InformationCircleIcon,
@@ -21,16 +20,8 @@ import {
   useController,
   useForm,
 } from "react-hook-form";
-import * as yup from "yup";
 
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
-import {
-  CheckIcon,
-  InformationCircleIcon,
-  SelectorIcon,
-} from "@heroicons/react/solid";
-import { Input } from "common/src/styles";
-import moment from "moment";
 import ReactTooltip from "react-tooltip";
 import * as yup from "yup";
 import { Program, Round } from "../api/types";
