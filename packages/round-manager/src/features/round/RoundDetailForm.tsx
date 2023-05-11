@@ -36,6 +36,7 @@ const ValidationSchema = yup.object().shape({
       .string()
       .required("This field is required.")
       .min(8, "Round name must be at least 8 characters."),
+    roundType: yup.string().required("You must select the round type."),
     support: yup.object({
       type: yup
         .string()
@@ -487,11 +488,18 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               </div>
               <div className="flex mt-4">
                 <RoundType
-                  errors={errors}
                   register={register("roundMetadata.roundType")}
                   control={control}
                 />
               </div>
+              {errors.roundMetadata?.roundType && (
+                <p
+                  className="text-xs text-pink-500 mt-2"
+                  data-testid="round-end-date-error"
+                >
+                  {errors.roundMetadata?.roundType?.message}
+                </p>
+              )}
             </div>
 
             <div className="px-6 align-middle py-3.5 shadow-md">
@@ -819,7 +827,6 @@ function ApplicationDatesInformation() {
 
 function RoundType(props: {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
   control?: Control<Round>;
 }) {
   const { field: roundTypeField } = useController({
