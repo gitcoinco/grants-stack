@@ -66,7 +66,7 @@
     "@types/crypto-js": "^4.1.1",
     "@types/uuid": "^9.0.1",
     "@wagmi/core": "0.5.4",
-    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#fab892947ad5566e2666b76520ff9dc308158e07",
+    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#9e713f46db8a13e19c923a983bc5956b79da7c56",
     "babel-loader": "^8.3.0",
     "buffer": "^6.0.3",
     "classnames": "^2.3.2",

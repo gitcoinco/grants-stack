@@ -317,6 +317,7 @@ function AfterRoundStart(props: {
                   <ProjectList
                     projects={projects}
                     roundRoutePath={`/round/${chainId}/${roundId}`}
+                    roundId={roundId}
                     isBeforeRoundEndDate={props.isBeforeRoundEndDate}
                     canUseCollections
                   />
@@ -369,7 +370,7 @@ export const ProjectCard = (props: {
   addToCollection?: () => void;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
-}) {
+}) => {
   const { project, roundRoutePath } = props;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
