@@ -150,6 +150,7 @@ export interface Round {
   roundMetadata: {
     name: string;
     programContractAddress: string;
+    roundType: string;
     eligibility?: {
       description: string;
       requirements: { requirement: string }[];

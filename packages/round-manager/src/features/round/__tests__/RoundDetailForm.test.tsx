@@ -102,6 +102,12 @@ describe("<RoundDetailForm />", () => {
     expect(contactInfoInput).toBeInTheDocument();
   });
 
+  it("renders round type selection radio button", async () => {
+    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+    const roundTypeRadioBtn = screen.getByTestId("round-type-selection");
+    expect(roundTypeRadioBtn).toBeInTheDocument();
+  });
+
   it("requires contact information input to not be empty", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
     const submitButton = screen.getByRole("button", {
@@ -345,6 +351,10 @@ describe("<RoundDetailForm />", () => {
     fireEvent.change(endDateInputs[1], {
       target: { value: moment(roundEndTime).format("MM/DD/YYYY h:mm A") },
     });
+
+    /* Round Type Selection */
+    const roundTypeOption = screen.getByTestId("round-type-public");
+    fireEvent.click(roundTypeOption);
 
     /* Trigger validation */
     fireEvent.click(screen.getByText("Next"));
