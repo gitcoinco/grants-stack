@@ -27,6 +27,7 @@ export class TransactionBuilder {
     this.actions = [];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   add(action: string, args: any[]) {
     switch (action) {
       case "updateApplicationMetaPtr":

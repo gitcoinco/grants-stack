@@ -139,32 +139,49 @@ export default function ViewRoundSettings(props: { id?: string }) {
   });
 
   // returns a boolean for each group of fields that have been edited
-  const compareRounds = (oldRoundData: Round, newRoundData: Round): EditedGroups => {
+  const compareRounds = (
+    oldRoundData: Round,
+    newRoundData: Round
+  ): EditedGroups => {
     // create deterministic copies of the data
     const dOldRound: Round = _.cloneDeep(oldRoundData)!;
     const dNewRound: Round = _.cloneDeep(newRoundData);
 
     return {
-      ApplicationMetaPointer: !_.isEqual(dOldRound.applicationMetadata, dNewRound.applicationMetadata),
+      ApplicationMetaPointer: !_.isEqual(
+        dOldRound.applicationMetadata,
+        dNewRound.applicationMetadata
+      ),
       MatchAmount: false, //
       RoundFeeAddress: false, // not used in form yet
-      RoundFeePercentage: !_.isEqual(dOldRound.roundFeePercentage, dNewRound.roundFeePercentage),
-      RoundMetaPointer: !_.isEqual(dOldRound.roundMetadata, dNewRound.roundMetadata),
-      StartAndEndTimes: !(_.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime)
-        && _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime)
-        && _.isEqual(dOldRound.applicationsStartTime, dNewRound.applicationsStartTime)
-        && _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)),
-    }
-  }
+      RoundFeePercentage: !_.isEqual(
+        dOldRound.roundFeePercentage,
+        dNewRound.roundFeePercentage
+      ),
+      RoundMetaPointer: !_.isEqual(
+        dOldRound.roundMetadata,
+        dNewRound.roundMetadata
+      ),
+      StartAndEndTimes: !(
+        _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
+        _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
+        _.isEqual(
+          dOldRound.applicationsStartTime,
+          dNewRound.applicationsStartTime
+        ) &&
+        _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
+      ),
+    };
+  };
 
-  const prepareTransaction = async (editedGroups: EditedGroups, newRoundData: Round) => {
+  const prepareTransaction = async (
+    editedGroups: EditedGroups,
+    newRoundData: Round
+  ) => {
     console.log("hello world");
-  } 
+  };
 
   const submit: SubmitHandler<Round> = async (values: Round) => {
-    // todo: compare changes
-    // todo: categorize tx's
-    // todo: update metadata pointer in IPFS call
     // todo: send tx's
     const data = _.merge(editedRound, values);
     console.log("submit values", {
@@ -196,7 +213,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
       handleSubmit(submit(editedRound as Round));
       setEditMode(!editMode);
       setIsConfirmationModalOpen(false);
-    //  setIsProgressModalOpen(true);
+      //  setIsProgressModalOpen(true);
     } catch (e) {
       console.log("error", e);
     }
