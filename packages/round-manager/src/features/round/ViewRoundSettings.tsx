@@ -53,6 +53,15 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const ValidationSchema = RoundValidationSchema.shape({
     // Overrides for validation schema that was not included in imported schema.
     roundMetadata: yup.object({
+      eligibility: yup.object({
+        requirements: yup.array().of(
+          yup.object({
+            requirement: yup
+              .string()
+              .required("This field cannot be left blank."),
+          })
+        ),
+      }),
       quadraticFundingConfig: yup.object({
         matchingFundsAvailable: yup
           .number()
@@ -142,6 +151,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     setIsConfirmationModalOpen(true);
   };
 
+  // todo: update number of transactions based on actual number of transactions.
   const confirmationModalBody = (
     <p className="text-md">
       You will need to sign 3 transactions to update your round with the latest
@@ -150,11 +160,12 @@ export default function ViewRoundSettings(props: { id?: string }) {
     </p>
   );
 
-  const addRequirement = () => {
-    console.log("add requirement");
+  // todo: fix this...
+  const addRequirement = (e: any) => {
+    console.log("add requirement", e.target.value);
     const newRequirements = [
       ...(editedRound?.roundMetadata?.eligibility?.requirements || []),
-      { requirement: "test requirement" },
+      { requirement: e.target.value },
     ];
     setEditedRound({
       ...editedRound!,
@@ -228,7 +239,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
             )}
           </div>
         </div>
-        {/* todo: update the below copy when ready */}
         <div className="mb-8">
           <p className="text-sm text-gray-600">
             Changes can be made up until the round starts ({roundStartDateTime}
@@ -284,8 +294,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   control={control}
                   register={register}
                   errors={errors}
-                  onAddRequirement={() => {
-                    addRequirement();
+                  onAddRequirement={(e: any) => {
+                    addRequirement(e);
                   }}
                 />
               </Tab.Panel>
@@ -362,7 +372,7 @@ function DetailsPage(props: {
   control: Control<Round, any>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
-  onAddRequirement: () => void;
+  onAddRequirement: (e: any) => void;
 }) {
   const { round } = props;
   const { chain } = useNetwork();
@@ -608,6 +618,7 @@ function DetailsPage(props: {
           <div key={i} className="grid grid-cols-1 grid-rows-1 gap-4 mb-4">
             <div>
               <div
+                key={i}
                 className={
                   "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
                 }
@@ -661,10 +672,6 @@ function DetailsPage(props: {
                           data-testid="remove-requirement-button"
                           className="ml-4"
                           onClick={(e) => {
-                            console.log("remove requirement", {
-                              event: e,
-                              index: i,
-                            });
                             props.setEditedRound({
                               ...props.editedRound,
                               roundMetadata: {
@@ -702,14 +709,15 @@ function DetailsPage(props: {
                 className="text-xs text-pink-500"
                 data-testid="application-end-date-error"
               >
-                {/* {props.errors.roundMetadata?.eligibility?.requirements?.map(
-                    (err: any, i: number) => {
-                      // now what?
-                      return (
-                        <>Hello9</>
-                      )
-                    }
-                  )} */}
+                {Array.isArray(
+                  props.errors.roundMetadata.eligibility?.requirements
+                )
+                  ? props.errors.roundMetadata.eligibility?.requirements.map(
+                      (err: any, _i: number) => {
+                        return <span>{err.requirement.message}</span>;
+                      }
+                    )
+                  : null}
               </p>
             )}
           </div>
@@ -722,8 +730,8 @@ function DetailsPage(props: {
         $hidden={!props.editMode}
         className="mb-4"
         data-testid="add-requirement-button"
-        onClick={() => {
-          props.onAddRequirement();
+        onClick={(e) => {
+          props.onAddRequirement(e);
         }}
       >
         <span className="flex flex-row items-center">
@@ -1354,8 +1362,8 @@ function Funding(props: {
                   className="mr-2"
                   value={"yes"}
                   checked={
-                    props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .matchingCap
+                    props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.matchingCap
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
@@ -1389,8 +1397,8 @@ function Funding(props: {
                   className="ml-4"
                   value={"no"}
                   checked={
-                    !props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .matchingCap
+                    !props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.matchingCap
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
@@ -1451,13 +1459,6 @@ function Funding(props: {
                   )}
                   type="text"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                  value={
-                    props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .matchingCap
-                      ? round.roundMetadata.quadraticFundingConfig
-                          .matchingCapAmount
-                      : 0
-                  }
                   disabled={
                     !props.editMode ||
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
@@ -1497,11 +1498,12 @@ function Funding(props: {
       <div>
         <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
           A single project can only receive a maximum of{" "}
-          {round.roundMetadata.quadraticFundingConfig.matchingCapAmount ?? 0}%
-          of the matching fund (
+          {props.editedRound?.roundMetadata?.quadraticFundingConfig
+            ?.matchingCapAmount ?? 0}
+          % of the matching fund (
           {matchingFunds *
-            (round.roundMetadata.quadraticFundingConfig.matchingCapAmount ??
-              0)}{" "}
+            (props.editedRound?.roundMetadata?.quadraticFundingConfig
+              ?.matchingCapAmount ?? 0)}{" "}
           {matchingFundPayoutToken.name}).
         </span>
       </div>
@@ -1534,8 +1536,8 @@ function Funding(props: {
                   className="mr-2"
                   value={"yes"}
                   checked={
-                    props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .minDonationThreshold
+                    props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.minDonationThreshold
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
@@ -1569,8 +1571,8 @@ function Funding(props: {
                   className="ml-4"
                   value={"no"}
                   checked={
-                    !props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .minDonationThreshold || false
+                    !props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.minDonationThreshold || false
                   }
                   disabled={!props.editMode}
                   onChange={(e) => {
@@ -1632,8 +1634,8 @@ function Funding(props: {
                   type="text"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   value={
-                    props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .minDonationThreshold
+                    props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.minDonationThreshold
                       ? round.roundMetadata.quadraticFundingConfig
                           .minDonationThresholdAmount
                       : 0
@@ -1677,8 +1679,8 @@ function Funding(props: {
       <div>
         <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
           Each donation has to be a minimum of{" "}
-          {props.editedRound?.roundMetadata.quadraticFundingConfig
-            .minDonationThresholdAmount ?? 0}{" "}
+          {props.editedRound?.roundMetadata?.quadraticFundingConfig
+            ?.minDonationThresholdAmount ?? 0}{" "}
           USD equivalent for it to be eligible for matching.
         </span>
       </div>
@@ -1712,8 +1714,8 @@ function Funding(props: {
                   type="radio"
                   value="yes"
                   checked={
-                    props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .sybilDefense
+                    props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.sybilDefense
                   }
                   onChange={(e) => {
                     field.onChange(e.target.value);
@@ -1753,8 +1755,8 @@ function Funding(props: {
                   type="radio"
                   value="no"
                   checked={
-                    !props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .sybilDefense
+                    !props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.sybilDefense
                   }
                   onChange={(e) => {
                     field.onChange(e.target.value);
