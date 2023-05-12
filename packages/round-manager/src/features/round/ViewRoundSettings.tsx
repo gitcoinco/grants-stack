@@ -25,7 +25,7 @@ import { useNetwork } from "wagmi";
 import * as yup from "yup";
 import { useRoundById } from "../../context/round/RoundContext";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
-import { SupportType, payoutTokens } from "../api/utils";
+import { CHAINS, SupportType, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
@@ -478,19 +478,21 @@ function DetailsPage(props: {
             Program Chain
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
-            {/* todo: add image for chain */}
-            <input
-              type="text"
-              className="w-1/12 rounded-l-md border border-r-0 border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-              defaultValue={""}
-              disabled
-            />
-            <input
-              type="text"
-              className="w-11/12 rounded-r-md border border-l-0 border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-              defaultValue={chain?.name}
-              disabled
-            />
+            <span className="flex items-center pt-1">
+              {chain && CHAINS[chain.id]?.logo && (
+                <img
+                  src={CHAINS[chain.id]?.logo}
+                  alt="chain logo"
+                  data-testid="chain-logo"
+                  className="h-5 w-5 flex-shrink-0 rounded-full"
+                />
+              )}
+              {
+                <span className="ml-3 block truncate">
+                  {chain?.name}
+                </span>
+              }
+            </span>
           </div>
         </div>
       </div>
