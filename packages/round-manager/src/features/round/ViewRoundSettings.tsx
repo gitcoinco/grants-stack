@@ -675,7 +675,9 @@ function DetailsPage(props: {
                                   ...(props.editedRound?.roundMetadata
                                     .eligibility?.requirements || []),
                                 ],
-                                description: e.target.value,
+                                description:
+                                  props.editedRound?.roundMetadata.eligibility
+                                    ?.description || "",
                               },
                             },
                           });
