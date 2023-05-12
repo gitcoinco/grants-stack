@@ -192,8 +192,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
     </p>
   );
 
-  const addRequirement = () => {
-    console.log("add requirement");
+  // todo: fix this...
+  const addRequirement = (e: any) => {
+    console.log("add requirement", e.target.value);
     const newRequirements = [
       ...(editedRound?.roundMetadata?.eligibility?.requirements || []),
       { requirement: "" },
@@ -325,8 +326,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   control={control}
                   register={register}
                   errors={errors}
-                  onAddRequirement={() => {
-                    addRequirement();
+                  onAddRequirement={(e: any) => {
+                    addRequirement(e);
                   }}
                 />
               </Tab.Panel>
@@ -403,7 +404,7 @@ function DetailsPage(props: {
   control: Control<Round, any>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
-  onAddRequirement: () => void;
+  onAddRequirement: (e: any) => void;
 }) {
   const { round } = props;
   const { chain } = useNetwork();
@@ -745,8 +746,8 @@ function DetailsPage(props: {
         $hidden={!props.editMode}
         className="mb-4"
         data-testid="add-requirement-button"
-        onClick={() => {
-          props.onAddRequirement();
+        onClick={(e) => {
+          props.onAddRequirement(e);
         }}
       >
         <span className="flex flex-row items-center">
