@@ -60,7 +60,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
         .string()
         .required("This field is required.")
         .min(8, "Round name must be at least 8 characters."),
-      roundType: yup.string().required("You must select the round type."),
       support: yup.object({
         type: yup
           .string()
