@@ -641,24 +641,17 @@ function DetailsPage(props: {
                         disabled={!props.editMode}
                         onChange={(e) => {
                           field.onChange(e);
+
+                          const updatedRequirements = props.editedRound!.roundMetadata.eligibility!.requirements;
+                          updatedRequirements?.splice(i, 1);
+
                           props.setEditedRound({
                             ...props.editedRound,
                             roundMetadata: {
                               ...props.editedRound?.roundMetadata,
                               eligibility: {
                                 ...props.editedRound?.roundMetadata.eligibility,
-                                requirements: [
-                                  ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
-                                    0,
-                                    i
-                                  ) || []),
-                                  {
-                                    requirement: e.target.value,
-                                  },
-                                  ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
-                                    i + 1
-                                  ) || []),
-                                ],
+                                requirements: updatedRequirements,
                                 description:
                                   props.editedRound?.roundMetadata.eligibility
                                     ?.description || "",
