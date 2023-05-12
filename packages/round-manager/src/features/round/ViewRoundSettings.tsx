@@ -53,6 +53,34 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const ValidationSchema = RoundValidationSchema.shape({
     // Overrides for validation schema that was not included in imported schema.
     roundMetadata: yup.object({
+      name: yup
+        .string()
+        .required("This field is required.")
+        .min(8, "Round name must be at least 8 characters."),
+      roundType: yup.string().required("You must select the round type."),
+      support: yup.object({
+        type: yup
+          .string()
+          .required("You must select a support type.")
+          .notOneOf(
+            ["Select what type of input."],
+            "You must select a support type."
+          ),
+        info: yup
+          .string()
+          .required("This field is required.")
+          .when("type", {
+            is: "Email",
+            then: yup
+              .string()
+              .email()
+              .required("You must provide a valid email address."),
+          })
+          .when("type", {
+            is: (val: string) => val && val != "Email",
+            then: yup.string().url().required("You must provide a valid URL."),
+          }),
+      }),
       eligibility: yup.object({
         requirements: yup.array().of(
           yup.object({
@@ -423,14 +451,10 @@ function DetailsPage(props: {
                   disabled={!props.editMode}
                   data-testid={"round-name-input"}
                   onChange={(e) => {
+                    const updatedRound = props.editedRound;
+                    updatedRound.roundMetadata.name = e.target.value;
                     field.onChange(e);
-                    props.setEditedRound({
-                      ...props.editedRound,
-                      roundMetadata: {
-                        ...props.editedRound.roundMetadata,
-                        name: e.target.value,
-                      },
-                    });
+                    props.setEditedRound(updatedRound);
                   }}
                 />
               )}
@@ -438,7 +462,7 @@ function DetailsPage(props: {
           </div>
           {props.errors.roundMetadata && (
             <p
-              className="text-xs text-pink-500"
+              className="text-xs text-pink-500 mt-1"
               data-testid="application-end-date-error"
             >
               {props.errors.roundMetadata.name?.message}
@@ -508,7 +532,7 @@ function DetailsPage(props: {
         />
         {props.errors.roundMetadata && (
           <p
-            className="text-xs text-pink-500"
+            className="text-xs text-pink-500 mt-1"
             data-testid="application-end-date-error"
           >
             {props.errors.roundMetadata.eligibility?.description?.message}
@@ -555,7 +579,7 @@ function DetailsPage(props: {
           </div>
           {props.errors.roundMetadata && (
             <p
-              className="text-xs text-pink-500"
+              className="text-xs text-pink-500 mt-1"
               data-testid="application-end-date-error"
             >
               {props.errors.roundMetadata.support?.types?.message}
@@ -602,7 +626,7 @@ function DetailsPage(props: {
           </div>
           {props.errors.roundMetadata && (
             <p
-              className="text-xs text-pink-500"
+              className="text-xs text-pink-500 mt-1"
               data-testid="application-end-date-error"
             >
               {props.errors.roundMetadata?.support?.info?.message}
@@ -642,7 +666,9 @@ function DetailsPage(props: {
                         onChange={(e) => {
                           field.onChange(e);
 
-                          const updatedRequirements = props.editedRound!.roundMetadata.eligibility!.requirements;
+                          const updatedRequirements =
+                            props.editedRound!.roundMetadata.eligibility!
+                              .requirements;
                           updatedRequirements?.splice(i, 1);
 
                           props.setEditedRound({
@@ -699,7 +725,7 @@ function DetailsPage(props: {
             </div>
             {props.errors.roundMetadata && (
               <p
-                className="text-xs text-pink-500"
+                className="text-xs text-pink-500 mt-1"
                 data-testid="application-end-date-error"
               >
                 {Array.isArray(
@@ -920,7 +946,7 @@ function RoundApplicationPeriod(props: {
                 </div>
                 {props.errors.applicationsStartTime && (
                   <p
-                    className="text-xs text-pink-500"
+                    className="text-xs text-pink-500 mt-1"
                     data-testid="application-end-date-error"
                   >
                     {props.errors.applicationsStartTime?.message}
@@ -1011,7 +1037,7 @@ function RoundApplicationPeriod(props: {
                 </div>
                 {props.errors.applicationsEndTime && (
                   <p
-                    className="text-xs text-pink-500"
+                    className="text-xs text-pink-500 mt-1"
                     data-testid="application-end-date-error"
                   >
                     {props.errors.applicationsEndTime?.message}
@@ -1102,7 +1128,7 @@ function RoundApplicationPeriod(props: {
                 </div>
                 {props.errors.roundStartTime && (
                   <p
-                    className="text-xs text-pink-500"
+                    className="text-xs text-pink-500 mt-1"
                     data-testid="application-end-date-error"
                   >
                     {props.errors.roundStartTime?.message}
@@ -1190,7 +1216,7 @@ function RoundApplicationPeriod(props: {
                 </div>
                 {props.errors.roundEndTime && (
                   <p
-                    className="text-xs text-pink-500"
+                    className="text-xs text-pink-500 mt-1"
                     data-testid="application-end-date-error"
                   >
                     {props.errors.roundEndTime?.message}
@@ -1314,7 +1340,7 @@ function Funding(props: {
           </div>
           {props.errors.roundMetadata && (
             <p
-              className="text-xs text-pink-500"
+              className="text-xs text-pink-500 mt-1"
               data-testid="application-end-date-error"
             >
               {
@@ -1416,7 +1442,7 @@ function Funding(props: {
           </div>
           {props.errors.roundMetadata && (
             <p
-              className="text-xs text-pink-500"
+              className="text-xs text-pink-500 mt-1"
               data-testid="application-end-date-error"
             >
               {
@@ -1477,7 +1503,7 @@ function Funding(props: {
           </div>
           {props.errors.roundMetadata && (
             <p
-              className="text-xs text-pink-500"
+              className="text-xs text-pink-500 mt-1"
               data-testid="application-end-date-error"
             >
               {
@@ -1591,7 +1617,7 @@ function Funding(props: {
         </div>
         {props.errors.roundMetadata && (
           <p
-            className="text-xs text-pink-500"
+            className="text-xs text-pink-500 mt-1"
             data-testid="application-end-date-error"
           >
             {
@@ -1658,7 +1684,7 @@ function Funding(props: {
           </div>
           {props.errors.roundMetadata && (
             <p
-              className="text-xs text-pink-500"
+              className="text-xs text-pink-500 mt-1"
               data-testid="application-end-date-error"
             >
               {
@@ -1775,7 +1801,7 @@ function Funding(props: {
         </div>
         {props.errors.roundMetadata && (
           <p
-            className="text-xs text-pink-500"
+            className="text-xs text-pink-500 mt-1"
             data-testid="application-end-date-error"
           >
             {
