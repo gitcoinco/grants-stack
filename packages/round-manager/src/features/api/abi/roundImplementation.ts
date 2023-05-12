@@ -38,6 +38,7 @@ const roundImplementation = [
   "function hasRole(bytes32 role, address account) view returns (bool)",
   "function initialize(bytes encodedParameters, address _alloSettings)",
   "function matchAmount() view returns (uint256)",
+  "function multicall(bytes[] data) returns (bytes[] results)",
   "function nextApplicationIndex() view returns (uint256)",
   "function payoutStrategy() view returns (address)",
   "function renounceRole(bytes32 role, address account)",
@@ -59,7 +60,7 @@ const roundImplementation = [
   "function updateStartAndEndTimes(uint256 newApplicationsStartTime, uint256 newApplicationsEndTime, uint256 newRoundStartTime, uint256 newRoundEndTime)",
   "function vote(bytes[] encodedVotes) payable",
   "function votingStrategy() view returns (address)",
-  "function withdraw(address tokenAddress, address recipent)"
+  "function withdraw(address tokenAddress, address recipent)",
 ];
 
 export default roundImplementation;

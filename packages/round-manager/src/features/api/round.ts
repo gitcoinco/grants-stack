@@ -16,46 +16,46 @@ import {
 } from "./types";
 import { fetchFromIPFS, payoutTokens } from "./utils";
 
+export enum UpdateAction {
+  UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
+  UPDATE_ROUND_META_PTR = "updateRoundMetaPtr",
+  UPDATE_ROUND_START_AND_END_TIMES = "updateRoundStartAndEndTimes",
+  UPDATE_MATCH_AMOUNT = "updateMatchAmount",
+  UPDATE_ROUND_FEE_ADDRESS = "updateRoundFeeAddress",
+  UPDATE_ROUND_FEE_PERCENTAGE = "updateRoundFeePercentage"
+}
+
 export class TransactionBuilder {
   round: Round;
   signer: Signer;
-  actions: [];
+  actions: any[];
+  contract: any;
 
   constructor(round: Round, signer: Signer) {
     this.round = round;
     this.signer = signer;
     this.actions = [];
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-  add(action: string, args: any[]) {
-    switch (action) {
-      case "updateApplicationMetaPtr":
-        // push action with params
-        break;
-      case "updateRoundMetaPtr":
-        // push action with params
-        break;
-      case "updateRoundStartAndEndTimes":
-        // push action with params
-        break;
-      case "updateMatchAmount":
-        // push action with params
-        break;
-      case "updateRoundFeeAddress":
-        // push action with params
-        break;
-      case "updateRoundFeePercentage":
-        // push action with params
-        break;
-      default:
-        throw new Error(`Invalid action: ${action}`);
+    if (round.id) {
+      this.contract = new ethers.Contract(
+        round.id,
+        roundImplementationContract.abi,
+        signer,
+      );
+    } else {
+      throw new Error("Round ID is undefined");
     }
   }
 
-  async execute() {
-    // execute all actions
-    // return tx hash
+  add(action: UpdateAction, args: any[]) {
+    if (!(action in UpdateAction)) {
+      throw new Error(`Invalid action: ${action}`);
+    }
+    
+    this.actions.push(this.contract.interface.encodeFunctionData(action, args));
+  }
+
+  async execute(): Promise<TransactionResponse> {
+    return await this.contract.multicall(this.actions);
   }
 }
 /**

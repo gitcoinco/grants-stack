@@ -2,7 +2,7 @@ import React, { SetStateAction, createContext } from "react";
 import { EditedGroups, ProgressStatus, Round } from "../../features/api/types";
 import { Signer } from "ethers";
 import { datadogLogs } from "@datadog/browser-logs";
-import { TransactionBuilder } from "../../features/api/round";
+import { TransactionBuilder, UpdateAction } from "../../features/api/round";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
@@ -75,7 +75,7 @@ const _updateRound = async ({
   editedGroups,
  } = updateRoundData;
 
-const transactionBuilder = new TransactionBuilder(round, signerOrProvider);
+ const transactionBuilder = new TransactionBuilder(round, signerOrProvider);
 
  try {
   datadogLogs.logger.info(`_updateRound: ${round}`);
@@ -85,13 +85,15 @@ const transactionBuilder = new TransactionBuilder(round, signerOrProvider);
    if (editedGroups.RoundMetaPointer || editedGroups.ApplicationMetaPointer) {
     setIPFSCurrentStatus(ProgressStatus.IN_PROGRESS);
     if (editedGroups.RoundMetaPointer) {
-     const ipfsHash: string = "abcd";
+     const ipfsHash: string = "abcd"; // todo: add valid value
      // pin to ipfs
-     transactionBuilder.add("updateRoundMetaPtr", [ipfsHash])
+     transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [ipfsHash]);
      // create transaction
     }
     if (editedGroups.ApplicationMetaPointer) {
+     const ipfsHash: string = "abcd"; // todo: add valid value
      // pin to ipfs
+     transactionBuilder.add(UpdateAction.UPDATE_APPLICATION_META_PTR, [ipfsHash]);
      // create transaction
     }
     setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
@@ -102,22 +104,37 @@ const transactionBuilder = new TransactionBuilder(round, signerOrProvider);
    throw error;
   }
 
- // direct contract updates
- if(editedGroups.MatchAmount) {
+  // direct contract updates
+  if (editedGroups.MatchAmount) {
    // create match amount transaction
- }
+   const arg = "abcd"; // todo: add valid value
+   transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [arg]);
+  }
 
- if(editedGroups.RoundFeeAddress) {
+  if (editedGroups.RoundFeeAddress) {
    // create round fee address transaction
- }
+   const arg = "abcd"; // todo: add valid value
+   transactionBuilder.add(UpdateAction.UPDATE_ROUND_FEE_ADDRESS, [arg]);
+  }
 
- if(editedGroups.RoundFeePercentage) {
+  if (editedGroups.RoundFeePercentage) {
    // create round fee percentage transaction
- }
+   const arg = "abcd"; // todo: add valid value
+   transactionBuilder.add(UpdateAction.UPDATE_ROUND_FEE_PERCENTAGE, [arg]);
+  }
 
- if(editedGroups.StartAndEndTimes) {
+  if (editedGroups.StartAndEndTimes) {
    // create start and end times transaction
- }
+   const arg = "abcd"; // todo: add valid value
+   transactionBuilder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [arg]);
+  }
+
+  setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
+
+  const tx = await transactionBuilder.execute();
+  await tx.wait();
+
+  setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
 
  } catch (error) {
   datadogLogs.logger.error(`_updateRound: ${error}`);
