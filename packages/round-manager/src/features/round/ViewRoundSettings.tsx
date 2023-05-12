@@ -50,8 +50,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-  const matchAmount = round?.roundMetadata.quadraticFundingConfig.matchingCapAmount!;
+  const matchAmount =
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    round?.roundMetadata.quadraticFundingConfig.matchingCapAmount!;
 
   const ValidationSchema = RoundValidationSchema.shape({
     // Overrides for validation schema that was not included in imported schema.
@@ -105,10 +106,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           then: yup
             .number()
             .required("This field is required.")
-            .moreThan(
-              matchAmount,
-              `Must be greater than ${matchAmount}`
-            ),
+            .moreThan(matchAmount, `Must be greater than ${matchAmount}`),
           otherwise: yup.number().notRequired(),
         }),
         minDonationThresholdAmount: yup
@@ -193,11 +191,11 @@ export default function ViewRoundSettings(props: { id?: string }) {
     </p>
   );
 
-  const addRequirement = (e: any) => {
-    console.log("add requirement", e.target.value);
+  const addRequirement = () => {
+    console.log("add requirement");
     const newRequirements = [
       ...(editedRound?.roundMetadata?.eligibility?.requirements || []),
-      { requirement: e.target.value },
+      { requirement: "" },
     ];
     setEditedRound({
       ...editedRound!,
@@ -326,8 +324,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   control={control}
                   register={register}
                   errors={errors}
-                  onAddRequirement={(e: any) => {
-                    addRequirement(e);
+                  onAddRequirement={() => {
+                    addRequirement();
                   }}
                 />
               </Tab.Panel>
@@ -404,7 +402,7 @@ function DetailsPage(props: {
   control: Control<Round, any>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
-  onAddRequirement: (e: any) => void;
+  onAddRequirement: () => void;
 }) {
   const { round } = props;
   const { chain } = useNetwork();
@@ -491,11 +489,7 @@ function DetailsPage(props: {
                   className="h-5 w-5 flex-shrink-0 rounded-full"
                 />
               )}
-              {
-                <span className="ml-3 block truncate">
-                  {chain?.name}
-                </span>
-              }
+              {<span className="ml-3 block truncate">{chain?.name}</span>}
             </span>
           </div>
         </div>
@@ -671,22 +665,17 @@ function DetailsPage(props: {
                         disabled={!props.editMode}
                         onChange={(e) => {
                           field.onChange(e);
-
-                          const updatedRequirements =
-                            props.editedRound!.roundMetadata.eligibility!
-                              .requirements;
-                          updatedRequirements?.splice(i, 1);
-
                           props.setEditedRound({
                             ...props.editedRound,
                             roundMetadata: {
                               ...props.editedRound?.roundMetadata,
                               eligibility: {
                                 ...props.editedRound?.roundMetadata.eligibility,
-                                requirements: updatedRequirements,
-                                description:
-                                  props.editedRound?.roundMetadata.eligibility
-                                    ?.description || "",
+                                requirements: [
+                                  ...(props.editedRound?.roundMetadata
+                                    .eligibility?.requirements || []),
+                                ],
+                                description: e.target.value,
                               },
                             },
                           });
@@ -697,6 +686,11 @@ function DetailsPage(props: {
                           data-testid="remove-requirement-button"
                           className="ml-4"
                           onClick={(e) => {
+                            const updatedRequirements =
+                              props.editedRound!.roundMetadata.eligibility!
+                                .requirements;
+                            updatedRequirements?.splice(i, 1);
+
                             props.setEditedRound({
                               ...props.editedRound,
                               roundMetadata: {
@@ -704,15 +698,7 @@ function DetailsPage(props: {
                                 eligibility: {
                                   ...props.editedRound?.roundMetadata
                                     .eligibility,
-                                  requirements: [
-                                    ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
-                                      0,
-                                      i
-                                    ) || []),
-                                    ...(props.editedRound?.roundMetadata.eligibility?.requirements?.slice(
-                                      i + 1
-                                    ) || []),
-                                  ],
+                                  requirements: updatedRequirements,
                                   description:
                                     props.editedRound?.roundMetadata.eligibility
                                       ?.description || "",
@@ -755,8 +741,8 @@ function DetailsPage(props: {
         $hidden={!props.editMode}
         className="mb-4"
         data-testid="add-requirement-button"
-        onClick={(e) => {
-          props.onAddRequirement(e);
+        onClick={() => {
+          props.onAddRequirement();
         }}
       >
         <span className="flex flex-row items-center">
