@@ -63,29 +63,17 @@ export const RoundValidationSchema = yup.object().shape({
   applicationsStartTime: yup
     .date()
     .required("This field is required.")
-    .min(new Date(), "You must enter a date and time in the future.")
-    .max(
-      yup.ref("applicationsEndTime"),
-      "Applications start date must be earlier than the applications end date"
-    ),
+    .min(new Date(), "You must enter a date and time in the future."),
   applicationsEndTime: yup
     .date()
     .required("This field is required.")
     .min(
       yup.ref("applicationsStartTime"),
       "Applications end date must be later than applications start date"
-    )
-    .max(
-      yup.ref("roundStartTime"),
-      "Applications end date must be earlier than the round start date"
     ),
   roundStartTime: yup
     .date()
     .required("This field is required.")
-    .min(
-      yup.ref("applicationsEndTime"),
-      "Round start date must be later than applications end date"
-    )
     .max(
       yup.ref("roundEndTime"),
       "Round start date must be earlier than the round end date"
@@ -545,7 +533,7 @@ function RoundName(props: {
   );
 }
 
-function ProgramChain(props: { program: Program }) {
+export function ProgramChain(props: { program: Program }) {
   const { program } = props;
   return (
     <div className="col-span-6 sm:col-span-3 opacity-50">
@@ -610,7 +598,7 @@ function ContactInformation(props: {
   );
 }
 
-function SupportTypeButton(props: {
+export function SupportTypeButton(props: {
   errors: FieldErrors<Round>;
   supportType?: SupportType;
 }) {
@@ -641,7 +629,7 @@ function SupportTypeButton(props: {
   );
 }
 
-export function SupportTypeDropdown(props: {
+function SupportTypeDropdown(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   control: Control<Round>;
