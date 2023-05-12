@@ -138,6 +138,7 @@ const _updateRound = async ({
 
  } catch (error) {
   datadogLogs.logger.error(`_updateRound: ${error}`);
+  setRoundUpdateStatus(ProgressStatus.IS_ERROR);
  }
 
 };
