@@ -50,6 +50,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+  const matchAmount = round?.roundMetadata.quadraticFundingConfig.matchingCapAmount!;
+
   const ValidationSchema = RoundValidationSchema.shape({
     // Overrides for validation schema that was not included in imported schema.
     roundMetadata: yup.object({
@@ -103,7 +106,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
           then: yup
             .number()
             .required("This field is required.")
-            .moreThan(0, "Must be greater than 0"),
+            .moreThan(
+              matchAmount,
+              `Must be greater than ${matchAmount}`
+            ),
           otherwise: yup.number().notRequired(),
         }),
         minDonationThresholdAmount: yup
@@ -188,7 +194,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
     </p>
   );
 
-  // todo: fix this...
   const addRequirement = (e: any) => {
     console.log("add requirement", e.target.value);
     const newRequirements = [
@@ -1321,7 +1326,6 @@ function Funding(props: {
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   disabled={!props.editMode}
                   onChange={(e) => {
-                    // todo: matching funds available cannot be changed to be less than the amount already allocated
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
