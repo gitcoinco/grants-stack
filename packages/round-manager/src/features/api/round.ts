@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Signer } from "@ethersproject/abstract-signer";
 import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
@@ -46,11 +47,12 @@ export class TransactionBuilder {
     }
   }
 
-  add(action: UpdateAction, args: any[]) {
+  add(action: any, args: any[]) {
+    console.log("action, args", { action, args });
     if (!(action in UpdateAction)) {
       throw new Error(`Invalid action: ${action}`);
     }
-    
+
     this.actions.push(this.contract.interface.encodeFunctionData(action, args));
   }
 
@@ -58,6 +60,7 @@ export class TransactionBuilder {
     return await this.contract.multicall(this.actions);
   }
 }
+
 /**
  * Fetch a round by ID
  * @param signerOrProvider - provider
@@ -71,7 +74,7 @@ export async function getRoundById(
     // fetch chain id
     const { chainId } = await signerOrProvider.getNetwork();
 
-    // query the subgraph for all rounds by the given address in the given program
+    // query the subgraph for all rounds by  the given address in the given program
     const res = await graphql_fetch(
       `
           query GetRounds($roundId: String) {

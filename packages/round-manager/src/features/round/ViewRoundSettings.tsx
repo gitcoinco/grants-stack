@@ -40,6 +40,7 @@ import { PayoutTokenInformation } from "./QuadraticFundingForm";
 import ReactTooltip from "react-tooltip";
 
 export default function ViewRoundSettings(props: { id?: string }) {
+  const { signer } = useWallet();
   const { round, fetchRoundStatus, error } = useRoundById(
     props.id?.toLowerCase()
   );
@@ -52,6 +53,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [numberOfTransactions, setNumberOfTransactions] = useState(0);
 
   const matchAmount =
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
@@ -178,11 +180,52 @@ export default function ViewRoundSettings(props: { id?: string }) {
     editedGroups: EditedGroups,
     newRoundData: Round
   ) => {
-    console.log("hello world");
+    console.log("Preparing transaction...");
+    const builder = new TransactionBuilder(newRoundData, signer!);
+    let tx: any;
+    const addToTxCount = () => {
+      setNumberOfTransactions(numberOfTransactions + 1);
+    };
+
+    console.log("editedGroups", editedGroups);
+
+    try {
+      if (editedGroups.RoundMetaPointer) {
+        console.log("Updating the round metapointer");
+        const hash = await pinToIPFS({content: newRoundData.roundMetadata });
+        const hash2 = await saveToIPFS({content: newRoundData.roundMetadata });
+        console.log("hash", { hash, hash2 });
+        tx = builder.add("updateRoundMetaPtr", [hash]);
+        addToTxCount();
+      }
+      if (editedGroups.StartAndEndTimes) {
+        tx = builder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
+          editedRound?.applicationsStartTime,
+          editedRound?.applicationsEndTime,
+          editedRound?.roundStartTime,
+          editedRound?.roundEndTime,
+        ]);
+        addToTxCount();
+      }
+      if (editedGroups.MatchAmount) {
+        tx = builder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [
+          editedRound?.roundMetadata?.quadraticFundingConfig
+            ?.matchingFundsAvailable,
+        ]);
+        addToTxCount();
+      }
+
+      if (tx) {
+        console.log("tx", tx);
+        setIsProgressModalOpen(true);
+        await builder.execute();
+      }
+    } catch (e) {
+      console.log("error", e);
+    }
   };
 
   const submit: SubmitHandler<Round> = async (values: Round) => {
-    // todo: send tx's
     const data = _.merge(editedRound, values);
     console.log("submit values", {
       values,
@@ -213,7 +256,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
       handleSubmit(submit(editedRound as Round));
       setEditMode(!editMode);
       setIsConfirmationModalOpen(false);
-      //  setIsProgressModalOpen(true);
+      // setIsProgressModalOpen(true);
     } catch (e) {
       console.log("error", e);
     }
@@ -226,9 +269,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
   // todo: update number of transactions based on actual number of transactions.
   const confirmationModalBody = (
     <p className="text-md">
-      You will need to sign 3 transactions to update your round with the latest
-      changes. Please note that once the round starts, you will not be able to
-      make any more changes to your round settings.
+      You will need to sign {numberOfTransactions} transactions to update your
+      round with the latest changes. Please note that once the round starts, you
+      will not be able to make any more changes to your round settings.
     </p>
   );
 
@@ -409,7 +452,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
           }}
           cancelButtonAction={() => {
             setIsConfirmationModalOpen(false);
-            onCancelEdit();
           }}
         />
         <ProgressModal
