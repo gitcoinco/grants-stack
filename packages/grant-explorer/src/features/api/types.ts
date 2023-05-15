@@ -88,6 +88,7 @@ export interface Round {
    */
   roundMetadata?: {
     name: string;
+    roundType: string;
     eligibility: Eligibility;
     programContractAddress: string;
     quadraticFundingConfig?: {

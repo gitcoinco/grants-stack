@@ -1,6 +1,17 @@
 import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types";
 import { RedstoneTokenIds } from "common";
+import { useSearchParams } from "react-router-dom";
+
+export function useDebugMode(): boolean {
+  const [searchParams] = useSearchParams();
+
+  return (
+    (process.env.REACT_APP_ALLOW_URL_DEBUG_MODE === "true" &&
+      searchParams.get("debug") === "true") ||
+    process.env.REACT_APP_DEBUG_MODE === "true"
+  );
+}
 
 export enum ChainId {
   MAINNET = "1",
