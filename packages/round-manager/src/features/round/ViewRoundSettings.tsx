@@ -1398,7 +1398,7 @@ function Funding(props: {
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCap
                   }
-                  disabled={!props.editMode}
+                  readOnly={!props.editMode}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1572,7 +1572,7 @@ function Funding(props: {
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
                   }
-                  disabled={!props.editMode}
+                  readOnly={!props.editMode}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1743,7 +1743,7 @@ function Funding(props: {
                   {...props.register(
                     "roundMetadata.quadraticFundingConfig.sybilDefense"
                   )}
-                  disabled={!props.editMode}
+                  readOnly={!props.editMode}
                   type="radio"
                   value="yes"
                   checked={
