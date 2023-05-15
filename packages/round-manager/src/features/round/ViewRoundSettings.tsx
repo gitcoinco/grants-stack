@@ -53,7 +53,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-  const [numberOfTransactions, setNumberOfTransactions] = useState(0);
 
   const matchAmount =
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
@@ -195,9 +194,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
     console.log("Preparing transaction...");
     const builder = new TransactionBuilder(newRoundData, signer!);
     let tx: any;
-    const addToTxCount = () => {
-      setNumberOfTransactions(numberOfTransactions + 1);
-    };
 
     console.log("editedGroups", editedGroups);
 
@@ -208,7 +204,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
         const hash2 = await saveToIPFS({content: newRoundData.roundMetadata });
         console.log("hash", { hash, hash2 });
         tx = builder.add("updateRoundMetaPtr", [hash]);
-        addToTxCount();
       }
       if (editedGroups.StartAndEndTimes) {
         tx = builder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
@@ -217,14 +212,12 @@ export default function ViewRoundSettings(props: { id?: string }) {
           editedRound?.roundStartTime,
           editedRound?.roundEndTime,
         ]);
-        addToTxCount();
       }
       if (editedGroups.MatchAmount) {
         tx = builder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [
           editedRound?.roundMetadata?.quadraticFundingConfig
             ?.matchingFundsAvailable,
         ]);
-        addToTxCount();
       }
 
       if (tx) {
