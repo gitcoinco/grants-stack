@@ -26,7 +26,8 @@ export type RoundOverview = {
 
 async function fetchRoundsByTimestamp(
   query: string,
-  chainId: string
+  chainId: string,
+  debugModeEnabled: boolean
 ): Promise<RoundOverview[]> {
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
@@ -58,7 +59,7 @@ async function fetchRoundsByTimestamp(
       }
     }
 
-    return filteredRounds;
+    return debugModeEnabled ? rounds : filteredRounds;
   } catch (error) {
     console.log("error: fetchRoundsByTimestamp", error);
     return [];
@@ -88,7 +89,9 @@ function getActiveChainIds() {
   return activeChainIds;
 }
 
-export async function getRoundsInApplicationPhase(): Promise<{
+export async function getRoundsInApplicationPhase(
+  debugModeEnabled: boolean
+): Promise<{
   isLoading: boolean;
   error: unknown;
   rounds: RoundOverview[];
@@ -126,7 +129,11 @@ export async function getRoundsInApplicationPhase(): Promise<{
     `;
 
     for (let i = 0; i < chainIds.length; i++) {
-      const roundsForChainId = await fetchRoundsByTimestamp(query, chainIds[i]);
+      const roundsForChainId = await fetchRoundsByTimestamp(
+        query,
+        chainIds[i],
+        debugModeEnabled
+      );
       rounds.push(...roundsForChainId);
     }
 
@@ -145,7 +152,7 @@ export async function getRoundsInApplicationPhase(): Promise<{
   }
 }
 
-export async function getActiveRounds(): Promise<{
+export async function getActiveRounds(debugModeEnabled: boolean): Promise<{
   isLoading: boolean;
   error: unknown;
   rounds: RoundOverview[];
@@ -183,7 +190,11 @@ export async function getActiveRounds(): Promise<{
     `;
 
     for (let i = 0; i < chainIds.length; i++) {
-      const roundsForChainId = await fetchRoundsByTimestamp(query, chainIds[i]);
+      const roundsForChainId = await fetchRoundsByTimestamp(
+        query,
+        chainIds[i],
+        debugModeEnabled
+      );
       rounds.push(...roundsForChainId);
     }
 
