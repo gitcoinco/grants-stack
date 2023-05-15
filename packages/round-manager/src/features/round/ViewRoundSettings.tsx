@@ -873,6 +873,32 @@ function RoundApplicationPeriod(props: {
 }) {
   const { round } = props;
 
+  const [applicationStartDate, setApplicationStartDate] = useState(moment());
+  const [applicationEndDate, setApplicationEndDate] = useState(moment());
+  const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
+
+  const yesterday = moment().subtract(1, "day");
+
+  const disablePastDate = (current: moment.Moment) => {
+    return current.isAfter(yesterday);
+  };
+
+  function disableBeforeApplicationStartDate(current: moment.Moment) {
+    return current.isAfter(applicationStartDate);
+  }
+
+  const disablePastAndBeforeRoundStartDate = (current: moment.Moment) => {
+    return disablePastDate(current);
+  };
+
+  function disableBeforeApplicationEndDate(current: moment.Moment) {
+    return current.isAfter(applicationEndDate);
+  }
+
+  function disableBeforeRoundStartDate(current: moment.Moment) {
+    return current.isAfter(roundStartDate);
+  }
+
   return (
     <div className="w-full">
       <span className="mt-4 inline-flex text-sm text-gray-600 mb-8">
@@ -909,6 +935,7 @@ function RoundApplicationPeriod(props: {
                         {...props.register("applicationsStartTime")}
                         closeOnSelect
                         onChange={(date) => {
+                          setApplicationStartDate(moment(date));
                           field.onChange(moment(date).toDate());
                           props.setEditedRound({
                             ...props.editedRound,
@@ -918,6 +945,7 @@ function RoundApplicationPeriod(props: {
                         utc={true}
                         dateFormat={"YYYY-MM-DD"}
                         timeFormat={"HH:mm UTC"}
+                        isValidDate={disablePastAndBeforeRoundStartDate}
                         inputProps={{
                           id: "applicationsStartTime",
                           placeholder: "",
@@ -1002,6 +1030,7 @@ function RoundApplicationPeriod(props: {
                         {...props.register("applicationsEndTime")}
                         closeOnSelect
                         onChange={(date) => {
+                          setApplicationEndDate(moment(date));
                           field.onChange(moment(date).toDate());
                           props.setEditedRound({
                             ...props.editedRound,
@@ -1010,6 +1039,7 @@ function RoundApplicationPeriod(props: {
                         }}
                         utc={true}
                         dateFormat={"YYYY-MM-DD"}
+                        isValidDate={disableBeforeApplicationStartDate}
                         timeFormat={"HH:mm UTC"}
                         inputProps={{
                           id: "applicationsEndTime",
@@ -1097,6 +1127,7 @@ function RoundApplicationPeriod(props: {
                           {...props.register("roundStartTime")}
                           closeOnSelect
                           onChange={(date) => {
+                            setRoundStartDate(moment(date));
                             field.onChange(moment(date).toDate());
                             props.setEditedRound({
                               ...props.editedRound,
@@ -1106,6 +1137,7 @@ function RoundApplicationPeriod(props: {
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
                           timeFormat={"HH:mm UTC"}
+                          isValidDate={disableBeforeApplicationEndDate}
                           inputProps={{
                             id: "roundStartTime",
                             placeholder: "",
@@ -1199,6 +1231,7 @@ function RoundApplicationPeriod(props: {
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
                           timeFormat={"HH:mm UTC"}
+                          isValidDate={disableBeforeRoundStartDate}
                           inputProps={{
                             id: "roundEndTime",
                             placeholder: "",
