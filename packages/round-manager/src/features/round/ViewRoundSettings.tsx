@@ -1442,7 +1442,7 @@ function Funding(props: {
           >
             <input
               type="text"
-              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={matchingFundPayoutToken.name}
               disabled
             />
@@ -1624,7 +1624,7 @@ function Funding(props: {
           >
             <input
               type="text"
-              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="disabled:bg-gray-50 w-2/12 text-center rounded-l-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={"%"}
               disabled
             />
@@ -1638,7 +1638,7 @@ function Funding(props: {
                     "roundMetadata.quadraticFundingConfig.matchingCapAmount"
                   )}
                   type="text"
-                  className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                  className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   disabled={
                     !props.editMode ||
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
@@ -1826,7 +1826,7 @@ function Funding(props: {
           >
             <input
               type="text"
-              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={"USD"}
               disabled
             />
