@@ -149,13 +149,25 @@ export default function ViewRoundSettings(props: { id?: string }) {
     const dOldRound: Round = _.cloneDeep(oldRoundData)!;
     const dNewRound: Round = _.cloneDeep(newRoundData);
 
+    console.log(newRoundData);
+
     return {
       ApplicationMetaPointer: !_.isEqual(
         dOldRound.applicationMetadata,
         dNewRound.applicationMetadata
       ),
-      MatchAmount: false, //
-      RoundFeeAddress: false, // not used in form yet
+      MatchAmount: _.isEqual(
+        dOldRound?.roundMetadata?.quadraticFundingConfig
+          ?.matchingFundsAvailable,
+        dNewRound?.roundMetadata?.quadraticFundingConfig
+          ?.matchingFundsAvailable
+      ), 
+      RoundFeeAddress: false,
+      // todo feesAddress not found in roundMetadata
+      // RoundFeeAddress: _.isEqual(
+      //   dOldRound?.roundMetadata?.feesAddress.toLowerCase(),
+      //   dNewRound?.roundMetadata?.feesAddress.toLowerCase()
+      // ),
       RoundFeePercentage: !_.isEqual(
         dOldRound.roundFeePercentage,
         dNewRound.roundFeePercentage
