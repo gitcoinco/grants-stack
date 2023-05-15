@@ -440,7 +440,7 @@ function DetailsPage(props: {
           >
             Round Name
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <Controller
               name="roundMetadata.name"
               control={props.control}
@@ -483,7 +483,7 @@ function DetailsPage(props: {
           >
             Program Chain
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <span className="flex items-center">
               {chain && CHAINS[chain.id]?.logo && (
                 <img
@@ -505,7 +505,7 @@ function DetailsPage(props: {
       >
         Round Description
       </div>
-      <div className={"leading-8 font-normal text-grey-400"}>
+      <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
         <Controller
           name="roundMetadata.eligibility.description"
           control={props.control}
@@ -555,7 +555,7 @@ function DetailsPage(props: {
           >
             Support Input
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             {!props.editMode ? (
               <input
                 type="text"
@@ -598,7 +598,7 @@ function DetailsPage(props: {
           >
             Contact Information
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <Controller
               name="roundMetadata.support.info"
               control={props.control}
@@ -653,7 +653,7 @@ function DetailsPage(props: {
               >
                 Requirement {i + 1}
               </div>
-              <div className={"leading-8 font-normal text-grey-400"}>
+              <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
                 <Controller
                   control={props.control}
                   name={`roundMetadata.eligibility.requirements.${i}.requirement`}
@@ -887,7 +887,7 @@ function RoundApplicationPeriod(props: {
           >
             Applications
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
@@ -980,7 +980,7 @@ function RoundApplicationPeriod(props: {
           >
             &nbsp;
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
@@ -1074,7 +1074,7 @@ function RoundApplicationPeriod(props: {
           >
             Round
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
@@ -1167,7 +1167,7 @@ function RoundApplicationPeriod(props: {
           >
             &nbsp;
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
@@ -1297,7 +1297,7 @@ function Funding(props: {
               <FaInfoCircle className="ml-2" />
             </span>
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <input
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
@@ -1314,7 +1314,7 @@ function Funding(props: {
           >
             Matching Funds Available
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <input
               type="text"
               className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -1381,7 +1381,7 @@ function Funding(props: {
               <FaInfoCircle className="ml-2" />
             </span>
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.matchingCap"
@@ -1474,7 +1474,7 @@ function Funding(props: {
           >
             If so, how much?
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <input
               type="text"
               className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -1555,7 +1555,7 @@ function Funding(props: {
               <FaInfoCircle className="ml-2" />
             </span>
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
@@ -1648,7 +1648,7 @@ function Funding(props: {
           >
             If so, how much?
           </div>
-          <div className={"leading-8 font-normal text-grey-400"}>
+          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <input
               type="text"
               className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
