@@ -3,10 +3,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Listbox, Tab, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
-import { yupResolver } from "@hookform/resolvers/yup";
+// import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
-import _ from "lodash";
 import moment from "moment";
 import { Fragment, useState } from "react";
 import Datetime from "react-datetime";
@@ -20,11 +19,16 @@ import {
   UseFormRegisterReturn,
   useForm,
 } from "react-hook-form";
-import { FaEdit, FaInfoCircle, FaPlus } from "react-icons/fa";
+import { FaEdit, FaPlus } from "react-icons/fa";
 import { useNetwork } from "wagmi";
 import * as yup from "yup";
 import { useRoundById } from "../../context/round/RoundContext";
-import { ProgressStatus, ProgressStep, Round } from "../api/types";
+import {
+  EditedGroups,
+  ProgressStatus,
+  ProgressStep,
+  Round,
+} from "../api/types";
 import { CHAINS, SupportType, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
@@ -35,8 +39,10 @@ import {
   SupportTypeButton,
   supportTypes,
 } from "./RoundDetailForm";
+import _ from "lodash";
 import { PayoutTokenInformation } from "./QuadraticFundingForm";
 import ReactTooltip from "react-tooltip";
+import { useUpdateRound } from "../../context/round/UpdateRoundContext";
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round, fetchRoundStatus, error } = useRoundById(
@@ -46,15 +52,14 @@ export default function ViewRoundSettings(props: { id?: string }) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const [editedRound, setEditedRound] = useState<Round | undefined>({
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    ...round!,
+    ..._.cloneDeep(round!),
   });
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
-  const matchAmount =
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    round?.roundMetadata.quadraticFundingConfig.matchingCapAmount!;
+  const { updateRound, IPFSCurrentStatus, roundUpdateStatus, indexingStatus } = useUpdateRound();
+  const [ipfsStep, setIpfsStep] = useState(false);
 
   const ValidationSchema = RoundValidationSchema.shape({
     // Overrides for validation schema that was not included in imported schema.
@@ -134,21 +139,61 @@ export default function ViewRoundSettings(props: { id?: string }) {
     defaultValues: {
       ...round,
     },
-    resolver: yupResolver(ValidationSchema),
+    // resolver: yupResolver(ValidationSchema),
   });
 
+  // returns a boolean for each group of fields that have been edited
+  const compareRounds = (
+    oldRoundData: Round,
+    newRoundData: Round
+  ): EditedGroups => {
+    // create deterministic copies of the data
+    const dOldRound: Round = _.cloneDeep(oldRoundData)!;
+    const dNewRound: Round = _.cloneDeep(newRoundData);
+
+    return {
+      ApplicationMetaPointer: !_.isEqual(
+        dOldRound.applicationMetadata,
+        dNewRound.applicationMetadata
+      ),
+      MatchAmount: !_.isEqual(
+        dOldRound?.roundMetadata?.quadraticFundingConfig
+          ?.matchingFundsAvailable,
+        dNewRound?.roundMetadata?.quadraticFundingConfig
+          ?.matchingFundsAvailable
+      ),
+      RoundFeeAddress: false,
+      // todo feesAddress not found in roundMetadata
+      // RoundFeeAddress: _.isEqual(
+      //   dOldRound?.roundMetadata?.feesAddress.toLowerCase(),
+      //   dNewRound?.roundMetadata?.feesAddress.toLowerCase()
+      // ),
+      RoundFeePercentage: false,
+      // !_.isEqual(
+      //   dOldRound.roundFeePercentage,
+      //   dNewRound.roundFeePercentage
+      // ),
+      RoundMetaPointer: !_.isEqual(
+        dOldRound.roundMetadata,
+        dNewRound.roundMetadata
+      ),
+      StartAndEndTimes: !(
+        _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
+        _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
+        _.isEqual(
+          dOldRound.applicationsStartTime,
+          dNewRound.applicationsStartTime
+        ) &&
+        _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
+      ),
+    };
+  };
+
   const submit: SubmitHandler<Round> = async (values: Round) => {
-    // todo: compare changes
-    // todo: categorize tx's
-    // todo: update metadata pointer in IPFS call
-    // todo: send tx's
     const data = _.merge(editedRound, values);
-    console.log("submit values", {
-      values,
-      editedRound,
-      data,
-    });
     setEditedRound(data);
+    // Check for what has been edited into groups
+    // Prepare the transaction(s) to be sent
   };
 
   if (!round) {
@@ -168,12 +213,20 @@ export default function ViewRoundSettings(props: { id?: string }) {
     setEditMode(!editMode);
   };
 
-  const updateRound = async () => {
+  const updateRoundHandler = async () => {
     try {
       handleSubmit(submit(editedRound as Round));
+      const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
+      setIpfsStep(editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer);
       setEditMode(!editMode);
       setIsConfirmationModalOpen(false);
       setIsProgressModalOpen(true);
+      await updateRound({ editedGroups, round: editedRound! });
+      setTimeout(() => {
+        setIsProgressModalOpen(false);
+        setIpfsStep(false);
+        window.location.reload();
+      }, 2000);
     } catch (e) {
       console.log("error", e);
     }
@@ -183,17 +236,17 @@ export default function ViewRoundSettings(props: { id?: string }) {
     setIsConfirmationModalOpen(true);
   };
 
-  // todo: update number of transactions based on actual number of transactions.
   const confirmationModalBody = (
     <p className="text-md">
-      You will need to sign 3 transactions to update your round with the latest
+      You will need to sign 1 transaction to update your round with the latest
       changes. Please note that once the round starts, you will not be able to
       make any more changes to your round settings.
     </p>
   );
 
-  const addRequirement = () => {
-    console.log("add requirement");
+  // todo: fix this...
+  const addRequirement = (e: any) => {
+    console.log("add requirement", e.target.value);
     const newRequirements = [
       ...(editedRound?.roundMetadata?.eligibility?.requirements || []),
       { requirement: "" },
@@ -212,32 +265,41 @@ export default function ViewRoundSettings(props: { id?: string }) {
     });
   };
 
-  // todo: update status's
+  const isFinished = (): ProgressStatus => {
+    const ipfsSuccess = ipfsStep ? IPFSCurrentStatus === ProgressStatus.IS_SUCCESS : true;
+    const roundSuccess = roundUpdateStatus === ProgressStatus.IS_SUCCESS;
+    const indexingSuccess = indexingStatus === ProgressStatus.IS_SUCCESS;
+    return (ipfsSuccess && roundSuccess && indexingSuccess) ? ProgressStatus.IS_SUCCESS : ProgressStatus.NOT_STARTED;
+  }
+
   const progressSteps: ProgressStep[] = [
-    {
-      name: "Saving",
-      description: `The round settings is being saved.`,
-      status: ProgressStatus.IN_PROGRESS,
-    },
+    ...(ipfsStep
+      ? [
+        {
+          name: "Storing",
+          description: "The metadata is being saved in a safe place.",
+          status: IPFSCurrentStatus,
+        },
+      ] : []),
     {
       name: "Submitting",
       description: `Sending transaction to update the round contract.`,
-      status: ProgressStatus.IN_PROGRESS,
+      status: roundUpdateStatus,
     },
     {
       name: "Reindexing",
       description: "Making sure our data is up to date.",
-      status: ProgressStatus.IN_PROGRESS,
+      status: indexingStatus,
     },
     {
       name: "Finishing Up",
       description: "We’re wrapping up.",
-      status: ProgressStatus.IS_SUCCESS,
+      status: isFinished(),
     },
   ];
 
   return (
-    <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
+    <div key={editedRound?.id} className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
       <form onSubmit={handleSubmit(onUpdateRound)}>
         <div className="flex flex-row items-center justify-between">
           <p className="text-xl font-semibold leading-6 mb-4">Round Settings</p>
@@ -325,8 +387,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   control={control}
                   register={register}
                   errors={errors}
-                  onAddRequirement={() => {
-                    addRequirement();
+                  onAddRequirement={(e: any) => {
+                    addRequirement(e);
                   }}
                 />
               </Tab.Panel>
@@ -364,11 +426,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
           }}
           confirmButtonText={"Proceed to Update"}
           confirmButtonAction={() => {
-            updateRound();
+            updateRoundHandler();
           }}
           cancelButtonAction={() => {
             setIsConfirmationModalOpen(false);
-            onCancelEdit();
           }}
         />
         <ProgressModal
@@ -403,7 +464,7 @@ function DetailsPage(props: {
   control: Control<Round, any>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
-  onAddRequirement: () => void;
+  onAddRequirement: (e: any) => void;
 }) {
   const { round } = props;
   const { chain } = useNetwork();
@@ -440,7 +501,10 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             <Controller
               name="roundMetadata.name"
               control={props.control}
@@ -459,7 +523,7 @@ function DetailsPage(props: {
                       roundMetadata: {
                         ...props.editedRound.roundMetadata,
                         name: e.target.value,
-                      }
+                      },
                     });
                   }}
                 />
@@ -477,13 +541,14 @@ function DetailsPage(props: {
         </div>
         <div>
           <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
+            className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
           >
             Program Chain
           </div>
-          <div className={`border pl-2 rounded-lg py-0.5 opacity-50 leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`border pl-2 rounded-lg py-0.5 opacity-50 leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             <span className="flex items-center">
               {chain && CHAINS[chain.id]?.logo && (
                 <img
@@ -504,7 +569,10 @@ function DetailsPage(props: {
           *Required
         </span>
       </div>
-      <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+      <div
+        className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+          }`}
+      >
         <Controller
           name="roundMetadata.eligibility.description"
           control={props.control}
@@ -553,7 +621,10 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             {!props.editMode ? (
               <input
                 type="text"
@@ -595,7 +666,10 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             <Controller
               name="roundMetadata.support.info"
               control={props.control}
@@ -651,7 +725,10 @@ function DetailsPage(props: {
                   Optional
                 </span>
               </div>
-              <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+              <div
+                className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+                  }`}
+              >
                 <Controller
                   control={props.control}
                   name={`roundMetadata.eligibility.requirements.${i}.requirement`}
@@ -728,10 +805,10 @@ function DetailsPage(props: {
                   props.errors.roundMetadata.eligibility?.requirements
                 )
                   ? props.errors.roundMetadata.eligibility?.requirements.map(
-                      (err: any, _i: number) => {
-                        return <span>{err.requirement.message}</span>;
-                      }
-                    )
+                    (err: any, _i: number) => {
+                      return <span>{err.requirement.message}</span>;
+                    }
+                  )
                   : null}
               </p>
             )}
@@ -745,8 +822,8 @@ function DetailsPage(props: {
         $hidden={!props.editMode}
         className="mb-4"
         data-testid="add-requirement-button"
-        onClick={() => {
-          props.onAddRequirement();
+        onClick={(e) => {
+          props.onAddRequirement(e);
         }}
       >
         <span className="flex flex-row items-center">
@@ -905,25 +982,23 @@ function RoundApplicationPeriod(props: {
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
         <div>
           <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
+            className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
           >
             Applications
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.applicationsStartTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
+                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.applicationsStartTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                 >
-                  <p className="block text-[10px]">
-                    Start Date
-                  </p>
+                  <p className="block text-[10px]">Start Date</p>
                   <Controller
                     name="applicationsStartTime"
                     control={props.control}
@@ -979,18 +1054,16 @@ function RoundApplicationPeriod(props: {
               </div>
             ) : (
               <>
-                <p className="block text-[10px] pl-2">
-                  Start Date
-                </p>
+                <p className="block text-[10px] pl-2">Start Date</p>
                 <input
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
                   defaultValue={`${getUTCDate(
                     props.editedRound?.applicationsStartTime ??
-                      round.applicationsStartTime
+                    round.applicationsStartTime
                   )} ${getUTCTime(
                     props.editedRound?.applicationsStartTime ??
-                      round.applicationsStartTime
+                    round.applicationsStartTime
                   )}`}
                   disabled={!props.editMode}
                 />
@@ -1000,25 +1073,23 @@ function RoundApplicationPeriod(props: {
         </div>
         <div>
           <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
+            className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
           >
             &nbsp;
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.applicationsEndTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
+                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.applicationsEndTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                 >
-                  <p className="block text-[10px]">
-                    End Date
-                  </p>
+                  <p className="block text-[10px]">End Date</p>
                   <Controller
                     name="applicationsEndTime"
                     control={props.control}
@@ -1074,18 +1145,16 @@ function RoundApplicationPeriod(props: {
               </div>
             ) : (
               <>
-                <p className="block text-[10px] pl-2">
-                  End Date
-                </p>
+                <p className="block text-[10px] pl-2">End Date</p>
                 <input
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
                   defaultValue={`${getUTCDate(
                     props.editedRound?.applicationsEndTime ??
-                      round.applicationsEndTime
+                    round.applicationsEndTime
                   )} ${getUTCTime(
                     props.editedRound?.applicationsEndTime ??
-                      round.applicationsEndTime
+                    round.applicationsEndTime
                   )}`}
                   disabled={!props.editMode}
                 />
@@ -1096,25 +1165,23 @@ function RoundApplicationPeriod(props: {
 
         <div>
           <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
+            className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
           >
             Round
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.roundStartTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
+                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.roundStartTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                 >
-                  <p className="block text-[10px]">
-                    Start Date
-                  </p>
+                  <p className="block text-[10px]">Start Date</p>
                   <Controller
                     name="roundStartTime"
                     control={props.control}
@@ -1172,9 +1239,7 @@ function RoundApplicationPeriod(props: {
               </div>
             ) : (
               <>
-                <p className="block text-[10px] pl-2">
-                  Start Date
-                </p>
+                <p className="block text-[10px] pl-2">Start Date</p>
                 <input
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
@@ -1191,25 +1256,23 @@ function RoundApplicationPeriod(props: {
         </div>
         <div>
           <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
+            className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
           >
             &nbsp;
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.roundEndTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
+                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.roundEndTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                 >
-                  <p className="block text-[10px]">
-                    End Date
-                  </p>
+                  <p className="block text-[10px]">End Date</p>
                   <Controller
                     name="roundEndTime"
                     control={props.control}
@@ -1266,9 +1329,7 @@ function RoundApplicationPeriod(props: {
               </div>
             ) : (
               <>
-                <p className="block text-[10px] pl-2">
-                  End Date
-                </p>
+                <p className="block text-[10px] pl-2">End Date</p>
                 <input
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
@@ -1325,7 +1386,10 @@ function Funding(props: {
               *Required
             </span>
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             <input
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
@@ -1427,7 +1491,10 @@ function Funding(props: {
               </p>
             </ReactTooltip>
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.matchingCap"
@@ -1519,7 +1586,10 @@ function Funding(props: {
               *Required
             </span>
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             <input
               type="text"
               className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -1546,7 +1616,7 @@ function Funding(props: {
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCapAmount
                       ? round.roundMetadata.quadraticFundingConfig
-                          .matchingCapAmount
+                        .matchingCapAmount
                       : 0
                   }
                   onChange={(e) => {
@@ -1586,7 +1656,7 @@ function Funding(props: {
           {props.editedRound?.roundMetadata?.quadraticFundingConfig
             ?.matchingCapAmount ?? 0}
           % of the matching fund (
-          {matchingFunds /100 *
+          {matchingFunds / 100 *
             (props.editedRound?.roundMetadata?.quadraticFundingConfig
               ?.matchingCapAmount ?? 0)}{" "}
           {matchingFundPayoutToken.name}).
@@ -1618,12 +1688,15 @@ function Funding(props: {
               effect="solid"
             >
               <p className="text-xs">
-                Set a minimum amount for each <br /> 
+                Set a minimum amount for each <br />
                 donation to be eligible for matching.
               </p>
             </ReactTooltip>
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
@@ -1715,7 +1788,10 @@ function Funding(props: {
               *Required
             </span>
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div
+            className={`leading-8 font-normal ${!props.editMode && "text-grey-400"
+              }`}
+          >
             <input
               type="text"
               className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -1737,7 +1813,7 @@ function Funding(props: {
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
                       ? round.roundMetadata.quadraticFundingConfig
-                          .minDonationThresholdAmount
+                        ?.minDonationThresholdAmount
                       : 0
                   }
                   disabled={
