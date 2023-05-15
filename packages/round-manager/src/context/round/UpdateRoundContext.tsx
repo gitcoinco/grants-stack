@@ -1,9 +1,11 @@
-import React, { SetStateAction, createContext } from "react";
+import React, { SetStateAction, createContext, useContext } from "react";
 import { EditedGroups, ProgressStatus, Round } from "../../features/api/types";
 import { Signer } from "ethers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { TransactionBuilder, UpdateAction } from "../../features/api/round";
 import { saveToIPFS } from "../../features/api/ipfs";
+import { useWallet } from "../../features/common/Auth";
+import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
@@ -17,7 +19,8 @@ export interface UpdateRoundState {
   setIPFSCurrentStatus: SetStatusFn;
   roundUpdateStatus: ProgressStatus;
   setRoundUpdateStatus: SetStatusFn;
-  // todo: add indexing status?
+  indexingStatus: ProgressStatus;
+  setIndexingStatus: SetStatusFn;
 }
 
 export const initialUpdateRoundState: UpdateRoundState = {
@@ -25,6 +28,8 @@ export const initialUpdateRoundState: UpdateRoundState = {
   setIPFSCurrentStatus: () => { },
   roundUpdateStatus: ProgressStatus.NOT_STARTED,
   setRoundUpdateStatus: () => { },
+  indexingStatus: ProgressStatus.NOT_STARTED,
+  setIndexingStatus: () => { },
 };
 
 export const UpdateRoundContext = createContext<UpdateRoundState>(
@@ -39,11 +44,17 @@ export const UpdateRoundProvider = ({ children }: { children: React.ReactNode })
     initialUpdateRoundState.roundUpdateStatus,
   );
 
+  const [indexingStatus, setIndexingStatus] = React.useState<ProgressStatus>(
+    initialUpdateRoundState.indexingStatus,
+  );
+
   const providerProps: UpdateRoundState = {
     IPFSCurrentStatus,
     setIPFSCurrentStatus,
     roundUpdateStatus,
     setRoundUpdateStatus,
+    indexingStatus,
+    setIndexingStatus,
   };
 
   return (
@@ -69,6 +80,7 @@ const _updateRound = async ({
   const {
     setIPFSCurrentStatus,
     setRoundUpdateStatus,
+    setIndexingStatus
   } = context;
 
   const {
@@ -117,7 +129,7 @@ const _updateRound = async ({
 
     if (editedGroups.RoundFeePercentage) {
       const arg = round.roundMetadata?.quadraticFundingConfig
-        ?.matchingFundsAvailable; // todo: add valid value
+        ?.matchingFundsAvailable;
       transactionBuilder.add(UpdateAction.UPDATE_ROUND_FEE_PERCENTAGE, [arg]);
     }
 
@@ -133,13 +145,59 @@ const _updateRound = async ({
     setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
 
     const tx = await transactionBuilder.execute();
-    await tx.wait();
+    const receipt = await tx.wait();
+    const blockNumber = receipt.blockNumber;
 
     setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
+    setIndexingStatus(ProgressStatus.IN_PROGRESS);
+
+    try {
+      const chainId = await signerOrProvider.getChainId();
+      await waitForSubgraphSyncTo(chainId, blockNumber);
+      setIndexingStatus(ProgressStatus.IS_SUCCESS);
+
+    } catch (error) {
+      datadogLogs.logger.error(`_updateRound: ${error}`);
+      setIndexingStatus(ProgressStatus.IS_ERROR);
+      throw error;
+    }
 
   } catch (error) {
     datadogLogs.logger.error(`_updateRound: ${error}`);
     setRoundUpdateStatus(ProgressStatus.IS_ERROR);
+    console.log("_updateRound error: ", error);
   }
+};
 
+export const useUpdateRound = async () => {
+  const context = useContext(UpdateRoundContext);
+  if (!context) throw new Error("Missing UpdateRoundContext");
+
+  const {
+    setIPFSCurrentStatus,
+    setRoundUpdateStatus,
+    setIndexingStatus,
+  } = context;
+
+  const { signer: walletSigner } = useWallet();
+
+  const updateRound = (updateRoundData: UpdateRoundData) => {
+
+    setIPFSCurrentStatus(initialUpdateRoundState.IPFSCurrentStatus);
+    setRoundUpdateStatus(initialUpdateRoundState.roundUpdateStatus);
+    setIndexingStatus(initialUpdateRoundState.indexingStatus);
+
+    return _updateRound({
+      context,
+      signerOrProvider: walletSigner as Signer,
+      updateRoundData,
+    });
+  };
+
+  return {
+    updateRound,
+    IPFSCurrentStatus: context.IPFSCurrentStatus,
+    roundUpdateStatus: context.roundUpdateStatus,
+    indexingStatus: context.indexingStatus,
+  }
 };
