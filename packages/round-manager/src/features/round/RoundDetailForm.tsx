@@ -57,7 +57,14 @@ const ValidationSchema = yup.object().shape({
         })
         .when("type", {
           is: (val: string) => val && val != "Email",
-          then: yup.string().url().required("You must provide a valid URL."),
+          then: yup
+            .string()
+            /*Matches www.example.com, example.com, http and https prefixes, but not www.invalid */
+            .matches(
+              /^((ftp|http|https):\/\/)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/,
+              "Must be a valid URL"
+            )
+            .required("You must provide a valid URL."),
         }),
     }),
   }),
