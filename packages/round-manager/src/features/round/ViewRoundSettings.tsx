@@ -271,10 +271,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
     setIsConfirmationModalOpen(true);
   };
 
-  // todo: update number of transactions based on actual number of transactions.
   const confirmationModalBody = (
     <p className="text-md">
-      You will need to sign {numberOfTransactions} transactions to update your
+      You will need to sign 1 transaction to update your
       round with the latest changes. Please note that once the round starts, you
       will not be able to make any more changes to your round settings.
     </p>
