@@ -47,7 +47,6 @@ import ReactTooltip from "react-tooltip";
 import { useUpdateRound } from "../../context/round/UpdateRoundContext";
 
 export default function ViewRoundSettings(props: { id?: string }) {
-  const { signer } = useWallet();
   const { round, fetchRoundStatus, error } = useRoundById(
     props.id?.toLowerCase()
   );
@@ -158,7 +157,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
     const dOldRound: Round = _.cloneDeep(oldRoundData)!;
     const dNewRound: Round = _.cloneDeep(newRoundData);
 
-    console.log(newRoundData);
+    console.log(dOldRound);
+    console.log(dNewRound);
 
     return {
       ApplicationMetaPointer: !_.isEqual(
@@ -231,6 +231,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
       setIsConfirmationModalOpen(false);
       setIsProgressModalOpen(true);
       await updateRound({ editedGroups, round: editedRound! });
+      setTimeout(() => {
+        setIsProgressModalOpen(false);
+        setIpfsStep(false);
+      }, 2000);
     } catch (e) {
       console.log("error", e);
     }
@@ -276,7 +280,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
     return (ipfsSuccess && roundSuccess && indexingSuccess) ? ProgressStatus.IS_SUCCESS : ProgressStatus.NOT_STARTED;
   }
 
-  // todo: update status's
   const progressSteps: ProgressStep[] = [
     ...(ipfsStep
       ? [

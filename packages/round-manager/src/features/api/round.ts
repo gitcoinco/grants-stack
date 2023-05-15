@@ -57,6 +57,9 @@ export class TransactionBuilder {
   }
 
   async execute(): Promise<TransactionResponse> {
+    if (this.transactions.length === 0) {
+      throw new Error("No transactions to execute");
+    }
     return await this.contract.multicall(this.transactions);
   }
 
