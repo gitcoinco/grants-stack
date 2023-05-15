@@ -484,7 +484,7 @@ function DetailsPage(props: {
             Program Chain
           </div>
           <div className={"leading-8 font-normal text-grey-400"}>
-            <span className="flex items-center pt-1">
+            <span className="flex items-center">
               {chain && CHAINS[chain.id]?.logo && (
                 <img
                   src={CHAINS[chain.id]?.logo}
