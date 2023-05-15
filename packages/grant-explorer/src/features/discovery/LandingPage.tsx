@@ -9,6 +9,7 @@ import {
 import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
+import { useDebugMode } from "../api/utils";
 
 const LandingPage = () => {
   if (process.env.REACT_APP_ENV === "production") {
@@ -25,6 +26,8 @@ const LandingPage = () => {
 
   const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
   const [activeRoundsLoading, setActiveRoundsLoading] = useState<boolean>(true);
+
+  const debugModeEnabled = useDebugMode();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -73,7 +76,9 @@ const LandingPage = () => {
     const fetchActiveRounds = async () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { isLoading, error, rounds } = await getActiveRounds();
+        const { isLoading, error, rounds } = await getActiveRounds(
+          debugModeEnabled
+        );
         setActiveRounds(rounds);
         setAllActiveRounds(rounds);
         setActiveRoundsLoading(isLoading);
@@ -90,8 +95,9 @@ const LandingPage = () => {
     const fetchRoundsInApplicationPhase = async () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { isLoading, error, rounds } =
-          await getRoundsInApplicationPhase();
+        const { isLoading, error, rounds } = await getRoundsInApplicationPhase(
+          debugModeEnabled
+        );
         setRoundsInApplicationPhase(rounds);
         setApplyRoundsLoading(isLoading);
       } catch (error) {
