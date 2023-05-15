@@ -483,7 +483,7 @@ function DetailsPage(props: {
           >
             Program Chain
           </div>
-          <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
+          <div className={`border pl-2 rounded-lg py-0.5 opacity-50 leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <span className="flex items-center">
               {chain && CHAINS[chain.id]?.logo && (
                 <img
