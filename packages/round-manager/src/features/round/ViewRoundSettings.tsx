@@ -1543,6 +1543,13 @@ function Funding(props: {
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
                       .matchingCap
                   }
+                  value={
+                    props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.matchingCapAmount
+                      ? round.roundMetadata.quadraticFundingConfig
+                          .matchingCapAmount
+                      : 0
+                  }
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
