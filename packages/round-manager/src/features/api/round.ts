@@ -59,6 +59,10 @@ export class TransactionBuilder {
   async execute(): Promise<TransactionResponse> {
     return await this.contract.multicall(this.transactions);
   }
+
+  getTransactions() {
+    return this.transactions;
+  }
 }
 
 /**
