@@ -7,6 +7,7 @@ import SearchInput, { SortFilterDropdown } from "../common/SearchInput";
 import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
+import { useDebugMode } from "../api/utils";
 
 const ApplyNowPage = () => {
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
@@ -20,6 +21,8 @@ const ApplyNowPage = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [order, setOrder] = useState<string>("round_asc");
+
+  const debugModeEnabled = useDebugMode();
 
   function sortRoundsByTime(rounds: RoundOverview[], order: string) {
     // If order is round_asc, sort in ascending order. Otherwise, sort in descending order.
@@ -91,7 +94,9 @@ const ApplyNowPage = () => {
   // Fetch rounds in application phase
   useEffect(() => {
     const fetchRoundsInApplicationPhase = async () => {
-      const { isLoading, error, rounds } = await getRoundsInApplicationPhase();
+      const { isLoading, error, rounds } = await getRoundsInApplicationPhase(
+        debugModeEnabled
+      );
       setRoundsInApplicationPhase(rounds);
       setFilteredRoundsInApplicationPhase(rounds);
       setApplyRoundsLoading(isLoading);
