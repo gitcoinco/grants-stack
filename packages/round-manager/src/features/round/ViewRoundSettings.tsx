@@ -453,10 +453,14 @@ function DetailsPage(props: {
                   disabled={!props.editMode}
                   data-testid={"round-name-input"}
                   onChange={(e) => {
-                    const updatedRound = props.editedRound;
-                    updatedRound.roundMetadata.name = e.target.value;
                     field.onChange(e);
-                    props.setEditedRound(updatedRound);
+                    props.setEditedRound({
+                      ...props.editedRound,
+                      roundMetadata: {
+                        ...props.editedRound.roundMetadata,
+                        name: e.target.value,
+                      }
+                    });
                   }}
                 />
               )}
