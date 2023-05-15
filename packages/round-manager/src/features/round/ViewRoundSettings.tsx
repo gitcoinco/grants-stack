@@ -435,7 +435,7 @@ function DetailsPage(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             Round Name
@@ -474,7 +474,7 @@ function DetailsPage(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             Program Chain
@@ -496,7 +496,7 @@ function DetailsPage(props: {
       </div>
       <div
         className={
-          "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+          "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
         }
       >
         Round Description
@@ -546,7 +546,7 @@ function DetailsPage(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             Support Input
@@ -589,7 +589,7 @@ function DetailsPage(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             Contact Information
@@ -644,7 +644,7 @@ function DetailsPage(props: {
               <div
                 key={i}
                 className={
-                  "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+                  "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
                 }
               >
                 Requirement {i + 1}
@@ -878,7 +878,7 @@ function RoundApplicationPeriod(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             Applications
@@ -966,7 +966,7 @@ function RoundApplicationPeriod(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             &nbsp;
@@ -1058,7 +1058,7 @@ function RoundApplicationPeriod(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             Round
@@ -1146,7 +1146,7 @@ function RoundApplicationPeriod(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             &nbsp;
@@ -1268,7 +1268,7 @@ function Funding(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             <span className="flex flex-row items-center">
@@ -1288,7 +1288,7 @@ function Funding(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             Matching Funds Available
@@ -1352,7 +1352,7 @@ function Funding(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             <span className="flex flex-row items-center">
@@ -1448,7 +1448,7 @@ function Funding(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             If so, how much?
@@ -1526,7 +1526,7 @@ function Funding(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             <span className="flex flex-row items-center">
@@ -1622,7 +1622,7 @@ function Funding(props: {
         <div>
           <div
             className={
-              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
             }
           >
             If so, how much?
