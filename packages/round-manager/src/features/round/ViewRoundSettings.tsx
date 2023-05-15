@@ -107,8 +107,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           is: (val: any) => val === "yes",
           then: yup
             .number()
-            .required("This field is required.")
-            .moreThan(matchAmount, `Must be greater than ${matchAmount}`),
+            .required("This field is required."),
           otherwise: yup.number().notRequired(),
         }),
         minDonationThresholdAmount: yup
