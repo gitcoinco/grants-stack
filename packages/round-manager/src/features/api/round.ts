@@ -20,7 +20,7 @@ import { fetchFromIPFS, payoutTokens } from "./utils";
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
   UPDATE_ROUND_META_PTR = "updateRoundMetaPtr",
-  UPDATE_ROUND_START_AND_END_TIMES = "updateRoundStartAndEndTimes",
+  UPDATE_ROUND_START_AND_END_TIMES = "updateStartAndEndTimes",
   UPDATE_MATCH_AMOUNT = "updateMatchAmount",
   UPDATE_ROUND_FEE_ADDRESS = "updateRoundFeeAddress",
   UPDATE_ROUND_FEE_PERCENTAGE = "updateRoundFeePercentage"
@@ -48,10 +48,10 @@ export class TransactionBuilder {
   }
 
   add(action: any, args: any[]) {
-    console.log("action, args", { action, args });
-    if (!(action in UpdateAction)) {
-      throw new Error(`Invalid action: ${action}`);
-    }
+    // console.log("action, args", { action, args });
+    // if (!(action in UpdateAction)) {
+    //   throw new Error(`Invalid action: ${action}`);
+    // }
 
     this.transactions.push(this.contract.interface.encodeFunctionData(action, args));
   }

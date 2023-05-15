@@ -24,8 +24,14 @@ import { FaEdit, FaInfoCircle, FaPlus } from "react-icons/fa";
 import { useNetwork } from "wagmi";
 import * as yup from "yup";
 import { useRoundById } from "../../context/round/RoundContext";
-import { ProgressStatus, ProgressStep, Round } from "../api/types";
-import { CHAINS, SupportType, payoutTokens } from "../api/utils";
+import {
+  EditedGroups,
+  ProgressStatus,
+  ProgressStep,
+  Round,
+} from "../api/types";
+import { CHAINS, SupportType, payoutTokens, pinToIPFS } from "../api/utils";
+import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
@@ -38,6 +44,7 @@ import {
 import _ from "lodash";
 import { PayoutTokenInformation } from "./QuadraticFundingForm";
 import ReactTooltip from "react-tooltip";
+import { useUpdateRound } from "../../context/round/UpdateRoundContext";
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { signer } = useWallet();
@@ -53,6 +60,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+
+  const { updateRound, IPFSCurrentStatus, roundUpdateStatus, indexingStatus } = useUpdateRound();
+  const [ipfsStep, setIpfsStep] = useState(false);
 
   const matchAmount =
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
@@ -151,15 +161,15 @@ export default function ViewRoundSettings(props: { id?: string }) {
     console.log(newRoundData);
 
     return {
-      ApplicationMetaPointer: false,
-      // !_.isEqual(
-      //   dOldRound.applicationMetadata,
-      //   dNewRound.applicationMetadata
-      // ),
-      MatchAmount: _.isEqual(
+      ApplicationMetaPointer: !_.isEqual(
+        dOldRound.applicationMetadata,
+        dNewRound.applicationMetadata
+      ),
+      MatchAmount: !_.isEqual(
         dOldRound?.roundMetadata?.quadraticFundingConfig
           ?.matchingFundsAvailable,
-        dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
+        dNewRound?.roundMetadata?.quadraticFundingConfig
+          ?.matchingFundsAvailable
       ),
       RoundFeeAddress: false,
       // todo feesAddress not found in roundMetadata
@@ -188,62 +198,11 @@ export default function ViewRoundSettings(props: { id?: string }) {
     };
   };
 
-  // todo: set status's
-  const ipfsStatus: ProgressStatus = ProgressStatus.IS_SUCCESS;
-
-  const prepareTransaction = async (
-    editedGroups: EditedGroups,
-    newRoundData: Round
-  ) => {
-    console.log("Preparing transaction...");
-    const builder = new TransactionBuilder(newRoundData, signer!);
-    let tx: any;
-
-    console.log("editedGroups", editedGroups);
-
-    try {
-      if (editedGroups.RoundMetaPointer) {
-        console.log("Updating the round metapointer");
-        const hash = await pinToIPFS({ content: newRoundData.roundMetadata });
-        const hash2 = await saveToIPFS({ content: newRoundData.roundMetadata });
-        console.log("hash", { hash, hash2 });
-        tx = builder.add(UpdateAction.UPDATE_ROUND_META_PTR, [hash]);
-      }
-      if (editedGroups.StartAndEndTimes) {
-        console.log("Updating the round start and end times");
-        tx = builder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
-          editedRound?.applicationsStartTime,
-          editedRound?.applicationsEndTime,
-          editedRound?.roundStartTime,
-          editedRound?.roundEndTime,
-        ]);
-      }
-      console.log("Updating the match amount");
-      if (editedGroups.MatchAmount) {
-        tx = builder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [
-          editedRound?.roundMetadata?.quadraticFundingConfig
-            ?.matchingFundsAvailable,
-        ]);
-      }
-
-      if (tx) {
-        console.log("multicall update transaction ->", tx);
-        //todo: Need to test this still to make sure in the right spot
-        setIsProgressModalOpen(true);
-        await builder.execute();
-      }
-    } catch (e) {
-      console.log("error", e);
-    }
-  };
-
   const submit: SubmitHandler<Round> = async (values: Round) => {
     const data = _.merge(editedRound, values);
-    console.log("submit values", {
-      values,
-      editedRound,
-      data,
-    });
+    setEditedRound(data);
+    // Check for what has been edited into groups
+    // Prepare the transaction(s) to be sent
   };
 
   if (!round) {
@@ -263,11 +222,15 @@ export default function ViewRoundSettings(props: { id?: string }) {
     setEditMode(!editMode);
   };
 
-  const updateRound = async () => {
+  const updateRoundHandler = async () => {
     try {
       handleSubmit(submit(editedRound as Round));
+      const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
+      setIpfsStep(editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer);
       setEditMode(!editMode);
       setIsConfirmationModalOpen(false);
+      setIsProgressModalOpen(true);
+      await updateRound({ editedGroups, round: editedRound! });
     } catch (e) {
       console.log("error", e);
     }
@@ -306,27 +269,37 @@ export default function ViewRoundSettings(props: { id?: string }) {
     });
   };
 
+  const isFinished = (): ProgressStatus => {
+    const ipfsSuccess = ipfsStep ? IPFSCurrentStatus === ProgressStatus.IS_SUCCESS : true;
+    const roundSuccess = roundUpdateStatus === ProgressStatus.IS_SUCCESS;
+    const indexingSuccess = indexingStatus === ProgressStatus.IS_SUCCESS;
+    return (ipfsSuccess && roundSuccess && indexingSuccess) ? ProgressStatus.IS_SUCCESS : ProgressStatus.NOT_STARTED;
+  }
+
   // todo: update status's
   const progressSteps: ProgressStep[] = [
-    {
-      name: "Saving",
-      description: `The round settings is being saved.`,
-      status: ProgressStatus.IN_PROGRESS,
-    },
+    ...(ipfsStep
+      ? [
+        {
+          name: "Storing",
+          description: "The metadata is being saved in a safe place.",
+          status: IPFSCurrentStatus,
+        },
+      ] : []),
     {
       name: "Submitting",
       description: `Sending transaction to update the round contract.`,
-      status: ProgressStatus.IN_PROGRESS,
+      status: roundUpdateStatus,
     },
     {
       name: "Reindexing",
       description: "Making sure our data is up to date.",
-      status: ProgressStatus.IN_PROGRESS,
+      status: indexingStatus,
     },
     {
       name: "Finishing Up",
       description: "We’re wrapping up.",
-      status: ProgressStatus.IS_SUCCESS,
+      status: isFinished(),
     },
   ];
 
@@ -458,7 +431,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           }}
           confirmButtonText={"Proceed to Update"}
           confirmButtonAction={() => {
-            updateRound();
+            updateRoundHandler();
           }}
           cancelButtonAction={() => {
             setIsConfirmationModalOpen(false);
@@ -847,6 +820,10 @@ function DetailsPage(props: {
                       return <span>{err.requirement.message}</span>;
                     }
                   )
+                    (err: any, _i: number) => {
+                      return <span>{err.requirement.message}</span>;
+                    }
+                  )
                   : null}
               </p>
             )}
@@ -1032,11 +1009,10 @@ function RoundApplicationPeriod(props: {
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.applicationsStartTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
+                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.applicationsStartTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                 >
                   <p className="block text-[10px]">Start Date</p>
                   <Controller
@@ -1100,10 +1076,10 @@ function RoundApplicationPeriod(props: {
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
                   defaultValue={`${getUTCDate(
                     props.editedRound?.applicationsStartTime ??
-                      round.applicationsStartTime
+                    round.applicationsStartTime
                   )} ${getUTCTime(
                     props.editedRound?.applicationsStartTime ??
-                      round.applicationsStartTime
+                    round.applicationsStartTime
                   )}`}
                   disabled={!props.editMode}
                 />
@@ -1125,11 +1101,10 @@ function RoundApplicationPeriod(props: {
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.applicationsEndTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
+                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.applicationsEndTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                 >
                   <p className="block text-[10px]">End Date</p>
                   <Controller
@@ -1193,10 +1168,10 @@ function RoundApplicationPeriod(props: {
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
                   defaultValue={`${getUTCDate(
                     props.editedRound?.applicationsEndTime ??
-                      round.applicationsEndTime
+                    round.applicationsEndTime
                   )} ${getUTCTime(
                     props.editedRound?.applicationsEndTime ??
-                      round.applicationsEndTime
+                    round.applicationsEndTime
                   )}`}
                   disabled={!props.editMode}
                 />
@@ -1219,11 +1194,10 @@ function RoundApplicationPeriod(props: {
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.roundStartTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
+                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.roundStartTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                 >
                   <p className="block text-[10px]">Start Date</p>
                   <Controller
@@ -1312,11 +1286,10 @@ function RoundApplicationPeriod(props: {
             {props.editMode ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.roundEndTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
+                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.roundEndTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                 >
                   <p className="block text-[10px]">End Date</p>
                   <Controller
@@ -1864,6 +1837,7 @@ function Funding(props: {
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
                       ? round.roundMetadata.quadraticFundingConfig
+                        .minDonationThresholdAmount
                         .minDonationThresholdAmount
                       : 0
                   }
