@@ -50,6 +50,7 @@ interface RoundProjectResult {
  */
 export type RoundMetadata = {
   name: string;
+  roundType: string;
   eligibility: Eligibility;
   programContractAddress: string;
 };
