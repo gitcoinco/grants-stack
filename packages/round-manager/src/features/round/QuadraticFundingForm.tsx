@@ -323,7 +323,7 @@ function PayoutTokenButton(props: {
   );
 }
 
-function PayoutTokenInformation() {
+export function PayoutTokenInformation() {
   return (
     <>
       <InformationCircleIcon

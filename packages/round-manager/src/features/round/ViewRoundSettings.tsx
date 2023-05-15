@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Listbox, Tab, Transition } from "@headlessui/react";
-import { CheckIcon } from "@heroicons/react/solid";
+import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
@@ -35,6 +35,8 @@ import {
   SupportTypeButton,
   supportTypes,
 } from "./RoundDetailForm";
+import { PayoutTokenInformation } from "./QuadraticFundingForm";
+import ReactTooltip from "react-tooltip";
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round, fetchRoundStatus, error } = useRoundById(
@@ -433,12 +435,11 @@ function DetailsPage(props: {
     <div className="w-full">
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            Round Name
+          <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
+            <span>Round Name</span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
           </div>
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <Controller
@@ -498,12 +499,11 @@ function DetailsPage(props: {
           </div>
         </div>
       </div>
-      <div
-        className={
-          "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-        }
-      >
-        Round Description
+      <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
+        <span>Round Description</span>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">
+          *Required
+        </span>
       </div>
       <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
         <Controller
@@ -548,12 +548,11 @@ function DetailsPage(props: {
       </span>
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            Support Input
+          <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
+            <span>Support Input</span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
           </div>
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             {!props.editMode ? (
@@ -591,12 +590,11 @@ function DetailsPage(props: {
           )}
         </div>
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            Contact Information
+          <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
+            <span>Contact Information</span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
           </div>
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <Controller
@@ -647,11 +645,12 @@ function DetailsPage(props: {
             <div>
               <div
                 key={i}
-                className={
-                  "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-                }
+                className="text-sm leading-5 pb-1 items-center gap-1 mb-2"
               >
                 Requirement {i + 1}
+                <span className="text-right text-gray-400 float-right text-xs mt-1">
+                  Optional
+                </span>
               </div>
               <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
                 <Controller
@@ -1320,14 +1319,11 @@ function Funding(props: {
       </span>
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            <span className="flex flex-row items-center">
-              Payout Token
-              <FaInfoCircle className="ml-2" />
+          <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
+            <span>Payout Token</span>
+            <PayoutTokenInformation />
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
             </span>
           </div>
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
@@ -1340,17 +1336,18 @@ function Funding(props: {
           </div>
         </div>
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            Matching Funds Available
+
+          <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
+            <span>Mathing Funds Available</span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
           </div>
+
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <input
               type="text"
-              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="disabled:bg-gray-50 w-16 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={matchingFundPayoutToken.name}
               disabled
             />
@@ -1404,15 +1401,32 @@ function Funding(props: {
       </span>
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            <span className="flex flex-row items-center">
+          <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
+            <span>
               Do you want a matching cap for projects?
-              <FaInfoCircle className="ml-2" />
             </span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
+            <InformationCircleIcon
+              data-tip
+              data-background-color="#0E0333"
+              data-for="matching-cap-tooltip"
+              className="inline h-4 w-4 ml-2 mr-3 mb-1"
+              data-testid={"matching-cap-tooltip"}
+            />
+            <ReactTooltip
+              id="matching-cap-tooltip"
+              place="bottom"
+              type="dark"
+              effect="solid"
+            >
+              <p className="text-xs">
+                This will cap the percentage <br />
+                of your overall matching pool <br />
+                that a single grantee can receive.
+              </p>
+            </ReactTooltip>
           </div>
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <Controller
@@ -1500,17 +1514,16 @@ function Funding(props: {
           )}
         </div>
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            If so, how much?
+          <div className="text-sm leading-5 pb-1 gap-1 mb-2">
+            <span>If so, how much?</span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
           </div>
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <input
               type="text"
-              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="disabled:bg-gray-50 w-16 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={"%"}
               disabled
             />
@@ -1578,15 +1591,31 @@ function Funding(props: {
       </span>
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            <span className="flex flex-row items-center">
+          <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
+            <span>
               Do you want a minimum donation threshold for projects?
-              <FaInfoCircle className="ml-2" />
             </span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
+            <InformationCircleIcon
+              data-tip
+              data-background-color="#0E0333"
+              data-for="min-donation-tooltip"
+              className="inline h-4 w-4 ml-2 mr-3 mb-1"
+              data-testid="min-donation-tooltip"
+            />
+            <ReactTooltip
+              id="min-donation-tooltip"
+              place="bottom"
+              type="dark"
+              effect="solid"
+            >
+              <p className="text-xs">
+                Set a minimum amount for each <br /> 
+                donation to be eligible for matching.
+              </p>
+            </ReactTooltip>
           </div>
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <Controller
@@ -1674,17 +1703,16 @@ function Funding(props: {
           </p>
         )}
         <div>
-          <div
-            className={
-              "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
-            }
-          >
-            If so, how much?
+          <div className="text-sm leading-5 pb-1 gap-1 mb-2">
+            <span>If so, how much?</span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
           </div>
           <div className={`leading-8 font-normal ${!props.editMode && "text-grey-400"}`}>
             <input
               type="text"
-              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="disabled:bg-gray-50 w-16 rounded-l-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={"USD"}
               disabled
             />
@@ -1754,6 +1782,9 @@ function Funding(props: {
       <div>
         <span className="mt-2 inline-flex text-lg font-light text-gray-600 mb-2">
           Sybil Defense
+        </span>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">
+          *Required
         </span>
       </div>
       <div>
