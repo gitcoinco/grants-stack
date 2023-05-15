@@ -48,7 +48,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const [editedRound, setEditedRound] = useState<Round | undefined>({
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    ...round!,
+    ...(_.cloneDeep(round!)),
   });
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
