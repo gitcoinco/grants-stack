@@ -29,13 +29,13 @@ export enum UpdateAction {
 export class TransactionBuilder {
   round: Round;
   signer: Signer;
-  actions: any[];
+  transactions: any[];
   contract: any;
 
   constructor(round: Round, signer: Signer) {
     this.round = round;
     this.signer = signer;
-    this.actions = [];
+    this.transactions = [];
     if (round.id) {
       this.contract = new ethers.Contract(
         round.id,
@@ -53,11 +53,11 @@ export class TransactionBuilder {
       throw new Error(`Invalid action: ${action}`);
     }
 
-    this.actions.push(this.contract.interface.encodeFunctionData(action, args));
+    this.transactions.push(this.contract.interface.encodeFunctionData(action, args));
   }
 
   async execute(): Promise<TransactionResponse> {
-    return await this.contract.multicall(this.actions);
+    return await this.contract.multicall(this.transactions);
   }
 }
 
