@@ -3,7 +3,7 @@ import Navbar from "./Navbar";
 import { Button } from "common/src/styles";
 const NotFoundBanner = React.lazy(() => import("../../assets/404"));
 import { datadogLogs } from "@datadog/browser-logs";
-import Footer from "./Footer";
+import Footer from "common/src/components/Footer";
 import React, { Suspense } from "react";
 
 export default function NotFoundPage() {

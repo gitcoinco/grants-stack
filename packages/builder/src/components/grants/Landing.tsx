@@ -3,9 +3,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import Footer from "common/src/components/Footer";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
-import Footer from "../Footer";
 import {
   LandingBackground,
   BuilderLogo,
@@ -104,7 +104,8 @@ function Landing() {
           />
         </div>
       </section>
-      <div className="w-full mb-2">
+
+      <div className="mr-20">
         <Footer />
       </div>
     </div>

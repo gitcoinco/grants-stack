@@ -17,7 +17,7 @@ import { useRoundById } from "../../context/RoundContext";
 import { Project, Requirement, Round } from "../api/types";
 import { payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import PassportBanner from "../common/PassportBanner";

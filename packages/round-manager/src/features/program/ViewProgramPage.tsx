@@ -10,7 +10,7 @@ import { RefreshIcon } from "@heroicons/react/outline";
 import { Button } from "common/src/styles";
 import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import { abbreviateAddress } from "../api/utils";
 import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { datadogLogs } from "@datadog/browser-logs";
