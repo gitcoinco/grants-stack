@@ -1,22 +1,22 @@
-import { FormStepper } from "../common/FormStepper";
+import { PlusSmIcon, XIcon } from "@heroicons/react/solid";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Input } from "common/src/styles";
+import _ from "lodash";
 import { useContext } from "react";
-import { FormContext } from "../common/FormWizard";
 import {
   FieldArrayMethodProps,
   FieldArrayWithId,
   FieldError,
   SubmitHandler,
-  useFieldArray,
-  useForm,
   UseFormRegister,
   UseFormRegisterReturn,
+  useFieldArray,
+  useForm,
 } from "react-hook-form";
-import { Round } from "../api/types";
-import { Button, Input } from "common/src/styles";
-import { PlusSmIcon } from "@heroicons/react/solid";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import _ from 'lodash';
+import { Round } from "../api/types";
+import { FormStepper } from "../common/FormStepper";
+import { FormContext } from "../common/FormWizard";
 interface ApplicationEligibilityFormProps {
   stepper: typeof FormStepper;
 }
@@ -58,7 +58,7 @@ export default function ApplicationEligibilityForm(
     resolver: yupResolver(ValidationSchema),
   });
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: "roundMetadata.eligibility.requirements",
     control,
   });
@@ -99,6 +99,7 @@ export default function ApplicationEligibilityForm(
                     fields={fields}
                     register={register}
                     append={append}
+                    remove={remove}
                   />
                 </div>
               </div>
@@ -170,8 +171,9 @@ function DynamicRequirementsForm(props: {
     newRequirement: { requirement: string },
     options?: FieldArrayMethodProps
   ) => void;
+  remove: (index?: number | number[]) => void;
 }) {
-  const { fields, register, append } = props;
+  const { fields, register, append, remove } = props;
   return (
     <div>
       <p className="text-grey-400 mb-6">
@@ -189,14 +191,31 @@ function DynamicRequirementsForm(props: {
               </label>
               <span className="text-xs text-grey-400">Optional</span>
             </div>
-            <Input
-              {...register(
-                `roundMetadata.eligibility.requirements.${index}.requirement`
-              )}
-              type="text"
-              placeholder="Enter an eligibility requirement."
-              data-testid="requirement-input"
-            />
+            <div className="flex flex-row items-center">
+              <Input
+                {...register(
+                  `roundMetadata.eligibility.requirements.${index}.requirement`
+                )}
+                type="text"
+                placeholder="Enter an eligibility requirement."
+                data-testid="requirement-input"
+              />
+              <button
+                type="button"
+                className="focus:outline-none"
+                onClick={() => {
+                  remove(index);
+                }}
+                disabled={fields.length === 1}
+              >
+                <XIcon
+                  color="#D03E63"
+                  className="ml-2"
+                  width={24}
+                  height={23}
+                />
+              </button>
+            </div>
           </li>
         ))}
       </ul>
