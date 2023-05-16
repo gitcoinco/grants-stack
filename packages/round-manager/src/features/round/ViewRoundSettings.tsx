@@ -263,7 +263,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   };
 
   const confirmationModalBody = (
-    <p className="text-md">
+    <p className="text-md text-center font-normal mb-4">
       You will need to sign 1 transaction to update your round with the latest
       changes. Please note that once the round starts, you will not be able to
       make any more changes to your round settings.
@@ -463,6 +463,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           cancelButtonAction={() => {
             setIsConfirmationModalOpen(false);
           }}
+          modalStyle="wide"
         />
         <ProgressModal
           isOpen={isProgressModalOpen}
