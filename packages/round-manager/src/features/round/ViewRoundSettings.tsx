@@ -1624,11 +1624,11 @@ function Funding(props: {
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap
+                      ?.matchingCap !== false
                   }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap
+                      ?.matchingCap ?? true
                   }
                   readOnly={
                     !props.editMode.canEdit &&
@@ -1668,11 +1668,11 @@ function Funding(props: {
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap
+                      ?.matchingCap !== true
                   }
                   checked={
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap
+                      ?.matchingCap ?? false
                   }
                   onChange={(e) => {
                     field.onChange(e.target.value);
@@ -1750,7 +1750,7 @@ function Funding(props: {
                       : 0
                   }
                   onChange={(e) => {
-                    field.onChange(e.target.value);
+                    field.onChange(Number(e.target.value));
                     props.setEditedRound({
                       ...props.editedRound,
                       roundMetadata: {
