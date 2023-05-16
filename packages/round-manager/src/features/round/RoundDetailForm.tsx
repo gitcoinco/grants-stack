@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useContext, useState, useRef, useEffect, FC } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import Datetime from "react-datetime";
@@ -162,6 +162,55 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     return current.isAfter(roundStartDate);
   }
 
+
+  // WIP Custom Date picker :(
+  interface BetterDatetimeProps {
+    field: any;
+    setApplicationStartDate: (date: moment.Moment) => void;
+  }
+
+  const BetterDatetime: FC<BetterDatetimeProps> = ({ field, setApplicationStartDate }) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const cursorPositionRef = useRef<number | null>(null);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      cursorPositionRef.current = inputRef.current?.selectionStart || null;
+      field.onChange(e);
+    };
+
+    useEffect(() => {
+      if (cursorPositionRef.current !== null && inputRef.current) {
+        inputRef.current.selectionStart = cursorPositionRef.current;
+        inputRef.current.selectionEnd = cursorPositionRef.current;
+      }
+    }, [field.value]);
+
+    return (
+      <Datetime
+        {...field}
+        // closeOnSelect
+        onChange={(date) => {
+          setApplicationStartDate(moment(date));
+          field.onChange(moment(date));
+        }}
+        inputProps={{
+          id: "applicationsStartTime",
+          placeholder: "",
+          className: "block w-full border-0 p-0 text-gray-900 placeholder-grey-40 0 focus:ring-0 text-sm",
+          ref: inputRef,
+          onChange: handleInputChange,
+        }}
+        isValidDate={disablePastAndBeforeRoundStartDate}
+        initialViewDate={now}
+        utc={true}
+        dateFormat={"YYYY-MM-DD"}
+        timeFormat={"HH:mm UTC"}
+      />
+    );
+  };
+  // End WIP 
+
+
   return (
     <div>
       <div className="md:grid md:grid-cols-3 md:gap-10">
@@ -241,25 +290,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                       control={control}
                       name="applicationsStartTime"
                       render={({ field }) => (
-                        <Datetime
-                          {...field}
-                          closeOnSelect
-                          onChange={(date) => {
-                            setApplicationStartDate(moment(date));
-                            field.onChange(moment(date));
-                          }}
-                          inputProps={{
-                            id: "applicationsStartTime",
-                            placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-40  0 focus:ring-0 text-sm",
-                          }}
-                          isValidDate={disablePastAndBeforeRoundStartDate}
-                          initialViewDate={now}
-                          utc={true}
-                          dateFormat={"YYYY-MM-DD"}
-                          timeFormat={"HH:mm UTC"}
-                        />
+                        <BetterDatetime field={field} setApplicationStartDate={setApplicationStartDate} />
                       )}
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
