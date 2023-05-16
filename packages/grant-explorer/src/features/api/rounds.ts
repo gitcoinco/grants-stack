@@ -9,6 +9,11 @@ interface GetRoundOverviewResult {
   };
 }
 
+const validRounds = [
+  "0x35c9d05558da3a3f3cddbf34a8e364e59b857004",
+  "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc",
+];
+
 export type RoundOverview = {
   id: string;
   chainId: string;
@@ -55,6 +60,11 @@ async function fetchRoundsByTimestamp(
 
       // check if roundType is public & if so, add to filteredRounds
       if (round.roundMetadata?.roundType === "public") {
+        filteredRounds.push(round);
+      }
+
+      // check if round.id is in validRounds & if so, add to filteredRounds
+      if (validRounds.includes(round.id)) {
         filteredRounds.push(round);
       }
     }
