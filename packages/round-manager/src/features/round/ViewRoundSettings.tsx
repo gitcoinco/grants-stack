@@ -1510,7 +1510,7 @@ function Funding(props: {
         </div>
         <div>
           <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
-            <span>Mathing Funds Available</span>
+            <span>Matching Funds Available</span>
             <span className="text-right text-violet-400 float-right text-xs mt-1">
               *Required
             </span>
