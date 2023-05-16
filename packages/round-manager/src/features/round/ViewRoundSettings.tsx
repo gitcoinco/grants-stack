@@ -1369,7 +1369,7 @@ function RoundApplicationPeriod(props: {
             }`}
           >
             {props.editMode.canEdit ||
-            !props.editMode.canEditOnlyRoundEndDate ? (
+            props.editMode.canEditOnlyRoundEndDate ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
@@ -1440,11 +1440,11 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
                   defaultValue={`${getUTCDate(
-                    props.editedRound?.roundEndTime
-                  )} ${getUTCTime(props.editedRound?.roundEndTime)}`}
+                    editedRound?.roundEndTime
+                  )} ${getUTCTime(editedRound?.roundEndTime)}`}
                   disabled={
                     props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
+                    !props.editMode.canEditOnlyRoundEndDate
                   }
                 />
               </>
