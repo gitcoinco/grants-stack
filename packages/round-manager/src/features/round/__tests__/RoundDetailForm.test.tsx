@@ -175,9 +175,7 @@ describe("<RoundDetailForm />", () => {
     });
     const error = infoInput.parentElement?.querySelector("p");
     expect(error).toBeInTheDocument();
-    expect(error).toHaveTextContent(
-      "roundMetadata.support.info must be a valid URL"
-    );
+    expect(error).toHaveTextContent("Must be a valid URL");
   });
 
   it("validates applications end date is after applications start date.", async () => {
