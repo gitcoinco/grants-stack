@@ -1569,6 +1569,10 @@ function Funding(props: {
                   {...props.register(
                     "roundMetadata.quadraticFundingConfig.matchingFundsAvailable"
                   )}
+                  value={
+                    editedRound.roundMetadata.quadraticFundingConfig
+                      .matchingFundsAvailable ?? 0
+                  }
                   type="text"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   disabled={
