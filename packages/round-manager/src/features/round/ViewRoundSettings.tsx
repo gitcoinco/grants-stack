@@ -54,6 +54,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ..._.cloneDeep(round!),
   });
+  console.log("round", round);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -252,7 +253,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   // todo: fix this...
   const addRequirement = (e: any) => {
-    console.log("add requirement", e.target.value);
     const newRequirements = [
       ...(editedRound?.roundMetadata?.eligibility?.requirements || []),
       { requirement: "" },
@@ -487,6 +487,8 @@ function DetailsPage(props: {
   const numOfRequirements = props.editedRound?.roundMetadata.eligibility?.requirements?.length || 0;
   const lastRequirement = props.editedRound?.roundMetadata.eligibility?.requirements?.[props.editedRound?.roundMetadata.eligibility?.requirements?.length - 1];
   const isValidLastRequirement = numOfRequirements === 0 || (lastRequirement && lastRequirement.requirement !== "");
+
+  console.log("requirement", props.editedRound?.roundMetadata.eligibility?.requirements);
 
   function Cross({ color, size = "12" }: { color: string; size?: string }) {
     return (
@@ -818,15 +820,12 @@ function DetailsPage(props: {
                 className="text-xs text-pink-500 mt-1"
                 data-testid="application-end-date-error"
               >
-                {Array.isArray(
-                  props.errors.roundMetadata.eligibility?.requirements
-                )
-                  ? props.errors.roundMetadata.eligibility?.requirements.map(
-                    (err: any, _i: number) => {
-                      return <span>{err.requirement.message}</span>;
-                    }
-                  )
-                  : null}
+                <span>
+                  {props.errors.roundMetadata.eligibility?.requirements
+                    ? props.errors.roundMetadata.eligibility?.requirements[i]?.requirement?.message
+                    : ""
+                  }
+                </span>
               </p>
             )}
           </div>
