@@ -357,7 +357,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 type="button"
                 $variant="outline"
                 onClick={onEditClick}
-                disabled={hasRoundEnded}
+                disabled={hasRoundEnded || editMode.canEditOnlyRoundEndDate}
               >
                 <span className="flex flex-row items-center">
                   <FaEdit className="mr-2 mb-1" />
@@ -1030,7 +1030,7 @@ function RoundApplicationPeriod(props: {
             className={`leading-8 font-normal ${!props.editMode.canEdit || props.editMode.canEditOnlyRoundEndDate && "text-grey-400"
               }`}
           >
-            {props.editMode.canEdit && props.editMode.canEditOnlyRoundEndDate ? (
+            {props.editMode.canEdit && !props.editMode.canEditOnlyRoundEndDate ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.applicationsStartTime
@@ -1121,7 +1121,7 @@ function RoundApplicationPeriod(props: {
             className={`leading-8 font-normal ${!props.editMode.canEdit || props.editMode.canEditOnlyRoundEndDate && "text-grey-400"
               }`}
           >
-            {props.editMode.canEdit || !props.editMode.canEditOnlyRoundEndDate ? (
+            {props.editMode.canEdit && !props.editMode.canEditOnlyRoundEndDate ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.applicationsEndTime
@@ -1213,7 +1213,7 @@ function RoundApplicationPeriod(props: {
             className={`leading-8 font-normal ${!props.editMode.canEdit || props.editMode.canEditOnlyRoundEndDate && "text-grey-400"
               }`}
           >
-            {props.editMode.canEdit && props.editMode.canEditOnlyRoundEndDate ? (
+            {props.editMode.canEdit && !props.editMode.canEditOnlyRoundEndDate ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.roundStartTime
@@ -1304,7 +1304,7 @@ function RoundApplicationPeriod(props: {
             className={`leading-8 font-normal ${!props.editMode.canEdit || props.editMode.canEditOnlyRoundEndDate && "text-grey-400"
               }`}
           >
-            {props.editMode.canEdit && !props.editMode.canEditOnlyRoundEndDate ? (
+            {props.editMode.canEdit || !props.editMode.canEditOnlyRoundEndDate ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${props.errors.roundEndTime
@@ -1378,7 +1378,7 @@ function RoundApplicationPeriod(props: {
                   )} ${getUTCTime(
                     props.editedRound?.roundEndTime ?? round.roundEndTime
                   )}`}
-                    disabled={!props.editMode.canEdit}
+                    disabled={props.editMode.canEdit || props.editMode.canEditOnlyRoundEndDate}
                 />
               </>
             )}
