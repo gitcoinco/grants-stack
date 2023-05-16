@@ -12,10 +12,6 @@ import ApplyNowSection from "./ApplyNowSection";
 import { useDebugMode } from "../api/utils";
 
 const LandingPage = () => {
-  if (process.env.REACT_APP_ENV === "production") {
-    window.location.replace("https://grants.gitcoin.co");
-  }
-
   const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
