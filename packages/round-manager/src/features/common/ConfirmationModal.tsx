@@ -81,7 +81,7 @@ export default function ConfirmationModal({
                         : "sm:w-auto"
                     }`}
                     onClick={props.confirmButtonAction}
-                    data-testid={"confirm-continue"}
+                    data-testid={"confirm-button"}
                   >
                     {confirmButtonText}
                   </Button>
