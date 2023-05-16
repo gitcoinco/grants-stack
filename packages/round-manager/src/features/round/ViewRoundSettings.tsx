@@ -8,7 +8,7 @@ import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
 import moment from "moment";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Datetime from "react-datetime";
 import {
   Control,
@@ -54,7 +54,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ..._.cloneDeep(round!),
   });
-  console.log("round", round);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -62,6 +61,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const { updateRound, IPFSCurrentStatus, roundUpdateStatus, indexingStatus } =
     useUpdateRound();
   const [ipfsStep, setIpfsStep] = useState(false);
+  const [hasChanged, setHasChanged] = useState(false);
 
   const ValidationSchema = RoundValidationSchema.shape({
     // Overrides for validation schema that was not included in imported schema.
@@ -142,6 +142,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
     resolver: yupResolver(ValidationSchema),
   });
 
+  useEffect(() => {
+    setHasChanged(!_.isEqual(round, editedRound));
+  }, [editedRound])
   // returns a boolean for each group of fields that have been edited
   const compareRounds = (
     oldRoundData: Round,
@@ -329,7 +332,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 >
                   Cancel
                 </Button>
-                <Button type="submit">Update Round</Button>
+                <Button disabled={!hasChanged} type="submit">Update Round</Button>
               </>
             ) : (
               <Button
