@@ -206,6 +206,7 @@ function DynamicRequirementsForm(props: {
                 onClick={() => {
                   remove(index);
                 }}
+                data-testid="remove-requirement-button"
                 disabled={fields.length === 1}
               >
                 <XIcon
