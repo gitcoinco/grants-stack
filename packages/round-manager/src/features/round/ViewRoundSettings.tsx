@@ -1081,7 +1081,8 @@ function RoundApplicationPeriod(props: {
             }`}
           >
             {props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate ? (
+            !props.editMode.canEditOnlyRoundEndDate &&
+            !moment(editedRound.applicationsStartTime).isBefore(new Date()) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
@@ -1114,8 +1115,9 @@ function RoundApplicationPeriod(props: {
                         inputProps={{
                           id: "applicationsStartTime",
                           placeholder: "",
-                          className:
-                            "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                          className: `${
+                            props.editMode.canEdit ? "bg-grey-50" : ""
+                          } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
                         }}
                       />
                     )}
@@ -1145,20 +1147,27 @@ function RoundApplicationPeriod(props: {
                 )}
               </div>
             ) : (
-              <>
-                <p className="block text-[10px] pl-2">Start Date</p>
+              <div
+                className={`${
+                  props.editMode.canEdit ? "bg-grey-50" : ""
+                } relative border rounded-md shadow-sm focus-within:ring-1 ${
+                  props.errors.applicationsStartTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                }`}
+              >
+                <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
                 <input
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
+                  className={`border-0 pt-0 pl-2 -mt-2 text-sm ${
+                    props.editMode.canEdit ? "bg-grey-50" : ""
+                  }`}
                   defaultValue={`${getUTCDate(
                     editedRound.applicationsStartTime
                   )} ${getUTCTime(editedRound.applicationsStartTime)}`}
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                  disabled
                 />
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -1175,10 +1184,13 @@ function RoundApplicationPeriod(props: {
             }`}
           >
             {props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate ? (
+            !props.editMode.canEditOnlyRoundEndDate &&
+            !moment(editedRound.applicationsEndTime).isBefore(new Date()) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
+                  className={`${
+                    props.editMode.canEdit ? "bg-grey-50" : ""
+                  } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
                     props.errors.applicationsEndTime
                       ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                       : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
@@ -1208,8 +1220,9 @@ function RoundApplicationPeriod(props: {
                         inputProps={{
                           id: "applicationsEndTime",
                           placeholder: "",
-                          className:
-                            "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                          className: `${
+                            props.editMode.canEdit ? "bg-grey-50" : ""
+                          } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
                         }}
                       />
                     )}
@@ -1239,20 +1252,25 @@ function RoundApplicationPeriod(props: {
                 )}
               </div>
             ) : (
-              <>
-                <p className="block text-[10px] pl-2">End Date</p>
+              <div
+                className={`${
+                  props.editMode.canEdit ? "bg-grey-50" : ""
+                } relative border rounded-md shadow-sm focus-within:ring-1 ${
+                  props.errors.applicationsEndTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                }`}
+              >
+                <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
                 <input
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
+                  className="border-0 pt-0 pl-2 -mt-2 text-sm"
                   defaultValue={`${getUTCDate(
-                    editedRound?.applicationsEndTime
-                  )} ${getUTCTime(props.editedRound?.applicationsEndTime)}`}
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                    editedRound.applicationsEndTime
+                  )} ${getUTCTime(editedRound.applicationsEndTime)}`}
+                  disabled
                 />
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -1270,10 +1288,13 @@ function RoundApplicationPeriod(props: {
             }`}
           >
             {props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate ? (
+            !props.editMode.canEditOnlyRoundEndDate &&
+            !moment(editedRound.roundStartTime).isBefore(new Date()) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
+                  className={`${
+                    props.editMode.canEdit ? "bg-grey-50" : ""
+                  } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
                     props.errors.roundStartTime
                       ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                       : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
@@ -1304,8 +1325,9 @@ function RoundApplicationPeriod(props: {
                           inputProps={{
                             id: "roundStartTime",
                             placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                            className: `${
+                              props.editMode.canEdit ? "bg-grey-50" : ""
+                            } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
                           }}
                         />
                         <div className="absolute inset-y-2 right-0 pr-3 flex items-center pointer-events-none">
@@ -1336,20 +1358,25 @@ function RoundApplicationPeriod(props: {
                 )}
               </div>
             ) : (
-              <>
-                <p className="block text-[10px] pl-2">Start Date</p>
+              <div
+                className={`${
+                  props.editMode.canEdit ? "bg-grey-50" : ""
+                } relative border rounded-md shadow-sm focus-within:ring-1 ${
+                  props.errors.roundStartTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                }`}
+              >
+                <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
                 <input
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
+                  className="border-0 pt-0 pl-2 -mt-2 text-sm"
                   defaultValue={`${getUTCDate(
-                    props.editedRound?.roundEndTime
-                  )} ${getUTCTime(props.editedRound?.roundEndTime)}`}
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                    editedRound.roundStartTime
+                  )} ${getUTCTime(editedRound.roundStartTime)}`}
+                  disabled
                 />
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -1366,10 +1393,13 @@ function RoundApplicationPeriod(props: {
             }`}
           >
             {props.editMode.canEdit ||
-            props.editMode.canEditOnlyRoundEndDate ? (
+            (props.editMode.canEditOnlyRoundEndDate &&
+              !moment(editedRound.roundEndTime).isBefore(new Date())) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
-                  className={`relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
+                  className={`${
+                    props.editMode.canEdit ? "bg-grey-50" : ""
+                  } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
                     props.errors.roundEndTime
                       ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                       : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
@@ -1399,8 +1429,9 @@ function RoundApplicationPeriod(props: {
                           inputProps={{
                             id: "roundEndTime",
                             placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                            className: `${
+                              props.editMode.canEdit ? "bg-grey-50" : ""
+                            } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
                           }}
                         />
                         <div className="absolute inset-y-2 right-0 pr-3 flex items-center pointer-events-none">
@@ -1431,20 +1462,25 @@ function RoundApplicationPeriod(props: {
                 )}
               </div>
             ) : (
-              <>
-                <p className="block text-[10px] pl-2">End Date</p>
+              <div
+                className={`${
+                  props.editMode.canEdit ? "bg-grey-50" : ""
+                } relative border rounded-md shadow-sm focus-within:ring-1 ${
+                  props.errors.roundEndTime
+                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                }`}
+              >
+                <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
                 <input
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 ml-2"
+                  className="border-0 pt-0 pl-2 -mt-2 text-sm"
                   defaultValue={`${getUTCDate(
-                    editedRound?.roundEndTime
-                  )} ${getUTCTime(editedRound?.roundEndTime)}`}
-                  disabled={
-                    props.editMode.canEdit ||
-                    !props.editMode.canEditOnlyRoundEndDate
-                  }
+                    editedRound.roundEndTime
+                  )} ${getUTCTime(editedRound.roundEndTime)}`}
+                  disabled
                 />
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -1744,10 +1780,7 @@ function Funding(props: {
                   }
                   value={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCapAmount
-                      ? editedRound.roundMetadata.quadraticFundingConfig
-                          .matchingCapAmount
-                      : 0
+                      ?.matchingCapAmount ?? 0
                   }
                   onChange={(e) => {
                     field.onChange(Number(e.target.value));
