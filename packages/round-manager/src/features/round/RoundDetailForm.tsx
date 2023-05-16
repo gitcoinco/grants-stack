@@ -1,7 +1,5 @@
-import { Fragment, useContext, useState, useRef, useEffect, FC } from "react";
-
+import { Fragment, useContext, useState, FC } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
 import {
   Control,
@@ -13,16 +11,13 @@ import {
   UseFormRegisterReturn,
 } from "react-hook-form";
 import * as yup from "yup";
-
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import {
   CheckIcon,
-  InformationCircleIcon,
   SelectorIcon,
 } from "@heroicons/react/solid";
 import { Input } from "common/src/styles";
 import moment from "moment";
-import ReactTooltip from "react-tooltip";
 import { Program, Round } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
@@ -128,9 +123,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   });
 
   const FormStepper = props.stepper;
-  const [applicationStartDate, setApplicationStartDate] = useState(moment());
-  const [applicationEndDate, setApplicationEndDate] = useState(moment());
-  const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
+  const [applicationStartDate, setApplicationStartDate] = useState<any>();
+  const [applicationEndDate, setApplicationEndDate] = useState<any>();
+  const [roundStartDate, setRoundStartDate] = useState<any>();
+  const [roundEndDate, setRoundEndDate] = useState();
 
   const next: SubmitHandler<Round> = async (values) => {
     const data = _.merge(formData, values);
@@ -161,54 +157,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   function disableBeforeRoundStartDate(current: moment.Moment) {
     return current.isAfter(roundStartDate);
   }
-
-
-  // WIP Custom Date picker :(
-  interface BetterDatetimeProps {
-    field: any;
-    setApplicationStartDate: (date: moment.Moment) => void;
-  }
-
-  const BetterDatetime: FC<BetterDatetimeProps> = ({ field, setApplicationStartDate }) => {
-    const inputRef = useRef<HTMLInputElement>(null);
-    const cursorPositionRef = useRef<number | null>(null);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      cursorPositionRef.current = inputRef.current?.selectionStart || null;
-      field.onChange(e);
-    };
-
-    useEffect(() => {
-      if (cursorPositionRef.current !== null && inputRef.current) {
-        inputRef.current.selectionStart = cursorPositionRef.current;
-        inputRef.current.selectionEnd = cursorPositionRef.current;
-      }
-    }, [field.value]);
-
-    return (
-      <Datetime
-        {...field}
-        // closeOnSelect
-        onChange={(date) => {
-          setApplicationStartDate(moment(date));
-          field.onChange(moment(date));
-        }}
-        inputProps={{
-          id: "applicationsStartTime",
-          placeholder: "",
-          className: "block w-full border-0 p-0 text-gray-900 placeholder-grey-40 0 focus:ring-0 text-sm",
-          ref: inputRef,
-          onChange: handleInputChange,
-        }}
-        isValidDate={disablePastAndBeforeRoundStartDate}
-        initialViewDate={now}
-        utc={true}
-        dateFormat={"YYYY-MM-DD"}
-        timeFormat={"HH:mm UTC"}
-      />
-    );
-  };
-  // End WIP 
 
 
   return (
@@ -262,7 +210,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   What are the dates for the Applications and Round voting
                   period(s)?
                 </span>
-                <ApplicationDatesInformation />
               </div>
 
               <p className="text-sm mb-2">
@@ -280,33 +227,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
                     }`}
                   >
-                    <label
-                      htmlFor="applicationsStartTime"
-                      className="block text-[10px]"
-                    >
-                      Start Date
-                    </label>
-                    <Controller
+                    <BetterDatetime
                       control={control}
                       name="applicationsStartTime"
-                      render={({ field }) => (
-                        <BetterDatetime field={field} setApplicationStartDate={setApplicationStartDate} />
-                      )}
+                      label="Start Date"
+                      date={applicationStartDate}
+                      setDate={setApplicationStartDate}
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
                   </div>
                   {errors.applicationsStartTime && (
                     <p
@@ -326,50 +253,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
                     }`}
                   >
-                    <label
-                      htmlFor="applicationsEndTime"
-                      className="block text-[10px]"
-                    >
-                      End Date
-                    </label>
-                    <Controller
+                    <BetterDatetime 
                       control={control}
                       name="applicationsEndTime"
-                      render={({ field }) => (
-                        <Datetime
-                          {...field}
-                          closeOnSelect
-                          onChange={(date) => {
-                            setApplicationEndDate(moment(date));
-                            field.onChange(moment(date));
-                          }}
-                          inputProps={{
-                            id: "applicationsEndTime",
-                            placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
-                          }}
-                          isValidDate={disableBeforeApplicationStartDate}
-                          utc={true}
-                          dateFormat={"YYYY-MM-DD"}
-                          timeFormat={"HH:mm UTC"}
-                        />
-                      )}
+                      label="End Date"
+                      date={applicationEndDate}
+                      setDate={setApplicationEndDate}
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
                   </div>
                   {errors.applicationsEndTime && (
                     <p
@@ -396,50 +286,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
                     }`}
                   >
-                    <label
-                      htmlFor="roundStartTime"
-                      className="block text-[10px]"
-                    >
-                      Start Date
-                    </label>
-                    <Controller
+                    <BetterDatetime
                       control={control}
                       name="roundStartTime"
-                      render={({ field }) => (
-                        <Datetime
-                          {...field}
-                          closeOnSelect
-                          onChange={(date) => {
-                            setRoundStartDate(moment(date));
-                            field.onChange(moment(date));
-                          }}
-                          inputProps={{
-                            id: "roundStartTime",
-                            placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
-                          }}
-                          isValidDate={disableBeforeApplicationEndDate}
-                          utc={true}
-                          dateFormat={"YYYY-MM-DD"}
-                          timeFormat={"HH:mm UTC"}
-                        />
-                      )}
+                      label="Start Date"
+                      date={roundStartDate}
+                      setDate={setRoundStartDate}
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
                   </div>
                   {errors.roundStartTime && (
                     <p
@@ -459,43 +312,11 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
                     }`}
                   >
-                    <label htmlFor="roundEndTime" className="block text-[10px]">
-                      End Date
-                    </label>
-                    <Controller
+                    <BetterDatetime 
                       control={control}
                       name="roundEndTime"
-                      render={({ field }) => (
-                        <Datetime
-                          {...field}
-                          closeOnSelect
-                          inputProps={{
-                            id: "roundEndTime",
-                            placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
-                          }}
-                          isValidDate={disableBeforeRoundStartDate}
-                          utc={true}
-                          dateFormat={"YYYY-MM-DD"}
-                          timeFormat={"HH:mm UTC"}
-                        />
-                      )}
+                      label="End Date"
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
                   </div>
                   {errors.roundEndTime && (
                     <p
@@ -834,28 +655,6 @@ function Support(props: {
   );
 }
 
-function ApplicationDatesInformation() {
-  return (
-    <>
-      <InformationCircleIcon
-        data-tip
-        data-background-color="#0E0333"
-        data-for="application-dates-tooltip"
-        className="inline h-4 w-4 ml-2 mr-3 mb-1"
-        data-testid="application-dates-tooltip"
-      />
-      <ReactTooltip
-        id="application-dates-tooltip"
-        place="bottom"
-        type="dark"
-        effect="solid"
-      >
-        <p className="text-xs">All dates are in UTC.</p>
-      </ReactTooltip>
-    </>
-  );
-}
-
 function RoundType(props: {
   register: UseFormRegisterReturn<string>;
   control?: Control<Round>;
@@ -938,3 +737,45 @@ function RoundType(props: {
     </>
   );
 }
+
+
+interface BetterDatetimeProps {
+  control: Control<Round>;
+  name: any;
+  label: string;
+  date?: moment.Moment;
+  setDate?: (date: moment.Moment) => void;  
+}
+
+const BetterDatetime: FC<BetterDatetimeProps> = ({ control, name, label, date, setDate }) => {
+  const now = moment().format('YYYY-MM-DDTHH:mm');
+  return (
+    <div className="relative w-full border-0 p-0 placeholder-grey-40 focus:ring-0 text-sm">
+      <label
+        htmlFor={name}
+        className="block text-[10px]"
+      >
+        {label}
+      </label>
+      <Controller
+        control={control}
+        name={name}
+        defaultValue={date?.format('YYYY-MM-DDTHH:mm')}
+        render={({ field }) => (
+          <input
+            type="datetime-local"
+            {...field}
+            min={now}
+            className="block w-full border-0 p-0 focus:ring-0"
+            onChange={(e) => {
+              // Convert the local datetime to UTC
+              const date = moment.utc(e.target.value);
+              if (setDate) setDate(date);
+              field.onChange(e.target.value);
+            }}
+          />
+        )}
+      />
+    </div>
+  );
+};
