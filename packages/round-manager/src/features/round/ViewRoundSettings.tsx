@@ -121,7 +121,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
           ),
         matchingCapAmount: yup.number().when("matchingCap", {
           is: (val: any) => val === "yes",
-          then: yup.number().required("This field is required."),
+          then: yup
+            .number()
+            .required("This field is required.")
+            .moreThan(0.001, "Must be greater than zero (0)"),
           otherwise: yup.number().notRequired(),
         }),
         minDonationThresholdAmount: yup
@@ -843,7 +846,7 @@ function DetailsPage(props: {
                         }}
                       />
                       {props.editMode.canEdit &&
-                        props.editMode.canEditOnlyRoundEndDate && (
+                        !props.editMode.canEditOnlyRoundEndDate && (
                           <button
                             data-testid="remove-requirement-button"
                             className="ml-4"
