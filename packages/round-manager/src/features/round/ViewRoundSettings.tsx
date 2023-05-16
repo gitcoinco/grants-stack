@@ -1054,10 +1054,6 @@ function RoundApplicationPeriod(props: {
     return current.isAfter(applicationStartDate);
   }
 
-  const disablePastAndBeforeRoundStartDate = (current: moment.Moment) => {
-    return disablePastDate(current);
-  };
-
   function disableBeforeApplicationEndDate(current: moment.Moment) {
     return current.isAfter(applicationEndDate);
   }
@@ -1114,7 +1110,7 @@ function RoundApplicationPeriod(props: {
                         utc={true}
                         dateFormat={"YYYY-MM-DD"}
                         timeFormat={"HH:mm UTC"}
-                        isValidDate={disablePastAndBeforeRoundStartDate}
+                        isValidDate={disablePastDate}
                         inputProps={{
                           id: "applicationsStartTime",
                           placeholder: "",
@@ -1207,7 +1203,7 @@ function RoundApplicationPeriod(props: {
                         }}
                         utc={true}
                         dateFormat={"YYYY-MM-DD"}
-                        isValidDate={disableBeforeApplicationStartDate}
+                        isValidDate={disablePastDate}
                         timeFormat={"HH:mm UTC"}
                         inputProps={{
                           id: "applicationsEndTime",
@@ -1304,7 +1300,7 @@ function RoundApplicationPeriod(props: {
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
                           timeFormat={"HH:mm UTC"}
-                          isValidDate={disableBeforeApplicationEndDate}
+                          isValidDate={disablePastDate}
                           inputProps={{
                             id: "roundStartTime",
                             placeholder: "",
@@ -1399,7 +1395,7 @@ function RoundApplicationPeriod(props: {
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
                           timeFormat={"HH:mm UTC"}
-                          isValidDate={disableBeforeRoundStartDate}
+                          isValidDate={disablePastDate}
                           inputProps={{
                             id: "roundEndTime",
                             placeholder: "",
