@@ -1538,6 +1538,11 @@ function Funding(props: {
                   type="radio"
                   className="mr-2"
                   value={"yes"}
+                  disabled={
+                    !props.editMode &&
+                    !props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.matchingCap
+                  }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCap
@@ -1573,11 +1578,15 @@ function Funding(props: {
                   type="radio"
                   className="ml-4"
                   value={"no"}
+                  disabled={
+                    !props.editMode &&
+                    props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.matchingCap
+                  }
                   checked={
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCap
                   }
-                  disabled={!props.editMode}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1740,6 +1749,11 @@ function Funding(props: {
                   type="radio"
                   className="mr-2"
                   value={"yes"}
+                  disabled={
+                    !props.editMode &&
+                    !props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.minDonationThreshold
+                  }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
@@ -1779,7 +1793,11 @@ function Funding(props: {
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold || false
                   }
-                  disabled={!props.editMode}
+                  disabled={
+                    !props.editMode &&
+                    props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.minDonationThreshold
+                  }
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1921,9 +1939,13 @@ function Funding(props: {
                   {...props.register(
                     "roundMetadata.quadraticFundingConfig.sybilDefense"
                   )}
-                  readOnly={!props.editMode}
                   type="radio"
                   value="yes"
+                  disabled={
+                    !props.editMode &&
+                    !props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.sybilDefense
+                  }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.sybilDefense
@@ -1962,11 +1984,15 @@ function Funding(props: {
                   {...props.register(
                     "roundMetadata.quadraticFundingConfig.sybilDefense"
                   )}
-                  disabled={!props.editMode}
                   type="radio"
                   value="no"
                   checked={
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.sybilDefense
+                  }
+                  disabled={
+                    !props.editMode &&
+                    props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.sybilDefense
                   }
                   onChange={(e) => {
