@@ -340,6 +340,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 type="button"
                 $variant="outline"
                 onClick={onEditClick}
+                disabled={hasRoundEnded}
               >
                 <span className="flex flex-row items-center">
                   <FaEdit className="mr-2 mb-1" />
