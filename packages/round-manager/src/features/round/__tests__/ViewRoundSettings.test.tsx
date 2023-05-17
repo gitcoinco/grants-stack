@@ -196,6 +196,64 @@ describe("View Round", () => {
     });
   });
 
+  it.only("adds a requirement successfully", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
+
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+    });
+  });
+
+  it("removes a requirement successfully", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
+
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+    });
+  });
+
   it("validates that requirement(s) are not left blank", async () => {
     // todo: implement
   });
