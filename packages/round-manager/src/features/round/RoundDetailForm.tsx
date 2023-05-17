@@ -149,7 +149,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     /* Insert HTTPS into support URL if missing */
     if (
       values.roundMetadata.support?.type === "Website" &&
-      !/^https?:\/\//.test(values.roundMetadata.support.info)
+      !/^(https?|ipfs):\/\//.test(values.roundMetadata.support.info)
     ) {
       values.roundMetadata.support.info = `https://${values.roundMetadata.support.info}`;
     }
