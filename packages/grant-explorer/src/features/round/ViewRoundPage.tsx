@@ -15,7 +15,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import { Project, Requirement, Round } from "../api/types";
-import { payoutTokens } from "../api/utils";
+import { CHAINS, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
@@ -254,7 +254,7 @@ function AfterRoundStart(props: {
           >
             {round.roundMetadata?.name}
           </p>
-          <div className="flex text-grey-400 mb-3">
+          <div className="flex text-grey-400 mb-1">
             <p className="mr-4 text-sm">
               <span className="mr-1">Round starts on:</span>
               <span className="mr-1">
@@ -272,6 +272,16 @@ function AfterRoundStart(props: {
               <span>{getUTCTime(round.roundEndTime)}</span>
             </p>
           </div>
+
+          <p className="text-grey-400 text-sm flex gap-2 mb-2">
+            <span>Deployed on:</span>
+            <img
+              className="w-4 h-4 mt-0.5"
+              src={CHAINS[Number(chainId)]?.logo}
+              alt="Round Chain Logo"
+            />
+            <span>{CHAINS[Number(chainId)]?.name}</span>
+          </p>
 
           <p className="text-1xl mb-4">
             Matching funds available: &nbsp;
