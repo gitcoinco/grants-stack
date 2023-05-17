@@ -221,7 +221,7 @@ function AfterRoundStart(props: {
       name: round.roundMetadata?.name,
       path: `/round/${chainId}/${roundId}`,
     },
-  ] as BreadcrumbItem[]
+  ] as BreadcrumbItem[];
 
   return (
     <>
@@ -239,19 +239,11 @@ function AfterRoundStart(props: {
         </div>
       )}
       <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
-        <div 
-          className="flex flex-col pb-4"
-          data-testid="bread-crumbs"
-        >
-          <Breadcrumb
-            items={breadCrumbs}
-          />
+        <div className="flex flex-col pb-4" data-testid="bread-crumbs">
+          <Breadcrumb items={breadCrumbs} />
         </div>
         <main>
-          <p 
-            data-testid="round-title" 
-            className="text-3xl my-5"
-          >
+          <p data-testid="round-title" className="text-3xl my-5">
             {round.roundMetadata?.name}
           </p>
           <div className="flex text-grey-400 mb-3">
@@ -608,7 +600,7 @@ const ApplyButton = (props: { applicationURL: string }) => {
     <Button
       type="button"
       onClick={() => window.open(applicationURL, "_blank")}
-      className="mt-2 basis-full items-center justify-center shadow-sm text-sm rounded bg-white text-black border-2 border-gray-200 md:h-12 hover:border-violet-400"
+      className="mt-2 basis-full items-center justify-center shadow-sm text-sm rounded bg-violet-400 text-white border-2 border-gray-200 md:h-12 hover:border-violet-400"
       data-testid="apply-button"
     >
       Apply to Grant Round
