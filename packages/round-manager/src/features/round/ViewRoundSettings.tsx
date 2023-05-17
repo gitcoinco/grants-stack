@@ -120,20 +120,23 @@ export default function ViewRoundSettings(props: { id?: string }) {
           is: (val: any) => val === "yes",
           then: yup
             .number()
+            .positive()
+            .integer()
             .required("This field is required.")
-            .moreThan(0.001, "Must be greater than zero (0)"),
+            .moreThan(0.001, "Must be greater than zero (0)")
+            .lessThan(101, "Must be equal or less than 100"),
           otherwise: yup.number().notRequired(),
         }),
-        minDonationThresholdAmount: yup
-          .number()
-          .when("mindonatationThreshold", {
-            is: (val: any) => val === "yes",
-            then: yup
-              .number()
-              .required("This field is required")
-              .moreThan(0, "Must be greater than 0"),
-            otherwise: yup.number().notRequired(),
-          }),
+        minDonationThresholdAmount: yup.number().when("minDonationThreshold", {
+          is: (val: any) => val === "yes",
+          then: yup
+            .number()
+            .positive()
+            .integer()
+            .required("This field is required")
+            .moreThan(0, "Must be greater than 0"),
+          otherwise: yup.number().notRequired(),
+        }),
       }),
     }),
   });
@@ -1955,7 +1958,9 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          minDonationThresholdAmount: 0,
+                          minDonationThresholdAmount:
+                            editedRound.roundMetadata.quadraticFundingConfig
+                              .minDonationThresholdAmount ?? 0,
                           minDonationThreshold: e.target.value === "yes",
                         },
                       },
@@ -2009,11 +2014,8 @@ function Funding(props: {
                   type="text"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   value={
-                    props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.minDonationThreshold
-                      ? editedRound.roundMetadata.quadraticFundingConfig
-                          ?.minDonationThresholdAmount
-                      : 0
+                    editedRound.roundMetadata.quadraticFundingConfig
+                      ?.minDonationThresholdAmount
                   }
                   disabled={
                     (!props.editMode.canEdit &&

@@ -196,7 +196,7 @@ describe("View Round", () => {
     });
   });
 
-  it.only("adds a requirement successfully", async () => {
+  it("adds a requirement successfully", async () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
