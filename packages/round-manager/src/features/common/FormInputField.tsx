@@ -27,6 +27,7 @@ export const FormInputField: FC<{
         type="text"
         id={id}
         placeholder={placeholder}
+        data-testid={`${id}-testid`}
       />
       {hasError && (
         <p className="text-xs text-pink-500">{errorMessage}</p>

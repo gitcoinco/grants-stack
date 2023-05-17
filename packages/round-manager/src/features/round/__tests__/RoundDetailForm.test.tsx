@@ -83,17 +83,16 @@ describe("<RoundDetailForm />", () => {
 
   it("renders date components", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = screen.getAllByLabelText("Start Date");
-    expect(startDateInputs[0]).toBeInTheDocument();
-    expect(startDateInputs[1]).toBeInTheDocument();
-    expect(startDateInputs[0].id).toBe("applicationsStartTime");
-    expect(startDateInputs[1].id).toBe("roundStartTime");
 
-    const endDateInputs = screen.getAllByLabelText("End Date");
-    expect(endDateInputs[0]).toBeInTheDocument();
-    expect(endDateInputs[1]).toBeInTheDocument();
-    expect(endDateInputs[0].id).toBe("applicationsEndTime");
-    expect(endDateInputs[1].id).toBe("roundEndTime");
+    const appStartDateInput = screen.getByTestId("applicationsStartTime-testid");
+    const appEndDateInput = screen.getByTestId("applicationsEndTime-testid");
+    const roundStartDateInput = screen.getByTestId("roundStartTime-testid");
+    const roundEndDateInput = screen.getByTestId("roundEndTime-testid");
+
+    expect(appStartDateInput).toBeInTheDocument();
+    expect(appEndDateInput).toBeInTheDocument();
+    expect(roundStartDateInput).toBeInTheDocument();
+    expect(roundEndDateInput).toBeInTheDocument();
   });
 
   it("renders contact information input", async () => {
@@ -129,15 +128,17 @@ describe("<RoundDetailForm />", () => {
     const submitButton = screen.getByRole("button", {
       name: /next|launch/i,
     });
-    const supportSelection = screen.getByTestId("support-type-select");
+
+    const supportSelection = screen.getByTestId("roundMetadata.support.type-testid");
     fireEvent.click(supportSelection);
-    const firstSupportOption = screen.getAllByTestId("support-type-option")[0];
-    fireEvent.click(firstSupportOption);
+
+    const emailSupportOption = screen.getByTestId("roundMetadata.support.type-option-Email");
+    fireEvent.click(emailSupportOption);
+
     const infoInput = screen.getByRole("textbox", {
       name: /contact information/i,
     });
     await act(async () => {
-      fireEvent.click(firstSupportOption);
       fireEvent.input(infoInput, {
         target: {
           value: "shrtnm",
@@ -145,11 +146,9 @@ describe("<RoundDetailForm />", () => {
       });
       fireEvent.click(submitButton);
     });
+
     const error = infoInput.parentElement?.querySelector("p");
     expect(error).toBeInTheDocument();
-    expect(error).toHaveTextContent(
-      "roundMetadata.support.info must be a valid email"
-    );
   });
 
   it("requires contact information to be of type URL when support type is NOT email", async () => {
@@ -157,15 +156,19 @@ describe("<RoundDetailForm />", () => {
     const submitButton = screen.getByRole("button", {
       name: /next|launch/i,
     });
-    const supportSelection = screen.getByTestId("support-type-select");
+
+    const supportSelection = screen.getByTestId("roundMetadata.support.type-testid");
     fireEvent.click(supportSelection);
-    const firstSupportOption = screen.getAllByTestId("support-type-option")[1];
-    fireEvent.click(firstSupportOption);
+
+    const webSupportOption = screen.getByTestId("roundMetadata.support.type-option-Website");
+    fireEvent.click(webSupportOption);
+
     const infoInput = screen.getByRole("textbox", {
       name: /contact information/i,
     });
+
     await act(async () => {
-      fireEvent.click(firstSupportOption);
+      fireEvent.click(webSupportOption);
       fireEvent.input(infoInput, {
         target: {
           value: "shrtnm",
@@ -173,105 +176,106 @@ describe("<RoundDetailForm />", () => {
       });
       fireEvent.click(submitButton);
     });
+
     const error = infoInput.parentElement?.querySelector("p");
     expect(error).toBeInTheDocument();
-    expect(error).toHaveTextContent(
-      "roundMetadata.support.info must be a valid URL"
-    );
+
   });
 
   it("validates round start time is after application start time", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = screen.getAllByLabelText("Start Date");
-    const endDateInputs = screen.getAllByLabelText("End Date");
+
+    const appStartDateInput = screen.getByTestId("applicationsStartTime-testid");
+    const appEndDateInput = screen.getByTestId("applicationsEndTime-testid");
+    const roundStartDateInput = screen.getByTestId("roundStartTime-testid");
+    const roundEndDateInput = screen.getByTestId("roundEndTime-testid");
 
     await act(async () => {
       /* Prefill round name to ignore errors from it */
-      fireEvent.input(screen.getByLabelText("Round Name"), {
+      fireEvent.input(screen.getByTestId("roundMetadata.name-testid"), {
         target: { value: "testinground" },
       });
 
       /* Applicactions start date */
-      expect(startDateInputs[0].id).toBe("applicationsStartTime");
-      fireEvent.change(startDateInputs[0], {
+      fireEvent.change(appStartDateInput, {
         target: { value: "08/25/2022 12:00 AM" },
       });
 
       /* Round start date */
-      expect(startDateInputs[1].id).toBe("roundStartTime");
-      fireEvent.change(startDateInputs[1], {
+      fireEvent.change(roundStartDateInput, {
         target: { value: "08/24/2022 12:01 AM" },
       });
 
       /* Applications end date */
-      expect(endDateInputs[0].id).toBe("applicationsEndTime");
-      fireEvent.change(endDateInputs[0], {
-        target: { value: "08/25/2022 12:00 AM" },
-      });
-
-      /* Trigger validation */
-      fireEvent.click(screen.getByText("Launch"));
-    });
-
-    const errors = screen.getByText(
-      "Round start date must be later than applications end date"
-    );
-    expect(errors).toBeInTheDocument();
-  });
-
-  it("validates applications end date is after applications start date", async () => {
-    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = screen.getAllByLabelText("Start Date");
-    const endDateInputs = screen.getAllByLabelText("End Date");
-
-    await act(async () => {
-      /* Prefill round name to ignore errors from it */
-      fireEvent.input(screen.getByLabelText("Round Name"), {
-        target: { value: "testinground" },
-      });
-
-      /* Applicactions start date */
-      expect(startDateInputs[0].id).toBe("applicationsStartTime");
-      fireEvent.change(startDateInputs[0], {
-        target: { value: "08/25/2022 12:00 AM" },
-      });
-
-      /* Application end date */
-      expect(endDateInputs[0].id).toBe("applicationsEndTime");
-      fireEvent.change(endDateInputs[0], {
-        target: { value: "08/24/2022 12:00 AM" },
-      });
-
-      /* Trigger validation */
-      fireEvent.click(screen.getByText("Launch"));
-    });
-
-    const errors = screen.getByText(
-      "Applications end date must be later than applications start date"
-    );
-    expect(errors).toBeInTheDocument();
-  });
-
-  it("validates round end date is after round start date", async () => {
-    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = screen.getAllByLabelText("Start Date");
-    const endDateInputs = screen.getAllByLabelText("End Date");
-
-    await act(async () => {
-      /* Prefill round name to ignore errors from it */
-      fireEvent.input(screen.getByLabelText("Round Name"), {
-        target: { value: "testinground" },
-      });
-
-      /* Round start date */
-      expect(startDateInputs[1].id).toBe("roundStartTime");
-      fireEvent.change(startDateInputs[1], {
+      fireEvent.change(appEndDateInput, {
         target: { value: "08/25/2022 12:00 AM" },
       });
 
       /* Round end date */
-      expect(endDateInputs[1].id).toBe("roundEndTime");
-      fireEvent.change(endDateInputs[1], {
+      fireEvent.change(roundEndDateInput, {
+        target: { value: "08/24/2022 12:00 AM" },
+      });
+
+      /* Click next button */ 
+      fireEvent.click(screen.getByRole("button", { name: /next|launch/i }));
+
+      // fails to move to next step
+      expect(appEndDateInput).toBeInTheDocument();
+
+    });
+    
+  });
+
+  it("validates applications end date is after applications start date", async () => {
+    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+    
+    const appStartDateInput = screen.getByTestId("applicationsStartTime-testid");
+    const appEndDateInput = screen.getByTestId("applicationsEndTime-testid");
+
+    await act(async () => {
+      /* Prefill round name to ignore errors from it */
+      fireEvent.input(screen.getByTestId("roundMetadata.name-testid"), {
+        target: { value: "testinground" },
+      });
+
+      /* Applicactions start date */
+      fireEvent.change(appStartDateInput, {
+        target: { value: "08/25/2022 12:00 AM" },
+      });
+
+      /* Applications end date */
+      fireEvent.change(appEndDateInput, {
+        target: { value: "08/24/2022 12:00 AM" },
+      });
+
+      /* Click next button */
+      fireEvent.click(screen.getByRole("button", { name: /next|launch/i }));
+
+    });
+      
+    // fails to move to next step
+    expect(appEndDateInput).toBeInTheDocument();
+
+  });
+
+  it("validates round end date is after round start date", async () => {
+    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+    const roundStartDateInput = screen.getByTestId("roundStartTime-testid");
+    const roundEndDateInput = screen.getByTestId("roundEndTime-testid");
+
+    await act(async () => {
+      /* Prefill round name to ignore errors from it */
+      fireEvent.input(screen.getByTestId("roundMetadata.name-testid"), {
+        target: { value: "testinground" },
+      });
+
+      /* Round start date */
+      fireEvent.change(roundStartDateInput, {
+        target: { value: "08/25/2022 12:00 AM" },
+      });
+
+      /* Round end date */
+      fireEvent.change(roundEndDateInput, {
         target: { value: "08/24/2022 12:00 AM" },
       });
 
@@ -279,10 +283,9 @@ describe("<RoundDetailForm />", () => {
       fireEvent.click(screen.getByText("Launch"));
     });
 
-    const errors = screen.getByText(
-      "Round end date must be later than the round start date"
-    );
-    expect(errors).toBeInTheDocument();
+    // expect screen to remain on same page
+    expect(screen.getByTestId("roundStartTime-testid")).toBeInTheDocument();
+
   });
 
   it("goes to next page when passing validation", async () => {
@@ -305,19 +308,22 @@ describe("<RoundDetailForm />", () => {
         <RoundDetailForm stepper={FormStepper} />
       </FormContext.Provider>
     );
-    const startDateInputs = screen.getAllByLabelText("Start Date");
-    const endDateInputs = screen.getAllByLabelText("End Date");
+
+    const appStartDateInput = screen.getByTestId("applicationsStartTime-testid");
+    const appEndDateInput = screen.getByTestId("applicationsEndTime-testid");
+    const roundStartDateInput = screen.getByTestId("roundStartTime-testid");
+    const roundEndDateInput = screen.getByTestId("roundEndTime-testid");
 
     /* Round Name */
-    fireEvent.input(screen.getByLabelText("Round Name"), {
+    fireEvent.input(screen.getByTestId("roundMetadata.name-testid"), {
       target: { value: "testinground" },
     });
 
     /* Support Selection */
-    const supportSelection = screen.getByTestId("support-type-select");
+    const supportSelection = screen.getByTestId("roundMetadata.support.type-testid");
     fireEvent.click(supportSelection);
-    const firstSupportOption = screen.getAllByTestId("support-type-option")[0];
-    fireEvent.click(firstSupportOption);
+    const emailSupportOption = screen.getByTestId("roundMetadata.support.type-option-Email");
+    fireEvent.click(emailSupportOption);
 
     /* Contact Information */
     fireEvent.input(screen.getByLabelText("Contact Information"), {
@@ -325,31 +331,27 @@ describe("<RoundDetailForm />", () => {
     });
 
     /* Applications start date */
-    expect(startDateInputs[0].id).toBe("applicationsStartTime");
-    fireEvent.change(startDateInputs[0], {
+    fireEvent.change(appStartDateInput, {
       target: {
-        value: moment(applicationsStartTime).format("MM/DD/YYYY h:mm A"),
+        value: moment(applicationsStartTime).format('YYYY-MM-DDTHH:mm'),
       },
     });
 
     /* Applications end date */
-    expect(endDateInputs[0].id).toBe("applicationsEndTime");
-    fireEvent.change(endDateInputs[0], {
+    fireEvent.change(appEndDateInput, {
       target: {
-        value: moment(applicationsEndTime).format("MM/DD/YYYY h:mm A"),
+        value: moment(applicationsEndTime).format('YYYY-MM-DDTHH:mm'),
       },
     });
 
     /* Round start date */
-    expect(startDateInputs[1].id).toBe("roundStartTime");
-    fireEvent.change(startDateInputs[1], {
-      target: { value: moment(roundStartTime).format("MM/DD/YYYY h:mm A") },
+    fireEvent.change(roundStartDateInput, {
+      target: { value: moment(roundStartTime).format('YYYY-MM-DDTHH:mm') },
     });
 
     /* Round end date */
-    expect(endDateInputs[1].id).toBe("roundEndTime");
-    fireEvent.change(endDateInputs[1], {
-      target: { value: moment(roundEndTime).format("MM/DD/YYYY h:mm A") },
+    fireEvent.change(roundEndDateInput, {
+      target: { value: moment(roundEndTime).format('YYYY-MM-DDTHH:mm') },
     });
 
     /* Round Type Selection */

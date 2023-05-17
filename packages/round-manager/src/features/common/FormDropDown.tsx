@@ -49,7 +49,7 @@ hasError
 ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
 : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
 }`}
-                data-testid="support-type-select"
+                data-testid={`${id}-testid`}
                 id={id}
               >
                 <span className="flex items-center">
@@ -77,6 +77,7 @@ hasError
                         )
                       }
                       value={option}
+                      data-testid={`${id}-option-${option}`}
                     >
                       {({ selected, active }) => (
                         <>

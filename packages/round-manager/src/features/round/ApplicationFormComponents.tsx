@@ -207,6 +207,7 @@ export const BetterDatetime: FC<BetterDatetimeProps> = ({ control, name, label, 
         defaultValue={date?.format('YYYY-MM-DDTHH:mm')}
         render={({ field }) => (
           <input
+            data-testid={`${name}-testid`} 
             type="datetime-local"
             {...field}
             min={minDate ? minDate.format('YYYY-MM-DDTHH:mm') : now}
