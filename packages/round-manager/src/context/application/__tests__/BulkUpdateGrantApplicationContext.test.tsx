@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { updateApplicationStatuses } from "../../../features/api/application";
-import { ProgressStatus } from "../../../features/api/types";
-import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
 import { faker } from "@faker-js/faker";
-import { BulkUpdateGrantApplicationProvider, useBulkUpdateGrantApplications } from "../BulkUpdateGrantApplicationContext";
-import { makeApplication } from "../../../test-utils";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
+import { updateApplicationStatuses } from "../../../features/api/application";
+import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
+import { ProgressStatus } from "../../../features/api/types";
+import { makeApplication } from "../../../test-utils";
+import { BulkUpdateGrantApplicationProvider, useBulkUpdateGrantApplications } from "../BulkUpdateGrantApplicationContext";
 jest.mock("../../../features/api/application");
 jest.mock("../../../features/api/subgraph");
 jest.mock("../../../features/common/Auth", () => ({
@@ -198,12 +198,12 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         await act(async () => fireEvent.click(screen.getByTestId("update-grant-application")));
 
         // retry bulk update operation
-        await waitFor(() => {
-          screen.findByTestId(
+        await waitFor(async () => {
+          await screen.findByTestId(
             `indexing-status-is-${ProgressStatus.IS_ERROR}`
           );
         });
-        await act(async () => fireEvent.click(screen.getByTestId("update-grant-application")));
+        await act(async () => fireEvent.click(await screen.findByTestId("update-grant-application")));
 
         await waitFor(() => {
           expect(
