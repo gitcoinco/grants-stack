@@ -1,6 +1,8 @@
-import { FormStepper } from "../common/FormStepper";
+import { PlusSmIcon } from "@heroicons/react/solid";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Input } from "common/src/styles";
+import _ from 'lodash';
 import { useContext } from "react";
-import { FormContext } from "../common/FormWizard";
 import {
   FieldArrayMethodProps,
   FieldArrayWithId,
@@ -11,12 +13,10 @@ import {
   UseFormRegister,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { Round } from "../api/types";
-import { Button, Input } from "common/src/styles";
-import { PlusSmIcon } from "@heroicons/react/solid";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import _ from 'lodash';
+import { Round } from "../api/types";
+import { FormStepper } from "../common/FormStepper";
+import { FormContext } from "../common/FormWizard";
 interface ApplicationEligibilityFormProps {
   stepper: typeof FormStepper;
 }
@@ -24,7 +24,7 @@ interface ApplicationEligibilityFormProps {
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
     eligibility: yup.object({
-      description: yup.string().required("This field is required."),
+      description: yup.string().required("A round description is required."),
     }),
   }),
 });

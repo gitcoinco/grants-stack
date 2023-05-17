@@ -99,6 +99,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           }),
       }),
       eligibility: yup.object({
+        description: yup.string().required("A round description is required."),
         requirements: yup.array().of(
           yup.object({
             requirement: yup
