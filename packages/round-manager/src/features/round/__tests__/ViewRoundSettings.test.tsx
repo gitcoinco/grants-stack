@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useParams } from "react-router-dom";
 import { useDisconnect, useNetwork } from "wagmi";
 import {
@@ -87,14 +93,20 @@ describe("View Round", () => {
         )
       )
     );
-    const roundSettingsTab = screen.getByTestId("round-settings");
-    expect(roundSettingsTab).toBeInTheDocument();
-    fireEvent.click(roundSettingsTab);
-    // act(() => {
-    //   const editButton = screen.getByTestId("edit-round-button");
-    //   expect(editButton).toBeInTheDocument();
-    //   editButton?.click();
-    // });
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+      const cancelButton = await screen.findByTestId("cancel-button");
+      expect(cancelButton).toBeInTheDocument();
+      const updateRoundButton = await screen.findByTestId(
+        "update-round-button"
+      );
+      expect(updateRoundButton).toBeInTheDocument();
+    });
   });
 
   it("when cancel is clicked, it disables the imputs for editing and hides the update round button and cancel button", async () => {
@@ -115,19 +127,27 @@ describe("View Round", () => {
         )
       )
     );
-    const roundSettingsTab = screen.getByTestId("round-settings");
-    expect(roundSettingsTab).toBeInTheDocument();
-    roundSettingsTab.click();
 
-    // const editButton = screen.queryByTestId("edit-record-button");
-    // expect(editButton).toBeInTheDocument();
-    // editButton?.click();
-    // const cancelButton = screen.queryByTestId("cancel-button");
-    // expect(cancelButton).toBeInTheDocument();
-    // cancelButton?.click();
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+      const cancelButton = await screen.findByTestId("cancel-button");
+      expect(cancelButton).toBeInTheDocument();
+      const updateRoundButton = await screen.findByTestId(
+        "update-round-button"
+      );
+      expect(updateRoundButton).toBeInTheDocument();
+      fireEvent.click(cancelButton);
+      expect(cancelButton).not.toBeInTheDocument();
+      expect(updateRoundButton).not.toBeInTheDocument();
+    });
   });
 
-  it("when update round is clicked, it updates the round", async () => {
+  it("when update round is clicked, it updates the round name", async () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
@@ -145,27 +165,68 @@ describe("View Round", () => {
         )
       )
     );
-    const roundSettingsTab = screen.getByTestId("round-settings");
-    expect(roundSettingsTab).toBeInTheDocument();
-    roundSettingsTab.click();
 
-    // const editButton = screen.queryByTestId("edit-record-button");
-    // expect(editButton).toBeInTheDocument();
-    // editButton?.click();
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+      const cancelButton = await screen.findByTestId("cancel-button");
+      expect(cancelButton).toBeInTheDocument();
+      const updateRoundButton = await screen.findByTestId(
+        "update-round-button"
+      );
+      expect(updateRoundButton).toBeInTheDocument();
 
-    // // edit a field
-    // const roundNameInput = screen.queryByTestId("round-name-input");
-    // expect(roundNameInput).toBeInTheDocument();
+      const roundNameInput = screen.queryByTestId("round-name-input");
+      expect(roundNameInput).toBeInTheDocument();
+      fireEvent.input(roundNameInput!, {
+        target: {
+          value: "new round name",
+        },
+      });
+      expect(roundNameInput).toHaveValue("new round name");
+      fireEvent.click(updateRoundButton);
 
-    // await act(async () => {
-    //   fireEvent.input(roundNameInput!, {
-    //     target: {
-    //       value: "new round name",
-    //     },
-    //   });
-    // });
-    // expect(roundNameInput).toHaveValue("new round name");
+      await waitFor(() => {
+        expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
+      });
+    });
+  });
 
-    // click update round
+  it("validates that requirement(s) are not left blank", async () => {
+    // todo: implement
+  });
+
+  it("validates round start date is greater than today", async () => {
+    // todo: implement
+  });
+
+  it("validates when a date has passed, you can still select a data in the future", async () => {
+    // todo: implement
+  });
+
+  it("validates round end date is greater than round start date", async () => {
+    // todo: implement
+  });
+
+  it("validates applications end date is greater than applications start date", async () => {
+    // todo: implement
+  });
+
+  it("validates that match amount is greater than previous amount, error message otherwise", async () => {
+    // todo: implement
+  });
+
+  it("validates that matching cap % is editable when yes is selected and disabled otherwise", async () => {
+    // todo: implement
+    // todo: shows the amount of the matching cap % in ETH(tokens)
+  });
+
+  it("validates that minimum donation threshold amount is editable when yes is selected and disabled otherwise", async () => {
+    // todo: implement
+    // todo: shows the amount of the minimum donation threshold in USD
   });
 });
