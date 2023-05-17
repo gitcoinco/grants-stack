@@ -60,7 +60,7 @@ export const RoundValidationSchema = yup.object().shape({
             .string()
             /*Matches www.example.com, example.com, http and https prefixes, but not www.invalid */
             .matches(
-              /^((ftp|http|https):\/\/)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+((\/)[\w#]+)*(\/\w+\?[a-zA-Z0-9_]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/,
+              /((http|https):\/\/)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-/]))?/,
               "Must be a valid URL"
             )
             .required("You must provide a valid URL."),
@@ -146,6 +146,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
 
   const next: SubmitHandler<Round> = async (values) => {
+    /* Insert HTTPS into support URL if missing */
+    if (
+      values.roundMetadata.support?.type === "Website" &&
+      !/^https?:\/\//.test(values.roundMetadata.support.info)
+    ) {
+      values.roundMetadata.support.info = `https://${values.roundMetadata.support.info}`;
+    }
     const data = _.merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
