@@ -11,19 +11,19 @@ import {
   BulkUpdateGrantApplicationProvider,
   useBulkUpdateGrantApplications,
 } from "../BulkUpdateGrantApplicationContext";
+import { WagmiConfig } from "wagmi";
+import { client } from "../../../app/wagmi";
 jest.mock("../../../features/api/application");
 jest.mock("../../../features/api/subgraph");
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
-const mockWallet = {
-  address: "0x0",
-  signer: {
-    getChainId: () => {
-      /* do nothing.*/
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
     },
-  },
-};
+  }),
+}));
 
 jest.setTimeout(35000);
 
@@ -116,7 +116,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
     });
 
     it("sets indexing status to completed when subgraph is finished indexing", async () => {
-      const transactionBlockNumber = faker.datatype.number();
+      const transactionBlockNumber = faker.number.int();
       (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
@@ -281,11 +281,12 @@ const TestUseBulkUpdateGrantApplicationComponent = () => {
 
 function renderWithProvider(ui: JSX.Element) {
   render(
-    <BulkUpdateGrantApplicationProvider>
-      {ui}
-    </BulkUpdateGrantApplicationProvider>
+    <WagmiConfig config={client}>
+      <BulkUpdateGrantApplicationProvider>
+        {ui}
+      </BulkUpdateGrantApplicationProvider>
+    </WagmiConfig>
   );
 }
 
-export { };
-
+export {};

@@ -1,12 +1,17 @@
-import { Outlet, useOutletContext } from "react-router-dom";
-import { useAccount, useNetwork, useProvider, useSigner } from "wagmi";
-import { Web3Instance } from "../api/types";
+import {
+  useAccount,
+  useNetwork,
+  usePublicClient,
+  useWalletClient,
+} from "wagmi";
 import { Spinner } from "./Spinner";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
 import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
 import Footer from "common/src/components/Footer";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
+import React from "react";
 
 /**
  * Component for protecting child routes that require web3 wallet instance.
@@ -15,8 +20,8 @@ import Navbar from "./Navbar";
 export default function Auth() {
   const { address, isConnected, isConnecting } = useAccount();
   const { chain } = useNetwork();
-  const { data: signer } = useSigner();
-  const provider = useProvider();
+  const { data: signer } = useWalletClient();
+  const provider = usePublicClient();
 
   const data = {
     address,
@@ -59,11 +64,4 @@ export default function Auth() {
   ) : (
     <Outlet context={data} />
   );
-}
-
-/**
- * Wrapper hook to expose wallet auth information to other components
- */
-export function useWallet() {
-  return useOutletContext<Web3Instance>();
 }

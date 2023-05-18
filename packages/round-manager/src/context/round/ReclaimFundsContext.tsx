@@ -1,11 +1,10 @@
-import { Signer } from "ethers";
 import React, {
   createContext,
   SetStateAction,
   useContext,
   useState,
 } from "react";
-import { useSigner } from "wagmi";
+import { useWalletClient, WalletClient } from "wagmi";
 import { reclaimFundsFromContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
 import { ProgressStatus } from "../../features/api/types";
 
@@ -19,7 +18,7 @@ export type ReclaimFundsParams = {
 export type SubmitReclaimFundsParams = {
   payoutStrategy: string;
   recipientAddress: string;
-  signer: Signer;
+  signer: WalletClient;
   context: ReclaimFundsState;
 };
 
@@ -68,10 +67,14 @@ export const useReclaimFunds = () => {
     );
   }
 
-  const { data: signer } = useSigner();
+  const { data: signer } = useWalletClient();
 
   const handleReclaimFunds = async (params: ReclaimFundsParams) => {
-    return _reclaimFunds({ ...params, signer: signer as Signer, context });
+    return _reclaimFunds({
+      ...params,
+      signer: signer as WalletClient,
+      context,
+    });
   };
 
   return {

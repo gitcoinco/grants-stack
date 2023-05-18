@@ -7,7 +7,6 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames } from "common";
 import { Input } from "common/src/styles";
-import _ from 'lodash';
 import { Fragment, useContext, useState } from "react";
 import {
   Control,
@@ -18,13 +17,16 @@ import {
   useForm,
   useWatch,
 } from "react-hook-form";
-import ReactTooltip from "react-tooltip";
 import * as yup from "yup";
 import { Round } from "../api/types";
 import { PayoutToken, getPayoutTokenOptions } from "../api/utils";
-import { useWallet } from "../common/Auth";
+import ReactTooltip from "react-tooltip";
+import _ from "lodash";
+import { Hex } from "viem";
+import { useChainId } from "wagmi";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
@@ -48,7 +50,7 @@ export const FundingValidationSchema = yup.object().shape({
             .number()
             .required("You must provide an amount for the matching cap.")
             .moreThan(0, "Matching cap amount must be more than zero.")
-            .max(
+            .lessThan(
               100,
               "Matching cap amount must be less than or equal to 100%."
             ),
@@ -94,16 +96,16 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
       sybilDefense: true,
     };
 
-  const { chain } = useWallet();
+  const chainId = useChainId();
   const payoutTokenOptions: PayoutToken[] = [
     {
       name: "Choose Payout Token",
-      chainId: chain.id,
-      address: "",
+      chainId: chainId,
+      address: "" as Hex,
       default: true,
       decimal: 0,
     },
-    ...getPayoutTokenOptions(chain.id),
+    ...getPayoutTokenOptions(chainId),
   ];
 
   const {
@@ -234,8 +236,8 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
               <p className="text-grey-400 mb-2 mt-1 text-sm">
                 Ensure that project supporters are not bots or sybil with
                 Gitcoin Passport. Learn more about Gitcoin Passport{" "}
-                <a 
-                  href="https://docs.passport.gitcoin.co/overview/readme" 
+                <a
+                  href="https://docs.passport.gitcoin.co/overview/readme"
                   className="text-violet-300"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -485,10 +487,10 @@ function MatchingFundsAvailable(props: {
           }
           type="number"
           id={"roundMetadata.matchingFunds.matchingFundsAvailable"}
-          $hasError={
+          $hasError={Boolean(
             props.errors?.roundMetadata?.quadraticFundingConfig
               ?.matchingFundsAvailable
-          }
+          )}
           placeholder="Enter the amount in chosen payout token."
           data-testid="matching-funds-available"
           aria-describedby="price-currency"
@@ -658,18 +660,17 @@ function MatchingCap(props: {
               "block w-full rounded-md border-gray-300 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10"
             }
             {...props.registerMatchingCapAmount}
-            $hasError={
+            $hasError={Boolean(
               isMatchingCap &&
-              props.errors?.roundMetadata?.quadraticFundingConfig
-                ?.matchingCapAmount
-            }
+                props.errors?.roundMetadata?.quadraticFundingConfig
+                  ?.matchingCapAmount
+            )}
             type="number"
             id={"matchingCapAmount"}
             disabled={!isMatchingCap}
             placeholder="Enter matching cap in form of percentage."
             data-testid="matching-cap-percent"
             aria-describedby="percentage-symbol"
-            max="100"
             step="any"
             onKeyUp={(e) =>
               e.currentTarget.value !== ""
@@ -762,7 +763,7 @@ function MinDonationThreshold(props: {
               effect="solid"
             >
               <p className="text-xs">
-                Set a minimum amount for each <br /> 
+                Set a minimum amount for each <br />
                 donation to be eligible for matching.
               </p>
             </ReactTooltip>
@@ -839,11 +840,11 @@ function MinDonationThreshold(props: {
               "block w-full rounded-md border-gray-300 pl-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10"
             }
             {...props.registerMinDonationThreshold}
-            $hasError={
+            $hasError={Boolean(
               isMinDonation &&
-              props.errors?.roundMetadata?.quadraticFundingConfig
-                ?.matchingCapAmount
-            }
+                props.errors?.roundMetadata?.quadraticFundingConfig
+                  ?.matchingCapAmount
+            )}
             type="number"
             id={"minDonationAmount"}
             disabled={!isMinDonation}

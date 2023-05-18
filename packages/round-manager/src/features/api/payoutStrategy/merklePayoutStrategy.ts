@@ -1,59 +1,57 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { fetchProjectPaidInARound, Payout } from "common";
-import { BigNumber, ethers, Signer } from "ethers";
+import { useFetchProjectPaidInRound, Payout } from "common";
 import { useEffect, useState } from "react";
-// import dist from "tailwind-styled-components";
-import { useWallet } from "../../common/Auth";
-import {
-  merklePayoutStrategyFactoryContract,
-  merklePayoutStrategyImplementationContract
-} from "../contracts";
+import { merklePayoutStrategyFactoryContract } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
 import { ChainId, generateMerkleTree } from "../utils";
+import { usePublicClient, WalletClient } from "wagmi";
+import { decodeEventLog, getContract, Hex } from "viem";
+import MerklePayoutStrategyFactoryABI from "../abi/payoutStrategy/MerklePayoutStrategyFactoryABI";
+import MerklePayoutStrategyImplementationABI from "../abi/payoutStrategy/MerklePayoutStrategyImplementationABI";
+import merklePayoutStrategyImplementationABI from "../abi/payoutStrategy/MerklePayoutStrategyImplementationABI";
+import { waitForTransaction } from "@wagmi/core";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
  * create on QuadraticFundingVotingStrategyFactory contract
  *
- * @param signerOrProvider
+ * @param walletClient
  * @returns
  */
 export const deployMerklePayoutStrategyContract = async (
-  signerOrProvider: Signer,
+  walletClient: WalletClient
 ): Promise<{ payoutContractAddress: string }> => {
   try {
-    const chainId = await signerOrProvider.getChainId();
+    const chainId = await walletClient.getChainId();
 
     const _merklePayoutStrategyFactoryContract =
       merklePayoutStrategyFactoryContract(chainId);
 
-    const payoutStrategyFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _merklePayoutStrategyFactoryContract.address!,
-      _merklePayoutStrategyFactoryContract.abi,
-      signerOrProvider,
-    );
+    const payoutStrategyFactory = getContract({
+      address: _merklePayoutStrategyFactoryContract.address as Hex,
+      abi: MerklePayoutStrategyFactoryABI,
+      walletClient,
+    });
 
     // Deploy a new MerklePayoutStrategy contract
-    const tx = await payoutStrategyFactory.create();
+    const txHash = await payoutStrategyFactory.write.create();
+    let payoutContractAddress = "";
 
-    const receipt = await tx.wait();
+    const data = await waitForTransaction({
+      hash: txHash,
+    });
 
-    let payoutContractAddress;
-
-    if (receipt.events) {
-      const event = receipt.events.find(
-        (e: { event: string }) => e.event === "PayoutContractCreated",
-      );
-      if (event && event.args) {
-        payoutContractAddress = event.args.payoutContractAddress;
+    data.logs.find((log) => {
+      const decoded = decodeEventLog({
+        abi: MerklePayoutStrategyFactoryABI,
+        ...log,
+      });
+      if (decoded.eventName === "PayoutContractCreated") {
+        payoutContractAddress = decoded.args.payoutContractAddress as string;
       }
-    } else {
-      throw new Error("No PayoutContractCreated event");
-    }
+    });
 
-    console.log("✅ Merkle Payout Transaction hash: ", tx.hash);
+    console.log("✅ Merkle Payout Transaction hash: ", txHash);
     console.log("✅ Merkle Payout Strategy address: ", payoutContractAddress);
 
     return { payoutContractAddress };
@@ -66,28 +64,32 @@ export const deployMerklePayoutStrategyContract = async (
 interface UpdateDistributionProps {
   payoutStrategy: string;
   encodedDistribution: string;
-  signerOrProvider: Signer;
+  walletClient: WalletClient;
 }
 
 export async function updateDistributionToContract({
   payoutStrategy,
   encodedDistribution,
-  signerOrProvider,
+  walletClient,
 }: UpdateDistributionProps) {
   try {
-    const merklePayoutStrategyImplementation = new ethers.Contract(
-      payoutStrategy,
-      merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
-    );
+    const merklePayoutStrategyImplementation = getContract({
+      address: payoutStrategy as Hex,
+      abi: MerklePayoutStrategyImplementationABI,
+      walletClient,
+    });
 
-    const tx = await merklePayoutStrategyImplementation.updateDistribution(
-      encodedDistribution,
-    );
-    const receipt = await tx.wait();
+    const txHash =
+      await merklePayoutStrategyImplementation.write.updateDistribution([
+        encodedDistribution as Hex,
+      ]);
 
-    console.log("✅ Transaction hash: ", tx.hash);
-    const blockNumber = receipt.blockNumber;
+    const txReceipt = await waitForTransaction({
+      hash: txHash,
+    });
+
+    console.log("✅ Transaction hash: ", txHash);
+    const blockNumber = txReceipt.blockNumber;
     return {
       transactionBlockNumber: blockNumber,
     };
@@ -98,14 +100,14 @@ export async function updateDistributionToContract({
 }
 
 export const useFetchMatchingDistributionFromContract = (
-  roundId: string | undefined,
+  roundId: string | undefined
 ): {
   distributionMetaPtr: string;
   matchingDistributionContract: MatchingStatsData[];
   isLoading: boolean;
   isError: boolean;
 } => {
-  const { provider: walletProvider } = useWallet();
+  const publicClient = usePublicClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [matchingData, setMatchingData] = useState<any>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -115,8 +117,8 @@ export const useFetchMatchingDistributionFromContract = (
     async function fetchData() {
       try {
         const matchingDataRes = await fetchMatchingDistribution(
-          roundId,
-          walletProvider,
+          roundId as string,
+          publicClient
         );
         setMatchingData(matchingDataRes);
         setIsLoading(false);
@@ -127,7 +129,7 @@ export const useFetchMatchingDistributionFromContract = (
     }
 
     fetchData();
-  }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [roundId, publicClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     distributionMetaPtr: matchingData.distributionMetaPtr,
@@ -150,18 +152,18 @@ interface GroupedProjects {
  */
 export const useGroupProjectsByPaymentStatus = (
   chainId: ChainId,
-  roundId: string,
+  roundId: string
 ): GroupedProjects => {
   const [groupedProjects, setGroupedProjects] = useState<GroupedProjects>({
     paid: [],
     unpaid: [],
   });
 
-  const paidProjectsFromGraph = fetchProjectPaidInARound(roundId, chainId);
+  const paidProjectsFromGraph = useFetchProjectPaidInRound(roundId, chainId);
 
   const allProjects =
     useFetchMatchingDistributionFromContract(
-      roundId,
+      roundId
     ).matchingDistributionContract;
 
   useEffect(() => {
@@ -172,14 +174,10 @@ export const useGroupProjectsByPaymentStatus = (
       };
 
       const paidProjects: Payout[] = await paidProjectsFromGraph;
-      const paidProjectIds = paidProjects.map((project) =>
-        project.projectId,
-      );
+      const paidProjectIds = paidProjects.map((project) => project.projectId);
 
       allProjects?.forEach((project) => {
-        const projectStatus = paidProjectIds.includes(
-          project.projectId
-        )
+        const projectStatus = paidProjectIds.includes(project.projectId)
           ? "paid"
           : "unpaid";
 
@@ -188,11 +186,8 @@ export const useGroupProjectsByPaymentStatus = (
         if (projectStatus === "paid") {
           tmpProject = {
             ...project,
-            hash: paidProjects.find(
-              (p) =>
-                p.projectId ===
-                project.projectId,
-            )?.txnHash,
+            hash: paidProjects.find((p) => p.projectId === project.projectId)
+              ?.txnHash,
             status: "",
           };
         }
@@ -203,9 +198,7 @@ export const useGroupProjectsByPaymentStatus = (
     }
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allProjects]);
-  // TODO: Add txn hash and other needs
+  }, [allProjects, paidProjectsFromGraph]);
   return groupedProjects;
 };
 
@@ -215,37 +208,36 @@ export const useGroupProjectsByPaymentStatus = (
  * @param payoutStrategy
  * @param allProjects
  * @param projectIdsToBePaid
- * @param signerOrProvider
+ * @param walletClient
  * @returns
  */
 export const batchDistributeFunds = async (
   payoutStrategy: string,
   allProjects: MatchingStatsData[],
   projectIdsToBePaid: string[],
-  signerOrProvider: Signer,
+  walletClient: WalletClient
 ) => {
   try {
-    const merklePayoutStrategyImplementation = new ethers.Contract(
-      payoutStrategy,
-      merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
-    );
+    const merklePayoutStrategyImplementation = getContract({
+      address: payoutStrategy as Hex,
+      abi: merklePayoutStrategyImplementationABI,
+      walletClient,
+    });
 
     // Generate merkle tree
     const { tree, matchingResults } = generateMerkleTree(allProjects);
 
     // Filter projects to be paid from matching results
     const projectsToBePaid = matchingResults.filter((project) =>
-      projectIdsToBePaid.includes(project.projectId),
+      projectIdsToBePaid.includes(project.projectId)
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const projectsWithMerkleProof: any[] = [];
 
     projectsToBePaid.forEach((project) => {
-      const distribution: [number, string, BigNumber, string] = [
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        project.index!,
+      const distribution: [number, string, bigint, string] = [
+        project.index as number,
         project.projectPayoutAddress,
         project.matchAmountInToken,
         project.projectId,
@@ -263,13 +255,15 @@ export const batchDistributeFunds = async (
       });
     });
 
-    const tx = await merklePayoutStrategyImplementation[
-      "payout((uint256,address,uint256,bytes32[],bytes32)[])"
-    ](projectsWithMerkleProof);
+    const tx = await merklePayoutStrategyImplementation.write.payout([
+      projectsWithMerkleProof,
+    ]);
 
-    const receipt = await tx.wait();
+    const receipt = await waitForTransaction({
+      hash: tx,
+    });
 
-    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Transaction hash: ", tx);
     const blockNumber = receipt.blockNumber;
     return {
       transactionBlockNumber: blockNumber,
@@ -279,7 +273,7 @@ export const batchDistributeFunds = async (
     console.error("batchDistributeFunds", error);
 
     return {
-      transactionBlockNumber: 0,
+      transactionBlockNumber: BigInt(0),
       error,
     };
   }
@@ -289,29 +283,31 @@ export const batchDistributeFunds = async (
  * Reclaims funds from contract to provided address
  *
  * @param payoutStrategy
- * @param signerOrProvider
+ * @param walletClient
  * @param recipient
  * @returns
  */
 export async function reclaimFundsFromContract(
   payoutStrategy: string,
-  signerOrProvider: Signer,
-  recipient: string,
+  walletClient: WalletClient,
+  recipient: string
 ) {
   try {
-    const merklePayoutStrategyImplementation = new ethers.Contract(
-      payoutStrategy,
-      merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
-    );
+    const merklePayoutStrategyImplementation = getContract({
+      address: payoutStrategy as Hex,
+      abi: MerklePayoutStrategyImplementationABI,
+      walletClient,
+    });
 
-    const tx = await merklePayoutStrategyImplementation.withdrawFunds(
-      recipient,
-    );
+    const tx = await merklePayoutStrategyImplementation.write.withdrawFunds([
+      recipient as Hex,
+    ]);
 
-    const receipt = await tx.wait();
+    const receipt = await waitForTransaction({
+      hash: tx,
+    });
 
-    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Transaction hash: ", tx);
     const blockNumber = receipt.blockNumber;
     return {
       transactionBlockNumber: blockNumber,

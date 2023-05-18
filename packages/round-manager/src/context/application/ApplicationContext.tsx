@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { GrantApplication } from "../../features/api/types";
-import { useWallet } from "../../features/common/Auth";
 import {
   getApplicationById,
   getApplicationsByRoundId,
 } from "../../features/api/application";
-import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
+import { usePublicClient } from "wagmi";
+import { PublicClient } from "viem";
 
 enum ActionType {
   SET_APPLICATION = "SET_APPLICATION",
@@ -129,12 +129,12 @@ export const ApplicationProvider = ({
 function fetchApplicationById(
   dispatch: Dispatch,
   id: string,
-  walletProvider: Web3Provider
+  publicClient: PublicClient
 ) {
   datadogLogs.logger.info(`fetchApplicationById: id - ${id}`);
 
   dispatch({ type: ActionType.SET_LOADING, payload: true });
-  getApplicationById(id, walletProvider)
+  getApplicationById(id, publicClient)
     .then((application) => {
       dispatch({ type: ActionType.SET_APPLICATION, payload: application });
     })
@@ -149,12 +149,12 @@ function fetchApplicationById(
 const fetchApplicationsByRoundId = async (
   dispatch: Dispatch,
   roundId: string,
-  walletProvider: Web3Provider
+  publicClient: PublicClient
 ) => {
   datadogLogs.logger.info(`fetchApplicationsByRoundId: roundId - ${roundId}`);
 
   dispatch({ type: ActionType.SET_LOADING, payload: true });
-  getApplicationsByRoundId(roundId, walletProvider)
+  getApplicationsByRoundId(roundId, publicClient)
     .then((applications) =>
       dispatch({
         type: ActionType.SET_ROUND_APPLICATIONS,
@@ -189,14 +189,14 @@ export const useApplicationById = (
     );
   }
 
-  const { provider: walletProvider } = useWallet();
+  const publicClient = usePublicClient();
 
   useEffect(() => {
     if (id) {
       // NB: we always refetch application by id to populate project owners for application page
-      fetchApplicationById(context.dispatch, id, walletProvider);
+      fetchApplicationById(context.dispatch, id, publicClient);
     }
-  }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [id, publicClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     application: context.state.applications.find(
@@ -222,15 +222,15 @@ export const useApplicationByRoundId = (
     );
   }
 
-  const { provider: walletProvider } = useWallet();
+  const publicClient = usePublicClient();
 
   useEffect(() => {
     fetchApplicationsByRoundId(
       context.dispatch,
       roundId?.toLowerCase(),
-      walletProvider
+      publicClient
     );
-  }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [roundId, publicClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     applications: context.state.applications,

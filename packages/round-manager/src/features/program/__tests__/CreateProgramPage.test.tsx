@@ -1,6 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import CreateProgramPage from "../CreateProgramPage";
-import { useWallet } from "../../common/Auth";
 import { ProgressStatus } from "../../api/types";
 import { saveToIPFS } from "../../api/ipfs";
 import {
@@ -9,23 +8,24 @@ import {
   initialCreateProgramState,
 } from "../../../context/program/CreateProgramContext";
 import { MemoryRouter } from "react-router-dom";
+import { useChainId, WagmiConfig } from "wagmi";
+import { client } from "../../../app/wagmi";
 
-jest.mock("../../api/ipfs");
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useChainId: jest.fn(),
 }));
 
-jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
+jest.mock("../../api/ipfs");
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ...jest.requireActual("@rainbow-me/rainbowkit"),
+  ConnectButton: jest.fn(),
 }));
 
 describe("<CreateProgramPage />", () => {
   let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({ chain: {} });
     (saveToIPFS as jest.Mock).mockImplementation(() => {
       /* do nothing */
     });
@@ -33,6 +33,8 @@ describe("<CreateProgramPage />", () => {
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {
       /* do nothing */
     });
+
+    (useChainId as jest.Mock).mockReturnValue(1);
   });
 
   afterEach(() => {
@@ -42,12 +44,12 @@ describe("<CreateProgramPage />", () => {
   it("shows program chain tooltip", async () => {
     renderWithContext(<CreateProgramPage />);
 
-    expect(
-      await screen.findByTestId("program-chain-tooltip")
-    ).toBeInTheDocument();
+    const tooltip = await screen.findByTestId("program-chain-tooltip");
+    expect(tooltip).not.toBeNull();
   });
 
   it("displays wrong network when connected to unsupported network", async () => {
+    (useChainId as jest.Mock).mockReturnValue(1239123);
     renderWithContext(<CreateProgramPage />);
 
     expect(await screen.findByText("Wrong Network")).toBeInTheDocument();
@@ -118,13 +120,15 @@ export const renderWithContext = (
 ) =>
   render(
     <MemoryRouter>
-      <CreateProgramContext.Provider
-        value={{
-          state: { ...initialCreateProgramState, ...programStateOverrides },
-          dispatch,
-        }}
-      >
-        {ui}
-      </CreateProgramContext.Provider>
+      <WagmiConfig config={client}>
+        <CreateProgramContext.Provider
+          value={{
+            state: { ...initialCreateProgramState, ...programStateOverrides },
+            dispatch,
+          }}
+        >
+          {ui}
+        </CreateProgramContext.Provider>
+      </WagmiConfig>
     </MemoryRouter>
   );

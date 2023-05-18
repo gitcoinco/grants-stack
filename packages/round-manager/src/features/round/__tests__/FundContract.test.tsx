@@ -14,40 +14,17 @@ import {
   useBalance,
   useDisconnect,
   useSwitchNetwork,
-  useSigner,
+  WagmiConfig,
 } from "wagmi";
 import { useParams } from "react-router-dom";
-import { faker } from "@faker-js/faker";
 import { useTokenPrice } from "common";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { TextDecoder } = require("util");
-global.TextDecoder = TextDecoder;
-
-jest.mock("../../common/Auth");
-jest.mock("wagmi");
-
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
+import { client } from "../../../app/wagmi";
 
 let mockRoundData: Round = makeRoundData();
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: jest.fn(),
-}));
-
-jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({
-    chain: {},
-    address: mockRoundData.operatorWallets![0],
-    provider: {
-      network: {
-        chainId: 1,
-      },
-    },
-  }),
 }));
 
 jest.mock("../../api/utils", () => ({
@@ -57,6 +34,19 @@ jest.mock("../../api/utils", () => ({
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useTokenPrice: jest.fn(),
+}));
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchNetwork: jest.fn(),
+  useBalance: jest.fn(),
+  useAccount: jest.fn(),
+  useDisconnect: jest.fn(),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
 }));
 
 describe("fund contract tab", () => {
@@ -87,23 +77,24 @@ describe("fund contract tab", () => {
     }));
 
     (useAccount as jest.Mock).mockImplementation(() => ({
-      address: faker.finance.ethereumAddress(),
-    }));
-
-    (useSigner as jest.Mock).mockImplementation(() => ({
-      signer: {
-        getBalance: () => Promise.resolve("0"),
-      },
+      address: mockRoundData.operatorWallets
+        ? mockRoundData.operatorWallets[0]
+        : "",
     }));
 
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
+            wrapWithRoundContext(
+              <WagmiConfig config={client}>
+                <ViewRoundPage />
+              </WagmiConfig>,
+              {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
+            ),
             { programs: [] }
           ),
           {
@@ -113,6 +104,7 @@ describe("fund contract tab", () => {
         )
       )
     );
+
     const fundContractTab = screen.getByTestId("fund-contract");
     fireEvent.click(fundContractTab);
     expect(screen.getByText("Contract Details")).toBeInTheDocument();

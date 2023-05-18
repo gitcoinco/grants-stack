@@ -1,18 +1,13 @@
 import "./browserPatches";
 
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, BrowserRouter } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { initDatadog } from "./datadog";
 import { initTagmanager } from "./tagmanager";
-
-import { store } from "./app/store";
 import { chains, client as WagmiClient } from "./app/wagmi";
-import history from "./history";
 import reportWebVitals from "./reportWebVitals";
 
 import "./index.css";
@@ -54,44 +49,43 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <WagmiConfig client={WagmiClient}>
+    <BrowserRouter>
+      <WagmiConfig config={WagmiClient}>
         <RainbowKitProvider coolMode chains={chains}>
-          <ReduxRouter history={history} store={store}>
-            <Routes>
-              {/* Protected Routes */}
-              <Route element={<Auth />}>
-                {/* Default Route */}
-                <Route
-                  path="/"
-                  element={
-                    <ReadProgramProvider>
-                      <Program />
-                    </ReadProgramProvider>
-                  }
-                />
+          <Routes>
+            {/* Protected Routes */}
+            <Route element={<Auth />}>
+              {/* Default Route */}
+              <Route
+                path="/"
+                element={
+                  <ReadProgramProvider>
+                    <Program />
+                  </ReadProgramProvider>
+                }
+              />
 
-                {/* Round Routes */}
-                <Route
-                  path="/round/create"
-                  element={
-                    <ReadProgramProvider>
-                      <CreateRoundProvider>
-                        <CreateRound />
-                      </CreateRoundProvider>
-                    </ReadProgramProvider>
-                  }
-                />
-                <Route
-                  path="/round/:id"
-                  element={
-                    <RoundProvider>
-                      <ApplicationProvider>
-                        <BulkUpdateGrantApplicationProvider>
-                          <FinalizeRoundProvider>
-                            <FundContractProvider>
-                              <ReclaimFundsProvider>
-                                <UpdateRoundProvider>
+              {/* Round Routes */}
+              <Route
+                path="/round/create"
+                element={
+                  <ReadProgramProvider>
+                    <CreateRoundProvider>
+                      <CreateRound />
+                    </CreateRoundProvider>
+                  </ReadProgramProvider>
+                }
+              />
+              <Route
+                path="/round/:id"
+                element={
+                  <RoundProvider>
+                    <ApplicationProvider>
+                      <BulkUpdateGrantApplicationProvider>
+                        <FinalizeRoundProvider>
+                          <FundContractProvider>
+                            <ReclaimFundsProvider>
+                              <UpdateRoundProvider>
                                   <ViewRoundPage />
                               </UpdateRoundProvider>
                             </ReclaimFundsProvider>
@@ -99,9 +93,9 @@ root.render(
                         </FinalizeRoundProvider>
                       </BulkUpdateGrantApplicationProvider>
                     </ApplicationProvider>
-                    </RoundProvider>
-                  }
-                />
+                  </RoundProvider>
+                }
+              />
               <Route
                 path="/round/:roundId/application/:id"
                 element={
@@ -142,10 +136,9 @@ root.render(
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
-        </ReduxRouter>
-      </RainbowKitProvider>
+        </RainbowKitProvider>
     </WagmiConfig>
-  </Provider>
+  </BrowserRouter>
   </React.StrictMode >
 );
 

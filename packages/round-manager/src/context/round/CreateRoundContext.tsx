@@ -11,14 +11,13 @@ import React, {
   useState,
 } from "react";
 import { saveToIPFS } from "../../features/api/ipfs";
-import { useWallet } from "../../features/common/Auth";
 import { deployRoundContract } from "../../features/api/round";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
-import { Signer } from "@ethersproject/abstract-signer";
 import { deployQFVotingContract } from "../../features/api/votingStrategy/qfVotingStrategy";
 import { deployMerklePayoutStrategyContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
+import { useWalletClient, WalletClient } from "wagmi";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
@@ -115,13 +114,13 @@ export const CreateRoundProvider = ({
 
 interface _createRoundParams {
   context: CreateRoundState;
-  signerOrProvider: Signer;
+  walletClient: WalletClient;
   createRoundData: CreateRoundData;
 }
 
 const _createRound = async ({
   context,
-  signerOrProvider,
+  walletClient,
   createRoundData,
 }: _createRoundParams) => {
   const {
@@ -166,12 +165,12 @@ const _createRound = async ({
 
     const votingContractAddress = await handleDeployVotingContract(
       setVotingContractDeploymentStatus,
-      signerOrProvider
+      walletClient
     );
 
     const payoutContractAddress = await handleDeployPayoutContract(
       setPayoutContractDeploymentStatus,
-      signerOrProvider
+      walletClient
     );
 
     const roundContractInputsWithContracts = {
@@ -186,12 +185,12 @@ const _createRound = async ({
     const transactionBlockNumber = await handleDeployRoundContract(
       setRoundContractDeploymentStatus,
       roundContractInputsWithContracts,
-      signerOrProvider
+      walletClient
     );
 
     await waitForSubgraphToUpdate(
       setIndexingStatus,
-      signerOrProvider,
+      walletClient,
       transactionBlockNumber
     );
   } catch (error) {
@@ -216,7 +215,7 @@ export const useCreateRound = () => {
     setRoundContractDeploymentStatus,
     setIndexingStatus,
   } = context;
-  const { signer: walletSigner } = useWallet();
+  const { data: walletClient } = useWalletClient();
 
   const createRound = (createRoundData: CreateRoundData) => {
     resetToInitialState(
@@ -229,7 +228,7 @@ export const useCreateRound = () => {
 
     return _createRound({
       context,
-      signerOrProvider: walletSigner as Signer,
+      walletClient: walletClient as WalletClient,
       createRoundData,
     });
   };
@@ -302,12 +301,12 @@ async function storeDocuments(
 
 async function handleDeployVotingContract(
   setDeploymentStatus: SetStatusFn,
-  signerOrProvider: Signer
+  walletClient: WalletClient
 ): Promise<string> {
   try {
     setDeploymentStatus(ProgressStatus.IN_PROGRESS);
     const { votingContractAddress } = await deployQFVotingContract(
-      signerOrProvider
+      walletClient
     );
 
     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
@@ -321,12 +320,12 @@ async function handleDeployVotingContract(
 
 async function handleDeployPayoutContract(
   setDeploymentStatus: SetStatusFn,
-  signerOrProvider: Signer
+  walletClient: WalletClient
 ): Promise<string> {
   try {
     setDeploymentStatus(ProgressStatus.IN_PROGRESS);
     const { payoutContractAddress } = await deployMerklePayoutStrategyContract(
-      signerOrProvider
+      walletClient
     );
 
     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
@@ -341,13 +340,13 @@ async function handleDeployPayoutContract(
 async function handleDeployRoundContract(
   setDeploymentStatus: SetStatusFn,
   round: Round,
-  signerOrProvider: Signer
-): Promise<number> {
+  walletClient: WalletClient
+): Promise<bigint> {
   try {
     setDeploymentStatus(ProgressStatus.IN_PROGRESS);
     const { transactionBlockNumber } = await deployRoundContract(
       round,
-      signerOrProvider
+      walletClient
     );
 
     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
@@ -362,13 +361,13 @@ async function handleDeployRoundContract(
 
 async function waitForSubgraphToUpdate(
   setIndexingStatus: SetStatusFn,
-  signerOrProvider: Signer,
-  transactionBlockNumber: number
+  walletClient: WalletClient,
+  transactionBlockNumber: bigint
 ) {
   try {
     setIndexingStatus(ProgressStatus.IN_PROGRESS);
 
-    const chainId = await signerOrProvider.getChainId();
+    const chainId = await walletClient.getChainId();
     await waitForSubgraphSyncTo(chainId, transactionBlockNumber);
 
     setIndexingStatus(ProgressStatus.IS_SUCCESS);

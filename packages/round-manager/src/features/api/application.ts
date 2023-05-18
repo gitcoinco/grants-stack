@@ -6,20 +6,20 @@ import {
   MetadataPointer,
   Project,
   ProjectStatus,
-  Web3Instance,
 } from "./types";
-import {
-  projectRegistryContract,
-  roundImplementationContract,
-  ERC20Contract,
-} from "./contracts";
-import { BigNumber } from "ethers";
-import { Contract, ethers } from "ethers";
-import { Signer } from "@ethersproject/abstract-signer";
-import { Web3Provider } from "@ethersproject/providers";
+import { projectRegistryContract } from "./contracts";
 import { graphql_fetch } from "common";
-// import { verifyApplicationMetadata } from "common/src/verification";
-// import { fetchProjectOwners } from "common/src/registry";
+import {
+  getAddress,
+  getContract,
+  Hex,
+  PublicClient,
+  TransactionReceipt,
+  zeroAddress,
+} from "viem";
+import { erc20ABI, WalletClient } from "wagmi";
+import { publicClient } from "../../app/wagmi";
+import RoundImplementationABI from "./abi/RoundImplementationABI";
 
 type RoundApplication = {
   id: string;
@@ -45,10 +45,10 @@ type Res = {
 
 export const getApplicationById = async (
   id: string,
-  signerOrProvider: Web3Instance["provider"]
+  publicClient: PublicClient
 ): Promise<GrantApplication> => {
   try {
-    const { chainId } = await signerOrProvider.getNetwork();
+    const chainId = await publicClient.getChainId();
 
     const res: Res = await graphql_fetch(
       `
@@ -82,18 +82,11 @@ export const getApplicationById = async (
       throw new Error("Grant Application doesn't exist");
     }
 
-    const _projectRegistryContract = projectRegistryContract(chainId);
-    const projectRegistry = new Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _projectRegistryContract.address!,
-      _projectRegistryContract.abi,
-      signerOrProvider
-    );
-
     const grantApplications = await fetchApplicationData(
       res,
       id,
-      projectRegistry
+      chainId,
+      publicClient
     );
 
     const grantApplicationsFromContract =
@@ -126,11 +119,10 @@ function convertStatus(status: number) {
 
 export const getApplicationsByRoundId = async (
   roundId: string,
-  signerOrProvider: Web3Provider
+  publicClient: PublicClient
 ): Promise<GrantApplication[]> => {
   try {
-    // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork();
+    const chainId = await publicClient.getChainId();
 
     // query the subgraph for all rounds by the given account in the given program
     const res = await graphql_fetch(
@@ -186,15 +178,12 @@ export const getApplicationsByRoundId = async (
       });
     }
 
-    const grantApplicationsFromContract =
-      res.data.roundApplications.length > 0
-        ? await updateApplicationStatusFromContract(
-            grantApplications,
-            res.data.roundApplications[0].round.projectsMetaPtr
-          )
-        : grantApplications;
-
-    return grantApplicationsFromContract;
+    return res.data.roundApplications.length > 0
+      ? await updateApplicationStatusFromContract(
+          grantApplications,
+          res.data.roundApplications[0].round.projectsMetaPtr
+        )
+      : grantApplications;
   } catch (error) {
     console.error("getApplicationsByRoundId", error);
     throw error;
@@ -225,7 +214,8 @@ export const checkGrantApplicationStatus = async (
 const fetchApplicationData = async (
   res: Res,
   id: string,
-  projectRegistry: Contract
+  chainId: number,
+  publicClient: PublicClient
 ): Promise<GrantApplication[]> =>
   Promise.all(
     res.data.roundApplications.map(
@@ -251,10 +241,21 @@ const fetchApplicationData = async (
           ? projectRegistryId.split(":")[2]
           : projectRegistryId;
 
-        const projectOwners = await projectRegistry.getProjectOwners(fixedId);
+        const _projectRegistryContract = projectRegistryContract(chainId);
+        const projectRegistry = getContract({
+          address: _projectRegistryContract.address as Hex,
+          abi: _projectRegistryContract.abi,
+          publicClient,
+        });
+
+        const projectOwners = await projectRegistry.read.getProjectOwners(
+          fixedId
+        );
         const grantApplicationProjectMetadata: Project = {
           ...projectMetadata,
-          owners: projectOwners.map((address: string) => ({ address })),
+          owners: (projectOwners as string[]).map((address: string) => ({
+            address,
+          })),
         };
 
         return {
@@ -326,27 +327,26 @@ const updateApplicationStatusFromContract = async (
 
 export const updateApplicationStatuses = async (
   roundId: string,
-  signer: Signer,
+  walletClient: WalletClient,
   statuses: AppStatus[]
-): Promise<{ transactionBlockNumber: number }> => {
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
-    signer
-  );
-
+): Promise<{ transactionBlockNumber: bigint }> => {
+  const roundImplementation = getContract({
+    address: roundId as Hex,
+    abi: RoundImplementationABI,
+    walletClient,
+  });
   console.log("Updating application statuses...", statuses);
 
-  const tx = await roundImplementation.setApplicationStatuses(statuses);
-
-  const receipt = await tx.wait();
-
-  console.log("✅ Transaction hash: ", tx.hash);
-
-  const blockNumber = receipt.blockNumber;
+  const tx = await roundImplementation.write.setApplicationStatuses([
+    statuses.map((status) => ({
+      index: BigInt(status.index),
+      statusRow: BigInt(status.statusRow),
+    })),
+  ]);
+  console.log("✅ Transaction hash: ", tx);
 
   return {
-    transactionBlockNumber: blockNumber,
+    transactionBlockNumber: BigInt(0),
   };
 };
 
@@ -428,64 +428,57 @@ export const updateApplicationList = async (
 
 export const fundRoundContract = async (
   roundId: string,
-  signer: Signer,
+  walletClient: WalletClient,
   payoutToken: PayoutToken,
-  amount: BigNumber
-): Promise<{ txBlockNumber: number; txHash: string }> => {
-  // checksum conversion
-  roundId = ethers.utils.getAddress(roundId);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let receipt: any = {};
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let tx: any = {};
+  amount: bigint
+): Promise<{ txBlockNumber: bigint; txHash: string }> => {
+  let receipt: TransactionReceipt;
+  let txHash: Hex;
+  roundId = getAddress(roundId);
 
-  if (payoutToken.address === ethers.constants.AddressZero) {
+  if (payoutToken.address === (zeroAddress as Hex)) {
     const txObj = {
-      to: roundId,
+      to: roundId as Hex,
       value: amount,
     };
 
-    tx = await signer.sendTransaction(txObj);
-
-    receipt = await tx.wait();
+    txHash = await walletClient.sendTransaction(txObj);
+    receipt = await publicClient({}).waitForTransactionReceipt({
+      hash: txHash,
+    });
   } else {
-    const tokenContract = new ethers.Contract(
-      payoutToken.address,
-      ERC20Contract.abi,
-      signer
-    );
+    const tokenContract = getContract({
+      address: payoutToken.address,
+      abi: erc20ABI,
+      walletClient,
+    });
 
-    tx = await tokenContract.transfer(roundId, amount);
-
-    receipt = await tx.wait();
+    txHash = await tokenContract.write.transfer([roundId as Hex, amount]);
+    receipt = await publicClient({}).waitForTransactionReceipt({
+      hash: txHash,
+    });
   }
 
-  console.log("✅ Transaction hash: ", tx.hash);
-
-  const blockNumber = receipt.blockNumber;
   return {
-    txBlockNumber: blockNumber,
-    txHash: tx.hash,
+    txBlockNumber: receipt.blockNumber,
+    txHash,
   };
 };
 
 export const approveTokenOnContract = async (
-  signer: Signer,
+  walletClient: WalletClient,
   roundId: string,
   tokenAddress: string,
-  amount: BigNumber
-): Promise<void> => {
-  // checksum conversion
-  roundId = ethers.utils.getAddress(roundId);
-  tokenAddress = ethers.utils.getAddress(tokenAddress);
+  amount: bigint
+) => {
+  roundId = getAddress(roundId);
+  tokenAddress = getAddress(tokenAddress);
 
-  const tokenContract = new ethers.Contract(
-    tokenAddress,
-    ERC20Contract.abi,
-    signer
-  );
+  const tokenContract = getContract({
+    address: getAddress(tokenAddress),
+    abi: erc20ABI,
+    walletClient,
+  });
 
-  const approveTx = await tokenContract.approve(roundId, amount);
-
-  await approveTx.wait();
+  await tokenContract.write.approve([getAddress(roundId), amount]);
 };

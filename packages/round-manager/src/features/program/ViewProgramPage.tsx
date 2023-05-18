@@ -8,7 +8,6 @@ import {
 import { RefreshIcon } from "@heroicons/react/outline";
 
 import { Button } from "common/src/styles";
-import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import Footer from "common/src/components/Footer";
 import { abbreviateAddress } from "../api/utils";
@@ -23,6 +22,7 @@ import { Spinner } from "../common/Spinner";
 import { useRounds } from "../../context/round/RoundContext";
 import { ProgressStatus } from "../api/types";
 import { useDebugMode } from "../../hooks";
+import { useAccount } from "wagmi";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -30,7 +30,7 @@ export default function ViewProgram() {
 
   const { id: programId } = useParams();
 
-  const { address } = useWallet();
+  const { address } = useAccount();
 
   const { program: programToRender, fetchProgramsStatus } =
     useProgramById(programId);
@@ -53,7 +53,7 @@ export default function ViewProgram() {
       }
 
       if (programToRender) {
-        programToRender.operatorWallets.includes(address?.toLowerCase())
+        programToRender.operatorWallets.includes(address?.toLowerCase() ?? "")
           ? setHasAccess(true)
           : setHasAccess(false);
       } else {

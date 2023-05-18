@@ -1,28 +1,20 @@
 import { saveToIPFS } from "../../../features/api/ipfs";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { EditedGroups, ProgressStatus, Round } from "../../../features/api/types";
-import { UpdateRoundData, UpdateRoundProvider, useUpdateRound } from "../UpdateRoundContext";
+import {
+  EditedGroups,
+  ProgressStatus,
+  Round,
+} from "../../../features/api/types";
+import {
+  UpdateRoundData,
+  UpdateRoundProvider,
+  useUpdateRound,
+} from "../UpdateRoundContext";
 import { TransactionBuilder } from "../../../features/api/round";
 import { makeRoundData } from "../../../test-utils";
-import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
-
-const mockWallet = {
-  address: "0x0",
-  signer: {
-    getChainId: () => {
-      return 1;
-    },
-  },
-};
-
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
+import { WagmiConfig } from "wagmi";
+import { client } from "../../../app/wagmi";
 
 jest.mock("../../../features/api/round");
 jest.mock("../../../features/api/ipfs");
@@ -30,35 +22,43 @@ jest.mock("../../../features/api/subgraph");
 
 const mockRoundData: Round = makeRoundData();
 
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
+}));
+
 const executeSpy = (execute: boolean) => {
   if (!execute)
     // return function which does nothing
     return jest
-      .spyOn(TransactionBuilder.prototype, 'execute')
+      .spyOn(TransactionBuilder.prototype, "execute")
       .mockImplementation(function () {
         return new Promise(() => {
           /* do nothing. */
-        }) as unknown as Promise<TransactionResponse>;
+        });
       });
 
   if (execute)
     return jest
-      .spyOn(TransactionBuilder.prototype, 'execute')
-      .mockImplementation(async function (): Promise<TransactionResponse> {
+      .spyOn(TransactionBuilder.prototype, "execute")
+      .mockImplementation(async function () {
         const receipt: any = {
           blockNumber: 123,
         };
 
         const response: any = {
-          wait: async (): Promise<TransactionReceipt> => {
-            return receipt as unknown as TransactionReceipt;
+          wait: async () => {
+            return receipt;
           },
         };
 
-        return response as unknown as TransactionResponse;
+        return response;
       });
 };
-
 
 describe("<UpdateRoundProvider />", () => {
   function callUpdateRound() {
@@ -74,7 +74,7 @@ describe("<UpdateRoundProvider />", () => {
       RoundFeePercentage: false,
       RoundMetaPointer: true,
       StartAndEndTimes: false,
-    }
+    };
 
     it("sets ipfs status to in progress when saving to ipfs", async () => {
       (saveToIPFS as jest.Mock).mockReturnValue(
@@ -83,7 +83,12 @@ describe("<UpdateRoundProvider />", () => {
         })
       );
 
-      renderWithProvider(<TestUseUpdateRoundComponent mockEditedGroups={mockEditedGroups} mockRoundData={mockRoundData} />);
+      renderWithProvider(
+        <TestUseUpdateRoundComponent
+          mockEditedGroups={mockEditedGroups}
+          mockRoundData={mockRoundData}
+        />
+      );
       callUpdateRound();
 
       expect(
@@ -96,7 +101,12 @@ describe("<UpdateRoundProvider />", () => {
     it("sets ipfs status to complete when saving to ipfs succeeds", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
 
-      renderWithProvider(<TestUseUpdateRoundComponent mockEditedGroups={mockEditedGroups} mockRoundData={mockRoundData} />);
+      renderWithProvider(
+        <TestUseUpdateRoundComponent
+          mockEditedGroups={mockEditedGroups}
+          mockRoundData={mockRoundData}
+        />
+      );
       callUpdateRound();
 
       expect(
@@ -115,13 +125,18 @@ describe("<UpdateRoundProvider />", () => {
       RoundFeePercentage: false,
       RoundMetaPointer: true,
       StartAndEndTimes: false,
-    }
+    };
 
     it("sets update status to in progress when updating round", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
       executeSpy(false);
 
-      renderWithProvider(<TestUseUpdateRoundComponent mockEditedGroups={mockEditedGroups} mockRoundData={mockRoundData} />);
+      renderWithProvider(
+        <TestUseUpdateRoundComponent
+          mockEditedGroups={mockEditedGroups}
+          mockRoundData={mockRoundData}
+        />
+      );
       callUpdateRound();
 
       expect(
@@ -135,7 +150,12 @@ describe("<UpdateRoundProvider />", () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
       executeSpy(true);
 
-      renderWithProvider(<TestUseUpdateRoundComponent mockEditedGroups={mockEditedGroups} mockRoundData={mockRoundData} />);
+      renderWithProvider(
+        <TestUseUpdateRoundComponent
+          mockEditedGroups={mockEditedGroups}
+          mockRoundData={mockRoundData}
+        />
+      );
       callUpdateRound();
 
       expect(
@@ -154,7 +174,7 @@ describe("<UpdateRoundProvider />", () => {
       RoundFeePercentage: false,
       RoundMetaPointer: true,
       StartAndEndTimes: false,
-    }
+    };
 
     it("sets indexing status to in progress when updating round", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
@@ -166,7 +186,12 @@ describe("<UpdateRoundProvider />", () => {
         })
       );
 
-      renderWithProvider(<TestUseUpdateRoundComponent mockEditedGroups={mockEditedGroups} mockRoundData={mockRoundData} />);
+      renderWithProvider(
+        <TestUseUpdateRoundComponent
+          mockEditedGroups={mockEditedGroups}
+          mockRoundData={mockRoundData}
+        />
+      );
       callUpdateRound();
 
       expect(
@@ -180,7 +205,14 @@ describe("<UpdateRoundProvider />", () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
       executeSpy(true);
 
-      renderWithProvider(<TestUseUpdateRoundComponent mockEditedGroups={mockEditedGroups} mockRoundData={mockRoundData} />);
+      (waitForSubgraphSyncTo as jest.Mock).mockReset();
+
+      renderWithProvider(
+        <TestUseUpdateRoundComponent
+          mockEditedGroups={mockEditedGroups}
+          mockRoundData={mockRoundData}
+        />
+      );
       callUpdateRound();
 
       expect(
@@ -192,13 +224,25 @@ describe("<UpdateRoundProvider />", () => {
   });
 });
 
-const TestUseUpdateRoundComponent = ({ mockEditedGroups, mockRoundData }: { mockEditedGroups: EditedGroups, mockRoundData: Round }) => {
-  const { updateRound, IPFSCurrentStatus, roundUpdateStatus, indexingStatus } = useUpdateRound();
+const TestUseUpdateRoundComponent = ({
+  mockEditedGroups,
+  mockRoundData,
+}: {
+  mockEditedGroups: EditedGroups;
+  mockRoundData: Round;
+}) => {
+  const { updateRound, IPFSCurrentStatus, roundUpdateStatus, indexingStatus } =
+    useUpdateRound();
 
   return (
     <div>
       <button
-        onClick={() => updateRound({ round: mockRoundData, editedGroups: mockEditedGroups } as unknown as UpdateRoundData)}
+        onClick={() =>
+          updateRound({
+            round: mockRoundData,
+            editedGroups: mockEditedGroups,
+          } as unknown as UpdateRoundData)
+        }
         data-testid="update-round"
       >
         Update My Round
@@ -206,9 +250,7 @@ const TestUseUpdateRoundComponent = ({ mockEditedGroups, mockRoundData }: { mock
 
       <div data-testid={`storing-status-is-${IPFSCurrentStatus}`} />
 
-      <div
-        data-testid={`update-status-is-${roundUpdateStatus}`}
-      />
+      <div data-testid={`update-status-is-${roundUpdateStatus}`} />
 
       <div data-testid={`indexing-status-is-${indexingStatus}`} />
     </div>
@@ -216,5 +258,9 @@ const TestUseUpdateRoundComponent = ({ mockEditedGroups, mockRoundData }: { mock
 };
 
 function renderWithProvider(ui: JSX.Element) {
-  render(<UpdateRoundProvider>{ui}</UpdateRoundProvider>);
+  render(
+    <WagmiConfig config={client}>
+      <UpdateRoundProvider>{ui}</UpdateRoundProvider>
+    </WagmiConfig>
+  );
 }

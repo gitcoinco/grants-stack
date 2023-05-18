@@ -1,5 +1,4 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { ethers, Signer } from "ethers";
 import React, {
   createContext,
   ReactNode,
@@ -7,12 +6,13 @@ import React, {
   useContext,
   useState,
 } from "react";
-import { useSigner } from "wagmi";
+import { useWalletClient, WalletClient } from "wagmi";
 import { fundRoundContract } from "../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 
 import { ProgressStatus } from "../../features/api/types";
 import { PayoutToken } from "../../features/api/utils";
+import { parseUnits } from "viem";
 
 export interface FundContractState {
   tokenApprovalStatus: ProgressStatus;
@@ -23,8 +23,8 @@ export interface FundContractState {
   setIndexingStatus: React.Dispatch<SetStateAction<ProgressStatus>>;
   txHash: string;
   setTxHash: React.Dispatch<SetStateAction<string>>;
-  txBlockNumber: number;
-  setTxBlockNumber: React.Dispatch<SetStateAction<number>>;
+  txBlockNumber: bigint;
+  setTxBlockNumber: React.Dispatch<SetStateAction<bigint>>;
 }
 
 export type FundContractParams = {
@@ -34,7 +34,7 @@ export type FundContractParams = {
 };
 
 interface SubmitFundParams {
-  signer: Signer;
+  signer: WalletClient;
   context: FundContractState;
   roundId: string;
   payoutToken: PayoutToken;
@@ -93,7 +93,7 @@ export const initialFundContractState: FundContractState = {
   setTxHash: () => {
     /**/
   },
-  txBlockNumber: -1,
+  txBlockNumber: BigInt(-1),
   setTxBlockNumber: () => {
     /**/
   },
@@ -111,12 +111,12 @@ export const useFundContract = () => {
     );
   }
 
-  const { data: signer } = useSigner();
+  const { data: signer } = useWalletClient();
 
   const handleFundContract = async (params: FundContractParams) => {
     return _fundContract({
       ...params,
-      signer: signer as Signer,
+      signer: signer as WalletClient,
       context,
     });
   };
@@ -177,7 +177,7 @@ async function _fundContract({
 }
 
 async function approveTokenForFunding(
-  signerOrProvider: Signer,
+  signerOrProvider: WalletClient,
   roundId: string,
   token: PayoutToken,
   amount: number,
@@ -201,7 +201,7 @@ async function approveTokenForFunding(
 }
 
 async function fund(
-  signerOrProvider: Signer,
+  signerOrProvider: WalletClient,
   roundId: string,
   token: PayoutToken,
   fundAmount: number,
@@ -212,8 +212,8 @@ async function fund(
   try {
     setFundStatus(ProgressStatus.IN_PROGRESS);
 
-    const amountInUnits = ethers.utils.parseUnits(
-      fundAmount.toString(),
+    const amountInUnits = parseUnits(
+      fundAmount.toString() as `${number}`,
       token.decimal
     );
 
@@ -241,7 +241,7 @@ async function fund(
 }
 
 async function waitForSubgraphToUpdate(
-  signerOrProvider: Signer,
+  signerOrProvider: WalletClient,
   context: FundContractState
 ) {
   const { setIndexingStatus, txBlockNumber } = context;

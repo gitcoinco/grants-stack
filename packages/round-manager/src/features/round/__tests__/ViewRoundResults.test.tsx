@@ -2,7 +2,7 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useParams } from "react-router-dom";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { useDisconnect, useSwitchNetwork, WagmiConfig } from "wagmi";
 import {
   makeApprovedProjectData,
   makeMatchingStatsData,
@@ -19,13 +19,9 @@ import { ProgressStatus } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
 import { useRound, useRoundMatchingFunds } from "../../../hooks";
 import { Round } from "../../api/types";
-
-jest.mock("../../common/Auth");
-jest.mock("../../api/round");
-
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
+import { client } from "../../../app/wagmi";
+import { zeroAddress } from "viem";
+import { fetchFinalizedMatches } from "../../api/round";
 
 export const mockNetwork = {
   chain: { id: 5, name: "Goerli" },
@@ -34,19 +30,27 @@ export const mockNetwork = {
     { id: 5, name: "Goerli" },
   ],
 };
-const mockSigner = {
-  getChainId: () => {
-    /* do nothing.*/
-  },
-};
+let mockRoundData: Round = makeRoundData();
+
 jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
   useNetwork: () => mockNetwork,
-  useSigner: () => ({ data: mockSigner }),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
   useDisconnect: jest.fn(),
   useSwitchNetwork: jest.fn(),
+  useAccount: () => ({
+    address: mockRoundData.operatorWallets
+      ? mockRoundData.operatorWallets[0]
+      : zeroAddress,
+  }),
+  usePublicClient: () => ({
+    getChainId: () => 5,
+  }),
 }));
-
-let mockRoundData: Round = makeRoundData();
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -64,33 +68,19 @@ jest.mock("../../../hooks", () => ({
   })),
 }));
 
+jest.mock("../../api/round", () => ({
+  ...jest.requireActual("../../api/round"),
+  fetchFinalizedMatches: jest.fn(),
+}));
+//
+// jest.mock("../../../context/application/ApplicationContext", () => ({
+//   ...jest.requireActual("../../../context/application/ApplicationContext"),
+//   useApplicationByRoundId: () => ({ applications: [] }),
+// }));
+
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
   ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
   useFetchMatchingDistributionFromContract: jest.fn(),
-}));
-
-jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({
-    chain: {
-      name: "Ethereum",
-    },
-    address: mockRoundData.operatorWallets![0],
-    signer: {
-      getChainId: () => {
-        /* do nothing */
-      },
-    },
-    provider: {
-      network: {
-        chainId: 1,
-      },
-    },
-  }),
-}));
-
-jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
 describe("View Round Results before distribution data is finalized to contract", () => {
@@ -124,9 +114,18 @@ describe("View Round Results before distribution data is finalized to contract",
       }));
 
       const roundEndTime = faker.date.recent();
-      const roundStartTime = faker.date.past(1, roundEndTime);
-      const applicationsEndTime = faker.date.past(1, roundStartTime);
-      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+      const roundStartTime = faker.date.past({
+        years: 1,
+        refDate: roundEndTime,
+      });
+      const applicationsEndTime = faker.date.past({
+        years: 1,
+        refDate: roundStartTime,
+      });
+      const applicationsStartTime = faker.date.past({
+        years: 1,
+        refDate: applicationsEndTime,
+      });
 
       (useRound as jest.Mock).mockReturnValue({
         data: {
@@ -144,6 +143,24 @@ describe("View Round Results before distribution data is finalized to contract",
         },
         isLoading: false,
       });
+
+      (fetchFinalizedMatches as jest.Mock).mockImplementation(async () => [
+        {
+          matches: [
+            {
+              revisedContributionCount: 0,
+              revisedMatch: 0n,
+              matched: 0n,
+              contributionsCount: 0,
+              projectId: "",
+              applicationId: "",
+              projectName: "",
+              payoutAddress: "",
+            },
+          ],
+          readyForPayoutTransactionHash: "",
+        },
+      ]);
 
       const approvedProjects = [
         makeApprovedProjectData(),
@@ -164,10 +181,15 @@ describe("View Round Results before distribution data is finalized to contract",
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
               wrapWithFinalizeRoundContext(
-                wrapWithRoundContext(<ViewRoundPage />, {
-                  data: [mockRoundData],
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                })
+                wrapWithRoundContext(
+                  <WagmiConfig config={client}>
+                    <ViewRoundPage />
+                  </WagmiConfig>,
+                  {
+                    data: [mockRoundData],
+                    fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                  }
+                )
               )
             )
           )
@@ -175,8 +197,13 @@ describe("View Round Results before distribution data is finalized to contract",
       );
       const roundResultsTab = screen.getByTestId("round-results");
       fireEvent.click(roundResultsTab);
-      expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
-      expect(screen.getByTestId("match-stats-table")).toBeInTheDocument();
+      expect(
+        await screen.findByTestId("match-stats-title")
+      ).toBeInTheDocument();
+
+      expect(
+        await screen.findByTestId("match-stats-table")
+      ).toBeInTheDocument();
     });
   });
 
@@ -226,10 +253,15 @@ describe("View Round Results before distribution data is finalized to contract",
           wrapWithFinalizeRoundContext(
             wrapWithApplicationContext(
               wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewRoundPage />, {
-                  data: [mockRoundData],
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
+                wrapWithRoundContext(
+                  <WagmiConfig config={client}>
+                    <ViewRoundPage />
+                  </WagmiConfig>,
+                  {
+                    data: [mockRoundData],
+                    fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                  }
+                ),
                 { programs: [] }
               ),
               {
@@ -328,10 +360,15 @@ describe("View Round Results after distribution data is finalized to contract", 
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
             wrapWithFinalizeRoundContext(
-              wrapWithRoundContext(<ViewRoundPage />, {
-                data: [mockRoundData],
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              })
+              wrapWithRoundContext(
+                <WagmiConfig config={client}>
+                  <ViewRoundPage />
+                </WagmiConfig>,
+                {
+                  data: [mockRoundData],
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }
+              )
             )
           )
         )

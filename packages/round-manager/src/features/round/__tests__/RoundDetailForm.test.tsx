@@ -5,25 +5,19 @@ import { makeProgramData, renderWrapped } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import moment from "moment";
 import { ChainId, CHAINS } from "../../api/utils";
-import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import { RoundDetailForm } from "../RoundDetailForm";
+import { useChainId } from "wagmi";
+import { goerli } from "viem/chains";
 
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
-
-jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useChainId: jest.fn(),
 }));
 
 beforeEach(() => {
-  (useWallet as jest.Mock).mockReturnValue({
-    chain: { id: ChainId.GOERLI_CHAIN_ID },
-  });
+  (useChainId as jest.Mock).mockReturnValue(goerli.id);
 });
 
 describe("<RoundDetailForm />", () => {

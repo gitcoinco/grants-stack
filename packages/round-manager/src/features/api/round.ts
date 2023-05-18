@@ -1,13 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Signer } from "@ethersproject/abstract-signer";
-import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
-import { BigNumber, ethers, utils } from "ethers";
-import {
-  merklePayoutStrategyImplementationContract,
-  roundFactoryContract,
-  roundImplementationContract,
-} from "./contracts";
+import { roundFactoryContract } from "./contracts";
 import {
   ApplicationStatus,
   ApprovedProject,
@@ -16,46 +8,88 @@ import {
   Round,
 } from "./types";
 import { fetchFromIPFS, payoutTokens } from "./utils";
-
-export enum UpdateAction {
-  UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
-  UPDATE_ROUND_META_PTR = "updateRoundMetaPtr",
-  UPDATE_ROUND_START_AND_END_TIMES = "updateStartAndEndTimes",
-  UPDATE_MATCH_AMOUNT = "updateMatchAmount",
-  UPDATE_ROUND_FEE_ADDRESS = "updateRoundFeeAddress",
-  UPDATE_ROUND_FEE_PERCENTAGE = "updateRoundFeePercentage"
-}
+import {
+  decodeEventLog,
+  encodeAbiParameters,
+  encodeFunctionData,
+  getAddress,
+  getContract,
+  GetContractReturnType,
+  Hex,
+  parseAbiParameters,
+  parseUnits,
+  PublicClient,
+  zeroAddress,
+} from "viem";
+import { WalletClient } from "wagmi";
+import { waitForTransaction } from "@wagmi/core";
+import RoundFactoryABI from "./abi/RoundFactoryABI";
+import RoundImplementationABI from "./abi/RoundImplementationABI";
+import {
+  AbiFunction,
+  AbiParametersToPrimitiveTypes,
+  ExtractAbiFunction,
+  ExtractAbiFunctionNames,
+} from "abitype";
+import MerklePayoutStrategyImplementationABI from "./abi/payoutStrategy/MerklePayoutStrategyImplementationABI";
+import { FinalizedMatches, RevisedMatch } from "../round/ViewRoundResults";
 
 export class TransactionBuilder {
   round: Round;
-  signer: Signer;
-  transactions: any[];
-  contract: any;
+  walletClient: WalletClient;
+  transactions: Hex[];
+  contract: GetContractReturnType<
+    typeof RoundImplementationABI,
+    null,
+    WalletClient
+  >;
 
-  constructor(round: Round, signer: Signer) {
+  constructor(round: Round, walletClient: WalletClient) {
     this.round = round;
-    this.signer = signer;
+    this.walletClient = walletClient;
     this.transactions = [];
     if (round.id) {
-      this.contract = new ethers.Contract(
-        round.id,
-        roundImplementationContract.abi,
-        signer,
-      );
+      this.contract = getContract({
+        address: round.id as Hex,
+        abi: RoundImplementationABI,
+        walletClient,
+      });
     } else {
       throw new Error("Round ID is undefined");
     }
   }
 
-  add(action: any, args: any[]) {
-    this.transactions.push(this.contract.interface.encodeFunctionData(action, args));
+  add<
+    TAbi extends typeof RoundImplementationABI,
+    TFunctionName extends ExtractAbiFunctionNames<TAbi>,
+    TAbiFunction extends AbiFunction = ExtractAbiFunction<TAbi, TFunctionName>
+  >(
+    functionName: TFunctionName | ExtractAbiFunctionNames<TAbi>,
+    args: AbiParametersToPrimitiveTypes<TAbiFunction["inputs"], "inputs">
+  ) {
+    this.transactions.push(
+      // @ts-expect-error viem internal type error
+      encodeFunctionData<TAbi, TFunctionName>({
+        abi: RoundImplementationABI,
+        functionName,
+        args,
+      })
+    );
   }
 
-  async execute(): Promise<TransactionResponse> {
+  async execute() {
     if (this.transactions.length === 0) {
       throw new Error("No transactions to execute");
     }
-    return await this.contract.multicall(this.transactions);
+    const contract = getContract({
+      address: this.round.id as Hex,
+      abi: RoundImplementationABI,
+      walletClient: this.walletClient,
+    });
+    const tx = await contract.write.multicall([this.transactions]);
+    return await waitForTransaction({
+      hash: tx,
+    });
   }
 
   getTransactions() {
@@ -65,18 +99,18 @@ export class TransactionBuilder {
 
 /**
  * Fetch a round by ID
- * @param signerOrProvider - provider
+ * @param publicClient - provider
  * @param roundId - the ID of a specific round for detail
  */
 export async function getRoundById(
-  signerOrProvider: Web3Provider,
-  roundId: string,
+  publicClient: PublicClient,
+  roundId: string
 ): Promise<Round> {
   try {
     // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork();
+    const chainId = await publicClient.getChainId();
 
-    // query the subgraph for all rounds by  the given address in the given program
+    // query the subgraph for all rounds by the given address in the given program
     const res = await graphql_fetch(
       `
           query GetRounds($roundId: String) {
@@ -134,7 +168,7 @@ export async function getRoundById(
           }
         `,
       chainId,
-      { roundId: roundId },
+      { roundId: roundId }
     );
 
     const round: RoundResult = res.data.rounds[0];
@@ -154,11 +188,11 @@ export async function getRoundById(
 
     const approvedProjectsWithMetadata = await loadApprovedProjects(
       round,
-      chainId,
+      chainId
     );
 
     const operatorWallets = res.data.rounds[0].roles[0].accounts.map(
-      (account: { address: string }) => account.address,
+      (account: { address: string }) => account.address
     );
 
     const DENOMINATOR = 100000;
@@ -176,7 +210,7 @@ export async function getRoundById(
       roundMetadata,
       applicationMetadata,
       applicationsStartTime: new Date(
-        Number(round.applicationsStartTime) * 1000,
+        Number(round.applicationsStartTime) * 1000
       ),
       applicationsEndTime: new Date(Number(round.applicationsEndTime) * 1000),
       roundStartTime: new Date(Number(round.roundStartTime) * 1000),
@@ -206,13 +240,13 @@ export async function getRoundById(
  */
 export async function listRounds(
   address: string,
-  signerOrProvider: Web3Provider,
+  signerOrProvider: PublicClient,
   programId: string,
-  roundId?: string,
+  roundId?: string
 ): Promise<{ rounds: Round[] }> {
   try {
     // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork();
+    const chainId = await signerOrProvider.getChainId();
 
     // query the subgraph for all rounds by the given address in the given program
     const res = await graphql_fetch(
@@ -250,7 +284,7 @@ export async function listRounds(
           }
         `,
       chainId,
-      { address: address?.toLowerCase(), programId, roundId },
+      { address: address?.toLowerCase(), programId, roundId }
     );
 
     const rounds: Round[] = [];
@@ -263,7 +297,7 @@ export async function listRounds(
       ]);
 
       const operatorWallets = round.roles[0].accounts.map(
-        (account: { address: string }) => account.address,
+        (account: { address: string }) => account.address
       );
 
       rounds.push({
@@ -294,23 +328,23 @@ export async function listRounds(
  * Deploys a round by invoking the create funciton on RoundFactory
  *
  * @param round
- * @param signerOrProvider
+ * @param walletClient
  * @returns
  */
 export async function deployRoundContract(
   round: Round,
-  signerOrProvider: Signer,
-): Promise<{ transactionBlockNumber: number }> {
+  walletClient: WalletClient
+): Promise<{ transactionBlockNumber: bigint }> {
   try {
-    const chainId = await signerOrProvider.getChainId();
+    const chainId = await walletClient.getChainId();
+    const addresses = await walletClient.getAddresses();
 
     const _roundFactoryContract = roundFactoryContract(chainId);
-    const roundFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _roundFactoryContract.address!,
-      _roundFactoryContract.abi,
-      signerOrProvider,
-    );
+    const roundFactory = getContract({
+      address: _roundFactoryContract.address as Hex,
+      abi: RoundFactoryABI,
+      walletClient,
+    });
 
     if (!round.applicationsEndTime) {
       round.applicationsEndTime = round.roundStartTime;
@@ -327,67 +361,81 @@ export async function deployRoundContract(
       new Date(round.roundEndTime).getTime() / 1000,
     ];
 
-    const initMetaPtr = [round.store, round.applicationStore];
-
-    const initRoles = [
-      [await signerOrProvider.getAddress()],
-      round.operatorWallets,
-    ];
-
     // Ensure tokenAmount is normalized to token decimals
     const tokenAmount =
       round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable || 0;
     const token = payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase(),
+      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
     )[0];
-    const parsedTokenAmount = utils.parseUnits(
-      tokenAmount.toString(),
-      token.decimal,
+    const parsedTokenAmount = parseUnits(
+      tokenAmount.toString() as `${number}`,
+      token.decimal
     );
 
-    // encode input parameters
-    const params = [
-      initAddresses,
-      initRoundTimes,
-      parsedTokenAmount,
-      round.token,
-      round.feesPercentage || 0,
-      round.feesAddress || ethers.constants.AddressZero,
-      initMetaPtr,
-      initRoles,
-    ];
-
-    const encodedParameters = ethers.utils.defaultAbiCoder.encode(
+    const encodedParameters = encodeAbiParameters(
+      parseAbiParameters(
+        "(address votingStrategy, address payoutStrategy),(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime),uint256,address,uint8,address,((uint256 protocol, string pointer),(uint256 protocol, string pointer)),(address[] adminRoles, address[] roundOperators)"
+      ),
       [
-        "tuple(address votingStrategy, address payoutStrategy)",
-        "tuple(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime)",
-        "uint256",
-        "address",
-        "uint8",
-        "address",
-        "tuple(tuple(uint256 protocol, string pointer), tuple(uint256 protocol, string pointer))",
-        "tuple(address[] adminRoles, address[] roundOperators)",
-      ],
-      params,
+        {
+          votingStrategy: initAddresses[0] as Hex,
+          payoutStrategy: initAddresses[1] as Hex,
+        },
+        {
+          applicationsStartTime: BigInt(initRoundTimes[0]),
+          applicationsEndTime: BigInt(initRoundTimes[1]),
+          roundStartTime: BigInt(initRoundTimes[2]),
+          roundEndTime: BigInt(initRoundTimes[3]),
+        },
+        parsedTokenAmount,
+        round.token as Hex,
+        round.feesPercentage || 0,
+        (round.feesAddress || zeroAddress) as Hex,
+        [
+          {
+            protocol: BigInt(round.store?.protocol ?? 1),
+            pointer: round.store?.pointer ?? "",
+          },
+          {
+            protocol: BigInt(round.applicationStore?.protocol ?? 1),
+            pointer: round.applicationStore?.pointer ?? "",
+          },
+        ],
+        {
+          adminRoles: [addresses[0]],
+          roundOperators: round.operatorWallets as Hex[],
+        },
+      ]
     );
 
     // Deploy a new Round contract
-    const tx = await roundFactory.create(encodedParameters, round.ownedBy);
+    const tx = await roundFactory.write.create([
+      encodedParameters,
+      round.ownedBy as Hex,
+    ]);
 
-    const receipt = await tx.wait(); // wait for transaction receipt
+    const receipt = await waitForTransaction({
+      hash: tx,
+    });
 
     let roundAddress;
+    receipt.logs
+      .map((log) => {
+        try {
+          return decodeEventLog({ ...log, abi: RoundFactoryABI });
+        } catch {
+          /* This tx receipt also captures events emitted from the RoundImplementation,
+          so we try parsing it using RoundpImplementation */
+          return decodeEventLog({ ...log, abi: RoundImplementationABI });
+        }
+      })
+      .find((log) => {
+        if (log.eventName === "RoundCreated") {
+          roundAddress = log.args.roundAddress;
+        }
+      });
 
-    if (receipt.events) {
-      const event = receipt.events.find(
-        (e: { event: string }) => e.event === "RoundCreated",
-      );
-      if (event && event.args) {
-        roundAddress = event.args.roundAddress;
-      }
-    }
-
-    console.log("✅ Round Contract Transaction hash: ", tx.hash);
+    console.log("✅ Round Contract Transaction hash: ", tx);
     console.log("✅ Round address: ", roundAddress);
 
     const blockNumber = receipt.blockNumber;
@@ -448,7 +496,7 @@ function convertStatus(status: string | number) {
 async function loadApprovedProjects(
   round: RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any,
+  chainId: any
 ): Promise<ApprovedProject[]> {
   if (!round.projectsMetaPtr || round.projects.length === 0) {
     return [];
@@ -456,11 +504,11 @@ async function loadApprovedProjects(
   const allRoundProjects = round.projects;
 
   const approvedProjects = allRoundProjects.filter(
-    (project) => project.status === ApplicationStatus.APPROVED,
+    (project) => project.status === ApplicationStatus.APPROVED
   );
   const fetchApprovedProjectMetadata: Promise<ApprovedProject>[] =
     approvedProjects.map((project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId),
+      fetchMetadataAndMapProject(project, chainId)
     );
   return Promise.all(fetchApprovedProjectMetadata);
 }
@@ -468,7 +516,7 @@ async function loadApprovedProjects(
 async function fetchMetadataAndMapProject(
   project: RoundProjectResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any,
+  chainId: any
 ): Promise<ApprovedProject> {
   const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
   // NB: applicationData can be in two formats:
@@ -494,7 +542,7 @@ async function fetchMetadataAndMapProject(
 export async function getProjectOwners(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
-  projectRegistryId: string,
+  projectRegistryId: string
 ) {
   try {
     // get the subgraph for project owners by $projectRegistryId
@@ -515,13 +563,13 @@ export async function getProjectOwners(
       `,
       chainId,
       { projectRegistryId },
-      true,
+      true
     );
 
     return (
       res.data?.projects[0]?.accounts.map(
         (account: { account: { address: string } }) =>
-          ethers.utils.getAddress(account.account.address),
+          getAddress(account.account.address)
       ) || []
     );
   } catch (error) {
@@ -533,44 +581,41 @@ export async function getProjectOwners(
 /**
  * Fetch finalized matching distribution
  * @param roundId - the ID of a specific round for detail
- * @param signerOrProvider
+ * @param publicClient
  */
 export async function fetchMatchingDistribution(
-  roundId: string | undefined,
-  signerOrProvider: Web3Provider,
+  roundId: string,
+  publicClient: PublicClient
 ): Promise<{
   distributionMetaPtr: string;
   matchingDistribution: MatchingStatsData[];
 }> {
   try {
-    if (!roundId) {
-      throw new Error("Round ID is required");
-    }
     let matchingDistribution: MatchingStatsData[] = [];
-    const roundImplementation = new ethers.Contract(
-      roundId,
-      roundImplementationContract.abi,
-      signerOrProvider,
-    );
-    const payoutStrategyAddress = await roundImplementation.payoutStrategy();
-    const payoutStrategy = new ethers.Contract(
-      payoutStrategyAddress,
-      merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
-    );
-    const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
-    const distributionMetaPtr = distributionMetaPtrRes.pointer;
+    const roundImplementation = getContract({
+      address: roundId as Hex,
+      abi: RoundImplementationABI,
+      publicClient,
+    });
+    const payoutStrategyAddress =
+      await roundImplementation.read.payoutStrategy();
+    const payoutStrategy = getContract({
+      address: payoutStrategyAddress as Hex,
+      abi: MerklePayoutStrategyImplementationABI,
+      publicClient,
+    });
+    const distributionMetaPtrRes =
+      await payoutStrategy.read.distributionMetaPtr();
+    const distributionMetaPtr = distributionMetaPtrRes[1];
 
     if (distributionMetaPtr !== "") {
-      // fetch distribution from IPFS
       const matchingDistributionRes = await fetchFromIPFS(distributionMetaPtr);
       matchingDistribution = matchingDistributionRes.matchingDistribution;
 
-      // parse matchAmountInToken to a valid BigNumber
+      /* TODO: use viem to deserialize bigints here */
       matchingDistribution.map((distribution) => {
-        distribution.matchAmountInToken = BigNumber.from(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (distribution.matchAmountInToken as any).hex,
+        distribution.matchAmountInToken = BigInt(
+          distribution.matchAmountInToken
         );
       });
     }
@@ -582,25 +627,65 @@ export async function fetchMatchingDistribution(
   }
 }
 
-/**
- * Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
- * @param roundId
- * @param signerOrProvider
- * @returns
- */
-export const setReadyForPayout = async ({
-  roundId,
-  signerOrProvider,
-}: {
-  roundId: string;
-  signerOrProvider: Signer;
-}): Promise<TransactionResponse> => {
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
-    signerOrProvider,
-  );
+export async function fetchFinalizedMatches(
+  roundId: string,
+  publicClient: PublicClient
+): Promise<FinalizedMatches | undefined> {
+  const roundImplementation = getContract({
+    address: roundId as Hex,
+    abi: RoundImplementationABI,
+    publicClient,
+  });
 
-  const tx = await roundImplementation.setReadyForPayout();
-  return tx.wait();
-};
+  const payoutFilter =
+    await roundImplementation.createEventFilter.PayFeeAndEscrowFundsToPayoutContract(
+      {
+        fromBlock: BigInt(0),
+        toBlock: "latest",
+      }
+    );
+
+  const payoutEvents = await publicClient.getFilterLogs({
+    filter: payoutFilter,
+  });
+
+  if (payoutEvents.length > 0) {
+    const readyForPayoutTransactionHash = payoutEvents[0].transactionHash ?? "";
+
+    const payoutStrategyAddress =
+      await roundImplementation.read.payoutStrategy();
+
+    const payoutStrategy = getContract({
+      address: payoutStrategyAddress,
+      abi: MerklePayoutStrategyImplementationABI,
+      publicClient,
+    });
+
+    const distributionMetaPtr = await payoutStrategy.read.distributionMetaPtr();
+
+    const distribution = await fetchFromIPFS(distributionMetaPtr[1]);
+
+    const distributionMatches =
+      distribution.matchingDistribution as MatchingStatsData[];
+
+    const matches: RevisedMatch[] = distributionMatches.map((m) => {
+      return {
+        applicationId: m.applicationId,
+        payoutAddress: m.projectPayoutAddress,
+        projectId: m.projectId,
+        projectName: m.projectName,
+        contributionsCount: 0,
+        revisedContributionCount: m.contributionsCount,
+        matched: m.originalMatchAmountInToken,
+        revisedMatch: m.matchAmountInToken,
+      };
+    });
+
+    return {
+      readyForPayoutTransactionHash,
+      matches,
+    };
+  }
+
+  return undefined;
+}

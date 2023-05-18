@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { datadogLogs } from "@datadog/browser-logs";
 import { Tab } from "@headlessui/react";
 import {
@@ -21,7 +20,6 @@ import tw from "tailwind-styled-components";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { useRoundById } from "../../context/round/RoundContext";
-import { useDebugMode } from "../../hooks";
 import {
   ApplicationStatus,
   GrantApplication,
@@ -29,7 +27,6 @@ import {
   Round,
 } from "../api/types";
 import AccessDenied from "../common/AccessDenied";
-import { useWallet } from "../common/Auth";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -42,15 +39,18 @@ import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
 import ViewFundGrantees from "./ViewFundGrantees";
-import ViewRoundResults from "./ViewRoundResults/ViewRoundResults";
+import ViewRoundResults from "./ViewRoundResults";
 import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
+import { useDebugMode } from "../../hooks";
+import { useAccount, useNetwork } from "wagmi";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const { id } = useParams();
-  const { address, chain } = useWallet();
+  const { chain } = useNetwork();
+  const { address } = useAccount();
 
   const { round, fetchRoundStatus, error } = useRoundById(id?.toLowerCase());
   const isRoundsFetched =
@@ -73,7 +73,7 @@ export default function ViewRoundPage() {
           setHasAccess(true);
           return;
         }
-        round.operatorWallets?.includes(address?.toLowerCase())
+        round.operatorWallets?.includes(address?.toLowerCase() ?? "")
           ? setHasAccess(true)
           : setHasAccess(false);
       } else {
@@ -129,7 +129,7 @@ export default function ViewRoundPage() {
                 <div className="absolute right-0">
                   <ViewGrantsExplorerButton
                     iconStyle="h-4 w-4"
-                    chainId={`${chain.id}`}
+                    chainId={`${chain?.id}`}
                     roundId={id}
                   />
                 </div>
@@ -312,7 +312,7 @@ export default function ViewRoundPage() {
                         applications={applications}
                         isRoundsFetched={isRoundsFetched}
                         fetchRoundStatus={fetchRoundStatus}
-                        chainId={`${chain.id}`}
+                        chainId={`${chain?.id}`}
                         roundId={id}
                       />
                     </Tab.Panel>
@@ -339,7 +339,7 @@ export default function ViewRoundPage() {
                     <Tab.Panel>
                       <ReclaimFunds
                         round={round}
-                        chainId={`${chain.id}`}
+                        chainId={`${chain?.id}`}
                         roundId={id}
                       />
                     </Tab.Panel>

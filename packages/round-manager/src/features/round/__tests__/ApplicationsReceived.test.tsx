@@ -26,24 +26,11 @@ import {
 } from "../../api/application";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ApplicationStatus, ProgressStatus } from "../../api/types";
+import { WagmiConfig } from "wagmi";
+import { client } from "../../../app/wagmi";
 
 jest.mock("../../api/application");
-jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({
-    chain: {},
-    address: "0x0",
-    signer: {
-      getChainId: () => {
-        /* do nothing */
-      },
-    },
-    provider: { getNetwork: () => ({ chainId: "0" }) },
-  }),
-}));
-jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
-}));
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
@@ -75,6 +62,15 @@ function setupInBulkSelectionMode() {
   });
   fireEvent.click(selectButton);
 }
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
+}));
 
 describe("<ApplicationsReceived />", () => {
   beforeEach(() => {
@@ -470,23 +466,25 @@ export const renderWithContext = (
 ) =>
   render(
     <MemoryRouter>
-      <BulkUpdateGrantApplicationContext.Provider
-        value={{
-          ...initialBulkUpdateGrantApplicationState,
-          ...bulkUpdateGrantApplicationStateOverrides,
-        }}
-      >
-        <ApplicationContext.Provider
+      <WagmiConfig config={client}>
+        <BulkUpdateGrantApplicationContext.Provider
           value={{
-            state: {
-              ...initialApplicationState,
-              ...grantApplicationStateOverrides,
-            },
-            dispatch,
+            ...initialBulkUpdateGrantApplicationState,
+            ...bulkUpdateGrantApplicationStateOverrides,
           }}
         >
-          {ui}
-        </ApplicationContext.Provider>
-      </BulkUpdateGrantApplicationContext.Provider>
+          <ApplicationContext.Provider
+            value={{
+              state: {
+                ...initialApplicationState,
+                ...grantApplicationStateOverrides,
+              },
+              dispatch,
+            }}
+          >
+            {ui}
+          </ApplicationContext.Provider>
+        </BulkUpdateGrantApplicationContext.Provider>
+      </WagmiConfig>
     </MemoryRouter>
   );

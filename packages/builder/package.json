@@ -18,7 +18,6 @@
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^2.0.11",
     "@lagunovsky/redux-react-router": "^2.2.0",
-    "@pinata/sdk": "^1.1.26",
     "@rainbow-me/rainbowkit": "^0.7.2",
     "@redux-devtools/extension": "^3.2.3",
     "@tailwindcss/line-clamp": "^0.4.2",

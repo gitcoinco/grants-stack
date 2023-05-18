@@ -1,7 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { ExclamationCircleIcon } from "@heroicons/react/outline";
-import { ethers } from "ethers";
-import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBalance } from "wagmi";
@@ -15,6 +13,7 @@ import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
 import { useTokenPrice } from "common";
+import { zeroAddress } from "viem";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;
@@ -122,7 +121,7 @@ function ReclaimFundsContent(props: {
         recipientAddress: walletAddress,
       });
     } catch (error) {
-      if (error === Logger.errors.TRANSACTION_REPLACED) {
+      if (error === "replaced") {
         setTransactionReplaced(true);
       } else {
         datadogLogs.logger.error(
@@ -141,7 +140,7 @@ function ReclaimFundsContent(props: {
     )[0];
 
   const tokenDetail =
-    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+    matchingFundPayoutToken?.address == zeroAddress
       ? { addressOrName: payoutStrategy }
       : {
           addressOrName: payoutStrategy,
@@ -302,7 +301,7 @@ function ReclaimFundsContent(props: {
                 })}{" "}
                 USD
               </span>
-            ): null}
+            ) : null}
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -318,7 +317,9 @@ function ReclaimFundsContent(props: {
           <button
             className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded disabled:opacity-50"
             data-testid="reclaim-fund-btn"
-            disabled={walletAddress.length == 0 || balanceData?.value.isZero()}
+            disabled={
+              walletAddress.length == 0 || balanceData?.value === BigInt(0)
+            }
             onClick={() => handleReclaimFunds()}
           >
             Reclaim funds

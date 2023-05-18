@@ -6,18 +6,9 @@ import {
   ReclaimFundsProvider,
   useReclaimFunds,
 } from "../ReclaimFundsContext";
-
-jest.mock("wagmi");
+import { WagmiConfig } from "wagmi";
+import { client } from "../../../app/wagmi";
 jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
-
-const mockSigner = {
-  getChainId: () => {
-    /* do nothing.*/
-  },
-};
-jest.mock("wagmi", () => ({
-  useSigner: () => ({ data: mockSigner }),
-}));
 
 const testParams: ReclaimFundsParams = {
   payoutStrategy: "testPayoutStrategy",
@@ -118,5 +109,9 @@ const TestUseReclaimFundsComponent = (params: ReclaimFundsParams) => {
 };
 
 function renderWithProvider(ui: JSX.Element) {
-  render(<ReclaimFundsProvider>{ui}</ReclaimFundsProvider>);
+  render(
+    <WagmiConfig config={client}>
+      <ReclaimFundsProvider>{ui}</ReclaimFundsProvider>
+    </WagmiConfig>
+  );
 }

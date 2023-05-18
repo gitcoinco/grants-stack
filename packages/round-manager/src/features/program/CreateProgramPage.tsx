@@ -7,7 +7,6 @@ import {
   XIcon,
 } from "@heroicons/react/solid";
 
-import { useWallet } from "../common/Auth";
 import { Button, Input } from "common/src/styles";
 import Navbar from "../common/Navbar";
 import Footer from "common/src/components/Footer";
@@ -19,6 +18,7 @@ import { ProgressStatus, ProgressStep } from "../api/types";
 import { useCreateProgram } from "../../context/program/CreateProgramContext";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
+import { useAccount, useChainId, useNetwork } from "wagmi";
 
 type FormData = {
   name: string;
@@ -32,7 +32,9 @@ export default function CreateProgram() {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
-  const { address, chain } = useWallet();
+  const { address } = useAccount();
+  const { chain } = useNetwork();
+  const chainId = useChainId();
 
   const {
     createProgram,
@@ -106,7 +108,7 @@ export default function CreateProgram() {
     },
     {
       name: "Deploying",
-      description: `Connecting to the ${chain.name} blockchain.`,
+      description: `Connecting to the ${chain?.name} blockchain.`,
       status: contractDeploymentStatus,
     },
     {
@@ -222,14 +224,14 @@ export default function CreateProgram() {
                     </label>
 
                     <div className="opacity-50 flex mt-1 py-[6px] shadow-sm px-3 border rounded-md border-grey-100">
-                      {CHAINS[chain.id] ? (
+                      {CHAINS[chainId] ? (
                         <>
                           <img
-                            src={CHAINS[chain.id]?.logo}
+                            src={CHAINS[chainId]?.logo}
                             alt="program-chain-logo"
                             className="h-4 w-4 ml-1 mr-2 mt-1"
                           />
-                          <p>{chain.name}</p>
+                          <p>{chain?.name}</p>
                         </>
                       ) : (
                         <>

@@ -12,7 +12,14 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useDisconnect,
+  useNetwork,
+  useSwitchNetwork,
+  WagmiConfig,
+} from "wagmi";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   ApplicationContext,
@@ -26,39 +33,15 @@ import {
 } from "../../api/application";
 import { faker } from "@faker-js/faker";
 import { RoundContext } from "../../../context/round/RoundContext";
-import { useWallet } from "../../common/Auth";
 import {
   BulkUpdateGrantApplicationContext,
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import { GrantApplication, ProgressStatus } from "../../api/types";
+import { client } from "../../../app/wagmi";
 
 jest.mock("../../api/application");
-jest.mock("../../common/Auth");
-
-jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
-}));
-
-const mockAddress = "0x0";
-const mockWallet = {
-  provider: {
-    network: {
-      chainId: 1,
-    },
-  },
-  address: mockAddress,
-  signer: {
-    getChainId: () => {
-      /* do nothing */
-    },
-  },
-  chain: {
-    name: "abc",
-  },
-};
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -72,10 +55,20 @@ const applicationIdOverride = "some-application-id";
 const roundIdOverride = "some-round-id";
 
 jest.mock("@gitcoinco/passport-sdk-verifier");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useChainId: jest.fn(),
+  useAccount: jest.fn(),
+  useSwitchNetwork: jest.fn(),
+  useNetwork: jest.fn(),
+  useDisconnect: jest.fn(),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
 }));
-jest.mock("wagmi");
 
 const verifyCredentialMock = jest.spyOn(
   PassportVerifier.prototype,
@@ -84,7 +77,13 @@ const verifyCredentialMock = jest.spyOn(
 
 describe("ViewApplicationPage", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockImplementation(() => mockWallet);
+    (useNetwork as jest.Mock).mockReturnValue({
+      name: "abc",
+    });
+    (useChainId as jest.Mock).mockReturnValue(0);
+    (useAccount as jest.Mock).mockReturnValue({
+      address: "0x0",
+    });
     (useSwitchNetwork as any).mockReturnValue({ chains: [] });
     (useDisconnect as any).mockReturnValue({});
   });
@@ -107,10 +106,13 @@ describe("ViewApplicationPage", () => {
     const application = makeGrantApplicationData({ applicationIdOverride });
     (getApplicationsByRoundId as any).mockResolvedValue(application);
     const wrongAddress = faker.finance.ethereumAddress();
-    (useWallet as jest.Mock).mockImplementation(() => ({
-      ...mockWallet,
+    (useNetwork as jest.Mock).mockReturnValue({
+      name: "abc",
+    });
+    (useChainId as jest.Mock).mockReturnValue(0);
+    (useAccount as jest.Mock).mockReturnValue({
       address: wrongAddress,
-    }));
+    });
 
     renderWithContext(<ViewApplicationPage />, { applications: [application] });
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
@@ -292,7 +294,13 @@ describe("ViewApplicationPage", () => {
 
 describe("ViewApplicationPage verification badges", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockImplementation(() => mockWallet);
+    (useNetwork as jest.Mock).mockReturnValue({
+      name: "abc",
+    });
+    (useChainId as jest.Mock).mockReturnValue(0);
+    (useAccount as jest.Mock).mockReturnValue({
+      address: "0x0",
+    });
     (useSwitchNetwork as any).mockReturnValue({ chains: [] });
     (useDisconnect as any).mockReturnValue({});
   });
@@ -300,7 +308,7 @@ describe("ViewApplicationPage verification badges", () => {
   it("shows project twitter with no badge when there is no credential", async () => {
     const provider = "twitter";
     verifyCredentialMock.mockResolvedValue(true);
-    const expectedTwitterHandle = faker.random.word();
+    const expectedTwitterHandle = faker.lorem.word();
     const grantApplicationWithNoVc = makeGrantApplicationData({
       applicationIdOverride,
       projectTwitterOverride: expectedTwitterHandle,
@@ -327,7 +335,7 @@ describe("ViewApplicationPage verification badges", () => {
   it("shows project github organization with no badge when there is no credential", async () => {
     const provider = "github";
     verifyCredentialMock.mockResolvedValue(true);
-    const expectedGithubOrganizationName = faker.random.word();
+    const expectedGithubOrganizationName = faker.lorem.word();
     const grantApplicationWithNoVc = makeGrantApplicationData({
       applicationIdOverride,
       projectGithubOverride: expectedGithubOrganizationName,
@@ -588,38 +596,40 @@ export const renderWithContext = (
 ) =>
   render(
     <MemoryRouter>
-      <BulkUpdateGrantApplicationContext.Provider
-        value={{
-          ...initialBulkUpdateGrantApplicationState,
-          ...bulkUpdateGrantApplicationStateOverrides,
-        }}
-      >
-        <RoundContext.Provider
+      <WagmiConfig config={client}>
+        <BulkUpdateGrantApplicationContext.Provider
           value={{
-            state: {
-              data: [
-                makeRoundData({
-                  id: roundIdOverride,
-                  operatorWallets: [mockAddress],
-                }),
-              ],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            },
-            dispatch,
+            ...initialBulkUpdateGrantApplicationState,
+            ...bulkUpdateGrantApplicationStateOverrides,
           }}
         >
-          <ApplicationContext.Provider
+          <RoundContext.Provider
             value={{
               state: {
-                ...initialApplicationState,
-                ...applicationStateOverrides,
+                data: [
+                  makeRoundData({
+                    id: roundIdOverride,
+                    operatorWallets: ["0x0"],
+                  }),
+                ],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
               },
               dispatch,
             }}
           >
-            {ui}
-          </ApplicationContext.Provider>
-        </RoundContext.Provider>
-      </BulkUpdateGrantApplicationContext.Provider>
+            <ApplicationContext.Provider
+              value={{
+                state: {
+                  ...initialApplicationState,
+                  ...applicationStateOverrides,
+                },
+                dispatch,
+              }}
+            >
+              {ui}
+            </ApplicationContext.Provider>
+          </RoundContext.Provider>
+        </BulkUpdateGrantApplicationContext.Provider>
+      </WagmiConfig>
     </MemoryRouter>
   );

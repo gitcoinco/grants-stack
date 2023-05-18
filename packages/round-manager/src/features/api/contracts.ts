@@ -1,10 +1,10 @@
-/**
- * This file contains all contract definitions for Gitcoin Grants Round Manager
- */
-
-import abi from "./abi";
 import { Contract } from "./types";
 import { ChainId } from "./utils";
+import ProjectRegistryABI from "./abi/ProjectRegistryABI";
+import ProgramFactoryABI from "./abi/ProgramFactoryABI";
+import RoundFactoryABI from "./abi/RoundFactoryABI";
+import QFVotingStrategyFactoryABI from "./abi/votingStrategy/QFVotingStrategyFactoryABI";
+import MerklePayoutStrategyFactoryABI from "./abi/payoutStrategy/MerklePayoutStrategyFactoryABI";
 
 /************************/
 /* == External ABI == */
@@ -42,13 +42,8 @@ export const projectRegistryContract = (
 
   return {
     address: address,
-    abi: abi.projectRegistry,
+    abi: ProjectRegistryABI,
   };
-};
-
-/* ERC20 */
-export const ERC20Contract: Contract = {
-  abi: abi.erc20,
 };
 
 /************************/
@@ -87,13 +82,8 @@ export const programFactoryContract = (
 
   return {
     address: address,
-    abi: abi.programFactory,
+    abi: ProgramFactoryABI,
   };
-};
-
-/* ProgramImplementation */
-export const programImplementationContract: Contract = {
-  abi: abi.programImplementation,
 };
 
 /************************/
@@ -132,13 +122,8 @@ export const roundFactoryContract = (
 
   return {
     address: address,
-    abi: abi.roundFactory,
+    abi: RoundFactoryABI,
   };
-};
-
-/* RoundImplementation */
-export const roundImplementationContract: Contract = {
-  abi: abi.roundImplementation,
 };
 
 /************************/
@@ -177,7 +162,7 @@ export const qfVotingStrategyFactoryContract = (
 
   return {
     address: address,
-    abi: abi.qfVotingStrategyFactory,
+    abi: QFVotingStrategyFactoryABI,
   };
 };
 
@@ -217,11 +202,6 @@ export const merklePayoutStrategyFactoryContract = (
 
   return {
     address: address,
-    abi: abi.merklePayoutStrategyFactory,
+    abi: MerklePayoutStrategyFactoryABI,
   };
-};
-
-/* MerklePayoutStrategyImplementation */
-export const merklePayoutStrategyImplementationContract: Contract = {
-  abi: abi.merklePayoutStrategyImplementation,
 };

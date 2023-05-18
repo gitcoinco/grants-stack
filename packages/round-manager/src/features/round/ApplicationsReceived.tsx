@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { utils } from "ethers";
 import {
   InboxInIcon as NoApplicationsForRoundIcon,
   DownloadIcon,
@@ -38,8 +37,9 @@ import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
-import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
+import { getAddress } from "viem";
+import { useNetwork } from "wagmi";
 
 async function exportAndDownloadCSV(
   roundId: string,
@@ -69,7 +69,7 @@ async function exportAndDownloadCSV(
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
-  const { chain } = useWallet();
+  const { chain } = useNetwork();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
@@ -173,10 +173,8 @@ export default function ApplicationsReceived() {
       setOpenProgressModal(true);
       setOpenModal(false);
       await bulkUpdateGrantApplications({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        roundId: id!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        applications: applications!,
+        roundId: id as string,
+        applications: applications as GrantApplication[],
         selectedApplications: selected.filter(
           (application) => application.status !== "PENDING"
         ),
@@ -217,7 +215,11 @@ export default function ApplicationsReceived() {
             className="text-xs px-3 py-1 inline-block"
             disabled={isCsvExportLoading}
             onClick={() =>
-              handleExportCsvClick(utils.getAddress(id), chain.id, chain.name)
+              handleExportCsvClick(
+                getAddress(id),
+                chain?.id ?? 1,
+                chain?.name ?? ""
+              )
             }
           >
             {isCsvExportLoading ? (

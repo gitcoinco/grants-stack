@@ -14,14 +14,20 @@ jest.mock("common", () => ({
   graphql_fetch: jest.fn(),
 }));
 
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  usePublicClient: () => ({
+    getChainId: () => 5,
+  }),
+}));
+
 describe("listPrograms", () => {
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
-    // const address = "0x0"
     const expectedProgram = makeProgramData({
       chain: CHAINS[ChainId.GOERLI_CHAIN_ID],
     });
     const expectedPrograms: Program[] = [expectedProgram];
-    (graphql_fetch as jest.Mock).mockResolvedValue({
+    (graphql_fetch as jest.Mock).mockResolvedValueOnce({
       data: {
         programs: [
           {
@@ -45,14 +51,13 @@ describe("listPrograms", () => {
       },
     });
 
-    (fetchFromIPFS as jest.Mock).mockResolvedValue({
+    (fetchFromIPFS as jest.Mock).mockResolvedValueOnce({
       name: expectedProgram.metadata?.name,
     });
 
+    // @ts-expect-error Mock public client
     const actualPrograms = await listPrograms("0x0", {
-      getNetwork: async () =>
-        // @ts-expect-error Test file
-        Promise.resolve({ chainId: ChainId.GOERLI_CHAIN_ID }),
+      getChainId: async () => 5,
     });
 
     expect(actualPrograms).toEqual(expectedPrograms);
@@ -60,6 +65,10 @@ describe("listPrograms", () => {
 });
 
 describe("getProgramById", () => {
+  beforeAll(() => {
+    jest.clearAllMocks();
+  });
+
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
     const expectedProgram = makeProgramData({
       chain: CHAINS[ChainId.GOERLI_CHAIN_ID],
@@ -92,10 +101,9 @@ describe("getProgramById", () => {
       name: expectedProgram.metadata?.name,
     });
 
+    // @ts-expect-error Mock public client
     const actualProgram = await getProgramById(programId as string, {
-      getNetwork: async () =>
-        // @ts-expect-error Test file
-        Promise.resolve({ chainId: ChainId.GOERLI_CHAIN_ID }),
+      getChainId: async () => 5,
     });
 
     expect(actualProgram).toEqual(expectedProgram);

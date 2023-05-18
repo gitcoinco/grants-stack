@@ -1,7 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { InformationCircleIcon } from "@heroicons/react/solid";
-import { BigNumber, ethers } from "ethers";
-import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
@@ -9,15 +7,13 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
 import { ProgressStatus, Round } from "../api/types";
-import {
-  getTxExplorerForContract,
-  payoutTokens,
-} from "../api/utils";
+import { getTxExplorerForContract, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { classNames, useTokenPrice } from "common";
+import { formatEther, Hex, parseUnits, zeroAddress } from "viem";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -97,18 +93,16 @@ export default function FundContract(props: {
         t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
     )[0];
 
-  // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
   const tokenDetail = {
     addressOrName: props.roundId,
     token:
-      matchingFundPayoutToken?.address ===
-      "0x0000000000000000000000000000000000000000"
+      matchingFundPayoutToken?.address == (zeroAddress as Hex)
         ? undefined
         : matchingFundPayoutToken?.address,
   };
 
   const tokenDetailUser =
-    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+    matchingFundPayoutToken?.address == (zeroAddress as Hex)
       ? { addressOrName: address }
       : { addressOrName: address, token: matchingFundPayoutToken?.address };
 
@@ -142,9 +136,7 @@ export default function FundContract(props: {
   const protocolFeePercentage = (props.round?.protocolFeePercentage ?? 0) * 100;
   const combinedFees =
     ((roundFeePercentage + protocolFeePercentage) * matchingFunds) / 100;
-  const contractBalance = ethers.utils.formatEther(
-    balanceData?.value.toString() ?? "0"
-  );
+  const contractBalance = formatEther(balanceData?.value ?? BigInt(0));
   const totalAmountLeftToFund = (
     combinedFees +
     matchingFunds -
@@ -172,12 +164,12 @@ export default function FundContract(props: {
   function handleFundContract() {
     // check if signer has enough token balance
     const accountBalance = matchingFundPayoutTokenBalance?.value;
-    const tokenBalance = ethers.utils.parseUnits(
-      amountToFund,
-      matchingFundPayoutToken?.decimal
+    const tokenBalance = parseUnits(
+      amountToFund as `${number}`,
+      matchingFundPayoutToken?.decimal ?? 18
     );
 
-    if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
+    if (!accountBalance || tokenBalance > accountBalance) {
       setInsufficientBalance(true);
       return;
     } else {
@@ -534,7 +526,7 @@ export default function FundContract(props: {
         payoutToken: matchingFundPayoutToken!,
       });
     } catch (error) {
-      if (error === Logger.errors.TRANSACTION_REPLACED) {
+      if (error === "replaced") {
         setTransactionReplaced(true);
       } else {
         datadogLogs.logger.error(

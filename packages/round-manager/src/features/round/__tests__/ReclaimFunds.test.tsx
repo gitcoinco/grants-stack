@@ -8,33 +8,36 @@ import {
 } from "../../../test-utils";
 import ReclaimFunds from "../ReclaimFunds";
 import { ProgressStatus, Round } from "../../api/types";
-import { useBalance, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
+import {
+  useBalance,
+  useDisconnect,
+  useSwitchNetwork,
+  WagmiConfig,
+} from "wagmi";
 import ViewRoundPage from "../ViewRoundPage";
 import { useParams } from "react-router-dom";
 import { useTokenPrice } from "common";
+import { client } from "../../../app/wagmi";
 
-jest.mock("wagmi");
-jest.mock("../../common/Auth");
-
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+const mockRoundData: Round = makeRoundData();
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchNetwork: jest.fn(),
+  useBalance: jest.fn(),
+  useDisconnect: jest.fn(),
+  useAccount: () => ({
+    address: mockRoundData.operatorWallets![0],
+  }),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: jest.fn(),
-}));
-
-jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({
-    chain: {},
-    address: mockRoundData.operatorWallets![0],
-    provider: {
-      network: {
-        chainId: 1,
-      },
-    },
-  }),
 }));
 
 jest.mock("../../api/utils", () => ({
@@ -48,8 +51,6 @@ jest.mock("common", () => ({
 
 const chainId = "0";
 const roundId = "testRoundId";
-
-const mockRoundData: Round = makeRoundData();
 
 describe("ReclaimFunds", () => {
   it("displays NoInformationContent when round is not over", () => {
@@ -105,20 +106,19 @@ describe("ReclaimFunds", () => {
         loading: false,
       }));
 
-      (useSigner as jest.Mock).mockImplementation(() => ({
-        signer: {
-          getBalance: () => Promise.resolve("0"),
-        },
-      }));
-
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewRoundPage />, {
-                data: [mockRoundData],
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }),
+              wrapWithRoundContext(
+                <WagmiConfig config={client}>
+                  <ViewRoundPage />
+                </WagmiConfig>,
+                {
+                  data: [mockRoundData],
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }
+              ),
               { programs: [] }
             ),
             {
@@ -128,6 +128,7 @@ describe("ReclaimFunds", () => {
           )
         )
       );
+
       const fundContractTab = screen.getByTestId("reclaim-funds");
       fireEvent.click(fundContractTab);
 

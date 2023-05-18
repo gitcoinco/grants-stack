@@ -41,12 +41,12 @@ describe("Wait for subgraph to sync", () => {
   const pollIntervalInMs = 0; // decrease polling interval for shorter test runs
 
   it("resolves when the current block number is greater than to the desired block number", async () => {
-    const desiredBlockNumber = 5000;
+    const desiredBlockNumber = 5000n;
     (graphql_fetch as jest.Mock).mockResolvedValue({
       data: {
         _meta: {
           block: {
-            number: desiredBlockNumber + 1000,
+            number: desiredBlockNumber + 1000n,
             hash: "somehash",
           },
         },
@@ -59,13 +59,13 @@ describe("Wait for subgraph to sync", () => {
   });
 
   it("keeps polling until the current block number is greater than or equal to the desired block number", async () => {
-    const desiredBlockNumber = 5000;
+    const desiredBlockNumber = 5000n;
     (graphql_fetch as jest.Mock)
       .mockResolvedValueOnce({
         data: {
           _meta: {
             block: {
-              number: desiredBlockNumber - 1000,
+              number: desiredBlockNumber - 1000n,
               hash: "somehash",
             },
           },
@@ -75,7 +75,7 @@ describe("Wait for subgraph to sync", () => {
         data: {
           _meta: {
             block: {
-              number: desiredBlockNumber - 500,
+              number: desiredBlockNumber - 500n,
               hash: "somehash",
             },
           },

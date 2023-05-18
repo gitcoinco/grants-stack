@@ -1,30 +1,6 @@
-/**
- * Supported EVM networks
- */
-import { Signer } from "@ethersproject/abstract-signer";
-import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
-
-export type Network = "goerli" | "optimism";
-
-export interface Web3Instance {
-  /**
-   * Currently selected address in ETH format i.e 0x...
-   */
-  address: string;
-  /**
-   * Chain ID & name of the currently connected network
-   */
-  chain: {
-    id: number;
-    name: string;
-    network: Network;
-  };
-  provider: Web3Provider;
-  signer?: Signer;
-}
+import { Abi } from "abitype";
 
 export enum StorageProtocolID {
   IPFS = 1,
@@ -33,7 +9,6 @@ export enum StorageProtocolID {
 export interface MetadataPointer {
   /**
    * The decentralized storage protocol
-   * Read more here: https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/MetaPtrProtocol.md
    */
   protocol: StorageProtocolID;
   /**
@@ -67,7 +42,7 @@ export interface Contract {
   /**
    * Contract ABI in Human Readable ABI format
    */
-  abi: Array<string>;
+  abi: Abi;
   /**
    * Contract ABI in binary format
    */
@@ -245,8 +220,8 @@ export type MatchingStatsData = {
   matchPoolPercentage: number;
   projectId: string;
   applicationId: string;
-  matchAmountInToken: BigNumber;
-  originalMatchAmountInToken: BigNumber;
+  matchAmountInToken: bigint;
+  originalMatchAmountInToken: bigint;
   projectPayoutAddress: string;
   status?: string;
   hash?: string;
@@ -289,12 +264,6 @@ export type ProjectMetadata = {
   projectGithub?: string;
   credentials?: ProjectCredentials;
   owners: ProjectOwner[];
-};
-
-export type RoundProject = {
-  id: string;
-  status: ApplicationStatus;
-  payoutAddress: string;
 };
 
 export interface GrantApplication {
@@ -395,7 +364,7 @@ export type Project = {
 };
 
 export type TransactionBlock = {
-  transactionBlockNumber: number;
+  transactionBlockNumber: bigint;
   error?: unknown;
 };
 

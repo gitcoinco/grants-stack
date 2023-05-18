@@ -1,9 +1,9 @@
 import { ProgressStatus, Round } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
-import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
+import { PublicClient } from "viem";
+import { useAccount, useChainId, usePublicClient } from "wagmi";
 
 export interface RoundState {
   data: Round[];
@@ -37,7 +37,7 @@ export const RoundContext = createContext<
 const fetchRounds = async (
   dispatch: Dispatch,
   address: string,
-  walletProvider: Web3Provider,
+  publicClient: PublicClient,
   programId: string
 ) => {
   datadogLogs.logger.info(`fetchRounds: program - ${programId}`);
@@ -48,7 +48,7 @@ const fetchRounds = async (
   });
 
   try {
-    const { rounds } = await listRounds(address, walletProvider, programId);
+    const { rounds } = await listRounds(address, publicClient, programId);
     dispatch({ type: ActionType.SET_ROUNDS, payload: rounds });
     dispatch({
       type: ActionType.SET_FETCH_ROUNDS_STATUS,
@@ -68,8 +68,8 @@ const fetchRounds = async (
 
 const fetchRoundById = async (
   dispatch: Dispatch,
-  walletProvider: Web3Provider,
-  roundId: string
+  roundId: string,
+  publicClient: PublicClient
 ) => {
   datadogLogs.logger.info(`fetchRoundById: round - ${roundId}`);
 
@@ -79,7 +79,7 @@ const fetchRoundById = async (
   });
 
   try {
-    const round = await getRoundById(walletProvider, roundId);
+    const round = await getRoundById(publicClient, roundId);
     dispatch({ type: ActionType.SET_ROUNDS, payload: [round] });
     dispatch({
       type: ActionType.SET_FETCH_ROUNDS_STATUS,
@@ -138,13 +138,14 @@ export const useRounds = (programId?: string) => {
   if (context === undefined) {
     throw new Error("useRounds must be used within a RoundProvider");
   }
-  const { address, provider } = useWallet();
+  const { address } = useAccount();
+  const publicClient = usePublicClient();
 
   useEffect(() => {
     if (programId) {
-      fetchRounds(context.dispatch, address, provider, programId);
+      fetchRounds(context.dispatch, address ?? "", publicClient, programId);
     }
-  }, [address, provider, programId, context.dispatch]);
+  }, [address, publicClient, programId, context.dispatch]);
 
   return { ...context.state, dispatch: context.dispatch };
 };
@@ -154,20 +155,20 @@ export const useRoundById = (roundId?: string) => {
   if (context === undefined) {
     throw new Error("useRounds must be used within a RoundProvider");
   }
-  const { provider } = useWallet();
+  const chainId = useChainId();
+  const publicClient = usePublicClient();
 
   useEffect(() => {
     if (roundId) {
       const existingRound = context.state.data.find(
-        (round) =>
-          round.id === roundId && round.chainId === provider.network.chainId
+        (round) => round.id === roundId && round.chainId === chainId
       );
 
       if (!existingRound?.token) {
-        fetchRoundById(context.dispatch, provider, roundId);
+        fetchRoundById(context.dispatch, roundId, publicClient);
       }
     }
-  }, [provider, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [publicClient, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const round = context.state.data.find((round) => round.id === roundId);
   return {

@@ -8,25 +8,38 @@ import {
   useCreateProgram,
 } from "../CreateProgramContext";
 import { faker } from "@faker-js/faker";
-
-const mockWallet = {
-  address: "0x0",
-  signer: {
-    getChainId: () => {
-      /* do nothing.*/
-    },
-  },
-};
+import { WagmiConfig } from "wagmi";
+import { client } from "../../../app/wagmi";
 
 jest.mock("../../../features/api/program");
 jest.mock("../../../features/api/ipfs");
 jest.mock("../../../features/api/subgraph");
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
-jest.mock("wagmi");
+
 jest.mock("@rainbow-me/rainbowkit", () => ({
+  ...jest.requireActual("@rainbow-me/rainbowkit"),
   ConnectButton: jest.fn(),
+}));
+
+jest.mock("@wagmi/core", () => ({
+  ...jest.requireActual("@wagmi/core"),
+  getNetwork: () => ({
+    chain: {
+      id: 1,
+    },
+  }),
+}));
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchNetwork: jest.fn(),
+  useBalance: jest.fn(),
+  useAccount: jest.fn(),
+  useDisconnect: jest.fn(),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
 }));
 
 describe("<CreateProgramProvider />", () => {
@@ -87,7 +100,6 @@ describe("<CreateProgramProvider />", () => {
 
       const createContract = screen.getByTestId("create-program");
       fireEvent.click(createContract);
-
       expect(
         await screen.findByTestId(
           `deploying-status-is-${ProgressStatus.IN_PROGRESS}`
@@ -333,5 +345,9 @@ const TestUseCreateProgramComponent = () => {
 };
 
 function renderWithProvider(ui: JSX.Element) {
-  render(<CreateProgramProvider>{ui}</CreateProgramProvider>);
+  render(
+    <WagmiConfig config={client}>
+      <CreateProgramProvider>{ui}</CreateProgramProvider>
+    </WagmiConfig>
+  );
 }

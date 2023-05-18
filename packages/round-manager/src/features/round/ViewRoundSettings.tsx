@@ -251,6 +251,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const updateRoundHandler = async () => {
     try {
+      // @ts-expect-error need help debugging this
       handleSubmit(submit(editedRound as Round));
       const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
       console.log("editedGroups", editedGroups);

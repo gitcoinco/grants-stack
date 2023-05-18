@@ -1,5 +1,4 @@
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-import { BigNumber, ethers } from "ethers";
 import {
   ApplicationMetadata,
   IPFSObject,
@@ -8,6 +7,7 @@ import {
   Program,
 } from "./types";
 import { RedstoneTokenIds } from "common";
+import { formatUnits, Hex, zeroAddress } from "viem";
 
 export enum ChainId {
   MAINNET = 1,
@@ -22,34 +22,34 @@ export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
     name: "Mainnet", // TODO get canonical network names
-    logo: "./logos/ethereum-eth-logo.svg",
+    logo: "/logos/ethereum-eth-logo.svg",
   },
   [ChainId.GOERLI_CHAIN_ID]: {
     id: ChainId.GOERLI_CHAIN_ID,
     name: "Goerli", // TODO get canonical network names
-    logo: "./logos/ethereum-eth-logo.svg",
+    logo: "/logos/ethereum-eth-logo.svg",
   },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     name: "Optimism",
-    logo: "./logos/optimism-logo.svg",
+    logo: "/logos/optimism-logo.svg",
   },
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
     id: ChainId.FANTOM_MAINNET_CHAIN_ID,
     name: "Fantom",
-    logo: "./logos/fantom-logo.svg",
+    logo: "/logos/fantom-logo.svg",
   },
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: {
     id: ChainId.FANTOM_TESTNET_CHAIN_ID,
     name: "Fantom Testnet",
-    logo: "./logos/fantom-logo.svg",
+    logo: "/logos/fantom-logo.svg",
   },
 };
 
 export type PayoutToken = {
   name: string;
   chainId: number;
-  address: string;
+  address: Hex;
   logo?: string;
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
   redstoneTokenId?: string;
@@ -63,11 +63,11 @@ export type SupportType = {
 };
 
 export const TokenNamesAndLogos: Record<string, string> = {
-  FTM: "./logos/fantom-logo.svg",
-  BUSD: "./logos/busd-logo.svg",
-  DAI: "./logos/dai-logo.svg",
-  ETH: "./logos/ethereum-eth-logo.svg",
-  OP: "./logos/optimism-logo.svg",
+  FTM: "/logos/fantom-logo.svg",
+  BUSD: "/logos/busd-logo.svg",
+  DAI: "/logos/dai-logo.svg",
+  ETH: "/logos/ethereum-eth-logo.svg",
+  OP: "/logos/optimism-logo.svg",
 };
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -82,7 +82,7 @@ const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.MAINNET,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -101,7 +101,7 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -120,7 +120,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "FTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
     redstoneTokenId: RedstoneTokenIds["FTM"],
@@ -163,7 +163,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.GOERLI_CHAIN_ID,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -204,7 +204,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         {
           name: "ETH",
           chainId: ChainId.MAINNET,
-          address: ethers.constants.AddressZero,
+          address: zeroAddress,
           logo: TokenNamesAndLogos["ETH"],
           decimal: 18,
         },
@@ -222,7 +222,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         {
           name: "ETH",
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-          address: ethers.constants.AddressZero,
+          address: zeroAddress,
           logo: TokenNamesAndLogos["ETH"],
           decimal: 18,
         },
@@ -240,7 +240,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         {
           name: "FTM",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: ethers.constants.AddressZero,
+          address: zeroAddress,
           logo: TokenNamesAndLogos["FTM"],
           decimal: 18,
         },
@@ -291,7 +291,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         {
           name: "ETH",
           chainId: ChainId.GOERLI_CHAIN_ID,
-          address: ethers.constants.AddressZero,
+          address: zeroAddress,
           logo: TokenNamesAndLogos["ETH"],
           decimal: 18,
         },
@@ -412,11 +412,13 @@ export interface ApplicationSchema {
  * @returns The application schema
  */
 export const generateApplicationSchema = (
-  questions: ApplicationMetadata["questions"],
+  questions: SchemaQuestion[],
   requirements: ApplicationMetadata["requirements"]
 ): ApplicationSchema => {
   const schema = { questions: new Array<SchemaQuestion>(), requirements };
-  if (!questions) return schema;
+  if (!questions) {
+    return schema;
+  }
 
   schema.questions = questions.map((question, index) => {
     return {
@@ -479,11 +481,11 @@ export const getTxExplorerForContract = (
 export const generateMerkleTree = (
   matchingResults: MatchingStatsData[]
 ): {
-  distribution: [number, string, BigNumber, string][];
-  tree: StandardMerkleTree<[number, string, BigNumber, string]>;
+  distribution: [number, string, bigint, string][];
+  tree: StandardMerkleTree<[number, string, bigint, string]>;
   matchingResults: MatchingStatsData[];
 } => {
-  const distribution: [number, string, BigNumber, string][] = [];
+  const distribution: [number, string, bigint, string][] = [];
 
   matchingResults.forEach((matchingResult, index) => {
     matchingResults[index].index = index;
@@ -507,13 +509,11 @@ export const generateMerkleTree = (
 };
 
 export const formatCurrency = (
-  value: BigNumber,
+  value: bigint,
   decimal: number,
   fraction?: number
 ) => {
-  return parseFloat(
-    ethers.utils.formatUnits(value.toString(), decimal)
-  ).toLocaleString("en-US", {
+  return parseFloat(formatUnits(value, decimal)).toLocaleString("en-US", {
     maximumFractionDigits: fraction || 3,
   });
 };

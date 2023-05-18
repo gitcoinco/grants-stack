@@ -14,8 +14,7 @@ import React, {
 import { updateApplicationStatuses } from "../../features/api/application";
 import { datadogLogs } from "@datadog/browser-logs";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
-import { Signer } from "@ethersproject/abstract-signer";
-import { useWallet } from "../../features/common/Auth";
+import { useWalletClient, WalletClient } from "wagmi";
 
 export interface BulkUpdateGrantApplicationState {
   roundId: string;
@@ -108,7 +107,7 @@ export const BulkUpdateGrantApplicationProvider = ({
 };
 
 interface bulkUpdateGrantApplicationParams {
-  signer: Signer;
+  walletClient: WalletClient;
   context: BulkUpdateGrantApplicationState;
   roundId: string;
   applications: GrantApplication[];
@@ -180,7 +179,7 @@ function createFullRow(statuses: Status[]) {
 }
 
 async function _bulkUpdateGrantApplication({
-  signer,
+  walletClient,
   context,
   roundId,
   applications,
@@ -224,13 +223,17 @@ async function _bulkUpdateGrantApplication({
     }
 
     const transactionBlockNumber = await updateContract({
-      signer,
+      walletClient,
       roundId,
       statusRows,
       context,
     });
 
-    await waitForSubgraphToUpdate(signer, transactionBlockNumber, context);
+    await waitForSubgraphToUpdate(
+      walletClient,
+      transactionBlockNumber,
+      context
+    );
   } catch (error) {
     datadogLogs.logger.error(`error: _bulkUpdateGrantApplication - ${error}`);
     console.error("_bulkUpdateGrantApplication: ", error);
@@ -247,14 +250,16 @@ export const useBulkUpdateGrantApplications = () => {
     );
   }
 
-  const { signer } = useWallet();
-
+  const { data: walletClient } = useWalletClient();
+  if (walletClient == undefined) {
+    throw new Error("WalletClient is not connected");
+  }
   const handleBulkUpdateGrantApplications = async (
     params: BulkUpdateGrantApplicationParams
   ) => {
     return _bulkUpdateGrantApplication({
       ...params,
-      signer: signer as Signer,
+      walletClient,
       context,
     });
   };
@@ -267,18 +272,18 @@ export const useBulkUpdateGrantApplications = () => {
 };
 
 interface UpdateContractParams {
-  signer: Signer;
+  walletClient: WalletClient;
   roundId: string;
   statusRows: AppStatus[];
   context: BulkUpdateGrantApplicationState;
 }
 
 const updateContract = async ({
-  signer,
+  walletClient,
   roundId,
   statusRows,
   context,
-}: UpdateContractParams): Promise<number> => {
+}: UpdateContractParams): Promise<bigint> => {
   const { setContractUpdatingStatus } = context;
 
   try {
@@ -286,7 +291,7 @@ const updateContract = async ({
 
     const { transactionBlockNumber } = await updateApplicationStatuses(
       roundId,
-      signer,
+      walletClient,
       statusRows
     );
 
@@ -302,8 +307,8 @@ const updateContract = async ({
 };
 
 async function waitForSubgraphToUpdate(
-  signerOrProvider: Signer,
-  transactionBlockNumber: number,
+  walletClient: WalletClient,
+  transactionBlockNumber: bigint,
   context: BulkUpdateGrantApplicationState
 ) {
   const { setIndexingStatus } = context;
@@ -315,7 +320,7 @@ async function waitForSubgraphToUpdate(
 
     setIndexingStatus(ProgressStatus.IN_PROGRESS);
 
-    const chainId = await signerOrProvider.getChainId();
+    const chainId = await walletClient.getChainId();
 
     await waitForSubgraphSyncTo(chainId, transactionBlockNumber);
 

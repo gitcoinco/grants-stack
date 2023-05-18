@@ -1,50 +1,49 @@
-import { Signer } from "@ethersproject/abstract-signer";
-import { ethers } from "ethers";
 import { qfVotingStrategyFactoryContract } from "../contracts";
+import { WalletClient } from "wagmi";
+import { decodeEventLog, getContract, Hex } from "viem";
+import { waitForTransaction } from "@wagmi/core";
+import QFVotingStrategyFactoryABI from "../abi/votingStrategy/QFVotingStrategyFactoryABI";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
  * create on QuadraticFundingVotingStrategyFactory contract
  *
- * @param signerOrProvider
+ * @param walletClient
+ * @param publicClient
  * @returns
  */
 export const deployQFVotingContract = async (
-  signerOrProvider: Signer
+  walletClient: WalletClient
 ): Promise<{ votingContractAddress: string }> => {
   try {
-    const chainId = await signerOrProvider.getChainId();
+    const chainId = await walletClient.getChainId();
 
     const _QFVotingStrategyFactory = qfVotingStrategyFactoryContract(chainId); //roundFactoryContract(chainId);
-    const qfVotingStrategyFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _QFVotingStrategyFactory.address!,
-      _QFVotingStrategyFactory.abi,
-      signerOrProvider
-    );
+    const qfVotingStrategyFactory = getContract({
+      address: _QFVotingStrategyFactory.address as Hex,
+      abi: QFVotingStrategyFactoryABI,
+      walletClient,
+    });
 
-    // Deploy a new QF Voting Strategy contract
-    const tx = await qfVotingStrategyFactory.create();
+    const txHash = await qfVotingStrategyFactory.write.create();
 
-    const receipt = await tx.wait();
+    const receipt = await waitForTransaction({
+      hash: txHash,
+    });
 
-    let votingContractAddress;
+    let votingContractAddress = "";
+    receipt.logs
+      .map((log) => decodeEventLog({ ...log, abi: QFVotingStrategyFactoryABI }))
+      .find((log) => {
+        if (log.eventName === "VotingContractCreated") {
+          votingContractAddress = log.args.votingContractAddress as string;
+        }
+      });
 
-    if (receipt.events) {
-      const event = receipt.events.find(
-        (e: { event: string }) => e.event === "VotingContractCreated"
-      );
-      if (event && event.args) {
-        votingContractAddress = event.args.votingContractAddress;
-      }
-    } else {
-      throw new Error("No VotingContractCreated event");
-    }
-
-    console.log("✅ Voting Contract Transaction hash: ", tx.hash);
+    console.log("✅ Voting Contract Transaction hash: ", txHash);
     console.log("✅ Voting Contract address: ", votingContractAddress);
 
-    return { votingContractAddress };
+    return { votingContractAddress: votingContractAddress };
   } catch (error) {
     console.error("deployQFVotingContract", error);
     throw new Error("Unable to create QF voting contract");

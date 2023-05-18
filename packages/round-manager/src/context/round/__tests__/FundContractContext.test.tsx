@@ -11,19 +11,11 @@ import {
   FundContractProvider,
   useFundContract,
 } from "../FundContractContext";
+import { client } from "../../../app/wagmi";
+import { WagmiConfig } from "wagmi";
 
-jest.mock("wagmi");
 jest.mock("../../../features/api/subgraph");
 jest.mock("../../../features/api/application");
-
-const mockSigner = {
-  getChainId: () => {
-    /* do nothing.*/
-  },
-};
-jest.mock("wagmi", () => ({
-  useSigner: () => ({ data: mockSigner }),
-}));
 
 const testParams: FundContractParams = {
   roundId: "testRoundId",
@@ -100,10 +92,10 @@ describe("useFundContract Errors", () => {
 
   it("sets indexing status to error when indexing fails", async () => {
     (approveTokenOnContract as jest.Mock).mockResolvedValue({
-      transactionBlockNumber: faker.random.numeric(),
+      transactionBlockNumber: faker.string.numeric(),
     });
     (fundRoundContract as jest.Mock).mockResolvedValue({
-      transactionBlockNumber: faker.random.numeric(),
+      transactionBlockNumber: faker.string.numeric(),
     });
     (waitForSubgraphSyncTo as jest.Mock).mockRejectedValue(new Error(":("));
 
@@ -118,7 +110,7 @@ describe("useFundContract Errors", () => {
 
   it("if fund fails, resets fund status when fund contract is retried", async () => {
     (approveTokenOnContract as jest.Mock).mockResolvedValue({
-      transactionBlockNumber: faker.random.numeric(),
+      transactionBlockNumber: faker.string.numeric(),
     });
     (fundRoundContract as jest.Mock)
       .mockRejectedValueOnce(new Error(":("))
@@ -142,10 +134,10 @@ describe("useFundContract Errors", () => {
 
   it("if indexing fails, resets indexing status when fund contract is retried", async () => {
     (approveTokenOnContract as jest.Mock).mockResolvedValue({
-      transactionBlockNumber: faker.random.numeric(),
+      transactionBlockNumber: faker.string.numeric(),
     });
     (fundRoundContract as jest.Mock).mockResolvedValue({
-      transactionBlockNumber: faker.random.numeric(),
+      transactionBlockNumber: faker.string.numeric(),
     });
     (waitForSubgraphSyncTo as jest.Mock)
       .mockRejectedValueOnce(new Error(":("))
@@ -192,5 +184,9 @@ const TestUseFundContractComponent = (params: FundContractParams) => {
 };
 
 function renderWithProvider(ui: JSX.Element) {
-  render(<FundContractProvider>{ui}</FundContractProvider>);
+  render(
+    <WagmiConfig config={client}>
+      <FundContractProvider>{ui}</FundContractProvider>
+    </WagmiConfig>
+  );
 }

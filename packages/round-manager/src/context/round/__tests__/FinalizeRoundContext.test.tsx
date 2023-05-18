@@ -8,24 +8,18 @@ import {
   FinalizeRoundProvider,
   useFinalizeRound,
 } from "../FinalizeRoundContext";
+import { client } from "../../../app/wagmi";
+import { WagmiConfig } from "wagmi";
 
-const mockWallet = {
-  address: "0x0",
-  signer: {
-    getChainId: () => {
-      /* do nothing.*/
-    },
-  },
-};
 jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
 jest.mock("../../../features/api/round");
 jest.mock("../../../features/api/ipfs");
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useWalletClient: () => ({
+    data: {},
+  }),
 }));
 
 describe("<FinalizeRoundProvider />", () => {
@@ -45,7 +39,6 @@ describe("<FinalizeRoundProvider />", () => {
 
       const finalizeRound = screen.getByTestId("finalize-round");
       fireEvent.click(finalizeRound);
-
       expect(
         await screen.findByTestId(
           `storing-status-is-${ProgressStatus.IN_PROGRESS}`
@@ -184,5 +177,9 @@ const TestUseFinalizeRoundComponent = () => {
 };
 
 function renderWithProvider(ui: JSX.Element) {
-  render(<FinalizeRoundProvider>{ui}</FinalizeRoundProvider>);
+  render(
+    <WagmiConfig config={client}>
+      <FinalizeRoundProvider>{ui}</FinalizeRoundProvider>
+    </WagmiConfig>
+  );
 }

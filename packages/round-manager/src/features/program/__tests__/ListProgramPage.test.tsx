@@ -3,18 +3,6 @@ import { screen } from "@testing-library/react";
 import { makeProgramData, renderWithProgramContext } from "../../../test-utils";
 import { ProgressStatus } from "../../api/types";
 
-jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({
-    chain: {},
-    address: "0x0",
-    provider: { getNetwork: () => ({ chainId: "0" }) },
-  }),
-}));
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
-
 describe("<ListProgramPage />", () => {
   it("does not render a list of programs when no programs have been created", () => {
     renderWithProgramContext(<ListProgramPage />, {

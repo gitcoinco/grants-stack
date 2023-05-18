@@ -9,8 +9,8 @@ describe("<FormStepper />", () => {
   });
 
   describe("when currentStep is past the first step", () => {
-    const stepsCount = faker.datatype.number({ min: 2 });
-    const currentStep = faker.datatype.number({ min: 2, max: stepsCount });
+    const stepsCount = faker.number.int({ min: 2 });
+    const currentStep = faker.number.int({ min: 2, max: stepsCount });
 
     it("should display a Previous button when currentStep > 1", () => {
       const testFormStepperProps: FormStepperProps = {
@@ -43,8 +43,8 @@ describe("<FormStepper />", () => {
   });
 
   describe("when currentStep is not the last step", () => {
-    const stepsCount = faker.datatype.number({ min: 2 });
-    const currentStep = faker.datatype.number({ min: 1, max: stepsCount - 1 });
+    const stepsCount = faker.number.int({ min: 2 });
+    const currentStep = faker.number.int({ min: 1, max: stepsCount - 1 });
     const testFormStepperProps: FormStepperProps = {
       currentStep,
       stepsCount,
@@ -72,7 +72,7 @@ describe("<FormStepper />", () => {
   });
 
   describe("when currentStep is the last step", () => {
-    const stepsCount = faker.datatype.number({ min: 1 });
+    const stepsCount = faker.number.int({ min: 1 });
     const currentStep = stepsCount;
     const testFormStepperProps: FormStepperProps = {
       currentStep,

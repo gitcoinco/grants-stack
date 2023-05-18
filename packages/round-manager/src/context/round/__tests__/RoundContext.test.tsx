@@ -4,23 +4,10 @@ import { render, screen } from "@testing-library/react";
 import { makeRoundData } from "../../../test-utils";
 import { getRoundById, listRounds } from "../../../features/api/round";
 import { ProgressStatus, Round } from "../../../features/api/types";
+import { WagmiConfig } from "wagmi";
+import { client } from "../../../app/wagmi";
 
 jest.mock("../../../features/api/round");
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
-const mockWallet = {
-  address: "0x0",
-  signer: {
-    getChainId: () => {
-      /* do nothing.*/
-    },
-  },
-};
 
 describe("<RoundProvider />", () => {
   beforeEach(() => {
@@ -139,10 +126,12 @@ describe("<RoundProvider />", () => {
       );
 
       render(
-        <RoundProvider>
-          {/*// @ts-expect-error test file*/}
-          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        <WagmiConfig config={client}>
+          <RoundProvider>
+            {/*// @ts-expect-error test file*/}
+            <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
+          </RoundProvider>
+        </WagmiConfig>
       );
 
       expect(

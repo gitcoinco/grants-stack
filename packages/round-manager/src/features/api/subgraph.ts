@@ -21,7 +21,7 @@ export async function getCurrentSubgraphBlockNumber(
 
 export async function waitForSubgraphSyncTo(
   chainId: number,
-  blockNumber: number,
+  blockNumber: bigint,
   pollIntervalInMs = 1000
 ): Promise<number> {
   let currentBlockNumber = await getCurrentSubgraphBlockNumber(chainId);

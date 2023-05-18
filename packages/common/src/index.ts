@@ -203,7 +203,7 @@ export const graphql_fetch = async (
  * @param chainId Chain ID
  * @returns
  */
-export function fetchProjectPaidInARound(
+export function useFetchProjectPaidInRound(
   roundId: string,
   chainId: ChainId
 ): Promise<Payout[]> {
@@ -363,43 +363,45 @@ export const RedstoneTokenIds: Record<string, string> = {
   ETH: "ETH",
 };
 
-export const useTokenPrice = (tokenId: string|undefined) => {
+export const useTokenPrice = (tokenId: string | undefined) => {
   const [tokenPrice, setTokenPrice] = useState<number>();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
 
-  if (!tokenId) return {
-    data: 0,
-    error,
-    loading,
-  };
+  if (!tokenId)
+    return {
+      data: 0,
+      error,
+      loading,
+    };
 
   useMemo(async () => {
     setLoading(true);
 
     const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
-    fetch(tokenPriceEndpoint).then(resp => {
-      if (resp.ok) {
-        return resp.json();
-      } else {
-        setError(resp);
+    fetch(tokenPriceEndpoint)
+      .then((resp) => {
+        if (resp.ok) {
+          return resp.json();
+        } else {
+          setError(resp);
+          setLoading(false);
+        }
+      })
+      .then((data) => {
+        if (data) {
+          setTokenPrice(data[0].value);
+        } else {
+          setError(data);
+        }
+
         setLoading(false);
-      }
-    }).then(data => {
-
-      if (data) {
-        setTokenPrice(data[0].value);
-      } else {
-        setError(data);
-      }
-
-      setLoading(false);
-    }).catch((err) => {
-      console.log("error fetching token price", { err });
-      setError(err);
-      setLoading(false);
-    });
-
+      })
+      .catch((err) => {
+        console.log("error fetching token price", { err });
+        setError(err);
+        setLoading(false);
+      });
   }, [tokenId]);
 
   return {

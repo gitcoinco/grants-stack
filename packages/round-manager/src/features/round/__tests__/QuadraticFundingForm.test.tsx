@@ -3,24 +3,17 @@ import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
 
 import { ChainId, getPayoutTokenOptions } from "../../api/utils";
-import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import QuadraticFundingForm from "../QuadraticFundingForm";
+import { useChainId } from "wagmi";
 
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
-
-jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useChainId: jest.fn(),
 }));
 
 beforeEach(() => {
-  (useWallet as jest.Mock).mockReturnValue({
-    chain: { id: ChainId.GOERLI_CHAIN_ID },
-  });
+  (useChainId as jest.Mock).mockReturnValue(5);
 });
 
 describe("<QuadraticFundingForm />", () => {
@@ -123,6 +116,7 @@ describe("<QuadraticFundingForm />", () => {
     });
     fireEvent.click(screen.getByText("Launch"));
     const errors = await screen.findByTestId("matching-cap-error");
+
     expect(errors).toBeInTheDocument();
     expect(errors).toHaveTextContent(
       "Matching cap amount must be more than zero."
@@ -131,9 +125,10 @@ describe("<QuadraticFundingForm />", () => {
   it("shows validation error message if matching cap amount is > 100", async () => {
     fireEvent.click(screen.getByTestId("matching-cap-true"));
     fireEvent.change(screen.getByTestId("matching-cap-percent"), {
-      target: { value: "101" },
+      target: { value: "200" },
     });
     fireEvent.click(screen.getByText("Launch"));
+
     const errors = await screen.findByTestId("matching-cap-error");
     expect(errors).toBeInTheDocument();
     expect(errors).toHaveTextContent(

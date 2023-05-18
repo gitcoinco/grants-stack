@@ -4,33 +4,37 @@ import { faker } from "@faker-js/faker";
 import { RoundDetailForm } from "../RoundDetailForm";
 import ApplicationEligibilityForm from "../ApplicationEligibilityForm";
 import { RoundApplicationForm } from "../RoundApplicationForm";
-import { useWallet } from "../../common/Auth";
 import * as FormWizardImport from "../../common/FormWizard";
 import { fireEvent, screen } from "@testing-library/react";
 import QuadraticFundingForm from "../QuadraticFundingForm";
+import { useAccount } from "wagmi";
+import { useSearchParams } from "react-router-dom";
 
 jest.mock("../../common/Navbar");
-jest.mock("../../common/Auth");
 const formWizardSpy = jest.spyOn(FormWizardImport, "FormWizard");
 
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useAccount: jest.fn(),
+}));
+
 const programId = faker.finance.ethereumAddress();
-const useParamsFn = () => [
-  {
-    get: () => programId,
-  },
-];
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useSearchParams: useParamsFn,
+  useSearchParams: jest.fn(),
 }));
 
 describe("<CreateRoundPage />", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: {},
+    (useAccount as jest.Mock).mockReturnValue({
       address: "0x0",
-      provider: { getNetwork: () => ({ chainId: "0x0" }) },
     });
+
+    (useSearchParams as jest.Mock).mockReturnValue([
+      {
+        get: () => programId,
+      },
+    ]);
   });
 
   it("sends program to form wizard", () => {
@@ -63,6 +67,7 @@ describe("<CreateRoundPage />", () => {
   });
 
   it("sends program matching search query to form wizard", () => {
+    jest.clearAllMocks();
     const programToChoose = makeProgramData({ id: programId });
     const programs = [makeProgramData(), programToChoose, makeProgramData()];
 

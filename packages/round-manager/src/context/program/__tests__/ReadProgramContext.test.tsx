@@ -8,23 +8,7 @@ import { makeProgramData } from "../../../test-utils";
 import { getProgramById, listPrograms } from "../../../features/api/program";
 import { Program, ProgressStatus } from "../../../features/api/types";
 
-const mockWallet = {
-  address: "0x0",
-  signer: {
-    getChainId: () => {
-      /* do nothing.*/
-    },
-  },
-};
-
 jest.mock("../../../features/api/program");
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 describe("<ReadProgramProvider />", () => {
   beforeEach(() => {

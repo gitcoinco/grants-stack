@@ -4,7 +4,7 @@ import {
   render,
   screen,
   waitFor,
-  within
+  within,
 } from "@testing-library/react";
 import { randomInt } from "crypto";
 import { act } from "react-dom/test-utils";
@@ -12,7 +12,7 @@ import { MemoryRouter } from "react-router-dom";
 import {
   CreateRoundContext,
   CreateRoundState,
-  initialCreateRoundState
+  initialCreateRoundState,
 } from "../../../context/round/CreateRoundContext";
 import { saveToIPFS } from "../../api/ipfs";
 import { deployMerklePayoutStrategyContract } from "../../api/payoutStrategy/merklePayoutStrategy";
@@ -20,49 +20,48 @@ import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import { ApplicationMetadata, ProgressStatus } from "../../api/types";
 import { deployQFVotingContract } from "../../api/votingStrategy/qfVotingStrategy";
-import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
   initialQuestions,
-  RoundApplicationForm
+  RoundApplicationForm,
 } from "../RoundApplicationForm";
+import { useAccount, useChainId, useNetwork, WagmiConfig } from "wagmi";
+import { client as WagmiClient } from "../../../app/wagmi";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
 jest.mock("../../api/subgraph");
-jest.mock("../../common/Auth");
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy");
 jest.mock("../../api/votingStrategy/qfVotingStrategy");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
-
-jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
-}));
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
 const randomMetadata = {
-  name: faker.random.word(),
+  name: faker.lorem.word(),
 };
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
+  useNetwork: jest.fn(),
+  useChainId: jest.fn(),
+  useAccount: jest.fn(),
+}));
 
 describe("<RoundApplicationForm />", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: { name: "my blockchain" },
-      provider: {
-        getNetwork: () => ({
-          chainId: 0,
-        }),
-      },
-      signer: {
-        getChainId: () => 0,
-      },
+    (useNetwork as jest.Mock).mockReturnValue({
+      name: "my blockchain",
+    });
+    (useChainId as jest.Mock).mockReturnValue(0);
+    (useAccount as jest.Mock).mockReturnValue({
       address: "0x0",
     });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
@@ -217,16 +216,11 @@ describe("<RoundApplicationForm />", () => {
 
 describe("Application Form Builder", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: { name: "my blockchain" },
-      provider: {
-        getNetwork: () => ({
-          chainId: 0,
-        }),
-      },
-      signer: {
-        getChainId: () => 0,
-      },
+    (useNetwork as jest.Mock).mockReturnValue({
+      name: "my blockchain",
+    });
+    (useChainId as jest.Mock).mockReturnValue(0);
+    (useAccount as jest.Mock).mockReturnValue({
       address: "0x0",
     });
   });
@@ -415,9 +409,7 @@ describe("Application Form Builder", () => {
         fireEvent.click(save);
       }
 
-      const encryptionToggleLabels = screen.getAllByText(
-        "Encrypted"
-      );
+      const encryptionToggleLabels = screen.getAllByText("Encrypted");
 
       expect(encryptionToggleLabels.length).toBe(1);
     });
@@ -493,9 +485,7 @@ describe("Application Form Builder", () => {
       // 8. Funding Source Optional
       // 9. Team Size Optional
 
-      const requiredToggleLabels = screen.getAllByText(
-        "*Required"
-      );
+      const requiredToggleLabels = screen.getAllByText("*Required");
 
       expect(requiredToggleLabels.length).toBe(4);
     });
@@ -604,7 +594,7 @@ describe("Application Form Builder", () => {
 
       selectList = screen.getByTestId("select-question");
 
-      const selectType = within(selectList).getAllByText("Paragraph")
+      const selectType = within(selectList).getAllByText("Paragraph");
       fireEvent.click(selectType[0]);
 
       const inputField = screen.getByTestId("question-title-input");
@@ -618,16 +608,11 @@ describe("Application Form Builder", () => {
   });
   describe("Project Socials", () => {
     beforeEach(() => {
-      (useWallet as jest.Mock).mockReturnValue({
-        chain: { name: "my blockchain" },
-        provider: {
-          getNetwork: () => ({
-            chainId: 0,
-          }),
-        },
-        signer: {
-          getChainId: () => 0,
-        },
+      (useNetwork as jest.Mock).mockReturnValue({
+        name: "my blockchain",
+      });
+      (useChainId as jest.Mock).mockReturnValue(0);
+      (useAccount as jest.Mock).mockReturnValue({
         address: "0x0",
       });
     });
@@ -872,10 +857,12 @@ export const renderWithContext = (
 ) =>
   render(
     <MemoryRouter>
-      <CreateRoundContext.Provider
-        value={{ ...initialCreateRoundState, ...createRoundStateOverrides }}
-      >
-        {ui}
-      </CreateRoundContext.Provider>
+      <WagmiConfig config={WagmiClient}>
+        <CreateRoundContext.Provider
+          value={{ ...initialCreateRoundState, ...createRoundStateOverrides }}
+        >
+          {ui}
+        </CreateRoundContext.Provider>
+      </WagmiConfig>
     </MemoryRouter>
   );

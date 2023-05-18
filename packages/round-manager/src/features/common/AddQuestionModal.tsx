@@ -358,8 +358,11 @@ function AddQuestionModal({
             } with your form submission:`}
           </div>
         </div>
-        {errors.map((error) => (
-          <div className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10">
+        {errors.map((error, i) => (
+          <div
+            key={i}
+            className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10"
+          >
             <div className="col-span-1"></div>
             <div className="col-span-9">
               <span className="text-md pr-2 pt-1">&bull;</span>

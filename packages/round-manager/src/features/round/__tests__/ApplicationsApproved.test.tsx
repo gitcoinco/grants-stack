@@ -25,6 +25,8 @@ import {
   updateApplicationStatuses,
 } from "../../api/application";
 import { ProgressStatus } from "../../api/types";
+import { client } from "../../../app/wagmi";
+import { WagmiConfig } from "wagmi";
 
 jest.mock("../../api/application");
 jest.mock("../../api/subgraph");
@@ -35,21 +37,14 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 const roundIdOverride = "some-round-id";
-jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({
-    chain: {},
-    address: "0x0",
-    signer: {
-      getChainId: () => {
-        /* do nothing */
-      },
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
     },
-    provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
-}));
-jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
 const grantApplications = [
@@ -443,23 +438,25 @@ export const renderWithContext = (
 ) =>
   render(
     <MemoryRouter>
-      <BulkUpdateGrantApplicationContext.Provider
-        value={{
-          ...initialBulkUpdateGrantApplicationState,
-          ...bulkUpdateApplicationStateOverrides,
-        }}
-      >
-        <ApplicationContext.Provider
+      <WagmiConfig config={client}>
+        <BulkUpdateGrantApplicationContext.Provider
           value={{
-            state: {
-              ...initialApplicationState,
-              ...grantApplicationStateOverrides,
-            },
-            dispatch,
+            ...initialBulkUpdateGrantApplicationState,
+            ...bulkUpdateApplicationStateOverrides,
           }}
         >
-          {ui}
-        </ApplicationContext.Provider>
-      </BulkUpdateGrantApplicationContext.Provider>
+          <ApplicationContext.Provider
+            value={{
+              state: {
+                ...initialApplicationState,
+                ...grantApplicationStateOverrides,
+              },
+              dispatch,
+            }}
+          >
+            {ui}
+          </ApplicationContext.Provider>
+        </BulkUpdateGrantApplicationContext.Provider>
+      </WagmiConfig>
     </MemoryRouter>
   );

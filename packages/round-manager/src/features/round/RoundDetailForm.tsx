@@ -568,7 +568,7 @@ function RoundName(props: {
       <Input
         {...props.register}
         className={"h-10"}
-        $hasError={props.errors.roundMetadata?.name}
+        $hasError={Boolean(props.errors.roundMetadata?.name)}
         type="text"
         id={"roundMetadata.name"}
       />
@@ -632,7 +632,7 @@ function ContactInformation(props: {
       <Input
         {...props.register}
         className={"h-10 mt-2"}
-        $hasError={props.errors.roundMetadata?.support?.info}
+        $hasError={Boolean(props.errors.roundMetadata?.support?.info)}
         type="text"
         placeholder="Enter desired form of contact here. Ex: website, email..."
         id={"roundMetadata.support.info"}

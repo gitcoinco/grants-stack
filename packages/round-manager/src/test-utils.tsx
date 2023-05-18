@@ -1,13 +1,8 @@
 import { faker } from "@faker-js/faker";
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
-import { BigNumber, ethers } from "ethers";
-import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
-import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
-import { store } from "./app/store";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import {
   ApplicationContext,
   ApplicationState,
@@ -44,18 +39,21 @@ import {
   ProjectStatus,
   Round,
 } from "./features/api/types";
-import { IAM_SERVER } from "./features/round/ViewApplicationPage";
-import history from "./history";
+
+import { stringToHex, zeroAddress } from "viem";
+import { WagmiConfig } from "wagmi";
+import { client } from "./app/wagmi";
+import { IAM_SERVER } from "./constants";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
   metadata: {
-    name: faker.company.bsBuzz(),
+    name: faker.company.buzzVerb(),
   },
   // TODO add this back in for createProgram
   // store: {
   //   protocol: randomInt(1, 10),
-  //   pointer: faker.random.alpha({ count: 59, casing: "lower" })
+  //   pointer: faker.string.alpha({ length: 59, casing: "lower" })
   // },
   operatorWallets: [faker.finance.ethereumAddress()],
   ...overrides,
@@ -63,9 +61,15 @@ export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
-  const applicationsEndTime = faker.date.soon(10, applicationsStartTime);
-  const roundStartTime = faker.date.future(1, applicationsEndTime);
-  const roundEndTime = faker.date.soon(21, roundStartTime);
+  const applicationsEndTime = faker.date.soon({
+    days: 10,
+    refDate: applicationsStartTime,
+  });
+  const roundStartTime = faker.date.future({
+    years: 1,
+    refDate: applicationsEndTime,
+  });
+  const roundEndTime = faker.date.soon({ days: 21, refDate: roundStartTime });
   const roundFeePercentage = 10000;
   const protocolFeePercentage = 10000;
   return {
@@ -96,7 +100,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     applicationsEndTime,
     roundStartTime,
     roundEndTime,
-    token: ethers.constants.AddressZero, // to match our token list
+    token: zeroAddress, // to match our token list
     votingStrategy: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: faker.finance.ethereumAddress(),
@@ -114,13 +118,13 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 export const makeMatchingStatsData = (): MatchingStatsData => {
   return {
     projectName: faker.company.name(),
-    applicationId: faker.datatype.number().toString(),
-    projectId: formatBytes32String(faker.company.name().slice(0, 31)),
-    uniqueContributorsCount: faker.datatype.number(),
-    contributionsCount: faker.datatype.number(),
-    matchPoolPercentage: faker.datatype.number(),
-    matchAmountInToken: parseEther(faker.datatype.number().toString()),
-    originalMatchAmountInToken: parseEther(faker.datatype.number().toString()),
+    applicationId: faker.number.int().toString(),
+    projectId: stringToHex(faker.company.name().slice(0, 31), { size: 32 }),
+    uniqueContributorsCount: faker.number.int(),
+    contributionsCount: faker.number.int(),
+    matchPoolPercentage: faker.number.int(),
+    matchAmountInToken: faker.number.bigInt(),
+    originalMatchAmountInToken: faker.number.bigInt(),
     projectPayoutAddress: faker.finance.ethereumAddress(),
   };
 };
@@ -132,12 +136,12 @@ export const makeApplication = (): GrantApplication => {
     recipient: faker.finance.ethereumAddress(),
     projectsMetaPtr: {
       protocol: randomInt(1, 10),
-      pointer: faker.random.alpha({ count: 59, casing: "lower" }),
+      pointer: faker.string.alpha({ length: 59, casing: "lower" }),
     },
     status: ["PENDING", "APPROVED", "REJECTED", "CANCELLED", "APPEAL", "FRAUD"][
       randomInt(0, 5)
     ] as ProjectStatus,
-    applicationIndex: faker.datatype.number(),
+    applicationIndex: faker.number.int(),
     createdAt: faker.date.past().toDateString(),
   };
 };
@@ -147,7 +151,7 @@ export type QFDistribution = {
   matchAmountInUSD: number;
   totalContributionsInUSD: number;
   matchPoolPercentage: number;
-  matchAmountInToken: BigNumber;
+  matchAmountInToken: bigint;
   projectPayoutAddress: string;
   uniqueContributorsCount: number;
   revisedMatch: bigint;
@@ -158,16 +162,16 @@ export type QFDistribution = {
 export const makeQFDistribution = (): QFDistribution => {
   return {
     projectId: faker.finance.ethereumAddress().toString(),
-    matchAmountInUSD: faker.datatype.number(),
-    totalContributionsInUSD: faker.datatype.number(),
-    matchPoolPercentage: faker.datatype.number(),
-    matchAmountInToken: parseEther(faker.datatype.number().toString()),
+    matchAmountInUSD: faker.number.int(),
+    totalContributionsInUSD: faker.number.int(),
+    matchPoolPercentage: faker.number.int(),
+    matchAmountInToken: faker.number.bigInt(),
     projectPayoutAddress: faker.finance.ethereumAddress(),
-    uniqueContributorsCount: faker.datatype.number(),
+    uniqueContributorsCount: faker.number.int(),
     revisedMatch: BigInt(1),
-    contributionsCount: faker.datatype.number(),
+    contributionsCount: faker.number.int(),
     matched: BigInt(1),
-    revisedContributionCount: faker.datatype.number(),
+    revisedContributionCount: faker.number.int(),
   };
 };
 
@@ -177,7 +181,7 @@ export const makeApprovedProjectData = (
 ): ApprovedProject => {
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
-    projectRegistryId: faker.datatype.number().toString(),
+    projectRegistryId: faker.number.int().toString(),
     recipient: faker.finance.ethereumAddress(),
     projectMetadata: {
       title: faker.company.name(),
@@ -240,14 +244,14 @@ export const makeGrantApplicationData = (
   return {
     id:
       applicationIdOverride ||
-      faker.random.alpha({ count: 10, casing: "lower" }),
+      faker.string.alpha({ length: 10, casing: "lower" }),
     round:
-      roundIdOverride || faker.random.alpha({ count: 59, casing: "lower" }),
+      roundIdOverride || faker.string.alpha({ length: 59, casing: "lower" }),
     recipient: faker.finance.ethereumAddress(),
     project: {
       lastUpdated: 1659714564,
       createdAt: 1659714564,
-      id: faker.random.alpha({ count: 10, casing: "lower" }),
+      id: faker.string.alpha({ length: 10, casing: "lower" }),
       owners: [
         {
           address: ownerAddress,
@@ -256,11 +260,11 @@ export const makeGrantApplicationData = (
       title: faker.lorem.sentence(2),
       description: faker.lorem.sentence(10),
       website: faker.internet.domainName(),
-      bannerImg: faker.random.alpha({ count: 59, casing: "lower" }),
-      logoImg: faker.random.alpha({ count: 59, casing: "lower" }),
+      bannerImg: faker.string.alpha({ length: 59, casing: "lower" }),
+      logoImg: faker.string.alpha({ length: 59, casing: "lower" }),
       metaPtr: {
         protocol: randomInt(1, 10),
-        pointer: faker.random.alpha({ count: 59, casing: "lower" }),
+        pointer: faker.string.alpha({ length: 59, casing: "lower" }),
       },
       projectGithub: projectGithubOverride ?? undefined,
       projectTwitter: projectTwitterOverride ?? undefined,
@@ -269,13 +273,13 @@ export const makeGrantApplicationData = (
     answers: applicationAnswers ?? [],
     projectsMetaPtr: {
       protocol: randomInt(1, 10),
-      pointer: faker.random.alpha({ count: 59, casing: "lower" }),
+      pointer: faker.string.alpha({ length: 59, casing: "lower" }),
     },
     status: ["PENDING", "APPROVED", "REJECTED", "CANCELLED", "APPEAL", "FRAUD"][
       randomInt(0, 4)
     ] as ProjectStatus,
-    applicationIndex: faker.datatype.number(),
-    createdAt: faker.datatype.number().toString(),
+    applicationIndex: faker.number.int(),
+    createdAt: faker.number.int().toString(),
   };
 };
 
@@ -312,16 +316,9 @@ export const makeProjectCredentials = (
 };
 
 export const renderWrapped = (ui: JSX.Element) => {
-  render(
-    <Provider store={store}>
-      <ReduxRouter store={store} history={history}>
-        {ui}
-      </ReduxRouter>
-    </Provider>
-  );
+  render(<BrowserRouter>{ui}</BrowserRouter>);
 };
 
-// TODO finish and replace other renderWrapped function @vacekj
 export const renderWithProgramContext = (
   ui: JSX.Element,
   programStateOverrides: Partial<ReadProgramState> = {},
@@ -330,36 +327,16 @@ export const renderWithProgramContext = (
 ) =>
   render(
     <MemoryRouter>
-      <ReadProgramContext.Provider
-        value={{
-          state: { ...initialReadProgramState, ...programStateOverrides },
-          dispatch,
-        }}
-      >
-        {ui}
-      </ReadProgramContext.Provider>
-    </MemoryRouter>
-  );
-
-export const renderWithApplicationContext = (
-  ui: JSX.Element,
-  grantApplicationStateOverrides: Partial<ApplicationState> = {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
-) =>
-  render(
-    <MemoryRouter>
-      <ApplicationContext.Provider
-        value={{
-          state: {
-            ...initialApplicationState,
-            ...grantApplicationStateOverrides,
-          },
-          dispatch,
-        }}
-      >
-        {ui}
-      </ApplicationContext.Provider>
+      <WagmiConfig config={client}>
+        <ReadProgramContext.Provider
+          value={{
+            state: { ...initialReadProgramState, ...programStateOverrides },
+            dispatch,
+          }}
+        >
+          {ui}
+        </ReadProgramContext.Provider>
+      </WagmiConfig>
     </MemoryRouter>
   );
 
@@ -437,7 +414,6 @@ export const wrapWithRoundContext = (
 export const wrapWithBulkUpdateGrantApplicationContext = (
   ui: JSX.Element,
   bulkUpdateOverrides: Partial<BulkUpdateGrantApplicationState> = {}
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => (
   <BulkUpdateGrantApplicationContext.Provider
     value={{
@@ -448,27 +424,3 @@ export const wrapWithBulkUpdateGrantApplicationContext = (
     {ui}
   </BulkUpdateGrantApplicationContext.Provider>
 );
-
-type ContextMock<T> = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  context: React.Context<any>;
-  value: T;
-};
-
-/**
- * Wraps the element in an arbitrary amount of contexts for testing purposes
- * @param element the final child element. Can be a React component, an HTML tag, or even a string, null. etc. See ReactElement type
- * @param contexts the contexts to wrap the element with, including their values
- */
-export function wrapInContexts<T>(
-  element: React.ReactNode,
-  contexts: ContextMock<T>[]
-) {
-  return (
-    <>
-      {contexts.reduceRight((acc, { context, value }) => {
-        return <context.Provider value={value}>{acc}</context.Provider>;
-      }, element)}
-    </>
-  );
-}

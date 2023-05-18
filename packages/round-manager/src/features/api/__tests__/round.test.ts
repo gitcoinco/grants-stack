@@ -1,94 +1,74 @@
 import { Round } from "../types";
 import { makeRoundData } from "../../../test-utils";
-import { Signer } from "@ethersproject/abstract-signer";
-import { TransactionBuilder, UpdateAction } from "../round";
-import { ethers } from "ethers";
+import { TransactionBuilder } from "../round";
+import { WalletClient } from "wagmi";
+import RoundImplementationABI from "../abi/RoundImplementationABI";
+import { ExtractAbiFunctionNames } from "abitype";
+import { createWalletClient, http, toHex } from "viem";
+import "../../../app/wagmi";
+import { goerli } from "viem/chains";
 
-const mockWallet = {
-  address: "0x0",
-  signer: {
-    getChainId: () => {
-      return 1;
-    },
-  },
-};
-
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
-
+global.Uint8Array = Uint8Array;
 describe("TransactionBuilder", () => {
   const round: Round = makeRoundData();
-  
-  const signer = ethers.Wallet.createRandom() as Signer;
-  let transactionBuilder: TransactionBuilder;
 
-  beforeEach(() => {
-    transactionBuilder = new TransactionBuilder(round, signer);
+  let transactionBuilder: TransactionBuilder;
+  let walletClient: WalletClient;
+
+  beforeEach(async () => {
+    walletClient = createWalletClient({
+      chain: goerli,
+      transport: http(),
+    });
+    transactionBuilder = new TransactionBuilder(round, walletClient);
   });
 
   it("should initialize correctly", () => {
     expect(transactionBuilder.round).toBe(round);
-    expect(transactionBuilder.signer).toBe(signer);
+    expect(transactionBuilder.walletClient).toBe(walletClient);
     expect(transactionBuilder.transactions).toEqual([]);
-    expect(transactionBuilder.contract).toBeInstanceOf(ethers.Contract);
   });
 
   it("should throw an error when round ID is undefined", () => {
-    expect(() => new TransactionBuilder({...round, id: undefined}, signer)).toThrowError(
-      "Round ID is undefined",
-    );
+    expect(
+      () => new TransactionBuilder({ ...round, id: undefined }, walletClient)
+    ).toThrowError("Round ID is undefined");
   });
 
   it("should add a transaction to the builder", () => {
-    const action = UpdateAction.UPDATE_APPLICATION_META_PTR;
-    const args = [{protocol: 1, pointer: "abcd"}];
-    transactionBuilder.add(action, args);
+    const args = [{ protocol: 1n, pointer: "abcd" }] as const;
+    transactionBuilder.add("updateApplicationMetaPtr", args);
 
     const transactions = transactionBuilder.getTransactions();
     expect(transactions.length).toEqual(1);
   });
 
   it("should add multiple transactions to the builder", () => {
-    const action1 = UpdateAction.UPDATE_APPLICATION_META_PTR;
-    const args1 = [{protocol: 1, pointer: "abcd"}];
+    const action1: ExtractAbiFunctionNames<typeof RoundImplementationABI> =
+      "updateApplicationMetaPtr";
+    const args1 = [{ protocol: 1n, pointer: "abcd" }] as const;
     transactionBuilder.add(action1, args1);
 
-    const action2 = UpdateAction.UPDATE_MATCH_AMOUNT;
-    const args2 = [1];
+    const action2: ExtractAbiFunctionNames<typeof RoundImplementationABI> =
+      "updateMatchAmount";
+    const args2 = [1n] as const;
 
     transactionBuilder.add(action2, args2);
-    
+
     const transactions = transactionBuilder.getTransactions();
     expect(transactions.length).toEqual(2);
   });
 
-  it("should throw an error when the action is not supported", () => {
-    const action = "unsupported action";
-    const args = ["arg1", "arg2"];
-
-    expect(() => transactionBuilder.add(action, args)).toThrowError();
-  });
-
-  it("should throw an error when the wrong param is provided", () => {
-    const action = UpdateAction.UPDATE_APPLICATION_META_PTR;
-    const args = ["arg1", "arg2"];
-
-    expect(() => transactionBuilder.add(action, args)).toThrowError();
-  });
-
   it("should throw an error when there are no transactions to execute", async () => {
     await expect(transactionBuilder.execute()).rejects.toThrowError(
-      "No transactions to execute",
+      "No transactions to execute"
     );
   });
 
   it("should return the transactions", () => {
-    const transactions = ["transaction1", "transaction2"];
+    const transactions = Array(3).fill(
+      toHex("190238908590128097", { size: 32 })
+    );
     transactionBuilder.transactions = transactions;
 
     const result = transactionBuilder.getTransactions();

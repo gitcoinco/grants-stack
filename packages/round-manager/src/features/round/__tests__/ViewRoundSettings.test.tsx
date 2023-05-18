@@ -8,7 +8,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { useParams } from "react-router-dom";
-import { useDisconnect, useNetwork } from "wagmi";
+import { useDisconnect, useNetwork, WagmiConfig } from "wagmi";
 import {
   makeRoundData,
   wrapWithApplicationContext,
@@ -18,35 +18,7 @@ import {
 } from "../../../test-utils";
 import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-
-jest.mock("../../common/Auth");
-jest.mock("wagmi");
-
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
-
-jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({
-    chain: {
-      name: "Ethereum",
-    },
-    address: mockRoundData.operatorWallets![0],
-    signer: {
-      getChainId: () => {
-        /* do nothing */
-      },
-    },
-    provider: {
-      network: {
-        chainId: 1,
-      },
-      getNetwork: () => {
-        return { chainId: 1 };
-      },
-    },
-  }),
-}));
+import { client } from "../../../app/wagmi";
 
 Object.assign(navigator, {
   clipboard: {
@@ -55,6 +27,17 @@ Object.assign(navigator, {
     },
   },
 });
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useNetwork: jest.fn(),
+  useDisconnect: jest.fn(),
+  useWalletClient: () => ({
+    data: {
+      getChainId: () => 5,
+    },
+  }),
+}));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -80,10 +63,15 @@ describe("View Round", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
+            wrapWithRoundContext(
+              <WagmiConfig config={client}>
+                <ViewRoundPage />
+              </WagmiConfig>,
+              {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
+            ),
             { programs: [] }
           ),
           {
@@ -114,10 +102,15 @@ describe("View Round", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
+            wrapWithRoundContext(
+              <WagmiConfig config={client}>
+                <ViewRoundPage />
+              </WagmiConfig>,
+              {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
+            ),
             { programs: [] }
           ),
           {
@@ -152,10 +145,15 @@ describe("View Round", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
+            wrapWithRoundContext(
+              <WagmiConfig config={client}>
+                <ViewRoundPage />
+              </WagmiConfig>,
+              {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
+            ),
             { programs: [] }
           ),
           {
@@ -201,10 +199,15 @@ describe("View Round", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
+            wrapWithRoundContext(
+              <WagmiConfig config={client}>
+                <ViewRoundPage />
+              </WagmiConfig>,
+              {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
+            ),
             { programs: [] }
           ),
           {
@@ -230,10 +233,15 @@ describe("View Round", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
+            wrapWithRoundContext(
+              <WagmiConfig config={client}>
+                <ViewRoundPage />
+              </WagmiConfig>,
+              {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
+            ),
             { programs: [] }
           ),
           {

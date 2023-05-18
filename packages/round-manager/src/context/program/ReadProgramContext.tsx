@@ -1,13 +1,9 @@
-import {
-  Program,
-  ProgressStatus,
-  Web3Instance,
-} from "../../features/api/types";
+import { Program, ProgressStatus } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { useWallet } from "../../features/common/Auth";
 import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
-import { Web3Provider } from "@ethersproject/providers";
+import { PublicClient } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
 
 export interface ReadProgramState {
   programs: Program[];
@@ -45,7 +41,7 @@ export const ReadProgramContext = createContext<ProgramContextType>(undefined);
 const fetchProgramsByAddress = async (
   dispatch: Dispatch,
   address: string,
-  walletProvider: Web3Instance["provider"]
+  publicClient: PublicClient
 ) => {
   datadogLogs.logger.info(`fetchProgramsByAddress: address - ${address}`);
 
@@ -54,7 +50,7 @@ const fetchProgramsByAddress = async (
     payload: ProgressStatus.IN_PROGRESS,
   });
   try {
-    const programs = await listPrograms(address, walletProvider);
+    const programs = await listPrograms(address, publicClient);
     dispatch({ type: ActionType.SET_PROGRAMS, payload: programs });
     dispatch({
       type: ActionType.SET_FETCH_PROGRAM_STATUS,
@@ -75,7 +71,7 @@ const fetchProgramsByAddress = async (
 const fetchProgramsById = async (
   dispatch: Dispatch,
   programId: string,
-  walletProvider: Web3Provider
+  publicClient: PublicClient
 ) => {
   datadogLogs.logger.info(`fetchProgramsById: programId - ${programId}`);
 
@@ -84,7 +80,7 @@ const fetchProgramsById = async (
     payload: ProgressStatus.IN_PROGRESS,
   });
   try {
-    const program = await getProgramById(programId, walletProvider);
+    const program = await getProgramById(programId, publicClient);
     dispatch({ type: ActionType.SET_PROGRAMS, payload: [program] });
     dispatch({
       type: ActionType.SET_FETCH_PROGRAM_STATUS,
@@ -148,11 +144,12 @@ export const usePrograms = (): ReadProgramState & { dispatch: Dispatch } => {
     throw new Error("usePrograms must be used within a ProgramProvider");
   }
 
-  const { address, provider: walletProvider } = useWallet();
+  const publicClient = usePublicClient();
+  const { address } = useAccount();
 
   useEffect(() => {
-    fetchProgramsByAddress(context.dispatch, address, walletProvider);
-  }, [address, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchProgramsByAddress(context.dispatch, address ?? "", publicClient);
+  }, [address, publicClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { ...context.state, dispatch: context.dispatch };
 };
@@ -169,7 +166,8 @@ export const useProgramById = (
     throw new Error("useProgramById must be used within a ProgramProvider");
   }
 
-  const { provider: walletProvider } = useWallet();
+  const publicClient = usePublicClient();
+
   useEffect(() => {
     if (id) {
       const existingProgram = context.state.programs.find(
@@ -177,10 +175,10 @@ export const useProgramById = (
       );
 
       if (!existingProgram) {
-        fetchProgramsById(context.dispatch, id, walletProvider);
+        fetchProgramsById(context.dispatch, id, publicClient);
       }
     }
-  }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [id, publicClient]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     program: context.state.programs.find((program) => program.id === id),
