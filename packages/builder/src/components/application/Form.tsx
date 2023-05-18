@@ -94,7 +94,7 @@ function DetailSummary(props: {
   return (
     <p
       className={`${sm ? "text-sm" : "text-base"} font-normal 
-      ${violetcolor ? "text-violet-400" : "text-black"}`}
+      ${violetcolor ? "text-gitcoin-violet-400" : "text-black"}`}
       data-testid={testID}
     >
       {" "}
