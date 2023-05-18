@@ -22,6 +22,6 @@ export const PayoutParams: DeployParams = {
     merklePayoutContract: "0xcaC94621584a1a0121c0B5664A9FFB0B86588B8a",
   },
   "polygon-mumbai": {
-    merklePayoutContract: "0x703DA1BD023Dd59724cDDff9a8e554a4e08c0a0B",
+    merklePayoutContract: "0xb04f69d8b4e300d566813a9b62f5d7878a0322c3",
   },
 };
