@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import {
   act,
   fireEvent,
@@ -5,11 +6,10 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import ApplicationEligibilityForm from "../ApplicationEligibilityForm";
+import { Round } from "../../api/types";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
-import { Round } from "../../api/types";
-import { faker } from "@faker-js/faker";
+import ApplicationEligibilityForm from "../ApplicationEligibilityForm";
 
 describe("<ApplicationEligibilityForm>", () => {
   beforeEach(() => {
@@ -93,6 +93,41 @@ describe("<ApplicationEligibilityForm>", () => {
         initialRequirementInputFields.length + 1
       );
     });
+
+    it("selecting X removes a requirement input field", async () => {
+      render(<ApplicationEligibilityForm stepper={FormStepper} />);
+      const initialRequirementInputFields = await screen.findAllByTestId(
+        "requirement-input"
+      );
+
+      const addARequirement = screen.getByRole("button", {
+        name: /Add a Requirement/i,
+      });
+      fireEvent.click(addARequirement);
+
+      const requirementInputFields = await screen.findAllByTestId(
+        "requirement-input"
+      );
+      expect(requirementInputFields).toHaveLength(
+        initialRequirementInputFields.length + 1
+      );
+
+      const removeRequirementButtons = await screen.findAllByTestId(
+        "remove-requirement-button"
+      );
+      expect(requirementInputFields).toHaveLength(
+        initialRequirementInputFields.length + 1
+      );
+
+      fireEvent.click(removeRequirementButtons[0]);
+
+      const updatedRequirementInputFields = await screen.findAllByTestId(
+        "requirement-input"
+      );
+      expect(updatedRequirementInputFields).toHaveLength(
+        initialRequirementInputFields.length
+      );
+    });
   });
 });
 
@@ -101,7 +136,7 @@ describe("form submission", () => {
   let formContext: any;
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     formContext = {
       currentStep: 2,
       setCurrentStep: jest.fn(),
