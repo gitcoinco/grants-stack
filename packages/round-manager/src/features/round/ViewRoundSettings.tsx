@@ -589,7 +589,7 @@ function DetailsPage(props: {
           {props.errors.roundMetadata && (
             <p
               className="text-xs text-pink-500 mt-1"
-              data-testid="application-end-date-error"
+              data-testid="round-name-error"
             >
               {props.errors.roundMetadata.name?.message}
             </p>
@@ -667,7 +667,7 @@ function DetailsPage(props: {
         {props.errors.roundMetadata && (
           <p
             className="text-xs text-pink-500 mt-1"
-            data-testid="application-end-date-error"
+            data-testid="round-description-error"
           >
             {props.errors.roundMetadata.eligibility?.description?.message}
           </p>
@@ -726,7 +726,7 @@ function DetailsPage(props: {
           {props.errors.roundMetadata && (
             <p
               className="text-xs text-pink-500 mt-1"
-              data-testid="application-end-date-error"
+              data-testid="support-type-error"
             >
               {props.errors.roundMetadata.support?.types?.message}
             </p>
@@ -780,7 +780,7 @@ function DetailsPage(props: {
           {props.errors.roundMetadata && (
             <p
               className="text-xs text-pink-500 mt-1"
-              data-testid="application-end-date-error"
+              data-testid="support-error"
             >
               {props.errors.roundMetadata?.support?.info?.message}
             </p>
@@ -890,7 +890,7 @@ function DetailsPage(props: {
             {props.errors.roundMetadata && (
               <p
                 className="text-xs text-pink-500 mt-1"
-                data-testid="application-end-date-error"
+                data-testid="requirement-error"
               >
                 <span>
                   {props.errors.roundMetadata.eligibility?.requirements
@@ -1150,7 +1150,7 @@ function RoundApplicationPeriod(props: {
                 {props.errors.applicationsStartTime && (
                   <p
                     className="text-xs text-pink-500 mt-1"
-                    data-testid="application-end-date-error"
+                    data-testid="application-start-date-error"
                   >
                     {props.errors.applicationsStartTime?.message}
                   </p>
@@ -1366,7 +1366,7 @@ function RoundApplicationPeriod(props: {
                 {props.errors.roundStartTime && (
                   <p
                     className="text-xs text-pink-500 mt-1"
-                    data-testid="application-end-date-error"
+                    data-testid="round-start-date-error"
                   >
                     {props.errors.roundStartTime?.message}
                   </p>
@@ -1472,7 +1472,7 @@ function RoundApplicationPeriod(props: {
                 {props.errors.roundEndTime && (
                   <p
                     className="text-xs text-pink-500 mt-1"
-                    data-testid="application-end-date-error"
+                    data-testid="round-end-date-error"
                   >
                     {props.errors.roundEndTime?.message}
                   </p>
@@ -1599,7 +1599,7 @@ function Funding(props: {
                     props.editMode.canEditOnlyRoundEndDate
                   }
                   onChange={(e) => {
-                    field.onChange(e.target.value);
+                    field.onChange(Number(e.target.value));
                     props.setEditedRound({
                       ...props.editedRound,
                       roundMetadata: {
@@ -1620,7 +1620,7 @@ function Funding(props: {
           {props.errors.roundMetadata && (
             <p
               className="text-xs text-pink-500 mt-1"
-              data-testid="application-end-date-error"
+              data-testid="matching-funds-available-error"
             >
               {
                 props.errors.roundMetadata.quadraticFundingConfig
@@ -1753,17 +1753,6 @@ function Funding(props: {
             />{" "}
             No
           </div>
-          {props.errors.roundMetadata && (
-            <p
-              className="text-xs text-pink-500 mt-1"
-              data-testid="application-end-date-error"
-            >
-              {
-                props.errors.roundMetadata?.quadraticFundingConfig?.matchingCap
-                  ?.message
-              }
-            </p>
-          )}
         </div>
         <div>
           <div className="text-sm leading-5 pb-1 gap-1 mb-2">
@@ -1826,7 +1815,7 @@ function Funding(props: {
           {props.errors.roundMetadata && (
             <p
               className="text-xs text-pink-500 mt-1"
-              data-testid="application-end-date-error"
+              data-testid="matching-cap-amount-error"
             >
               {
                 props.errors.roundMetadata?.quadraticFundingConfig
@@ -1972,17 +1961,6 @@ function Funding(props: {
             No
           </div>
         </div>
-        {props.errors.roundMetadata && (
-          <p
-            className="text-xs text-pink-500 mt-1"
-            data-testid="application-end-date-error"
-          >
-            {
-              props.errors.roundMetadata?.quadraticFundingConfig
-                ?.minDonationThreshold?.message
-            }
-          </p>
-        )}
         <div>
           <div className="text-sm leading-5 pb-1 gap-1 mb-2">
             <span>If so, how much?</span>
@@ -2044,7 +2022,7 @@ function Funding(props: {
           {props.errors.roundMetadata && (
             <p
               className="text-xs text-pink-500 mt-1"
-              data-testid="application-end-date-error"
+              data-testid="min-donation-threshold-amount-error"
             >
               {
                 props.errors.roundMetadata?.quadraticFundingConfig
@@ -2174,7 +2152,7 @@ function Funding(props: {
         {props.errors.roundMetadata && (
           <p
             className="text-xs text-pink-500 mt-1"
-            data-testid="application-end-date-error"
+            data-testid="sybil-defense-error"
           >
             {
               props.errors.roundMetadata?.quadraticFundingConfig?.sybilDefense
