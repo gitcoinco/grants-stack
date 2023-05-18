@@ -66,6 +66,14 @@ export const RoundValidationSchema = yup.object().shape({
     .min(
       yup.ref("applicationsStartTime"),
       "You must enter a date and time in the future."
+    )
+    .max(
+      yup.ref("roundStartTime"),
+      "Applications start date must be before the round start date"
+    )
+    .max(
+      yup.ref("roundEndTime"),
+      "Applications start date must be before the round end date"
     ),
   applicationsEndTime: yup
     .date()
@@ -73,10 +81,18 @@ export const RoundValidationSchema = yup.object().shape({
     .min(
       yup.ref("applicationsStartTime"),
       "Applications end date must be later than applications start date"
+    )
+    .max(
+      yup.ref("roundEndTime"),
+      "Applications end date must be before the round end date"
     ),
   roundStartTime: yup
     .date()
     .required("This field is required.")
+    .min(
+      yup.ref("applicationsStartTime"),
+      "Round start date must be later than the applications start date"
+    )
     .max(
       yup.ref("roundEndTime"),
       "Round start date must be earlier than the round end date"
@@ -87,6 +103,10 @@ export const RoundValidationSchema = yup.object().shape({
     .min(
       yup.ref("roundStartTime"),
       "Round end date must be later than the round start date"
+    )
+    .min(
+      yup.ref("applicationsEndTime"),
+      "Round end date must be later than the applications end date"
     ),
 });
 
