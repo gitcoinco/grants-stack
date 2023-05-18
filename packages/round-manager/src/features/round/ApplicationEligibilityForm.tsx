@@ -58,7 +58,7 @@ export default function ApplicationEligibilityForm(
     resolver: yupResolver(ValidationSchema),
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     name: "roundMetadata.eligibility.requirements",
     control,
   });
@@ -100,6 +100,7 @@ export default function ApplicationEligibilityForm(
                     register={register}
                     append={append}
                     remove={remove}
+                    replace={replace}
                   />
                 </div>
               </div>
@@ -172,8 +173,17 @@ function DynamicRequirementsForm(props: {
     options?: FieldArrayMethodProps
   ) => void;
   remove: (index?: number | number[]) => void;
+  replace: (
+    value:
+      | {
+          requirement: string;
+        }
+      | {
+          requirement: string;
+        }[]
+  ) => void;
 }) {
-  const { fields, register, append, remove } = props;
+  const { fields, register, append, remove, replace } = props;
   return (
     <div>
       <p className="text-grey-400 mb-6">
@@ -204,10 +214,13 @@ function DynamicRequirementsForm(props: {
                 type="button"
                 className="focus:outline-none"
                 onClick={() => {
-                  remove(index);
+                  if (fields.length > 1) {
+                    remove(index);
+                  } else {
+                    replace([{ requirement: "" }]);
+                  }
                 }}
                 data-testid="remove-requirement-button"
-                disabled={fields.length === 1}
               >
                 <XIcon
                   color="#D03E63"
