@@ -71,21 +71,23 @@ export async function main() {
 
   console.log("Approved Allowance");
 
+  const projectID = ethers.utils.formatBytes32String("380");
+
   // Cast Vote
   const votes = [
     [
       signers[0].address, //  voter
       tokenAddress, // token
       1, // amount
-      "0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017", // grantAddress
-      ethers.utils.id("projectID"),
+      "0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017", // grantRoundAddress
+      projectID,
     ],
     [
       signers[0].address, //  voter
       tokenAddress, // token
       2, // amount
-      "0xB8cEF765721A6da910f14Be93e7684e9a3714123", // grantAddress
-      ethers.utils.id("projectID"),
+      "0xB8cEF765721A6da910f14Be93e7684e9a3714123", // grantRoundAddress
+      projectID,
     ],
   ];
 
