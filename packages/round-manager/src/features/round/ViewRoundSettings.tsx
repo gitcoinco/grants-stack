@@ -2024,7 +2024,7 @@ function Funding(props: {
                       .minDonationThreshold
                   }
                   onChange={(e) => {
-                    field.onChange(e.target.value);
+                    field.onChange(Number(e.target.value));
                     props.setEditedRound({
                       ...props.editedRound,
                       roundMetadata: {
