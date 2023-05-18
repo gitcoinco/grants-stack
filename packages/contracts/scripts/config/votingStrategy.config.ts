@@ -36,7 +36,7 @@ export const QFVotingParams: DeployParams = {
   "polygon-mumbai": {
     factory: "0xA86837773d8167C20f648Fcc11dB7eA4B95B4b7A",
     implementation: "0x54eF677eac9056F7aa5bA7CF5C9e2F4d6072e64c",
-    contract: "0x10c5e410A0b28D80144099741ae6FcAE4a77833c",
+    contract: "0xb699801f40079b793d806a5a96b37bceaee4c838",
   },
 };
 
@@ -54,6 +54,6 @@ export const QFRelayParams: DeployParams = {
   "polygon-mumbai": {
     factory: "0x0637876724150495d2B4F73A18EA87bCb78E63DB",
     implementation: "0xECcBFe205B79B7D4c9e478db3acee055342C7506",
-    contract: "0xEE5c9659192C7487b973eA00C49aC797CbDfcE26",
+    contract: "0xb699801f40079b793d806a5a96b37bceaee4c838",
   },
 };

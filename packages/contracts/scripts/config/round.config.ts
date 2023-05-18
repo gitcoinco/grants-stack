@@ -36,6 +36,6 @@ export const roundParams: DeployParams = {
   "polygon-mumbai": {
     roundFactoryContract: "0x36Ca0662fd2af176B10CEA7f2aBa0BB299B6E6c5",
     roundImplementationContract: "0x22EF50635EFA6Cab76944e478DD99BFbB676c0Ec",
-    roundContract: "0x00BbaCC4EA0c68f7cA41242B7F4246544ba46e83",
+    roundContract: "0xd0d36fdf0104d85e8f702e84e565d70b08716a95",
   },
 };
