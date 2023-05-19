@@ -57,9 +57,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
     canEditOnlyRoundEndDate: false,
   });
 
-  console.log("===> round")
-  console.log(round)
-
   const [editedRound, setEditedRound] = useState<Round | undefined>({
     ..._.cloneDeep(round!),
   });
@@ -215,8 +212,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const submit: SubmitHandler<Round> = async (values: Round) => {
     const data = _.merge(editedRound, values);
-
-    console.log("submitting", data);
     setEditedRound(data);
     // Check for what has been edited into groups
     // Prepare the transaction(s) to be sent
@@ -527,11 +522,6 @@ function DetailsPage(props: {
   const isValidLastRequirement =
     numOfRequirements === 0 ||
     (lastRequirement && lastRequirement.requirement !== "");
-
-  console.log(
-    "requirement",
-    props.editedRound?.roundMetadata.eligibility?.requirements
-  );
 
   function Cross({ color, size = "12" }: { color: string; size?: string }) {
     return (
