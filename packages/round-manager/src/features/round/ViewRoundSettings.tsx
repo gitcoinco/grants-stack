@@ -206,7 +206,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   });
 
   useEffect(() => {
-    setHasChanged(!_.isEqual(round, editedRound));
+    setHasChanged(Object.values(compareRounds(round!, editedRound!)).some((value) => value === true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
 
@@ -1746,7 +1746,6 @@ function Funding(props: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
                           matchingCap: e.target.value === "yes",
-                          matchingCapAmount: 0,
                         },
                       },
                     });
@@ -1951,9 +1950,6 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          minDonationThresholdAmount:
-                            editedRound.roundMetadata.quadraticFundingConfig
-                              .minDonationThresholdAmount ?? 0,
                           minDonationThreshold: e.target.value === "yes",
                         },
                       },
