@@ -600,7 +600,7 @@ const ApplyButton = (props: { applicationURL: string }) => {
     <Button
       type="button"
       onClick={() => window.open(applicationURL, "_blank")}
-      className="mt-2 basis-full items-center justify-center shadow-sm text-sm rounded border-2 border-gray-200 md:h-12"
+      className="mt-2 basis-full items-center justify-center shadow-sm text-sm rounded md:h-12"
       data-testid="apply-button"
     >
       Apply to Grant Round
