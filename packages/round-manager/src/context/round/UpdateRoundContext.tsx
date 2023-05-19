@@ -92,7 +92,6 @@ const _updateRound = async ({
   const transactionBuilder = new TransactionBuilder(round, signerOrProvider);
   const chainId = await signerOrProvider.getChainId();
 
-  console.log(updateRoundData)
   try {
     datadogLogs.logger.info(`_updateRound: ${round}`);
 

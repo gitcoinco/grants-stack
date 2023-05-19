@@ -48,11 +48,6 @@ export class TransactionBuilder {
   }
 
   add(action: any, args: any[]) {
-    // console.log("action, args", { action, args });
-    // if (!(action in UpdateAction)) {
-    //   throw new Error(`Invalid action: ${action}`);
-    // }
-
     this.transactions.push(this.contract.interface.encodeFunctionData(action, args));
   }
 
