@@ -56,6 +56,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
     canEditOnlyRoundEndDate: false,
   });
 
+  console.log("===> round")
+  console.log(round)
+
   const [editedRound, setEditedRound] = useState<Round | undefined>({
     ..._.cloneDeep(round!),
   });
@@ -111,6 +114,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
       quadraticFundingConfig: yup.object({
         matchingFundsAvailable: yup
           .number()
+          .typeError("Invalid value")
           .min(
             round?.roundMetadata?.quadraticFundingConfig
               ?.matchingFundsAvailable ?? 0,
@@ -120,6 +124,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           is: (val: any) => val === "yes",
           then: yup
             .number()
+            .typeError("Invalid value")
             .positive()
             .integer()
             .required("This field is required.")
@@ -131,6 +136,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           is: (val: any) => val === "yes",
           then: yup
             .number()
+            .typeError("Invalid value")
             .positive()
             .integer()
             .required("This field is required")
@@ -207,6 +213,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const submit: SubmitHandler<Round> = async (values: Round) => {
     const data = _.merge(editedRound, values);
+
+    console.log("submitting", data);
     setEditedRound(data);
     // Check for what has been edited into groups
     // Prepare the transaction(s) to be sent
@@ -1589,8 +1597,7 @@ function Funding(props: {
                     "roundMetadata.quadraticFundingConfig.matchingFundsAvailable"
                   )}
                   value={
-                    editedRound.roundMetadata.quadraticFundingConfig
-                      .matchingFundsAvailable ?? 0
+                    field.value
                   }
                   type="number"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -1599,7 +1606,7 @@ function Funding(props: {
                     props.editMode.canEditOnlyRoundEndDate
                   }
                   onChange={(e) => {
-                    field.onChange(Number(e.target.value));
+                    field.onChange((e.target.value));
                     props.setEditedRound({
                       ...props.editedRound,
                       roundMetadata: {
@@ -1791,11 +1798,10 @@ function Funding(props: {
                       .matchingCap
                   }
                   value={
-                    props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCapAmount ?? 0
+                    field.value
                   }
                   onChange={(e) => {
-                    field.onChange(Number(e.target.value));
+                    field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
                       roundMetadata: {
@@ -1992,8 +1998,7 @@ function Funding(props: {
                   type="number"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   value={
-                    editedRound.roundMetadata.quadraticFundingConfig
-                      ?.minDonationThresholdAmount
+                    field.value
                   }
                   disabled={
                     (!props.editMode.canEdit &&
@@ -2002,7 +2007,7 @@ function Funding(props: {
                       .minDonationThreshold
                   }
                   onChange={(e) => {
-                    field.onChange(Number(e.target.value));
+                    field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
                       roundMetadata: {
