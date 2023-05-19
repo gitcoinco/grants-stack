@@ -50,6 +50,52 @@ type EditMode = {
   canEditOnlyRoundEndDate: boolean;
 };
 
+// returns a boolean for each group of fields that have been edited
+const compareRounds = (
+  oldRoundData: Round,
+  newRoundData: Round
+): EditedGroups => {
+  // create deterministic copies of the data
+  const dOldRound: Round = _.cloneDeep(oldRoundData)!;
+  const dNewRound: Round = _.cloneDeep(newRoundData);
+
+  return {
+    ApplicationMetaPointer: !_.isEqual(
+      dOldRound.applicationMetadata,
+      dNewRound.applicationMetadata
+    ),
+    MatchAmount: !_.isEqual(
+      dOldRound?.roundMetadata?.quadraticFundingConfig
+        ?.matchingFundsAvailable,
+      dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
+    ),
+    RoundFeeAddress: false,
+    // todo feesAddress not found in roundMetadata
+    // RoundFeeAddress: _.isEqual(
+    //   dOldRound?.roundMetadata?.feesAddress.toLowerCase(),
+    //   dNewRound?.roundMetadata?.feesAddress.toLowerCase()
+    // ),
+    RoundFeePercentage: false,
+    // !_.isEqual(
+    //   dOldRound.roundFeePercentage,
+    //   dNewRound.roundFeePercentage
+    // ),
+    RoundMetaPointer: !_.isEqual(
+      dOldRound.roundMetadata,
+      dNewRound.roundMetadata
+    ),
+    StartAndEndTimes: !(
+      _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
+      _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
+      _.isEqual(
+        dOldRound.applicationsStartTime,
+        dNewRound.applicationsStartTime
+      ) &&
+      _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
+    ),
+  };
+};
+
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round } = useRoundById(props.id?.toLowerCase());
   const [editMode, setEditMode] = useState<EditMode>({
@@ -163,52 +209,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
     setHasChanged(!_.isEqual(round, editedRound));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
-
-  // returns a boolean for each group of fields that have been edited
-  const compareRounds = (
-    oldRoundData: Round,
-    newRoundData: Round
-  ): EditedGroups => {
-    // create deterministic copies of the data
-    const dOldRound: Round = _.cloneDeep(oldRoundData)!;
-    const dNewRound: Round = _.cloneDeep(newRoundData);
-
-    return {
-      ApplicationMetaPointer: !_.isEqual(
-        dOldRound.applicationMetadata,
-        dNewRound.applicationMetadata
-      ),
-      MatchAmount: !_.isEqual(
-        dOldRound?.roundMetadata?.quadraticFundingConfig
-          ?.matchingFundsAvailable,
-        dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
-      ),
-      RoundFeeAddress: false,
-      // todo feesAddress not found in roundMetadata
-      // RoundFeeAddress: _.isEqual(
-      //   dOldRound?.roundMetadata?.feesAddress.toLowerCase(),
-      //   dNewRound?.roundMetadata?.feesAddress.toLowerCase()
-      // ),
-      RoundFeePercentage: false,
-      // !_.isEqual(
-      //   dOldRound.roundFeePercentage,
-      //   dNewRound.roundFeePercentage
-      // ),
-      RoundMetaPointer: !_.isEqual(
-        dOldRound.roundMetadata,
-        dNewRound.roundMetadata
-      ),
-      StartAndEndTimes: !(
-        _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
-        _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
-        _.isEqual(
-          dOldRound.applicationsStartTime,
-          dNewRound.applicationsStartTime
-        ) &&
-        _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
-      ),
-    };
-  };
 
   const submit: SubmitHandler<Round> = async (values: Round) => {
     const data = _.merge(editedRound, values);
