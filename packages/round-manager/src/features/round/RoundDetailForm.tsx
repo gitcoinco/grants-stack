@@ -103,10 +103,6 @@ export const RoundValidationSchema = yup.object().shape({
     .min(
       yup.ref("roundStartTime"),
       "Round end date must be later than the round start date"
-    )
-    .min(
-      yup.ref("applicationsEndTime"),
-      "Round end date must be later than the applications end date"
     ),
 });
 
