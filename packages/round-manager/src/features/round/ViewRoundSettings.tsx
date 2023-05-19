@@ -18,6 +18,7 @@ import {
   SubmitHandler,
   UseFormRegister,
   UseFormRegisterReturn,
+  UseFormResetField,
   useForm,
 } from "react-hook-form";
 import { FaEdit, FaPlus } from "react-icons/fa";
@@ -153,6 +154,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     handleSubmit,
     formState: { errors },
     reset,
+    resetField,
   } = useForm<Round>({
     defaultValues: {
       ...round,
@@ -459,6 +461,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   control={control}
                   register={register}
                   errors={errors}
+                  resetField={resetField}
                 />
               </Tab.Panel>
             </Tab.Panels>
@@ -1522,6 +1525,7 @@ function Funding(props: {
   setEditedRound: (round: Round) => void;
   control: Control<Round, any>;
   register: UseFormRegister<Round>;
+  resetField: UseFormResetField<Round>;
   errors: any;
 }) {
   const { editedRound } = props;
@@ -1701,6 +1705,7 @@ function Funding(props: {
                     !props.editMode.canEditOnlyRoundEndDate
                   }
                   onChange={(e) => {
+                    props.resetField("roundMetadata.quadraticFundingConfig.matchingCapAmount");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1741,6 +1746,7 @@ function Funding(props: {
                       ?.matchingCap ?? false
                   }
                   onChange={(e) => {
+                    props.resetField("roundMetadata.quadraticFundingConfig.matchingCapAmount");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1905,6 +1911,7 @@ function Funding(props: {
                     !props.editMode.canEditOnlyRoundEndDate
                   }
                   onChange={(e) => {
+                    props.resetField("roundMetadata.quadraticFundingConfig.minDonationThresholdAmount");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1945,6 +1952,7 @@ function Funding(props: {
                       ?.minDonationThreshold
                   }
                   onChange={(e) => {
+                    props.resetField("roundMetadata.quadraticFundingConfig.minDonationThresholdAmount");
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
