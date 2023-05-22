@@ -1832,7 +1832,13 @@ function Funding(props: {
           )}
         </div>
       </div>
-      <div>
+      <div
+        className={
+          props.editedRound?.roundMetadata?.quadraticFundingConfig?.matchingCap
+            ? ""
+            : "hidden"
+        }
+      >
         <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
           A single project can only receive a maximum of{" "}
           {props.editedRound?.roundMetadata?.quadraticFundingConfig
@@ -2041,7 +2047,14 @@ function Funding(props: {
           )}
         </div>
       </div>
-      <div>
+      <div
+        className={
+          props.editedRound?.roundMetadata?.quadraticFundingConfig
+            ?.minDonationThreshold
+            ? ""
+            : "hidden"
+        }
+      >
         <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
           Each donation has to be a minimum of{" "}
           {props.editedRound?.roundMetadata?.quadraticFundingConfig
