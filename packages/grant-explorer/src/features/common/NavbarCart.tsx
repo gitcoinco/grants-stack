@@ -6,6 +6,8 @@ import { Button } from "common/src/styles";
 import { CheckIcon, EyeIcon } from "@heroicons/react/24/outline";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { renderToPlainText } from "common";
+import tw from "tailwind-styled-components";
+
 export default function NavbarCart(props: {
   cart: Project[];
   roundUrlPath: string;
@@ -76,10 +78,24 @@ function QuickViewIcon(props: { count: number }) {
 function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
   const navigate = useNavigate();
 
+  const QuickViewSummary = tw.div`
+    mt-5
+    w-[400px]
+    flex
+    flex-col
+    absolute
+    right-0
+    rounded
+    bg-white
+    shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)]
+    p-4
+    z-20
+  `;
+
   return (
-    <div
+    <QuickViewSummary
       data-testid="quick-view-summary"
-      className="mt-5 w-[400px] flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20"
+      className="quick-view-summary"
     >
       <p className="flex border-b mb-4 pb-2 gap-2 text-sm">
         <CheckIcon className="w-4" />
@@ -104,7 +120,7 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
       >
         View my cart ({props.cart.length})
       </Button>
-    </div>
+    </QuickViewSummary>
   );
 }
 
