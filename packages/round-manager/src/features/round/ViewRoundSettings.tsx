@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Listbox, Tab, Transition } from "@headlessui/react";
+import { Listbox, RadioGroup, Tab, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames, getUTCDate, getUTCTime } from "common";
@@ -19,6 +19,7 @@ import {
   UseFormRegister,
   UseFormRegisterReturn,
   UseFormResetField,
+  useController,
   useForm,
 } from "react-hook-form";
 import { FaEdit, FaPlus } from "react-icons/fa";
@@ -122,6 +123,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
         .string()
         .required("This field is required.")
         .min(8, "Round name must be at least 8 characters."),
+      roundType: yup.string().required("You must select the round type."),
       support: yup.object({
         type: yup
           .string()
@@ -217,8 +219,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const submit: SubmitHandler<Round> = async (values: Round) => {
     const data = _.merge(editedRound, values);
     setEditedRound(data);
-    // Check for what has been edited into groups
-    // Prepare the transaction(s) to be sent
   };
 
   if (!round) {
@@ -253,6 +253,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     try {
       handleSubmit(submit(editedRound as Round));
       const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
+      console.log("editedGroups", editedGroups);
       setIpfsStep(
         editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer
       );
@@ -793,6 +794,18 @@ function DetailsPage(props: {
           )}
         </div>
       </div>
+      <div className="mt-6">
+        <span className="text-sm text-gray-600 mb-10">
+          Do you want to show your round on the Gitcoin Explorer homepage?
+        </span>
+        <RoundType
+          control={props.control}
+          register={props.register("roundMetadata.roundType")}
+          editMode={props.editMode}
+          editedRound={props.editedRound}
+          setEditedRound={props.setEditedRound}
+        />
+      </div>
       <span className="mt-8 flex flex-col text-sm text-gray-600 mb-8">
         What requirements do you have for applicants?
       </span>
@@ -932,6 +945,127 @@ function DetailsPage(props: {
         </span>
       </Button>
     </div>
+  );
+}
+
+function RoundType(props: {
+  register: UseFormRegisterReturn<string>;
+  control?: Control<Round>;
+  editMode: EditMode;
+  editedRound: Round;
+  setEditedRound: (round: Round) => void;
+}) {
+  const { field: roundTypeField } = useController({
+    name: "roundMetadata.roundType",
+    defaultValue: "",
+    control: props.control,
+    rules: {
+      required: true,
+    },
+  });
+
+  return (
+    <>
+      {" "}
+      <div className="flex flex-row mt-4">
+        <RadioGroup
+          {...roundTypeField}
+          data-testid="round-type-selection"
+          disabled={!props.editMode.canEdit}
+        >
+          <div>
+            <RadioGroup.Option
+              {...roundTypeField}
+              {...props.register}
+              value="public"
+              className="mb-2"
+              onChange={() => {
+                roundTypeField.onChange("public");
+                props.setEditedRound({
+                  ...props.editedRound,
+                  roundMetadata: {
+                    ...props.editedRound.roundMetadata,
+                    roundType: "public",
+                  },
+                });
+              }}
+            >
+              {({ checked, active }) => {
+                return (
+                  <span className="flex items-center text-sm">
+                    <span
+                      className={classNames(
+                        checked
+                          ? "bg-indigo-600 border-transparent"
+                          : "bg-white border-gray-300",
+                        active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                        "h-4 w-4 rounded-full border flex items-center justify-center"
+                      )}
+                      aria-hidden="true"
+                    >
+                      <span className="rounded-full bg-white w-1.5 h-1.5" />
+                    </span>
+                    <RadioGroup.Label
+                      as="span"
+                      className="ml-3 block text-sm text-gray-700"
+                      data-testid="round-type-public"
+                    >
+                      Yes, make my round public
+                      <p className="text-xs text-gray-400">
+                        Anyone on the Gitcoin Explorer homepage will be able to
+                        see your round
+                      </p>
+                    </RadioGroup.Label>
+                  </span>
+                );
+              }}
+            </RadioGroup.Option>
+            <RadioGroup.Option
+              {...roundTypeField}
+              {...props.register}
+              value="private"
+              onChange={() => {
+                roundTypeField.onChange("private");
+                props.setEditedRound({
+                  ...props.editedRound,
+                  roundMetadata: {
+                    ...props.editedRound.roundMetadata,
+                    roundType: "private",
+                  },
+                });
+              }}
+            >
+              {({ checked, active }) => (
+                <span className="flex items-center text-sm">
+                  <span
+                    className={classNames(
+                      checked
+                        ? "bg-indigo-600 border-transparent"
+                        : "bg-white border-gray-300",
+                      active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                    )}
+                    aria-hidden="true"
+                  >
+                    <span className="rounded-full bg-white w-1.5 h-1.5" />
+                  </span>
+                  <RadioGroup.Label
+                    as="span"
+                    className="ml-3 block text-sm text-gray-700"
+                    data-testid="round-type-private"
+                  >
+                    No, keep my round private
+                    <p className="text-xs text-gray-400">
+                      Only people with the round link can see your round.
+                    </p>
+                  </RadioGroup.Label>
+                </span>
+              )}
+            </RadioGroup.Option>
+          </div>
+        </RadioGroup>
+      </div>
+    </>
   );
 }
 
