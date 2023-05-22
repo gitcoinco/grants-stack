@@ -84,11 +84,17 @@ function ProjectTitle(props: { projectMetadata: Metadata }) {
   );
 }
 
-function DetailSummary(props: { text: string; testID: string; sm?: boolean }) {
-  const { text, testID, sm } = props;
+function DetailSummary(props: {
+  text: string;
+  testID: string;
+  sm?: boolean;
+  violetcolor?: boolean;
+}) {
+  const { text, testID, sm, violetcolor } = props;
   return (
     <p
-      className={`${sm ? "text-sm" : "text-base"} font-normal text-black`}
+      className={`${sm ? "text-sm" : "text-base"} font-normal 
+      ${violetcolor ? "text-gitcoin-violet-400" : "text-black"}`}
       data-testid={testID}
     >
       {" "}
@@ -147,36 +153,6 @@ function AboutProject(props: {
           />
         </span>
       )}
-      {website && (
-        <span className="flex items-center mt-4 gap-1">
-          <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
-          <a
-            href={website}
-            target="_blank"
-            rel="noreferrer"
-            className="text-base font-normal text-black"
-          >
-            <DetailSummary text={`${website}`} testID="project-website" />
-          </a>
-        </span>
-      )}
-      {projectTwitter && (
-        <span className="flex items-center mt-4 gap-1">
-          <img src={TwitterLogo} className="h-4" alt="Twitter Logo" />
-          <a
-            href={`https://twitter.com/${projectTwitter}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-base font-normal text-black"
-          >
-            <DetailSummary
-              text={`@${projectTwitter}`}
-              testID="project-twitter"
-            />
-          </a>
-          {validTwitterCredential && <GreenVerifiedBadge />}
-        </span>
-      )}
       {projectToRender.createdAt && (
         <span className="flex items-center mt-4 gap-2">
           {/* <CalendarIcon className="h-4 w-4 mr-1 opacity-80" /> */}
@@ -193,6 +169,41 @@ function AboutProject(props: {
           />
         </span>
       )}
+      {website && (
+        <span className="flex items-center mt-4 gap-1">
+          <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <a
+            href={website}
+            target="_blank"
+            rel="noreferrer"
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary
+              text={`${website}`}
+              testID="project-website"
+              violetcolor
+            />
+          </a>
+        </span>
+      )}
+      {projectTwitter && (
+        <span className="flex items-center mt-4 gap-1">
+          <img src={TwitterLogo} className="h-4" alt="Twitter Logo" />
+          <a
+            href={`https://twitter.com/${projectTwitter}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary
+              text={projectTwitter}
+              testID="project-twitter"
+              violetcolor
+            />
+          </a>
+          {validTwitterCredential && <GreenVerifiedBadge />}
+        </span>
+      )}
       {userGithub && (
         <span className="flex items-center mt-4 gap-2">
           <img src={GithubLogo} className="h-4" alt="GitHub Logo" />
@@ -202,7 +213,11 @@ function AboutProject(props: {
             rel="noreferrer"
             className="text-base font-normal text-black"
           >
-            <DetailSummary text={`${userGithub}`} testID="user-github" />
+            <DetailSummary
+              text={`${userGithub}`}
+              testID="user-github"
+              violetcolor
+            />
           </a>
           {validGithubCredential && <GreenVerifiedBadge />}
         </span>
@@ -216,7 +231,11 @@ function AboutProject(props: {
             rel="noreferrer"
             className="text-base font-normal text-black"
           >
-            <DetailSummary text={`${projectGithub}`} testID="project-github" />
+            <DetailSummary
+              text={`${projectGithub}`}
+              testID="project-github"
+              violetcolor
+            />
           </a>
         </span>
       )}
