@@ -16,7 +16,7 @@ import {
   PassportState,
   submitPassport,
 } from "../api/passport";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import { useRoundById } from "../../context/RoundContext";
 import { formatUTCDateAsISOString, getUTCTime } from "common";
@@ -431,7 +431,9 @@ export default function PassportConnect() {
             </div>
           </div>
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );

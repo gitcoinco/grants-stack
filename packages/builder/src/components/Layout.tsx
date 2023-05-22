@@ -2,12 +2,12 @@ import { useChainModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { useAccount } from "wagmi";
+import Footer from "common/src/components/Footer";
 import { WEB3_BAD_CHAIN_ERROR } from "../actions/web3";
 import { RootState } from "../reducers";
 import colors from "../styles/colors";
 import { AlertContainer } from "./base/Alert";
 import Toast from "./base/Toast";
-import Footer from "./Footer";
 import Landing from "./grants/Landing";
 import Header from "./Header";
 import Globe from "./icons/Globe";
@@ -72,10 +72,10 @@ function Layout(ownProps: Props) {
           </div>
         </>
       </Toast>
-      <div className="h-1/8 w-full mb-2">
+      <AlertContainer alerts={props.alerts} />
+      <div className="mr-20 mb-6">
         <Footer />
       </div>
-      <AlertContainer alerts={props.alerts} />
     </div>
   );
 }
