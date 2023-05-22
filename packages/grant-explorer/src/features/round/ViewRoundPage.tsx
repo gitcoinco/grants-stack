@@ -273,14 +273,16 @@ function AfterRoundStart(props: {
             </p>
           </div>
 
-          <p className="text-grey-400 text-sm flex gap-2 mb-2">
+          <p className="text-grey-400 text-sm flex gap-2 mb-4">
             <span>Deployed on:</span>
-            <img
-              className="w-4 h-4 mt-0.5"
-              src={CHAINS[Number(chainId)]?.logo}
-              alt="Round Chain Logo"
-            />
-            <span>{CHAINS[Number(chainId)]?.name}</span>
+            <div className="flex">
+              <img
+                className="w-4 h-4 mt-0.5 mr-1"
+                src={CHAINS[Number(chainId)]?.logo}
+                alt="Round Chain Logo"
+              />
+              <span>{CHAINS[Number(chainId)]?.name}</span>
+            </div>
           </p>
 
           <p className="text-1xl mb-4">
