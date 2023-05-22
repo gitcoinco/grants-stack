@@ -7,7 +7,7 @@ import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-log
 import { ChainId, getTxExplorer } from "../api/utils";
 import { useRoundById } from "../../context/RoundContext";
 import { useQFDonation } from "../../context/QFDonationContext";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import { useCart } from "../../context/CartContext";
 import { useEffect } from "react";
 
@@ -105,7 +105,9 @@ export default function ThankYou() {
             </div>
           </div>
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );

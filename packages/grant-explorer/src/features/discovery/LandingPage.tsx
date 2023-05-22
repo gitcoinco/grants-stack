@@ -10,6 +10,7 @@ import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 import { useDebugMode } from "../api/utils";
+import Footer from "common/src/components/Footer";
 
 const LandingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,32 +108,39 @@ const LandingPage = () => {
   return (
     <>
       <Navbar roundUrlPath={"/"} showWalletInteraction={false} />
-      <Suspense
-        fallback={
-          <div
-            style={{
-              width: "100%",
-              height: "560px",
-            }}
-          />
-        }
-      >
-        <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
-      </Suspense>
-      <div className="container px-4 md:px-0 md:mx-auto">
-        <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
-          Browse through active rounds
-        </h1>
-        <ApplyNowSection
-          isLoading={applyRoundsLoading}
-          roundOverview={roundsInApplicationPhase}
-        />
-        <ActiveRoundsSection
-          isLoading={activeRoundsLoading}
-          setSearchQuery={setSearchQuery}
-          roundOverview={activeRounds}
-          searchQuery={searchQuery}
-        />
+      <div className=" mx-auto pt-8">
+        <main>
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  width: "100%",
+                  height: "560px",
+                }}
+              />
+            }
+          >
+            <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
+          </Suspense>
+          <div className="container px-4 md:px-0 md:mx-auto">
+            <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
+              Browse through active rounds
+            </h1>
+            <ApplyNowSection
+              isLoading={applyRoundsLoading}
+              roundOverview={roundsInApplicationPhase}
+            />
+            <ActiveRoundsSection
+              isLoading={activeRoundsLoading}
+              setSearchQuery={setSearchQuery}
+              roundOverview={activeRounds}
+              searchQuery={searchQuery}
+            />
+          </div>
+        </main>
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );

@@ -26,7 +26,7 @@ import {
   ProjectCredentials,
   ProjectMetadata,
 } from "../api/types";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
@@ -185,7 +185,9 @@ export default function ViewProjectDetails() {
             </>
           )}
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );

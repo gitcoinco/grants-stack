@@ -31,7 +31,7 @@ import {
 import AccessDenied from "../common/AccessDenied";
 import { useWallet } from "../common/Auth";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";

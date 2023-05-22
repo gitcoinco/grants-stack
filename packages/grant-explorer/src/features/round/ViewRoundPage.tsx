@@ -18,7 +18,7 @@ import { useRoundById } from "../../context/RoundContext";
 import { Project, Requirement, Round } from "../api/types";
 import { CHAINS, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import PassportBanner from "../common/PassportBanner";
@@ -114,7 +114,9 @@ function BeforeRoundStart(props: {
             )}
           />
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );
@@ -267,8 +269,8 @@ function AfterRoundStart(props: {
           />
         </div>
         <main>
-          <p 
-            data-testid="round-title" 
+          <p
+            data-testid="round-title"
             className="text-3xl my-5"
           >
             {round.roundMetadata?.name}
@@ -364,8 +366,10 @@ function AfterRoundStart(props: {
             </div>
           </Tab.Group>
         </main>
-        <Footer />
-      </div >
+        <div className="my-11">
+          <Footer />
+        </div >
+      </div>
     </>
   );
 }

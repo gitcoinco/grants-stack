@@ -4,7 +4,7 @@ import { Web3Instance } from "../api/types";
 import { Spinner } from "./Spinner";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
 import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
-import Footer from "./Footer";
+import Footer from "common/src/components/Footer";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Navbar from "./Navbar";
 

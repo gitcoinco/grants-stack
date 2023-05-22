@@ -34,7 +34,7 @@ import {
 import { getPayoutTokenOptions } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import InfoModal from "../common/InfoModal";
 import Navbar from "../common/Navbar";
 import PassportBanner from "../common/PassportBanner";
@@ -297,7 +297,9 @@ export default function ViewCart() {
             {SummaryContainer()}
           </div>
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );
