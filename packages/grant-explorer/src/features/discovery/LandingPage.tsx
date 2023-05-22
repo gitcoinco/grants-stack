@@ -142,7 +142,7 @@ const LandingPage = () => {
             />
           </div>
         </main>
-        <div className="mb-4 mt-4">
+        <div className="my-11">
           <Footer />
         </div>
       </div>

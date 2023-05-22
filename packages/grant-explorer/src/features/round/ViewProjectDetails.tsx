@@ -185,7 +185,9 @@ export default function ViewProjectDetails() {
             </>
           )}
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );

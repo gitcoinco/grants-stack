@@ -105,7 +105,9 @@ export default function ThankYou() {
             </div>
           </div>
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );

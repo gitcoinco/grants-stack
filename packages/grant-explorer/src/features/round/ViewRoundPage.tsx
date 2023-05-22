@@ -108,7 +108,9 @@ function BeforeRoundStart(props: {
             )}
           />
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );
@@ -307,7 +309,9 @@ function AfterRoundStart(props: {
             />
           )}
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );

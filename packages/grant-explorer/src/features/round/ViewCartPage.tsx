@@ -297,7 +297,7 @@ export default function ViewCart() {
             {SummaryContainer()}
           </div>
         </main>
-        <div className="mt-10">
+        <div className="my-11">
           <Footer />
         </div>
       </div>
