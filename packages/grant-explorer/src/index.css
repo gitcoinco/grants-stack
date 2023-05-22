@@ -43,4 +43,12 @@
   p {
     @apply text-base;
   }
+
+  .quick-view-summary {
+    margin-right: 0rem;
+
+    @media (max-width: 768px) {
+      margin-right:-4rem;
+    }
+  }
 }

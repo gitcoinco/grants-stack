@@ -977,7 +977,12 @@ export default function ViewCart() {
           <strong>if</strong>you are using an ERC20 token:
         </p>
         <ul className="list-disc list-inside pl-3 pt-3">
-          <li>Approving the contract to access your wallet</li>
+          <li>
+            Approving the token allowance
+            <i>
+              (If you have approved enough amount previously, this step will be automatically skipped)
+            </i>
+          </li>
           <li>Approving the transaction</li>
         </ul>
       </div>
