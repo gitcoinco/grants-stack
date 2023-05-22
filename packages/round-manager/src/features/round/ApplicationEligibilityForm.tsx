@@ -24,7 +24,7 @@ interface ApplicationEligibilityFormProps {
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
     eligibility: yup.object({
-      description: yup.string().required("This field is required."),
+      description: yup.string().required("A round description is required."),
     }),
   }),
 });

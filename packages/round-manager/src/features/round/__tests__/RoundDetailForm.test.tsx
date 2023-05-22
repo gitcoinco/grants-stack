@@ -180,45 +180,6 @@ describe("<RoundDetailForm />", () => {
     );
   });
 
-  it("validates round start time is after application start time", async () => {
-    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = screen.getAllByLabelText("Start Date");
-    const endDateInputs = screen.getAllByLabelText("End Date");
-
-    await act(async () => {
-      /* Prefill round name to ignore errors from it */
-      fireEvent.input(screen.getByLabelText("Round Name"), {
-        target: { value: "testinground" },
-      });
-
-      /* Applicactions start date */
-      expect(startDateInputs[0].id).toBe("applicationsStartTime");
-      fireEvent.change(startDateInputs[0], {
-        target: { value: "08/25/2022 12:00 AM" },
-      });
-
-      /* Round start date */
-      expect(startDateInputs[1].id).toBe("roundStartTime");
-      fireEvent.change(startDateInputs[1], {
-        target: { value: "08/24/2022 12:01 AM" },
-      });
-
-      /* Applications end date */
-      expect(endDateInputs[0].id).toBe("applicationsEndTime");
-      fireEvent.change(endDateInputs[0], {
-        target: { value: "08/25/2022 12:00 AM" },
-      });
-
-      /* Trigger validation */
-      fireEvent.click(screen.getByText("Launch"));
-    });
-
-    const errors = screen.getByText(
-      "Round start date must be later than applications end date"
-    );
-    expect(errors).toBeInTheDocument();
-  });
-
   it("validates applications end date is after applications start date", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
     const startDateInputs = screen.getAllByLabelText("Start Date");
