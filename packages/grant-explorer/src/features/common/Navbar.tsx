@@ -2,7 +2,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { useCart } from "../../context/CartContext";
-import CustomerSupport from "./CustomerSupport";
 import NavbarCart from "./NavbarCart";
 
 export interface NavbarProps {
@@ -41,14 +40,16 @@ export default function Navbar(props: NavbarProps) {
                   data-testid="connect-wallet-button"
                   id="connect-wallet-button"
                 >
-                  <ConnectButton />
+                  <ConnectButton
+                    showBalance={false}
+                    chainStatus={{ largeScreen: "icon", smallScreen: "icon" }}
+                  />
                 </div>
               </div>
             )}
             {props.isBeforeRoundEndDate && (
               <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
             )}
-            <CustomerSupport />
           </div>
         </div>
       </div>
