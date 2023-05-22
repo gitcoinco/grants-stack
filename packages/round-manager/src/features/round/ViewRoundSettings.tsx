@@ -1609,6 +1609,9 @@ function Funding(props: {
                           matchingCap:
                             props.editedRound?.roundMetadata
                               .quadraticFundingConfig.matchingCap,
+                          matchingCapAmount:
+                            props.editedRound?.roundMetadata
+                              .quadraticFundingConfig.matchingCapAmount,
                         },
                       },
                     });
