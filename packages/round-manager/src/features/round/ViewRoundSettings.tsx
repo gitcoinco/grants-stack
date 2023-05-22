@@ -1839,9 +1839,11 @@ function Funding(props: {
             {props.editedRound?.roundMetadata?.quadraticFundingConfig
               ?.matchingCapAmount ?? 0}
             % of the matching fund (
-            {(matchingFunds / 100) *
+            {(
+            (matchingFunds / 100) *
               (props.editedRound?.roundMetadata?.quadraticFundingConfig
-                ?.matchingCapAmount ?? 0)}{" "}
+                ?.matchingCapAmount ?? 0)
+          ).toFixed(4)}{" "}
             {matchingFundPayoutToken.name}).
           </span>
         </div>
