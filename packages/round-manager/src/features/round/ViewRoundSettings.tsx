@@ -65,8 +65,7 @@ const compareRounds = (
       dNewRound.applicationMetadata
     ),
     MatchAmount: !_.isEqual(
-      dOldRound?.roundMetadata?.quadraticFundingConfig
-        ?.matchingFundsAvailable,
+      dOldRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable,
       dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
     ),
     RoundFeeAddress: false,
@@ -206,7 +205,11 @@ export default function ViewRoundSettings(props: { id?: string }) {
   });
 
   useEffect(() => {
-    setHasChanged(Object.values(compareRounds(round!, editedRound!)).some((value) => value === true));
+    setHasChanged(
+      Object.values(compareRounds(round!, editedRound!)).some(
+        (value) => value === true
+      )
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
 
@@ -1590,9 +1593,7 @@ function Funding(props: {
                   {...props.register(
                     "roundMetadata.quadraticFundingConfig.matchingFundsAvailable"
                   )}
-                  value={
-                    field.value
-                  }
+                  value={field.value}
                   type="number"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                   disabled={
@@ -1600,7 +1601,7 @@ function Funding(props: {
                     props.editMode.canEditOnlyRoundEndDate
                   }
                   onChange={(e) => {
-                    field.onChange((e.target.value));
+                    field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
                       roundMetadata: {
@@ -1695,7 +1696,9 @@ function Funding(props: {
                     !props.editMode.canEditOnlyRoundEndDate
                   }
                   onChange={(e) => {
-                    props.resetField("roundMetadata.quadraticFundingConfig.matchingCapAmount");
+                    props.resetField(
+                      "roundMetadata.quadraticFundingConfig.matchingCapAmount"
+                    );
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1736,7 +1739,9 @@ function Funding(props: {
                       ?.matchingCap ?? false
                   }
                   onChange={(e) => {
-                    props.resetField("roundMetadata.quadraticFundingConfig.matchingCapAmount");
+                    props.resetField(
+                      "roundMetadata.quadraticFundingConfig.matchingCapAmount"
+                    );
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1792,9 +1797,7 @@ function Funding(props: {
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
                       .matchingCap
                   }
-                  value={
-                    field.value
-                  }
+                  value={field.value}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1827,16 +1830,19 @@ function Funding(props: {
         </div>
       </div>
       <div>
-        <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
-          A single project can only receive a maximum of{" "}
-          {props.editedRound?.roundMetadata?.quadraticFundingConfig
-            ?.matchingCapAmount ?? 0}
-          % of the matching fund (
-          {(matchingFunds / 100) *
-            (props.editedRound?.roundMetadata?.quadraticFundingConfig
-              ?.matchingCapAmount ?? 0)}{" "}
-          {matchingFundPayoutToken.name}).
-        </span>
+        {props.editedRound?.roundMetadata?.quadraticFundingConfig
+          .matchingCap && (
+          <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
+            A single project can only receive a maximum of{" "}
+            {props.editedRound?.roundMetadata?.quadraticFundingConfig
+              ?.matchingCapAmount ?? 0}
+            % of the matching fund (
+            {(matchingFunds / 100) *
+              (props.editedRound?.roundMetadata?.quadraticFundingConfig
+                ?.matchingCapAmount ?? 0)}{" "}
+            {matchingFundPayoutToken.name}).
+          </span>
+        )}
       </div>
       <span className="mt-4 inline-flex text-lg font-light text-gray-600 mb-4">
         Minimum Donation Threshold
@@ -1900,7 +1906,9 @@ function Funding(props: {
                     !props.editMode.canEditOnlyRoundEndDate
                   }
                   onChange={(e) => {
-                    props.resetField("roundMetadata.quadraticFundingConfig.minDonationThresholdAmount");
+                    props.resetField(
+                      "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+                    );
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1941,7 +1949,9 @@ function Funding(props: {
                       ?.minDonationThreshold
                   }
                   onChange={(e) => {
-                    props.resetField("roundMetadata.quadraticFundingConfig.minDonationThresholdAmount");
+                    props.resetField(
+                      "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+                    );
                     field.onChange(e.target.value);
                     props.setEditedRound({
                       ...props.editedRound,
@@ -1991,9 +2001,7 @@ function Funding(props: {
                   )}
                   type="number"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                  value={
-                    field.value
-                  }
+                  value={field.value}
                   disabled={
                     (!props.editMode.canEdit &&
                       !props.editMode.canEditOnlyRoundEndDate) ||
@@ -2032,14 +2040,16 @@ function Funding(props: {
         </div>
       </div>
       <div>
-        <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
-          Each donation has to be a minimum of{" "}
-          {props.editedRound?.roundMetadata?.quadraticFundingConfig
-            ?.minDonationThresholdAmount ?? 0}{" "}
-          USD equivalent for it to be eligible for matching.
-        </span>
+        {props.editedRound?.roundMetadata?.quadraticFundingConfig
+          .minDonationThreshold && (
+          <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
+            Each donation has to be a minimum of{" "}
+            {props.editedRound?.roundMetadata?.quadraticFundingConfig
+              ?.minDonationThresholdAmount ?? 0}{" "}
+            USD equivalent for it to be eligible for matching.
+          </span>
+        )}
       </div>
-
       <div>
         <span className="mt-2 inline-flex text-lg font-light text-gray-600 mb-2">
           Sybil Defense
