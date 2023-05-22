@@ -42,10 +42,20 @@ export default function NavbarCart(props: {
 }
 
 function QuickViewIcon(props: { count: number }) {
-  const badgeStyles =
-    props.count >= 100
-      ? { width: 6, paddingRight: 2.5 }
-      : { width: 4, paddingRight: 1.5 };
+  const Badge = tw.div`
+      inline-flex
+      absolute
+      justify-center
+      items-center
+      h-4
+      text-xs
+      text-white
+      bg-violet-400
+      rounded-full
+      -top-1.5
+      ${() => (props.count >= 100 ? "-right-2.5" : "-right-1.5")}
+      ${() => (props.count >= 100 ? "w-6" : "w-4")}
+    `;
 
   return (
     <div className="cursor-pointer">
@@ -66,15 +76,14 @@ function QuickViewIcon(props: { count: number }) {
       </svg>
 
       {props.count > 0 && (
-        <div
-          className={`inline-flex absolute justify-center items-center w-${badgeStyles.width} h-4 text-xs text-white bg-violet-400 rounded-full -top-1.5 -right-${badgeStyles.paddingRight}`}
+        <Badge
           style={{
             fontSize: "0.5rem",
             paddingLeft: 1,
           }}
         >
           {props.count}
-        </div>
+        </Badge>
       )}
     </div>
   );
