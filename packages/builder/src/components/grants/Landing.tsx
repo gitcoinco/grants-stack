@@ -3,7 +3,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import Footer from "common/src/components/Footer";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
 import {
@@ -104,10 +103,6 @@ function Landing() {
           />
         </div>
       </section>
-
-      <div className="mr-20">
-        <Footer />
-      </div>
     </div>
   );
 }
