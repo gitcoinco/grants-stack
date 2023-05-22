@@ -60,7 +60,7 @@ export const RoundValidationSchema = yup.object().shape({
             .string()
             /*Matches www.example.com, example.com, http and https prefixes, but not www.invalid */
             .matches(
-              /^(http:\/\/|https:\/\/|ipfs:\/\/)\S+\.\S+$|^(ipfs:\/\/)\S+$/,
+              /^(http:\/\/|https:\/\/|ipfs:\/\/)?\S+\.\S+$|^(ipfs:\/\/)\S+$/,
               "Must be a valid URL"
             )
             .required("You must provide a valid URL."),
