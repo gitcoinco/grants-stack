@@ -51,7 +51,7 @@ const RoundCard = (props: RoundCardProps) => {
             )}
           </CardDescription>
           <p className="mt-4 text-xs" data-testid="days-left">
-            {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
+            {daysLeft} {daysLeft === 1 ? "day" : "days"} left in application period
           </p>
         </CardContent>
       </a>
