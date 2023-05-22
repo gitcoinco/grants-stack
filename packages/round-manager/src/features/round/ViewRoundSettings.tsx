@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Listbox, Tab, Transition } from "@headlessui/react";
-import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
+import { CheckIcon, InformationCircleIcon, SelectorIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
@@ -39,12 +39,7 @@ import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { horizontalTabStyles } from "../common/Utils";
 import { PayoutTokenInformation } from "./QuadraticFundingForm";
-import {
-  RoundValidationSchema,
-  SupportTypeButton,
-  supportTypes,
-} from "./RoundDetailForm";
-import FormValidationErrorList from "../common/FormValidationErrorList";
+import { applicationValidationSchema as RoundValidationSchema } from "./applicationValidationSchema";
 
 type EditMode = {
   canEdit: boolean;
@@ -2175,3 +2170,72 @@ function Funding(props: {
     </div>
   );
 }
+
+function SupportTypeButton(props: {
+  errors: FieldErrors<Round>;
+  supportType?: SupportType;
+}) {
+  const { supportType } = props;
+  return (
+    <Listbox.Button
+      className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
+        props.errors.roundMetadata?.support?.type
+          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+          : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+      }`}
+      data-testid="support-type-select"
+      id={"roundMetadata.support.type"}
+    >
+      <span className="flex items-center">
+        {supportType?.default ? (
+          <span className="ml-3 block truncate text-gray-400">
+            {supportType?.name}
+          </span>
+        ) : (
+          <span className="ml-3 block truncate">{supportType?.name}</span>
+        )}
+      </span>
+      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+        <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+      </span>
+    </Listbox.Button>
+  );
+}
+
+const supportTypes: SupportType[] = [
+    {
+      name: "Select what type of input.",
+      regex: "https://www.google.com",
+      default: true,
+    },
+    {
+      name: "Email",
+      regex: "https://www.google.com",
+      default: false,
+    },
+    {
+      name: "Website",
+      regex: "https://www.google.com",
+      default: false,
+    },
+    {
+      name: "Discord Group Invite Link",
+      regex: "https://www.google.com",
+      default: false,
+    },
+    {
+      name: "Telegram Group Invite Link",
+      regex: "https://www.google.com",
+      default: false,
+    },
+    {
+      name: "Google Form Link",
+      regex: "https://www.google.com",
+      default: false,
+    },
+    {
+      name: "Other (please provide a link)",
+      regex: "https://www.google.com",
+      default: false,
+    },
+  ];
