@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { render, screen } from "@testing-library/react";
-import ViewRoundPage from "../ViewRoundPage";
-import { GrantApplication, ProgressStatus, Round } from "../../api/types";
+import { useParams } from "react-router-dom";
+import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
   makeGrantApplicationData,
   makeRoundData,
@@ -11,8 +11,8 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
-import { useParams } from "react-router-dom";
+import { GrantApplication, ProgressStatus, Round } from "../../api/types";
+import ViewRoundPage from "../ViewRoundPage";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
@@ -172,10 +172,15 @@ describe("View Round", () => {
         )
       )
     );
+
     expect(screen.getByTestId("side-nav-bar")).toBeInTheDocument();
+    expect(screen.getByText("Fund Contract")).toBeInTheDocument();
     expect(screen.getByText("Grant Applications")).toBeInTheDocument();
+    expect(screen.getByText("Round Settings")).toBeInTheDocument();
     expect(screen.getByText("Round Stats")).toBeInTheDocument();
     expect(screen.getByText("Round Results")).toBeInTheDocument();
+    expect(screen.getByText("Fund Grantees")).toBeInTheDocument();
+    expect(screen.getByText("Reclaim Funds")).toBeInTheDocument();
   });
 
   it("indicates how many of each kind of application there are", () => {
