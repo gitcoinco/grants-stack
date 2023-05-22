@@ -100,6 +100,7 @@ export default function Preview({
         logoImg={props.metadata?.logoImgData ?? DefaultProjectLogo}
         bannerImg={props.metadata?.bannerImgData ?? DefaultProjectBanner}
         showApplications={false}
+        showTabs={false}
       />
       <div className="flex justify-end">
         <Button
