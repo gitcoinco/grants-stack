@@ -34,7 +34,7 @@ export default function FormValidationErrorList({ errors }: any) {
   if (errorsArray.length > 0)
     return (
       <div
-        className="inline-block p-4 text-pink-500 border rounded border-red-900/10 bg-pink-100 mb-8"
+        className="w-full inline-block p-4 text-pink-500 border rounded border-red-900/10 bg-pink-100 mb-8"
         role="alert"
       >
         <strong className="text-pink-500 font-medium text-sm">
