@@ -1,16 +1,16 @@
+import Footer from "common/src/components/Footer";
 import { lazy, Suspense, useEffect, useState } from "react";
-
-const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 import {
-  RoundOverview,
   getActiveRounds,
   getRoundsInApplicationPhase,
+  RoundOverview,
 } from "../api/rounds";
+import { useDebugMode } from "../api/utils";
 import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
-import { useDebugMode } from "../api/utils";
-import Footer from "common/src/components/Footer";
+
+const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 
 const LandingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
