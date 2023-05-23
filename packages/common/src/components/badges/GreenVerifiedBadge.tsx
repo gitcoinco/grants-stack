@@ -1,5 +1,5 @@
-import colors from "../../styles/colors";
-import Shield from "../icons/Shield";
+import colors from "../../../../builder/src/styles/colors";
+import Shield from "../../../../builder/src/components/icons/Shield";
 
 function GreenVerifiedBadge() {
   return (

@@ -1,3 +1,4 @@
+import GreenVerifiedBadge from "common/src/components/badges/GreenVerifiedBadge";
 import { Box } from "@chakra-ui/react";
 import { renderToHTML } from "common";
 import { useSelector } from "react-redux";
@@ -11,7 +12,6 @@ import { formatDateFromMs } from "../../utils/components";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import ApplicationCard from "./ApplicationCard";
-import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 
 export default function About({
   project,
