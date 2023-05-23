@@ -190,7 +190,7 @@ function EditProject() {
           {currentSubText(formStatus)}
         </div>
         {formStatus === ProjectFormStatus.Preview && (
-          <div className="flex flex-row items-center -ml-56">
+          <div className="flex flex-row items-center lg:-ml-56">
             <span className="icon mr-2">
               <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
             </span>
