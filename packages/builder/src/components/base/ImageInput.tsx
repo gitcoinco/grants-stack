@@ -1,6 +1,6 @@
+import colors from "common/src/colors";
 import { useEffect, useRef, useState } from "react";
 import PinataClient from "../../services/pinata";
-import colors from "common/src/colors";
 import CloudUpload from "../icons/CloudUpload";
 import ImageCrop from "./images/ImageCrop";
 import Toast from "./Toast";

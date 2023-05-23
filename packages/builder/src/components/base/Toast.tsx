@@ -1,7 +1,7 @@
+import colors from "common/src/colors";
 import { Fragment, useEffect } from "react";
 import { Transition } from "@headlessui/react";
 import Cross from "../icons/Cross";
-import colors from "common/src/colors";
 
 export default function Toast({
   children,

@@ -1,9 +1,9 @@
+import colors from "common/src/colors";
+import Shield from "common/src/icons/Shield";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { formReset } from "../../actions/projectForm";
 import { slugs } from "../../routes";
-import colors from "common/src/colors";
-import Shield from "common/src/icons/Shield";
 import { BaseModal } from "./BaseModal";
 import Button, { ButtonVariants } from "./Button";
 
