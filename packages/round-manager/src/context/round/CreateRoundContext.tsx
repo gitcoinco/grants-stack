@@ -145,7 +145,6 @@ const _createRound = async ({
       );
     }
 
-    applicationQuestions.applicationSchema.requirements
 
     const { roundMetadataIpfsHash, applicationSchemaIpfsHash } =
       await storeDocuments(
