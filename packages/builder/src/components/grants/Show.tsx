@@ -140,6 +140,7 @@ function Project() {
             logoImg={props.logoImg}
             bannerImg={props.bannerImg}
             showApplications
+            showTabs
           />
         </>
       )}
