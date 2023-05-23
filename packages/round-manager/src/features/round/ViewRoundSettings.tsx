@@ -1829,9 +1829,9 @@ function Funding(props: {
           )}
         </div>
       </div>
-      <div>
-        {props.editedRound?.roundMetadata?.quadraticFundingConfig
-          .matchingCap && (
+
+      {props.editedRound?.roundMetadata?.quadraticFundingConfig.matchingCap && (
+        <div>
           <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
             A single project can only receive a maximum of{" "}
             {props.editedRound?.roundMetadata?.quadraticFundingConfig
@@ -1842,8 +1842,8 @@ function Funding(props: {
                 ?.matchingCapAmount ?? 0)}{" "}
             {matchingFundPayoutToken.name}).
           </span>
-        )}
-      </div>
+        </div>
+      )}
       <span className="mt-4 inline-flex text-lg font-light text-gray-600 mb-4">
         Minimum Donation Threshold
       </span>
@@ -2039,17 +2039,17 @@ function Funding(props: {
           )}
         </div>
       </div>
-      <div>
-        {props.editedRound?.roundMetadata?.quadraticFundingConfig
-          .minDonationThreshold && (
+      {props.editedRound?.roundMetadata?.quadraticFundingConfig
+        .minDonationThreshold && (
+        <div>
           <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
             Each donation has to be a minimum of{" "}
             {props.editedRound?.roundMetadata?.quadraticFundingConfig
               ?.minDonationThresholdAmount ?? 0}{" "}
             USD equivalent for it to be eligible for matching.
           </span>
-        )}
-      </div>
+        </div>
+      )}
       <div>
         <span className="mt-2 inline-flex text-lg font-light text-gray-600 mb-2">
           Sybil Defense
