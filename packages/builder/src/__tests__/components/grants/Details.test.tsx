@@ -41,7 +41,7 @@ describe("<Details />", () => {
 _italic text_
 
 <script>alert("this should be rendered as text")</script>
-        `,
+`,
       });
 
       await act(async () => {
@@ -53,6 +53,7 @@ _italic text_
             bannerImg="img"
             logoImg="img"
             showApplications={false}
+            showTabs
           />,
           store
         );
@@ -104,6 +105,7 @@ _italic text_
             bannerImg="img"
             logoImg="img"
             showApplications={false}
+            showTabs
           />,
           store
         );
@@ -140,6 +142,7 @@ _italic text_
             bannerImg="img"
             logoImg="img"
             showApplications={false}
+            showTabs
           />,
           store
         );
@@ -180,6 +183,7 @@ _italic text_
             bannerImg="img"
             logoImg="img"
             showApplications={false}
+            showTabs
           />,
           store
         );
@@ -216,6 +220,7 @@ _italic text_
             bannerImg="img"
             logoImg="img"
             showApplications={false}
+            showTabs
           />,
           store
         );
@@ -223,5 +228,45 @@ _italic text_
 
       expect(screen.queryByText("Verified")).not.toBeInTheDocument();
     });
+  });
+
+  test("should not show tabs when disabled", async () => {
+    const store = setupStore();
+    const twitterHandle = "my-twitter-handle";
+    const twitterVC = buildVerifiableCredential("Twitter", twitterHandle);
+    twitterVC.issuer = IAM_SERVER;
+
+    const githubHandle = "github-org-handle";
+
+    const project = buildProjectMetadata({
+      projectTwitter: twitterHandle,
+      projectGithub: githubHandle,
+      credentials: {
+        twitter: twitterVC,
+      },
+    });
+
+    const verifyCredentialMock = jest.fn();
+    verifyCredentialMock.mockReturnValue(true);
+    PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
+
+    await act(async () => {
+      renderWrapped(
+        <Details
+          project={project}
+          createdAt={new Date().getTime()}
+          updatedAt={new Date().getTime()}
+          bannerImg="img"
+          logoImg="img"
+          showApplications={false}
+          showTabs={false}
+        />,
+        store
+      );
+    });
+
+    expect(screen.queryByText("About")).not.toBeInTheDocument();
+    expect(screen.queryByText("Stats")).not.toBeInTheDocument();
+    expect(screen.queryByText("Rounds")).not.toBeInTheDocument();
   });
 });
