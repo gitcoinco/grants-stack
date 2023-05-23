@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "../common/styles";
 import { ReactComponent as Banner } from "../../assets/programs/city-voxel.svg";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { usePrograms } from "../../context/program/ReadProgramContext";
 import { ProgressStatus } from "../api/types";

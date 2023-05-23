@@ -10,7 +10,7 @@ import {
 import { useWallet } from "../common/Auth";
 import { Button, Input } from "common/src/styles";
 import Navbar from "../common/Navbar";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import ProgressModal from "../common/ProgressModal";
 import { datadogLogs } from "@datadog/browser-logs";
 import ErrorModal from "../common/ErrorModal";

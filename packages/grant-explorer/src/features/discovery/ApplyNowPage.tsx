@@ -8,6 +8,7 @@ import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
 import { useDebugMode } from "../api/utils";
+import Footer from "common/src/components/Footer";
 
 const ApplyNowPage = () => {
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
@@ -173,6 +174,9 @@ const ApplyNowPage = () => {
         ) : (
           <NoRounds type="apply" />
         )}
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );

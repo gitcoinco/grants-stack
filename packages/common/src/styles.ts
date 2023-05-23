@@ -3,6 +3,7 @@ import tw from "tailwind-styled-components";
 
 type ButtonProps = {
   $variant?: "solid" | "outline" | "secondary";
+  $hidden?: boolean;
 };
 
 export const Button = tw.button`
@@ -16,15 +17,17 @@ export const Button = tw.button`
   disabled:text-slate-500
   disabled:border-slate-200
   disabled:shadow-none
+  disabled:cursor-not-allowed
   ${(p: ButtonProps) => {
     if (p.$variant === "outline") {
-      return "bg-white text-grey-500 border border-grey-100";
+      return "bg-white text-grey-500 border border-grey-100 hover:border-grey-300";
     } else if (p.$variant === "secondary") {
       return "bg-violet-100 text-violet-400 hover:bg-violet-50 hover:brightness-100";
     } else {
       return "bg-violet-400 text-white";
     }
   }}
+  ${(p: ButtonProps) => (p.$hidden ? "hidden" : "")}
 `;
 
 type InputProps = {

@@ -19,9 +19,9 @@ import {
   initialBulkUpdateGrantApplicationState,
 } from "./context/application/BulkUpdateGrantApplicationContext";
 import {
-  initialReadProgramState,
   ReadProgramContext,
   ReadProgramState,
+  initialReadProgramState,
 } from "./context/program/ReadProgramContext";
 import {
   FinalizeRoundContext,
@@ -29,9 +29,9 @@ import {
   initialFinalizeRoundState,
 } from "./context/round/FinalizeRoundContext";
 import {
-  initialRoundState,
   RoundContext,
   RoundState,
+  initialRoundState,
 } from "./context/round/RoundContext";
 import {
   ApplicationStatus,
@@ -75,6 +75,14 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
       name: faker.company.name(),
       programContractAddress: faker.finance.ethereumAddress(),
       roundType: "private",
+      eligibility: {
+        description: faker.lorem.sentence(),
+        requirements: [
+          {
+            requirement: "",
+          },
+        ],
+      },
       quadraticFundingConfig: {
         matchingCap: true,
         matchingCapAmount: 100,

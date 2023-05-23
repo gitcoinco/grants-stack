@@ -34,7 +34,7 @@ import {
 import { getPayoutTokenOptions } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import InfoModal from "../common/InfoModal";
 import Navbar from "../common/Navbar";
 import PassportBanner from "../common/PassportBanner";
@@ -291,7 +291,9 @@ export default function ViewCart() {
             {SummaryContainer()}
           </div>
         </main>
-        <Footer />
+        <div className="my-11">
+          <Footer />
+        </div>
       </div>
     </>
   );
@@ -975,7 +977,12 @@ export default function ViewCart() {
           <strong>if</strong>you are using an ERC20 token:
         </p>
         <ul className="list-disc list-inside pl-3 pt-3">
-          <li>Approving the contract to access your wallet</li>
+          <li>
+            Approving the token allowance
+            <i>
+              (If you have approved enough amount previously, this step will be automatically skipped)
+            </i>
+          </li>
           <li>Approving the transaction</li>
         </ul>
       </div>

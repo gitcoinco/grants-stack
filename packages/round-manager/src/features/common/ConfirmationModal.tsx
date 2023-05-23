@@ -10,6 +10,7 @@ interface ModalProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   confirmButtonAction: () => void;
   cancelButtonAction?: () => void;
+  modalStyle?: "wide" | "normal";
 }
 
 export default function ConfirmationModal({
@@ -20,6 +21,7 @@ export default function ConfirmationModal({
   },
   confirmButtonText = "Confirm",
   cancelButtonAction = () => setIsOpen(false),
+  modalStyle = "normal",
   ...props
 }: ModalProps) {
   const cancelButtonRef = useRef(null);
@@ -61,7 +63,9 @@ export default function ConfirmationModal({
                   <div className="mt-3 text-center sm:mt-0 sm:text-left">
                     <Dialog.Title
                       as="h3"
-                      className="text-base leading-6 font-semibold text-grey-500"
+                      className={`text-base leading-6 font-semibold text-grey-500 ${
+                        modalStyle === "wide" ? "text-center" : ""
+                      }`}
                     >
                       {title}
                     </Dialog.Title>
@@ -70,19 +74,28 @@ export default function ConfirmationModal({
                 </div>
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                   <Button
-                    data-testid="confirm-button"
                     type="button"
-                    className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-4 py-2"
+                    className={`w-full inline-flex text-sm sm:ml-3 ${
+                      modalStyle === "wide"
+                        ? "sm_full justify-center"
+                        : "sm:w-auto"
+                    }`}
                     onClick={props.confirmButtonAction}
+                    data-testid={"confirm-button"}
                   >
                     {confirmButtonText}
                   </Button>
                   <Button
                     type="button"
                     $variant="outline"
-                    className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-4 py-2"
+                    className={`w-full inline-flex text-sm sm:ml-3 ${
+                      modalStyle === "wide"
+                        ? "sm_full justify-center"
+                        : "sm:w-auto"
+                    }`}
                     onClick={cancelButtonAction}
                     ref={cancelButtonRef}
+                    data-testid={"confirm-cancel"}
                   >
                     Cancel
                   </Button>

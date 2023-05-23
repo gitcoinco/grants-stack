@@ -1,6 +1,6 @@
 import Navbar from "./Navbar";
 import { datadogLogs } from "@datadog/browser-logs";
-import Footer from "./Footer";
+import Footer from "common/src/components/Footer";
 
 export default function AccessDenied() {
   datadogLogs.logger.info(`====> Route: NotFound`);

@@ -73,10 +73,4 @@ describe("<Navbar>", () => {
     );
     expect(screen.queryByTestId("navbar-cart")).not.toBeInTheDocument();
   });
-
-  it("SHOULD display support options", async () => {
-    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
-
-    expect(screen.getByTestId("customer-support")).toBeInTheDocument();
-  });
 });

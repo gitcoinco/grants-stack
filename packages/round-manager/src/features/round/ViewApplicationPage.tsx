@@ -18,7 +18,7 @@ import { useWallet } from "../common/Auth";
 import { Button } from "common/src/styles";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
-import Footer from "../common/Footer";
+import Footer from "common/src/components/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
 import ProgressModal from "../common/ProgressModal";
