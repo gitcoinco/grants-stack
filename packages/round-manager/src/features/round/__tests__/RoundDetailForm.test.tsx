@@ -180,7 +180,7 @@ describe("<RoundDetailForm />", () => {
     );
   });
 
-  it("validates applications end date is after applications start date", async () => {
+  it("validates applications end date is after applications start date.", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
     const startDateInputs = screen.getAllByLabelText("Start Date");
     const endDateInputs = screen.getAllByLabelText("End Date");
@@ -208,12 +208,12 @@ describe("<RoundDetailForm />", () => {
     });
 
     const errors = screen.getByText(
-      "Applications end date must be later than applications start date"
+      "Applications end date must be later than applications start date."
     );
     expect(errors).toBeInTheDocument();
   });
 
-  it("validates round end date is after round start date", async () => {
+  it("validates round end date is after round start date.", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
     const startDateInputs = screen.getAllByLabelText("Start Date");
     const endDateInputs = screen.getAllByLabelText("End Date");
@@ -241,7 +241,7 @@ describe("<RoundDetailForm />", () => {
     });
 
     const errors = screen.getByText(
-      "Round end date must be later than the round start date"
+      "Round end date must be later than the round start date."
     );
     expect(errors).toBeInTheDocument();
   });
