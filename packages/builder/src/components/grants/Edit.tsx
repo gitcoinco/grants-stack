@@ -1,3 +1,4 @@
+import { EyeIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -17,10 +18,10 @@ import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Preview from "../base/Preview";
 import ProjectForm from "../base/ProjectForm";
+import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import VerificationForm from "../base/VerificationForm";
 import Cross from "../icons/Cross";
-import PurpleNotificationBox from "../base/PurpleNotificationBox";
 
 function EditProject() {
   const params = useParams();
@@ -188,6 +189,17 @@ function EditProject() {
         <div className="w-full mb-2 inline-block sm:hidden">
           {currentSubText(formStatus)}
         </div>
+        {formStatus === ProjectFormStatus.Preview && (
+          <div className="flex flex-row items-center -ml-56">
+            <span className="icon mr-2">
+              <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
+            </span>
+            <span className="text-sm text-gray-500">
+              This is a preview of your project &apos s public page on Gitcoin
+              Explorer.
+            </span>
+          </div>
+        )}
         <Button
           variant={ButtonVariants.outlineDanger}
           onClick={() => toggleModal(true)}
