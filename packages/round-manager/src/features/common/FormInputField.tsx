@@ -1,17 +1,18 @@
 import { FC } from "react";
-import { UseFormRegisterReturn, FieldErrors } from "react-hook-form";
+import { UseFormRegisterReturn, FieldErrors, FieldPath } from "react-hook-form";
 import { Input } from "common/src/styles";
 import { Round } from "../api/types";
-import { get } from "lodash";
 
 export const FormInputField: FC<{
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   label: string;
-  id: string;
+  id: FieldPath<Round>;
   placeholder?: string;
 }> = ({ register, errors, label, id, placeholder }) => {
-  const errorMessage = get(errors, id)?.message;
+  // @ts-expect-error appears on the error id key-value for the errors object
+  const errorMessage = errors[id]?.message;
+
   const hasError = Boolean(errorMessage);
 
   return (

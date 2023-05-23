@@ -9,7 +9,6 @@ import {
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { Round } from "../api/types";
-import _ from "lodash";
 import { classNames } from "common";
 import { Fragment } from "react";
 
@@ -22,8 +21,8 @@ export const FormDropDown: FC<{
   options: string[];
   defaultValue: string;
 }> = ({ errors, control, label, id, options, defaultValue }) => {
-  // @ts-expect-error "required" appears on the error type, not sure where from
-  const errorMessage = _.get(errors, id)?.message;
+  // @ts-expect-error appears on the error id key-value for the errors object
+  const errorMessage = errors[id]?.message;
   const hasError = Boolean(errorMessage);
   const { field } = useController({
     name: id,
@@ -58,8 +57,7 @@ hasError
                 id={id}
               >
                 <span className="flex items-center">
-                  {/*@ts-expect-error field.value includes the Date type, but we never actually render it */}
-                  <span className="ml-3 block truncate">{field.value}</span>
+                  <span className="ml-3 block truncate">{typeof field.value === 'string' ? field.value : field.value?.toString()}</span>
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
                   <SelectorIcon
