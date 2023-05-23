@@ -139,12 +139,11 @@ const _createRound = async ({
   try {
     datadogLogs.logger.info(`_createRound: ${round}`);
 
-    if (roundMetadataWithProgramContractAddress.eligibility) {
+    if (roundMetadataWithProgramContractAddress && roundMetadataWithProgramContractAddress.eligibility) {
       roundMetadataWithProgramContractAddress.eligibility.requirements = roundMetadataWithProgramContractAddress.eligibility?.requirements.filter(
         obj => obj.requirement != ""
       );
     }
-
 
     const { roundMetadataIpfsHash, applicationSchemaIpfsHash } =
       await storeDocuments(
