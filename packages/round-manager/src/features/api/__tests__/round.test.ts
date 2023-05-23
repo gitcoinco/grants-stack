@@ -22,9 +22,9 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 
 describe("TransactionBuilder", () => {
-  let round: Round = makeRoundData();
+  const round: Round = makeRoundData();
   
-  let signer = ethers.Wallet.createRandom() as Signer;
+  const signer = ethers.Wallet.createRandom() as Signer;
   let transactionBuilder: TransactionBuilder;
 
   beforeEach(() => {
