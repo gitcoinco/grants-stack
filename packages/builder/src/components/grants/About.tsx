@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { GithubLogo, TwitterLogo } from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
-import colors from "../../styles/colors";
+import colors from "common/src/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import { formatDateFromMs } from "../../utils/components";
 import Calendar from "../icons/Calendar";

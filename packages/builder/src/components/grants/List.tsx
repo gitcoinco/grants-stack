@@ -10,7 +10,7 @@ import { RootState } from "../../reducers";
 import { Status } from "../../reducers/projects";
 import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { newGrantPath, roundPath } from "../../routes";
-import colors from "../../styles/colors";
+import colors from "common/src/colors";
 import { parseRoundToApply } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
