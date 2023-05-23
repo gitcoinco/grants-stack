@@ -195,7 +195,7 @@ function EditProject() {
               <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
             </span>
             <span className="text-sm text-gray-500">
-              This is a preview of your project &apos s public page on Gitcoin
+              This is a preview of your project&apos;s public page on Gitcoin
               Explorer.
             </span>
           </div>
