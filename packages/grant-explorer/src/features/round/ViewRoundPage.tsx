@@ -583,12 +583,23 @@ function PreRoundPage(props: {
               {round.roundMetadata?.eligibility.requirements?.map(element)}
             </ul>
           </div>
-          <div className="container mx-auto flex mt-4 mb-8 lg:w-96">
+          <div className="container mx-auto mt-4 mb-8 lg:w-96">
             {isBeforeApplicationStartDate && (
-              <InactiveButton
-                label="Apply to Grant Round"
-                testid="applications-open-button"
-              />
+              <>
+                <div>
+                  <InactiveButton
+                    label="Apply to Grant Round"
+                    testid="applications-open-button"
+                  />
+                  <div className="text-gray-400">
+                    <p className="mt-4">
+                      The applications for this round will start on
+                    </p>
+                    {formatUTCDateAsISOString(round.applicationsEndTime)}
+                    {getUTCTime(round.applicationsEndTime)}.
+                  </div>
+                </div>
+              </>
             )}
 
             {isDuringApplicationPeriod && (
@@ -630,7 +641,7 @@ const InactiveButton = (props: { label: string; testid: string }) => {
   return (
     <Button
       type="button"
-      className="basis-full items-center justify-center shadow-sm text-sm bg-grey-300 rounded border-1 md:h-12"
+      className="w-full basis-full items-center justify-center shadow-sm text-sm bg-grey-300 rounded border-1 md:h-12"
       data-testid={testid}
       disabled={true}
     >
