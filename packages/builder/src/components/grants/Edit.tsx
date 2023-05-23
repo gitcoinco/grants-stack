@@ -1,3 +1,4 @@
+import colors from "common/src/colors";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -10,7 +11,6 @@ import {
 } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
-import colors from "common/src/colors";
 import { ProjectFormStatus } from "../../types";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";

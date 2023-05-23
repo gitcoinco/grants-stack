@@ -1,5 +1,5 @@
-import Stars from "../icons/Stars";
 import colors from "common/src/colors";
+import Stars from "../icons/Stars";
 import { Status } from "../../reducers/newGrant";
 
 function statusMessage(status: Status, error: string | undefined) {

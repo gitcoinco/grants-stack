@@ -1,3 +1,4 @@
+import colors from "common/src/colors";
 import { useChainModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
@@ -5,7 +6,6 @@ import { useAccount } from "wagmi";
 import Footer from "common/src/components/Footer";
 import { WEB3_BAD_CHAIN_ERROR } from "../actions/web3";
 import { RootState } from "../reducers";
-import colors from "common/src/colors";
 import { AlertContainer } from "./base/Alert";
 import Toast from "./base/Toast";
 import Landing from "./grants/Landing";

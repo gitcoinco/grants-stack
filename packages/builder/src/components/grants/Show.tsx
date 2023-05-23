@@ -1,3 +1,4 @@
+import colors from "common/src/colors";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
@@ -10,7 +11,6 @@ import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
-import colors from "common/src/colors";
 import { getProjectImage, ImgTypes } from "../../utils/components";
 import { getProjectURIComponents } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
