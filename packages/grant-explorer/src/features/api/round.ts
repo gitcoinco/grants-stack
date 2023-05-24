@@ -31,6 +31,7 @@ export interface RoundResult {
   applicationsEndTime: string;
   roundStartTime: string;
   roundEndTime: string;
+  matchAmount: string;
   token: string;
   votingStrategy: string;
   projectsMetaPtr?: MetadataPointer | null;
@@ -90,6 +91,7 @@ export async function getRoundById(
             applicationsEndTime
             roundStartTime
             roundEndTime
+            matchAmount
             token
             votingStrategy
             projectsMetaPtr {
@@ -144,6 +146,7 @@ export async function getRoundById(
       applicationsEndTime: new Date(parseInt(round.applicationsEndTime) * 1000),
       roundStartTime: new Date(parseInt(round.roundStartTime) * 1000),
       roundEndTime: new Date(parseInt(round.roundEndTime) * 1000),
+      matchAmount: round.matchAmount, 
       token: round.token,
       votingStrategy: round.votingStrategy,
       ownedBy: round.program.id,

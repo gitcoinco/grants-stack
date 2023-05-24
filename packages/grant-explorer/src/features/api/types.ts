@@ -99,6 +99,11 @@ export interface Round {
       minDonationThresholdAmount?: number;
       sybilDefense?: boolean;
     };
+    config?: {
+      sybilDefenseEnabled: boolean
+      matchingCapPercentage: number
+      minDonationThresholdAmount: bigint
+    };
     support?: {
       type: string;
       info: string;
@@ -132,6 +137,10 @@ export interface Round {
    * Unix timestamp after which grants cannot apply to a round
    */
   applicationsEndTime: Date;
+  /**
+   * TODO
+   */
+  matchAmount: string; 
   /**
    * Contract address of the token used to payout match amounts at the end of a round
    */

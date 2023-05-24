@@ -96,6 +96,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     applicationsEndTime,
     roundStartTime,
     roundEndTime,
+    matchAmount: faker.finance.amount().toString(),
     token: ethers.constants.AddressZero, // to match our token list
     votingStrategy: faker.finance.ethereumAddress(),
     payoutStrategy: {

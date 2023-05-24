@@ -105,6 +105,7 @@ export async function getRoundById(
               roundStartTime
               roundEndTime
               roundFeePercentage
+              matchAmount
               token
               projectsMetaPtr {
                 pointer
@@ -183,6 +184,7 @@ export async function getRoundById(
       roundEndTime: new Date(Number(round.roundEndTime) * 1000),
       protocolFeePercentage: protocolFeePercentage,
       roundFeePercentage: roundFeePercentage,
+      matchAmount: round.matchAmount,
       token: round.token,
       votingStrategy: res.data.rounds[0].votingStrategy,
       payoutStrategy: res.data.rounds[0].payoutStrategy,
@@ -239,6 +241,8 @@ export async function listRounds(
               applicationsEndTime
               roundStartTime
               roundEndTime
+              matchAmount
+              token
               roles(where: {
                 role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
               }) {
@@ -274,6 +278,7 @@ export async function listRounds(
         applicationsEndTime: new Date(round.applicationsEndTime * 1000),
         roundStartTime: new Date(round.roundStartTime * 1000),
         roundEndTime: new Date(round.roundEndTime * 1000),
+        matchAmount: round.matchAmount,
         token: round.token,
         votingStrategy: round.votingStrategy,
         payoutStrategy: res.data.rounds[0].payoutStrategy,
@@ -336,7 +341,8 @@ export async function deployRoundContract(
 
     // Ensure tokenAmount is normalized to token decimals
     const tokenAmount =
-      round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable || 0;
+      round.matchAmount || 0;
+    // TODO: Use Contract to get token amount and decimals
     const token = payoutTokens.filter(
       (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase(),
     )[0];
@@ -414,6 +420,7 @@ interface RoundResult {
   applicationsEndTime: string;
   roundStartTime: string;
   roundEndTime: string;
+  matchAmount: string;
   token: string;
   votingStrategy: {
     id: string;

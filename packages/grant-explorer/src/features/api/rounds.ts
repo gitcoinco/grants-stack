@@ -128,7 +128,6 @@ export async function getRoundsInApplicationPhase(
           roundEndTime
           matchAmount
           token
-
           projects(where:{
             status: 1
           }) {
@@ -189,7 +188,6 @@ export async function getActiveRounds(debugModeEnabled: boolean): Promise<{
           roundEndTime
           matchAmount
           token
-
           projects(where:{
             status: 1
           }) {

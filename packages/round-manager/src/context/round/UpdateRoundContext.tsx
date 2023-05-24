@@ -124,8 +124,7 @@ const _updateRound = async ({
       console.log("updating match amount")
       const decimals = getPayoutTokenOptions(chainId).find(token => token.address === round.token)?.decimal
       // use ethers to convert amount using decimals
-      const arg = ethers.utils.parseUnits(round?.roundMetadata?.quadraticFundingConfig
-        ?.matchingFundsAvailable.toString(), decimals);
+      const arg = ethers.utils.parseUnits(round?.matchAmount.toString(), decimals);
       transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [arg]);
       console.log(arg.toString());
     }

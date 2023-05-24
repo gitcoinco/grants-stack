@@ -281,7 +281,7 @@ function AfterRoundStart(props: {
 
           <p className="text-1xl mb-4">
             Matching funds available: &nbsp;
-            {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
+            {round.matchAmount.toLocaleString()}
             &nbsp;
             {matchingFundPayoutTokenName}
           </p>

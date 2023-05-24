@@ -124,8 +124,7 @@ export default function FundContract(props: {
 
   const matchingFunds =
     (props.round &&
-      props.round.roundMetadata.quadraticFundingConfig
-        ?.matchingFundsAvailable) ??
+      props.round.matchAmount) ??
     0;
 
   const matchingFundsInUSD =
