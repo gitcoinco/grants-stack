@@ -44,6 +44,7 @@ import {
   SupportTypeButton,
   supportTypes,
 } from "./RoundDetailForm";
+import FormValidationErrorList from "../common/FormValidationErrorList";
 
 type EditMode = {
   canEdit: boolean;
@@ -157,7 +158,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
       quadraticFundingConfig: yup.object({
         matchingFundsAvailable: yup
           .number()
-          .typeError("Invalid value")
+          .typeError("Invalid value.")
           .min(
             round?.roundMetadata?.quadraticFundingConfig
               ?.matchingFundsAvailable ?? 0,
@@ -167,23 +168,23 @@ export default function ViewRoundSettings(props: { id?: string }) {
           is: (val: any) => val === "yes",
           then: yup
             .number()
-            .typeError("Invalid value")
+            .typeError("Invalid value.")
             .positive()
             .integer()
             .required("This field is required.")
-            .moreThan(0.001, "Must be greater than zero (0)")
-            .lessThan(101, "Must be equal or less than 100"),
+            .moreThan(0.001, "Must be greater than zero (0).")
+            .lessThan(101, "Must be equal or less than 100."),
           otherwise: yup.number().notRequired(),
         }),
         minDonationThresholdAmount: yup.number().when("minDonationThreshold", {
           is: (val: any) => val === "yes",
           then: yup
             .number()
-            .typeError("Invalid value")
+            .typeError("Invalid value.")
             .positive()
             .integer()
-            .required("This field is required")
-            .moreThan(0, "Must be greater than 0"),
+            .required("This field is required.")
+            .moreThan(0, "Must be greater than 0."),
           otherwise: yup.number().notRequired(),
         }),
       }),
@@ -392,6 +393,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
             Date.
           </p>
         </div>
+        <FormValidationErrorList errors={errors} />
         <Tab.Group>
           <div className="justify-end grow relative">
             <Tab.List className="border-b mb-6 flex items-center justify-between">
@@ -2062,7 +2064,6 @@ function Funding(props: {
           USD equivalent for it to be eligible for matching.
         </span>
       </div>
-
       <div>
         <span className="mt-2 inline-flex text-lg font-light text-gray-600 mb-2">
           Sybil Defense
