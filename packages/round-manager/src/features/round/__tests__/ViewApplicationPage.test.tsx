@@ -22,6 +22,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import {
   getApplicationsByRoundId,
+  getApplicationById,
   updateApplicationStatuses,
 } from "../../api/application";
 import { faker } from "@faker-js/faker";
@@ -93,6 +94,7 @@ describe("ViewApplicationPage", () => {
     (getApplicationsByRoundId as jest.Mock).mockRejectedValue(
       "No application :("
     );
+    (getApplicationById as any).mockResolvedValue("no Application :(");
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [],
@@ -106,6 +108,7 @@ describe("ViewApplicationPage", () => {
   it("should display access denied when wallet accessing is not round operator", () => {
     const application = makeGrantApplicationData({ applicationIdOverride });
     (getApplicationsByRoundId as any).mockResolvedValue(application);
+    (getApplicationById as any).mockResolvedValue(application);
     const wrongAddress = faker.finance.ethereumAddress();
     (useWallet as jest.Mock).mockImplementation(() => ({
       ...mockWallet,
@@ -144,6 +147,8 @@ describe("ViewApplicationPage", () => {
     (getApplicationsByRoundId as any).mockResolvedValue(
       grantApplicationWithApplicationAnswers
     );
+    (getApplicationById as any).mockResolvedValue(grantApplicationWithApplicationAnswers);
+
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplicationWithApplicationAnswers],
@@ -164,6 +169,8 @@ describe("ViewApplicationPage", () => {
         roundIdOverride,
       });
       (getApplicationsByRoundId as any).mockResolvedValue(application);
+      (getApplicationById as any).mockResolvedValue(application);
+
     });
 
     it("should open confirmation modal when approve is clicked", async () => {
@@ -310,6 +317,8 @@ describe("ViewApplicationPage verification badges", () => {
     (getApplicationsByRoundId as any).mockResolvedValue(
       grantApplicationWithNoVc
     );
+    (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
+    (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplicationWithNoVc],
@@ -336,6 +345,7 @@ describe("ViewApplicationPage verification badges", () => {
     (getApplicationsByRoundId as any).mockResolvedValue(
       grantApplicationWithNoVc
     );
+    (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplicationWithNoVc],
@@ -366,13 +376,14 @@ describe("ViewApplicationPage verification badges", () => {
       (getApplicationsByRoundId as any).mockResolvedValue(
         grantApplicationWithValidVc
       );
+      (getApplicationById as any).mockResolvedValue(grantApplicationWithValidVc);
 
       renderWithContext(<ViewApplicationPage />, {
         applications: [grantApplicationWithValidVc],
       });
 
       expect(
-        await screen.findByTestId(`${provider}-verifiable-credential`)
+        await screen.findByTestId(`verified-badge`)
       ).toBeInTheDocument();
     }
   );
@@ -387,6 +398,7 @@ describe("ViewApplicationPage verification badges", () => {
     });
     grantApplication.project!.projectTwitter = handle.toUpperCase();
     (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
+    (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -394,7 +406,7 @@ describe("ViewApplicationPage verification badges", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId(`${provider}-verifiable-credential`)
+        screen.getByTestId(`verified-badge`)
       ).toBeInTheDocument();
     });
     expect(
@@ -412,6 +424,7 @@ describe("ViewApplicationPage verification badges", () => {
     });
     grantApplication.project!.projectGithub = handle.toUpperCase();
     (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
+    (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -419,7 +432,7 @@ describe("ViewApplicationPage verification badges", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId(`${provider}-verifiable-credential`)
+        screen.getByTestId(`verified-badge`)
       ).toBeInTheDocument();
     });
     expect(
@@ -439,6 +452,7 @@ describe("ViewApplicationPage verification badges", () => {
         ...overrides,
       });
       (getApplicationsByRoundId as any).mockResolvedValue(grantApplicationStub);
+      (getApplicationById as any).mockResolvedValue(grantApplicationStub);
 
       renderWithContext(<ViewApplicationPage />, {
         applications: [grantApplicationStub],
@@ -468,6 +482,9 @@ describe("ViewApplicationPage verification badges", () => {
       (getApplicationsByRoundId as any).mockResolvedValue(
         noGithubVerification.application
       );
+      (getApplicationById as any).mockResolvedValue(noGithubVerification.application
+      );
+
 
       renderWithContext(<ViewApplicationPage />, noGithubVerification);
 
@@ -487,6 +504,7 @@ describe("ViewApplicationPage verification badges", () => {
     });
     grantApplication.project!.credentials["github"].issuer = fakeIssuer;
     (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
+    (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -512,6 +530,7 @@ describe("ViewApplicationPage verification badges", () => {
     });
     grantApplication.project!.projectTwitter = "not some handle";
     (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
+    (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -537,6 +556,7 @@ describe("ViewApplicationPage verification badges", () => {
     });
     grantApplication.project!.projectGithub = "not some handle";
     (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
+    (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -567,6 +587,7 @@ describe("ViewApplicationPage verification badges", () => {
         it.address = "bad";
       });
       (getApplicationsByRoundId as any).mockResolvedValue(grantApplicationData);
+      (getApplicationById as any).mockResolvedValue(grantApplicationData);
 
       renderWithContext(<ViewApplicationPage />, {
         applications: [grantApplicationData],
