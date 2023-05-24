@@ -11,6 +11,7 @@ import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { Round } from "../api/types";
 import { classNames } from "common";
 import { Fragment } from "react";
+import { get } from "lodash";
 
 export const FormDropDown: FC<{
   register: UseFormRegisterReturn<string>;
@@ -22,7 +23,7 @@ export const FormDropDown: FC<{
   defaultValue: string;
 }> = ({ errors, control, label, id, options, defaultValue }) => {
   // @ts-expect-error appears on the error id key-value for the errors object
-  const errorMessage = errors[id]?.message;
+  const errorMessage = get(errors, id)?.message;
   const hasError = Boolean(errorMessage);
   const { field } = useController({
     name: id,

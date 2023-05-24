@@ -2,6 +2,7 @@ import { FC } from "react";
 import { UseFormRegisterReturn, FieldErrors, FieldPath } from "react-hook-form";
 import { Input } from "common/src/styles";
 import { Round } from "../api/types";
+import { get } from "lodash";
 
 export const FormInputField: FC<{
   register: UseFormRegisterReturn<string>;
@@ -11,7 +12,7 @@ export const FormInputField: FC<{
   placeholder?: string;
 }> = ({ register, errors, label, id, placeholder }) => {
   // @ts-expect-error appears on the error id key-value for the errors object
-  const errorMessage = errors[id]?.message;
+  const errorMessage = get(errors, id)?.message;
 
   const hasError = Boolean(errorMessage);
 
