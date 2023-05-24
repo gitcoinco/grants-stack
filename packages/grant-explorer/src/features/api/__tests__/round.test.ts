@@ -157,9 +157,12 @@ describe("getRoundById", () => {
         },
       };
 
-      (graphql_fetch as jest.Mock)
-        .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
-        .mockResolvedValueOnce(graphQLResultWithProjectOwners);
+      // (graphql_fetch as jest.Mock)
+      //   .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
+      //   .mockResolvedValueOnce(graphQLResultWithProjectOwners);
+        (getProjectOwners as jest.Mock).mockResolvedValue([
+          "0x4873178bea2dcd7022f0ef6c70048b0e05bf9017",
+        ]);
 
       (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
         if (pointer === expectedRoundData.store?.pointer) {
