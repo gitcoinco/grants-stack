@@ -59,7 +59,7 @@ describe("<QuadraticFundingForm />", () => {
     fireEvent.click(screen.getByText("Launch"));
 
     const errors = await screen.findByText(
-      "You must select a payout token for your round."
+      "You must select a token."
     );
     expect(errors).toBeInTheDocument();
   });

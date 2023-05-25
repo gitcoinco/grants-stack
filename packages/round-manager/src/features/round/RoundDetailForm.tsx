@@ -8,7 +8,7 @@ import {
 import { Program } from "../api/types";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
-import _ from "lodash";
+import { merge } from "lodash";
 import { RoundName, ProgramChain, ContactInformation, RoundDatetime, RoundType, Support } from "./ApplicationFormComponents";
 import moment from "moment";
 import { roundDetailsValidationSchema } from "./formValidators";
@@ -53,7 +53,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const [roundStartDate, setRoundStartDate] = useState<moment.Moment>();
 
   const next: SubmitHandler<RoundDetails> = async (values) => {
-    const data = _.merge(formData, values);
+    const data = merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
   };
