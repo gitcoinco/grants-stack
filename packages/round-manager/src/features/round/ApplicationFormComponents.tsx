@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FC } from "react";
 import "react-datetime/css/react-datetime.css";
 import {
   Control,
-  Controller,
   FieldErrors,
   useController,
   UseFormRegisterReturn,
 } from "react-hook-form";
 import { Listbox, RadioGroup } from "@headlessui/react";
-import { Program, Round } from "../api/types";
+import { Program } from "../api/types";
 import { classNames } from "common";
 import moment from "moment";
 import { FormInputField } from "../common/FormInputField";
 import { FormDropDown } from "../common/FormDropDown";
+import { RoundDetails } from "./RoundDetailForm";
+import { Datetime } from "../common/Datetime";
 
 export function RoundName(
   props: any
@@ -22,7 +22,7 @@ export function RoundName(
     <FormInputField
       {...props}
       label="Round Name"
-      id="roundMetadata.name"
+      id="roundName"
       placeholder="Enter round name here."    />
   );
 }
@@ -65,18 +65,17 @@ export const ContactInformation = (props: any) => (
   <FormInputField
     {...props}
     label="Contact Information"
-    id="roundMetadata.support.info"
+    id="roundSupport.input"
     placeholder="Enter desired form of contact here. Ex: website, email..."
   />
 );
 
 export function Support(props: {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  control: Control<Round>;
+  errors: FieldErrors<RoundDetails>;
+  control: Control<RoundDetails>;
 }) {
   const supportTypes = [
-    "Select what type of input.",
     "Email",
     "Website",
     "Discord Group Invite Link",
@@ -91,7 +90,7 @@ export function Support(props: {
       errors={props.errors}
       control={props.control}
       label="Support Input"
-      id="roundMetadata.support.type"
+      id="roundSupport.type"
       options={supportTypes}
       defaultValue={supportTypes[0]}
     />
@@ -100,11 +99,10 @@ export function Support(props: {
 
 export function RoundType(props: {
   register: UseFormRegisterReturn<string>;
-  control?: Control<Round>;
+  control?: Control<RoundDetails>;
 }) {
   const { field: roundTypeField } = useController({
-    name: "roundMetadata.roundType",
-    defaultValue: "",
+    name: "roundVisibility",
     control: props.control,
     rules: {
       required: true,
@@ -181,9 +179,8 @@ export function RoundType(props: {
   );
 }
 
-
-interface DatetimeProps {
-  control: Control<Round>;
+interface RoundDatetimeProps {
+  control: Control<RoundDetails>;
   name: any;
   label: string;
   date?: moment.Moment;
@@ -191,37 +188,19 @@ interface DatetimeProps {
   minDate?: moment.Moment;
 }
 
-export const Datetime: FC<DatetimeProps> = ({ control, name, label, date, setDate, minDate }) => {
-  const now = moment().format('YYYY-MM-DDTHH:mm');
+// use datetime common component
+export function RoundDatetime(props: RoundDatetimeProps) {
+  const { control, name, label, date, setDate, minDate } = props;
   return (
-    <div className="relative w-full border-0 p-0 placeholder-grey-40 focus:ring-0 text-sm">
-      <label
-        htmlFor={name}
-        className="block text-[10px]"
-      >
-        {label}
-      </label>
-      <Controller
+    <div className="col-span-6 sm:col-span-3">
+      <Datetime
         control={control}
         name={name}
-        defaultValue={date?.format('YYYY-MM-DDTHH:mm')}
-        render={({ field }) => (
-          <input
-            data-testid={`${name}-testid`} 
-            type="datetime-local"
-            {...field}
-            min={minDate ? minDate.format('YYYY-MM-DDTHH:mm') : now}
-            className="block w-full border-0 p-0 focus:ring-0"
-            onChange={(e) => {
-              // Convert the local datetime to UTC
-              const date = moment.utc(e.target.value);
-              if (setDate) setDate(date);
-              field.onChange(e.target.value);
-            }}
-          />
-        )}
+        label={label}
+        date={date}
+        setDate={setDate}
+        minDate={minDate}
       />
     </div>
   );
-};
-
+}

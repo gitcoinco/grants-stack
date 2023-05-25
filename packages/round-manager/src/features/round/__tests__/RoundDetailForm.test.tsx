@@ -84,10 +84,10 @@ describe("<RoundDetailForm />", () => {
   it("renders date components", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
 
-    const appStartDateInput = screen.getByTestId("applicationsStartTime-testid");
-    const appEndDateInput = screen.getByTestId("applicationsEndTime-testid");
-    const roundStartDateInput = screen.getByTestId("roundStartTime-testid");
-    const roundEndDateInput = screen.getByTestId("roundEndTime-testid");
+    const appStartDateInput = screen.getByTestId("roundApplicationsStartTime-testid");
+    const appEndDateInput = screen.getByTestId("roundApplicationsEndTime-testid");
+    const roundStartDateInput = screen.getByTestId("roundVotingStartTime-testid");
+    const roundEndDateInput = screen.getByTestId("roundVotingEndTime-testid");
 
     expect(appStartDateInput).toBeInTheDocument();
     expect(appEndDateInput).toBeInTheDocument();
@@ -129,10 +129,10 @@ describe("<RoundDetailForm />", () => {
       name: /next|launch/i,
     });
 
-    const supportSelection = screen.getByTestId("roundMetadata.support.type-testid");
+    const supportSelection = screen.getByTestId("roundSupport.type-testid");
     fireEvent.click(supportSelection);
 
-    const emailSupportOption = screen.getByTestId("roundMetadata.support.type-option-Email");
+    const emailSupportOption = screen.getByTestId("roundSupport.type-option-Email");
     fireEvent.click(emailSupportOption);
 
     const infoInput = screen.getByRole("textbox", {
@@ -157,10 +157,10 @@ describe("<RoundDetailForm />", () => {
       name: /next|launch/i,
     });
 
-    const supportSelection = screen.getByTestId("roundMetadata.support.type-testid");
+    const supportSelection = screen.getByTestId("roundSupport.type-testid");
     fireEvent.click(supportSelection);
 
-    const webSupportOption = screen.getByTestId("roundMetadata.support.type-option-Website");
+    const webSupportOption = screen.getByTestId("roundSupport.type-option-Website");
     fireEvent.click(webSupportOption);
 
     const infoInput = screen.getByRole("textbox", {
@@ -185,14 +185,14 @@ describe("<RoundDetailForm />", () => {
   it("validates round start time is after application start time", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
 
-    const appStartDateInput = screen.getByTestId("applicationsStartTime-testid");
-    const appEndDateInput = screen.getByTestId("applicationsEndTime-testid");
-    const roundStartDateInput = screen.getByTestId("roundStartTime-testid");
-    const roundEndDateInput = screen.getByTestId("roundEndTime-testid");
+    const appStartDateInput = screen.getByTestId("roundApplicationsStartTime-testid");
+    const appEndDateInput = screen.getByTestId("roundApplicationsEndTime-testid");
+    const roundStartDateInput = screen.getByTestId("roundVotingStartTime-testid");
+    const roundEndDateInput = screen.getByTestId("roundVotingEndTime-testid");
 
     await act(async () => {
       /* Prefill round name to ignore errors from it */
-      fireEvent.input(screen.getByTestId("roundMetadata.name-testid"), {
+      fireEvent.input(screen.getByTestId("roundName-testid"), {
         target: { value: "testinground" },
       });
 
@@ -229,12 +229,12 @@ describe("<RoundDetailForm />", () => {
   it("validates applications end date is after applications start date", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
     
-    const appStartDateInput = screen.getByTestId("applicationsStartTime-testid");
-    const appEndDateInput = screen.getByTestId("applicationsEndTime-testid");
+    const appStartDateInput = screen.getByTestId("roundApplicationsStartTime-testid");
+    const appEndDateInput = screen.getByTestId("roundApplicationsEndTime-testid");
 
     await act(async () => {
       /* Prefill round name to ignore errors from it */
-      fireEvent.input(screen.getByTestId("roundMetadata.name-testid"), {
+      fireEvent.input(screen.getByTestId("roundName-testid"), {
         target: { value: "testinground" },
       });
 
@@ -260,12 +260,12 @@ describe("<RoundDetailForm />", () => {
 
   it("validates round end date is after round start date", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const roundStartDateInput = screen.getByTestId("roundStartTime-testid");
-    const roundEndDateInput = screen.getByTestId("roundEndTime-testid");
+    const roundStartDateInput = screen.getByTestId("roundVotingStartTime-testid");
+    const roundEndDateInput = screen.getByTestId("roundVotingEndTime-testid");
 
     await act(async () => {
       /* Prefill round name to ignore errors from it */
-      fireEvent.input(screen.getByTestId("roundMetadata.name-testid"), {
+      fireEvent.input(screen.getByTestId("roundName-testid"), {
         target: { value: "testinground" },
       });
 
@@ -284,7 +284,7 @@ describe("<RoundDetailForm />", () => {
     });
 
     // expect screen to remain on same page
-    expect(screen.getByTestId("roundStartTime-testid")).toBeInTheDocument();
+    expect(screen.getByTestId("roundVotingStartTime-testid")).toBeInTheDocument();
 
   });
 
@@ -309,20 +309,20 @@ describe("<RoundDetailForm />", () => {
       </FormContext.Provider>
     );
 
-    const appStartDateInput = screen.getByTestId("applicationsStartTime-testid");
-    const appEndDateInput = screen.getByTestId("applicationsEndTime-testid");
-    const roundStartDateInput = screen.getByTestId("roundStartTime-testid");
-    const roundEndDateInput = screen.getByTestId("roundEndTime-testid");
+    const appStartDateInput = screen.getByTestId("roundApplicationsStartTime-testid");
+    const appEndDateInput = screen.getByTestId("roundApplicationsEndTime-testid");
+    const roundStartDateInput = screen.getByTestId("roundVotingStartTime-testid");
+    const roundEndDateInput = screen.getByTestId("roundVotingEndTime-testid");
 
     /* Round Name */
-    fireEvent.input(screen.getByTestId("roundMetadata.name-testid"), {
+    fireEvent.input(screen.getByTestId("roundName-testid"), {
       target: { value: "testinground" },
     });
 
     /* Support Selection */
-    const supportSelection = screen.getByTestId("roundMetadata.support.type-testid");
+    const supportSelection = screen.getByTestId("roundSupport.type-testid");
     fireEvent.click(supportSelection);
-    const emailSupportOption = screen.getByTestId("roundMetadata.support.type-option-Email");
+    const emailSupportOption = screen.getByTestId("roundSupport.type-option-Email");
     fireEvent.click(emailSupportOption);
 
     /* Contact Information */

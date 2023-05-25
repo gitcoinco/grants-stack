@@ -1,33 +1,34 @@
-import { FC } from "react";
+import { ReactElement } from "react";
 import {
   Control,
   useController,
   UseFormRegisterReturn,
   FieldErrors,
   FieldPath,
+  FieldValues,
 } from "react-hook-form";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { Round } from "../api/types";
 import { classNames } from "common";
 import { Fragment } from "react";
 import { get } from "lodash";
 
-export const FormDropDown: FC<{
+interface FormDropDownProps<T extends FieldValues> {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  control: Control<Round>;
+  errors: FieldErrors<T>;
+  control: Control<T>;
   label: string;
-  id: FieldPath<Round>;
+  id: FieldPath<T>;
   options: string[];
   defaultValue: string;
-}> = ({ errors, control, label, id, options, defaultValue }) => {
-  // @ts-expect-error appears on the error id key-value for the errors object
+}
+
+export const FormDropDown = <T extends FieldValues,>({ errors, control, label, id, options }: FormDropDownProps<T>): ReactElement => {
+
   const errorMessage = get(errors, id)?.message;
   const hasError = Boolean(errorMessage);
   const { field } = useController({
     name: id,
-    defaultValue: defaultValue,
     control: control,
     rules: {
       required: true,
@@ -50,10 +51,10 @@ export const FormDropDown: FC<{
             <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
               <Listbox.Button
                 className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
-hasError
-? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-: "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-}`}
+                  hasError
+                  ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                  : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                }`}
                 data-testid={`${id}-testid`}
                 id={id}
               >
@@ -118,7 +119,7 @@ hasError
               </Transition>
             </div>
             {hasError && (
-              <p className="mt-2 text-xs text-pink-500">{errorMessage}</p>
+              <p className="mt-2 text-xs text-pink-500">{errorMessage?.toString()}</p>
             )}
           </div>
         )}

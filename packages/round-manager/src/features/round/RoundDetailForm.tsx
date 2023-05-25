@@ -5,13 +5,26 @@ import {
   SubmitHandler,
   useForm,
 } from "react-hook-form";
-import { Program, Round } from "../api/types";
+import { Program } from "../api/types";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
 import _ from "lodash";
-import { applicationValidationSchema as ValidationSchema } from "./applicationValidationSchema";
-import { RoundName, ProgramChain, ContactInformation, Datetime, RoundType, Support } from "./ApplicationFormComponents";
+import { RoundName, ProgramChain, ContactInformation, RoundDatetime, RoundType, Support } from "./ApplicationFormComponents";
 import moment from "moment";
+import { roundDetailsValidationSchema } from "./formValidators";
+
+export type RoundDetails = {
+  roundName: string;
+  roundSupport: {
+    type: string;
+    input: string;
+  };
+  roundApplicationsStartTime: Date;
+  roundApplicationsEndTime: Date;
+  roundVotingStartTime: Date;
+  roundVotingEndTime: Date;
+  roundVisibility: string;
+};
 
 interface RoundDetailFormProps {
   stepper: typeof FormStepper;
@@ -22,22 +35,16 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const program = props.initialData?.program;
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
   useContext(FormContext);
-  const defaultRoundMetadata = {
-    ...((formData as Partial<Round>)?.roundMetadata ?? {}),
-    feesPercentage: 0,
-    feesAddress: "",
-  };
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Round>({
+  } = useForm<RoundDetails>({
     defaultValues: {
       ...formData,
-      roundMetadata: defaultRoundMetadata,
     },
-    resolver: yupResolver(ValidationSchema),
+    resolver: yupResolver(roundDetailsValidationSchema),
   });
 
   const FormStepper = props.stepper;
@@ -45,7 +52,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const [applicationEndDate, setApplicationEndDate] = useState<moment.Moment>();
   const [roundStartDate, setRoundStartDate] = useState<moment.Moment>();
 
-  const next: SubmitHandler<Round> = async (values) => {
+  const next: SubmitHandler<RoundDetails> = async (values) => {
     const data = _.merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
@@ -75,7 +82,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
             <div className="pt-7 sm:px-6 bg-white">
               <div className="grid grid-cols-6 gap-6">
                 <RoundName
-                  register={register("roundMetadata.name")}
+                  register={
+                    register("roundName") 
+                  }
                   errors={errors}
                 />
                 {program && <ProgramChain program={program} />}
@@ -88,14 +97,14 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               <div className="grid grid-cols-6 gap-6 mb-1">
                 <div className="col-span-6 sm:col-span-3">
                   <Support
-                    register={register("roundMetadata.support.type")}
+                    register={register("roundSupport")}
                     errors={errors}
                     control={control}
                   />
                 </div>
                 <div className="col-span-6 sm:col-span-3 pt-2">
                   <ContactInformation
-                    register={register("roundMetadata.support.info")}
+                    register={register("roundSupport.input")}
                     errors={errors}
                   />
                 </div>
@@ -121,26 +130,26 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 <div className="col-span-6 sm:col-span-3">
                   <div
                     className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-errors.applicationsStartTime
-? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-: "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-}`}
+                      errors.roundApplicationsStartTime
+                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                   >
-                    <Datetime
+                    <RoundDatetime
                       control={control}
-                      name="applicationsStartTime"
+                      name="roundApplicationsStartTime"
                       label="Start Date"
                       date={applicationStartDate}
                       setDate={setApplicationStartDate}
                       minDate={now}
                     />
                   </div>
-                  {errors.applicationsStartTime && (
+                  {errors.roundApplicationsStartTime && (
                     <p
                       className="text-xs text-pink-500"
                       data-testid="application-start-date-error"
                     >
-                      {errors.applicationsStartTime?.message}
+                      {errors.roundApplicationsStartTime?.message}
                     </p>
                   )}
                 </div>
@@ -148,26 +157,26 @@ errors.applicationsStartTime
                 <div className="col-span-6 sm:col-span-3">
                   <div
                     className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-errors.applicationsEndTime
-? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-: "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-}`}
+                      errors.roundApplicationsEndTime
+                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                   >
-                    <Datetime 
+                    <RoundDatetime 
                       control={control}
-                      name="applicationsEndTime"
+                      name="roundApplicationsEndTime"
                       label="End Date"
                       date={applicationEndDate}
                       setDate={setApplicationEndDate}
                       minDate={applicationStartDate}
                     />
                   </div>
-                  {errors.applicationsEndTime && (
+                  {errors.roundApplicationsEndTime && (
                     <p
                       className="text-xs text-pink-500"
                       data-testid="application-end-date-error"
                     >
-                      {errors.applicationsEndTime?.message}
+                      {errors.roundApplicationsEndTime?.message}
                     </p>
                   )}
                 </div>
@@ -182,26 +191,26 @@ errors.applicationsEndTime
                 <div className="col-span-6 sm:col-span-3">
                   <div
                     className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-errors.roundStartTime
-? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-: "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-}`}
+                      errors.roundVotingStartTime
+                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                   >
-                    <Datetime
+                    <RoundDatetime
                       control={control}
-                      name="roundStartTime"
+                      name="roundVotingStartTime"
                       label="Start Date"
                       date={roundStartDate}
                       setDate={setRoundStartDate}
                       minDate={applicationEndDate}
                     />
                   </div>
-                  {errors.roundStartTime && (
+                  {errors.roundVotingStartTime && (
                     <p
                       className="text-xs text-pink-500"
                       data-testid="round-start-date-error"
                     >
-                      {errors.roundStartTime?.message}
+                      {errors.roundVotingStartTime?.message}
                     </p>
                   )}
                 </div>
@@ -209,24 +218,24 @@ errors.roundStartTime
                 <div className="col-span-6 sm:col-span-3">
                   <div
                     className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-errors.roundEndTime
-? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-: "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-}`}
+                      errors.roundVotingEndTime
+                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                   >
-                    <Datetime 
+                    <RoundDatetime 
                       control={control}
-                      name="roundEndTime"
+                      name="roundVotingEndTime"
                       label="End Date"
                       minDate={roundStartDate}
                     />
                   </div>
-                  {errors.roundEndTime && (
+                  {errors.roundVotingEndTime && (
                     <p
                       className="text-xs text-pink-500"
                       data-testid="round-end-date-error"
                     >
-                      {errors.roundEndTime?.message}
+                      {errors.roundVotingEndTime?.message}
                     </p>
                   )}
                 </div>
@@ -248,16 +257,16 @@ errors.roundEndTime
               </div>
               <div className="flex mt-4">
                 <RoundType
-                  register={register("roundMetadata.roundType")}
+                  register={register("roundVisibility")}
                   control={control}
                 />
               </div>
-              {errors.roundMetadata?.roundType && (
+              {errors.roundVisibility && (
                 <p
                   className="text-xs text-pink-500 mt-2"
                   data-testid="round-end-date-error"
                 >
-                  {errors.roundMetadata?.roundType?.message}
+                  {errors.roundVisibility?.message}
                 </p>
               )}
             </div>
