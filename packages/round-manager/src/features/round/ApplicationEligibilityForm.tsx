@@ -1,7 +1,7 @@
 import { PlusSmIcon, XIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Input } from "common/src/styles";
-import _ from "lodash";
+import { merge } from "lodash";
 import { useContext } from "react";
 import {
   FieldArrayMethodProps,
@@ -13,60 +13,45 @@ import {
   useFieldArray,
   useForm,
 } from "react-hook-form";
-import * as yup from "yup";
-import { Round } from "../api/types";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+import { eligibilityValidationSchema } from "./formValidators";
+
 interface ApplicationEligibilityFormProps {
   stepper: typeof FormStepper;
 }
 
-const ValidationSchema = yup.object().shape({
-  roundMetadata: yup.object({
-    eligibility: yup.object({
-      description: yup.string().required("A round description is required."),
-    }),
-  }),
-});
+interface EligibilityForm {
+  description: string;
+  requirements: { requirement: string }[];
+}
 
 export default function ApplicationEligibilityForm(
   props: ApplicationEligibilityFormProps
 ) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
-  const initialRoundMetadata: Round["roundMetadata"] =
-    // @ts-expect-error Needs refactoring/typing as a whole
-    formData?.roundMetadata ?? {};
-  const defaultEligibilityFormData: Round["roundMetadata"]["eligibility"] =
-    initialRoundMetadata?.eligibility ?? {
-      description: "",
-      requirements: [{ requirement: "" }], // NB: start with 1 requirement
-    };
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<Round>({
+  } = useForm<EligibilityForm>({
     defaultValues: {
       ...formData,
-      roundMetadata: {
-        ...initialRoundMetadata,
-        eligibility: defaultEligibilityFormData,
-      },
     },
-    resolver: yupResolver(ValidationSchema),
+    resolver: yupResolver(eligibilityValidationSchema),
   });
 
   const { fields, append, remove, replace } = useFieldArray({
-    name: "roundMetadata.eligibility.requirements",
+    name: "requirements",
     control,
   });
 
   const FormStepper = props.stepper;
 
-  const next: SubmitHandler<Round> = async (values) => {
-    const data = _.merge(formData, values);
+  const next: SubmitHandler<EligibilityForm> = async (values) => {
+    const data = merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
   };
@@ -86,10 +71,10 @@ export default function ApplicationEligibilityForm(
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6">
                   <RoundInput
-                    register={register("roundMetadata.eligibility.description")}
-                    error={errors.roundMetadata?.eligibility?.description}
+                    register={register("description")}
+                    error={errors.description}
                     labelText={"Round Description"}
-                    inputId={"eligibility.description"}
+                    inputId={"description"}
                     inputPlaceholder={
                       "Enter a short description of your round."
                     }
@@ -166,8 +151,8 @@ function RoundInput(props: {
 }
 
 function DynamicRequirementsForm(props: {
-  fields: FieldArrayWithId<Round, "roundMetadata.eligibility.requirements">[];
-  register: UseFormRegister<Round>;
+  fields: FieldArrayWithId<EligibilityForm, "requirements">[];
+  register: UseFormRegister<EligibilityForm>;
   append: (
     newRequirement: { requirement: string },
     options?: FieldArrayMethodProps
@@ -204,7 +189,7 @@ function DynamicRequirementsForm(props: {
             <div className="flex flex-row items-center">
               <Input
                 {...register(
-                  `roundMetadata.eligibility.requirements.${index}.requirement`
+                  `requirements.${index}.requirement`
                 )}
                 type="text"
                 placeholder="Enter an eligibility requirement."
@@ -247,3 +232,4 @@ function DynamicRequirementsForm(props: {
     </div>
   );
 }
+
