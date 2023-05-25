@@ -1,4 +1,3 @@
-import { EyeIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -191,8 +190,8 @@ function EditProject() {
             {currentSubText(formStatus)}
           </div>
         </div>
-        <div className="w-full sm:w-2/3 flex sm:flex-row flex-col items-center justify-between">
-          <div className="flex flex-row">
+        <div className="w-full sm:w-2/3 flex sm:flex-row flex-col items-center justify-end">
+          {/* <div className="flex flex-row">
             {formStatus === ProjectFormStatus.Preview && (
               <div className="flex flex-row items-center">
                 <span className="icon mr-2">
@@ -204,8 +203,8 @@ function EditProject() {
                 </span>
               </div>
             )}
-          </div>
-          <div className="flex">
+          </div> */}
+          <div className="flex flex-row">
             <Button
               variant={ButtonVariants.outlineDanger}
               onClick={() => toggleModal(true)}
