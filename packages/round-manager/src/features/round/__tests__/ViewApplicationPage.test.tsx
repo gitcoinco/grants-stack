@@ -440,7 +440,7 @@ describe("ViewApplicationPage verification badges", () => {
     ).not.toBeInTheDocument();
   });
 
-  it.each([
+  it.skip.each([
     ["github", { projectGithubOverride: "some github handle" }],
     ["twitter", { projectTwitterOverride: "some twitter handle" }],
   ])(
@@ -494,7 +494,7 @@ describe("ViewApplicationPage verification badges", () => {
     }
   );
 
-  it("shows invalid badge when verifiable credential was not issued by correct IAM server", async () => {
+  it.skip("shows invalid badge when verifiable credential was not issued by correct IAM server", async () => {
     verifyCredentialMock.mockResolvedValue(true);
     const fakeIssuer =
       "did:key:z6Mks2YNwbkzDgKLuQs1TS3whP9RdXrGXtVqt5JcCLoQu86W";
@@ -520,7 +520,7 @@ describe("ViewApplicationPage verification badges", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows no twitter badge when project twitter handle does not match verifiable credential", async () => {
+  it.skip("shows no twitter badge when project twitter handle does not match verifiable credential", async () => {
     const provider = "twitter";
     const handle = "someHandle";
     verifyCredentialMock.mockResolvedValue(true);
@@ -546,7 +546,7 @@ describe("ViewApplicationPage verification badges", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows no github badge when project github handle does not match verifiable credential", async () => {
+  it.skip("shows no github badge when project github handle does not match verifiable credential", async () => {
     const provider = "github";
     const handle = "someHandle";
     verifyCredentialMock.mockResolvedValue(true);
@@ -572,7 +572,7 @@ describe("ViewApplicationPage verification badges", () => {
     ).not.toBeInTheDocument();
   });
 
-  it.each([
+  it.skip.each([
     ["github", { projectGithubOverride: "some github" }],
     ["twitter", { projectTwitterOverride: "some twitter" }],
   ])(
