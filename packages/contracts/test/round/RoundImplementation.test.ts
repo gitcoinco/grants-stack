@@ -16,7 +16,7 @@ import {
   RoundImplementation,
   DummyRelay,
 } from "../../typechain";
-import { MerklePayoutStrategy } from "../../typechain/MerklePayoutStrategy";
+import { MerklePayoutStrategyImplementation } from "../../typechain/MerklePayoutStrategyImplementation";
 
 type MetaPtr = {
   protocol: BigNumberish;
@@ -38,7 +38,7 @@ describe.only("RoundImplementation", function () {
   let quadraticFundingRelayStrategyArtifact: Artifact;
 
   // Payout Strategy
-  let payoutStrategy: MerklePayoutStrategy;
+  let payoutStrategy: MerklePayoutStrategyImplementation;
   let payoutStrategyArtifact: Artifact;
 
   // Variable declarations
@@ -84,9 +84,9 @@ describe.only("RoundImplementation", function () {
 
     // Deploy PayoutStrategy contract
     payoutStrategyArtifact = await artifacts.readArtifact(
-      "MerklePayoutStrategy"
+      "MerklePayoutStrategyImplementation"
     );
-    payoutStrategy = <MerklePayoutStrategy>(
+    payoutStrategy = <MerklePayoutStrategyImplementation>(
       await deployContract(user, payoutStrategyArtifact, [])
     );
   });
@@ -158,7 +158,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -245,7 +245,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -280,7 +280,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -316,7 +316,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -352,7 +352,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -385,7 +385,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -471,7 +471,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -498,7 +498,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -581,7 +581,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -608,7 +608,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -696,7 +696,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -723,7 +723,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -823,7 +823,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -850,7 +850,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -906,7 +906,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -980,7 +980,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -1007,7 +1007,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -1055,7 +1055,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -1146,7 +1146,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -1173,7 +1173,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -1287,7 +1287,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
         // Deploy Round contract
@@ -1394,7 +1394,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
@@ -1526,7 +1526,7 @@ describe.only("RoundImplementation", function () {
             []
           );
           // Deploy PayoutStrategy contract
-          payoutStrategy = <MerklePayoutStrategy>(
+          payoutStrategy = <MerklePayoutStrategyImplementation>(
             await deployContract(user, payoutStrategyArtifact, [])
           );
 
@@ -1646,7 +1646,7 @@ describe.only("RoundImplementation", function () {
             []
           );
           // Deploy PayoutStrategy contract
-          payoutStrategy = <MerklePayoutStrategy>(
+          payoutStrategy = <MerklePayoutStrategyImplementation>(
             await deployContract(user, payoutStrategyArtifact, [])
           );
 
@@ -1701,7 +1701,7 @@ describe.only("RoundImplementation", function () {
             []
           );
           // Deploy PayoutStrategy contract
-          payoutStrategy = <MerklePayoutStrategy>(
+          payoutStrategy = <MerklePayoutStrategyImplementation>(
             await deployContract(user, payoutStrategyArtifact, [])
           );
 
@@ -1781,7 +1781,7 @@ describe.only("RoundImplementation", function () {
           QuadraticFundingVotingStrategyImplementation
         >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategy>(
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
