@@ -45,6 +45,7 @@ function Apply() {
       "toggleRoundApplicationModal",
       ApplicationModalStatus.Undefined
     );
+  const [isInPreviewMode, setIsInPreviewMode] = useState(false);
 
   const { roundId, chainId } = params;
 
@@ -223,15 +224,17 @@ function Apply() {
           <div className="w-full sm:w-2/3 flex sm:flex-row flex-col items-center justify-between">
             <div className="flex flex-row">
               {/* todo: only show this on preview */}
-              <div className="flex flex-row items-center">
-                <span className="icon mr-2">
-                  <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
-                </span>
-                <span className="text-sm text-gray-500">
-                  This is a preview of your project&apos;s public page on
-                  Gitcoin Explorer.
-                </span>
-              </div>
+              {isInPreviewMode && (
+                <div className="flex flex-row items-center">
+                  <span className="icon mr-2">
+                    <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    This is a preview of your project&apos;s public page on
+                    Gitcoin Explorer.
+                  </span>
+                </div>
+              )}
             </div>
             <Button
               variant={ButtonVariants.outlineDanger}
@@ -290,6 +293,7 @@ function Apply() {
                   dispatch(submitApplication(props.round!.address, answers));
                   toggleStatusModal(true);
                 }}
+                onPreviewApplication={setIsInPreviewMode}
               />
             )}
           </div>
