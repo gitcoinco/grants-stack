@@ -29,7 +29,7 @@ interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
 
-interface QuadraticFundingConfig {
+export interface QuadraticFundingConfig {
   matchingFundsAvailable: number;
   matchingCap: boolean;
   matchingCapAmount?: number;

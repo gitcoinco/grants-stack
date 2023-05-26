@@ -21,7 +21,7 @@ interface ApplicationEligibilityFormProps {
   stepper: typeof FormStepper;
 }
 
-interface EligibilityForm {
+export interface EligibilityForm {
   description: string;
   requirements: { requirement: string }[];
 }
