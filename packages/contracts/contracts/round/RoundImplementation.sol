@@ -55,6 +55,11 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Emitted when a project has applied to the round
   event NewProjectApplication(bytes32 indexed project, MetaPtr applicationMetaPtr);
+  
+  /**  NEW EVENTS */
+  /// @notice Emitted when protocol & round fees are paid
+  event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint protocolFeeAmount, uint roundFeeAmount);
+
 
   // --- Modifier ---
 
@@ -300,4 +305,53 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   function updateDistribution(bytes memory encodedDistribution) external onlyRole(ROUND_OPERATOR_ROLE) {
     payoutStrategy.updateDistribution(encodedDistribution);
   }
+
+  /// @notice Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
+  function setReadyForPayout() external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
+    uint256 fundsInContract = _getTokenBalance(token);
+
+    require(fundsInContract >= matchAmount, "Round: Not enough funds in contract");
+
+    // transfer funds to payout contract
+    if (token == address(0)) {
+      payoutStrategy.setReadyForPayout{value: fundsInContract}();
+    } else {
+      IERC20(token).safeTransfer(address(payoutStrategy), fundsInContract);
+      payoutStrategy.setReadyForPayout();
+    }
+
+    emit PayFeeAndEscrowFundsToPayoutContract(fundsInContract, protocolFeeAmount, roundFeeAmount);
+  }
+
+  /// @notice Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
+  /// @param tokenAddress token address
+  /// @param recipent recipient address
+  function withdraw(address tokenAddress, address payable recipent) external onlyRole(ROUND_OPERATOR_ROLE) {
+    require(tokenAddress != token, "Round: Cannot withdraw round token");
+    _transferAmount(recipent, _getTokenBalance(tokenAddress), tokenAddress);
+  }
+
+  /// @notice Util function to get token balance in the contract
+  /// @param tokenAddress token address
+  function _getTokenBalance(address tokenAddress) private view returns (uint256) {
+    if (tokenAddress == address(0)) {
+      return address(this).balance;
+    } else {
+      return IERC20(tokenAddress).balanceOf(address(this));
+    }
+  }
+
+  /// @notice Util function to transfer amount to recipient
+  /// @param _recipient recipient address
+  /// @param _amount amount to transfer
+  /// @param _tokenAddress token address
+  function _transferAmount(address payable _recipient, uint256 _amount, address _tokenAddress) private {
+    if (_tokenAddress == address(0)) {
+      Address.sendValue(_recipient, _amount);
+    } else {
+      IERC20(_tokenAddress).safeTransfer(_recipient, _amount);
+    }
+  }
+
+  receive() external payable {}
 }

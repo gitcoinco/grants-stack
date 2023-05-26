@@ -1,3 +1,6 @@
 {
-    "css.validate": false
+    "css.validate": false,
+    "solidity.compileUsingRemoteVersion": "v0.8.17+commit.8df45f5f",
+    "solidity.defaultCompiler": "remote",
+    
 }
