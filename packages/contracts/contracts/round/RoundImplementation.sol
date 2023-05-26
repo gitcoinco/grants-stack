@@ -58,8 +58,10 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   
   /**  NEW EVENTS */
   /// @notice Emitted when protocol & round fees are paid
-  event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint protocolFeeAmount, uint roundFeeAmount);
-
+  event EscrowFundsToPayoutContract(uint256 matchAmount);
+  
+  /// @notice Emitted when match amount is updated
+  event MatchAmountUpdated(uint256 newAmount);
 
   // --- Modifier ---
 
@@ -68,6 +70,12 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     // slither-disable-next-line timestamp
     require(block.timestamp <= roundEndTime, "error: round has ended");
    _;
+  }
+
+      /// @notice modifier to check if round has ended.
+  modifier roundHasEnded() {
+    require(block.timestamp > roundEndTime, "round has not ended");
+    _;
   }
 
   // --- Data ---
@@ -101,6 +109,9 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice MetaPtr to the projects
   MetaPtr public projectsMetaPtr;
+
+  ///@notice amount that the round operator has agreed to match
+  uint256 public matchAmount;
 
   // --- Core methods ---
 
@@ -273,6 +284,18 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     projectsMetaPtr = newProjectsMetaPtr;
   }
 
+    // @notice Update match amount (only by ROUND_OPERATOR_ROLE)
+  /// @param newAmount new Amount
+  function updateMatchAmount(uint256 newAmount) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
+    require(newAmount > matchAmount, "Round: Lesser than current match amount");
+
+    matchAmount = newAmount;
+
+    emit MatchAmountUpdated(newAmount);
+  }
+
+
+
   /// @notice Submit a project application
   /// @param projectID unique hash of the project
   /// @param newApplicationMetaPtr appliction metaPtr
@@ -300,11 +323,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     votingStrategy.vote{value: msg.value}(encodedVotes, msg.sender);
   }
 
-  /// @notice Invoked by round operator to update distribution on payout contract
-  /// @param encodedDistribution encoded distribution
-  function updateDistribution(bytes memory encodedDistribution) external onlyRole(ROUND_OPERATOR_ROLE) {
-    payoutStrategy.updateDistribution(encodedDistribution);
-  }
+
 
   /// @notice Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
   function setReadyForPayout() external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
@@ -320,7 +339,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
       payoutStrategy.setReadyForPayout();
     }
 
-    emit PayFeeAndEscrowFundsToPayoutContract(fundsInContract, protocolFeeAmount, roundFeeAmount);
+    emit EscrowFundsToPayoutContract(fundsInContract);
   }
 
   /// @notice Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)

@@ -19,6 +19,12 @@ import "../round/RoundImplementation.sol";
  *  - TODO: add function distribute() to actually distribute the funds  
  */
 abstract contract IPayoutStrategy {
+   using SafeERC20Upgradeable for IERC20Upgradeable;
+
+  // --- Constants ---
+
+  /// @notice round operator role
+  bytes32 public constant ROUND_OPERATOR_ROLE = keccak256("ROUND_OPERATOR");
 
    // --- Data ---
 
