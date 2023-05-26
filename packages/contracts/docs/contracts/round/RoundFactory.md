@@ -75,7 +75,7 @@ function renounceOwnership() external nonpayable
 ### roundContract
 
 ```solidity
-function roundContract() external view returns (address)
+function roundContract() external view returns (address payable)
 ```
 
 
@@ -87,7 +87,7 @@ function roundContract() external view returns (address)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined |
+| _0 | address payable | undefined |
 
 ### transferOwnership
 
@@ -108,7 +108,7 @@ function transferOwnership(address newOwner) external nonpayable
 ### updateRoundContract
 
 ```solidity
-function updateRoundContract(address newRoundContract) external nonpayable
+function updateRoundContract(address payable newRoundContract) external nonpayable
 ```
 
 Allows the owner to update the RoundImplementation. This provides us the flexibility to upgrade RoundImplementation contract while relying on the same RoundFactory to get the list of rounds.
@@ -119,7 +119,7 @@ Allows the owner to update the RoundImplementation. This provides us the flexibi
 
 | Name | Type | Description |
 |---|---|---|
-| newRoundContract | address | undefined |
+| newRoundContract | address payable | undefined |
 
 
 

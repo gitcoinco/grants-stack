@@ -236,6 +236,23 @@ Instantiates a new round
 |---|---|---|
 | encodedParameters | bytes | Encoded parameters for program creation |
 
+### matchAmount
+
+```solidity
+function matchAmount() external view returns (uint256)
+```
+
+amount that the round operator has agreed to match
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
 ### payoutStrategy
 
 ```solidity
@@ -357,6 +374,17 @@ Unix timestamp of the start of the round
 |---|---|---|
 | _0 | uint256 | undefined |
 
+### setReadyForPayout
+
+```solidity
+function setReadyForPayout() external payable
+```
+
+Pay Protocol &amp; Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
+
+
+
+
 ### supportsInterface
 
 ```solidity
@@ -444,13 +472,13 @@ Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
 |---|---|---|
 | newApplicationsStartTime | uint256 | new applicationsStartTime |
 
-### updateDistribution
+### updateMatchAmount
 
 ```solidity
-function updateDistribution(bytes encodedDistribution) external nonpayable
+function updateMatchAmount(uint256 newAmount) external nonpayable
 ```
 
-Invoked by round operator to update distribution on payout contract
+
 
 
 
@@ -458,7 +486,7 @@ Invoked by round operator to update distribution on payout contract
 
 | Name | Type | Description |
 |---|---|---|
-| encodedDistribution | bytes | encoded distribution |
+| newAmount | uint256 | new Amount |
 
 ### updateProjectsMetaPtr
 
@@ -557,6 +585,23 @@ Voting Strategy Contract Address
 |---|---|---|
 | _0 | contract IVotingStrategy | undefined |
 
+### withdraw
+
+```solidity
+function withdraw(address tokenAddress, address payable recipent) external nonpayable
+```
+
+Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenAddress | address | token address |
+| recipent | address payable | recipient address |
+
 
 
 ## Events
@@ -612,6 +657,22 @@ Emitted when application start time is updated
 | oldTime  | uint256 | undefined |
 | newTime  | uint256 | undefined |
 
+### EscrowFundsToPayoutContract
+
+```solidity
+event EscrowFundsToPayoutContract(uint256 matchAmount)
+```
+
+Emitted when protocol &amp; round fees are paid
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| matchAmount  | uint256 | undefined |
+
 ### Initialized
 
 ```solidity
@@ -627,6 +688,22 @@ event Initialized(uint8 version)
 | Name | Type | Description |
 |---|---|---|
 | version  | uint8 | undefined |
+
+### MatchAmountUpdated
+
+```solidity
+event MatchAmountUpdated(uint256 newAmount)
+```
+
+Emitted when match amount is updated
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newAmount  | uint256 | undefined |
 
 ### NewProjectApplication
 

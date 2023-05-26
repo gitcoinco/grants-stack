@@ -59,7 +59,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /**  NEW EVENTS */
   /// @notice Emitted when protocol & round fees are paid
   event EscrowFundsToPayoutContract(uint256 matchAmount);
-  
+
   /// @notice Emitted when match amount is updated
   event MatchAmountUpdated(uint256 newAmount);
 
@@ -327,12 +327,12 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
   function setReadyForPayout() external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
-    uint256 fundsInContract = _getTokenBalance(token);
+    uint256 fundsInContract = _getTokenBalance(address(token));
 
     require(fundsInContract >= matchAmount, "Round: Not enough funds in contract");
 
     // transfer funds to payout contract
-    if (token == address(0)) {
+    if (address(token) == address(0)) {
       payoutStrategy.setReadyForPayout{value: fundsInContract}();
     } else {
       IERC20(token).safeTransfer(address(payoutStrategy), fundsInContract);
@@ -346,7 +346,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @param tokenAddress token address
   /// @param recipent recipient address
   function withdraw(address tokenAddress, address payable recipent) external onlyRole(ROUND_OPERATOR_ROLE) {
-    require(tokenAddress != token, "Round: Cannot withdraw round token");
+    require(tokenAddress != address(token), "Round: Cannot withdraw round token");
     _transferAmount(recipent, _getTokenBalance(tokenAddress), tokenAddress);
   }
 

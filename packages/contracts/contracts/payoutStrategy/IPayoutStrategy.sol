@@ -29,7 +29,7 @@ abstract contract IPayoutStrategy {
    // --- Data ---
 
   /// @notice Round address
-  address public roundAddress;
+  address payable public roundAddress;
 
     /// @notice Token address
   address public tokenAddress;
@@ -84,7 +84,7 @@ abstract contract IPayoutStrategy {
     roundAddress = payable(msg.sender);
 
     // set the token address
-    tokenAddress = RoundImplementation(roundAddress).token();
+    tokenAddress = address(RoundImplementation(roundAddress).token());
 
     isReadyForPayout = false;
   }

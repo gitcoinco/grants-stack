@@ -10,6 +10,41 @@ Defines the abstract contract for payout strategies for a round. Any new payout 
 
 ## Methods
 
+### ROUND_OPERATOR_ROLE
+
+```solidity
+function ROUND_OPERATOR_ROLE() external view returns (bytes32)
+```
+
+round operator role
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bytes32 | undefined |
+
+### distributionMetaPtr
+
+```solidity
+function distributionMetaPtr() external view returns (uint256 protocol, string pointer)
+```
+
+MetaPtr containing the distribution
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| protocol | uint256 | undefined |
+| pointer | string | undefined |
+
 ### init
 
 ```solidity
@@ -21,13 +56,75 @@ Invoked by RoundImplementation on creation to set the round for which the payout
 
 
 
+### isDistributionSet
+
+```solidity
+function isDistributionSet() external view returns (bool)
+```
+
+checks that distribution is set before setReadyForPayout
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bool | undefined |
+
+### isReadyForPayout
+
+```solidity
+function isReadyForPayout() external view returns (bool)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bool | undefined |
+
 ### roundAddress
 
 ```solidity
-function roundAddress() external view returns (address)
+function roundAddress() external view returns (address payable)
 ```
 
 Round address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address payable | undefined |
+
+### setReadyForPayout
+
+```solidity
+function setReadyForPayout() external payable
+```
+
+Invoked by RoundImplementation to set isReadyForPayout
+
+
+
+
+### tokenAddress
+
+```solidity
+function tokenAddress() external view returns (address)
+```
+
+Token address
 
 
 
@@ -53,6 +150,54 @@ Invoked by RoundImplementation to upload distribution to the payout strategy
 | Name | Type | Description |
 |---|---|---|
 | _encodedDistribution | bytes | encoded distribution |
+
+### withdrawFunds
+
+```solidity
+function withdrawFunds(address payable withdrawAddress) external payable
+```
+
+Invoked by RoundImplementation to withdraw funds to withdrawAddress from the payout contract
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| withdrawAddress | address payable | withdraw funds address |
+
+
+
+## Events
+
+### FundsWithdrawn
+
+```solidity
+event FundsWithdrawn(address indexed tokenAddress, uint256 amount, address withdrawAddress)
+```
+
+Emitted when funds are withdrawn from the payout contract
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenAddress `indexed` | address | undefined |
+| amount  | uint256 | undefined |
+| withdrawAddress  | address | undefined |
+
+### ReadyForPayout
+
+```solidity
+event ReadyForPayout()
+```
+
+Emitted when contract is ready for payout
+
+
 
 
 

@@ -17,6 +17,8 @@ import "../../utils/MetaPtr.sol";
  *  - TODO: add function distribute() to actually distribute the funds
  */
 contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
+     using SafeERC20 for IERC20;
+
     // --- Data ---
 
     /// @notice merkle root generated from distribution
