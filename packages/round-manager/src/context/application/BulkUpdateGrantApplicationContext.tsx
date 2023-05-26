@@ -31,28 +31,28 @@ export interface BulkUpdateGrantApplicationState {
 }
 
 export const initialBulkUpdateGrantApplicationState: BulkUpdateGrantApplicationState =
-  {
-    roundId: "",
-    setRoundId: () => {
-      /**/
-    },
-    applications: [],
-    setApplications: () => {
-      /**/
-    },
-    selectedApplications: [],
-    setSelectedApplications: () => {
-      /**/
-    },
-    contractUpdatingStatus: ProgressStatus.NOT_STARTED,
-    setContractUpdatingStatus: () => {
-      /**/
-    },
-    indexingStatus: ProgressStatus.NOT_STARTED,
-    setIndexingStatus: () => {
-      /**/
-    },
-  };
+{
+  roundId: "",
+  setRoundId: () => {
+    /**/
+  },
+  applications: [],
+  setApplications: () => {
+    /**/
+  },
+  selectedApplications: [],
+  setSelectedApplications: () => {
+    /**/
+  },
+  contractUpdatingStatus: ProgressStatus.NOT_STARTED,
+  setContractUpdatingStatus: () => {
+    /**/
+  },
+  indexingStatus: ProgressStatus.NOT_STARTED,
+  setIndexingStatus: () => {
+    /**/
+  },
+};
 
 export type BulkUpdateGrantApplicationParams = {
   roundId: string;
@@ -207,8 +207,11 @@ async function _bulkUpdateGrantApplication({
     const rowsToUpdate = Array.from(
       new Set(
         selectedApplications.map((application) => {
+          let applicationIndex = application.applicationIndex;
+          if (application.applicationIndex === undefined)
+            applicationIndex = Number(application.id.split("-")[1]);
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return Math.floor(application.applicationIndex! / 128);
+          return Math.floor(applicationIndex! / 128);
         })
       )
     );
