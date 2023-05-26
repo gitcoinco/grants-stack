@@ -36,11 +36,11 @@ import {
 import { CHAINS, SupportType, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
+import FormValidationErrorList from "../common/FormValidationErrorList";
 import ProgressModal from "../common/ProgressModal";
 import { horizontalTabStyles } from "../common/Utils";
 import { PayoutTokenInformation } from "./QuadraticFundingForm";
 import { applicationValidationSchema as RoundValidationSchema } from "./applicationValidationSchema";
-import FormValidationErrorList from "../common/FormValidationErrorList";
 
 type EditMode = {
   canEdit: boolean;
