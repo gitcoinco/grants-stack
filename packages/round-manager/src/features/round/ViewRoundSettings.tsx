@@ -36,6 +36,7 @@ import {
 import { CHAINS, SupportType, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
+import FormValidationErrorList from "../common/FormValidationErrorList";
 import ProgressModal from "../common/ProgressModal";
 import { horizontalTabStyles } from "../common/Utils";
 import { PayoutTokenInformation } from "./QuadraticFundingForm";
@@ -44,7 +45,6 @@ import {
   SupportTypeButton,
   supportTypes,
 } from "./RoundDetailForm";
-import FormValidationErrorList from "../common/FormValidationErrorList";
 
 type EditMode = {
   canEdit: boolean;
@@ -1850,7 +1850,7 @@ function Funding(props: {
             (matchingFunds / 100) *
             (props.editedRound?.roundMetadata?.quadraticFundingConfig
               ?.matchingCapAmount ?? 0)
-          ).toFixed(4)}{" "}
+          ).toFixed(2)}{" "}
           {matchingFundPayoutToken.name}).
         </span>
       </div>
