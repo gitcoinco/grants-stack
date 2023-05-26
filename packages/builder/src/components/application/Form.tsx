@@ -42,6 +42,7 @@ import {
   getPayoutIcon,
   networkPrettyName,
 } from "../../utils/wallet";
+import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
 import ErrorModal from "../base/ErrorModal";
@@ -60,7 +61,6 @@ import {
   TextInputAddress,
 } from "../grants/inputs";
 import Calendar from "../icons/Calendar";
-import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 
 const validation = {
   messages: [""],
@@ -403,6 +403,7 @@ export default function Form({
   showErrorModal,
   readOnly,
   publishedApplication,
+  onPreviewApplication,
 }: {
   roundApplication: RoundApplicationMetadata;
   round: Round;
@@ -411,6 +412,7 @@ export default function Form({
   showErrorModal: boolean;
   readOnly?: boolean;
   publishedApplication?: any;
+  onPreviewApplication?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const dispatch = useDispatch();
   const { chains } = useNetwork();
@@ -574,6 +576,7 @@ export default function Form({
   };
 
   const handlePreviewClick = async () => {
+    onPreviewApplication?.(true);
     setSubmitted(true);
     const valid = await validate(answers);
     if (valid === ValidationStatus.Valid) {
@@ -1144,7 +1147,9 @@ export default function Form({
                   <Button
                     variant={ButtonVariants.primary}
                     disabled={!isValidProjectSelected}
-                    onClick={() => handlePreviewClick()}
+                    onClick={() => {
+                      handlePreviewClick();
+                    }}
                   >
                     Preview Application
                   </Button>

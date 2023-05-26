@@ -17,10 +17,10 @@ import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Preview from "../base/Preview";
 import ProjectForm from "../base/ProjectForm";
+import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import VerificationForm from "../base/VerificationForm";
 import Cross from "../icons/Cross";
-import PurpleNotificationBox from "../base/PurpleNotificationBox";
 
 function EditProject() {
   const params = useParams();
@@ -148,8 +148,8 @@ function EditProject() {
 
     return data ? (
       <>
-        <h5 className="mb-2">{data.title}</h5>
-        <p className="mb-2">{data.description}</p>
+        <h5 className="mb-2 sm:text-left text-center">{data.title}</h5>
+        <p className="mb-2 sm:text-left text-center">{data.description}</p>
         {data.element}
       </>
     ) : null;
@@ -182,22 +182,41 @@ function EditProject() {
   };
 
   return (
-    <div className="mx-4">
-      <div className="flex flex-col sm:flex-row justify-between">
-        <h3 className="mb-2">Edit Your Project</h3>
-        <div className="w-full mb-2 inline-block sm:hidden">
-          {currentSubText(formStatus)}
+    <div className="sm:w-full mx-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between">
+        <div className="w-full sm:w-1/3 flex flex-col sm:flex-row">
+          <h3 className="mb-2">Edit Your Project</h3>
+          <div className="w-full mb-2 inline-block sm:hidden sm:text-center">
+            {currentSubText(formStatus)}
+          </div>
         </div>
-        <Button
-          variant={ButtonVariants.outlineDanger}
-          onClick={() => toggleModal(true)}
-          styles={["w-full sm:w-auto mx-w-full ml-0"]}
-        >
-          <i className="icon mt-1.5">
-            <Cross color={colors["danger-background"]} />
-          </i>{" "}
-          <span className="pl-2">Exit</span>
-        </Button>
+        <div className="w-full sm:w-2/3 flex sm:flex-row flex-col items-center justify-end">
+          {/* <div className="flex flex-row">
+            {formStatus === ProjectFormStatus.Preview && (
+              <div className="flex flex-row items-center">
+                <span className="icon mr-2">
+                  <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
+                </span>
+                <span className="text-sm text-gray-500">
+                  This is a preview of your project&apos;s public page on
+                  Gitcoin Explorer.
+                </span>
+              </div>
+            )}
+          </div> */}
+          <div className="flex flex-row">
+            <Button
+              variant={ButtonVariants.outlineDanger}
+              onClick={() => toggleModal(true)}
+              styles={["ml-0"]}
+            >
+              <i className="icon mt-1">
+                <Cross color={colors["danger-background"]} />
+              </i>{" "}
+              <span className="pl-2">Exit</span>
+            </Button>
+          </div>
+        </div>
       </div>
 
       <div className="w-full flex">
