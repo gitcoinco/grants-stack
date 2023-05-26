@@ -1834,7 +1834,7 @@ describe.only("RoundImplementation", function () {
           .reverted;
       });
     });
-    describe.only("test: setReadyForPayout", () => {
+    describe("test: setReadyForPayout", () => {
       const merkleRoot = ethers.utils.formatBytes32String("MERKLE_ROOT");
       const distributionMetaPtr = {
         protocol: 1,
@@ -1960,6 +1960,71 @@ describe.only("RoundImplementation", function () {
         await expect(
           roundImplementation.setReadyForPayout()
         ).to.be.revertedWith("isReadyForPayout already set");
+      });
+    });
+    describe("test: withdraw", () => {
+      let _currentBlockTimestamp: number;
+
+      beforeEach(async () => {
+        _currentBlockTimestamp = (
+          await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+        ).timestamp;
+
+        // Deploy voting strategy
+        quadraticFundingVotingStrategy = <
+          QuadraticFundingVotingStrategyImplementation
+        >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
+        // Deploy PayoutStrategy contract
+        payoutStrategy = <MerklePayoutStrategyImplementation>(
+          await deployContract(user, payoutStrategyArtifact, [])
+        );
+        _token = ethers.Wallet.createRandom().address;
+        const params = [
+          quadraticFundingVotingStrategy.address, // _quadraticFundingVotingStrategyAddress
+          payoutStrategy.address, //  _payoutStrategyAddress
+          _currentBlockTimestamp + 100, // _applicationsStartTime
+          _currentBlockTimestamp + 250, // _applicationsEndTime
+          _currentBlockTimestamp + 500, // _roundStartTime
+          _currentBlockTimestamp + 1000, // _roundEndTime
+          _token, // _token
+          _roundMetaPtr, // _roundMetaPtr
+          _applicationMetaPtr, // _applicationMetaPtr
+          _adminRoles, // _adminRoles
+          [user.address], // _roundOperators
+        ];
+
+        await roundImplementation.initialize(encodeRoundParameters(params));
+        await payoutStrategy.initialize();
+        mockERC20.mint(ethers.utils.parseEther("10"));
+      });
+      it("invoking withdraw SHOULD withdraw erc20 from the contract", async () => {
+        const [signer] = await ethers.getSigners();
+        const amount = ethers.utils.parseEther("10");
+        await mockERC20.connect(signer).mint(amount);
+        await mockERC20
+          .connect(signer)
+          .transfer(roundImplementation.address, amount);
+        expect(await mockERC20.balanceOf(roundImplementation.address)).to.equal(
+          amount
+        );
+        expect(
+          await roundImplementation.withdraw(mockERC20.address, signer.address)
+        );
+        expect(await mockERC20.balanceOf(roundImplementation.address)).to.equal(
+          "0x00"
+        );
+      });
+      it("invoking withdraw SHOULD REVERT WHEN called on the token used for the matching pool", async () => {
+        const [signer] = await ethers.getSigners();
+        await expect(
+          roundImplementation.withdraw(_token, signer.address)
+        ).to.be.revertedWith("Round: Cannot withdraw round token");
+      });
+      it("invoking withdraw SHOULD REVERT WHEN called by wrong EOA", async () => {
+        const [_, rando] = await ethers.getSigners();
+        await expect(
+          roundImplementation.withdraw(_token, rando.address)
+        ).to.be.revertedWith("Round: Cannot withdraw round token");
       });
     });
     describe.skip("test: updateDistribution", () => {
