@@ -10,7 +10,7 @@ export const getChainRPC = (chainId: number) => {
       return "https://fantom-testnet.public.blastapi.io/";
 
     case 10:
-      return "https://rpc.ankr.com/optimism	";
+      return "https://rpc.ankr.com/optimism";
 
     case 5:
       return "https://ethereum-goerli.publicnode.com";
