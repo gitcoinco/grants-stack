@@ -1,3 +1,4 @@
+import { EyeIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,16 +17,16 @@ import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantsPath, projectPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
+import { RoundApplicationAnswers } from "../../types/roundApplication";
 import { applicationSteps } from "../../utils/steps";
 import { getProjectURIComponents } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import ExitModal from "../base/ExitModal";
-import Cross from "../icons/Cross";
-import StatusModal from "../base/StatusModal";
-import { RoundApplicationAnswers } from "../../types/roundApplication";
 import PurpleNotificationBox from "../base/PurpleNotificationBox";
+import StatusModal from "../base/StatusModal";
+import Cross from "../icons/Cross";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -44,6 +45,7 @@ function Apply() {
       "toggleRoundApplicationModal",
       ApplicationModalStatus.Undefined
     );
+  const [isInPreviewMode, setIsInPreviewMode] = useState(false);
 
   const { roundId, chainId } = params;
 
@@ -211,22 +213,40 @@ function Apply() {
 
   return (
     <>
-      <div className="mx-4">
-        <div className="flex flex-col sm:flex-row justify-between">
-          <h3 className="mb-2">Grant Round Application</h3>
-          <div className="w-full mb-2 inline-block sm:hidden">
-            <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
+      <div className="sm:w-full mx-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between">
+          <div className="w-full sm:w-1/3 flex flex-col sm:flex-row">
+            <h3>Grant Round Application</h3>
+            {/* <div className="w-full mb-2 inline-block sm:hidden">
+              <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
+            </div> */}
           </div>
-          <Button
-            variant={ButtonVariants.outlineDanger}
-            onClick={() => toggleModal(true)}
-            styles={["w-full sm:w-auto mx-w-full ml-0"]}
-          >
-            <i className="icon mt-1">
-              <Cross color={colors["danger-background"]} />
-            </i>{" "}
-            <span className="pl-2">Exit</span>
-          </Button>
+          <div className="w-full sm:w-2/3 flex sm:flex-row flex-col items-center justify-between">
+            <div className="flex flex-row">
+              {/* todo: only show this on preview */}
+              {isInPreviewMode && (
+                <div className="flex flex-row items-center">
+                  <span className="icon mr-2">
+                    <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    This is a preview of your project&apos;s public page on
+                    Gitcoin Explorer.
+                  </span>
+                </div>
+              )}
+            </div>
+            <Button
+              variant={ButtonVariants.outlineDanger}
+              onClick={() => toggleModal(true)}
+              styles={["w-full sm:w-auto mx-w-full ml-0"]}
+            >
+              <i className="icon mt-1">
+                <Cross color={colors["danger-background"]} />
+              </i>{" "}
+              <span className="pl-2">Exit</span>
+            </Button>
+          </div>
         </div>
         <div className="w-full flex">
           <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
@@ -273,6 +293,7 @@ function Apply() {
                   dispatch(submitApplication(props.round!.address, answers));
                   toggleStatusModal(true);
                 }}
+                onPreviewApplication={setIsInPreviewMode}
               />
             )}
           </div>
