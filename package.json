@@ -24,7 +24,7 @@
     "re-start": "pnpm --filter grant-explorer run start",
     "re-typecheck": "turbo run typecheck --filter=grant-explorer",
     "// builder script": "====== packages/builder specific ======",
-    "b-start": "pnpm --filter builder run start",
+    "b-start": "pnpm --filter builder run start"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
