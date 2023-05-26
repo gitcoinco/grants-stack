@@ -1,4 +1,4 @@
-import { Contract } from "ethers";
+import { Contract, ethers } from "ethers";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 import {
   ApplicationStatus,
@@ -7,8 +7,8 @@ import {
   Project,
   Round,
 } from "./types";
-import { getDefaultProvider, getNetwork } from "@ethersproject/providers";
 import { projectRegistryContract } from "./contracts";
+import { getChainRPC } from "common/src/chains";
 
 /**
  * Shape of subgraph response
@@ -224,13 +224,15 @@ export async function getProjectOwners(
   chainId: any,
   projectRegistryId: string,
 ) {
-  if(!projectRegistryId || !chainId) return [];
+  if (!projectRegistryId || !chainId) return [];
   try {
-    const provider = getDefaultProvider(getNetwork(Number(chainId)).name);
+    const provider = new ethers.providers.JsonRpcProvider(getChainRPC(Number(chainId)));
     const registryData = projectRegistryContract(chainId.toString());
 
-    if (!registryData.address || !registryData.abi)
-      throw Error("Unable to fetch project owners");
+    if (!registryData.address || !registryData.abi) {
+      console.log("Unable to fetch project owners");
+      return [];
+    }
     const registry = new Contract(
       registryData.address,
       registryData.abi,
