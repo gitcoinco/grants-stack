@@ -6,6 +6,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
+import { RoundMetadata } from "../../features/round/RoundApplicationForm"; 
 
 export type Network = "goerli" | "optimism";
 
@@ -147,27 +148,7 @@ export interface Round {
   /**
    * Metadata of the Round to be stored off-chain
    */
-  roundMetadata: {
-    name: string;
-    programContractAddress: string;
-    roundType: string;
-    eligibility?: {
-      description: string;
-      requirements: { requirement: string }[];
-    };
-    quadraticFundingConfig: {
-      matchingFundsAvailable: number;
-      matchingCap: boolean;
-      matchingCapAmount?: number;
-      minDonationThreshold?: boolean;
-      minDonationThresholdAmount?: number;
-      sybilDefense?: boolean;
-    };
-    support?: {
-      type: string;
-      info: string;
-    };
-  };
+  roundMetadata: RoundMetadata;
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
    */

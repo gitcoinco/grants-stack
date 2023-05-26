@@ -34,8 +34,37 @@ import InfoModal from "../common/InfoModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
-import _ from 'lodash';
+import { RoundDetails } from "./RoundDetailForm";
+import { QuadraticFundingConfig } from "./QuadraticFundingForm";
+import { EligibilityForm } from "./ApplicationEligibilityForm";
 
+  export interface RoundMetadata {
+    name: string;
+    programContractAddress?: string;
+    ownedBy?: string;
+    operatorWalletAddress?: string;
+    roundType: string;
+    eligibility?: {
+      description: string;
+      requirements: { requirement: string }[];
+    };
+    quadraticFundingConfig: {
+      sybilDefenseEnabled: boolean;
+      matchingCapPercentage: number;
+      minDonationAmountUSD: number;
+      matchingFundsAvailable: number;
+    };
+    support?: {
+      type: string;
+      info: string;
+    };
+  }
+
+  interface FormData extends RoundDetails, QuadraticFundingConfig, EligibilityForm {
+    programContractAddress?: string;
+    ownedBy?: string;
+    operatorWalletAddress?: string;
+  }
 const payoutQuestion: SchemaQuestion = {
   id: 0,
   title: "Payout Wallet Address",
@@ -89,7 +118,7 @@ export const initialRequirements: ProjectRequirements = {
  * -------------------------------------------------------------------------------------------
  */
 
-const VERSION = "2.0.0";
+const VERSION = "2.0.1";
 
 export function RoundApplicationForm(props: {
   initialData: {
@@ -105,6 +134,8 @@ export function RoundApplicationForm(props: {
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
+  console.log("form data", formData);
+
   const Steps = props.stepper;
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
@@ -193,7 +224,7 @@ export function RoundApplicationForm(props: {
   ]);
 
   const prev = () => setCurrentStep(currentStep - 1);
-
+  
   const next: SubmitHandler<Round> = async (values) => {
     if (!openHeadsUpModal) {
       setOpenHeadsUpModal(true);
@@ -201,10 +232,27 @@ export function RoundApplicationForm(props: {
     }
     try {
       setOpenProgressModal(true);
-      const data: Partial<Round> = _.merge(formData, values);
+      const data2 = formData as FormData;
+      
+      const roundMetadata: RoundMetadata= {
+        name: data2.roundName,
+        roundType: data2.roundVisibility,
+        quadraticFundingConfig: {
+          sybilDefenseEnabled: data2.sybilDefenseEnabled,
+          matchingCapPercentage: data2.matchingCapAmount && data2.matchingCap ? data2.matchingCapAmount : 1,
+          minDonationAmountUSD: data2.minDonationThresholdAmount && data2.minDonationThreshold ? data2.minDonationThresholdAmount : 0,
+          matchingFundsAvailable: data2.matchingFundsAvailable,
+        },
+        support: {
+          type: data2.roundSupport.type,
+          info: data2.roundSupport.input
+        }
+      }
+
+      console.log("roundMetadata", roundMetadata);
 
       const roundMetadataWithProgramContractAddress: Round["roundMetadata"] = {
-        ...(data.roundMetadata as Round["roundMetadata"]),
+        ...(roundMetadata),
         programContractAddress: programId,
       };
 
@@ -216,18 +264,21 @@ export function RoundApplicationForm(props: {
         ),
         version: VERSION,
       };
-
-      const round = {
-        ...data,
+      
+      const round: Round = {
+        ...values,
+        roundMetadata: roundMetadata,
         ownedBy: programId,
         operatorWallets: props.initialData.program.operatorWallets,
-      } as Round;
-
+      } as Round; 
+      
       await createRound({
         roundMetadataWithProgramContractAddress,
         applicationQuestions,
         round,
       });
+      
+
     } catch (error) {
       datadogLogs.logger.error(
         `error: RoundApplcationForm next - ${error}, programId - ${programId}`
