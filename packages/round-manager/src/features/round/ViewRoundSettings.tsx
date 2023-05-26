@@ -987,7 +987,7 @@ function RoundType(props: {
   return (
     <>
       {" "}
-      <div className="flex flex-row mt-4">
+      <div className="flex flex-row">
         <RadioGroup
           {...roundTypeField}
           data-testid="round-type-selection"
@@ -1002,7 +1002,7 @@ function RoundType(props: {
               value={type.value}
             >
               {({ checked, active }) => (
-                <span className="flex items-center text-sm">
+                <span className="flex items-center text-sm mt-2">
                   <span
                     className={classNames(
                       checked
