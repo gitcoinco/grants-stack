@@ -55,7 +55,7 @@ contract MerklePayoutStrategyFactory is OwnableUpgradeable {
    */
   function create(
   ) external returns (address) {
-
+    require(payoutImplementation != address(0), "payoutImplementation not set");
     nonce++;
 
     bytes32 salt = keccak256(abi.encodePacked(msg.sender, nonce));

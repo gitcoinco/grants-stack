@@ -65,7 +65,7 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
      * - should be invoked by RoundImplementation contract
      * - ideally IPayoutStrategy implementation should emit events after
      *   distribution is updated
-     * - would be invoked at the end of the roune
+     * - would be invoked at the end of the round
      *
      * @param encodedDistribution encoded distribution
      */

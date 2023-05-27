@@ -24,7 +24,7 @@ type MetaPtr = {
   pointer: string;
 };
 
-describe.only("RoundImplementation", function () {
+describe("RoundImplementation", function () {
   let user: SignerWithAddress;
 
   // Round Implementation
@@ -2025,65 +2025,6 @@ describe.only("RoundImplementation", function () {
         await expect(
           roundImplementation.withdraw(_token, rando.address)
         ).to.be.revertedWith("Round: Cannot withdraw round token");
-      });
-    });
-    describe.skip("test: updateDistribution", () => {
-      const merkleRoot = ethers.utils.formatBytes32String("MERKLE_ROOT");
-      const distributionMetaPtr = {
-        protocol: 1,
-        pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq",
-      };
-
-      const encodedDistribution = encodeMerkleUpdateDistributionParameters([
-        merkleRoot,
-        distributionMetaPtr,
-      ]);
-
-      beforeEach(async () => {
-        const _currentBlockTimestamp = (
-          await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-        ).timestamp;
-
-        // Deploy voting strategy
-        quadraticFundingVotingStrategy = <
-          QuadraticFundingVotingStrategyImplementation
-        >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
-        // Deploy PayoutStrategy contract
-        payoutStrategy = <MerklePayoutStrategyImplementation>(
-          await deployContract(user, payoutStrategyArtifact, [])
-        );
-
-        const params = [
-          quadraticFundingVotingStrategy.address, // _quadraticFundingVotingStrategyAddress
-          payoutStrategy.address, //  _payoutStrategyAddress
-          _currentBlockTimestamp + 100, // _applicationsStartTime
-          _currentBlockTimestamp + 250, // _applicationsEndTime
-          _currentBlockTimestamp + 500, // _roundStartTime
-          _currentBlockTimestamp + 1000, // _roundEndTime
-          _token, // _token
-          _roundMetaPtr, // _roundMetaPtr
-          _applicationMetaPtr, // _applicationMetaPtr
-          _adminRoles, // _adminRoles
-          [user.address], // _roundOperators
-        ];
-
-        await roundImplementation.initialize(encodeRoundParameters(params));
-      });
-
-      it("invoking updateDistribution SHOULD revert WHEN invoked by wallet who is not round operator", async () => {
-        const [_, anotherUser] = await ethers.getSigners();
-
-        const txn = roundImplementation
-          .connect(anotherUser)
-          .updateDistribution(encodedDistribution);
-        await expect(txn).to.be.revertedWith(
-          `AccessControl: account ${anotherUser.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
-        );
-      });
-
-      it("invoking updateDistribution SHOULD by round operator should not revert", async () => {
-        const txn = roundImplementation.updateDistribution(encodedDistribution);
-        await expect(txn).to.not.be.reverted;
       });
     });
   });
