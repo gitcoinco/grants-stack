@@ -38,33 +38,33 @@ import { RoundDetails } from "./RoundDetailForm";
 import { QuadraticFundingConfig } from "./QuadraticFundingForm";
 import { EligibilityForm } from "./ApplicationEligibilityForm";
 
-  export interface RoundMetadata {
-    name: string;
-    programContractAddress?: string;
-    ownedBy?: string;
-    operatorWalletAddress?: string;
-    roundType: string;
-    eligibility?: {
-      description: string;
-      requirements: { requirement: string }[];
-    };
-    quadraticFundingConfig: {
-      sybilDefenseEnabled: boolean;
-      matchingCapPercentage: number;
-      minDonationAmountUSD: number;
-      matchingFundsAvailable: number;
-    };
-    support?: {
-      type: string;
-      info: string;
-    };
-  }
+export interface RoundMetadata {
+  name: string;
+  programContractAddress?: string;
+  ownedBy?: string;
+  operatorWalletAddress?: string;
+  roundType: string;
+  eligibility?: {
+    description: string;
+    requirements: { requirement: string }[];
+  };
+  quadraticFundingConfig: {
+    sybilDefenseEnabled: boolean;
+    matchingCapPercentage: number;
+    minDonationAmountUSD: number;
+    matchingFundsAvailable: number;
+  };
+  support?: {
+    type: string;
+    info: string;
+  };
+}
 
-  interface FormData extends RoundDetails, QuadraticFundingConfig, EligibilityForm {
-    programContractAddress?: string;
-    ownedBy?: string;
-    operatorWalletAddress?: string;
-  }
+interface FormData extends RoundDetails, QuadraticFundingConfig, EligibilityForm {
+  programContractAddress?: string;
+  ownedBy?: string;
+  operatorWalletAddress?: string;
+}
 const payoutQuestion: SchemaQuestion = {
   id: 0,
   title: "Payout Wallet Address",
