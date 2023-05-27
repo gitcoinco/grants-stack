@@ -232,20 +232,20 @@ export function RoundApplicationForm(props: {
     }
     try {
       setOpenProgressModal(true);
-      const data2 = formData as FormData;
+      const data = formData as FormData;
       
       const roundMetadata: RoundMetadata= {
-        name: data2.roundName,
-        roundType: data2.roundVisibility,
+        name: data.roundName,
+        roundType: data.roundVisibility,
         quadraticFundingConfig: {
-          sybilDefenseEnabled: data2.sybilDefenseEnabled,
-          matchingCapPercentage: data2.matchingCapAmount && data2.matchingCap ? data2.matchingCapAmount : 1,
-          minDonationAmountUSD: data2.minDonationThresholdAmount && data2.minDonationThreshold ? data2.minDonationThresholdAmount : 0,
-          matchingFundsAvailable: data2.matchingFundsAvailable,
+          sybilDefenseEnabled: data.sybilDefenseEnabled,
+          matchingCapPercentage: data.matchingCapAmount && data.matchingCap ? data.matchingCapAmount : 1,
+          minDonationAmountUSD: data.minDonationThresholdAmount && data.minDonationThreshold ? data.minDonationThresholdAmount : 0,
+          matchingFundsAvailable: data.matchingFundsAvailable,
         },
         support: {
-          type: data2.roundSupport.type,
-          info: data2.roundSupport.input
+          type: data.roundSupport.type,
+          info: data.roundSupport.input
         }
       }
 
