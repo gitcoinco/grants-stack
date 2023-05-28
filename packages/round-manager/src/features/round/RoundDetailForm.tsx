@@ -494,7 +494,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   homepage?
                 </p>
                 <p className="text-sm mt-0.5">
-                  <a className="underline text-violet-400 mr-1" href="https://grant-explorer.gitcoin.co/" target="_blank">
+                  <a className="text-violet-400 mr-1" href="https://grant-explorer.gitcoin.co/" target="_blank">
                     Gitcoin Explorer
                   </a>
                    is the place where supporters (donors) discover and donate to projects.
