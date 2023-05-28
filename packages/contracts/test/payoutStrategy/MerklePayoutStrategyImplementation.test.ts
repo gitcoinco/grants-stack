@@ -309,12 +309,9 @@ describe.only("MerklePayoutStrategyImplementation", () => {
           // eslint-disable-next-line no-unused-expressions
           expect(await merklePayoutStrategyImplementation.isDistributionSet())
             .to.be.true;
-          // eslint-disable-next-line no-unused-expressions
-          await expect(roundImplementation.setReadyForPayout()).to.not.be
-            .reverted;
         }
       );
-      it("invoking payout SHOULD distribute funds", async () => {
+      it("invoking payout SHOULD distribute funds with ERC20", async () => {
         // Prepare Payout
         const proofUser = tree.getProof(distributions[1]);
         const proofUser2 = tree.getProof(distributions[2]);
@@ -333,6 +330,10 @@ describe.only("MerklePayoutStrategyImplementation", () => {
           ],
         ];
         const distribution = arrayToDistribution(payouts);
+        // set ready for payout
+        // eslint-disable-next-line no-unused-expressions
+        await expect(roundImplementation.setReadyForPayout()).to.not.be
+          .reverted;
 
         const tx = await merklePayoutStrategyImplementation.payout(
           distribution
@@ -346,6 +347,51 @@ describe.only("MerklePayoutStrategyImplementation", () => {
         expect(balance2).to.equal(200);
         const balance3 = await mockERC20Contract.balanceOf(grantee3.address);
         expect(balance3).to.equal(300);
+      });
+      it("invoking payout SHOULD revert if there is an empty proof", async () => {
+        // Prepare Payout
+        const [_, grant1] = await ethers.getSigners();
+        const payouts = [
+          [grant1.address, 1, [], ethers.utils.formatBytes32String("test")],
+        ];
+        const distribution = arrayToDistribution(payouts);
+        // set ready for payout
+        // eslint-disable-next-line no-unused-expressions
+        expect(await roundImplementation.setReadyForPayout()).to.not.be;
+        // payout
+        await expect(
+          merklePayoutStrategyImplementation.payout(distribution)
+        ).to.be.revertedWith("Payout: Invalid proof");
+      });
+      it("invoking payout SHOULD revert if not ready for payout", async () => {
+        const [_, grant1] = await ethers.getSigners();
+        // Prepare Payout
+        const payouts = [
+          [grant1.address, 10, [], ethers.utils.formatBytes32String("test")],
+        ];
+
+        const distribution = arrayToDistribution(payouts);
+
+        await expect(
+          merklePayoutStrategyImplementation.payout(distribution)
+        ).to.be.revertedWith("Payout: Not ready for payout");
+      });
+      it("invoking payout SHOULD revert if an non round operator attempts to call payout", async () => {
+        // Prepare Payout
+        const [_, grant1] = await ethers.getSigners();
+        const payouts = [
+          [grant1.address, 1, [], ethers.utils.formatBytes32String("test")],
+        ];
+        const distribution = arrayToDistribution(payouts);
+        // set ready for payout
+        // eslint-disable-next-line no-unused-expressions
+        expect(await roundImplementation.setReadyForPayout()).to.not.be;
+        // payout
+        await expect(
+          merklePayoutStrategyImplementation
+            .connect(grant1)
+            .payout(distribution)
+        ).to.be.revertedWith("not round operator");
       });
     });
   });
