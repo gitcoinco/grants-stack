@@ -182,7 +182,7 @@ describe("MerklePayoutStrategyFactory", () => {
             merklePayoutStrategyImplementation.address
           )
         )
-          .to.emit(merklePayoutStrategyFactory, "PayoutImplementationUpdate")
+          .to.emit(merklePayoutStrategyFactory, "PayoutImplementationUpdated")
           .withArgs(merklePayoutStrategyImplementation.address);
       });
       it("invoking updatePayoutImplementation SHOULD REVERT if called by incorrect EOA", async () => {
@@ -264,74 +264,3 @@ describe("MerklePayoutStrategyFactory", () => {
     });
   });
 });
-
-/** 
- *      const merkleRoot = ethers.utils.formatBytes32String("MERKLE_ROOT");
-      const distributionMetaPtr = {
-        protocol: 1,
-        pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq",
-      };
-
-      const encodedDistribution = encodeMerkleUpdateDistributionParameters([
-        merkleRoot,
-        distributionMetaPtr,
-      ]);
-
- * it("invoking updateDistribution SHOULD revert IF round address is not set", async () => {
-        const txn =
-          merklePayoutStrategyImplementation.updateDistribution(
-            encodedDistribution
-          );
-        await expect(txn).to.be.revertedWith(
-          "error: payout contract not linked to a round"
-        );
-      });
-
-      it("invoking updateDistribution SHOULD revert IF invoked by an address which is not roundAddress", async () => {
-        const [_, anotherUser] = await ethers.getSigners();
-
-        // Invoke init
-        await merklePayoutStrategyImplementation.initialize();
-
-        const txn = merklePayoutStrategyImplementation
-          .connect(anotherUser)
-          .updateDistribution(encodedDistribution);
-
-        await expect(txn).to.be.revertedWith(
-          "error: can be invoked only by round contract"
-        );
-      });
-
-      it("invoking updateDistribution SHOULD emit event DistributionUpdated", async () => {
-        // Invoke init
-        await merklePayoutStrategyImplementation.init();
-
-        const txn = await merklePayoutStrategyImplementation.updateDistribution(
-          encodedDistribution
-        );
-        expect(txn)
-          .to.emit(merklePayoutStrategyImplementation, "DistributionUpdated")
-          .withArgs(merkleRoot, [
-            distributionMetaPtr.protocol,
-            distributionMetaPtr.pointer,
-          ]);
-      });
-
-      it("invoking updateDistribution SHOULD update public variables", async () => {
-        // Invoke init
-        await merklePayoutStrategyImplementation.init();
-
-        // Update distribution
-        await merklePayoutStrategyImplementation.updateDistribution(
-          encodedDistribution
-        );
-
-        await expect(
-          await merklePayoutStrategyImplementation.merkleRoot()
-        ).to.equal(merkleRoot);
-
-        const metaPtr =
-          await merklePayoutStrategyImplementation.distributionMetaPtr();
-        expect(metaPtr.protocol).to.equal(distributionMetaPtr.protocol);
-        expect(metaPtr.pointer).to.equal(distributionMetaPtr.pointer);
-      }); */

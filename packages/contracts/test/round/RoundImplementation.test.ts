@@ -18,6 +18,7 @@ import {
   DummyRelay,
   MerklePayoutStrategyImplementation,
 } from "../../typechain/index";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 type MetaPtr = {
   protocol: BigNumberish;
@@ -123,10 +124,10 @@ describe("RoundImplementation", function () {
 
   describe("core functions", () => {
     before(async () => {
-      _applicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
-      _applicationsEndTime = Math.round(new Date().getTime() / 1000 + 7200); // 2 hours later
-      _roundStartTime = Math.round(new Date().getTime() / 1000 + 10800); // 3 hours later
-      _roundEndTime = Math.round(new Date().getTime() / 1000 + 14400); // 4 hours later
+      _applicationsStartTime = (await time.latest()) + 100;
+      _applicationsEndTime = (await time.latest()) + 250;
+      _roundStartTime = (await time.latest()) + 500;
+      _roundEndTime = (await time.latest()) + 1000;
 
       _token = Wallet.createRandom().address;
       _quadraticFundingVotingStrategy = Wallet.createRandom().address;
@@ -162,10 +163,7 @@ describe("RoundImplementation", function () {
       let initializeTxn: ContractTransaction;
 
       beforeEach(async () => {
-        _currentBlockTimestamp = (
-          await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-        ).timestamp;
-
+        _currentBlockTimestamp = await time.latest();
         // Deploy voting strategy
         quadraticFundingVotingStrategy = <
           QuadraticFundingVotingStrategyImplementation
@@ -296,8 +294,8 @@ describe("RoundImplementation", function () {
         payoutStrategy = <MerklePayoutStrategyImplementation>(
           await deployContract(user, payoutStrategyArtifact, [])
         );
-
-        const _time = Math.round(new Date().getTime() / 1000 - 259200); // 3 days earlier
+        const currentTime = await time.latest();
+        const _time = currentTime - 300;
         const newRoundImplementation = <RoundImplementation>(
           await deployContract(user, roundImplementationArtifact, [])
         );
@@ -333,7 +331,7 @@ describe("RoundImplementation", function () {
           await deployContract(user, payoutStrategyArtifact, [])
         );
 
-        const _time = Math.round(new Date().getTime() / 1000); // current time
+        const _time = await time.latest();
         const newRoundImplementation = <RoundImplementation>(
           await deployContract(user, roundImplementationArtifact, [])
         );
@@ -475,9 +473,7 @@ describe("RoundImplementation", function () {
       };
 
       beforeEach(async () => {
-        _currentBlockTimestamp = (
-          await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-        ).timestamp;
+        _currentBlockTimestamp = await time.latest();
 
         // Deploy voting strategy
         quadraticFundingVotingStrategy = <
@@ -585,9 +581,7 @@ describe("RoundImplementation", function () {
       };
 
       beforeEach(async () => {
-        _currentBlockTimestamp = (
-          await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-        ).timestamp;
+        _currentBlockTimestamp = await time.latest();
 
         // Deploy voting strategy
         quadraticFundingVotingStrategy = <
@@ -601,10 +595,10 @@ describe("RoundImplementation", function () {
         const params = [
           quadraticFundingVotingStrategy.address, // _quadraticFundingVotingStrategyAddress
           payoutStrategy.address, // _payoutStrategyAddress
-          _applicationsStartTime, // _applicationsStartTime
-          _applicationsEndTime, // _applicationsEndTime
-          _roundStartTime, // _roundStartTime
-          _roundEndTime, // _roundEndTime
+          _currentBlockTimestamp + 100, // _applicationsStartTime
+          _currentBlockTimestamp + 600, // _applicationsEndTime
+          _currentBlockTimestamp + 500, // _roundStartTime
+          _currentBlockTimestamp + 1000, // _roundEndTime
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
@@ -633,10 +627,10 @@ describe("RoundImplementation", function () {
         const params = [
           quadraticFundingVotingStrategy.address, // _quadraticFundingVotingStrategyAddress
           payoutStrategy.address, // _payoutStrategyAddress
-          _applicationsStartTime, // _applicationsStartTime
-          _applicationsEndTime, // _applicationsEndTime
-          _roundStartTime, // _roundStartTime
-          _roundEndTime, // _roundEndTime
+          _currentBlockTimestamp + 100, // _applicationsStartTime
+          _currentBlockTimestamp + 600, // _applicationsEndTime
+          _currentBlockTimestamp + 500, // _roundStartTime
+          _currentBlockTimestamp + 1000, // _roundEndTime
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
@@ -1849,9 +1843,7 @@ describe("RoundImplementation", function () {
       let _currentBlockTimestamp: number;
 
       beforeEach(async () => {
-        _currentBlockTimestamp = (
-          await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-        ).timestamp;
+        _currentBlockTimestamp = await time.latest();
 
         // Deploy voting strategy
         quadraticFundingVotingStrategy = <
@@ -1862,6 +1854,7 @@ describe("RoundImplementation", function () {
           await deployContract(user, payoutStrategyArtifact, [])
         );
         _token = mockERC20.address;
+
         const params = [
           quadraticFundingVotingStrategy.address, // _quadraticFundingVotingStrategyAddress
           payoutStrategy.address, //  _payoutStrategyAddress
@@ -1881,7 +1874,6 @@ describe("RoundImplementation", function () {
         mockERC20.mint(ethers.utils.parseEther("10"));
       });
       it("invoking setReadyForPayout SHOULD set payout strategy as ready to pay and emit an event and transfer funds", async function () {
-        await payoutStrategy.updateDistribution(encodedDistribution);
         // update match amount and add funds
         const [signer] = await ethers.getSigners();
         const matchAmount = ethers.utils.parseEther("5");
@@ -1889,8 +1881,11 @@ describe("RoundImplementation", function () {
           .connect(signer)
           .transfer(roundImplementation.address, matchAmount);
         await roundImplementation.updateMatchAmount(matchAmount);
+
         //  end round
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500]);
+        await time.increase(1300);
+        // update distribution
+        await payoutStrategy.updateDistribution(encodedDistribution);
 
         expect(await roundImplementation.setReadyForPayout()).to.emit(
           roundImplementation,
@@ -1903,11 +1898,12 @@ describe("RoundImplementation", function () {
         );
       });
       it("invoking setReadyForPayout SHOULD REVERT WHEN called with less funds than match amount", async () => {
-        await payoutStrategy.updateDistribution(encodedDistribution);
         const matchAmount = ethers.utils.parseEther("5");
         await roundImplementation.updateMatchAmount(matchAmount);
         //  end round
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500]);
+        await time.increase(1300);
+        // update distribution
+        await payoutStrategy.updateDistribution(encodedDistribution);
 
         // eslint-disable-next-line no-unused-expressions
         await expect(
@@ -1917,11 +1913,14 @@ describe("RoundImplementation", function () {
         expect(await payoutStrategy.isReadyForPayout()).to.be.false;
       });
       it("invoking setReadyForPayout SHOULD REVERT WHEN called by wrong EOA", async () => {
-        await payoutStrategy.updateDistribution(encodedDistribution);
         const matchAmount = ethers.utils.parseEther("5");
         await roundImplementation.updateMatchAmount(matchAmount);
+
         //  end round
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500]);
+        await time.increase(1300);
+        // update distribution
+        await payoutStrategy.updateDistribution(encodedDistribution);
+
         const [_, rando] = await ethers.getSigners();
         // eslint-disable-next-line no-unused-expressions
         await expect(roundImplementation.connect(rando).setReadyForPayout()).to
@@ -1930,7 +1929,6 @@ describe("RoundImplementation", function () {
         expect(await payoutStrategy.isReadyForPayout()).to.be.false;
       });
       it("invoking setReadyForPayout SHOULD REVERT WHEN called before round end", async () => {
-        await payoutStrategy.updateDistribution(encodedDistribution);
         // eslint-disable-next-line no-unused-expressions
         await expect(
           roundImplementation.setReadyForPayout()
@@ -1940,7 +1938,8 @@ describe("RoundImplementation", function () {
       });
       it("invoking setReadyForPayout SHOULD REVERT WHEN distribution has not been set", async () => {
         //  end round
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500]);
+        await time.increase(1300);
+
         // eslint-disable-next-line no-unused-expressions
         await expect(
           roundImplementation.setReadyForPayout()
@@ -1949,9 +1948,10 @@ describe("RoundImplementation", function () {
         expect(await payoutStrategy.isReadyForPayout()).to.be.false;
       });
       it("invoking setReadyForPayout SHOULD REVERT WHEN isReadyForPayout has already been set", async () => {
-        await payoutStrategy.updateDistribution(encodedDistribution);
         //  end round
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500]);
+        await time.increase(1300);
+        // update distribution
+        await payoutStrategy.updateDistribution(encodedDistribution);
         // eslint-disable-next-line no-unused-expressions
         await expect(roundImplementation.setReadyForPayout()).to.not.be
           .reverted;

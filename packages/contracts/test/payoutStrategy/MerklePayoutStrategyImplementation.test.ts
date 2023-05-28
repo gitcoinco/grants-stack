@@ -23,18 +23,18 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { before } from "mocha";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 
-describe.only("MerklePayoutStrategyImplementation", () => {
+describe("MerklePayoutStrategyImplementation", () => {
   let user: SignerWithAddress;
 
   // payout strategy
   let merklePayoutStrategyImplementation: MerklePayoutStrategyImplementation;
   let merklePayoutStrategyImplementationArtifact: Artifact;
-  let merklePayoutStrategyFactory: MerklePayoutStrategyFactory;
   let merklePayoutStrategyFactoryArtifact: Artifact;
+  let merklePayoutStrategyFactory: MerklePayoutStrategyFactory
 
   // roundFactory
-  let roundFactory: RoundFactory;
   let roundFactoryFactory: RoundFactory__factory;
+  let roundFactory: RoundFactory;
   let roundImplementation: RoundImplementation;
   let roundImplementationArtifact: Artifact;
 
@@ -47,9 +47,6 @@ describe.only("MerklePayoutStrategyImplementation", () => {
   let mockERC20Contract: MockERC20;
   // init variables
   let _currentBlockTimestamp: number;
-  const ROUND_OPERATOR_ROLE = ethers.utils.keccak256(
-    ethers.utils.toUtf8Bytes("ROUND_OPERATOR")
-  );
 
   const merkleRoot: BytesLike = ethers.utils.formatBytes32String("MERKLE_ROOT");
   const distributionMetaPtr = {
