@@ -8,63 +8,67 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../../utils/MetaPtr.sol";
 
 contract MerklePayoutStrategyFactory is OwnableUpgradeable {
+    // --- Data ---
 
-  // --- Data ---
+    address payable public payoutImplementation;
 
-  address payable public payoutImplementation;
+    uint256 public nonce;
 
-  uint256 public nonce;
+    // --- Event ---
 
-  // --- Event ---
+    /// @notice Emitted when payoutImplementation is updated
+    event PayoutImplementationUpdated(address merklePayoutStrategyAddress);
 
-  /// @notice Emitted when payoutImplementation is updated
-  event PayoutImplementationUpdated(address merklePayoutStrategyAddress);
+    /// @notice Emitted when a new payout contract is created
+    event PayoutContractCreated(
+        address indexed payoutContractAddress,
+        address indexed payoutImplementation
+    );
 
-  /// @notice Emitted when a new payout contract is created
-  event PayoutContractCreated(
-    address indexed payoutContractAddress,
-    address indexed payoutImplementation
-  );
+    /// @notice constructor function which ensure deployer is set as owner
+    function initialize() external initializer {
+        __Context_init_unchained();
+        __Ownable_init_unchained();
+    }
 
-  /// @notice constructor function which ensure deployer is set as owner
-  function initialize() external initializer {
-    __Context_init_unchained();
-    __Ownable_init_unchained();
-  }
+    // --- Core methods ---
 
-  // --- Core methods ---
+    /**
+     * @notice Allows the owner to update the payoutImplementation.
+     * This provides us the flexibility to upgrade MerklePayoutStrategyImplementation
+     * contract while relying on the same MerklePayoutStrategyFactory to get the list of
+     * MerklePayout contracts.
+     *
+     * @param newPayoutImplementation - address of the new payoutImplementation
+     */
+    function updatePayoutImplementation(
+        address payable newPayoutImplementation
+    ) external onlyOwner {
+        payoutImplementation = newPayoutImplementation;
 
-  /**
-   * @notice Allows the owner to update the payoutImplementation.
-   * This provides us the flexibility to upgrade MerklePayoutStrategyImplementation
-   * contract while relying on the same MerklePayoutStrategyFactory to get the list of
-   * MerklePayout contracts.
-   *
-   * @param newPayoutImplementation - address of the new payoutImplementation
-   */
-  function updatePayoutImplementation(address payable newPayoutImplementation) external onlyOwner {
+        emit PayoutImplementationUpdated(newPayoutImplementation);
+    }
 
-    payoutImplementation = newPayoutImplementation;
+    /**
+     * @notice Clones MerklePayoutStrategyImplementation and deploys a contract
+     * and emits an event
+     */
+    function create() external returns (address) {
+        require(
+            payoutImplementation != address(0),
+            "payoutImplementation not set"
+        );
+        nonce++;
 
-    emit PayoutImplementationUpdated(newPayoutImplementation);
-  }
+        bytes32 salt = keccak256(abi.encodePacked(msg.sender, nonce));
+        address clone = ClonesUpgradeable.cloneDeterministic(
+            payoutImplementation,
+            salt
+        );
 
-  /**
-   * @notice Clones MerklePayoutStrategyImplementation and deploys a contract
-   * and emits an event
-   */
-  function create(
-  ) external returns (address) {
-    require(payoutImplementation != address(0), "payoutImplementation not set");
-    nonce++;
+        MerklePayoutStrategyImplementation(payable(clone)).initialize();
+        emit PayoutContractCreated(clone, payoutImplementation);
 
-    bytes32 salt = keccak256(abi.encodePacked(msg.sender, nonce));
-    address clone = ClonesUpgradeable.cloneDeterministic(payoutImplementation, salt);
-
-    MerklePayoutStrategyImplementation(payable(clone)).initialize();
-    emit PayoutContractCreated(clone, payoutImplementation);
-
-    return clone;
-  }
-
+        return clone;
+    }
 }
