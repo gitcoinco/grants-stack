@@ -17,14 +17,14 @@ import "../../utils/MetaPtr.sol";
  *  - TODO: add function distribute() to actually distribute the funds
  */
 contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
-     using SafeERC20 for IERC20;
+    using SafeERC20 for IERC20;
 
     // --- Data ---
 
     /// @notice merkle root generated from distribution
     bytes32 public merkleRoot;
 
-    /// @notice map of booleans to keep track of claims
+    /// @notice map of booleans to keep track of claims payee => payment completed
     mapping(address => bool) private distributed;
 
     // --- Event ---
@@ -45,7 +45,6 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
 
     // --- Types ---
     struct Distribution {
-        uint256 index;
         address grantee;
         uint256 amount;
         bytes32[] merkleProof;
@@ -71,7 +70,9 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
      */
     function updateDistribution(
         bytes calldata encodedDistribution
-    ) external override isRoundOperator {
+    ) external override roundHasEnded isRoundOperator {
+        require(isReadyForPayout == false, "Payout: Already ready for payout");
+
         (bytes32 _merkleRoot, MetaPtr memory _distributionMetaPtr) = abi.decode(
             encodedDistribution,
             (bytes32, MetaPtr)
@@ -83,10 +84,10 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
         emit DistributionUpdated(merkleRoot, distributionMetaPtr);
     }
 
-      /// @notice function to check if distribution is set
-  function isDistributionSet() public view override returns (bool) {
-    return merkleRoot != "";
-  }
+    /// @notice function to check if distribution is set
+    function isDistributionSet() public view override returns (bool) {
+        return merkleRoot != "";
+    }
 
     /// @notice function to distribute funds to recipient
     /// @dev can be invoked only by round operator

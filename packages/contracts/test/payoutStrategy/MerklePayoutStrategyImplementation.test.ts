@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { deployContract } from "ethereum-waffle";
-import { isAddress } from "ethers/lib/utils";
+import { BytesLike, isAddress } from "ethers/lib/utils";
 import { artifacts, ethers, upgrades } from "hardhat";
 import { Artifact } from "hardhat/types";
 import {
@@ -14,17 +14,14 @@ import {
   MockERC20,
   QuadraticFundingVotingStrategyImplementation,
 } from "../../typechain";
-import { AddressZero } from "@ethersproject/constants";
 import {
+  arrayToDistribution,
   encodeMerkleUpdateDistributionParameters,
   encodeRoundParameters,
 } from "../../scripts/utils";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-import fs from "fs";
-import { Address } from "cluster";
 import { before } from "mocha";
-import { BigNumberish } from "ethers";
-import { deploy } from "@openzeppelin/hardhat-upgrades/dist/utils";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 describe.only("MerklePayoutStrategyImplementation", () => {
   let user: SignerWithAddress;
@@ -45,7 +42,7 @@ describe.only("MerklePayoutStrategyImplementation", () => {
   let votingStrategyContract: QuadraticFundingVotingStrategyImplementation;
   let votingStrategyArtifact: Artifact;
 
-  //mockERC20
+  //  mockERC20
   let mockERC20Artifact: Artifact;
   let mockERC20Contract: MockERC20;
   // init variables
@@ -53,6 +50,17 @@ describe.only("MerklePayoutStrategyImplementation", () => {
   const ROUND_OPERATOR_ROLE = ethers.utils.keccak256(
     ethers.utils.toUtf8Bytes("ROUND_OPERATOR")
   );
+
+  const merkleRoot: BytesLike = ethers.utils.formatBytes32String("MERKLE_ROOT");
+  const distributionMetaPtr = {
+    protocol: 1,
+    pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq",
+  };
+
+  const encodedDistribution = encodeMerkleUpdateDistributionParameters([
+    merkleRoot,
+    distributionMetaPtr,
+  ]);
 
   before(async () => {
     [user] = await ethers.getSigners();
@@ -99,29 +107,32 @@ describe.only("MerklePayoutStrategyImplementation", () => {
         "Failed to deploy MerklePayoutStrategyImplementation"
       ).to.be.true;
     });
+    it("invoking initialize more than once SHOULD revert the transaction ", async () => {
+      // eslint-disable-next-line no-unused-expressions
+      await expect(merklePayoutStrategyImplementation.initialize()).to.not.be
+        .reverted;
+      await expect(
+        merklePayoutStrategyImplementation.initialize()
+      ).to.revertedWith("Initializable: contract is already initialized");
+    });
+    it("SHOULD have an empty merkle root after deploy", async () => {
+      expect(await merklePayoutStrategyImplementation.merkleRoot()).to.be.equal(
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      );
+    });
   });
 
   describe("core functions", () => {
-    const merkleRoot = ethers.utils.formatBytes32String("MERKLE_ROOT");
-    const distributionMetaPtr = {
-      protocol: 1,
-      pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq",
-    };
-
-    const encodedDistribution = encodeMerkleUpdateDistributionParameters([
-      merkleRoot,
-      distributionMetaPtr,
-    ]);
-
+    let encodedRoundParams: BytesLike;
     beforeEach(async () => {
       _currentBlockTimestamp = (
         await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
       ).timestamp;
 
-      const applicationsStartTime = _currentBlockTimestamp + 3600; // 1 hour later
-      const applicationsEndTime = _currentBlockTimestamp + 7200; // 2 hours later
-      const roundStartTime = _currentBlockTimestamp + 10800; // 3 hours later
-      const roundEndTime = _currentBlockTimestamp + 14400; // 4 hours later
+      const applicationsStartTime = _currentBlockTimestamp + 100; // 1 hour later
+      const applicationsEndTime = _currentBlockTimestamp + 250; // 2 hours later
+      const roundStartTime = _currentBlockTimestamp + 500; // 3 hours later
+      const roundEndTime = _currentBlockTimestamp + 1000; // 4 hours later
 
       // Deploy MerklePayoutStrategyImplementation
       merklePayoutStrategyImplementationArtifact = await artifacts.readArtifact(
@@ -174,11 +185,14 @@ describe.only("MerklePayoutStrategyImplementation", () => {
         [user.address], // _adminRoles
         [user.address, ethers.Wallet.createRandom().address], // _roundOperators
       ];
-      const encodedRoundParams = encodeRoundParameters(params);
+      encodedRoundParams = encodeRoundParameters(params);
       roundImplementation.initialize(encodedRoundParams);
     });
     describe("test: updateDistribution", () => {
-      it("invoking updateDistribution SHOULD update the distribution", async () => {
+      it("invoking updateDistribution SHOULD update the merkle root", async () => {
+        // advance to round end
+        await time.increase(1300);
+
         expect(
           await merklePayoutStrategyImplementation
             .connect(user)
@@ -189,43 +203,49 @@ describe.only("MerklePayoutStrategyImplementation", () => {
             1,
             "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq",
           ]);
-      });
-      it("invoking initialize more than once SHOULD revert the transaction ", async () => {
-        expect(merklePayoutStrategyImplementation.initialize()).to.revertedWith(
-          "Initializable: contract is already initialized"
+        expect(await merklePayoutStrategyImplementation.merkleRoot()).to.equal(
+          merkleRoot
         );
       });
-    });
-  });
-});
-
-/** 
- * 
- *       
- *      const merkleRoot = ethers.utils.formatBytes32String("MERKLE_ROOT");
-      const distributionMetaPtr = {
-        protocol: 1,
-        pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq",
-      };
-
-      const encodedDistribution = encodeMerkleUpdateDistributionParameters([
-        merkleRoot,
-        distributionMetaPtr,
-      ]);
-
- * it("invoking updateDistribution SHOULD revert IF round address is not set", async () => {
-        const txn =
+      it("invoking updateDistribution SHOULD revert if round has not ended", async () => {
+        expect(
+          await merklePayoutStrategyImplementation.isReadyForPayout()
+        ).to.equal(false);
+        const tx =
           merklePayoutStrategyImplementation.updateDistribution(
             encodedDistribution
           );
-        await expect(txn).to.be.revertedWith(
-          "error: payout contract not linked to a round"
-        );
-      });
 
+        await expect(tx).to.revertedWith("round has not ended");
+      });
+      it("invoking updateDistribution SHOULD revert if round has been set ready for payout", async () => {
+        // end round
+        await time.increase(1300);
+        await mockERC20Contract.connect(user).mint(1100);
+        await mockERC20Contract
+          .connect(user)
+          .transfer(roundImplementation.address, 110);
+
+        await merklePayoutStrategyImplementation.updateDistribution(
+          encodedDistribution
+        );
+        await roundImplementation.setReadyForPayout();
+
+        expect(
+          await merklePayoutStrategyImplementation.isReadyForPayout()
+        ).to.equal(true);
+
+        const tx =
+          merklePayoutStrategyImplementation.updateDistribution(
+            encodedDistribution
+          );
+
+        await expect(tx).to.revertedWith("Payout: Already ready for payout");
+      });
       it("invoking updateDistribution SHOULD revert IF invoked by an address which is not roundAddress", async () => {
         const [_, anotherUser] = await ethers.getSigners();
-
+        // end round
+        await time.increase(1300);
         // Invoke init
         await merklePayoutStrategyImplementation.initialize();
 
@@ -233,41 +253,100 @@ describe.only("MerklePayoutStrategyImplementation", () => {
           .connect(anotherUser)
           .updateDistribution(encodedDistribution);
 
-        await expect(txn).to.be.revertedWith(
-          "error: can be invoked only by round contract"
-        );
+        await expect(txn).to.be.revertedWith("not round operator");
       });
+    });
+    describe("test: payout", () => {
+      let grantee1: SignerWithAddress;
+      let grantee2: SignerWithAddress;
+      let grantee3: SignerWithAddress;
+      let tree: StandardMerkleTree<[string, number, string]>;
+      let distributions: [string, number, string][];
+      beforeEach(
+        "add funds, calculate merkle tree, set ready for payout",
+        async () => {
+          [user, grantee1, grantee2, grantee3] = await ethers.getSigners();
+          // mint and transfer funds
+          await mockERC20Contract.connect(user).mint(1000);
+          await mockERC20Contract
+            .connect(user)
+            .transfer(roundImplementation.address, 900);
+          // update match amount
+          await roundImplementation.updateMatchAmount(500);
 
-      it("invoking updateDistribution SHOULD emit event DistributionUpdated", async () => {
-        // Invoke init
-        await merklePayoutStrategyImplementation.init();
+          distributions = [
+            [
+              grantee1.address,
+              100,
+              ethers.utils.formatBytes32String("project1"),
+            ],
+            [
+              grantee2.address,
+              200,
+              ethers.utils.formatBytes32String("project2"),
+            ],
+            [
+              grantee3.address,
+              300,
+              ethers.utils.formatBytes32String("project3"),
+            ],
+          ];
 
-        const txn = await merklePayoutStrategyImplementation.updateDistribution(
-          encodedDistribution
-        );
-        expect(txn)
-          .to.emit(merklePayoutStrategyImplementation, "DistributionUpdated")
-          .withArgs(merkleRoot, [
-            distributionMetaPtr.protocol,
-            distributionMetaPtr.pointer,
+          tree = StandardMerkleTree.of(distributions, [
+            "address",
+            "uint256",
+            "bytes32",
           ]);
-      });
 
-      it("invoking updateDistribution SHOULD update public variables", async () => {
-        // Invoke init
-        await merklePayoutStrategyImplementation.init();
+          // end round
+          await time.increase(1300);
+          await merklePayoutStrategyImplementation.updateDistribution(
+            encodeMerkleUpdateDistributionParameters([
+              tree.root,
+              { protocol: 1, pointer: "test" },
+            ])
+          );
+          // eslint-disable-next-line no-unused-expressions
+          expect(await merklePayoutStrategyImplementation.isDistributionSet())
+            .to.be.true;
+          // eslint-disable-next-line no-unused-expressions
+          await expect(roundImplementation.setReadyForPayout()).to.not.be
+            .reverted;
+        }
+      );
+      it("invoking payout SHOULD distribute funds", async () => {
+        // Prepare Payout
+        const proofUser = tree.getProof(distributions[1]);
+        const proofUser2 = tree.getProof(distributions[2]);
+        const payouts = [
+          [
+            distributions[1][0],
+            distributions[1][1],
+            proofUser,
+            distributions[1][2],
+          ],
+          [
+            distributions[2][0],
+            distributions[2][1],
+            proofUser2,
+            distributions[2][2],
+          ],
+        ];
+        const distribution = arrayToDistribution(payouts);
 
-        // Update distribution
-        await merklePayoutStrategyImplementation.updateDistribution(
-          encodedDistribution
+        const tx = await merklePayoutStrategyImplementation.payout(
+          distribution
         );
+        await expect(tx)
+          .to.emit(merklePayoutStrategyImplementation, "BatchPayoutSuccessful")
+          .withArgs(user.address);
 
-        await expect(
-          await merklePayoutStrategyImplementation.merkleRoot()
-        ).to.equal(merkleRoot);
-
-        const metaPtr =
-          await merklePayoutStrategyImplementation.distributionMetaPtr();
-        expect(metaPtr.protocol).to.equal(distributionMetaPtr.protocol);
-        expect(metaPtr.pointer).to.equal(distributionMetaPtr.pointer);
-      }); */
+        /* Verify balance */
+        const balance2 = await mockERC20Contract.balanceOf(grantee2.address);
+        expect(balance2).to.equal(200);
+        const balance3 = await mockERC20Contract.balanceOf(grantee3.address);
+        expect(balance3).to.equal(300);
+      });
+    });
+  });
+});

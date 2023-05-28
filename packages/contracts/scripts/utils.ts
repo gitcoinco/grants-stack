@@ -67,3 +67,14 @@ export const assertEnvironment = () => {
     console.error("Please set your INFURA_ID in a .env file");
   }
 };
+
+export function arrayToDistribution(array: any[]) {
+  return array.map((elem) => {
+    return {
+      grantee: elem[0],
+      amount: elem[1],
+      merkleProof: elem[2],
+      projectId: elem[3],
+    };
+  });
+}
