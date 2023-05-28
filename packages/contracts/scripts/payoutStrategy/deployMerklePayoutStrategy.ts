@@ -18,11 +18,15 @@ export async function main() {
 
   // Deploy MerklePayoutStrategy
   const contractFactory = await ethers.getContractFactory(
-    "MerklePayoutStrategy"
+    "MerklePayoutStrategyFactory"
   );
   const contract = await contractFactory.deploy();
-
-  console.log(`Deploying MerklePayoutStrategy to ${contract.address}`);
+  console.log(`Deploying MerklePayoutStrategyFactory to ${contract.address}`);
+  const implementationFactory = await ethers.getContractFactory("MerklePayoutStrategyImplementation");
+  const implementationContract = await implementationFactory.deploy();
+  console.log(
+    `Deploying MerklePayoutStrategyImplementation to ${implementationContract.address}`
+  );
 
   await contract.deployTransaction.wait(blocksToWait);
   console.log("✅ Deployed.");
