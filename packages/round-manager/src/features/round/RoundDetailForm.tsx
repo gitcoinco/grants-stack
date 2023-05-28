@@ -194,7 +194,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 {program && <ProgramChain program={program} />}
               </div>
 
-              <p className="mt-6 mb-4 text-sm">
+              <p className="mt-6 mb-2 text-sm text-grey-400">
                 Where can applicants reach you and/or your team if support is
                 needed?
               </p>
@@ -214,12 +214,14 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 </div>
               </div>
 
-              <div className="mt-6 mb-4 text-sm">
-                <span>
-                  What are the dates for the Applications and Round voting
-                  period(s)?
-                </span>
-                <ApplicationDatesInformation />
+              <div className="mt-6 mb-4 text-sm text-grey-400">
+                <p>
+                  What are the dates for the Applications and Round voting period(s)?
+                  <ApplicationDatesInformation />
+                </p>
+                <p className="text-sm mt-0.5">
+                  Tips: You can accept applications even after the round starts by setting up overlapping Applications and Round periods!
+                </p>
               </div>
 
               <p className="text-sm mb-2">
@@ -486,10 +488,16 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
             {/* Round Type */}
             <div className="p-6 bg-white">
-              <div className="grid grid-rows-1">
+              <div className="grid grid-rows-1 text-grey-400">
                 <p>
                   Do you want to show your round on the Gitcoin Explorer
                   homepage?
+                </p>
+                <p className="text-sm mt-0.5">
+                  <a className="text-violet-400 mr-1" href="https://grant-explorer.gitcoin.co/" target="_blank">
+                    Gitcoin Explorer
+                  </a>
+                   is the place where supporters (donors) discover and donate to projects.
                 </p>
               </div>
               <div className="flex mt-4">
@@ -804,12 +812,23 @@ function Support(props: {
   control: Control<Round>;
 }) {
   return (
-    <SupportTypeDropdown
-      register={props.register}
-      errors={props.errors}
-      control={props.control}
-      supportTypes={supportTypes}
-    />
+    <div className="mt-2 mb-2">
+       <div className="flex justify-between">
+        <label htmlFor="roundMetadata.support.info" className="text-sm">
+          Suppport Input
+        </label>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">
+          *Required
+        </span>
+      </div>
+
+      <SupportTypeDropdown
+        register={props.register}
+        errors={props.errors}
+        control={props.control}
+        supportTypes={supportTypes}
+      />
+    </div>
   );
 }
 
@@ -875,7 +894,7 @@ function RoundType(props: {
                     data-testid="round-type-public"
                   >
                     Yes, make my round public
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 mt-1">
                       Anyone on the Gitcoin Explorer homepage will be able to
                       see your round
                     </p>
@@ -904,7 +923,7 @@ function RoundType(props: {
                     data-testid="round-type-private"
                   >
                     No, keep my round private
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 mt-1">
                       Only people with the round link can see your round.
                     </p>
                   </RadioGroup.Label>
