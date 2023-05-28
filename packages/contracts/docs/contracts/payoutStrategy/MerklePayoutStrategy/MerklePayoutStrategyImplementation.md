@@ -187,7 +187,7 @@ function updateDistribution(bytes encodedDistribution) external nonpayable
 
 Invoked by RoundImplementation to upload distribution to the payout strategy
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the roune*
+*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the round*
 
 #### Parameters
 

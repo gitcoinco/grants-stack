@@ -2,28 +2,71 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { deployContract } from "ethereum-waffle";
 import { isAddress } from "ethers/lib/utils";
-import { artifacts, ethers } from "hardhat";
+import { artifacts, ethers, upgrades } from "hardhat";
 import { Artifact } from "hardhat/types";
 import {
   MerklePayoutStrategyImplementation,
   MerklePayoutStrategyFactory,
+  RoundFactory,
+  RoundImplementation,
+  RoundFactory__factory,
+  QuadraticFundingRelayStrategyImplementation,
+  MockERC20,
+  QuadraticFundingVotingStrategyImplementation,
 } from "../../typechain";
 import { AddressZero } from "@ethersproject/constants";
-import { encodeMerkleUpdateDistributionParameters } from "../../scripts/utils";
+import {
+  encodeMerkleUpdateDistributionParameters,
+  encodeRoundParameters,
+} from "../../scripts/utils";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import fs from "fs";
 import { Address } from "cluster";
+import { before } from "mocha";
+import { BigNumberish } from "ethers";
+import { deploy } from "@openzeppelin/hardhat-upgrades/dist/utils";
 
-describe("MerklePayoutStrategyImplementation", () => {
+describe.only("MerklePayoutStrategyImplementation", () => {
   let user: SignerWithAddress;
+
+  // payout strategy
   let merklePayoutStrategyImplementation: MerklePayoutStrategyImplementation;
   let merklePayoutStrategyImplementationArtifact: Artifact;
   let merklePayoutStrategyFactory: MerklePayoutStrategyFactory;
   let merklePayoutStrategyFactoryArtifact: Artifact;
-  let merklePayoutStrategyClone: MerklePayoutStrategyImplementation;
 
-  async function deploy() {
+  // roundFactory
+  let roundFactory: RoundFactory;
+  let roundFactoryFactory: RoundFactory__factory;
+  let roundImplementation: RoundImplementation;
+  let roundImplementationArtifact: Artifact;
+
+  // voting strategy
+  let votingStrategyContract: QuadraticFundingVotingStrategyImplementation;
+  let votingStrategyArtifact: Artifact;
+
+  //mockERC20
+  let mockERC20Artifact: Artifact;
+  let mockERC20Contract: MockERC20;
+  // init variables
+  let _currentBlockTimestamp: number;
+  const ROUND_OPERATOR_ROLE = ethers.utils.keccak256(
+    ethers.utils.toUtf8Bytes("ROUND_OPERATOR")
+  );
+
+  before(async () => {
     [user] = await ethers.getSigners();
+
+    roundFactoryFactory = await ethers.getContractFactory("RoundFactory");
+
+    roundFactory = <RoundFactory>(
+      await upgrades.deployProxy(roundFactoryFactory)
+    );
+
+    roundImplementationArtifact = await artifacts.readArtifact(
+      "RoundImplementation"
+    );
+
     merklePayoutStrategyFactoryArtifact = await artifacts.readArtifact(
       "MerklePayoutStrategyFactory"
     );
@@ -31,57 +74,30 @@ describe("MerklePayoutStrategyImplementation", () => {
     merklePayoutStrategyFactory = <MerklePayoutStrategyFactory>(
       await deployContract(user, merklePayoutStrategyFactoryArtifact, [])
     );
+  });
 
-    merklePayoutStrategyImplementationArtifact = await artifacts.readArtifact(
-      "MerklePayoutStrategyImplementation"
-    );
-    merklePayoutStrategyImplementation = <MerklePayoutStrategyImplementation>(
-      await deployContract(user, merklePayoutStrategyImplementationArtifact, [])
-    );
-
-    // eslint-disable-next-line no-unused-expressions
-    expect(
-      isAddress(merklePayoutStrategyFactory.address),
-      "failed to deploy merklepayoutfactory"
-    ).to.be.true;
-
-    // Verify deploy
-    // eslint-disable-next-line no-unused-expressions
-    expect(
-      isAddress(merklePayoutStrategyImplementation.address),
-      "Failed to deploy MerklePayoutStrategy"
-    ).to.be.true;
-
-    // Verify default value
-    const metaPtr =
-      await merklePayoutStrategyImplementation.distributionMetaPtr();
-    expect(metaPtr.protocol).to.equal(0);
-    // eslint-disable-next-line no-unused-expressions
-    expect(metaPtr.pointer).to.be.empty;
-
-    expect(await merklePayoutStrategyImplementation.roundAddress()).to.equal(
-      AddressZero
-    );
-    await merklePayoutStrategyFactory.initialize();
-    await merklePayoutStrategyFactory.updatePayoutImplementation(
-      merklePayoutStrategyImplementation.address
-    );
-    const merklePayoutStrategyCloneAddress =
-      await merklePayoutStrategyFactory.callStatic.create();
-    const tx = await merklePayoutStrategyFactory.create();
-    await tx.wait();
-    
-    merklePayoutStrategyClone = <MerklePayoutStrategyImplementation>(
-      new ethers.Contract(
-        merklePayoutStrategyCloneAddress,
-        merklePayoutStrategyImplementationArtifact.abi
-      )
-    );
-  }
-
-  describe("constructor", () => {
+  describe("deployment", () => {
     it("deploys properly", async () => {
-      deploy();
+      [user] = await ethers.getSigners();
+
+      // Deploy MerklePayoutStrategyImplementation
+      merklePayoutStrategyImplementationArtifact = await artifacts.readArtifact(
+        "MerklePayoutStrategyImplementation"
+      );
+      merklePayoutStrategyImplementation = <MerklePayoutStrategyImplementation>(
+        await deployContract(
+          user,
+          merklePayoutStrategyImplementationArtifact,
+          []
+        )
+      );
+
+      // Verify deploy
+      // eslint-disable-next-line no-unused-expressions
+      expect(
+        isAddress(merklePayoutStrategyImplementation.address),
+        "Failed to deploy MerklePayoutStrategyImplementation"
+      ).to.be.true;
     });
   });
 
@@ -96,90 +112,87 @@ describe("MerklePayoutStrategyImplementation", () => {
       merkleRoot,
       distributionMetaPtr,
     ]);
-    describe("test: updateDistribution", () => {
-      beforeEach(async () => {
-        deploy();
-      });
 
-      it.only("invoking updateDistribution SHOULD update the distribution", async () => {
-        expect(
-          await merklePayoutStrategyClone.updateDistribution(
-            encodedDistribution
-          )
-        )
-          .to.emit(merklePayoutStrategyClone, "DistributionUpdated")
-          .withArgs(merkleRoot, distributionMetaPtr);
-      });
-      it("invoking initialize more than once SHOULD revert the transaction ", async () => {
-        await merklePayoutStrategyFactory.initialize();
-        expect(merklePayoutStrategyFactory.initialize()).to.revertedWith(
-          "Initializable: contract is already initialized"
-        );
-      });
-    });
+    beforeEach(async () => {
+      _currentBlockTimestamp = (
+        await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+      ).timestamp;
 
-    describe("test: create", () => {
-      beforeEach(async () => {
-        [user] = await ethers.getSigners();
-        merklePayoutStrategyFactoryArtifact = await artifacts.readArtifact(
-          "MerklePayoutStrategyFactory"
-        );
+      const applicationsStartTime = _currentBlockTimestamp + 3600; // 1 hour later
+      const applicationsEndTime = _currentBlockTimestamp + 7200; // 2 hours later
+      const roundStartTime = _currentBlockTimestamp + 10800; // 3 hours later
+      const roundEndTime = _currentBlockTimestamp + 14400; // 4 hours later
 
-        merklePayoutStrategyFactory = <MerklePayoutStrategyFactory>(
-          await deployContract(user, merklePayoutStrategyFactoryArtifact, [])
-        );
+      // Deploy MerklePayoutStrategyImplementation
+      merklePayoutStrategyImplementationArtifact = await artifacts.readArtifact(
+        "MerklePayoutStrategyImplementation"
+      );
 
-        merklePayoutStrategyImplementationArtifact =
-          await artifacts.readArtifact("MerklePayoutStrategyImplementation");
-
-        merklePayoutStrategyImplementation = <
-          MerklePayoutStrategyImplementation
-        >await deployContract(
+      merklePayoutStrategyImplementation = <MerklePayoutStrategyImplementation>(
+        await deployContract(
           user,
           merklePayoutStrategyImplementationArtifact,
           []
-        );
+        )
+      );
 
-        // eslint-disable-next-line no-unused-expressions
+      roundImplementation = <RoundImplementation>(
+        await deployContract(user, roundImplementationArtifact, [])
+      );
+
+      votingStrategyArtifact = await artifacts.readArtifact(
+        "QuadraticFundingRelayStrategyImplementation"
+      );
+
+      votingStrategyContract = <QuadraticFundingRelayStrategyImplementation>(
+        await deployContract(user, votingStrategyArtifact, [])
+      );
+
+      mockERC20Artifact = await artifacts.readArtifact("MockERC20");
+      mockERC20Contract = <MockERC20>(
+        await deployContract(user, mockERC20Artifact, [0])
+      );
+
+      const params = [
+        votingStrategyContract.address, // _votingStrategyAddress
+        merklePayoutStrategyImplementation.address, // _payoutStrategyAddress
+        applicationsStartTime, // _applicationsStartTime
+        applicationsEndTime, // _applicationsEndTime
+        roundStartTime, // _roundStartTime
+        roundEndTime, // _roundEndTime
+        mockERC20Contract.address, // _token
+        {
+          protocol: 1,
+          pointer:
+            "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi",
+        }, // _roundMetaPtr
+        {
+          protocol: 1,
+          pointer:
+            "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq",
+        }, // _applicationMetaPtr
+        [user.address], // _adminRoles
+        [user.address, ethers.Wallet.createRandom().address], // _roundOperators
+      ];
+      const encodedRoundParams = encodeRoundParameters(params);
+      roundImplementation.initialize(encodedRoundParams);
+    });
+    describe("test: updateDistribution", () => {
+      it("invoking updateDistribution SHOULD update the distribution", async () => {
         expect(
-          isAddress(merklePayoutStrategyFactory.address),
-          "failed to deploy merklepayoutfactory"
-        ).to.be.true;
-
-        // Verify deploy
-        // eslint-disable-next-line no-unused-expressions
-        expect(
-          isAddress(merklePayoutStrategyImplementation.address),
-          "Failed to deploy MerklePayoutStrategy"
-        ).to.be.true;
-
-        // Verify default value
-        const metaPtr =
-          await merklePayoutStrategyImplementation.distributionMetaPtr();
-        expect(metaPtr.protocol).to.equal(0);
-        // eslint-disable-next-line no-unused-expressions
-        expect(metaPtr.pointer).to.be.empty;
-
-        expect(
-          await merklePayoutStrategyImplementation.roundAddress()
-        ).to.equal(AddressZero);
-        await merklePayoutStrategyFactory.initialize();
+          await merklePayoutStrategyImplementation
+            .connect(user)
+            .updateDistribution(encodedDistribution)
+        )
+          .to.emit(merklePayoutStrategyImplementation, "DistributionUpdated")
+          .withArgs(merkleRoot, [
+            1,
+            "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq",
+          ]);
       });
-
-      it("invoking create SHOULD clone a new payout contract", async () => {
-        await merklePayoutStrategyFactory.updatePayoutImplementation(
-          merklePayoutStrategyImplementation.address
-        );
-        const cloneAddress =
-          await merklePayoutStrategyFactory.callStatic.create();
-        expect(await merklePayoutStrategyFactory.create())
-          .to.emit(merklePayoutStrategyFactory, "PayoutContractCreated")
-          .withArgs(cloneAddress, merklePayoutStrategyImplementation.address);
-      });
-
-      it("invoking create SHOULD REVERT if called with payout implementation not set ", async () => {
-        await expect(merklePayoutStrategyFactory.create()).to.be.revertedWith(
-          "payoutImplementation not set"
+      it("invoking initialize more than once SHOULD revert the transaction ", async () => {
+        expect(merklePayoutStrategyImplementation.initialize()).to.revertedWith(
+          "Initializable: contract is already initialized"
         );
       });
     });
@@ -187,6 +200,8 @@ describe("MerklePayoutStrategyImplementation", () => {
 });
 
 /** 
+ * 
+ *       
  *      const merkleRoot = ethers.utils.formatBytes32String("MERKLE_ROOT");
       const distributionMetaPtr = {
         protocol: 1,
