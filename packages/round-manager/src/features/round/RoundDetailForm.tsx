@@ -81,7 +81,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 {program && <ProgramChain program={program} />}
               </div>
 
-              <p className="mt-6 mb-4 text-sm">
+              <p className="mt-6 mb-2 text-sm text-grey-400">
                 Where can applicants reach you and/or your team if support is
                 needed?
               </p>
@@ -106,6 +106,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   What are the dates for the Applications and Round voting
                   period(s)?
                 </span>
+                <p className="text-sm mt-0.5">
+                  Tips: You can accept applications even after the round starts by setting up overlapping Applications and Round periods!
+                </p>
               </div>
 
               <p className="text-sm mb-2">
@@ -231,10 +234,16 @@ errors.roundEndTime
             </div>
 
             <div className="p-6 bg-white">
-              <div className="grid grid-rows-1">
+              <div className="grid grid-rows-1 text-grey-400">
                 <p>
                   Do you want to show your round on the Gitcoin Explorer
                   homepage?
+                </p>
+                <p className="text-sm mt-0.5">
+                  <a className="text-violet-400 mr-1" href="https://grant-explorer.gitcoin.co/" target="_blank">
+                    Gitcoin Explorer
+                  </a>
+                   is the place where supporters (donors) discover and donate to projects.
                 </p>
               </div>
               <div className="flex mt-4">
