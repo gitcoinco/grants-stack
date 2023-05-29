@@ -103,7 +103,7 @@ export default function ViewProjectDetails() {
       name: "Project Details",
       path: `/round/${chainId}/${roundId}/${applicationId}`,
     },
-  ] as BreadcrumbItem[]
+  ] as BreadcrumbItem[];
 
   return (
     <>
@@ -122,15 +122,10 @@ export default function ViewProjectDetails() {
         </div>
       )}
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
-        <div 
-          className="flex flex-col pb-6"
-          data-testid="bread-crumbs"
-        >
-          <Breadcrumb
-            items={breadCrumbs}
-          />
+        <div className="flex flex-col pb-6" data-testid="bread-crumbs">
+          <Breadcrumb items={breadCrumbs} />
         </div>
-        <main>
+        <main className={"flex flex-col items-center"}>
           {!isLoading && projectToRender && (
             <>
               <Header projectMetadata={projectToRender.projectMetadata} />
@@ -167,7 +162,7 @@ export default function ViewProjectDetails() {
                     />
                   </div>
                 </div>
-                <div className="md:visible invisible">
+                <div className="md:visible invisible  min-w-fit">
                   <Sidebar
                     isAlreadyInCart={isAlreadyInCart}
                     isBeforeRoundEndDate={isBeforeRoundEndDate}
@@ -404,7 +399,7 @@ function Detail(props: { text: string; testID: string }) {
       dangerouslySetInnerHTML={{
         __html: renderToHTML(props.text.replace(/\n/g, "\n\n")),
       }}
-      className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+      className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600 max-w-full"
       data-testid={props.testID}
     />
   );
