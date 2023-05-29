@@ -3,6 +3,9 @@ import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.sv
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { useCart } from "../../context/CartContext";
 import NavbarCart from "./NavbarCart";
+import { useParams } from "react-router-dom";
+import { reloadPageOnLocalStorageEvent } from "../api/LocalStorage";
+import { useEffect } from "react";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -15,6 +18,21 @@ export default function Navbar(props: NavbarProps) {
   const [cart] = useCart();
   const showWalletInteraction = props.showWalletInteraction ?? true;
   const currentOrigin = window.location.origin;
+
+  const { roundId } = useParams();
+
+  useEffect(() => {
+    const storageEventHandler = (event: StorageEvent) =>
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      reloadPageOnLocalStorageEvent(roundId!, event);
+
+    window.addEventListener("storage", storageEventHandler);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("storage", storageEventHandler);
+    };
+  }, [roundId]);
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
