@@ -40,7 +40,7 @@ import FormValidationErrorList from "../common/FormValidationErrorList";
 import ProgressModal from "../common/ProgressModal";
 import { horizontalTabStyles } from "../common/Utils";
 import { PayoutTokenInformation } from "./QuadraticFundingForm";
-import { applicationValidationSchema as RoundValidationSchema } from "./applicationValidationSchema";
+import { RoundName } from "./ApplicationFormComponents";
 
 type EditMode = {
   canEdit: boolean;
@@ -548,6 +548,13 @@ function DetailsPage(props: {
     <div className="w-full">
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
         <div>
+          <RoundName
+            register={
+              props.register("roundMetadata.name") 
+            }
+            errors={props.errors.roundMetadata?.name}
+          />
+          {/* WIP 
           <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
             <span>Round Name</span>
             <span className="text-right text-violet-400 float-right text-xs mt-1">
@@ -595,14 +602,14 @@ function DetailsPage(props: {
             >
               {props.errors.roundMetadata.name?.message}
             </p>
-          )}
+          )} */}
         </div>
         <div>
           <div
             className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
           >
             Program Chain
-          </div>
+          </div> 
           <div
             className={`border pl-2 rounded-lg py-0.5 opacity-50 leading-8 font-normal ${
               !props.editMode.canEdit ||
@@ -1605,13 +1612,8 @@ function Funding(props: {
                       roundMetadata: {
                         ...props.editedRound?.roundMetadata,
                         quadraticFundingConfig: {
+                          ...props.editedRound?.roundMetadata.quadraticFundingConfig,
                           matchingFundsAvailable: Number(e.target.value),
-                          matchingCap:
-                            props.editedRound?.roundMetadata
-                              .quadraticFundingConfig.matchingCap,
-                          matchingCapAmount:
-                            props.editedRound?.roundMetadata
-                              .quadraticFundingConfig.matchingCapAmount,
                         },
                       },
                     });
@@ -1882,12 +1884,12 @@ function Funding(props: {
           >
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
+              name="roundMetadata.quadraticFundingConfig.minDonationAmountUSD"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.minDonationThreshold"
+                    "roundMetadata.quadraticFundingConfig.minDonationAmountUSD"
                   )}
                   type="radio"
                   className="mr-2"
@@ -1896,11 +1898,11 @@ function Funding(props: {
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.minDonationThreshold
+                      ?.minDonationAmountUSD
                   }
                   checked={
-                    props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.minDonationThreshold
+                    Boolean(props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.minDonationAmountUSD)
                   }
                   readOnly={
                     !props.editMode.canEdit &&
@@ -1908,7 +1910,7 @@ function Funding(props: {
                   }
                   onChange={(e) => {
                     props.resetField(
-                      "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+                      "roundMetadata.quadraticFundingConfig.minDonationAmountUSD"
                     );
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1918,7 +1920,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          minDonationThreshold: e.target.value === "yes",
+                          minDonationAmountUSD: e.target.value === "yes",
                         },
                       },
                     });

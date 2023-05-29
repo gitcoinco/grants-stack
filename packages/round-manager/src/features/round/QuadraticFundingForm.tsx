@@ -62,9 +62,6 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
   } = useForm<QuadraticFundingConfig>({
     defaultValues: {
       ...formData,
-      // roundMetadata: {
-      //   quadraticFundingConfig: initialQuadraticFundingConfig,
-      // },
     },
     resolver: yupResolver(quadraticFundingValidationSchema),
   });
