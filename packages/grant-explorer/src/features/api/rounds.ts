@@ -12,7 +12,10 @@ interface GetRoundOverviewResult {
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004",
   "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc",
+  "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38",
 ];
+
+const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"];
 
 export type RoundOverview = {
   id: string;
@@ -66,6 +69,14 @@ async function fetchRoundsByTimestamp(
       // check if round.id is in validRounds & if so, add to filteredRounds
       if (validRounds.includes(round.id)) {
         filteredRounds.push(round);
+      }
+
+      // check if round.id is in invalidRounds & if so, remove from filteredRounds
+      if (invalidRounds.includes(round.id)) {
+        const index = filteredRounds.findIndex((r) => r.id === round.id);
+        if (index > -1) {
+          filteredRounds.splice(index, 1);
+        }
       }
     }
 
