@@ -263,6 +263,10 @@ function FullPreview(props: {
   } = props;
   const ipfsPrefix = `${process.env.REACT_APP_PINATA_GATEWAY!}/ipfs/`;
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
       <div className="relative pt-7">
