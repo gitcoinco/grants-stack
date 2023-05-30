@@ -105,7 +105,7 @@ root.render(
                   />
 
                   <Route
-                    path="/:chainId/contributors/:address/history"
+                    path="/chains/:chainId/contributors/:address/history"
                     element={<ViewContributionHistory />}
                   />
 

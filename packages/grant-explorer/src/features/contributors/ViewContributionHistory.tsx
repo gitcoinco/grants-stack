@@ -3,8 +3,9 @@ import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
 } from "allo-indexer-client";
+import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
 import { getPayoutTokenOptions } from "../api/utils";
@@ -49,28 +50,32 @@ const useContributionHistory = (chainId: number, address: string) => {
 function StatCard(props: { title: string; value: string | undefined }) {
   return (
     <div className="rounded border border-violet-400 p-4">
-      <div className="font-bold">{props.title}</div>
-      <div>{props.value}</div>
+      <div className="font-bold text-sm pb-4">{props.title}</div>
+      <div className="text-grey-400 text-xl">{props.value}</div>
     </div>
   );
 }
 
 function ViewContributionHistoryDisplay(props: {
+  chainId: number;
   tokens: Record<string, PayoutToken>;
   contributions: Contribution[];
 }) {
   return (
     <div>
-      <h1>Donation History</h1>
+      <div className="text-lg">Donation History</div>
       <div className="flex gap-4">
         <StatCard title="Total Donated" value="1000" />
         <StatCard title="Total Projects" value="1000" />
       </div>
-      <table>
-        <tr>
-          <th>Project</th>
-          <th>Donation</th>
-          <th>Transaction information</th>
+      <div className="text-lg bg-violet-100 text-black px-2 px-2">
+        Active Rounds
+      </div>
+      <table className="border-collapse">
+        <tr className="text-left">
+          <th className="p-4">Project</th>
+          <th className="p-4">Donation</th>
+          <th className="p-4">Transaction information</th>
         </tr>
         {props.contributions.map((contribution) => {
           const token = props.tokens[contribution.token];
@@ -85,17 +90,34 @@ function ViewContributionHistoryDisplay(props: {
           }
 
           return (
-            <tr key={contribution.id} className="border-b">
-              <td>
-                {contribution.roundName}
-                {contribution.projectTitle}
+            <tr key={contribution.id}>
+              <td className="border-b p-4">
+                <div className="flex items-center">
+                  <Link
+                    className="underline inline-block max-w-[90px] truncate"
+                    title={contribution.roundName}
+                    to={`/round/${props.chainId}/${contribution.roundId}`}
+                  >
+                    {contribution.roundName}
+                  </Link>
+                  <ChevronRightIcon className="h-4 inline mx-2" />
+                  <Link
+                    className="underline inline-block max-w-[90px] truncate"
+                    title={contribution.projectTitle}
+                    to={`/round/${props.chainId}/${contribution.roundId}/${contribution.projectId}`}
+                  >
+                    {contribution.projectTitle}
+                  </Link>
+                </div>
+                <div className="text-sm text-gray-500">4 mins ago</div>
               </td>
-              <td>{formattedAmount}</td>
-              <td>{contribution.transaction}</td>
+              <td className="border-b p-4">{formattedAmount}</td>
+              <td className="border-b p-4">{contribution.transaction}</td>
             </tr>
           );
         })}
       </table>
+      <div className="text-lg bg-grey-50 text-black px-2 px-2">Past Rounds</div>
     </div>
   );
 }
@@ -123,6 +145,7 @@ function ViewContributionHistoryFetcher(props: {
   } else {
     return (
       <ViewContributionHistoryDisplay
+        chainId={props.chainId}
         tokens={tokens}
         contributions={contributionHistory.data}
       />
