@@ -102,7 +102,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                     control={control}
                   />
                 </div>
-                <div className="col-span-6 sm:col-span-3 pt-2">
+                <div className="col-span-6 sm:col-span-3">
                   <ContactInformation
                     register={register("roundSupport.input")}
                     errors={errors}
