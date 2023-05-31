@@ -22,9 +22,11 @@ export default function Navbar(props: NavbarProps) {
   const { roundId } = useParams();
 
   useEffect(() => {
+    if (!roundId) {
+      return;
+    }
     const storageEventHandler = (event: StorageEvent) =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      reloadPageOnLocalStorageEvent(roundId!, event);
+      reloadPageOnLocalStorageEvent(roundId, event);
 
     window.addEventListener("storage", storageEventHandler);
 
