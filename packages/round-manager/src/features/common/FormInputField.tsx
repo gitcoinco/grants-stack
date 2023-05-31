@@ -1,17 +1,23 @@
 import { FC } from "react";
-import { UseFormRegisterReturn, FieldErrors, FieldPath } from "react-hook-form";
+import { UseFormRegisterReturn, FieldErrors, FieldPath, FieldValues } from "react-hook-form";
 import { Input } from "common/src/styles";
-import { Round } from "../api/types";
 import { get } from "lodash";
 
-export const FormInputField: FC<{
+export const FormInputField = <T extends FieldValues, >({
+  register,
+  errors,
+  label,
+  id,
+  placeholder,
+  disabled,
+}: {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
+  errors: FieldErrors<T>;
   label: string;
-  id: FieldPath<Round>;
+  id: FieldPath<T>;
   placeholder?: string;
-}> = ({ register, errors, label, id, placeholder }) => {
-  // @ts-expect-error appears on the error id key-value for the errors object
+  disabled?: boolean;
+}) => {
   const errorMessage = get(errors, id)?.message;
 
   const hasError = Boolean(errorMessage);
@@ -24,15 +30,16 @@ export const FormInputField: FC<{
       </div>
       <Input
         {...register}
-        className={"h-10"}
+        className={"h-10 disabled:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"}
         $hasError={hasError}
         type="text"
         id={id}
         placeholder={placeholder}
         data-testid={`${id}-testid`}
+        disabled={disabled}
       />
       {hasError && (
-        <p className="text-xs text-pink-500">{errorMessage}</p>
+        <p className="text-xs text-pink-500">{errorMessage?.toString()}</p>
       )}
     </div>
   );

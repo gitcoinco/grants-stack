@@ -10,13 +10,15 @@ interface DatetimeProps<T extends FieldValues> {
   date?: moment.Moment;
   setDate?: (date: moment.Moment) => void;  
   minDate?: moment.Moment;
+  disabled?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Datetime = <T extends FieldValues>({ control, name, label, date, setDate, minDate }: DatetimeProps<T>): ReactElement => {
+export const Datetime = <T extends FieldValues>({ control, name, label, date, setDate, minDate, disabled }: DatetimeProps<T>): ReactElement => {
   const now = moment().format('YYYY-MM-DDTHH:mm');
   return (
-    <div className="relative w-full border-0 p-0 placeholder-grey-40 focus:ring-0 text-sm">
+    <div 
+      className="relative w-full border-0 p-0 placeholder-grey-40 focus:ring-0 text-sm">
       <label
         htmlFor={name}
         className="block text-[10px]"
@@ -28,13 +30,14 @@ export const Datetime = <T extends FieldValues>({ control, name, label, date, se
         name={name}
         render={({ field }) => (
           <input
-            data-testid={`${name}-testid`} 
-            type="datetime-local"
-            {...field}
-            min={minDate ? minDate.format('YYYY-MM-DDTHH:mm') : now}
-            className="block w-full border-0 p-0 focus:ring-0"
-            onChange={(e) => {
-              // Convert the local datetime to UTC
+          data-testid={`${name}-testid`} 
+          type="datetime-local"
+          {...field}
+          min={minDate ? minDate.format('YYYY-MM-DDTHH:mm') : now}
+          className="block w-full border-0 p-0 focus:ring-0 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          disabled={disabled}
+          onChange={(e) => {
+            // Convert the local datetime to UTC
               const date = moment.utc(e.target.value);
               if (setDate) setDate(date);
               field.onChange(e.target.value);
