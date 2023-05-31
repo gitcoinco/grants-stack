@@ -1,34 +1,52 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import "react-datetime/css/react-datetime.css";
 import {
   Control,
   FieldErrors,
   useController,
   UseFormRegisterReturn,
+  useWatch,
 } from "react-hook-form";
 import { Listbox, RadioGroup } from "@headlessui/react";
-import { Program } from "../api/types";
+import { Program } from '../api/types';
 import { classNames } from "common";
 import moment from "moment";
 import { FormInputField } from "../common/FormInputField";
 import { FormDropDown } from "../common/FormDropDown";
-import { RoundDetails } from "./RoundDetailForm";
+import { RoundDetailFormFields } from "./RoundDetailForm";
 import { Datetime } from "../common/Datetime";
+import { QuadraticFundingFormFields } from "./QuadraticFundingForm";
+import { RadioOption } from "../common/RadioOption";
+import { InformationCircleIcon } from "@heroicons/react/outline";
+import { FC, useState } from "react";
+import ReactTooltip from "react-tooltip";
+import { PayoutToken } from '../api/utils';
 
-export function RoundName(
-  props: any
-) {
+interface RoundNameProps {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<RoundDetailFormFields>;
+}
+
+export const RoundName: FC<RoundNameProps> = ({
+  register,
+  errors,
+}) => {
   return (
-    <FormInputField
-      {...props}
+  <FormInputField<RoundDetailFormFields>
+      register={register}
+      errors={errors}
       label="Round Name"
       id="roundName"
       placeholder="Enter round name here."    />
   );
 }
 
-export function ProgramChain(props: { program: Program }) {
-  const { program } = props;
+interface ProgramChainProps {
+  program: Program;
+}
+
+export const ProgramChain: FC<ProgramChainProps> = ({
+  program,
+}) => {
   return (
     <div className="col-span-6 sm:col-span-3 opacity-50">
       <Listbox disabled>
@@ -61,49 +79,68 @@ export function ProgramChain(props: { program: Program }) {
   );
 }
 
-export const ContactInformation = (props: any) => (
-  <FormInputField
-    {...props}
+interface ContactInformationProps {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<RoundDetailFormFields>;
+}
+
+export const ContactInformation: FC<ContactInformationProps> = ({
+  register,
+  errors,
+}) => (
+  <FormInputField<RoundDetailFormFields>
+    register={register}
+    errors={errors}
     label="Contact Information"
     id="roundSupport.input"
     placeholder="Enter desired form of contact here. Ex: website, email..."
   />
 );
 
-export function Support(props: {
+interface SupportProps {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<RoundDetails>;
-  control: Control<RoundDetails>;
-}) {
+  errors: FieldErrors<RoundDetailFormFields>;
+  control: Control<RoundDetailFormFields>;
+}
+
+export const Support: FC<SupportProps> = ({
+  register,
+  errors,
+  control,
+}) => {
   const supportTypes = [
-    "Email",
-    "Website",
-    "Discord Group Invite Link",
-    "Telegram Group Invite Link",
-    "Google Form Link",
-    "Other (please provide a link)",
+    {name: "Email"},
+    {name: "Website"},
+    {name: "Discord Group Invite Link"},
+    {name: "Telegram Group Invite Link"},
+    {name: "Google Form Link"},
+    {name: "Other (please provide a link)"},
   ]
 
   return (
     <FormDropDown
-      register={props.register}
-      errors={props.errors}
-      control={props.control}
+      register={register}
+      errors={errors}
+      control={control}
       label="Support Input"
       id="roundSupport.type"
       options={supportTypes}
-      defaultValue={supportTypes[0]}
+      defaultValue={""}
     />
   );
 }
 
-export function RoundType(props: {
+interface RoundTypeProps {
   register: UseFormRegisterReturn<string>;
-  control?: Control<RoundDetails>;
-}) {
+  control: Control<RoundDetailFormFields>;
+}
+
+export const RoundType: FC<RoundTypeProps> = ({
+  control,
+}) => {
   const { field: roundTypeField } = useController({
     name: "roundVisibility",
-    control: props.control,
+    control: control,
     rules: {
       required: true,
     },
@@ -180,8 +217,8 @@ export function RoundType(props: {
 }
 
 interface RoundDatetimeProps {
-  control: Control<RoundDetails>;
-  name: any;
+  control: Control<RoundDetailFormFields>;
+  name: unknown;
   label: string;
   date?: moment.Moment;
   setDate?: (date: moment.Moment) => void;  
@@ -189,8 +226,14 @@ interface RoundDatetimeProps {
 }
 
 // use datetime common component
-export function RoundDatetime(props: RoundDatetimeProps) {
-  const { control, name, label, date, setDate, minDate } = props;
+export const RoundDatetime: FC<RoundDatetimeProps> = ({
+  control,
+  name,
+  label,
+  date,
+  setDate,
+  minDate,
+}) => {
   return (
     <div className="col-span-6 sm:col-span-3">
       <Datetime
@@ -202,5 +245,289 @@ export function RoundDatetime(props: RoundDatetimeProps) {
         minDate={minDate}
       />
     </div>
+  );
+}
+
+interface SybilDefenseProps {
+  control?: Control<QuadraticFundingFormFields>;
+}
+
+export const SybilDefense: FC<SybilDefenseProps> = ({
+  control,
+}) => {
+  const { field: sybilDefenseField } = useController({
+    name: "sybilDefenseEnabled",
+    defaultValue: false,
+    control: control,
+    rules: {
+      required: true,
+    },
+  });
+
+  return (
+    <>
+      {" "}
+      <div className="col-span-6 sm:col-span-3">
+        <RadioGroup
+          {...sybilDefenseField}
+          data-testid="sybil-defense-selection"
+        >
+          <div>
+            <RadioOption
+              value={true}
+              label="Yes, enable Gitcoin Passport (Recommended)"
+              description="Allow matching only for donation from project supporters
+                           that have verified their identity on Gitcoin Passport."
+              checked={true}
+              active={true}
+              testid="sybil-defense-true"
+            />
+            <RadioOption
+              value={false}
+              label="No, disable Gitcoin Passport"
+              description="Allow matching for all donation, including potentially
+                           sybil ones."
+              checked={false}
+              active={true}
+              testid="sybil-defense-false"
+            />
+          </div>
+        </RadioGroup>
+      </div>
+    </>
+  );
+}
+
+interface MinDonationThresholdProps {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<QuadraticFundingFormFields>;
+  control?: Control<QuadraticFundingFormFields>;
+}
+
+export const MinDonationThreshold: FC<MinDonationThresholdProps> = ({ register, errors, control }) => {
+  const { field: minDonationThresholdField } = useController({
+    name: "minDonationThreshold",
+    defaultValue: false,
+    control: control,
+    rules: {
+      required: true,
+    },
+  });
+  const { value: isMinDonation } = minDonationThresholdField;
+
+  const amt = useWatch({
+    name: "minDonationThresholdAmount",
+    control: control,
+  });
+  const [minDonationAmount, ] = useState(amt);
+
+  return (
+    <>
+      <div className="col-span-6 sm:col-span-3">
+        <RadioGroup
+          {...minDonationThresholdField}
+          data-testid="min-donation-selection"
+        >
+          <RadioGroup.Label className="block text-sm">
+            <p className="text-sm">
+              Do you want a minimum donation threshold for projects?
+              <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+              <InformationCircleIcon
+                data-tip
+                data-background-color="#0E0333"
+                data-for="min-donation-tooltip"
+                className="inline h-4 w-4 ml-2 mr-3 mb-1"
+                data-testid="min-donation-tooltip"
+              />
+            </p>
+            <ReactTooltip
+              id="min-donation-tooltip"
+              place="bottom"
+              type="dark"
+              effect="solid"
+            >
+              Set a minimum amount for each donation to be eligible for matching.
+            </ReactTooltip>
+          </RadioGroup.Label>
+          <div className="flex flex-row gap-4 mt-3">
+            <RadioOption
+              value={true}
+              label="Yes"
+              checked={false}
+              active={true}
+              testid="min-donation-true" description={""}            
+            />
+            <RadioOption
+              value={false}
+              label="No"
+              checked={true}
+              active={true}
+              testid="min-donation-false" description={""}            
+            />
+          </div>
+        </RadioGroup>
+      </div>
+      <FormInputField
+        register={register}
+        errors={errors}
+        label="If so, how much?"
+        id="minDonationThresholdAmount"
+        placeholder="Enter minimum donation amount"
+        disabled={!isMinDonation}
+      />
+      <div
+        className="col-span-6 rounded text-sm bg-gray-50 p-2 text-gray-500"
+        hidden={!isMinDonation}
+      >
+        Each donation has to be a minimum of ${minDonationAmount} USD equivalent
+        for it to be eligible for matching.
+      </div>
+    </>
+  );
+};
+
+interface MatchingCapProps {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<QuadraticFundingFormFields>;
+  control?: Control<QuadraticFundingFormFields>;
+  token: string;
+  payoutTokenOptions: PayoutToken[];
+}
+
+export const MatchingCap: FC<MatchingCapProps> = ({ register, errors, control }) => {
+  const { field: matchingCap } = useController({
+    name: "matchingCap",
+    defaultValue: false,
+    control: control,
+    rules: {
+      required: true,
+    },
+  });
+  
+  const amt = useWatch({
+    name: "matchingCapAmount",
+    control: control,
+  });
+
+  const isMatchingCap = useWatch({
+    name: "matchingCap",
+    control: control,
+  });
+
+  const [matchingCapAmount, ] = useState<
+    string | undefined
+  >(amt?.toString());
+
+  return (
+    <>
+      <div className="col-span-6 sm:col-span-3">
+        <RadioGroup
+          {...matchingCap}
+          data-testid="matching-cap-selection"
+        >
+          <RadioGroup.Label className="block text-sm">
+            <p className="text-sm">
+              Do you want a matching cap for projects?
+              <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+              <InformationCircleIcon
+                data-tip
+                data-background-color="#0E0333"
+                data-for="matching-cap-tooltip"
+                className="inline h-4 w-4 ml-2 mr-3 mb-1"
+                data-testid="matching-cap-tooltip"
+              />
+            </p>
+            <ReactTooltip
+              id="matching-cap-tooltip"
+              place="bottom"
+              type="dark"
+              effect="solid"
+            >
+              This will cap the percentage <br />
+            of your overall matching pool <br />
+            that a single grantee can receive
+            </ReactTooltip>
+          </RadioGroup.Label>
+          <div className="flex flex-row gap-4 mt-3">
+            <RadioOption
+              value={true}
+              label="Yes"
+              checked={false}
+              active={true}
+              testid="matching-cap-true" description={""}           
+            />
+            <RadioOption
+              value={false}
+              label="No"
+              checked={true}
+              active={true}
+              testid="matching-cap-false" description={""}
+            />
+          </div>
+        </RadioGroup>
+      </div>
+      <FormInputField
+        register={register}
+        errors={errors}
+        label="If so, how much?"
+        id="matchingCapAmount"
+        placeholder="Enter matching cap amount"
+        disabled={!isMatchingCap}
+      />
+      <div
+        className="col-span-6 rounded text-sm bg-gray-50 p-2 text-gray-500"
+        hidden={!isMatchingCap}
+      >
+        Each donation has to be a minimum of ${matchingCapAmount} USD equivalent
+        for it to be eligible for matching.
+      </div>
+    </>
+  );
+};
+
+interface MatchingFundsAvailableProps {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<QuadraticFundingFormFields>;
+  token: string;
+  payoutTokenOptions: PayoutToken[];
+}
+
+export const MatchingFundsAvailable: FC<MatchingFundsAvailableProps> = ({
+  register,
+  errors,
+}) => {
+  return (
+  <FormInputField<QuadraticFundingFormFields>
+      register={register}
+      errors={errors}
+      label="Matching Funds Available"
+      id="matchingFundsAvailable"
+      placeholder="Enter the amount in the chosen payout token"    />
+  );
+}
+
+interface PayoutTokenDropdownProps {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<QuadraticFundingFormFields>;
+  control: Control<QuadraticFundingFormFields>;
+  payoutTokenOptions: PayoutToken[];
+}
+
+export const PayoutTokenDropdown: FC<PayoutTokenDropdownProps> = ({
+  register,
+  errors,
+  control,
+  payoutTokenOptions,
+}) => {
+  return (
+    <FormDropDown
+      register={register}
+      errors={errors}
+      control={control}
+      label="Payout Token"
+      id="token"
+      options={payoutTokenOptions}
+      defaultValue={""}
+    />
   );
 }

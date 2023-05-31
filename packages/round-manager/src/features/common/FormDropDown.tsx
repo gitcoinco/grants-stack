@@ -19,11 +19,15 @@ interface FormDropDownProps<T extends FieldValues> {
   control: Control<T>;
   label: string;
   id: FieldPath<T>;
-  options: string[];
+  options: Array<{
+    name: string;
+    logo?: string;
+  }>;
   defaultValue: string;
+  disabled?: boolean;
 }
 
-export const FormDropDown = <T extends FieldValues,>({ errors, control, label, id, options }: FormDropDownProps<T>): ReactElement => {
+export const FormDropDown = <T extends FieldValues,>({ errors, control, label, id, options, disabled}: FormDropDownProps<T>): ReactElement => {
 
   const errorMessage = get(errors, id)?.message;
   const hasError = Boolean(errorMessage);
@@ -36,8 +40,8 @@ export const FormDropDown = <T extends FieldValues,>({ errors, control, label, i
   });
 
   return (
-    <div className="col-span-6 sm:col-span-3 relative mt-2">
-      <Listbox {...field}>
+    <div className="col-span-6 sm:col-span-3 relative">
+      <Listbox {...field} disabled={disabled}>
         {({ open }) => (
           <div>
             <Listbox.Label className="text-sm mt-4 mb-2">
@@ -50,7 +54,8 @@ export const FormDropDown = <T extends FieldValues,>({ errors, control, label, i
             </Listbox.Label>
             <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
               <Listbox.Button
-                className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
+                className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50
+                 ${
                   hasError
                   ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                   : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
@@ -59,6 +64,13 @@ export const FormDropDown = <T extends FieldValues,>({ errors, control, label, i
                 id={id}
               >
                 <span className="flex items-center">
+                  {options.find((option) => option.name === field.value)?.logo && (
+                    <img
+                      src={options.find((option) => option.name === field.value)?.logo}
+                      alt={options.find((option) => option.name === field.value)?.name}
+                      className="flex-shrink-0 h-6 w-6 rounded-full"
+                    />
+                  )}
                   <span className="ml-3 block truncate">{typeof field.value === 'string' ? field.value : field.value?.toString()}</span>
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
@@ -78,15 +90,15 @@ export const FormDropDown = <T extends FieldValues,>({ errors, control, label, i
                 <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                   {options.map((option) => (
                     <Listbox.Option
-                      key={option}
+                      key={option.name}
                       className={({ active }) =>
                         classNames(
                           active ? "text-white bg-indigo-600" : "text-gray-900",
                           "cursor-default select-none relative py-2 pl-10 pr-4"
                         )
                       }
-                      value={option}
-                      data-testid={`${id}-option-${option}`}
+                      value={option.name}
+                      data-testid={`${id}-option-${option.name}`}
                     >
                       {({ selected, active }) => (
                         <>
@@ -96,7 +108,23 @@ export const FormDropDown = <T extends FieldValues,>({ errors, control, label, i
                               "block truncate"
                             )}
                           >
-                            {option}
+                              <div className="flex items-center">
+                                {option.logo ? (
+                                  <img
+                                    src={option.logo}
+                                    alt=""
+                                    className="h-6 w-6 flex-shrink-0 rounded-full"
+                                  />
+                                ) : null}
+                                <span
+                                  className={classNames(
+                                    selected ? "font-semibold" : "font-normal",
+                                    "ml-3 block truncate"
+                                  )}
+                                >
+                                  {option.name}
+                                </span>
+                              </div>
                           </span>
                           {selected ? (
                             <span
