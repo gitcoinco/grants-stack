@@ -11,3 +11,20 @@ export function loadCartFromLocalStorage(roundId: string): Project[] {
   }
   return JSON.parse(serializedCart);
 }
+
+export function reloadPageOnLocalStorageEvent(
+  roundId: string,
+  event: StorageEvent
+): void {
+  // Check if the event is related to localStorage changes
+  if (event.storageArea === window.localStorage) {
+    // Check if the updated item is 'cart-round-roundId'
+    if (event.key === `cart-round-${roundId}`) {
+      // Check if it's a different tab
+      if (document.visibilityState === "hidden") {
+        // Reload the page
+        window.location.reload();
+      }
+    }
+  }
+}
