@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { UseFormRegisterReturn, FieldErrors, FieldPath, FieldValues } from "react-hook-form";
 import { Input } from "common/src/styles";
 import { get } from "lodash";

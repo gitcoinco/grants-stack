@@ -12,7 +12,7 @@ export const RadioOption: FC<{
   testid: string;
   disabled?: boolean;
   onChange?: (value: boolean) => void;
-}> = ({ value, label, description, checked, active, testid, disabled }) => (
+}> = ({ value, label, description, testid, disabled }) => (
   <RadioGroup.Option value={value} className="mb-2" disabled={disabled}>
     {({ checked, active }) => (
       <span className="flex items-center text-sm">

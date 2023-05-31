@@ -34,8 +34,8 @@ import InfoModal from "../common/InfoModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
-import { RoundDetails } from "./RoundDetailForm";
-import { QuadraticFundingConfig } from "./QuadraticFundingForm";
+import { RoundDetailFormFields } from "./RoundDetailForm";
+import { QuadraticFundingFormFields } from "./QuadraticFundingForm";
 import { EligibilityForm } from "./ApplicationEligibilityForm";
 
 export interface RoundMetadata {
@@ -60,7 +60,7 @@ export interface RoundMetadata {
   };
 }
 
-interface FormData extends RoundDetails, QuadraticFundingConfig, EligibilityForm {
+interface FormData extends RoundDetailFormFields, QuadraticFundingFormFields, EligibilityForm {
   programContractAddress?: string;
   ownedBy?: string;
   operatorWalletAddress?: string;

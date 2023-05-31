@@ -13,7 +13,7 @@ import { RoundName, ProgramChain, ContactInformation, RoundDatetime, RoundType, 
 import moment from "moment";
 import { roundDetailsValidationSchema } from "./formValidators";
 
-export type RoundDetails = {
+export type RoundDetailFormFields = {
   roundName: string;
   roundSupport: {
     type: string;
@@ -40,7 +40,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RoundDetails>({
+  } = useForm<RoundDetailFormFields>({
     defaultValues: {
       ...formData,
     },
@@ -52,7 +52,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const [applicationEndDate, setApplicationEndDate] = useState<moment.Moment>();
   const [roundStartDate, setRoundStartDate] = useState<moment.Moment>();
 
-  const next: SubmitHandler<RoundDetails> = async (values) => {
+  const next: SubmitHandler<RoundDetailFormFields> = async (values) => {
     const data = merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
@@ -259,6 +259,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 <RoundType
                   register={register("roundVisibility")}
                   control={control}
+
                 />
               </div>
               {errors.roundVisibility && (
