@@ -1,4 +1,4 @@
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
@@ -122,17 +122,12 @@ function ViewContributionHistoryDisplay(props: {
   );
 }
 
-function ViewContributionHistoryFetcher(props: {
-  chainId: number;
-  address: string;
-}) {
-  const contributionHistory = useContributionHistory(
-    props.chainId,
-    props.address
-  );
+function ViewContributionHistoryFetcher(props: { address: string }) {
+  const chainId = 1;
+  const contributionHistory = useContributionHistory(chainId, props.address);
 
   const tokens = Object.fromEntries(
-    getPayoutTokenOptions(String(props.chainId)).map((token) => [
+    getPayoutTokenOptions(String(chainId)).map((token) => [
       token.address,
       token,
     ])
@@ -145,7 +140,7 @@ function ViewContributionHistoryFetcher(props: {
   } else {
     return (
       <ViewContributionHistoryDisplay
-        chainId={props.chainId}
+        chainId={chainId}
         tokens={tokens}
         contributions={contributionHistory.data}
       />
@@ -156,14 +151,11 @@ function ViewContributionHistoryFetcher(props: {
 export default function () {
   const params = useParams();
   const { address: walletAddress } = useAccount();
-  const { chain } = useNetwork();
-
-  const chainId = params.chainId ? Number(params.chainId) : chain?.id;
   const address = params.address ?? walletAddress;
 
-  if (chainId === undefined || address === undefined) {
+  if (address === undefined) {
     return null;
   }
 
-  return <ViewContributionHistoryFetcher chainId={chainId} address={address} />;
+  return <ViewContributionHistoryFetcher address={address} />;
 }
