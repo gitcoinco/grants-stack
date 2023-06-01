@@ -5,7 +5,9 @@ import { useCart } from "../../context/CartContext";
 import NavbarCart from "./NavbarCart";
 import { useParams } from "react-router-dom";
 import { reloadPageOnLocalStorageEvent } from "../api/LocalStorage";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
+import { useAccount } from "wagmi";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -20,6 +22,7 @@ export default function Navbar(props: NavbarProps) {
   const currentOrigin = window.location.origin;
 
   const { roundId } = useParams();
+  const { address: walletAddress } = useAccount();
 
   useEffect(() => {
     if (!roundId) {
@@ -65,6 +68,17 @@ export default function Navbar(props: NavbarProps) {
                     chainStatus={{ largeScreen: "icon", smallScreen: "icon" }}
                   />
                 </div>
+              </div>
+            )}
+            {walletAddress && (
+              <div>
+                <a
+                  href={`${currentOrigin}#/contributors/${walletAddress}/history`}
+                  className="flex-shrink-0 flex items-center"
+                  data-testid={"contributions-link"}
+                >
+                  <UserCircleIcon className="h-8 w-8" />
+                </a>
               </div>
             )}
             {props.isBeforeRoundEndDate && (
