@@ -1,5 +1,79 @@
 import * as yup from "yup";
 
+export const roundDetailsEditValidationSchema = yup.object().shape({
+  roundName: yup
+  .string()
+  .defined()
+  .required("This field is required.")
+  .min(8, "Round name must be at least 8 characters.")
+  .default(""),
+  roundDescription: yup
+  .string()
+  .defined()
+  .required("This field is required.")
+  .default(""),
+
+  roundSupport: yup
+  .object({
+    type: yup
+    .string()
+    .required("You must select a support type."),
+    input: yup 
+    .string()
+    .required("This field is required.")
+    .when("type", {
+      is: "Email",
+      then: yup
+      .string()
+      .email()
+      .required("You must provide a valid email address."),
+    })
+    .when("type", {
+      is: (val: string) => val && val != "Email",
+      then: yup.string().url().required("You must provide a valid URL."),
+    })
+  }),
+
+  roundToken: yup
+  .string()
+  .required("You must select a token."),
+
+  matchingFundsAvailable: yup
+  .number()
+  .typeError("Matching funds available must be a valid number.")
+  .moreThan(0, "Matching funds available must be more than zero."),
+
+  matchingCapAmount: yup
+  .number()
+  .transform((value) => (isNaN(value) ? 0 : value))
+  .when("matchingCap", {
+    is: true,
+    then: yup
+    .number()
+    .required("You must provide an amount for the matching cap.")
+    .moreThan(0, "Matching cap amount must be more than zero.")
+    .max(
+      100,
+      "Matching cap amount must be less than or equal to 100%."
+    ),
+  }),
+
+  minDonationThresholdAmount: yup
+  .number()
+  .transform((value) => (isNaN(value) ? 0 : value))
+  .when("minDonationThreshold", {
+    is: true,
+    then: yup
+    .number()
+    .required(
+      "You must provide an amount for the minimum donation threshold."
+    )
+    .moreThan(0, "Minimum donation threshold must be more than zero."),
+  }),
+  
+});
+
+
 /**
  * Validation schema for the round details section of the round form.
  */

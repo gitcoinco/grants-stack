@@ -20,15 +20,18 @@ import { InformationCircleIcon } from "@heroicons/react/outline";
 import { FC, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { PayoutToken } from '../api/utils';
+import { RoundDetailsEditFormFields } from "./ViewRoundSettings";
 
 interface RoundNameProps {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<RoundDetailFormFields>;
+  disabled?: boolean;
 }
 
 export const RoundName: FC<RoundNameProps> = ({
   register,
   errors,
+  disabled,
 }) => {
   return (
   <FormInputField<RoundDetailFormFields>
@@ -36,16 +39,20 @@ export const RoundName: FC<RoundNameProps> = ({
       errors={errors}
       label="Round Name"
       id="roundName"
-      placeholder="Enter round name here."    />
+      placeholder="Enter round name here."    
+      disabled={disabled}
+    />
   );
 }
 
 interface ProgramChainProps {
-  program: Program;
+  label: string | undefined;
+  logo: string | undefined; 
 }
 
 export const ProgramChain: FC<ProgramChainProps> = ({
-  program,
+  label,
+  logo
 }) => {
   return (
     <div className="col-span-6 sm:col-span-3 opacity-50">
@@ -57,9 +64,9 @@ export const ProgramChain: FC<ProgramChainProps> = ({
               className={`relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm sm:text-sm h-10`}
             >
               <span className="flex items-center">
-                {program.chain?.logo && (
+                {logo && (
                   <img
-                    src={program.chain.logo}
+                    src={logo}
                     alt="chain logo"
                     data-testid="chain-logo"
                     className="h-5 w-5 flex-shrink-0 rounded-full"
@@ -67,7 +74,7 @@ export const ProgramChain: FC<ProgramChainProps> = ({
                 )}
                 {
                   <span className="ml-3 block truncate">
-                    {program.chain?.name}
+                    {label}
                   </span>
                 }
               </span>
@@ -82,11 +89,13 @@ export const ProgramChain: FC<ProgramChainProps> = ({
 interface ContactInformationProps {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<RoundDetailFormFields>;
+  disabled?: boolean;
 }
 
 export const ContactInformation: FC<ContactInformationProps> = ({
   register,
   errors,
+  disabled,
 }) => (
   <FormInputField<RoundDetailFormFields>
     register={register}
@@ -94,19 +103,22 @@ export const ContactInformation: FC<ContactInformationProps> = ({
     label="Contact Information"
     id="roundSupport.input"
     placeholder="Enter desired form of contact here. Ex: website, email..."
+    disabled={disabled}
   />
 );
 
 interface SupportProps {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<RoundDetailFormFields>;
-  control: Control<RoundDetailFormFields>;
+  errors: FieldErrors<RoundDetailFormFields | any>;
+  control: Control<RoundDetailFormFields | any>;
+  disabled?: boolean;
 }
 
 export const Support: FC<SupportProps> = ({
   register,
   errors,
   control,
+  disabled,
 }) => {
   const supportTypes = [
     {name: "Email"},
@@ -125,7 +137,8 @@ export const Support: FC<SupportProps> = ({
       label="Support Input"
       id="roundSupport.type"
       options={supportTypes}
-      defaultValue={""}
+      defaultValue={supportTypes[0]}
+      disabled={disabled}
     />
   );
 }
@@ -249,11 +262,13 @@ export const RoundDatetime: FC<RoundDatetimeProps> = ({
 }
 
 interface SybilDefenseProps {
-  control?: Control<QuadraticFundingFormFields>;
+  control?: Control<QuadraticFundingFormFields | any>;
+  disabled?: boolean;
 }
 
 export const SybilDefense: FC<SybilDefenseProps> = ({
   control,
+  disabled,
 }) => {
   const { field: sybilDefenseField } = useController({
     name: "sybilDefenseEnabled",
@@ -281,6 +296,7 @@ export const SybilDefense: FC<SybilDefenseProps> = ({
               checked={true}
               active={true}
               testid="sybil-defense-true"
+              disabled={disabled}
             />
             <RadioOption
               value={false}
@@ -290,6 +306,7 @@ export const SybilDefense: FC<SybilDefenseProps> = ({
               checked={false}
               active={true}
               testid="sybil-defense-false"
+              disabled={disabled}
             />
           </div>
         </RadioGroup>
@@ -300,11 +317,12 @@ export const SybilDefense: FC<SybilDefenseProps> = ({
 
 interface MinDonationThresholdProps {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<QuadraticFundingFormFields>;
-  control?: Control<QuadraticFundingFormFields>;
+  errors: FieldErrors<QuadraticFundingFormFields | any>;
+  control?: Control<QuadraticFundingFormFields | any>;
+  disabled?: boolean;
 }
 
-export const MinDonationThreshold: FC<MinDonationThresholdProps> = ({ register, errors, control }) => {
+export const MinDonationThreshold: FC<MinDonationThresholdProps> = ({ register, errors, control, disabled }) => {
   const { field: minDonationThresholdField } = useController({
     name: "minDonationThreshold",
     defaultValue: false,
@@ -355,14 +373,18 @@ export const MinDonationThreshold: FC<MinDonationThresholdProps> = ({ register, 
               label="Yes"
               checked={false}
               active={true}
-              testid="min-donation-true" description={""}            
+              testid="min-donation-true" 
+              description={""}
+              disabled={disabled}
             />
             <RadioOption
               value={false}
               label="No"
               checked={true}
               active={true}
-              testid="min-donation-false" description={""}            
+              testid="min-donation-false" 
+              description={""}
+              disabled={disabled}   
             />
           </div>
         </RadioGroup>
@@ -388,13 +410,14 @@ export const MinDonationThreshold: FC<MinDonationThresholdProps> = ({ register, 
 
 interface MatchingCapProps {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<QuadraticFundingFormFields>;
-  control?: Control<QuadraticFundingFormFields>;
+  errors: FieldErrors<QuadraticFundingFormFields | any>;
+  control?: Control<QuadraticFundingFormFields | any>;
   token: string;
   payoutTokenOptions: PayoutToken[];
+  disabled?: boolean;
 }
 
-export const MatchingCap: FC<MatchingCapProps> = ({ register, errors, control }) => {
+export const MatchingCap: FC<MatchingCapProps> = ({ register, errors, control, disabled }) => {
   const { field: matchingCap } = useController({
     name: "matchingCap",
     defaultValue: false,
@@ -454,14 +477,18 @@ export const MatchingCap: FC<MatchingCapProps> = ({ register, errors, control })
               label="Yes"
               checked={false}
               active={true}
-              testid="matching-cap-true" description={""}           
+              testid="matching-cap-true" 
+              description={""}  
+              disabled={disabled}         
             />
             <RadioOption
               value={false}
               label="No"
               checked={true}
               active={true}
-              testid="matching-cap-false" description={""}
+              testid="matching-cap-false" 
+              description={""}
+              disabled={disabled}
             />
           </div>
         </RadioGroup>
@@ -487,14 +514,16 @@ export const MatchingCap: FC<MatchingCapProps> = ({ register, errors, control })
 
 interface MatchingFundsAvailableProps {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<QuadraticFundingFormFields>;
+  errors: FieldErrors<QuadraticFundingFormFields | any>;
   token: string;
   payoutTokenOptions: PayoutToken[];
+  disabled?: boolean;
 }
 
 export const MatchingFundsAvailable: FC<MatchingFundsAvailableProps> = ({
   register,
   errors,
+  disabled,
 }) => {
   return (
   <FormInputField<QuadraticFundingFormFields>
@@ -502,15 +531,19 @@ export const MatchingFundsAvailable: FC<MatchingFundsAvailableProps> = ({
       errors={errors}
       label="Matching Funds Available"
       id="matchingFundsAvailable"
-      placeholder="Enter the amount in the chosen payout token"    />
+      placeholder="Enter the amount in the chosen payout token" 
+      disabled={disabled}   
+    />
   );
 }
 
 interface PayoutTokenDropdownProps {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<QuadraticFundingFormFields>;
-  control: Control<QuadraticFundingFormFields>;
+  errors: FieldErrors<QuadraticFundingFormFields | RoundDetailsEditFormFields | any >;
+  control: Control<QuadraticFundingFormFields | RoundDetailsEditFormFields| any >;
   payoutTokenOptions: PayoutToken[];
+  disabled?: boolean;
+  defaultValue?: PayoutToken;
 }
 
 export const PayoutTokenDropdown: FC<PayoutTokenDropdownProps> = ({
@@ -518,6 +551,8 @@ export const PayoutTokenDropdown: FC<PayoutTokenDropdownProps> = ({
   errors,
   control,
   payoutTokenOptions,
+  defaultValue,
+  disabled,
 }) => {
   return (
     <FormDropDown
@@ -527,7 +562,8 @@ export const PayoutTokenDropdown: FC<PayoutTokenDropdownProps> = ({
       label="Payout Token"
       id="token"
       options={payoutTokenOptions}
-      defaultValue={""}
+      defaultValue={defaultValue}
+      disabled={disabled}
     />
   );
 }

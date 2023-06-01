@@ -87,7 +87,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   }
                   errors={errors}
                 />
-                {program && <ProgramChain program={program} />}
+                {program && <ProgramChain label={program.chain?.name} logo={program.chain?.logo}  />}
               </div>
 
               <p className="mt-6 mb-2 text-sm text-grey-400">

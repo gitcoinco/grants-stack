@@ -34,8 +34,9 @@ export const Datetime = <T extends FieldValues>({ control, name, label, date, se
           type="datetime-local"
           {...field}
           min={minDate ? minDate.format('YYYY-MM-DDTHH:mm') : now}
-          className="block w-full border-0 p-0 focus:ring-0 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="block w-full border-0 p-0 focus:ring-0 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={disabled}
+          value={date?.format('YYYY-MM-DDTHH:mm')}
           onChange={(e) => {
             // Convert the local datetime to UTC
               const date = moment.utc(e.target.value);

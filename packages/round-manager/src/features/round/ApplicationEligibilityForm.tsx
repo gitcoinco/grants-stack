@@ -17,6 +17,7 @@ import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
 import { eligibilityValidationSchema } from "./formValidators";
 
+// TODO: Refactor this component to use the new Form base component
 interface ApplicationEligibilityFormProps {
   stepper: typeof FormStepper;
 }

@@ -2,6 +2,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { merge } from 'lodash';
 import { useContext } from "react";
 import {
+  Field,
+  FieldValues,
   SubmitHandler,
   useForm,
 } from "react-hook-form";
@@ -15,8 +17,8 @@ import { MatchingCap, MatchingFundsAvailable, MinDonationThreshold, PayoutTokenD
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
-
-export interface QuadraticFundingFormFields {
+// also be form fieldValues
+export interface QuadraticFundingFormFields extends FieldValues { 
   matchingFundsAvailable: number;
   matchingCap: boolean;
   matchingCapAmount?: number;
@@ -24,7 +26,7 @@ export interface QuadraticFundingFormFields {
   minDonationThresholdAmount?: number;
   sybilDefenseEnabled: boolean;
   token: string;
-}
+} 
 
 export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } = useContext(FormContext);

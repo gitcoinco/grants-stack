@@ -13,21 +13,23 @@ import { classNames } from "common";
 import { Fragment } from "react";
 import { get } from "lodash";
 
+export interface FormDropdownOption {
+  name: string;
+  logo?: string;
+}
+
 interface FormDropDownProps<T extends FieldValues> {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<T>;
   control: Control<T>;
   label: string;
   id: FieldPath<T>;
-  options: Array<{
-    name: string;
-    logo?: string;
-  }>;
-  defaultValue: string;
+  options: Array<FormDropdownOption>;
+  defaultValue?: FormDropdownOption;
   disabled?: boolean;
 }
 
-export const FormDropDown = <T extends FieldValues,>({ errors, control, label, id, options, disabled}: FormDropDownProps<T>): ReactElement => {
+export const FormDropDown = <T extends FieldValues,>({ errors, control, label, id, options, defaultValue, disabled}: FormDropDownProps<T>): ReactElement => {
 
   const errorMessage = get(errors, id)?.message;
   const hasError = Boolean(errorMessage);
@@ -66,12 +68,12 @@ export const FormDropDown = <T extends FieldValues,>({ errors, control, label, i
                 <span className="flex items-center">
                   {options.find((option) => option.name === field.value)?.logo && (
                     <img
-                      src={options.find((option) => option.name === field.value)?.logo}
+                      src={defaultValue ? defaultValue.logo : options.find((option) => option.name === field.value)?.logo}
                       alt={options.find((option) => option.name === field.value)?.name}
                       className="flex-shrink-0 h-6 w-6 rounded-full"
                     />
                   )}
-                  <span className="ml-3 block truncate">{typeof field.value === 'string' ? field.value : field.value?.toString()}</span>
+                  <span className="ml-3 block truncate">{defaultValue ? defaultValue.name : (typeof field.value === 'string' ? field.value : field.value?.toString())}</span>
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
                   <SelectorIcon
