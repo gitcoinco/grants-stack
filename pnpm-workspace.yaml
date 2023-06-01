@@ -1,5 +1,4 @@
 packages:
-  - 'packages/api'
   - 'packages/common'
   - 'packages/eslint-config-gitcoin'
   - 'packages/round-manager'
