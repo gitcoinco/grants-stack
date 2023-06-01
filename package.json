@@ -34,12 +34,12 @@
     "lint:builder": "pnpm --filter=builder run lint"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
+    "@commitlint/cli": "^17.6.3",
+    "@commitlint/config-conventional": "^17.6.3",
     "husky": "^8.0.1",
     "lint-staged": "^13.1.0"
   },
   "dependencies": {
-    "turbo": "^1.9.3"
+    "turbo": "^1.9.9"
   }
 }

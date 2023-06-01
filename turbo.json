@@ -10,28 +10,6 @@
       ],
       "outputMode": "new-only"
     },
-    "api#build": {
-      "env": [
-        "PORT",
-        "POSTGRES_USER",
-        "POSTGRES_DB",
-        "POSTGRES_HOST",
-        "POSTGRES_PASSWORD",
-        "POSTGRES_PORT",
-        "DATABASE_URL",
-        "SUBGRAPH_MAINNET_API",
-        "SUBGRAPH_GOERLI_API",
-        "SUBGRAPH_OPTIMISM_MAINNET_API",
-        "SENTRY_DSN",
-        "OPTIMISM_ETHERSCAN_API"
-      ],
-      "outputs": [
-        "bin"
-      ]
-    },
-    "graph#test": {
-      "dependsOn": ["pnpm prepare:local", "pnpm codegen", "pnpm build"]
-    },
     "test": {
       "dependsOn": [
         "build"
