@@ -190,7 +190,7 @@ export default function ViewProjectDetails() {
 
 function Header(props: { projectMetadata: ProjectMetadata }) {
   return (
-    <div>
+    <div className={"w-full"}>
       <ProjectBanner
         projectMetadata={props.projectMetadata}
         classNameOverride="h-32 w-full object-cover lg:h-80 rounded"
