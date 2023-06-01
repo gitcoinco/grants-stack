@@ -82,13 +82,19 @@ export const RoundValidationSchema = yup.object().shape({
       yup.ref("roundEndTime"),
       "Applications start date must be before the round end date."
     ),
+  rollingApplications: yup.boolean(),
   applicationsEndTime: yup
     .date()
     .required("This field is required.")
-    .min(
-      yup.ref("applicationsStartTime"),
-      "Applications end date must be later than applications start date."
-    )
+    .when("rollingApplications", {
+      is: false,
+      then: yup
+        .date()
+        .min(
+          yup.ref("applicationsStartTime"),
+          "Applications end date must be later than applications start date."
+        ),
+    })
     .max(
       yup.ref("roundEndTime"),
       "Applications end date must be before the round end date."
@@ -131,6 +137,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     control,
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<Round>({
     defaultValues: {
@@ -146,9 +153,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const [roundStartDate, setRoundStartDate] = useState(moment());
   const [roundEndDate, setRoundEndDate] = useState(moment());
   const [rollingApplications, setRollingApplications] = useState(false);
-  const [roundEndDateChanged, setRoundEndDateChanged] = useState(false);
-  const [applicationEndDateChanged, setApplicationEndDateChanged] =
-    useState(false);
 
   const next: SubmitHandler<Round> = async (values) => {
     /* Insert HTTPS into support URL if missing */
@@ -188,10 +192,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   }
 
   useEffect(() => {
-    if (rollingApplications && roundEndDateChanged) {
-      setApplicationEndDate(roundEndDate);
+    if (rollingApplications) {
+      setValue("applicationsEndTime", roundEndDate.toDate());
     }
-  }, [rollingApplications, roundEndDate, roundEndDateChanged]);
+  }, [rollingApplications, roundEndDate, setValue]);
 
   return (
     <div>
@@ -381,21 +385,14 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           closeOnSelect
                           onChange={(date) => {
                             setApplicationEndDate(moment(date));
-                            setApplicationEndDateChanged(true);
                             field.onChange(moment(date));
                           }}
                           inputProps={{
                             id: "applicationsEndTime",
                             placeholder: "",
-
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
                             disabled: rollingApplications,
-                            value: applicationEndDateChanged
-                              ? moment(applicationEndDate).format(
-                                  "YYYY-MM-DD HH:mm UTC"
-                                )
-                              : "",
                           }}
                           isValidDate={disableBeforeApplicationStartDate}
                           utc={true}
@@ -526,8 +523,12 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           onChange={(date) => {
                             field.onChange(moment(date));
                             setRoundEndDate(moment(date));
-                            setRoundEndDateChanged(true);
-                            setApplicationEndDateChanged(true);
+                            if (rollingApplications) {
+                              setValue(
+                                "applicationsEndTime",
+                                moment(date).toDate()
+                              );
+                            }
                           }}
                           isValidDate={disableBeforeRoundStartDate}
                           utc={true}
