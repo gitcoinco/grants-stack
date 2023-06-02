@@ -157,12 +157,12 @@ export async function getRoundById(
             roundMetadataObject?.quadraticFundingConfig.matchingFundsAvailable,
           matchingCapPercentage:
             roundMetadataObject?.quadraticFundingConfig?.matchingCapAmount ??
-            null,
+            undefined,
           minContributionUSD:
             roundMetadataObject?.quadraticFundingConfig
-              ?.minDonationThresholdAmount ?? null,
+              ?.minDonationThresholdAmount ?? undefined,
           enablePassport:
-            roundMetadataObject?.quadraticFundingConfig?.sybilDefense ?? null,
+            roundMetadataObject?.quadraticFundingConfig?.sybilDefense ?? undefined,
         },
       };
     }

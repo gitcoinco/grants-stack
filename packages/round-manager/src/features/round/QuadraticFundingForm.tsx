@@ -20,23 +20,15 @@ import {
 } from "react-hook-form";
 import ReactTooltip from "react-tooltip";
 import * as yup from "yup";
-import { Round } from "../api/types";
 import { PayoutToken, getPayoutTokenOptions } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+import { RoundForm } from "../roundForm";
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
 
-type RoundForm = Round & {
-  roundMetadata: {
-    quadraticFundingConfig: {
-      enableMatchingCap: boolean;
-      enableMinContribution: boolean;
-    };
-  };
-};
 
 export const FundingValidationSchema = yup.object().shape({
   roundMetadata: yup.object().shape({
