@@ -46,6 +46,8 @@ import {
   supportTypes,
 } from "./RoundDetailForm";
 
+import { RoundForm, buildRound, buildRoundForm } from "../roundForm";
+
 type EditMode = {
   canEdit: boolean;
   canEditOnlyRoundEndDate: boolean;
@@ -53,12 +55,12 @@ type EditMode = {
 
 // returns a boolean for each group of fields that have been edited
 const compareRounds = (
-  oldRoundData: Round,
-  newRoundData: Round
+  oldRoundData: RoundForm,
+  newRoundData: RoundForm
 ): EditedGroups => {
   // create deterministic copies of the data
-  const dOldRound: Round = _.cloneDeep(oldRoundData)!;
-  const dNewRound: Round = _.cloneDeep(newRoundData);
+  const dOldRound: RoundForm = _.cloneDeep(oldRoundData)!;
+  const dNewRound: RoundForm = _.cloneDeep(newRoundData);
 
   return {
     ApplicationMetaPointer: !_.isEqual(
@@ -66,8 +68,8 @@ const compareRounds = (
       dNewRound.applicationMetadata
     ),
     MatchAmount: !_.isEqual(
-      dOldRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable,
-      dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
+      dOldRound?.roundMetadata?.quadraticFundingConfig?.matchAmount,
+      dNewRound?.roundMetadata?.quadraticFundingConfig?.matchAmount
     ),
     RoundFeeAddress: false,
     // todo feesAddress not found in roundMetadata
@@ -96,16 +98,30 @@ const compareRounds = (
   };
 };
 
-export default function ViewRoundSettings(props: { id?: string }) {
-  const { round } = useRoundById(props.id?.toLowerCase());
+export default function (props: { id: string }) {
+  const { round } = useRoundById(props.id.toLowerCase());
+
+  if (!round) {
+    return null;
+  }
+
+  return <ViewRoundSettings round={round} />;
+}
+
+export function ViewRoundSettings(props: { round: Round }) {
+  const { round } = props;
+
   const [editMode, setEditMode] = useState<EditMode>({
     canEdit: false,
     canEditOnlyRoundEndDate: false,
   });
 
-  const [editedRound, setEditedRound] = useState<Round | undefined>({
-    ..._.cloneDeep(round!),
-  });
+  const roundForm = buildRoundForm(round);
+
+  const [editedRound, setEditedRound] = useState<RoundForm | undefined>(
+    roundForm
+  );
+
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -156,15 +172,14 @@ export default function ViewRoundSettings(props: { id?: string }) {
         ),
       }),
       quadraticFundingConfig: yup.object({
-        matchingFundsAvailable: yup
+        matchAmount: yup
           .number()
           .typeError("Invalid value.")
           .min(
-            round?.roundMetadata?.quadraticFundingConfig
-              ?.matchingFundsAvailable ?? 0,
-            `Must be greater than previous value of ${round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}.`
+            round?.roundMetadata?.quadraticFundingConfig?.matchAmount ?? 0,
+            `Must be greater than previous value of ${round?.roundMetadata?.quadraticFundingConfig?.matchAmount}.`
           ),
-        matchingCapAmount: yup.number().when("matchingCap", {
+        matchingCapPercentage: yup.number().when("enableMatchingCap", {
           is: (val: any) => val === "yes",
           then: yup
             .number()
@@ -176,7 +191,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
             .lessThan(101, "Must be equal or less than 100."),
           otherwise: yup.number().notRequired(),
         }),
-        minDonationThresholdAmount: yup.number().when("minDonationThreshold", {
+        minContributionUSD: yup.number().when("enableMinContribution", {
           is: (val: any) => val === "yes",
           then: yup
             .number()
@@ -198,7 +213,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     formState: { errors },
     reset,
     resetField,
-  } = useForm<Round>({
+  } = useForm<RoundForm>({
     defaultValues: {
       ...round,
     },
@@ -207,15 +222,18 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   useEffect(() => {
     setHasChanged(
-      Object.values(compareRounds(round!, editedRound!)).some(
+      Object.values(compareRounds(round as RoundForm, editedRound!)).some(
         (value) => value === true
       )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
 
-  const submit: SubmitHandler<Round> = async (values: Round) => {
-    const data = _.merge(editedRound, values);
+  const submit: SubmitHandler<RoundForm> = async (values: RoundForm) => {
+    const data = _.merge<RoundForm, RoundForm>(
+      editedRound as RoundForm,
+      values
+    );
     setEditedRound(data);
     // Check for what has been edited into groups
     // Prepare the transaction(s) to be sent
@@ -235,7 +253,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const onCancelEdit = () => {
     reset(round);
-    setEditedRound(round);
+    setEditedRound(round as RoundForm);
     setEditMode({
       canEdit: false,
       canEditOnlyRoundEndDate,
@@ -251,15 +269,18 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const updateRoundHandler = async () => {
     try {
-      handleSubmit(submit(editedRound as Round));
-      const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
+      handleSubmit(submit(editedRound as RoundForm));
+      const editedGroups: EditedGroups = compareRounds(
+        round as RoundForm,
+        editedRound as RoundForm
+      );
       setIpfsStep(
         editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer
       );
       setEditMode({ ...editMode, canEdit: false });
       setIsConfirmationModalOpen(false);
       setIsProgressModalOpen(true);
-      await updateRound({ editedGroups, round: editedRound! });
+      await updateRound({ editedGroups, round: buildRound(editedRound!) });
       setTimeout(() => {
         setIsProgressModalOpen(false);
         setIpfsStep(false);
@@ -433,7 +454,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
               <Tab.Panel>
                 <DetailsPage
                   editMode={editMode}
-                  editedRound={editedRound as Round}
+                  editedRound={editedRound as RoundForm}
                   setEditedRound={setEditedRound}
                   control={control}
                   register={register}
@@ -446,7 +467,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
               <Tab.Panel>
                 <RoundApplicationPeriod
                   editMode={editMode}
-                  editedRound={editedRound as Round}
+                  editedRound={editedRound as RoundForm}
                   setEditedRound={setEditedRound}
                   control={control}
                   register={register}
@@ -456,7 +477,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
               <Tab.Panel>
                 <Funding
                   editMode={editMode}
-                  editedRound={editedRound as Round}
+                  editedRound={editedRound as RoundForm}
                   setEditedRound={setEditedRound}
                   control={control}
                   register={register}
@@ -509,11 +530,11 @@ export default function ViewRoundSettings(props: { id?: string }) {
 //
 function DetailsPage(props: {
   editMode: EditMode;
-  editedRound: Round;
-  setEditedRound: (round: Round) => void;
-  control: Control<Round, any>;
-  register: UseFormRegister<Round>;
-  errors: FieldErrors<Round>;
+  editedRound: RoundForm;
+  setEditedRound: (round: RoundForm) => void;
+  control: Control<RoundForm, any>;
+  register: UseFormRegister<RoundForm>;
+  errors: FieldErrors<RoundForm>;
   onAddRequirement: (e: any) => void;
 }) {
   const { chain } = useNetwork();
@@ -937,13 +958,13 @@ function DetailsPage(props: {
 
 function SupportTypeDropdown(props: {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  control: Control<Round>;
+  errors: FieldErrors<RoundForm>;
+  control: Control<RoundForm>;
   supportTypes: SupportType[];
   showLabel?: boolean;
-  editedRound: Round;
-  setEditedRound: (round: Round) => void;
-  field: ControllerRenderProps<Round, "roundMetadata.support.type">;
+  editedRound: RoundForm;
+  setEditedRound: (round: RoundForm) => void;
+  field: ControllerRenderProps<RoundForm, "roundMetadata.support.type">;
   disabled: boolean;
 }) {
   return (
@@ -1045,11 +1066,11 @@ function SupportTypeDropdown(props: {
 
 function RoundApplicationPeriod(props: {
   editMode: EditMode;
-  editedRound: Round;
-  setEditedRound: (round: Round) => void;
-  control: Control<Round, any>;
-  register: UseFormRegister<Round>;
-  errors: FieldErrors<Round>;
+  editedRound: RoundForm;
+  setEditedRound: (round: RoundForm) => void;
+  control: Control<RoundForm, any>;
+  register: UseFormRegister<RoundForm>;
+  errors: FieldErrors<RoundForm>;
 }) {
   const { editedRound } = props;
 
@@ -1516,11 +1537,11 @@ function RoundApplicationPeriod(props: {
 
 function Funding(props: {
   editMode: EditMode;
-  editedRound: Round;
-  setEditedRound: (round: Round) => void;
-  control: Control<Round, any>;
-  register: UseFormRegister<Round>;
-  resetField: UseFormResetField<Round>;
+  editedRound: RoundForm;
+  setEditedRound: (round: RoundForm) => void;
+  control: Control<RoundForm, any>;
+  register: UseFormRegister<RoundForm>;
+  resetField: UseFormResetField<RoundForm>;
   errors: any;
 }) {
   const { editedRound } = props;
@@ -1534,8 +1555,7 @@ function Funding(props: {
 
   const matchingFunds =
     (editedRound &&
-      editedRound.roundMetadata.quadraticFundingConfig
-        ?.matchingFundsAvailable) ??
+      editedRound.roundMetadata.quadraticFundingConfig?.matchAmount) ??
     0;
 
   return (
@@ -1588,12 +1608,12 @@ function Funding(props: {
             />
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.matchingFundsAvailable"
+              name="roundMetadata.quadraticFundingConfig.matchAmount"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.matchingFundsAvailable"
+                    "roundMetadata.quadraticFundingConfig.matchAmount"
                   )}
                   value={field.value}
                   type="number"
@@ -1609,13 +1629,9 @@ function Funding(props: {
                       roundMetadata: {
                         ...props.editedRound?.roundMetadata,
                         quadraticFundingConfig: {
-                          matchingFundsAvailable: Number(e.target.value),
-                          matchingCap:
-                            props.editedRound?.roundMetadata
-                              .quadraticFundingConfig.matchingCap,
-                          matchingCapAmount:
-                            props.editedRound?.roundMetadata
-                              .quadraticFundingConfig.matchingCapAmount,
+                          ...props.editedRound?.roundMetadata
+                            .quadraticFundingConfig,
+                          matchAmount: Number(e.target.value),
                         },
                       },
                     });
@@ -1630,8 +1646,8 @@ function Funding(props: {
               data-testid="matching-funds-available-error"
             >
               {
-                props.errors.roundMetadata.quadraticFundingConfig
-                  ?.matchingFundsAvailable?.message
+                props.errors.roundMetadata.quadraticFundingConfig?.matchAmount
+                  ?.message
               }
             </p>
           )}
@@ -1676,12 +1692,12 @@ function Funding(props: {
           >
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.matchingCap"
+              name="roundMetadata.quadraticFundingConfig.enableMatchingCap"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.matchingCap"
+                    "roundMetadata.quadraticFundingConfig.enableMatchingCap"
                   )}
                   type="radio"
                   className="mr-2"
@@ -1690,11 +1706,11 @@ function Funding(props: {
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap !== false
+                      ?.enableMatchingCap !== false
                   }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap ?? true
+                      ?.enableMatchingCap ?? true
                   }
                   readOnly={
                     !props.editMode.canEdit &&
@@ -1702,7 +1718,7 @@ function Funding(props: {
                   }
                   onChange={(e) => {
                     props.resetField(
-                      "roundMetadata.quadraticFundingConfig.matchingCapAmount"
+                      "roundMetadata.quadraticFundingConfig.matchingCapPercentage"
                     );
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1712,7 +1728,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          matchingCap: e.target.value === "yes",
+                          enableMatchingCap: e.target.value === "yes",
                         },
                       },
                     });
@@ -1723,12 +1739,12 @@ function Funding(props: {
             Yes
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.matchingCap"
+              name="roundMetadata.quadraticFundingConfig.enableMatchingCap"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.matchingCap"
+                    "roundMetadata.quadraticFundingConfig.enableMatchingCap"
                   )}
                   type="radio"
                   className="ml-4"
@@ -1737,15 +1753,15 @@ function Funding(props: {
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap !== true
+                      ?.enableMatchingCap !== true
                   }
                   checked={
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap ?? false
+                      ?.enableMatchingCap ?? false
                   }
                   onChange={(e) => {
                     props.resetField(
-                      "roundMetadata.quadraticFundingConfig.matchingCapAmount"
+                      "roundMetadata.quadraticFundingConfig.enableMatchingCap"
                     );
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1755,7 +1771,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          matchingCap: e.target.value === "yes",
+                          enableMatchingCap: e.target.value === "yes",
                         },
                       },
                     });
@@ -1787,12 +1803,12 @@ function Funding(props: {
             />
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.matchingCapAmount"
+              name="roundMetadata.quadraticFundingConfig.matchingCapPercentage"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.matchingCapAmount"
+                    "roundMetadata.quadraticFundingConfig.matchingCapPercentage"
                   )}
                   type="number"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -1800,7 +1816,7 @@ function Funding(props: {
                     (!props.editMode.canEdit &&
                       !props.editMode.canEditOnlyRoundEndDate) ||
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .matchingCap
+                      .matchingCapPercentage
                   }
                   value={field.value}
                   onChange={(e) => {
@@ -1812,7 +1828,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          matchingCapAmount: Number(e.target.value),
+                          matchingCapPercentage: Number(e.target.value),
                         },
                       },
                     });
@@ -1836,7 +1852,8 @@ function Funding(props: {
       </div>
       <div
         className={
-          props.editedRound?.roundMetadata?.quadraticFundingConfig?.matchingCap
+          props.editedRound?.roundMetadata?.quadraticFundingConfig
+            ?.enableMatchingCap
             ? ""
             : "hidden"
         }
@@ -1844,12 +1861,12 @@ function Funding(props: {
         <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
           A single project can only receive a maximum of{" "}
           {props.editedRound?.roundMetadata?.quadraticFundingConfig
-            ?.matchingCapAmount ?? 0}
+            ?.matchingCapPercentage ?? 0}
           % of the matching fund (
           {(
             (matchingFunds / 100) *
             (props.editedRound?.roundMetadata?.quadraticFundingConfig
-              ?.matchingCapAmount ?? 0)
+              ?.matchingCapPercentage ?? 0)
           ).toFixed(2)}{" "}
           {matchingFundPayoutToken.name}).
         </span>
@@ -1891,12 +1908,12 @@ function Funding(props: {
           >
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
+              name="roundMetadata.quadraticFundingConfig.enableMinContribution"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.minDonationThreshold"
+                    "roundMetadata.quadraticFundingConfig.enableMinContribution"
                   )}
                   type="radio"
                   className="mr-2"
@@ -1905,11 +1922,11 @@ function Funding(props: {
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.minDonationThreshold
+                      ?.enableMinContribution
                   }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.minDonationThreshold
+                      ?.enableMinContribution
                   }
                   readOnly={
                     !props.editMode.canEdit &&
@@ -1917,7 +1934,7 @@ function Funding(props: {
                   }
                   onChange={(e) => {
                     props.resetField(
-                      "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+                      "roundMetadata.quadraticFundingConfig.enableMinContribution"
                     );
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1927,7 +1944,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          minDonationThreshold: e.target.value === "yes",
+                          enableMinContribution: e.target.value === "yes",
                         },
                       },
                     });
@@ -1938,29 +1955,29 @@ function Funding(props: {
             Yes
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
+              name="roundMetadata.quadraticFundingConfig.minContributionUSD"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.minDonationThreshold"
+                    "roundMetadata.quadraticFundingConfig.enableMinContribution"
                   )}
                   type="radio"
                   className="ml-4"
                   value={"no"}
                   checked={
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.minDonationThreshold || false
+                      ?.enableMinContribution || false
                   }
                   disabled={
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.minDonationThreshold
+                      ?.enableMinContribution
                   }
                   onChange={(e) => {
                     props.resetField(
-                      "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+                      "roundMetadata.quadraticFundingConfig.minContributionUSD"
                     );
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1970,7 +1987,6 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          minDonationThreshold: e.target.value === "yes",
                         },
                       },
                     });
@@ -2002,12 +2018,12 @@ function Funding(props: {
             />
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+              name="roundMetadata.quadraticFundingConfig.minContributionUSD"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
+                    "roundMetadata.quadraticFundingConfig.minContributionUSD"
                   )}
                   type="number"
                   className="w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -2016,7 +2032,7 @@ function Funding(props: {
                     (!props.editMode.canEdit &&
                       !props.editMode.canEditOnlyRoundEndDate) ||
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
-                      .minDonationThreshold
+                      .minContributionUSD
                   }
                   onChange={(e) => {
                     field.onChange(e.target.value);
@@ -2027,7 +2043,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound.roundMetadata
                             .quadraticFundingConfig,
-                          minDonationThresholdAmount: Number(e.target.value),
+                          minContributionUSD: Number(e.target.value),
                         },
                       },
                     });
@@ -2052,7 +2068,7 @@ function Funding(props: {
       <div
         className={
           props.editedRound?.roundMetadata?.quadraticFundingConfig
-            ?.minDonationThreshold
+            ?.enableMinContribution
             ? ""
             : "hidden"
         }
@@ -2060,7 +2076,7 @@ function Funding(props: {
         <span className="mt-4 inline-flex text-sm text-gray-600 mb-8 bg-grey-50 p-2 w-full rounded-lg">
           Each donation has to be a minimum of{" "}
           {props.editedRound?.roundMetadata?.quadraticFundingConfig
-            ?.minDonationThresholdAmount ?? 0}{" "}
+            ?.minContributionUSD ?? 0}{" "}
           USD equivalent for it to be eligible for matching.
         </span>
       </div>
@@ -2085,12 +2101,12 @@ function Funding(props: {
           >
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.sybilDefense"
+              name="roundMetadata.quadraticFundingConfig.enablePassport"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.sybilDefense"
+                    "roundMetadata.quadraticFundingConfig.enablePassport"
                   )}
                   type="radio"
                   value="yes"
@@ -2098,11 +2114,11 @@ function Funding(props: {
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.sybilDefense
+                      ?.enablePassport
                   }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.sybilDefense
+                      ?.enablePassport
                   }
                   onChange={(e) => {
                     field.onChange(e.target.value);
@@ -2113,7 +2129,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          sybilDefense: e.target.value === "yes",
+                          enablePassport: e.target.value === "yes",
                         },
                       },
                     });
@@ -2131,24 +2147,24 @@ function Funding(props: {
           >
             <Controller
               control={props.control}
-              name="roundMetadata.quadraticFundingConfig.sybilDefense"
+              name="roundMetadata.quadraticFundingConfig.enablePassport"
               render={({ field }) => (
                 <input
                   {...field}
                   {...props.register(
-                    "roundMetadata.quadraticFundingConfig.sybilDefense"
+                    "roundMetadata.quadraticFundingConfig.enablePassport"
                   )}
                   type="radio"
                   value="no"
                   checked={
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.sybilDefense
+                      ?.enablePassport
                   }
                   disabled={
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.sybilDefense
+                      ?.enablePassport
                   }
                   onChange={(e) => {
                     field.onChange(e.target.value);
@@ -2159,7 +2175,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          sybilDefense: e.target.value === "yes",
+                          enablePassport: e.target.value === "yes",
                         },
                       },
                     });

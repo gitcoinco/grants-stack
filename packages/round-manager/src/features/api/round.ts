@@ -134,16 +134,38 @@ export async function getRoundById(
           }
         `,
       chainId,
-      { roundId: roundId },
+      { roundId: roundId }
     );
 
     const round: RoundResult = res.data.rounds[0];
 
     // fetch round and application metadata from IPFS
-    const [roundMetadata, applicationMetadata] = await Promise.all([
+    const [roundMetadataObject, applicationMetadata] = await Promise.all([
       fetchFromIPFS(res.data.rounds[0].roundMetaPtr.pointer),
       fetchFromIPFS(res.data.rounds[0].applicationMetaPtr.pointer),
     ]);
+
+    let roundMetadata: Round["roundMetadata"];
+
+    if (roundMetadataObject?.quadraticFundingConfig?.matchAmount) {
+      roundMetadata = roundMetadataObject;
+    } else {
+      roundMetadata = {
+        ...(roundMetadataObject as Round["roundMetadata"]),
+        quadraticFundingConfig: {
+          matchAmount:
+            roundMetadataObject?.quadraticFundingConfig.matchingFundsAvailable,
+          matchingCapPercentage:
+            roundMetadataObject?.quadraticFundingConfig?.matchingCapAmount ??
+            null,
+          minContributionUSD:
+            roundMetadataObject?.quadraticFundingConfig
+              ?.minDonationThresholdAmount ?? null,
+          enablePassport:
+            roundMetadataObject?.quadraticFundingConfig?.sybilDefense ?? null,
+        },
+      };
+    }
 
     round.projects = round.projects.map((project) => {
       return {
@@ -336,7 +358,7 @@ export async function deployRoundContract(
 
     // Ensure tokenAmount is normalized to token decimals
     const tokenAmount =
-      round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable || 0;
+      round.roundMetadata.quadraticFundingConfig?.matchAmount || 0;
     const token = payoutTokens.filter(
       (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase(),
     )[0];

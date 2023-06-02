@@ -320,7 +320,7 @@ export default function ViewRoundPage() {
                       <FundContract round={round} roundId={id} />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewRoundSettings id={round?.id} />
+                      {round?.id && <ViewRoundSettings id={round.id} />}
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewRoundStats />

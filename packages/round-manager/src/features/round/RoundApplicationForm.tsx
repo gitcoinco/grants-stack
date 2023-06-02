@@ -34,7 +34,8 @@ import InfoModal from "../common/InfoModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
-import _ from 'lodash';
+import _ from "lodash";
+import { RoundForm, buildRound } from "../roundForm";
 
 const payoutQuestion: SchemaQuestion = {
   id: 0,
@@ -201,7 +202,11 @@ export function RoundApplicationForm(props: {
     }
     try {
       setOpenProgressModal(true);
-      const data: Partial<Round> = _.merge(formData, values);
+      const finalFormData: RoundForm = _.merge(
+        formData as RoundForm,
+        values as RoundForm
+      );
+      const data: Round = buildRound(finalFormData);
 
       const roundMetadataWithProgramContractAddress: Round["roundMetadata"] = {
         ...(data.roundMetadata as Round["roundMetadata"]),

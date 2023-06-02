@@ -29,20 +29,29 @@ interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
 
+type RoundForm = Round & {
+  roundMetadata: {
+    quadraticFundingConfig: {
+      enableMatchingCap: boolean;
+      enableMinContribution: boolean;
+    };
+  };
+};
+
 export const FundingValidationSchema = yup.object().shape({
   roundMetadata: yup.object().shape({
     quadraticFundingConfig: yup.object({
-      matchingFundsAvailable: yup
+      matchAmount: yup
         .number()
         .typeError("Matching funds available must be a valid number.")
         .moreThan(0, "Matching funds available must be more than zero."),
-      matchingCap: yup
+      enableMatchingCap: yup
         .boolean()
         .required("You must select if you want a matching cap for projects."),
-      matchingCapAmount: yup
+      matchingCapPercentage: yup
         .number()
         .transform((value) => (isNaN(value) ? 0 : value))
-        .when("matchingCap", {
+        .when("enableMatchingCap", {
           is: true,
           then: yup
             .number()
@@ -53,13 +62,13 @@ export const FundingValidationSchema = yup.object().shape({
               "Matching cap amount must be less than or equal to 100%."
             ),
         }),
-      minDonationThreshold: yup
+      enableMinContribution: yup
         .boolean()
         .required("You must select if you want a minimum donation threshold."),
-      minDonationThresholdAmount: yup
+      minContributionUSD: yup
         .number()
         .transform((value) => (isNaN(value) ? 0 : value))
-        .when("minDonationThreshold", {
+        .when("enableMinContribution", {
           is: true,
           then: yup
             .number()
@@ -68,7 +77,7 @@ export const FundingValidationSchema = yup.object().shape({
             )
             .moreThan(0, "Minimum donation threshold must be more than zero."),
         }),
-      sybilDefense: yup
+      enablePassport: yup
         .boolean()
         .required("You must select if you want to use sybil defense."),
     }),
@@ -85,14 +94,15 @@ export const FundingValidationSchema = yup.object().shape({
 export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
-  const initialQuadraticFundingConfig: Round["roundMetadata"]["quadraticFundingConfig"] =
+  const initialQuadraticFundingConfig: RoundForm["roundMetadata"]["quadraticFundingConfig"] =
     // @ts-expect-error Needs refactoring/typing as a whole
-    formData?.roundMetadata.quadraticFundingConfig ?? {
-      matchingFundsAvailable: 0,
-      matchingCap: false,
-      minDonationThreshold: false,
-      sybilDefense: true,
-    };
+    (formData?.roundMetadata
+      .quadraticFundingConfig as RoundForm["roundMetadata"]["quadraticFundingConfig"]) ??
+    ({
+      enablePassport: true,
+      enableMatchingCap: false,
+      enableMinContribution: false,
+    } as RoundForm["roundMetadata"]["quadraticFundingConfig"]);
 
   const { chain } = useWallet();
   const payoutTokenOptions: PayoutToken[] = [
@@ -112,7 +122,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
     control,
     formState: { errors },
     watch,
-  } = useForm<Round>({
+  } = useForm<RoundForm>({
     defaultValues: {
       ...formData,
       roundMetadata: {
@@ -124,7 +134,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
 
   const FormStepper = props.stepper;
 
-  const next: SubmitHandler<Round> = async (values) => {
+  const next: SubmitHandler<RoundForm> = async (values) => {
     const data = _.merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
@@ -156,7 +166,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                 <MatchingFundsAvailable
                   errors={errors}
                   register={register(
-                    "roundMetadata.quadraticFundingConfig.matchingFundsAvailable",
+                    "roundMetadata.quadraticFundingConfig.matchAmount",
                     {
                       valueAsNumber: true,
                     }
@@ -174,7 +184,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                 <MatchingCap
                   errors={errors}
                   registerMatchingCapAmount={register(
-                    "roundMetadata.quadraticFundingConfig.matchingCapAmount",
+                    "roundMetadata.quadraticFundingConfig.matchingCapPercentage",
                     {
                       valueAsNumber: true,
                     }
@@ -195,7 +205,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                 <MinDonationThreshold
                   errors={errors}
                   registerMinDonationThreshold={register(
-                    "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount",
+                    "roundMetadata.quadraticFundingConfig.minContributionUSD",
                     {
                       valueAsNumber: true,
                     }
@@ -248,7 +258,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                 <SybilDefense
                   errors={errors}
                   registerMatchingCapAmount={register(
-                    "roundMetadata.quadraticFundingConfig.sybilDefense"
+                    "roundMetadata.quadraticFundingConfig.enablePassport"
                   )}
                   control={control}
                 />
@@ -287,7 +297,7 @@ function LeftSidebar() {
 }
 
 function PayoutTokenButton(props: {
-  errors: FieldErrors<Round>;
+  errors: FieldErrors<RoundForm>;
   token?: PayoutToken;
 }) {
   const { token } = props;
@@ -351,8 +361,8 @@ export function PayoutTokenInformation() {
 
 function PayoutTokenDropdown(props: {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  control: Control<Round>;
+  errors: FieldErrors<RoundForm>;
+  control: Control<RoundForm>;
   payoutTokenOptions: PayoutToken[];
 }) {
   const { field } = useController({
@@ -461,7 +471,7 @@ function PayoutTokenDropdown(props: {
 
 function MatchingFundsAvailable(props: {
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
+  errors: FieldErrors<RoundForm>;
   token: string;
   payoutTokenOptions: PayoutToken[];
 }) {
@@ -469,7 +479,7 @@ function MatchingFundsAvailable(props: {
   return (
     <div className="col-span-6 sm:col-span-3">
       <div className="flex justify-between">
-        <label htmlFor="matchingFundsAvailable" className="text-sm">
+        <label htmlFor="matchAmount" className="text-sm">
           Matching Funds Available
         </label>
         <span className="text-right text-violet-400 float-right text-xs mt-1">
@@ -484,10 +494,9 @@ function MatchingFundsAvailable(props: {
             "block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm h-10"
           }
           type="number"
-          id={"roundMetadata.matchingFunds.matchingFundsAvailable"}
+          id={"roundMetadata.matchingFunds.matchAmount"}
           $hasError={
-            props.errors?.roundMetadata?.quadraticFundingConfig
-              ?.matchingFundsAvailable
+            props.errors?.roundMetadata?.quadraticFundingConfig?.matchAmount
           }
           placeholder="Enter the amount in chosen payout token."
           data-testid="matching-funds-available"
@@ -504,12 +513,11 @@ function MatchingFundsAvailable(props: {
           </span>
         </div>
       </div>
-      {props.errors.roundMetadata?.quadraticFundingConfig
-        ?.matchingFundsAvailable && (
+      {props.errors.roundMetadata?.quadraticFundingConfig?.matchAmount && (
         <p className="text-xs text-pink-500">
           {
-            props.errors.roundMetadata?.quadraticFundingConfig
-              ?.matchingFundsAvailable.message
+            props.errors.roundMetadata?.quadraticFundingConfig?.matchAmount
+              .message
           }
         </p>
       )}
@@ -519,13 +527,13 @@ function MatchingFundsAvailable(props: {
 
 function MatchingCap(props: {
   registerMatchingCapAmount: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  control?: Control<Round>;
+  errors: FieldErrors<RoundForm>;
+  control?: Control<RoundForm>;
   token: string;
   payoutTokenOptions: PayoutToken[];
 }) {
   const { field: matchingCapField } = useController({
-    name: "roundMetadata.quadraticFundingConfig.matchingCap",
+    name: "roundMetadata.quadraticFundingConfig.enableMatchingCap",
     defaultValue: false,
     control: props.control,
     rules: {
@@ -536,7 +544,7 @@ function MatchingCap(props: {
   // get matching cap amount from form
 
   const amt = useWatch({
-    name: "roundMetadata.quadraticFundingConfig.matchingCapAmount",
+    name: "roundMetadata.quadraticFundingConfig.matchingCapPercentage",
     control: props.control,
   });
 
@@ -545,7 +553,7 @@ function MatchingCap(props: {
   >(amt?.toString());
 
   const matchingFunds = useWatch({
-    name: "roundMetadata.quadraticFundingConfig.matchingFundsAvailable",
+    name: "roundMetadata.quadraticFundingConfig.matchAmount",
     control: props.control,
   });
 
@@ -661,7 +669,7 @@ function MatchingCap(props: {
             $hasError={
               isMatchingCap &&
               props.errors?.roundMetadata?.quadraticFundingConfig
-                ?.matchingCapAmount
+                ?.matchingCapPercentage
             }
             type="number"
             id={"matchingCapAmount"}
@@ -680,14 +688,14 @@ function MatchingCap(props: {
         </div>
         {isMatchingCap &&
           props.errors?.roundMetadata?.quadraticFundingConfig
-            ?.matchingCapAmount && (
+            ?.matchingCapPercentage && (
             <p
               className="text-xs text-pink-500"
               data-testid="matching-cap-error"
             >
               {
                 props.errors.roundMetadata?.quadraticFundingConfig
-                  ?.matchingCapAmount?.message
+                  ?.matchingCapPercentage?.message
               }
             </p>
           )}
@@ -712,11 +720,11 @@ function MatchingCap(props: {
 
 function MinDonationThreshold(props: {
   registerMinDonationThreshold: UseFormRegisterReturn<string>; // TODO: add type
-  errors: FieldErrors<Round>;
-  control?: Control<Round>;
+  errors: FieldErrors<RoundForm>;
+  control?: Control<RoundForm>;
 }) {
   const { field: minDonationThresholdField } = useController({
-    name: "roundMetadata.quadraticFundingConfig.minDonationThreshold",
+    name: "roundMetadata.quadraticFundingConfig.enableMinContribution",
     defaultValue: false,
     control: props.control,
     rules: {
@@ -727,10 +735,12 @@ function MinDonationThreshold(props: {
 
   // watch for minDonationAmount
   const amt = useWatch({
-    name: "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount",
+    name: "roundMetadata.quadraticFundingConfig.minContributionUSD",
     control: props.control,
   });
   const [minDonationAmount, setMinDonationAmount] = useState(amt);
+
+  console.log(props);
 
   return (
     <>
@@ -842,10 +852,10 @@ function MinDonationThreshold(props: {
             $hasError={
               isMinDonation &&
               props.errors?.roundMetadata?.quadraticFundingConfig
-                ?.matchingCapAmount
+                ?.minContributionUSD
             }
             type="number"
-            id={"minDonationAmount"}
+            id={"minContributionUSD"}
             disabled={!isMinDonation}
             placeholder="Enter minimum donation amount"
             data-testid="min-donation-amount"
@@ -858,11 +868,11 @@ function MinDonationThreshold(props: {
         </div>
         {isMinDonation &&
           props.errors?.roundMetadata?.quadraticFundingConfig
-            ?.minDonationThresholdAmount && (
+            ?.minContributionUSD && (
             <p className="text-xs text-pink-500">
               {
                 props.errors.roundMetadata?.quadraticFundingConfig
-                  ?.minDonationThresholdAmount?.message
+                  ?.minContributionUSD?.message
               }
             </p>
           )}
@@ -880,11 +890,11 @@ function MinDonationThreshold(props: {
 
 function SybilDefense(props: {
   registerMatchingCapAmount: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  control?: Control<Round>;
+  errors: FieldErrors<RoundForm>;
+  control?: Control<RoundForm>;
 }) {
   const { field: sybilDefenseField } = useController({
-    name: "roundMetadata.quadraticFundingConfig.sybilDefense",
+    name: "roundMetadata.quadraticFundingConfig.enablePassport",
     defaultValue: false,
     control: props.control,
     rules: {
