@@ -56,7 +56,7 @@ export default function Details({
         bannerImg={bannerImg}
         logoImg={logoImg}
       />
-      {showTabs && (
+      {showTabs ? (
         <Tabs className="mt-8" defaultIndex={0}>
           <TabList className="mb-12" width="fit-content">
             <Tab
@@ -107,6 +107,13 @@ export default function Details({
             </TabPanel>
           </TabPanels>
         </Tabs>
+      ) : (
+        <About
+          project={project}
+          showApplications={showApplications}
+          createdAt={createdAt}
+          updatedAt={updatedAt}
+        />
       )}
     </>
   );
