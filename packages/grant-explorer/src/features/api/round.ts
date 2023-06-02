@@ -119,41 +119,29 @@ export async function getRoundById(
 
     const round: RoundResult = res.data.rounds[0];
 
-    const roundMetadataObject: unknown = await fetchFromIPFS(
-      round.roundMetaPtr.pointer
-    );
+    const roundMetadataObject = await fetchFromIPFS(round.roundMetaPtr.pointer);
 
-    let roundMetadata: Round["roundMetadata"];
+    let roundMetadata: Round["roundMetadata"] =
+      roundMetadataObject as Round["roundMetadata"];
 
-    if (
-      roundMetadataObject &&
-      typeof roundMetadataObject === "object" &&
-      "quadraticFundingConfig" in roundMetadataObject &&
-      roundMetadataObject.quadraticFundingConfig &&
-      typeof roundMetadataObject.quadraticFundingConfig === "object"
-    ) {
-      if ("matchAmount" in roundMetadataObject.quadraticFundingConfig) {
-        roundMetadata = roundMetadataObject as Round["roundMetadata"];
-      } else {
-        const quadraticFundingConfig =
-          roundMetadataObject.quadraticFundingConfig as {
-            matchingFundsAvailable: number;
-            matchingCapAmount?: number;
-            minDonationThresholdAmount?: number;
-            sybilDefense?: boolean;
-          };
+    if ("matchingFundsAvailable" in roundMetadata.quadraticFundingConfig) {
+      const quadraticFundingConfig =
+        roundMetadataObject.quadraticFundingConfig as {
+          matchingFundsAvailable: number;
+          matchingCapAmount?: number;
+          minDonationThresholdAmount?: number;
+          sybilDefense?: boolean;
+        };
 
-        roundMetadata = {
-          ...roundMetadataObject,
-          quadraticFundingConfig: {
-            matchAmount: quadraticFundingConfig.matchingFundsAvailable,
-            matchingCapPercentage: quadraticFundingConfig.matchingCapAmount,
-            minContributionUSD:
-              quadraticFundingConfig.minDonationThresholdAmount,
-            enablePassport: quadraticFundingConfig.sybilDefense ?? false,
-          },
-        } as Round["roundMetadata"];
-      }
+      roundMetadata = {
+        ...roundMetadataObject,
+        quadraticFundingConfig: {
+          matchAmount: quadraticFundingConfig.matchingFundsAvailable,
+          matchingCapPercentage: quadraticFundingConfig.matchingCapAmount,
+          minContributionUSD: quadraticFundingConfig.minDonationThresholdAmount,
+          enablePassport: quadraticFundingConfig.sybilDefense ?? false,
+        },
+      } as Round["roundMetadata"];
     }
 
     round.projects = round.projects.map((project) => {

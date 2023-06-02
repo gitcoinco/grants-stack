@@ -86,12 +86,12 @@ export interface Round {
   /**
    * Metadata of the Round to be stored off-chain
    */
-  roundMetadata?: {
+  roundMetadata: {
     name: string;
     roundType: string;
     eligibility: Eligibility;
     programContractAddress: string;
-    quadraticFundingConfig?: {
+    quadraticFundingConfig: {
       enablePassport: boolean;
       matchingCapPercentage?: number;
       minContributionUSD?: number;
