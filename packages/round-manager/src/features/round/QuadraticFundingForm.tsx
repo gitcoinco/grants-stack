@@ -732,8 +732,6 @@ function MinDonationThreshold(props: {
   });
   const [minDonationAmount, setMinDonationAmount] = useState(amt);
 
-  console.log(props);
-
   return (
     <>
       <div className="col-span-6 sm:col-span-3">
