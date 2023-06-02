@@ -92,12 +92,10 @@ export interface Round {
     eligibility: Eligibility;
     programContractAddress: string;
     quadraticFundingConfig?: {
-      matchingFundsAvailable: number;
-      matchingCap: boolean;
-      matchingCapAmount?: number;
-      minDonationThreshold?: boolean;
-      minDonationThresholdAmount?: number;
-      sybilDefense?: boolean;
+      enablePassport: boolean;
+      matchingCapPercentage?: number;
+      minContributionUSD?: number;
+      matchAmount: number;
     };
     support?: {
       type: string;

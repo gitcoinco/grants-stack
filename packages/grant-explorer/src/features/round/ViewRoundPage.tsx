@@ -281,7 +281,7 @@ function AfterRoundStart(props: {
 
           <p className="text-1xl mb-4">
             Matching funds available: &nbsp;
-            {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
+            {round.roundMetadata?.quadraticFundingConfig?.matchAmount.toLocaleString()}
             &nbsp;
             {matchingFundPayoutTokenName}
           </p>
@@ -551,7 +551,7 @@ function PreRoundPage(props: {
             <span>
               {" "}
               &nbsp;
-              {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
+              {round.roundMetadata?.quadraticFundingConfig?.matchAmount.toLocaleString()}
               &nbsp;
               {matchingFundPayoutTokenName}
             </span>
@@ -564,7 +564,10 @@ function PreRoundPage(props: {
             <span>
               {" "}
               &nbsp;
-              {round.roundMetadata?.quadraticFundingConfig?.matchingCapAmount}
+              {
+                round.roundMetadata?.quadraticFundingConfig
+                  ?.matchingCapPercentage
+              }
               &nbsp;
               {"%"}
             </span>

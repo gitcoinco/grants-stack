@@ -45,12 +45,8 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
       eligibility: { description: "name", requirements: [] },
       programContractAddress: faker.finance.ethereumAddress(),
       quadraticFundingConfig: {
-        matchingFundsAvailable: 99999,
-        matchingCap: false,
-        matchingCapAmount: 0,
-        minDonationThreshold: false,
-        minDonationThresholdAmount: 0,
-        sybilDefense: true,
+        matchAmount: 99999,
+        enablePassport: true,
       },
     },
     store: {

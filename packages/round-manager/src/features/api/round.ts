@@ -147,25 +147,37 @@ export async function getRoundById(
 
     let roundMetadata: Round["roundMetadata"];
 
-    if (roundMetadataObject?.quadraticFundingConfig?.matchAmount) {
-      roundMetadata = roundMetadataObject;
-    } else {
-      roundMetadata = {
-        ...(roundMetadataObject as Round["roundMetadata"]),
-        quadraticFundingConfig: {
-          matchAmount:
-            roundMetadataObject?.quadraticFundingConfig.matchingFundsAvailable,
-          matchingCapPercentage:
-            roundMetadataObject?.quadraticFundingConfig?.matchingCapAmount ??
-            undefined,
-          minContributionUSD:
-            roundMetadataObject?.quadraticFundingConfig
-              ?.minDonationThresholdAmount ?? undefined,
-          enablePassport:
-            roundMetadataObject?.quadraticFundingConfig?.sybilDefense ?? undefined,
-        },
-      };
+    if (
+      roundMetadataObject &&
+      typeof roundMetadataObject === "object" &&
+      "quadraticFundingConfig" in roundMetadataObject &&
+      roundMetadataObject.quadraticFundingConfig &&
+      typeof roundMetadataObject.quadraticFundingConfig === "object"
+    ) {
+      if ("matchAmount" in roundMetadataObject.quadraticFundingConfig) {
+        roundMetadata = roundMetadataObject as Round["roundMetadata"];
+      } else {
+        const quadraticFundingConfig =
+          roundMetadataObject.quadraticFundingConfig as {
+            matchingFundsAvailable: number;
+            matchingCapAmount?: number;
+            minDonationThresholdAmount?: number;
+            sybilDefense?: boolean;
+          };
+
+        roundMetadata = {
+          ...roundMetadataObject,
+          quadraticFundingConfig: {
+            matchAmount: quadraticFundingConfig.matchingFundsAvailable,
+            matchingCapPercentage: quadraticFundingConfig.matchingCapAmount,
+            minContributionUSD:
+              quadraticFundingConfig.minDonationThresholdAmount,
+            enablePassport: quadraticFundingConfig.sybilDefense ?? false,
+          },
+        } as Round["roundMetadata"];
+      }
     }
+
 
     round.projects = round.projects.map((project) => {
       return {
