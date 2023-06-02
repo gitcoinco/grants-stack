@@ -35,14 +35,14 @@ export function buildRound(round: RoundForm): Round {
     roundMetadata: {
       ...round.roundMetadata,
       quadraticFundingConfig: {
-        matchAmount: round.roundMetadata.quadraticFundingConfig.matchAmount,
-        minContributionUSD: round.roundMetadata.quadraticFundingConfig
+        matchAmount: round.roundMetadata?.quadraticFundingConfig.matchAmount,
+        minContributionUSD: round.roundMetadata?.quadraticFundingConfig
           .enableMinContribution
-          ? round.roundMetadata.quadraticFundingConfig.minContributionUSD
+          ? round.roundMetadata?.quadraticFundingConfig.minContributionUSD
           : undefined,
-        matchingCapPercentage: round.roundMetadata.quadraticFundingConfig
+        matchingCapPercentage: round.roundMetadata?.quadraticFundingConfig
           .enableMatchingCap
-          ? round.roundMetadata.quadraticFundingConfig.matchingCapPercentage
+          ? round.roundMetadata?.quadraticFundingConfig.matchingCapPercentage
           : undefined,
       },
     },
