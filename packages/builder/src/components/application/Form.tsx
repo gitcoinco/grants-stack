@@ -3,6 +3,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import {
   ExclamationTriangleIcon,
+  EyeIcon,
   GlobeAltIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
@@ -248,6 +249,7 @@ function FullPreview(props: {
   answers: RoundApplicationAnswers;
   questions: RoundApplicationQuestion[];
   handleSubmitApplication: Function;
+  preview: boolean;
   setPreview: Function;
   disableSubmit: boolean;
   chainId: number;
@@ -256,6 +258,7 @@ function FullPreview(props: {
     project,
     answers,
     questions,
+    preview,
     setPreview,
     handleSubmitApplication,
     disableSubmit,
@@ -269,6 +272,16 @@ function FullPreview(props: {
 
   return (
     <>
+      {preview && (
+        <div className="flex flex-row items-center justify-center">
+          <span className="icon mr-2">
+            <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
+          </span>
+          <span className="text-sm text-gray-500">
+            This is a preview of your public project page on Gitcoin Explorer.
+          </span>
+        </div>
+      )}
       <div className="relative pt-7">
         <div>
           <div>
@@ -407,7 +420,6 @@ export default function Form({
   showErrorModal,
   readOnly,
   publishedApplication,
-  onPreviewApplication,
 }: {
   roundApplication: RoundApplicationMetadata;
   round: Round;
@@ -416,7 +428,6 @@ export default function Form({
   showErrorModal: boolean;
   readOnly?: boolean;
   publishedApplication?: any;
-  onPreviewApplication?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const dispatch = useDispatch();
   const { chains } = useNetwork();
@@ -580,7 +591,6 @@ export default function Form({
   };
 
   const handlePreviewClick = async () => {
-    onPreviewApplication?.(true);
     setSubmitted(true);
     const valid = await validate(answers);
     if (valid === ValidationStatus.Valid) {
@@ -681,6 +691,7 @@ export default function Form({
           project={selectedProjectMetadata!}
           answers={answers}
           questions={schema.questions}
+          preview={preview}
           setPreview={setPreview}
           handleSubmitApplication={handleSubmitApplication}
           disableSubmit={disableSubmit}
