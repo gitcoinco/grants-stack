@@ -1,4 +1,4 @@
-import { useAccount } from "wagmi";
+import { chainId, useAccount } from "wagmi";
 import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
@@ -10,40 +10,76 @@ import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
 import { getPayoutTokenOptions } from "../api/utils";
 import Navbar from "../common/Navbar";
+import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-history-banner.svg";
+import { ChainId } from "../api/utils";
 
 type ContributionHistoryState =
   | { type: "loading" }
-  | { type: "loaded"; data: Contribution[] }
-  | { type: "error"; error: Error };
+  | {
+      type: "loaded";
+      data: { chainId: number; data: Contribution[] | never[] }[];
+    }
+  | { type: "error"; error: string };
 
-const useContributionHistory = (chainId: number, address: string) => {
+const useContributionHistory = (chainIds: number[], address: string) => {
   const [state, setState] = useState<ContributionHistoryState>({
     type: "loading",
   });
 
   useEffect(() => {
-    console.log("loading", chainId, address);
+    console.log("loading", chainIds, address);
 
     if (!process.env.REACT_APP_ALLO_API_URL) {
       throw new Error("REACT_APP_ALLO_API_URL is not set");
     }
 
-    const client = new AlloIndexerClient(
-      fetch.bind(window),
-      process.env.REACT_APP_ALLO_API_URL,
-      chainId
-    );
+    const histories: { chainId: number; data: Contribution[] | never[] }[] = [];
+    let allChainsError = true;
 
-    client
-      .getContributionsByAddress(address)
-      .then((data) => {
-        console.log("loaded", data);
-        setState({ type: "loaded", data });
-      })
-      .catch((error) => {
-        setState({ type: "error", error });
+    const fetchContributions = async () => {
+      const fetchPromises = chainIds.map((chainId: number) => {
+        if (!process.env.REACT_APP_ALLO_API_URL) {
+          throw new Error("REACT_APP_ALLO_API_URL is not set");
+        }
+
+        const client = new AlloIndexerClient(
+          fetch.bind(window),
+          process.env.REACT_APP_ALLO_API_URL,
+          chainId
+        );
+
+        return client
+          .getContributionsByAddress(address)
+          .then((data) => {
+            const history = { chainId, data };
+            histories.push(history);
+            allChainsError = false; // If data is fetched successfully for any chain, set allChainsError to false
+          })
+          .catch((error) => {
+            console.log(
+              `Error fetching contribution history for chain ${chainId}:`,
+              error
+            );
+            const history = { chainId, data: [] };
+            histories.push(history);
+          });
       });
-  }, [chainId, address]);
+
+      await Promise.all(fetchPromises);
+
+      if (allChainsError) {
+        setState({
+          type: "error",
+          error: "Error fetching contribution history for all chains",
+        });
+      } else {
+        console.log("loaded", histories);
+        setState({ type: "loaded", data: histories });
+      }
+    };
+
+    fetchContributions();
+  }, [chainIds, address]);
 
   return state;
 };
@@ -58,18 +94,18 @@ function StatCard(props: { title: string; value: string | undefined }) {
 }
 
 function ViewContributionHistoryDisplay(props: {
-  chainId: number;
   tokens: Record<string, PayoutToken>;
-  contributions: Contribution[];
+  contributions: { chainId: number; data: Contribution[] | never[] }[];
 }) {
   return (
     <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
       <main>
-        <div className="text-lg">Donation History</div>
-        <div className="flex gap-4">
+        <div className="text-lg">Donation Impact</div>
+        <div className="flex gap-4 my-4">
           <StatCard title="Total Donated" value="1000" />
           <StatCard title="Total Projects" value="1000" />
         </div>
+        <div className="text-lg my-4">Donation History</div>
         <div className="text-lg bg-violet-100 text-black px-2 px-2">
           All Rounds
         </div>
@@ -79,44 +115,47 @@ function ViewContributionHistoryDisplay(props: {
             <th className="p-4">Donation</th>
             <th className="p-4">Transaction information</th>
           </tr>
-          {props.contributions.map((contribution) => {
-            const token = props.tokens[contribution.token];
+          {props.contributions.map((chainContribution) => {
+            const { chainId, data } = chainContribution;
+            return data.map((contribution) => {
+              const token = props.tokens[contribution.token];
 
-            let formattedAmount = "N/A";
+              let formattedAmount = "N/A";
 
-            if (token) {
-              formattedAmount = `${ethers.utils.formatUnits(
-                contribution.amount,
-                token.decimal
-              )} ${token.name}`;
-            }
+              if (token) {
+                formattedAmount = `${ethers.utils.formatUnits(
+                  contribution.amount,
+                  token.decimal
+                )} ${token.name}`;
+              }
 
-            return (
-              <tr key={contribution.id}>
-                <td className="border-b p-4">
-                  <div className="flex items-center">
-                    <Link
-                      className="underline inline-block max-w-[250px] truncate"
-                      title={contribution.roundName}
-                      to={`/round/${props.chainId}/${contribution.roundId}`}
-                    >
-                      {contribution.roundName}
-                    </Link>
-                    <ChevronRightIcon className="h-4 inline mx-2" />
-                    <Link
-                      className="underline inline-block max-w-[250px] truncate"
-                      title={contribution.projectTitle}
-                      to={`/round/${props.chainId}/${contribution.roundId}/${contribution.projectId}`}
-                    >
-                      {contribution.projectTitle}
-                    </Link>
-                  </div>
-                  <div className="text-sm text-gray-500">4 mins ago</div>
-                </td>
-                <td className="border-b p-4">{formattedAmount}</td>
-                <td className="border-b p-4">{contribution.transaction}</td>
-              </tr>
-            );
+              return (
+                <tr key={contribution.id}>
+                  <td className="border-b p-4">
+                    <div className="flex items-center">
+                      <Link
+                        className="underline inline-block max-w-[250px] truncate"
+                        title={contribution.roundName}
+                        to={`/round/${chainId}/${contribution.roundId}`}
+                      >
+                        {contribution.roundName}
+                      </Link>
+                      <ChevronRightIcon className="h-4 inline mx-2" />
+                      <Link
+                        className="underline inline-block max-w-[250px] truncate"
+                        title={contribution.projectTitle}
+                        to={`/round/${chainId}/${contribution.roundId}/${contribution.projectId}`}
+                      >
+                        {contribution.projectTitle}
+                      </Link>
+                    </div>
+                    <div className="text-sm text-gray-500">4 mins ago</div>
+                  </td>
+                  <td className="border-b p-4">{formattedAmount}</td>
+                  <td className="border-b p-4">{contribution.transaction}</td>
+                </tr>
+              );
+            });
           })}
         </table>
       </main>
@@ -124,9 +163,41 @@ function ViewContributionHistoryDisplay(props: {
   );
 }
 
-function ViewContributionHistoryFetcher(props: { address: string }) {
-  const chainId = 1;
-  const contributionHistory = useContributionHistory(chainId, props.address);
+function ViewContributionHistoryWithoutDonations() {
+  return (
+    <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen bottom-16">
+      <main>
+        <div className="text-lg">Donation History</div>
+        <div className="flex justify-center">
+          <div className="w-3/4 my-6 text-center mx-auto">
+            <p className="text-md">
+              This is your donation history page, where you can keep track of
+              all the public goods you've funded. As you make donations, your
+              transaction history will appear here.
+            </p>
+            <div />
+          </div>
+        </div>
+        <div className="flex justify-center">
+          {" "}
+          {/* Add flex justify-center class */}
+          <DonationHistoryBanner />
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function ViewContributionHistoryFetcher(props: {
+  address: string;
+  chainIds: number[];
+}) {
+  const contributionHistory = useContributionHistory(
+    props.chainIds,
+    props.address
+  );
+
+  console.log("contributionHistory", contributionHistory);
 
   const tokens = Object.fromEntries(
     getPayoutTokenOptions(String(chainId)).map((token) => [
@@ -138,11 +209,11 @@ function ViewContributionHistoryFetcher(props: { address: string }) {
   if (contributionHistory.type === "loading") {
     return <div>Loading...</div>;
   } else if (contributionHistory.type === "error") {
-    return <div>{contributionHistory.error.toString()}</div>;
+    console.error("Error", contributionHistory);
+    return <ViewContributionHistoryWithoutDonations />;
   } else {
     return (
       <ViewContributionHistoryDisplay
-        chainId={chainId}
         tokens={tokens}
         contributions={contributionHistory.data}
       />
@@ -150,10 +221,24 @@ function ViewContributionHistoryFetcher(props: { address: string }) {
   }
 }
 
+function getChainIds(): number[] {
+  const isProduction = process.env.REACT_APP_ENV === "production";
+  if (isProduction) {
+    return [
+      Number(ChainId.MAINNET),
+      Number(ChainId.OPTIMISM_MAINNET_CHAIN_ID),
+      Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
+    ];
+  } else {
+    return Object.values(ChainId).map((chainId) => Number(chainId));
+  }
+}
+
 export default function () {
   const params = useParams();
   const { address: walletAddress } = useAccount();
   const address = params.address ?? walletAddress;
+  const chainIds = getChainIds();
 
   if (address === undefined) {
     return null;
@@ -162,7 +247,7 @@ export default function () {
   return (
     <>
       <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
-      <ViewContributionHistoryFetcher address={address} />;
+      <ViewContributionHistoryFetcher address={address} chainIds={chainIds} />;
     </>
   );
 }
