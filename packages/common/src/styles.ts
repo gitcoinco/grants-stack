@@ -12,7 +12,6 @@ export const Button = tw.button`
   rounded
   transition-colors
   focus:shadow-outline
-  hover:brightness-125
   disabled:bg-slate-100
   disabled:text-slate-500
   disabled:border-slate-200
