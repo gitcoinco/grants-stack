@@ -42,6 +42,8 @@ export const createCollection = async ({ title, owner, round, projects }: Create
   )
 
   localStorage.setItem('collections', JSON.stringify(Array.from(new Set(parseCollections()).add(id))))
+
+  document.dispatchEvent(new Event('collectionsUpdated'))
 }
 
 export const getCollectionById = async (id: string): Promise<Collection> => {

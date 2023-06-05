@@ -193,6 +193,8 @@ function AfterRoundStart(props: {
 
   useEffect(() => {
     setCollections(getAllCollectionsForRound(`${chainId}:${roundId}`))
+
+    document.addEventListener('collectionsUpdated', () => setCollections(getAllCollectionsForRound(`${chainId}:${roundId}`)))
   }, [chainId, roundId])
 
   const filterProjectsByTitle = (query: string) => {
