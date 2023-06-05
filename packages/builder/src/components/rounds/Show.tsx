@@ -18,6 +18,96 @@ import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
 
+interface PeriodProps {
+  applicationsStartTime: any;
+  applicationStarted: boolean;
+  applicationEnded: boolean;
+  projects: any;
+  chainId: any;
+  roundId: any;
+}
+
+function Period(props: PeriodProps) {
+  const {
+    applicationsStartTime,
+    applicationStarted,
+    applicationEnded,
+    projects,
+    chainId,
+    roundId,
+  } = props;
+  if (applicationStarted) {
+    return (
+      <>
+        <Button
+          styles={[
+            "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
+          ]}
+          variant={ButtonVariants.primary}
+          disabled
+        >
+          Apply
+        </Button>
+        <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
+          <span>The application period for this round will start on</span>
+          <span>{formatTimeUTC(applicationsStartTime)}</span>
+        </div>
+      </>
+    );
+  }
+  if (applicationEnded) {
+    return (
+      <>
+        <Button
+          styles={[
+            "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
+          ]}
+          variant={ButtonVariants.primary}
+          disabled
+        >
+          Application Ended
+        </Button>
+        <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
+          <span>The application period for this round has ended.</span>
+          <span>
+            If you&apos;ve applied to this round, view your projects on{" "}
+            <Link to={grantsPath()} className="text-gitcoin-violet-400">
+              My Projects.
+            </Link>
+          </span>
+        </div>
+      </>
+    );
+  }
+  return (
+    <div className="flex flex-1 flex-col w-full">
+      {Object.keys(projects).length !== 0 ? (
+        <Link to={roundApplicationPath(chainId!, roundId!)}>
+          <Button
+            styles={[
+              "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
+            ]}
+            variant={ButtonVariants.primary}
+          >
+            Apply
+          </Button>
+        </Link>
+      ) : (
+        <Link to={newGrantPath()}>
+          <Button
+            styles={[
+              "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
+            ]}
+            variant={ButtonVariants.primary}
+          >
+            Create Project
+          </Button>
+        </Link>
+      )}
+    </div>
+  );
+}
+
 function Round() {
   const [roundData, setRoundData] = useState<any>();
 
@@ -45,6 +135,12 @@ function Round() {
     const applicationStarted = roundState
       ? (roundState.round?.applicationsStartTime || now + 1000) > now
       : true;
+    const roundVotingStarted = roundState
+      ? (roundState.round?.roundStartTime || now + 1000) > now
+      : true;
+    const roundVotingEnded = roundState
+      ? (roundState.round?.roundEndTime || now - 1000) < now
+      : true;
 
     return {
       roundState,
@@ -57,6 +153,8 @@ function Round() {
       projectsStatus,
       applicationStarted,
       applicationEnded,
+      roundVotingStarted,
+      roundVotingEnded,
     };
   }, shallowEqual);
 
@@ -248,54 +346,16 @@ function Round() {
           </div>
         </div>
         <div className="flex flex-1 flex-col mt-8">
-          {props.applicationEnded || props.applicationStarted ? (
-            <>
-              <Button
-                styles={[
-                  "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
-                ]}
-                variant={ButtonVariants.primary}
-                disabled
-              >
-                Application Ended
-              </Button>
-              <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
-                <span>The application period for this round has ended.</span>
-                <span>
-                  If you&apos;ve applied to this round, view your projects on{" "}
-                  <Link to={grantsPath()} className="text-gitcoin-violet-400">
-                    My Projects.
-                  </Link>
-                </span>
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-1 flex-col w-full">
-              {Object.keys(props.projects).length !== 0 ? (
-                <Link to={roundApplicationPath(chainId!, roundId!)}>
-                  <Button
-                    styles={[
-                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
-                    ]}
-                    variant={ButtonVariants.primary}
-                  >
-                    Apply
-                  </Button>
-                </Link>
-              ) : (
-                <Link to={newGrantPath()}>
-                  <Button
-                    styles={[
-                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
-                    ]}
-                    variant={ButtonVariants.primary}
-                  >
-                    Create Project
-                  </Button>
-                </Link>
-              )}
-            </div>
-          )}
+          <Period
+            applicationsStartTime={
+              roundData?.roundMetadata?.applicationsStartTime
+            }
+            applicationStarted={props.applicationStarted}
+            applicationEnded={props.applicationEnded}
+            projects={props.projects}
+            roundId={roundId}
+            chainId={props.roundChainId}
+          />
         </div>
       </div>
       {!isOnRoundChain && renderNetworkChangeModal()}
