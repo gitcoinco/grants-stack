@@ -316,7 +316,6 @@ function AfterRoundStart(props: {
                     roundRoutePath={`/round/${chainId}/${roundId}`}
                     roundId={roundId}
                     isBeforeRoundEndDate={props.isBeforeRoundEndDate}
-                    roundId={roundId}
                     canUseCollections
                   />
                 )}
