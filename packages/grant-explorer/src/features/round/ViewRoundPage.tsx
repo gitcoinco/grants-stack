@@ -33,7 +33,7 @@ import {
   CardTitle,
   CardsContainer,
 } from "../common/styles";
-import { ReactComponent as BookmarkIcon } from "../../assets/icons/bookmark.svg";
+import { ReactComponent as BookmarkIcon } from "../../assets/icons/star.svg";
 import useCollections from '../collection/useCollections';
 import { Tab } from "@headlessui/react";
 import AllCollectionsView from "../collection/AllCollections";
@@ -228,7 +228,7 @@ function AfterRoundStart(props: {
 
   const tabs = [
     { title: `All Projects (${projects ? projects.length : 0})`, key: 'projects' },
-    { title: `My Collections (${collections ? collections.length : 0})`, key: 'collections' }
+    { title: `My Lists (${collections ? collections.length : 0})`, key: 'collections' }
   ]
 
   return (
@@ -318,12 +318,13 @@ function AfterRoundStart(props: {
                     projects={projects}
                     roundRoutePath={`/round/${chainId}/${roundId}`}
                     isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+                    roundId={roundId}
                     canUseCollections
                   />
                 )}
               </Tab.Panel>
               <Tab.Panel>
-                <AllCollectionsView projects={projects} />
+                <AllCollectionsView projects={projects} isActiveRound={props.isBeforeRoundEndDate ?? false} />
               </Tab.Panel>
             </div>
           </Tab.Group>
@@ -339,6 +340,7 @@ export const ProjectList = (props: {
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
   canUseCollections?: boolean
+  isInCollection?: boolean;
   roundId: string;
 }): JSX.Element => {
   const { projects, roundRoutePath } = props;
@@ -353,6 +355,7 @@ export const ProjectList = (props: {
             project={project}
             roundRoutePath={roundRoutePath}
             isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+            isInCollection={props.isInCollection}
             addToCollection={props.canUseCollections ? () => setActiveProject(project) : undefined}
             roundId={props.roundId}
           />
@@ -368,8 +371,9 @@ export const ProjectCard = (props: {
   roundRoutePath: string;
   addToCollection?: () => void;
   isBeforeRoundEndDate?: boolean;
+  isInCollection?: boolean;
   roundId: string;
-}) {
+}) => {
   const { project, roundRoutePath } = props;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
@@ -382,8 +386,6 @@ export const ProjectCard = (props: {
       cartProject.grantApplicationId === project.grantApplicationId
   );
 
-  const isAlreadyInCollection = false;
-
   return (
     <BasicCard className="relative md:w-[296px]" data-testid="project-card">
       <Link
@@ -391,14 +393,14 @@ export const ProjectCard = (props: {
         data-testid="project-detail-link"
       >
         <CardHeader>
-          {props.addToCollection && <div className={`inline-flex absolute right-2 top-3 ${isAlreadyInCollection ? "text-red-600" : "text-gray-200"}`}>
-            <BookmarkIcon fill="currentColor" aria-role="button" onClick={async (e) => {
-              e.preventDefault()
-              e.stopPropagation()
+          {(props.addToCollection || props.isInCollection) && <div className={`inline-flex absolute right-2 top-3 bg-grey-150 rounded-full p-2 ${props.isInCollection ? "text-gray-900" : "text-gray-500"}`} onClick={async (e) => {
+            e.preventDefault()
+            e.stopPropagation()
 
-              // handle bookmarking here
-              props.addToCollection && props.addToCollection()
-            }} />
+            // handle bookmarking here
+            props.addToCollection && props.addToCollection()
+          }} role="button">
+            <BookmarkIcon fill={props.isInCollection ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} />
           </div>}
           <ProjectBanner
             projectMetadata={project.projectMetadata}

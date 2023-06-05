@@ -14,6 +14,7 @@ type CreateCollectionParams = {
   title: string
   owner: `0x${string}`
   round: string
+  projects: number[]
 }
 
 const secretKey = 'grantProjects'
@@ -26,7 +27,7 @@ export const encodeCollection = (collection: string) => {
   return CryptoJS.AES.encrypt(collection, secretKey).toString()
 }
 
-export const createCollection = async ({ title, owner, round }: CreateCollectionParams): Promise<void> => {
+export const createCollection = async ({ title, owner, round, projects }: CreateCollectionParams): Promise<void> => {
   const id = `collections_${round}_${uuid()}`
 
   localStorage.setItem(
@@ -36,7 +37,7 @@ export const createCollection = async ({ title, owner, round }: CreateCollection
       title,
       owner,
       round,
-      projects: [],
+      projects,
     })
   )
 
