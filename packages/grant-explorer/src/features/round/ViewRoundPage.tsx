@@ -4,6 +4,7 @@ import {
   getUTCTime,
   renderToPlainText,
   truncateDescription,
+  classNames,
 } from "common";
 import { Button, Input } from "common/src/styles";
 import { useEffect, useState } from "react";
@@ -38,10 +39,6 @@ import useCollections from '../collection/useCollections';
 import { Tab } from "@headlessui/react";
 import AllCollectionsView from "../collection/AllCollections";
 import { getAllCollectionsForRound } from "../api/collections";
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
