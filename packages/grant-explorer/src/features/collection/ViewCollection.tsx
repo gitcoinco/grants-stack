@@ -4,7 +4,6 @@ import { Collection, getCollectionById } from "../api/collections";
 import { ProjectsWithRoundData, getProjects } from "../api/round";
 import { ReactComponent as ArrowUpRight } from "../../assets/icons/arrow-up-right.svg"
 import Navbar from "../common/Navbar";
-// import { useCart } from "../../context/CartContext";
 import { ProjectList } from "../round/ViewRoundPage";
 
 type CollectionWithProjects = Collection & ProjectsWithRoundData & {
@@ -84,10 +83,10 @@ const ViewCollection = () => {
 
         <hr className="my-8" />
 
-        <ProjectList projects={collection.projectsMeta} roundRoutePath={`/round/${collection.chainId}/${collection.roundId}`} isBeforeRoundEndDate={collection.isBeforeRoundEndDate} roundId={collection.roundId} />
+        <ProjectList projects={collection.projectsMeta} roundRoutePath={`/round/${collection.chainId}/${collection.roundId}`} isBeforeRoundEndDate={collection.isBeforeRoundEndDate} roundId={collection.roundId} isInCollection />
       </main>
-    </div >
-  </div >
+    </div>
+  </div>
 }
 
 export default ViewCollection

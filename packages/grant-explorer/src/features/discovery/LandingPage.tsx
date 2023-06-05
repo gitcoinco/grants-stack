@@ -12,7 +12,7 @@ import ApplyNowSection from "./ApplyNowSection";
 
 const LandingPage = () => {
   if (process.env.REACT_APP_ENV === "production") {
-    // window.location.replace("https://grants.gitcoin.co");
+    window.location.replace("https://grants.gitcoin.co");
   }
 
   const [searchQuery, setSearchQuery] = useState("");
