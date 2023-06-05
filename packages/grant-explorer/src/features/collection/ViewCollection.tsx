@@ -84,7 +84,7 @@ const ViewCollection = () => {
 
         <hr className="my-8" />
 
-        <ProjectList projects={collection.projectsMeta} roundRoutePath={`/round/${collection.chainId}/${collection.roundId}`} isBeforeRoundEndDate={collection.isBeforeRoundEndDate} roundId={collection.roundId} />
+        <ProjectList projects={collection.projectsMeta} roundRoutePath={`/round/${collection.chainId}/${collection.roundId}`} isBeforeRoundEndDate={collection.isBeforeRoundEndDate} roundId={collection.roundId} isInCollection />
       </main>
     </div >
   </div >
