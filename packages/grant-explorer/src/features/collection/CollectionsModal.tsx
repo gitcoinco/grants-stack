@@ -7,6 +7,7 @@ import { Collection, addProjectToCollection, createCollection, getMyCollections 
 import { ReactComponent as PlusIcon } from '../../assets/icons/plus.svg'
 import { getProjects } from '../api/round';
 import CollectionBanner from './CollectionBanner';
+import { Button, Input } from 'common/src/styles';
 
 interface Props {
   open: boolean
@@ -126,15 +127,12 @@ export const NewCollectionsModal = ({ open, closeModal, project }: Props) => {
           setNewCollection("")
           closeModal()
         }}>
-          <input type='text' placeholder='Create a new collection...' className='flex flex-1 w-full text-sm' value={newCollection} onChange={(e) => setNewCollection(e.target.value)} />
+          <Input type='text' placeholder='Create a new list...' value={newCollection} onChange={(e) => setNewCollection(e.target.value)} />
 
           <div className="mt-4 flex flex-1 w-full justify-end">
-            <button
-              type="submit"
-              className="inline-flex justify-center rounded-md border bg-white px-6 py-2 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-grey-500 focus-visible:ring-offset-2"
-            >
+            <Button type="submit" $variant='secondary'>
               Save
-            </button>
+            </Button>
           </div>
         </form>
       </div>

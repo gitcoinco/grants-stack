@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useCopyToClipboard } from 'usehooks-ts'
 import { Collection, encodeCollection, getAllCollections } from '../api/collections'
 import { Project } from '../api/types'
 import { BasicCard, CardsContainer, CardHeader, CardContent, CardTitle, CardDescription } from '../common/styles'
 import { getProjects } from '../api/round'
 import CollectionBanner from './CollectionBanner'
 import { ProjectList } from '../round/ViewRoundPage'
+import { Button } from 'common/src/styles'
+import { ChevronRightIcon, LinkIcon } from '@heroicons/react/24/outline'
 
 type Props = {
   projects?: Project[],
@@ -59,9 +62,11 @@ const CollectionCard = ({ collection, onCollectionClick }: CollectionItemProps) 
 type CollectionPreviewProps = { collection: ActiveCollection, isActiveRound: boolean, backToLists: () => void }
 
 const CollectionPreview = ({ collection, isActiveRound, backToLists }: CollectionPreviewProps) => {
+  const [, copy] = useCopyToClipboard();
+
   const { chainId, roundId } = useParams();
   return (<div>
-    <div className='flex my-4'>
+    <div className='flex my-4 justify-between'>
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="inline-flex items-center space-x-1 md:space-x-3">
           <li className="inline-flex items-center">
@@ -69,12 +74,16 @@ const CollectionPreview = ({ collection, isActiveRound, backToLists }: Collectio
           </li>
           <li aria-current="page">
             <div className="flex items-center">
-              <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+              <ChevronRightIcon className='w-3 h-3' strokeWidth={3} />
               <span className="ml-1 font-medium md:ml-2">{collection.title} ({collection.projects.length})</span>
             </div>
           </li>
         </ol>
       </nav>
+
+      <Button $variant="secondary" className="flex flex-nowrap items-center" onClick={() => copy(`${window.location.protocol}//${window.location.host}/#/collection?data=${collection.enc}`)}>
+        <LinkIcon className='w-4 h-4 mr-2' strokeWidth={3} />
+        <span>Share list</span></Button>
     </div>
     <ProjectList projects={collection.projects} roundRoutePath={`/round/${chainId}/${roundId}`} isBeforeRoundEndDate={isActiveRound} isInCollection={true} roundId={roundId as string} />
   </div>)
@@ -82,7 +91,7 @@ const CollectionPreview = ({ collection, isActiveRound, backToLists }: Collectio
 
 const AllCollectionsView = ({ projects, isActiveRound }: Props) => {
   const [collections, setCollections] = useState<Collection[]>([])
-  const [, setLoadingCollections] = useState<boolean>(false)
+  const [loadingCollections, setLoadingCollections] = useState<boolean>(false)
   const [activeCollection, setActiveCollection] = useState<ActiveCollection>()
   const { chainId, roundId } = useParams();
 
@@ -99,9 +108,12 @@ const AllCollectionsView = ({ projects, isActiveRound }: Props) => {
   }, [chainId, roundId, projects, loadAllCollections])
 
   return (<div className='w-full flex flex-1'>
-    <CardsContainer>
-      {activeCollection ? <CollectionPreview collection={activeCollection} isActiveRound={isActiveRound} backToLists={() => setActiveCollection(undefined)} /> : collections.map((collection) => <CollectionCard onCollectionClick={setActiveCollection} collection={collection} />)}
-    </CardsContainer>
+    {!loadingCollections && collections.length === 0 ? <div className='flex flex-col items-center w-full mt-6'>
+      <div className='my-4'>No lists created yet</div>
+      <img src='/empty-state.svg' className='w-full' />
+    </div> : <CardsContainer>
+      {activeCollection ? <CollectionPreview collection={activeCollection} isActiveRound={isActiveRound} backToLists={() => setActiveCollection(undefined)} /> : collections.map((collection) => <CollectionCard onCollectionClick={setActiveCollection} collection={collection} key={collection.id} />)}
+    </CardsContainer>}
   </div>)
 }
 
