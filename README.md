@@ -14,19 +14,28 @@ Package manager         : `pnpm`
 .
 ├── .github                     # github specific configuration
 ├── packages
-│   ├── graph                   # graph which indexes data from contracts
 │   ├── round-manager           # react-frontend for round-manager
 │   ├── grant-explorer          # react-frontend for grant-explorer
-├── docs                        # useful documentation
-├── lerna.json                  # lerna config
+│   ├── builder                 # react-frontend for builder
+│   ├── common                  # components and functionality that is shared between projects
+│   ├── eslint-config-gitcoin   # common eslint config for all grants stack projects
 ├── package.json                # root package configuration
 └── README.md
 ```
 
+## Git Hooks
+You can optionally enable pre-commit git hooks that autoformat your changed code using prettier.
+
+```bash
+brew install lefthook
+lefthook install
+```
+
+inspect the current hook configuration in [lefthook.yml](lefthook.yml)
 
 ## contracts
 
-The contracts needed for running a round can be found within the [Allo contracts repositort](https://github.com/Allo-Protocol/contracts)
+The contracts needed for running a round can be found within the [Allo contracts repository](https://github.com/Allo-Protocol/contracts)
 
 ### graph
 
@@ -75,7 +84,7 @@ To contribute to this project, fork the project and follow the instructions at [
 
 ##### Hosting
 
-All the frontend dApps are currently hosted presently via [fleek.co](https://fleek.co/).
+All the frontend dApps are hosted via [fleek.co](https://fleek.co/).
 
 Documented below are the environments along with the URL.
 

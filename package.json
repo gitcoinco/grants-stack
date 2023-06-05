@@ -28,9 +28,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.3",
-    "@commitlint/config-conventional": "^17.6.3",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.1.0"
+    "@commitlint/config-conventional": "^17.6.3"
   },
   "dependencies": {
     "turbo": "^1.9.9"
