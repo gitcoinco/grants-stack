@@ -9,6 +9,7 @@ import { useParams, Link } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
 import { getPayoutTokenOptions } from "../api/utils";
+import Navbar from "../common/Navbar";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -62,62 +63,63 @@ function ViewContributionHistoryDisplay(props: {
   contributions: Contribution[];
 }) {
   return (
-    <div>
-      <div className="text-lg">Donation History</div>
-      <div className="flex gap-4">
-        <StatCard title="Total Donated" value="1000" />
-        <StatCard title="Total Projects" value="1000" />
-      </div>
-      <div className="text-lg bg-violet-100 text-black px-2 px-2">
-        Active Rounds
-      </div>
-      <table className="border-collapse">
-        <tr className="text-left">
-          <th className="p-4">Project</th>
-          <th className="p-4">Donation</th>
-          <th className="p-4">Transaction information</th>
-        </tr>
-        {props.contributions.map((contribution) => {
-          const token = props.tokens[contribution.token];
+    <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
+      <main>
+        <div className="text-lg">Donation History</div>
+        <div className="flex gap-4">
+          <StatCard title="Total Donated" value="1000" />
+          <StatCard title="Total Projects" value="1000" />
+        </div>
+        <div className="text-lg bg-violet-100 text-black px-2 px-2">
+          All Rounds
+        </div>
+        <table className="border-collapse">
+          <tr className="text-left">
+            <th className="p-4">Project</th>
+            <th className="p-4">Donation</th>
+            <th className="p-4">Transaction information</th>
+          </tr>
+          {props.contributions.map((contribution) => {
+            const token = props.tokens[contribution.token];
 
-          let formattedAmount = "N/A";
+            let formattedAmount = "N/A";
 
-          if (token) {
-            formattedAmount = `${ethers.utils.formatUnits(
-              contribution.amount,
-              token.decimal
-            )} ${token.name}`;
-          }
+            if (token) {
+              formattedAmount = `${ethers.utils.formatUnits(
+                contribution.amount,
+                token.decimal
+              )} ${token.name}`;
+            }
 
-          return (
-            <tr key={contribution.id}>
-              <td className="border-b p-4">
-                <div className="flex items-center">
-                  <Link
-                    className="underline inline-block max-w-[90px] truncate"
-                    title={contribution.roundName}
-                    to={`/round/${props.chainId}/${contribution.roundId}`}
-                  >
-                    {contribution.roundName}
-                  </Link>
-                  <ChevronRightIcon className="h-4 inline mx-2" />
-                  <Link
-                    className="underline inline-block max-w-[90px] truncate"
-                    title={contribution.projectTitle}
-                    to={`/round/${props.chainId}/${contribution.roundId}/${contribution.projectId}`}
-                  >
-                    {contribution.projectTitle}
-                  </Link>
-                </div>
-                <div className="text-sm text-gray-500">4 mins ago</div>
-              </td>
-              <td className="border-b p-4">{formattedAmount}</td>
-              <td className="border-b p-4">{contribution.transaction}</td>
-            </tr>
-          );
-        })}
-      </table>
-      <div className="text-lg bg-grey-50 text-black px-2 px-2">Past Rounds</div>
+            return (
+              <tr key={contribution.id}>
+                <td className="border-b p-4">
+                  <div className="flex items-center">
+                    <Link
+                      className="underline inline-block max-w-[250px] truncate"
+                      title={contribution.roundName}
+                      to={`/round/${props.chainId}/${contribution.roundId}`}
+                    >
+                      {contribution.roundName}
+                    </Link>
+                    <ChevronRightIcon className="h-4 inline mx-2" />
+                    <Link
+                      className="underline inline-block max-w-[250px] truncate"
+                      title={contribution.projectTitle}
+                      to={`/round/${props.chainId}/${contribution.roundId}/${contribution.projectId}`}
+                    >
+                      {contribution.projectTitle}
+                    </Link>
+                  </div>
+                  <div className="text-sm text-gray-500">4 mins ago</div>
+                </td>
+                <td className="border-b p-4">{formattedAmount}</td>
+                <td className="border-b p-4">{contribution.transaction}</td>
+              </tr>
+            );
+          })}
+        </table>
+      </main>
     </div>
   );
 }
@@ -157,5 +159,10 @@ export default function () {
     return null;
   }
 
-  return <ViewContributionHistoryFetcher address={address} />;
+  return (
+    <>
+      <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
+      <ViewContributionHistoryFetcher address={address} />;
+    </>
+  );
 }
