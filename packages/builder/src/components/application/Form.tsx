@@ -273,7 +273,7 @@ function FullPreview(props: {
   return (
     <>
       {preview && (
-        <div className="flex flex-row items-center justify-center">
+        <div className="flex flex-row items-center">
           <span className="icon mr-2">
             <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
           </span>
