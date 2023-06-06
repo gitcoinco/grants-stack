@@ -44,6 +44,15 @@ module.exports = {
     fontFamily: {
       sans: ['"Libre Franklin"'],
     },
+    typography: (theme) => ({
+      DEFAULT: {
+        css: {
+          'p': {
+            paddingTop: '8px',
+          },
+        },
+      },
+    }),
   },
   important: true,
   plugins: [
