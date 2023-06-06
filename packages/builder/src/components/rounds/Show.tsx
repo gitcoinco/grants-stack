@@ -17,19 +17,20 @@ import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
+import { GrantsMetadataState } from "../../reducers/grantsMetadata";
 
 interface PeriodProps {
-  applicationsStartTime: any;
+  roundState: any;
   applicationStarted: boolean;
   applicationEnded: boolean;
-  projects: any;
-  chainId: any;
-  roundId: any;
+  projects: GrantsMetadataState;
+  chainId: number;
+  roundId: string | undefined;
 }
 
 function Period(props: PeriodProps) {
   const {
-    applicationsStartTime,
+    roundState,
     applicationStarted,
     applicationEnded,
     projects,
@@ -50,7 +51,7 @@ function Period(props: PeriodProps) {
         </Button>
         <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
           <span>The application period for this round will start on</span>
-          <span>{formatTimeUTC(applicationsStartTime)}</span>
+          <span>{formatTimeUTC(roundState?.round?.applicationsStartTime)}</span>
         </div>
       </>
     );
@@ -82,7 +83,7 @@ function Period(props: PeriodProps) {
   return (
     <div className="flex flex-1 flex-col w-full">
       {Object.keys(projects).length !== 0 ? (
-        <Link to={roundApplicationPath(chainId!, roundId!)}>
+        <Link to={roundApplicationPath(chainId.toString()!, roundId!)}>
           <Button
             styles={[
               "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
@@ -347,9 +348,7 @@ function Round() {
         </div>
         <div className="flex flex-1 flex-col mt-8">
           <Period
-            applicationsStartTime={
-              roundData?.roundMetadata?.applicationsStartTime
-            }
+            roundState={props.roundState}
             applicationStarted={props.applicationStarted}
             applicationEnded={props.applicationEnded}
             projects={props.projects}
