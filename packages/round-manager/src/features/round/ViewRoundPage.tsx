@@ -14,7 +14,6 @@ import {
 } from "@heroicons/react/solid";
 import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { Button } from "common/src/styles";
-import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
@@ -56,46 +55,20 @@ export default function ViewRoundPage() {
   const isRoundsFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { applications } = useApplicationByRoundId(id!);
+  const { applications } = useApplicationByRoundId(id as string);
 
-  const [roundExists, setRoundExists] = useState(true);
-  const [hasAccess, setHasAccess] = useState(true);
   const debugModeEnabled = useDebugMode();
-
-  useEffect(() => {
-    if (isRoundsFetched) {
-      setRoundExists(!!round);
-
-      if (round) {
-        /* In debug mode, give frontend access to all rounds */
-        if (debugModeEnabled) {
-          setHasAccess(true);
-          return;
-        }
-        round.operatorWallets?.includes(address?.toLowerCase() ?? "")
-          ? setHasAccess(true)
-          : setHasAccess(false);
-      } else {
-        setHasAccess(true);
-      }
-    } else if (!round && fetchRoundStatus != ProgressStatus.IN_PROGRESS) {
-      setRoundExists(false);
-    }
-  }, [
-    isRoundsFetched,
-    round,
-    address,
-    debugModeEnabled,
-    chain,
-    fetchRoundStatus,
-  ]);
+  const hasAccess =
+    debugModeEnabled || round
+      ? round?.operatorWallets?.includes(address?.toLowerCase() ?? "")
+      : true;
+  const roundNotFound = fetchRoundStatus === ProgressStatus.IS_ERROR;
 
   return (
     <>
-      {!roundExists && <NotFoundPage />}
+      {roundNotFound && <NotFoundPage />}
       {!hasAccess && <AccessDenied />}
-      {roundExists && hasAccess && (
+      {round && hasAccess && (
         <>
           <Navbar />
           <div className="flex flex-col w-screen mx-0">
