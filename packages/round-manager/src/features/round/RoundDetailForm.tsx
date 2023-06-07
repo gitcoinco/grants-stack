@@ -56,7 +56,14 @@ export const RoundValidationSchema = yup.object().shape({
         })
         .when("type", {
           is: (val: string) => val && val != "Email",
-          then: yup.string().url().required("You must provide a valid URL."),
+          then: yup
+            .string()
+            /*Matches www.example.com, example.com, http and https prefixes, but not www.invalid */
+            .matches(
+              /^(http:\/\/|https:\/\/|ipfs:\/\/)?\S+\.\S+$|^(ipfs:\/\/)\S+$/,
+              "Must be a valid URL"
+            )
+            .required("You must provide a valid URL."),
         }),
     }),
   }),
@@ -139,6 +146,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
 
   const next: SubmitHandler<Round> = async (values) => {
+    /* Insert HTTPS into support URL if missing */
+    if (
+      values.roundMetadata.support?.type === "Website" &&
+      !/^(https?|ipfs):\/\//.test(values.roundMetadata.support.info)
+    ) {
+      values.roundMetadata.support.info = `https://${values.roundMetadata.support.info}`;
+    }
     const data = _.merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
@@ -216,11 +230,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
               <div className="mt-6 mb-4 text-sm text-grey-400">
                 <p>
-                  What are the dates for the Applications and Round voting period(s)?
+                  What are the dates for the Applications and Round voting
+                  period(s)?
                   <ApplicationDatesInformation />
                 </p>
                 <p className="text-sm mt-0.5">
-                  Tips: You can accept applications even after the round starts by setting up overlapping Applications and Round periods!
+                  Tips: You can accept applications even after the round starts
+                  by setting up overlapping Applications and Round periods!
                 </p>
               </div>
 
@@ -494,10 +510,15 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   homepage?
                 </p>
                 <p className="text-sm mt-0.5">
-                  <a className="text-violet-400 mr-1" href="https://grant-explorer.gitcoin.co/" target="_blank">
+                  <a
+                    className="text-violet-400 mr-1"
+                    href="https://grant-explorer.gitcoin.co/"
+                    target="_blank"
+                  >
                     Gitcoin Explorer
                   </a>
-                   is the place where supporters (donors) discover and donate to projects.
+                  is the place where supporters (donors) discover and donate to
+                  projects.
                 </p>
               </div>
               <div className="flex mt-4">
@@ -610,7 +631,7 @@ function ContactInformation(props: {
       </div>
       <Input
         {...props.register}
-        className={"h-10"}
+        className={"h-10 mt-2"}
         $hasError={props.errors.roundMetadata?.support?.info}
         type="text"
         placeholder="Enter desired form of contact here. Ex: website, email..."
@@ -813,7 +834,7 @@ function Support(props: {
 }) {
   return (
     <div className="mt-2 mb-2">
-       <div className="flex justify-between">
+      <div className="flex justify-between">
         <label htmlFor="roundMetadata.support.info" className="text-sm">
           Suppport Input
         </label>
