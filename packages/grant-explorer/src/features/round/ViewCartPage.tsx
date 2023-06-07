@@ -980,7 +980,8 @@ export default function ViewCart() {
           <li>
             Approving the token allowance
             <i>
-              (If you have approved enough amount previously, this step will be automatically skipped)
+              (If you have approved enough amount previously, this step will be
+              automatically skipped)
             </i>
           </li>
           <li>Approving the transaction</li>

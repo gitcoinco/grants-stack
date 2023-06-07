@@ -88,7 +88,7 @@ const useContributionHistory = (chainIds: number[], address: string) => {
 
 function StatCard(props: { title: string; value: string | undefined }) {
   return (
-    <div className="rounded border border-violet-400 p-4">
+    <div className="rounded border border-violet-400 p-4 w-1/4">
       <div className="font-bold text-sm pb-4">{props.title}</div>
       <div className="text-grey-400 text-xl">{props.value}</div>
     </div>
@@ -106,7 +106,34 @@ function ViewContributionHistoryDisplay(props: {
   const addressLogo = blockies
     .create({ seed: props.address.toLowerCase() })
     .toDataURL();
-  console.log("ens", ensName);
+
+  const [totalDonations, setTotalDonations] = useState(0);
+  const [totalUniqueContributions, setTotalUniqueContributions] = useState(0);
+  const [totalProjectsFunded, setTotalProjectsFunded] = useState(0);
+
+  useEffect(() => {
+    let totalDonations = 0;
+    let totalUniqueContributions = 0;
+    const projects: string[] = [];
+    props.contributions.forEach((chainContribution) => {
+      const { data } = chainContribution;
+      data.forEach((contribution) => {
+        const token = props.tokens[contribution.token];
+        if (token) {
+          totalDonations += contribution.amountUSD;
+          totalUniqueContributions += 1;
+          const project = contribution.projectId;
+          if (!projects.includes(project)) {
+            projects.push(project);
+          }
+        }
+      });
+    });
+    setTotalDonations(totalDonations);
+    setTotalUniqueContributions(totalUniqueContributions);
+    setTotalProjectsFunded(projects.length);
+  }, [props.contributions, props.tokens]);
+
   return (
     <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
       <main>
@@ -123,15 +150,25 @@ function ViewContributionHistoryDisplay(props: {
             </div>
           </div>
           <CopyToClipboardButton
-            textToCopy={`https://explorer.gitcoin.co/#/contributors/${props.address}/history`}
+            textToCopy={window.location.href}
             styles="text-xs p-2"
             iconStyle="h-4 w-4 mr-1"
           />
         </div>
         <div className="text-lg">Donation Impact</div>
         <div className="flex gap-4 my-4">
-          <StatCard title="Total Donated" value="1000" />
-          <StatCard title="Total Projects" value="1000" />
+          <StatCard
+            title="Total Donations"
+            value={"$ " + totalDonations.toFixed(2).toString()}
+          />
+          <StatCard
+            title="Unique Contributions"
+            value={totalUniqueContributions.toString()}
+          />
+          <StatCard
+            title="Projects Funded"
+            value={totalProjectsFunded.toString()}
+          />
         </div>
         <div className="text-lg my-4">Donation History</div>
         <div className="text-lg bg-violet-100 text-black px-2 px-2">
@@ -177,7 +214,8 @@ function ViewContributionHistoryDisplay(props: {
                         {contribution.projectTitle}
                       </Link>
                     </div>
-                    <div className="text-sm text-gray-500">4 mins ago</div>
+                    {/* Todo: display contribution timestamp */}
+                    {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
                   </td>
                   <td className="border-b p-4">{formattedAmount}</td>
                   <td className="border-b p-4">{contribution.transaction}</td>
