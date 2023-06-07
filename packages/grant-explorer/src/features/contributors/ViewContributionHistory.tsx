@@ -14,6 +14,7 @@ import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-
 import { ChainId } from "../api/utils";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
+import { add } from "date-fns";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -171,7 +172,7 @@ function ViewContributionHistoryDisplay(props: {
           />
         </div>
         <div className="text-lg my-4">Donation History</div>
-        <div className="text-lg bg-violet-100 text-black px-2 px-2">
+        <div className="text-lg bg-violet-100 text-black px-1 py-1">
           All Rounds
         </div>
         <table className="border-collapse">
@@ -229,10 +230,34 @@ function ViewContributionHistoryDisplay(props: {
   );
 }
 
-function ViewContributionHistoryWithoutDonations() {
+function ViewContributionHistoryWithoutDonations(props: { address: string }) {
+  const { data: ensName } = useEnsName({
+    address: props.address,
+  });
+  const addressLogo = blockies
+    .create({ seed: props.address.toLowerCase() })
+    .toDataURL();
   return (
     <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen bottom-16">
       <main>
+        <div className="border-b pb-2 mb-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <img
+              className="w-10 h-10 rounded-full mr-4"
+              src={addressLogo}
+              alt="Address Logo"
+            />
+            <div className="text-xl">
+              {ensName ||
+                props.address.slice(0, 6) + "..." + props.address.slice(-4)}
+            </div>
+          </div>
+          <CopyToClipboardButton
+            textToCopy={window.location.href}
+            styles="text-xs p-2"
+            iconStyle="h-4 w-4 mr-1"
+          />
+        </div>
         <div className="text-lg">Donation History</div>
         <div className="flex justify-center">
           <div className="w-3/4 my-6 text-center mx-auto">
@@ -274,7 +299,7 @@ function ViewContributionHistoryFetcher(props: {
     return <div>Loading...</div>;
   } else if (contributionHistory.type === "error") {
     console.error("Error", contributionHistory);
-    return <ViewContributionHistoryWithoutDonations />;
+    return <ViewContributionHistoryWithoutDonations address={props.address} />;
   } else {
     return (
       <ViewContributionHistoryDisplay
@@ -299,20 +324,52 @@ function getChainIds(): number[] {
   }
 }
 
+function reloadPage(url: string) {
+  window.location.href = url;
+}
+
 export default function () {
   const params = useParams();
   const { address: walletAddress } = useAccount();
-  const address = params.address ?? walletAddress;
+  const address = params.address;
   const chainIds = getChainIds();
+  const [walletState, setWalletState] = useState(0);
+  const currentOrigin = window.location.origin;
+
+  useEffect(() => {
+    // 0: loading,
+    // 1: wallet connected & url address is different,
+    // 2: wallet connected & url address is same,
+    // 3: wallet not connected
+    if (walletAddress !== undefined && walletAddress !== address) {
+      setWalletState(1);
+    } else if (walletAddress !== undefined && walletAddress === address) {
+      setWalletState(2);
+    } else if (walletAddress === undefined) {
+      setWalletState(3);
+    }
+  }, [walletAddress, address]);
 
   if (address === undefined) {
     return null;
   }
 
+  console.log("wallet state: ", walletState);
+
   return (
     <>
       <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
-      <ViewContributionHistoryFetcher address={address} chainIds={chainIds} />;
+      {walletState == 1 &&
+        reloadPage(`${currentOrigin}#/contributors/${walletAddress}/history`)}
+      ;
+      {walletState == 2 && (
+        <ViewContributionHistoryFetcher address={address} chainIds={chainIds} />
+      )}
+      ;
+      {walletState == 3 && (
+        <ViewContributionHistoryFetcher address={address} chainIds={chainIds} />
+      )}
+      ;
     </>
   );
 }
