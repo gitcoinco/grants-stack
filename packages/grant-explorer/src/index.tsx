@@ -109,7 +109,7 @@ root.render(
                   />
 
                   <Route
-                    path="/contributors/:address/history"
+                    path="/contributions/:address/history"
                     element={<ViewContributionHistory />}
                   />
 
