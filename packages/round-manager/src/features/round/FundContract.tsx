@@ -103,8 +103,8 @@ export default function FundContract(props: {
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == (zeroAddress as Hex)
-      ? { addressOrName: address }
-      : { addressOrName: address, token: matchingFundPayoutToken?.address };
+      ? { address: address }
+      : { address: address, token: matchingFundPayoutToken?.address };
 
   const {
     data: balanceData,
@@ -157,10 +157,11 @@ export default function FundContract(props: {
 
   const {
     data: matchingFundPayoutTokenBalance,
-    // isError,
-    // isFetched,
-  } = useBalance(tokenDetailUser);
+    error: matchingErro,
+    status,
+  } = useBalance({ ...tokenDetailUser });
 
+  console.log(status, matchingErro, tokenDetailUser);
   function handleFundContract() {
     // check if signer has enough token balance
     const accountBalance = matchingFundPayoutTokenBalance?.value;
