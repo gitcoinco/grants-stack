@@ -1,4 +1,4 @@
-import { chainId, useAccount } from "wagmi";
+import { chainId, useAccount, useEnsName } from "wagmi";
 import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
@@ -12,6 +12,8 @@ import { getPayoutTokenOptions } from "../api/utils";
 import Navbar from "../common/Navbar";
 import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-history-banner.svg";
 import { ChainId } from "../api/utils";
+import blockies from "ethereum-blockies";
+import CopyToClipboardButton from "../common/CopyToClipboardButton";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -96,10 +98,36 @@ function StatCard(props: { title: string; value: string | undefined }) {
 function ViewContributionHistoryDisplay(props: {
   tokens: Record<string, PayoutToken>;
   contributions: { chainId: number; data: Contribution[] | never[] }[];
+  address: string;
 }) {
+  const { data: ensName } = useEnsName({
+    address: props.address,
+  });
+  const addressLogo = blockies
+    .create({ seed: props.address.toLowerCase() })
+    .toDataURL();
+  console.log("ens", ensName);
   return (
     <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
       <main>
+        <div className="border-b pb-2 mb-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <img
+              className="w-10 h-10 rounded-full mr-4"
+              src={addressLogo}
+              alt="Address Logo"
+            />
+            <div className="text-xl">
+              {ensName ||
+                props.address.slice(0, 6) + "..." + props.address.slice(-4)}
+            </div>
+          </div>
+          <CopyToClipboardButton
+            textToCopy={`https://explorer.gitcoin.co/#/contributors/${props.address}/history`}
+            styles="text-xs p-2"
+            iconStyle="h-4 w-4 mr-1"
+          />
+        </div>
         <div className="text-lg">Donation Impact</div>
         <div className="flex gap-4 my-4">
           <StatCard title="Total Donated" value="1000" />
@@ -197,8 +225,6 @@ function ViewContributionHistoryFetcher(props: {
     props.address
   );
 
-  console.log("contributionHistory", contributionHistory);
-
   const tokens = Object.fromEntries(
     getPayoutTokenOptions(String(chainId)).map((token) => [
       token.address,
@@ -216,6 +242,7 @@ function ViewContributionHistoryFetcher(props: {
       <ViewContributionHistoryDisplay
         tokens={tokens}
         contributions={contributionHistory.data}
+        address={props.address}
       />
     );
   }
