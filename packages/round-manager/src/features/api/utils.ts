@@ -8,6 +8,7 @@ import {
 } from "./types";
 import { RedstoneTokenIds } from "common";
 import { formatUnits, Hex, zeroAddress } from "viem";
+import { deserialize, serialize } from "@wagmi/core";
 
 export enum ChainId {
   MAINNET = 1,
@@ -310,7 +311,7 @@ export const fetchFromIPFS = (cid: string) => {
     `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
   ).then((resp) => {
     if (resp.ok) {
-      return resp.json();
+      return resp.text().then((text) => deserialize(text));
     }
 
     return Promise.reject(resp);
@@ -364,7 +365,7 @@ export const pinToIPFS = (obj: IPFSObject): Promise<{ IpfsHash: string }> => {
         ...params.headers,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...params.body, pinataContent: obj.content }),
+      body: serialize({ ...params.body, pinataContent: obj.content }),
     }).then((resp) => {
       if (resp.ok) {
         return resp.json();
