@@ -24,21 +24,13 @@
     "re-start": "pnpm --filter grant-explorer run start",
     "re-typecheck": "turbo run typecheck --filter=grant-explorer",
     "// builder script": "====== packages/builder specific ======",
-    "b-start": "pnpm --filter builder run start",
-    "// api script": "====== packages/api specific ======",
-    "api-build": "turbo run build --filter=api",
-    "api-test": "turbo run test --filter=api",
-    "api-start": "pnpm --filter api run start",
-    "lint-staged": "lint-staged",
-    "lint:builder": "pnpm --filter=builder run lint"
+    "b-start": "pnpm --filter builder run start"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.1.0"
+    "@commitlint/cli": "^17.6.3",
+    "@commitlint/config-conventional": "^17.6.3"
   },
   "dependencies": {
-    "turbo": "^1.9.3"
+    "turbo": "^1.9.9"
   }
 }
