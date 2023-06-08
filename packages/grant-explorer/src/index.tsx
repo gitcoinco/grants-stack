@@ -100,12 +100,12 @@ root.render(
                   />
 
                   <Route
-                    path="/profile/history"
+                    path="/profile"
                     element={<ViewContributionHistory />}
                   />
 
                   <Route
-                    path="/contributions/:address/history"
+                    path="/profile/:address"
                     element={<ViewContributionHistory />}
                   />
 
