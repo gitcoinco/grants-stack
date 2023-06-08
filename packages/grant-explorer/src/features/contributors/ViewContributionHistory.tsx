@@ -155,7 +155,7 @@ function ViewContributionHistoryDisplay(props: {
           </div>
           {props.address != "" && (
             <CopyToClipboardButton
-              textToCopy={`${currentOrigin}#/contributions/${props.address}/history/`}
+              textToCopy={`${currentOrigin}#/profile/${props.address}`}
               styles="text-xs p-2"
               iconStyle="h-4 w-4 mr-1"
             />
@@ -242,6 +242,7 @@ function ViewContributionHistoryWithoutDonations(props: { address: string }) {
   const addressLogo = blockies
     .create({ seed: props.address.toLowerCase() })
     .toDataURL();
+  const currentOrigin = window.location.origin;
   return (
     <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen bottom-16">
       <main>
@@ -261,7 +262,7 @@ function ViewContributionHistoryWithoutDonations(props: { address: string }) {
           </div>
           {props.address != "" && (
             <CopyToClipboardButton
-              textToCopy={window.location.href}
+              textToCopy={`${currentOrigin}#/profile/${props.address}`}
               styles="text-xs p-2"
               iconStyle="h-4 w-4 mr-1"
             />

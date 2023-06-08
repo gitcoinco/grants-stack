@@ -73,7 +73,7 @@ export default function Navbar(props: NavbarProps) {
             {walletAddress && (
               <div>
                 <a
-                  href={`${currentOrigin}#/profile/history/`}
+                  href={`${currentOrigin}#/profile`}
                   className="flex-shrink-0 flex items-center"
                   data-testid={"contributions-link"}
                 >
