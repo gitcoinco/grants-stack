@@ -20,6 +20,7 @@ import {
 import { erc20ABI, WalletClient } from "wagmi";
 import { publicClient } from "../../app/wagmi";
 import RoundImplementationABI from "./abi/RoundImplementationABI";
+import { waitForTransaction } from "@wagmi/core";
 
 type RoundApplication = {
   id: string;
@@ -343,10 +344,14 @@ export const updateApplicationStatuses = async (
       statusRow: BigInt(status.statusRow),
     })),
   ]);
+
+  const receipt = await waitForTransaction({
+    hash: tx,
+  });
   console.log("✅ Transaction hash: ", tx);
 
   return {
-    transactionBlockNumber: BigInt(0),
+    transactionBlockNumber: receipt.blockNumber,
   };
 };
 
