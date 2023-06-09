@@ -145,7 +145,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
   const [applicationEndDate, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(moment());
-  const [roundEndDate, setRoundEndDate] = useState(moment());
+  const [roundEndDate, setRoundEndDate] = useState<moment.Moment | "">("");
   const [rollingApplications, setRollingApplications] = useState(false);
 
   const next: SubmitHandler<Round> = async (values) => {
@@ -186,7 +186,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   }
 
   useEffect(() => {
-    if (rollingApplications) {
+    if (rollingApplications && roundEndDate !== "") {
       setValue("applicationsEndTime", roundEndDate.toDate());
     }
   }, [rollingApplications, roundEndDate, setValue]);
