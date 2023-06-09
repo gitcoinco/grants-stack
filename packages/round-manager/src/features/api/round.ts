@@ -495,8 +495,7 @@ function convertStatus(status: string | number) {
 
 async function loadApprovedProjects(
   round: RoundResult,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: ChainId
 ): Promise<ApprovedProject[]> {
   if (!round.projectsMetaPtr || round.projects.length === 0) {
     return [];
