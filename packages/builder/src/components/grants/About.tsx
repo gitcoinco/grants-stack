@@ -8,10 +8,10 @@ import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import { formatDateFromMs } from "../../utils/components";
+import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import ApplicationCard from "./ApplicationCard";
-import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 
 export default function About({
   project,
@@ -56,7 +56,7 @@ export default function About({
         <span className="text-[20px]">My Applications</span>
       </Box>
       <Box>
-        {props.applications.map((application, index) => {
+        {props.applications.map((application) => {
           const roundID = application?.roundID;
           const cardData = {
             application,
@@ -64,11 +64,7 @@ export default function About({
             chainId: application.chainId,
           };
 
-          return (
-            <Box key={[roundID, index].join("-")} m={2}>
-              <ApplicationCard applicationData={cardData} />
-            </Box>
-          );
+          return <ApplicationCard applicationData={cardData} />;
         })}
       </Box>
     </>
