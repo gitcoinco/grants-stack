@@ -7,7 +7,11 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
 import { ProgressStatus, Round } from "../api/types";
-import { getTxExplorerForContract, payoutTokens } from "../api/utils";
+import {
+  getTxExplorerForContract,
+  PayoutToken,
+  payoutTokens,
+} from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
@@ -30,7 +34,6 @@ export default function FundContract(props: {
   const [errorModalSubHeading, setErrorModalSubHeading] = useState<
     string | undefined
   >();
-  const [transactionReplaced, setTransactionReplaced] = useState(false);
 
   const { chain } = useNetwork() || {};
   const chainId = chain?.id ?? 5;
@@ -51,9 +54,7 @@ export default function FundContract(props: {
       setTimeout(() => {
         setOpenProgressModal(false);
         setErrorModalSubHeading(
-          transactionReplaced
-            ? "Transaction cancelled. Please try again."
-            : "There was an error during the funding process. Please try again."
+          "There was an error during the funding process. Please try again."
         );
         setOpenErrorModal(true);
       }, errorModalDelayMs);
@@ -82,7 +83,6 @@ export default function FundContract(props: {
     fundStatus,
     indexingStatus,
     txHash,
-    transactionReplaced,
     props.roundId,
   ]);
 
@@ -162,6 +162,7 @@ export default function FundContract(props: {
   } = useBalance({ ...tokenDetailUser });
 
   console.log(status, matchingErro, tokenDetailUser);
+
   function handleFundContract() {
     // check if signer has enough token balance
     const accountBalance = matchingFundPayoutTokenBalance?.value;
@@ -518,23 +519,17 @@ export default function FundContract(props: {
       }, errorModalDelayMs);
 
       await fundContract({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        roundId: props.roundId!,
+        roundId: props.roundId as string,
         fundAmount: Number(
           parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
         ),
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        payoutToken: matchingFundPayoutToken!,
+        payoutToken: matchingFundPayoutToken as PayoutToken,
       });
     } catch (error) {
-      if (error === "replaced") {
-        setTransactionReplaced(true);
-      } else {
-        datadogLogs.logger.error(
-          `error: handleSubmitFund - ${error}, id: ${props.roundId}`
-        );
-        console.error("handleSubmitFund - roundId", props.roundId, error);
-      }
+      datadogLogs.logger.error(
+        `error: handleSubmitFund - ${error}, id: ${props.roundId}`
+      );
+      console.error("handleSubmitFund - roundId", props.roundId, error);
     }
   }
 }

@@ -434,11 +434,11 @@ export const fundRoundContract = async (
 ): Promise<{ txBlockNumber: bigint; txHash: string }> => {
   let receipt: TransactionReceipt;
   let txHash: Hex;
-  roundId = getAddress(roundId);
+  const roundIdAddress = getAddress(roundId);
 
   if (payoutToken.address === (zeroAddress as Hex)) {
     const txObj = {
-      to: roundId as Hex,
+      to: roundIdAddress,
       value: amount,
     };
 
@@ -453,7 +453,10 @@ export const fundRoundContract = async (
       walletClient,
     });
 
-    txHash = await tokenContract.write.transfer([roundId as Hex, amount]);
+    txHash = await tokenContract.write.transfer([
+      roundIdAddress as Hex,
+      amount,
+    ]);
     receipt = await publicClient({}).waitForTransactionReceipt({
       hash: txHash,
     });

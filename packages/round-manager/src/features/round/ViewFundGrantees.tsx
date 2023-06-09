@@ -508,7 +508,6 @@ export function PayProjectsTable(props: {
   );
 }
 
-// todo: such a nice table should be in a separate and shared file
 export function PaidProjectsTable(props: {
   projects: MatchingStatsData[];
   token: PayoutToken;
