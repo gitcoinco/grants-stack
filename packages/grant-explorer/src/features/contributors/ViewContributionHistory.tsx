@@ -23,13 +23,13 @@ type ContributionHistoryState =
     }
   | { type: "error"; error: string };
 
-const useContributionHistory = (chainIds: number[], address: string) => {
+const useContributionHistory = (chainIds: number[], rawaddress: string) => {
   const [state, setState] = useState<ContributionHistoryState>({
     type: "loading",
   });
 
   useEffect(() => {
-    console.log("loading", chainIds, address);
+    console.log("loading", chainIds, rawaddress);
 
     if (!process.env.REACT_APP_ALLO_API_URL) {
       throw new Error("REACT_APP_ALLO_API_URL is not set");
@@ -49,6 +49,17 @@ const useContributionHistory = (chainIds: number[], address: string) => {
           process.env.REACT_APP_ALLO_API_URL,
           chainId
         );
+
+        let address = "";
+        try {
+          // ensure the address is a valid address
+          address = ethers.utils.getAddress(rawaddress.toLowerCase());
+        } catch (e) {
+          setState({
+            type: "error",
+            error: "bad address",
+          });
+        }
 
         return client
           .getContributionsByAddress(address)
@@ -81,7 +92,7 @@ const useContributionHistory = (chainIds: number[], address: string) => {
     };
 
     fetchContributions();
-  }, [chainIds, address]);
+  }, [chainIds, rawaddress]);
 
   return state;
 };
@@ -147,19 +158,15 @@ function ViewContributionHistoryDisplay(props: {
               alt="Address Logo"
             />
             <div className="text-xl">
-              {props.address != ""
-                ? ensName ||
-                  props.address.slice(0, 6) + "..." + props.address.slice(-4)
-                : ""}
+              {ensName ||
+                props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
           </div>
-          {props.address != "" && (
-            <CopyToClipboardButton
-              textToCopy={`${currentOrigin}#/profile/${props.address}`}
-              styles="text-xs p-2"
-              iconStyle="h-4 w-4 mr-1"
-            />
-          )}
+          <CopyToClipboardButton
+            textToCopy={`${currentOrigin}#/profile/${props.address}`}
+            styles="text-xs p-2"
+            iconStyle="h-4 w-4 mr-1"
+          />
         </div>
         <div className="text-lg">Donation Impact</div>
         <div className="flex gap-4 my-4">
@@ -243,6 +250,7 @@ function ViewContributionHistoryWithoutDonations(props: { address: string }) {
     .create({ seed: props.address.toLowerCase() })
     .toDataURL();
   const currentOrigin = window.location.origin;
+  const { address: walletAddress } = useAccount();
   return (
     <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen bottom-16">
       <main>
@@ -254,24 +262,20 @@ function ViewContributionHistoryWithoutDonations(props: { address: string }) {
               alt="Address Logo"
             />
             <div className="text-xl">
-              {props.address != ""
-                ? ensName ||
-                  props.address.slice(0, 6) + "..." + props.address.slice(-4)
-                : ""}
+              {ensName ||
+                props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
           </div>
-          {props.address != "" && (
-            <CopyToClipboardButton
-              textToCopy={`${currentOrigin}#/profile/${props.address}`}
-              styles="text-xs p-2"
-              iconStyle="h-4 w-4 mr-1"
-            />
-          )}
+          <CopyToClipboardButton
+            textToCopy={`${currentOrigin}#/profile/${props.address}`}
+            styles="text-xs p-2"
+            iconStyle="h-4 w-4 mr-1"
+          />
         </div>
         <div className="text-lg">Donation History</div>
         <div className="flex justify-center">
           <div className="w-3/4 my-6 text-center mx-auto">
-            {props.address != "" ? (
+            {props.address == walletAddress ? (
               <p className="text-md">
                 This is your donation history page, where you can keep track of
                 all the public goods you've funded. As you make donations, your
@@ -279,7 +283,12 @@ function ViewContributionHistoryWithoutDonations(props: { address: string }) {
               </p>
             ) : (
               <p className="text-md">
-                Please connect your wallet to view your donation history.
+                This is{" "}
+                {ensName ||
+                  props.address.slice(0, 6) + "..." + props.address.slice(-6)}
+                ’s donation history page, showcasing their contributions towards
+                public goods. As they make donations, their transaction history
+                will appear here.
               </p>
             )}
             <div />
@@ -342,18 +351,19 @@ function getChainIds(): number[] {
 
 export default function () {
   const params = useParams();
-  const { address: walletAddress } = useAccount();
-  const address = params.address ?? walletAddress ?? "";
   const chainIds = getChainIds();
 
-  if (address === undefined) {
+  if (params.address === undefined) {
     return null;
   }
 
   return (
     <>
       <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
-      <ViewContributionHistoryFetcher address={address} chainIds={chainIds} />
+      <ViewContributionHistoryFetcher
+        address={params.address}
+        chainIds={chainIds}
+      />
     </>
   );
 }
