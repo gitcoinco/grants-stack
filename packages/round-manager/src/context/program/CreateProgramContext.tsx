@@ -270,7 +270,6 @@ async function waitForSubgraphToUpdate(
       payload: { indexingStatus: ProgressStatus.IS_SUCCESS },
     });
   } catch (error) {
-    debugger;
     datadogLogs.logger.error(
       `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`
     );
