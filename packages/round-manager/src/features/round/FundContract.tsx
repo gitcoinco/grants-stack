@@ -155,13 +155,9 @@ export default function FundContract(props: {
     !isBalanceLoading &&
     Number(balanceData?.formatted) * Number(data);
 
-  const {
-    data: matchingFundPayoutTokenBalance,
-    error: matchingErro,
-    status,
-  } = useBalance({ ...tokenDetailUser });
-
-  console.log(status, matchingErro, tokenDetailUser);
+  const { data: matchingFundPayoutTokenBalance } = useBalance({
+    ...tokenDetailUser,
+  });
 
   function handleFundContract() {
     // check if signer has enough token balance
