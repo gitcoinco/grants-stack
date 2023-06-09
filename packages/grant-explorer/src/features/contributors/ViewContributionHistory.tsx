@@ -106,7 +106,7 @@ function StatCard(props: { title: string; value: string | undefined }) {
   );
 }
 
-function ViewContributionHistoryDisplay(props: {
+export function ViewContributionHistoryDisplay(props: {
   tokens: Record<string, PayoutToken>;
   contributions: { chainId: number; data: Contribution[] | never[] }[];
   address: string;
@@ -157,7 +157,7 @@ function ViewContributionHistoryDisplay(props: {
               src={addressLogo}
               alt="Address Logo"
             />
-            <div className="text-xl">
+            <div className="text-xl" data-testid="profile-address">
               {ensName ||
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
@@ -187,7 +187,7 @@ function ViewContributionHistoryDisplay(props: {
         <div className="text-lg bg-violet-100 text-black px-1 py-1">
           All Rounds
         </div>
-        <table className="border-collapse">
+        <table className="border-collapse" data-testid="donation-history-table">
           <tr className="text-left">
             <th className="p-4">Project</th>
             <th className="p-4">Donation</th>
@@ -249,7 +249,9 @@ function ViewContributionHistoryDisplay(props: {
   );
 }
 
-function ViewContributionHistoryWithoutDonations(props: { address: string }) {
+export function ViewContributionHistoryWithoutDonations(props: {
+  address: string;
+}) {
   const { data: ensName } = useEnsName({
     address: props.address,
   });
@@ -268,7 +270,7 @@ function ViewContributionHistoryWithoutDonations(props: { address: string }) {
               src={addressLogo}
               alt="Address Logo"
             />
-            <div className="text-xl">
+            <div className="text-xl" data-testid="profile-address">
               {ensName ||
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
