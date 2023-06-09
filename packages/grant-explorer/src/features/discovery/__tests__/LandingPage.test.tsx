@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
-import { makeRoundOverviewData, renderWithContext } from "../../../test-utils";
+import { makeRoundOverviewData, mockBalance, mockNetwork, mockSigner, renderWithContext } from "../../../test-utils";
 import { RoundMetadata } from "../../api/round";
 import {
   RoundOverview,
@@ -16,6 +16,29 @@ jest.mock("../../api/rounds", () => {
     getRoundsInApplicationPhase: jest.fn(),
   };
 });
+
+const chainId = faker.datatype.number();
+const userAddress = faker.finance.ethereumAddress();
+const mockAccount = {
+  address: userAddress,
+};
+const mockSwitchNetwork = {
+  chainId: chainId,
+};
+
+jest.mock("../../common/Navbar");
+jest.mock("../../common/Auth");
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: jest.fn(),
+}));
+
+jest.mock("wagmi", () => ({
+  useAccount: () => mockAccount,
+  useBalance: () => mockBalance,
+  useSigner: () => mockSigner,
+  useNetwork: () => mockNetwork,
+  useSwitchNetwork: () => mockSwitchNetwork,
+}));
 
 const mockGetActiveRounds = getActiveRounds as jest.MockedFunction<
   typeof getActiveRounds
@@ -84,6 +107,7 @@ describe("LandingPage", () => {
   it("filters active rounds based on search query", async () => {
     const roundMetadata: RoundMetadata = {
       name: "gitcoin",
+      roundType: "private",
       eligibility: {
         description: faker.lorem.sentence(),
         requirements: [],
