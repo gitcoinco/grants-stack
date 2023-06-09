@@ -34,7 +34,7 @@ import InfoModal from "../common/InfoModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
-import _ from 'lodash';
+import _ from "lodash";
 
 const payoutQuestion: SchemaQuestion = {
   id: 0,

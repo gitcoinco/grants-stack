@@ -95,7 +95,7 @@ function useRevisedMatchingFunds(
     }
   }
 
-  // TODO: ???
+  /* Explanation of active pattern: https://react.dev/reference/react/useEffect#fetching-data-with-effects*/
   useEffect(() => {
     let active = true;
 
