@@ -142,18 +142,12 @@ const _updateRound = async ({
       const decimals = getPayoutTokenOptions(chainId).find(
         (token) => token.address === round.token
       )?.decimal;
-      // use ethers to convert amount using decimals
       const arg = parseUnits(
         round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString() as `${number}`,
         decimals ?? 18
       );
       transactionBuilder.add("updateMatchAmount", [arg]);
     }
-
-    // if (editedGroups.RoundFeeAddress) {
-    //   const arg = "abcd"; // todo: add valid value
-    //   transactionBuilder.add(UpdateAction.UPDATE_ROUND_FEE_ADDRESS, [arg]);
-    // }
 
     if (editedGroups.RoundFeePercentage) {
       console.log("updating round fee percentage");
