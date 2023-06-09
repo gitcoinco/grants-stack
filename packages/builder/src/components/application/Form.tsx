@@ -571,19 +571,22 @@ export default function Form({
   };
 
   const handleProjectInput = async (e: ChangeHandlers) => {
-    const { value } = e.target;
-    setSelectedProjectID(value);
+    const { value: projectId } = e.target;
+    setSelectedProjectID(projectId);
     setIsLoading(true);
     // don't load the project if the input is empty/blank
-    if (value === "") {
+    if (projectId === "") {
       setHasExistingApplication(false);
       setIsLoading(false);
       handleInput(e);
       return;
     }
     const { hasProjectAppliedToRound } = await fetchProjectApplicationInRound(
-      value,
-      round.address
+      projectId,
+      round.address,
+      // assume the chainID is set and we are on the same chain
+      // as the round we are applying for
+      props.chainID!
     );
     setHasExistingApplication(hasProjectAppliedToRound);
     setIsLoading(false);
@@ -1188,6 +1191,7 @@ export default function Form({
               </div>
             )}
         </form>
+        {/* TODO: this is displayed regardless of the error, e.g. when receiving a 401 from Pinata */}
         <ErrorModal
           open={showErrorModal}
           onClose={closeErrorModal}
