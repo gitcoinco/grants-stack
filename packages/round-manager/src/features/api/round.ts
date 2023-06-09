@@ -1,4 +1,4 @@
-import { graphql_fetch } from "common";
+import { ChainId, graphql_fetch } from "common";
 import { roundFactoryContract } from "./contracts";
 import {
   ApplicationStatus,
@@ -515,8 +515,7 @@ async function loadApprovedProjects(
 
 async function fetchMetadataAndMapProject(
   project: RoundProjectResult,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: ChainId
 ): Promise<ApprovedProject> {
   const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
   // NB: applicationData can be in two formats:
@@ -540,8 +539,7 @@ async function fetchMetadataAndMapProject(
 }
 
 export async function getProjectOwners(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any,
+  chainId: ChainId,
   projectRegistryId: string
 ) {
   try {
