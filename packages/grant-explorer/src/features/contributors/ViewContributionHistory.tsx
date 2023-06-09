@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
-import { getPayoutTokenOptions } from "../api/utils";
+import { CHAINS, getPayoutTokenOptions } from "../api/utils";
 import Navbar from "../common/Navbar";
 import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-history-banner.svg";
 import { ChainId } from "../api/utils";
@@ -211,6 +211,13 @@ function ViewContributionHistoryDisplay(props: {
                 <tr key={contribution.id}>
                   <td className="border-b p-4">
                     <div className="flex items-center">
+                      <div>
+                        <img
+                          className="w-4 h-4 mr-2"
+                          src={CHAINS[chainId]?.logo}
+                          alt="Round Chain Logo"
+                        />
+                      </div>
                       <Link
                         className="underline inline-block max-w-[250px] truncate"
                         title={contribution.roundName}
