@@ -123,7 +123,7 @@ export const publishGrant =
     }
 
     const metadataCID = resp.IpfsHash;
-    const { chainID } = state.web3;
+    const { chainID, account } = state.web3;
     const addresses = addressesByChainID(chainID!);
     const { signer } = global;
     const projectRegistry = new ethers.Contract(
@@ -136,31 +136,24 @@ export const publishGrant =
     let projectTx;
     try {
       if (grantId !== undefined) {
-        try {
-          projectTx = await projectRegistry.updateProjectMetadata(grantId, {
-            protocol: 1,
-            pointer: metadataCID,
-          });
-        } catch (e) {
-          datadogRum.addError(e);
-          datadogLogs.logger.warn("transaction error");
-          dispatch(grantError("transaction error", Status.Error));
-          console.error("tx error", e);
-          return;
-        }
+        projectTx = await projectRegistry.updateProjectMetadata(grantId, {
+          protocol: 1,
+          pointer: metadataCID,
+        });
       } else {
-        try {
-          projectTx = await projectRegistry.createProject({
-            protocol: 1,
-            pointer: metadataCID,
-          });
-        } catch (e) {
-          datadogRum.addError(e);
-          datadogLogs.logger.warn("transaction error");
-          dispatch(grantError("transaction error", Status.Error));
-          console.error("tx error", e);
-          return;
-        }
+        const projectMetadata = {
+          protocol: 1,
+          pointer: metadataCID,
+        };
+        const nullMetadata = {
+          protocol: 0,
+          pointer: metadataCID,
+        };
+        projectTx = await projectRegistry.createProject(
+          [account],
+          projectMetadata,
+          nullMetadata
+        );
       }
     } catch (e) {
       datadogRum.addError(e);
