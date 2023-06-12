@@ -1,4 +1,3 @@
-import { EyeIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -45,7 +44,6 @@ function Apply() {
       "toggleRoundApplicationModal",
       ApplicationModalStatus.Undefined
     );
-  const [isInPreviewMode, setIsInPreviewMode] = useState(false);
 
   const { roundId, chainId } = params;
 
@@ -222,20 +220,7 @@ function Apply() {
             </div> */}
           </div>
           <div className="w-full sm:w-2/3 flex sm:flex-row flex-col items-center justify-between">
-            <div className="flex flex-row">
-              {/* todo: only show this on preview */}
-              {isInPreviewMode && (
-                <div className="flex flex-row items-center">
-                  <span className="icon mr-2">
-                    <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    This is a preview of your project&apos;s public page on
-                    Gitcoin Explorer.
-                  </span>
-                </div>
-              )}
-            </div>
+            <div className="flex flex-row" />
             <Button
               variant={ButtonVariants.outlineDanger}
               onClick={() => toggleModal(true)}
@@ -293,7 +278,6 @@ function Apply() {
                   dispatch(submitApplication(props.round!.address, answers));
                   toggleStatusModal(true);
                 }}
-                onPreviewApplication={setIsInPreviewMode}
               />
             )}
           </div>
