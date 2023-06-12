@@ -178,6 +178,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   };
 
   function disableBeforeApplicationEndDate(current: moment.Moment) {
+    if (rollingApplications) {
+      return disableBeforeApplicationStartDate(current);
+    }
     return current.isAfter(applicationEndDate);
   }
 
@@ -188,6 +191,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   useEffect(() => {
     if (rollingApplications && roundEndDate !== "") {
       setValue("applicationsEndTime", roundEndDate.toDate());
+      setApplicationEndDate(roundEndDate);
     }
   }, [rollingApplications, roundEndDate, setValue]);
 
@@ -518,6 +522,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             field.onChange(moment(date));
                             setRoundEndDate(moment(date));
                             if (rollingApplications) {
+                              setApplicationEndDate(moment(date));
                               setValue(
                                 "applicationsEndTime",
                                 moment(date).toDate()
