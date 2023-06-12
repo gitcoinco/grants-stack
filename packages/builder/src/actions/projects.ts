@@ -173,8 +173,8 @@ const fetchProjectCreatedUpdatedEvents = async (
   }
 
   // FIXME: use this line when the fantom RPC bug has been fixed
-  // const ids = createdEvents.map((event) => event.args!.projectID!.toNumber());
-  const ids = createdEvents.map((event) => parseInt(event.topics[1], 16));
+  // const ids = createdEvents.map((event) => event.args!.projectID!);
+  const ids = createdEvents.map((event) => event.topics[1]);
 
   const fullIds = ids.map(
     (id) => `${chainID}:${addresses.projectRegistry}:${id}`
@@ -232,10 +232,7 @@ export const extractProjectEvents = (
   createdEvents.forEach((createEvent) => {
     // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
     // const id = createEvent.args!.projectID!;
-    const id = `${chainID}:${chainAddresses.projectRegistry}:${parseInt(
-      createEvent.topics[1],
-      16
-    )}`;
+    const id = `${chainID}:${chainAddresses.projectRegistry}:${createEvent.topics[1]}`;
 
     // eslint-disable-next-line no-param-reassign
     eventList[id] = {
