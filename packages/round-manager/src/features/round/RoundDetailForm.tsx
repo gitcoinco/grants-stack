@@ -177,13 +177,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     return disablePastDate(current);
   };
 
-  function disableBeforeApplicationEndDate(current: moment.Moment) {
-    if (rollingApplications) {
-      return disableBeforeApplicationStartDate(current);
-    }
-    return current.isAfter(applicationEndDate);
-  }
-
   function disableBeforeRoundStartDate(current: moment.Moment) {
     return current.isAfter(roundStartDate);
   }
@@ -462,7 +455,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
-                          isValidDate={disableBeforeApplicationEndDate}
+                          isValidDate={disableBeforeApplicationStartDate}
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
                           timeFormat={"HH:mm UTC"}
