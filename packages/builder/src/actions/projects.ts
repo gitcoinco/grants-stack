@@ -142,7 +142,7 @@ const fetchProjectCreatedUpdatedEvents = async (
 
   // FIXME: use this line when the fantom RPC bug has been fixed
   // const createdFilter = contract.filters.ProjectCreated(null, account) as any;
-  const createdEventSig = ethers.utils.id("ProjectCreated(uint256,address)");
+  const createdEventSig = ethers.utils.id("ProjectCreated(bytes32,address)");
   const createdFilter = {
     address: addresses.projectRegistry,
     fromBlock: "0x00",
