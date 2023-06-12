@@ -133,8 +133,8 @@ const getMetadata = async (
         const ret = await ensureMetadataTimestamps(
           {
             ...metadata,
-            protocol: project.metadata.protocol,
-            pointer: project.metadata.pointer,
+            protocol: project.projectMetadata.protocol,
+            pointer: project.projectMetadata.pointer,
             id: projectId,
           },
           appProvider,
@@ -157,7 +157,7 @@ const getMetadata = async (
   try {
     // FIXME: fetch from pinata gateway
     const pinataClient = new PinataClient();
-    content = await pinataClient.fetchText(project.metadata.pointer);
+    content = await pinataClient.fetchText(project.projectMetadata.pointer);
   } catch (e) {
     // FIXME: dispatch "ipfs error"
     datadogRum.addError(e);
@@ -181,8 +181,8 @@ const getMetadata = async (
 
   const ret = {
     ...metadata,
-    protocol: project.metadata.protocol,
-    pointer: project.metadata.pointer,
+    protocol: project.projectMetadata.protocol,
+    pointer: project.projectMetadata.pointer,
     id: projectId,
   };
   storage.add(cacheKey, JSON.stringify(ret));
@@ -210,7 +210,7 @@ export const fetchGrantData =
       return;
     }
 
-    if (!project.metadata.protocol) {
+    if (!project.projectMetadata.protocol) {
       console.error("project not found");
       dispatch(grantMetadataFetchingError(id, "project not found"));
       return;
@@ -219,7 +219,7 @@ export const fetchGrantData =
     dispatch(grantMetadataLoading(id));
 
     try {
-      const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
+      const cacheKey = `project-${id}-${project.projectMetadata.protocol}-${project.projectMetadata.pointer}`;
       const { projects } = getState();
       const { createdAtBlock, updatedAtBlock } = projects.events[id] || {};
 

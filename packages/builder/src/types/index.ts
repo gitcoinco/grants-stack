@@ -41,7 +41,7 @@ export interface Project {
 }
 
 export type ProjectRegistryMetadata = {
-  metadata: {
+  projectMetadata: {
     protocol: number;
     pointer: string;
   };
