@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Image } from "@chakra-ui/react";
+import { Badge, Box, Button, Image, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -87,42 +87,36 @@ export default function ApplicationCard({
         break;
     }
 
+    const printApplicationStatus = () => {
+      switch (applicationData?.application.status as AppStatus) {
+        case "APPROVED":
+          return "Approved";
+        case "REJECTED":
+          return "Rejected";
+        case "PENDING":
+          return "In Review";
+        default:
+          return null;
+      }
+    };
+
     return (
       <Badge
         backgroundColor={colorScheme?.bg}
-        className="max-w-fit"
         borderRadius="full"
+        className="max-w-fit"
         p={2}
         textTransform="inherit"
       >
-        {applicationData?.application.status === "REJECTED" ? (
-          <span className={`text-${colorScheme?.text} text-sm`}>Rejected</span>
-        ) : null}
-        {applicationData?.application.status === "PENDING" ? (
-          <span className={`text-${colorScheme?.text} text-sm`}>In Review</span>
-        ) : null}
-        {applicationData?.application.status === "APPROVED" ? (
-          <span className={`text-${colorScheme?.text} text-sm`}>Approved</span>
-        ) : null}
+        <span className={`text-${colorScheme?.text} text-sm`}>
+          {printApplicationStatus()}
+        </span>
       </Badge>
     );
   };
 
-  if (!roundData) {
-    return null;
-  }
-
   return (
-    <Box
-      p={2}
-      m={2}
-      className={`border-gray-300 pt-4 pb-7 px-5 ${
-        roundData?.roundEndTime < Date.now() / 1000 ? "hidden" : ""
-      }`}
-      borderWidth="1px"
-      borderRadius="md"
-      key={applicationData.application.metaPtr.pointer}
-    >
+    <Box p={2} m={2} borderWidth="1px" borderRadius="md">
       <Box p={2} mb={1}>
         <span className="text-sm text-gitcoin-gray-400">
           {props.round?.programName}
@@ -139,7 +133,7 @@ export default function ApplicationCard({
       <div className="flex flex-1 flex-col md:flex-row justify-between">
         <Box className="pl-2 text-gitcoin-gray-400">
           <div className="mb-1 text-sm">{props.round?.roundMetadata.name}</div>
-          <span>{renderApplicationDate()}</span>
+          {roundData ? <span>{renderApplicationDate()}</span> : <Spinner />}
         </Box>
         <Box className="pl-2 mt-2 md:mt-0">{renderApplicationBadge()}</Box>
       </div>

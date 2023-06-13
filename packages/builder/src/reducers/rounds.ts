@@ -1,9 +1,9 @@
 import {
-  RoundsActions,
   ROUNDS_LOADING_ERROR,
   ROUNDS_LOADING_ROUND,
   ROUNDS_ROUND_LOADED,
   ROUNDS_UNLOADED,
+  RoundsActions,
 } from "../actions/rounds";
 import { Round } from "../types";
 

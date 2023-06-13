@@ -9,9 +9,9 @@ import { RootState } from "../reducers";
 import { Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
 import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
-import { getProviderByChainId } from "../utils/utils";
 import { RoundApplicationMetadata } from "../types/roundApplication";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
+import { getProviderByChainId } from "../utils/utils";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -331,4 +331,12 @@ export const loadRound =
     };
 
     dispatch(roundLoaded(address, round));
+  };
+
+export const loadRounds =
+  (addressAndChain: Map<string, number>) => async (dispatch: Dispatch) => {
+    addressAndChain.forEach((chainId, address) => {
+      console.log("DASA loading round", address, chainId);
+      dispatch<any>(loadRound(address, chainId));
+    });
   };
