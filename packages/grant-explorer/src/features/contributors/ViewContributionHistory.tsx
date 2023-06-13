@@ -1,4 +1,4 @@
-import { chainId, useAccount, useEnsName } from "wagmi";
+import { useAccount, useEnsName } from "wagmi";
 import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
@@ -8,13 +8,14 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
-import { CHAINS, getPayoutTokenOptions } from "../api/utils";
+import { CHAINS } from "../api/utils";
 import Navbar from "../common/Navbar";
 import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-history-banner.svg";
 import { ChainId } from "../api/utils";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
+import { payoutTokens } from "../api/utils";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -337,7 +338,7 @@ function ViewContributionHistoryFetcher(props: {
   );
 
   const tokens = Object.fromEntries(
-    getPayoutTokenOptions(String(chainId)).map((token) => [
+    payoutTokens.map((token) => [
       token.address,
       token,
     ])
