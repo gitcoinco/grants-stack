@@ -239,7 +239,10 @@ export function ViewContributionHistoryDisplay(props: {
                     {/* Todo: display contribution timestamp */}
                     {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
                   </td>
-                  <td className="border-b py-4 max-w-[120px] truncate">{formattedAmount}</td>
+                  <td className="border-b py-4 max-w-[120px] truncate">
+                    {formattedAmount}
+                    <div className="text-md text-gray-500">${contribution.amountUSD.toFixed(2)}</div>
+                  </td>
                   <td className="border-b py-4 max-w-[300px] truncate">{contribution.transaction}</td>
                 </tr>
               );
