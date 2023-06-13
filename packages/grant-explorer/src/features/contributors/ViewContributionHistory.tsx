@@ -14,6 +14,7 @@ import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-
 import { ChainId } from "../api/utils";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
+import Footer from "common/src/components/Footer";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -99,9 +100,9 @@ const useContributionHistory = (chainIds: number[], rawaddress: string) => {
 
 function StatCard(props: { title: string; value: string | undefined }) {
   return (
-    <div className="rounded border border-violet-400 p-4 w-1/4">
-      <div className="font-bold text-sm pb-4">{props.title}</div>
-      <div className="text-grey-400 text-xl">{props.value}</div>
+    <div className="rounded border border-violet-400 p-4 flex-grow">
+      <div className="font-bold text-md pb-4">{props.title}</div>
+      <div className="text-grey-400 text-2xl">{props.value}</div>
     </div>
   );
 }
@@ -157,7 +158,7 @@ export function ViewContributionHistoryDisplay(props: {
               src={addressLogo}
               alt="Address Logo"
             />
-            <div className="text-xl" data-testid="profile-address">
+            <div className="text-[32px]" data-testid="profile-address">
               {ensName ||
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
@@ -168,7 +169,7 @@ export function ViewContributionHistoryDisplay(props: {
             iconStyle="h-4 w-4 mr-1"
           />
         </div>
-        <div className="text-lg">Donation Impact</div>
+        <div className="text-2xl">Donation Impact</div>
         <div className="flex gap-4 my-4">
           <StatCard
             title="Total Donations"
@@ -183,15 +184,15 @@ export function ViewContributionHistoryDisplay(props: {
             value={totalProjectsFunded.toString()}
           />
         </div>
-        <div className="text-lg my-4">Donation History</div>
+        <div className="text-2xl my-4">Donation History</div>
         <div className="text-lg bg-violet-100 text-black px-1 py-1">
           All Rounds
         </div>
-        <table className="border-collapse" data-testid="donation-history-table">
-          <tr className="text-left">
-            <th className="p-4">Project</th>
-            <th className="p-4">Donation</th>
-            <th className="p-4">Transaction information</th>
+        <table className="border-collapse w-full" data-testid="donation-history-table">
+          <tr className="text-left text-lg">
+            <th className="py-4">Project</th>
+            <th className="py-4">Donation</th>
+            <th className="py-4">Transaction information</th>
           </tr>
           {props.contributions.map((chainContribution) => {
             const { chainId, data } = chainContribution;
@@ -209,7 +210,7 @@ export function ViewContributionHistoryDisplay(props: {
 
               return (
                 <tr key={contribution.id}>
-                  <td className="border-b p-4">
+                  <td className="border-b py-4">
                     <div className="flex items-center">
                       <div>
                         <img
@@ -219,7 +220,7 @@ export function ViewContributionHistoryDisplay(props: {
                         />
                       </div>
                       <Link
-                        className="underline inline-block max-w-[250px] truncate"
+                        className="underline inline-block max-w-[150px] truncate"
                         title={contribution.roundName}
                         to={`/round/${chainId}/${contribution.roundId}`}
                       >
@@ -227,7 +228,7 @@ export function ViewContributionHistoryDisplay(props: {
                       </Link>
                       <ChevronRightIcon className="h-4 inline mx-2" />
                       <Link
-                        className="underline inline-block max-w-[250px] truncate"
+                        className="underline inline-block max-w-[150px] truncate"
                         title={contribution.projectTitle}
                         to={`/round/${chainId}/${contribution.roundId}/${contribution.projectId}`}
                       >
@@ -237,14 +238,17 @@ export function ViewContributionHistoryDisplay(props: {
                     {/* Todo: display contribution timestamp */}
                     {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
                   </td>
-                  <td className="border-b p-4">{formattedAmount}</td>
-                  <td className="border-b p-4">{contribution.transaction}</td>
+                  <td className="border-b py-4 max-w-[120px] truncate">{formattedAmount}</td>
+                  <td className="border-b py-4 max-w-[300px] truncate">{contribution.transaction}</td>
                 </tr>
               );
             });
           })}
         </table>
       </main>
+      <div className="my-11 h-11">
+        <Footer />
+      </div>
     </div>
   );
 }
@@ -261,7 +265,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
   const currentOrigin = window.location.origin;
   const { address: walletAddress } = useAccount();
   return (
-    <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen bottom-16">
+    <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
       <main>
         <div className="border-b pb-2 mb-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -270,7 +274,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
               src={addressLogo}
               alt="Address Logo"
             />
-            <div className="text-xl" data-testid="profile-address">
+            <div className="text-[32px]" data-testid="profile-address">
               {ensName ||
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
@@ -281,34 +285,44 @@ export function ViewContributionHistoryWithoutDonations(props: {
             iconStyle="h-4 w-4 mr-1"
           />
         </div>
-        <div className="text-lg">Donation History</div>
+        <div className="text-2xl">Donation History</div>
         <div className="flex justify-center">
           <div className="w-3/4 my-6 text-center mx-auto">
             {props.address == walletAddress ? (
-              <p className="text-md">
-                This is your donation history page, where you can keep track of
-                all the public goods you've funded. As you make donations, your
-                transaction history will appear here.
-              </p>
+              <>
+                <p className="text-md">
+                  This is your donation history page, where you can keep track of
+                  all the public goods you've funded. 
+                </p>
+                <p className="text-md">
+                  As you make donations, your transaction history will appear here.
+                </p>
+              </>
             ) : (
-              <p className="text-md">
-                This is{" "}
-                {ensName ||
-                  props.address.slice(0, 6) + "..." + props.address.slice(-6)}
-                ’s donation history page, showcasing their contributions towards
-                public goods. As they make donations, their transaction history
-                will appear here.
-              </p>
+              <>
+                <p className="text-md">
+                  This is{" "}
+                  {ensName ||
+                    props.address.slice(0, 6) + "..." + props.address.slice(-6)}
+                    ’s donation history page, showcasing their contributions towards
+                    public goods.
+                </p>
+                <p className="text-md">
+                  As they make donations, their transaction history will appear here.
+                </p>
+              </>
             )}
             <div />
           </div>
         </div>
         <div className="flex justify-center">
           {" "}
-          {/* Add flex justify-center class */}
           <DonationHistoryBanner />
         </div>
       </main>
+      <div className="my-11 h-11">
+        <Footer />
+      </div>
     </div>
   );
 }
@@ -368,11 +382,11 @@ export default function () {
 
   return (
     <>
-      <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
-      <ViewContributionHistoryFetcher
-        address={params.address}
-        chainIds={chainIds}
-      />
+        <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
+        <ViewContributionHistoryFetcher
+          address={params.address}
+          chainIds={chainIds}
+        />
     </>
   );
 }
