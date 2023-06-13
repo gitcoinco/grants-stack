@@ -5,7 +5,7 @@ import {
 } from "allo-indexer-client";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
 import { CHAINS } from "../api/utils";
@@ -220,21 +220,14 @@ export function ViewContributionHistoryDisplay(props: {
                           alt="Round Chain Logo"
                         />
                       </div>
-                      <Link
-                        className="underline inline-block max-w-[150px] truncate"
-                        title={contribution.roundName}
-                        to={`/round/${chainId}/${contribution.roundId}`}
-                      >
+                      {/*ToDo: add links to the round name & project */}
+                      <div className="inline-block max-w-[150px] truncate">
                         {contribution.roundName}
-                      </Link>
+                      </div>
                       <ChevronRightIcon className="h-4 inline mx-2" />
-                      <Link
-                        className="underline inline-block max-w-[150px] truncate"
-                        title={contribution.projectTitle}
-                        to={`/round/${chainId}/${contribution.roundId}/${contribution.projectId}`}
-                      >
+                      <div className="inline-block max-w-[150px] truncate">
                         {contribution.projectTitle}
-                      </Link>
+                      </div>
                     </div>
                     {/* Todo: display contribution timestamp */}
                     {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
