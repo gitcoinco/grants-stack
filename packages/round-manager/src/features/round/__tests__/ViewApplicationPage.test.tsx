@@ -86,15 +86,15 @@ const verifyCredentialMock = jest.spyOn(
 describe("ViewApplicationPage", () => {
   beforeEach(() => {
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useSwitchNetwork as any).mockReturnValue({ chains: [] });
-    (useDisconnect as any).mockReturnValue({});
+    (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
+    (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
   it("should display 404 when there no application is found", () => {
     (getApplicationsByRoundId as jest.Mock).mockRejectedValue(
       "No application :("
     );
-    (getApplicationById as any).mockResolvedValue("no Application :(");
+    (getApplicationById as jest.Mock).mockResolvedValue("no Application :(");
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [],
@@ -107,8 +107,8 @@ describe("ViewApplicationPage", () => {
 
   it("should display access denied when wallet accessing is not round operator", () => {
     const application = makeGrantApplicationData({ applicationIdOverride });
-    (getApplicationsByRoundId as any).mockResolvedValue(application);
-    (getApplicationById as any).mockResolvedValue(application);
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(application);
+    (getApplicationById as jest.Mock).mockResolvedValue(application);
     const wrongAddress = faker.finance.ethereumAddress();
     (useWallet as jest.Mock).mockImplementation(() => ({
       ...mockWallet,
@@ -144,11 +144,12 @@ describe("ViewApplicationPage", () => {
       applicationAnswers: expectedAnswers,
     });
 
-    (getApplicationsByRoundId as any).mockResolvedValue(
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
       grantApplicationWithApplicationAnswers
     );
-    (getApplicationById as any).mockResolvedValue(grantApplicationWithApplicationAnswers);
-
+    (getApplicationById as jest.Mock).mockResolvedValue(
+      grantApplicationWithApplicationAnswers
+    );
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplicationWithApplicationAnswers],
@@ -168,9 +169,8 @@ describe("ViewApplicationPage", () => {
         applicationIdOverride,
         roundIdOverride,
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(application);
-      (getApplicationById as any).mockResolvedValue(application);
-
+      (getApplicationsByRoundId as jest.Mock).mockResolvedValue(application);
+      (getApplicationById as jest.Mock).mockResolvedValue(application);
     });
 
     it("should open confirmation modal when approve is clicked", async () => {
@@ -300,8 +300,8 @@ describe("ViewApplicationPage", () => {
 describe("ViewApplicationPage verification badges", () => {
   beforeEach(() => {
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useSwitchNetwork as any).mockReturnValue({ chains: [] });
-    (useDisconnect as any).mockReturnValue({});
+    (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
+    (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
   it("shows project twitter with no badge when there is no credential", async () => {
@@ -314,11 +314,15 @@ describe("ViewApplicationPage verification badges", () => {
     });
 
     grantApplicationWithNoVc.project!.credentials = {};
-    (getApplicationsByRoundId as any).mockResolvedValue(
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
       grantApplicationWithNoVc
     );
-    (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
-    (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
+    (getApplicationById as jest.Mock).mockResolvedValue(
+      grantApplicationWithNoVc
+    );
+    (getApplicationById as jest.Mock).mockResolvedValue(
+      grantApplicationWithNoVc
+    );
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplicationWithNoVc],
@@ -342,10 +346,12 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: expectedGithubOrganizationName,
     });
     grantApplicationWithNoVc.project!.credentials = {};
-    (getApplicationsByRoundId as any).mockResolvedValue(
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
       grantApplicationWithNoVc
     );
-    (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
+    (getApplicationById as jest.Mock).mockResolvedValue(
+      grantApplicationWithNoVc
+    );
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplicationWithNoVc],
@@ -373,18 +379,18 @@ describe("ViewApplicationPage verification badges", () => {
         applicationIdOverride,
         ...overrides,
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(
+      (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
         grantApplicationWithValidVc
       );
-      (getApplicationById as any).mockResolvedValue(grantApplicationWithValidVc);
+      (getApplicationById as jest.Mock).mockResolvedValue(
+        grantApplicationWithValidVc
+      );
 
       renderWithContext(<ViewApplicationPage />, {
         applications: [grantApplicationWithValidVc],
       });
 
-      expect(
-        await screen.findByTestId(`verified-badge`)
-      ).toBeInTheDocument();
+      expect(await screen.findByTestId(`verified-badge`)).toBeInTheDocument();
     }
   );
 
@@ -397,17 +403,15 @@ describe("ViewApplicationPage verification badges", () => {
       projectTwitterOverride: handle.toLowerCase(),
     });
     grantApplication.project!.projectTwitter = handle.toUpperCase();
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(grantApplication);
+    (getApplicationById as jest.Mock).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId(`verified-badge`)
-      ).toBeInTheDocument();
+      expect(screen.getByTestId(`verified-badge`)).toBeInTheDocument();
     });
     expect(
       screen.queryByTestId(`${provider}-verifiable-credential-unverified`)
@@ -423,17 +427,15 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: handle.toLowerCase(),
     });
     grantApplication.project!.projectGithub = handle.toUpperCase();
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(grantApplication);
+    (getApplicationById as jest.Mock).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId(`verified-badge`)
-      ).toBeInTheDocument();
+      expect(screen.getByTestId(`verified-badge`)).toBeInTheDocument();
     });
     expect(
       screen.queryByTestId(`${provider}-verifiable-credential-unverified`)
@@ -451,8 +453,10 @@ describe("ViewApplicationPage verification badges", () => {
         applicationIdOverride,
         ...overrides,
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(grantApplicationStub);
-      (getApplicationById as any).mockResolvedValue(grantApplicationStub);
+      (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
+        grantApplicationStub
+      );
+      (getApplicationById as jest.Mock).mockResolvedValue(grantApplicationStub);
 
       renderWithContext(<ViewApplicationPage />, {
         applications: [grantApplicationStub],
@@ -479,12 +483,12 @@ describe("ViewApplicationPage verification badges", () => {
         }),
         isLoading: false,
       };
-      (getApplicationsByRoundId as any).mockResolvedValue(
+      (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
         noGithubVerification.application
       );
-      (getApplicationById as any).mockResolvedValue(noGithubVerification.application
+      (getApplicationById as jest.Mock).mockResolvedValue(
+        noGithubVerification.application
       );
-
 
       renderWithContext(<ViewApplicationPage />, noGithubVerification);
 
@@ -503,8 +507,8 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: "whatever",
     });
     grantApplication.project!.credentials["github"].issuer = fakeIssuer;
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(grantApplication);
+    (getApplicationById as jest.Mock).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -529,8 +533,8 @@ describe("ViewApplicationPage verification badges", () => {
       projectTwitterOverride: handle,
     });
     grantApplication.project!.projectTwitter = "not some handle";
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(grantApplication);
+    (getApplicationById as jest.Mock).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -555,8 +559,8 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: handle,
     });
     grantApplication.project!.projectGithub = "not some handle";
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(grantApplication);
+    (getApplicationById as jest.Mock).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -586,8 +590,10 @@ describe("ViewApplicationPage verification badges", () => {
       grantApplicationData.project!.owners.forEach((it) => {
         it.address = "bad";
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(grantApplicationData);
-      (getApplicationById as any).mockResolvedValue(grantApplicationData);
+      (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
+        grantApplicationData
+      );
+      (getApplicationById as jest.Mock).mockResolvedValue(grantApplicationData);
 
       renderWithContext(<ViewApplicationPage />, {
         applications: [grantApplicationData],

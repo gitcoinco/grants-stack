@@ -85,6 +85,7 @@
     "test:coverage": "jest --watchAll=false --coverage",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
+    "lint:ci": "pnpm lint:fix --max-warnings=0",
     "lint:fix": "eslint ./src --fix --cache",
     "typecheck": "tsc --noEmit"
   },
