@@ -159,7 +159,7 @@ export function ViewContributionHistoryDisplay(props: {
               src={addressLogo}
               alt="Address Logo"
             />
-            <div className="text-[32px]" data-testid="profile-address">
+            <div className="text-[32px]" data-testid="profile-address" title={props.address}>
               {ensName ||
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
@@ -211,7 +211,7 @@ export function ViewContributionHistoryDisplay(props: {
 
               return (
                 <tr key={contribution.id}>
-                  <td className="border-b py-4">
+                  <td className="border-b py-4 pr-16>">
                     <div className="flex items-center">
                       <div>
                         <img
@@ -221,18 +221,24 @@ export function ViewContributionHistoryDisplay(props: {
                         />
                       </div>
                       {/*ToDo: add links to the round name & project */}
-                      <div className="inline-block max-w-[150px] truncate">
+                      <div 
+                        className="inline-block max-2-[200px] truncate"
+                        title={contribution.roundName}
+                      >
                         {contribution.roundName}
                       </div>
                       <ChevronRightIcon className="h-4 inline mx-2" />
-                      <div className="inline-block max-w-[150px] truncate">
+                      <div 
+                        className="inline-block max-w-[300px] truncate"
+                        title={contribution.projectTitle}
+                      >
                         {contribution.projectTitle}
                       </div>
                     </div>
                     {/* Todo: display contribution timestamp */}
                     {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
                   </td>
-                  <td className="border-b py-4 max-w-[120px] truncate">
+                  <td className="border-b py-4 max-w-[150px] truncate pr-16">
                     {formattedAmount}
                     <div className="text-md text-gray-500">${contribution.amountUSD.toFixed(2)}</div>
                   </td>
@@ -271,7 +277,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
               src={addressLogo}
               alt="Address Logo"
             />
-            <div className="text-[32px]" data-testid="profile-address">
+            <div className="text-[32px]" data-testid="profile-address" title={props.address}>
               {ensName ||
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
