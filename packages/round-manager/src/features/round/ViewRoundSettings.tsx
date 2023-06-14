@@ -965,11 +965,11 @@ function DetailsPage(props: {
 
 function RoundType(props: {
   register: UseFormRegisterReturn<string>;
-  control?: Control<Round>;
+  control?: Control<RoundForm>;
   editMode: EditMode;
-  editedRound: Round;
-  errors: FieldErrors<Round>;
-  setEditedRound: (round: Round) => void;
+  editedRound: RoundForm;
+  errors: FieldErrors<RoundForm>;
+  setEditedRound: (round: RoundForm) => void;
 }) {
   const { field: roundTypeField } = useController({
     name: "roundMetadata.roundType",
@@ -1910,15 +1910,14 @@ function Funding(props: {
                     "roundMetadata.quadraticFundingConfig.matchingCapPercentage"
                   )}
                   type="number"
-
                   className={classNames(
                     "w-[88%] rounded-r-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
-                    (
-                      (!props.editMode.canEdit &&
-                        !props.editMode.canEditOnlyRoundEndDate) ||
+                    (!props.editMode.canEdit &&
+                      !props.editMode.canEditOnlyRoundEndDate) ||
                       !props.editedRound?.roundMetadata.quadraticFundingConfig
-                        .matchingCap
-                    ) ? "disabled:bg-gray-50" : "bg-red"
+                        .matchingCapPercentage
+                      ? "disabled:bg-gray-50"
+                      : "bg-red"
                   )}
                   disabled={
                     (!props.editMode.canEdit &&
@@ -2121,8 +2120,9 @@ function Funding(props: {
                       (!props.editMode.canEdit &&
                         !props.editMode.canEditOnlyRoundEndDate) ||
                       !props.editedRound?.roundMetadata.quadraticFundingConfig
-                        .minDonationThreshold
-                    ) ? "disabled:bg-gray-50" : "bg-red"
+                        .minContributionUSD
+                      ? "disabled:bg-gray-50"
+                      : "bg-red"
                   )}
                   value={
                     field.value
