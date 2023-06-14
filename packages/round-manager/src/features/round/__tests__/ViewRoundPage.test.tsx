@@ -81,7 +81,7 @@ describe("View Round", () => {
           wrapWithReadProgramContext(
             wrapWithRoundContext(<ViewRoundPage />, {
               data: [],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              fetchRoundStatus: ProgressStatus.IS_ERROR,
             }),
             { programs: [] }
           ),
@@ -227,17 +227,24 @@ describe("View Round", () => {
 
   it("displays loading spinner when round is loading", () => {
     render(
-      wrapWithApplicationContext(
-        wrapWithReadProgramContext(
-          wrapWithRoundContext(<ViewRoundPage />, {
-            data: [],
-            fetchRoundStatus: ProgressStatus.IN_PROGRESS,
-          }),
-          { programs: [] }
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IN_PROGRESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: true,
+          }
         )
       )
     );
 
+    screen.logTestingPlaygroundURL();
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
   });
 
