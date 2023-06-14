@@ -83,7 +83,7 @@ jest.mock("react-router-dom", () => ({
 }));
 jest.mock("wagmi", () => ({
   useSigner: () => mockSigner,
-  useEnsName: jest.fn().mockReturnValue({ data: "mockedEnsName" }),
+  useEnsName: jest.fn().mockReturnValue({ data: "" }),
   useAccount: jest.fn().mockReturnValue({ data: "mockedAccount" }),
 }));
 
@@ -114,9 +114,16 @@ describe("<ViewContributionHistoryDisplay/>", () => {
 
     expect(screen.getByText("Donation Impact")).toBeInTheDocument();
     expect(screen.getByText("Donation History")).toBeInTheDocument();
-    expect(screen.getByTestId("profile-address")).toBeInTheDocument();
+    expect(screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))).toBeInTheDocument();
     expect(screen.getByText("Share Profile")).toBeInTheDocument();
-    expect(screen.getByTestId("donation-history-table")).toBeInTheDocument();
+    
+    for(const contribution of mockContributions) {
+      for (const chainContribution of contribution.data) {
+        expect(screen.getByText(chainContribution.roundName)).toBeInTheDocument();
+        expect(screen.getByText(chainContribution.projectTitle)).toBeInTheDocument();
+        expect(screen.getByText(chainContribution.transaction)).toBeInTheDocument();
+      }
+    }
   });
 });
 
@@ -133,7 +140,7 @@ describe("<ViewContributionHistoryWithoutDonations/>", () => {
     );
 
     expect(screen.getByText("Donation History")).toBeInTheDocument();
-    expect(screen.getByTestId("profile-address")).toBeInTheDocument();
+    expect(screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))).toBeInTheDocument();
     expect(screen.getByText("Share Profile")).toBeInTheDocument();
   });
 });
