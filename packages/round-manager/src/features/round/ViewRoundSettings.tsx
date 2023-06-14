@@ -2123,7 +2123,7 @@ function Funding(props: {
                         .minContributionUSD
                       ? "disabled:bg-gray-50"
                       : "bg-red"
-                  )}
+                  ))}
                   value={
                     field.value
                   }
