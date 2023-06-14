@@ -39,14 +39,15 @@ export default function ThankYou() {
   }, []);
 
   function TwitterButton(props: { roundName?: string }) {
-    const shareText = `I just donated to the ${props.roundName} on @gitcoin. Join me in making a difference by donating today! https://explorer.gitcoin.co/%23/round/${chainId}/${roundId}`;
+    const shareText = `I just donated to the ${props.roundName} on @gitcoin. Join me in making a difference by donating today! https://explorer.gitcoin.co/#/round/${chainId}/${roundId}`;
+    const shareUrl = `http://twitter.com/share?text=${encodeURIComponent(
+      shareText
+    )}`;
 
     return (
       <Button
         type="button"
-        onClick={() =>
-          window.open(`http://twitter.com/share?text=${shareText}`, "_blank")
-        }
+        onClick={() => window.open(shareUrl, "_blank")}
         className="flex items-center justify-center shadow-sm text-sm rounded border-1 text-black bg-[#C1E4FC] px-10 border-grey-100 hover:shadow-md"
         data-testid="twitter-button"
       >
