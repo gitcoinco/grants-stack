@@ -104,7 +104,7 @@ root.render(
                   />
 
                   <Route
-                    path="/profile/:address"
+                    path="/contributor/:address"
                     element={<ViewContributionHistory />}
                   />
 

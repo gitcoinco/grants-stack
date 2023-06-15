@@ -148,7 +148,7 @@ export function ViewContributionHistoryDisplay(props: {
             />
             <div
               className="text-[32px]"
-              data-testid="profile-address"
+              data-testid="contributor-address"
               title={props.address}
             >
               {props.ensName ||
@@ -156,7 +156,7 @@ export function ViewContributionHistoryDisplay(props: {
             </div>
           </div>
           <CopyToClipboardButton
-            textToCopy={`${currentOrigin}#/profile/${props.address}`}
+            textToCopy={`${currentOrigin}#/contributor/${props.address}`}
             styles="text-xs p-2"
             iconStyle="h-4 w-4 mr-1"
           />
@@ -273,7 +273,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
             />
             <div
               className="text-[32px]"
-              data-testid="profile-address"
+              data-testid="contributor-address"
               title={props.address}
             >
               {props.ensName ||
@@ -281,7 +281,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
             </div>
           </div>
           <CopyToClipboardButton
-            textToCopy={`${currentOrigin}#/profile/${props.address}`}
+            textToCopy={`${currentOrigin}#/contributor/${props.address}`}
             styles="text-xs p-2"
             iconStyle="h-4 w-4 mr-1"
           />
