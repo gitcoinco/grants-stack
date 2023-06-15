@@ -1,12 +1,12 @@
 import { datadogRum } from "@datadog/browser-rum";
+import { Client as AlloClient } from "allo-indexer-client";
+import { convertStatusToText } from "common";
 import { ethers, utils } from "ethers";
 import { Dispatch } from "redux";
-import { convertStatusToText } from "common";
-import { Client as AlloClient } from "allo-indexer-client";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
-import { Application, AppStatus, ProjectStats } from "../reducers/projects";
+import { AppStatus, Application, ProjectStats } from "../reducers/projects";
 import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
 import { fetchProjectOwners } from "../utils/projects";
@@ -344,7 +344,8 @@ export const loadAllChainsProjects =
 
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
-  roundID: string
+  roundID: string,
+  roundChainId: number
 ): Promise<any> => {
   const splitApplicationId = applicationId.split(":");
   const projectChainId = Number(splitApplicationId[0]);
@@ -372,7 +373,7 @@ export const fetchProjectApplicationInRound = async (
           }
         }
       `,
-      projectChainId,
+      roundChainId,
       {
         projectApplicationID,
         Id,
