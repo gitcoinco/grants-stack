@@ -143,7 +143,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
   const FormStepper = props.stepper;
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
-  const [applicationEndDate, setApplicationEndDate] = useState(moment());
+  const [, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(moment());
   const [roundEndDate, setRoundEndDate] = useState<moment.Moment | "">("");
   const [rollingApplications, setRollingApplications] = useState(false);
