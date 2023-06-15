@@ -156,7 +156,7 @@ export function ViewContributionHistoryDisplay(props: {
             </div>
           </div>
           <CopyToClipboardButton
-            textToCopy={`${currentOrigin}#/contributor/${props.address}`}
+            textToCopy={`${currentOrigin}#/contributors/${props.address}`}
             styles="text-xs p-2"
             iconStyle="h-4 w-4 mr-1"
           />
@@ -281,7 +281,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
             </div>
           </div>
           <CopyToClipboardButton
-            textToCopy={`${currentOrigin}#/contributor/${props.address}`}
+            textToCopy={`${currentOrigin}#/contributors/${props.address}`}
             styles="text-xs p-2"
             iconStyle="h-4 w-4 mr-1"
           />
