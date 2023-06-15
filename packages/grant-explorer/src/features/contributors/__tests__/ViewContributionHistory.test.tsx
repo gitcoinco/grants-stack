@@ -87,15 +87,6 @@ jest.mock("wagmi", () => ({
   useAccount: jest.fn().mockReturnValue({ data: "mockedAccount" }),
 }));
 
-jest.mock("ethereum-blockies", () => ({
-  __esModule: true,
-  default: {
-    create: jest.fn().mockReturnValue({
-      toDataURL: jest.fn().mockReturnValue("mockedAddressLogo"),
-    }),
-  },
-}));
-
 describe("<ViewContributionHistoryDisplay/>", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -108,6 +99,7 @@ describe("<ViewContributionHistoryDisplay/>", () => {
           tokens={mockTokens}
           contributions={mockContributions}
           address={mockAddress}
+          addressLogo="mockedAddressLogo"
         />
       </MemoryRouter>
     );
@@ -135,7 +127,10 @@ describe("<ViewContributionHistoryWithoutDonations/>", () => {
   it("Should show donation history", async () => {
     render(
       <MemoryRouter>
-        <ViewContributionHistoryWithoutDonations address={mockAddress} />
+        <ViewContributionHistoryWithoutDonations 
+          address={mockAddress} 
+          addressLogo="mockedAddressLogo"
+        />
       </MemoryRouter>
     );
 
