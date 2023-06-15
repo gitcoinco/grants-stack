@@ -1,4 +1,4 @@
-import { useAccount, useEnsName } from "wagmi";
+import { useAccount } from "wagmi";
 import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
@@ -21,27 +21,26 @@ type ContributionHistoryState =
   | { type: "loading" }
   | {
       type: "loaded";
-      data: { chainId: number; data: Contribution[] | never[] }[];
+      data: { chainId: number; data: Contribution[] }[];
     }
   | { type: "error"; error: string };
 
-const useContributionHistory = (chainIds: number[], rawaddress: string) => {
+const useContributionHistory = (chainIds: number[], rawAddress: string) => {
   const [state, setState] = useState<ContributionHistoryState>({
     type: "loading",
   });
 
   useEffect(() => {
-    console.log("loading", chainIds, rawaddress);
-
     if (!process.env.REACT_APP_ALLO_API_URL) {
       throw new Error("REACT_APP_ALLO_API_URL is not set");
     }
 
-    const histories: { chainId: number; data: Contribution[] | never[] }[] = [];
-    let allChainsError = true;
-
     const fetchContributions = async () => {
-      const fetchPromises = chainIds.map((chainId: number) => {
+      const fetchPromises: Promise<{
+        chainId: number;
+        data: Contribution[];
+        error?: string;
+      }>[] = chainIds.map((chainId: number) => {
         if (!process.env.REACT_APP_ALLO_API_URL) {
           throw new Error("REACT_APP_ALLO_API_URL is not set");
         }
@@ -55,46 +54,43 @@ const useContributionHistory = (chainIds: number[], rawaddress: string) => {
         let address = "";
         try {
           // ensure the address is a valid address
-          address = ethers.utils.getAddress(rawaddress.toLowerCase());
+          address = ethers.utils.getAddress(rawAddress.toLowerCase());
         } catch (e) {
-          setState({
-            type: "error",
-            error: "bad address",
+          return Promise.resolve({
+            chainId,
+            error: "Invalid address",
+            data: [],
           });
         }
 
         return client
           .getContributionsByAddress(address)
           .then((data) => {
-            const history = { chainId, data };
-            histories.push(history);
-            allChainsError = false; // If data is fetched successfully for any chain, set allChainsError to false
+            return { chainId, error: undefined, data };
           })
           .catch((error) => {
             console.log(
               `Error fetching contribution history for chain ${chainId}:`,
               error
             );
-            const history = { chainId, data: [] };
-            histories.push(history);
+            return { chainId, error: error.toString() as string, data: [] };
           });
       });
 
-      await Promise.all(fetchPromises);
+      const fetchResults = await Promise.all(fetchPromises);
 
-      if (allChainsError) {
+      if (fetchResults.every((result) => result.error)) {
         setState({
           type: "error",
           error: "Error fetching contribution history for all chains",
         });
       } else {
-        console.log("loaded", histories);
-        setState({ type: "loaded", data: histories });
+        setState({ type: "loaded", data: fetchResults });
       }
     };
 
     fetchContributions();
-  }, [chainIds, rawaddress]);
+  }, [chainIds, rawAddress]);
 
   return state;
 };
@@ -147,11 +143,15 @@ export function ViewContributionHistoryDisplay(props: {
           <div className="flex items-center">
             <img
               className="w-10 h-10 rounded-full mr-4"
-              src={addressLogo}
+              src={props.addressLogo}
               alt="Address Logo"
             />
-            <div className="text-[32px]" data-testid="profile-address" title={props.address}>
-              {ensName ||
+            <div
+              className="text-[32px]"
+              data-testid="profile-address"
+              title={props.address}
+            >
+              {props.ensName ||
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
           </div>
@@ -180,7 +180,10 @@ export function ViewContributionHistoryDisplay(props: {
         <div className="text-lg bg-violet-100 text-black px-1 py-1">
           All Rounds
         </div>
-        <table className="border-collapse w-full" data-testid="donation-history-table">
+        <table
+          className="border-collapse w-full"
+          data-testid="donation-history-table"
+        >
           <tr className="text-left text-lg">
             <th className="py-4">Project</th>
             <th className="py-4">Donation</th>
@@ -212,14 +215,14 @@ export function ViewContributionHistoryDisplay(props: {
                         />
                       </div>
                       {/*ToDo: add links to the round name & project */}
-                      <div 
+                      <div
                         className="inline-block max-2-[200px] truncate"
                         title={contribution.roundName}
                       >
                         {contribution.roundName}
                       </div>
                       <ChevronRightIcon className="h-4 inline mx-2" />
-                      <div 
+                      <div
                         className="inline-block max-w-[300px] truncate"
                         title={contribution.projectTitle}
                       >
@@ -231,9 +234,13 @@ export function ViewContributionHistoryDisplay(props: {
                   </td>
                   <td className="border-b py-4 max-w-[150px] truncate pr-16">
                     {formattedAmount}
-                    <div className="text-md text-gray-500">${contribution.amountUSD.toFixed(2)}</div>
+                    <div className="text-md text-gray-500">
+                      ${contribution.amountUSD.toFixed(2)}
+                    </div>
                   </td>
-                  <td className="border-b py-4 max-w-[300px] truncate">{contribution.transaction}</td>
+                  <td className="border-b py-4 max-w-[300px] truncate">
+                    {contribution.transaction}
+                  </td>
                 </tr>
               );
             });
@@ -249,13 +256,9 @@ export function ViewContributionHistoryDisplay(props: {
 
 export function ViewContributionHistoryWithoutDonations(props: {
   address: string;
+  addressLogo: string;
+  ensName?: string;
 }) {
-  const { data: ensName } = useEnsName({
-    address: props.address,
-  });
-  const addressLogo = blockies
-    .create({ seed: props.address.toLowerCase() })
-    .toDataURL();
   const currentOrigin = window.location.origin;
   const { address: walletAddress } = useAccount();
   return (
@@ -265,11 +268,15 @@ export function ViewContributionHistoryWithoutDonations(props: {
           <div className="flex items-center">
             <img
               className="w-10 h-10 rounded-full mr-4"
-              src={addressLogo}
+              src={props.addressLogo}
               alt="Address Logo"
             />
-            <div className="text-[32px]" data-testid="profile-address" title={props.address}>
-              {ensName ||
+            <div
+              className="text-[32px]"
+              data-testid="profile-address"
+              title={props.address}
+            >
+              {props.ensName ||
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
           </div>
@@ -285,24 +292,26 @@ export function ViewContributionHistoryWithoutDonations(props: {
             {props.address == walletAddress ? (
               <>
                 <p className="text-md">
-                  This is your donation history page, where you can keep track of
-                  all the public goods you've funded. 
+                  This is your donation history page, where you can keep track
+                  of all the public goods you've funded.
                 </p>
                 <p className="text-md">
-                  As you make donations, your transaction history will appear here.
+                  As you make donations, your transaction history will appear
+                  here.
                 </p>
               </>
             ) : (
               <>
                 <p className="text-md">
                   This is{" "}
-                  {ensName ||
+                  {props.ensName ||
                     props.address.slice(0, 6) + "..." + props.address.slice(-6)}
-                    ’s donation history page, showcasing their contributions towards
-                    public goods.
+                  ’s donation history page, showcasing their contributions
+                  towards public goods.
                 </p>
                 <p className="text-md">
-                  As they make donations, their transaction history will appear here.
+                  As they make donations, their transaction history will appear
+                  here.
                 </p>
               </>
             )}
@@ -330,22 +339,29 @@ function ViewContributionHistoryFetcher(props: {
     props.address
   );
 
+  const addressLogo = useMemo(() => {
+    return blockies.create({ seed: props.address.toLowerCase() }).toDataURL();
+  }, [props.address]);
+
   const tokens = Object.fromEntries(
-    payoutTokens.map((token) => [
-      token.address,
-      token,
-    ])
+    payoutTokens.map((token) => [token.address, token])
   );
 
   if (contributionHistory.type === "loading") {
     return <div>Loading...</div>;
   } else if (contributionHistory.type === "error") {
     console.error("Error", contributionHistory);
-    return <ViewContributionHistoryWithoutDonations address={props.address} />;
+    return (
+      <ViewContributionHistoryWithoutDonations
+        address={props.address}
+        addressLogo={addressLogo}
+      />
+    );
   } else {
     return (
       <ViewContributionHistoryDisplay
         tokens={tokens}
+        addressLogo={addressLogo}
         contributions={contributionHistory.data}
         address={props.address}
       />
@@ -376,11 +392,11 @@ export default function () {
 
   return (
     <>
-        <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
-        <ViewContributionHistoryFetcher
-          address={params.address}
-          chainIds={chainIds}
-        />
+      <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
+      <ViewContributionHistoryFetcher
+        address={params.address}
+        chainIds={chainIds}
+      />
     </>
   );
 }
