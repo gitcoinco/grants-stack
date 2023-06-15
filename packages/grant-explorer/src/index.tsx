@@ -32,6 +32,7 @@ import ThankYou from "./features/round/ThankYou";
 import ViewCart from "./features/round/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
+import ViewContributionHistory from "./features/contributors/ViewContributionHistory";
 
 // Initialize sentry
 initSentry();
@@ -96,6 +97,11 @@ root.render(
                   <Route
                     path="/round/:chainId/:roundId/passport/connect"
                     element={<PassportConnect />}
+                  />
+
+                  <Route
+                    path="/contributor/:address"
+                    element={<ViewContributionHistory />}
                   />
 
                   {/* Access Denied */}

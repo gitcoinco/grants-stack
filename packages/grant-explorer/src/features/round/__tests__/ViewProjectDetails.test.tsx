@@ -137,7 +137,6 @@ describe("<ViewProjectDetails/>", () => {
     it("displays the bread crumbs", async () => {
       expect(await screen.findByTestId("bread-crumbs")).toBeInTheDocument();
     });
-
   });
 
   it("shows project stats", async () => {

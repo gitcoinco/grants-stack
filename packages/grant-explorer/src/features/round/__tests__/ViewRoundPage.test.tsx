@@ -26,8 +26,8 @@ const mockAccount = {
   address: userAddress,
 };
 const mockSwitchNetwork = {
-  chainId: chainId
-}
+  chainId: chainId,
+};
 
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
