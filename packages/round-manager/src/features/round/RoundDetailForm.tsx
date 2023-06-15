@@ -8,7 +8,7 @@ import { classNames } from "common";
 import { Input } from "common/src/styles";
 import _ from "lodash";
 import moment from "moment";
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
 import {
@@ -131,6 +131,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     control,
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<Round>({
     defaultValues: {
@@ -142,8 +143,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
   const FormStepper = props.stepper;
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
-  const [applicationEndDate, setApplicationEndDate] = useState(moment());
-  const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
+  const [, setApplicationEndDate] = useState(moment());
+  const [roundStartDate, setRoundStartDate] = useState(moment());
+  const [roundEndDate, setRoundEndDate] = useState<moment.Moment | "">("");
+  const [rollingApplications, setRollingApplications] = useState(false);
 
   const next: SubmitHandler<Round> = async (values) => {
     /* Insert HTTPS into support URL if missing */
@@ -174,13 +177,16 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     return disablePastDate(current);
   };
 
-  function disableBeforeApplicationEndDate(current: moment.Moment) {
-    return current.isAfter(applicationEndDate);
-  }
-
   function disableBeforeRoundStartDate(current: moment.Moment) {
     return current.isAfter(roundStartDate);
   }
+
+  useEffect(() => {
+    if (rollingApplications && roundEndDate !== "") {
+      setValue("applicationsEndTime", roundEndDate.toDate());
+      setApplicationEndDate(roundEndDate);
+    }
+  }, [rollingApplications, roundEndDate, setValue]);
 
   return (
     <div>
@@ -309,6 +315,38 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                       {errors.applicationsStartTime?.message}
                     </p>
                   )}
+                  <div className="flex items-center mt-2">
+                    <input
+                      id="rollingApplications"
+                      name="rollingApplications"
+                      type="checkbox"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      checked={rollingApplications}
+                      onChange={(e) => setRollingApplications(e.target.checked)}
+                    />
+                    <label
+                      htmlFor="rollingApplications"
+                      className="ml-2 block text-sm text-grey-400"
+                    >
+                      Enable rolling applications
+                    </label>
+                    <InformationCircleIcon
+                      data-tip
+                      data-for="rollingApplicationsTooltip"
+                      className="h-4 w-4 ml-1 text-grey-400"
+                    />
+                    <ReactTooltip
+                      id="rollingApplicationsTooltip"
+                      place="top"
+                      effect="solid"
+                      className="text-grey-400"
+                    >
+                      <span>
+                        If enabled, applications will be accepted until the
+                        round ends.
+                      </span>
+                    </ReactTooltip>
+                  </div>
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
@@ -317,6 +355,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                       errors.applicationsEndTime
                         ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    } ${
+                      rollingApplications
+                        ? "cursor-not-allowed bg-gray-100"
+                        : ""
                     }`}
                   >
                     <label
@@ -340,7 +382,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             id: "applicationsEndTime",
                             placeholder: "",
                             className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
+                            disabled: rollingApplications,
                           }}
                           isValidDate={disableBeforeApplicationStartDate}
                           utc={true}
@@ -412,7 +455,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
-                          isValidDate={disableBeforeApplicationEndDate}
+                          isValidDate={disableBeforeApplicationStartDate}
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
                           timeFormat={"HH:mm UTC"}
@@ -467,6 +510,17 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             placeholder: "",
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                          }}
+                          onChange={(date) => {
+                            field.onChange(moment(date));
+                            setRoundEndDate(moment(date));
+                            if (rollingApplications) {
+                              setApplicationEndDate(moment(date));
+                              setValue(
+                                "applicationsEndTime",
+                                moment(date).toDate()
+                              );
+                            }
                           }}
                           isValidDate={disableBeforeRoundStartDate}
                           utc={true}
