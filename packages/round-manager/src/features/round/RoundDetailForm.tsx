@@ -328,7 +328,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                       htmlFor="rollingApplications"
                       className="ml-2 block text-sm text-grey-400"
                     >
-                      Accept applications throughout round
+                      Enable rolling applications
                     </label>
                     <InformationCircleIcon
                       data-tip
