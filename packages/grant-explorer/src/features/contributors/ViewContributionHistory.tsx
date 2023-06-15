@@ -4,7 +4,7 @@ import {
   DetailedVote as Contribution,
 } from "allo-indexer-client";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
@@ -110,44 +110,35 @@ function StatCard(props: { title: string; value: string | undefined }) {
 
 export function ViewContributionHistoryDisplay(props: {
   tokens: Record<string, PayoutToken>;
-  contributions: { chainId: number; data: Contribution[] | never[] }[];
+  contributions: { chainId: number; data: Contribution[] }[];
   address: string;
+  addressLogo: string;
+  ensName?: string;
 }) {
-  const { data: ensName } = useEnsName({
-    address: props.address,
-  });
-  const addressLogo = blockies
-    .create({ seed: props.address.toLowerCase() })
-    .toDataURL();
-
-  const [totalDonations, setTotalDonations] = useState(0);
-  const [totalUniqueContributions, setTotalUniqueContributions] = useState(0);
-  const [totalProjectsFunded, setTotalProjectsFunded] = useState(0);
-
   const currentOrigin = window.location.origin;
 
-  useEffect(() => {
-    let totalDonations = 0;
-    let totalUniqueContributions = 0;
-    const projects: string[] = [];
-    props.contributions.forEach((chainContribution) => {
-      const { data } = chainContribution;
-      data.forEach((contribution) => {
-        const token = props.tokens[contribution.token];
-        if (token) {
-          totalDonations += contribution.amountUSD;
-          totalUniqueContributions += 1;
-          const project = contribution.projectId;
-          if (!projects.includes(project)) {
-            projects.push(project);
+  const [totalDonations, totalUniqueContributions, totalProjectsFunded] =
+    useMemo(() => {
+      let totalDonations = 0;
+      let totalUniqueContributions = 0;
+      const projects: string[] = [];
+      props.contributions.forEach((chainContribution) => {
+        const { data } = chainContribution;
+        data.forEach((contribution) => {
+          const token = props.tokens[contribution.token];
+          if (token) {
+            totalDonations += contribution.amountUSD;
+            totalUniqueContributions += 1;
+            const project = contribution.projectId;
+            if (!projects.includes(project)) {
+              projects.push(project);
+            }
           }
-        }
+        });
       });
-    });
-    setTotalDonations(totalDonations);
-    setTotalUniqueContributions(totalUniqueContributions);
-    setTotalProjectsFunded(projects.length);
-  }, [props.contributions, props.tokens]);
+
+      return [totalDonations, totalUniqueContributions, projects.length];
+    }, [props.contributions, props.tokens]);
 
   return (
     <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
