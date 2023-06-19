@@ -165,12 +165,11 @@ export default function About({
           </div>
         )}
         <div className="mt-4">
-          <p className="text-primary-text ml-2 xl:mt-2 lg:mt-2 font-bold">
-            Description
-          </p>
-          <div className="pt-6 mb-12 ml-2 prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600">
+          <div className="mb-12 ml-2 prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600">
+            <div className="text-sm">Description</div>
             {project?.description && (
               <div
+                className="pr-4"
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
                   __html: renderToHTML(
