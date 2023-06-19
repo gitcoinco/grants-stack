@@ -19,7 +19,7 @@ import LoadingSpinner from "../base/LoadingSpinner";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import { GrantsMetadataState } from "../../reducers/grantsMetadata";
 
-interface PeriodProps {
+interface ApplyButtonProps {
   roundState: any;
   applicationsHaveStarted: boolean;
   applicationsHaveEnded: boolean;
@@ -28,7 +28,7 @@ interface PeriodProps {
   roundId: string | undefined;
 }
 
-function Period(props: PeriodProps) {
+function ApplyButton(props: ApplyButtonProps) {
   const {
     roundState,
     applicationsHaveStarted,
@@ -352,7 +352,7 @@ function Round() {
           </div>
         </div>
         <div className="flex flex-1 flex-col mt-8">
-          <Period
+          <ApplyButton
             roundState={props.roundState}
             applicationsHaveStarted={props.applicationsHaveStarted}
             applicationsHaveEnded={props.applicationsHaveEnded}
