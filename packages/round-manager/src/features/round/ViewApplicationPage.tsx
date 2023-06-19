@@ -1,10 +1,11 @@
+import { datadogLogs } from "@datadog/browser-logs";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import { ArrowNarrowLeftIcon, CheckIcon, XIcon } from "@heroicons/react/solid";
 import GreenVerifiedBadge from "common/src/components/badges/GreenVerifiedBadge";
-import {
-  ArrowNarrowLeftIcon,
-  CheckIcon,
-  XCircleIcon,
-  XIcon,
-} from "@heroicons/react/solid";
+import Footer from "common/src/components/Footer";
+import { Button } from "common/src/styles";
+import { utils } from "ethers";
 import { useEffect, useState } from "react";
 import {
   Link,
@@ -12,17 +13,16 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import ConfirmationModal from "../common/ConfirmationModal";
-import Navbar from "../common/Navbar";
-import { useWallet } from "../common/Auth";
-import { Button } from "common/src/styles";
-import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
-import Footer from "common/src/components/Footer";
-import { datadogLogs } from "@datadog/browser-logs";
+import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
+import { errorModalDelayMs } from "../../constants";
+import {
+  useApplicationById,
+  useApplicationByRoundId,
+} from "../../context/application/ApplicationContext";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
-import ProgressModal from "../common/ProgressModal";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import { useRoundById } from "../../context/round/RoundContext";
+import { Lit } from "../api/lit";
 import {
   AnswerBlock,
   GrantApplication,
@@ -30,24 +30,22 @@ import {
   ProgressStep,
   ProjectCredentials,
 } from "../api/types";
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { Lit } from "../api/lit";
-import { utils } from "ethers";
-import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
-import { useApplicationById, useApplicationByRoundId } from "../../context/application/ApplicationContext";
+import { useWallet } from "../common/Auth";
+import ConfirmationModal from "../common/ConfirmationModal";
+import ErrorModal from "../common/ErrorModal";
+import Navbar from "../common/Navbar";
+import NotFoundPage from "../common/NotFoundPage";
+import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
-import { useRoundById } from "../../context/round/RoundContext";
-import ErrorModal from "../common/ErrorModal";
-import { errorModalDelayMs } from "../../constants";
 
 import {
   CalendarIcon,
   formatDateWithOrdinal,
+  renderToHTML,
   VerifiedCredentialState,
 } from "common";
-import { renderToHTML } from "common";
 import { useDebugMode } from "../../hooks";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
@@ -196,10 +194,11 @@ export default function ViewApplicationPage() {
   const getVerifiableCredentialVerificationResultView = (provider: string) => {
     switch (verifiedProviders[provider]) {
       case VerifiedCredentialState.VALID:
-        return (
-          <GreenVerifiedBadge />
-        );
+        return <GreenVerifiedBadge />;
       case VerifiedCredentialState.INVALID:
+        // Temporarily commenting out as per discussion in https://discord.com/channels/562828676480237578/1116047776292286466/1118291972029960294
+        // TODO: Uncomment when we have a better way to handle expired VC
+        /*
         return (
           <span className="rounded-full bg-red-100 px-3 inline-flex flex-row justify-center items-center">
             <XCircleIcon
@@ -207,8 +206,10 @@ export default function ViewApplicationPage() {
               data-testid={`${provider}-verifiable-credential-unverified`}
             />
             <p className="text-white font-medium text-xs">Invalid</p>
-          </span>
+          </span>        
         );
+        */
+        return <></>;
       default:
         return <></>;
     }
@@ -458,8 +459,8 @@ export default function ViewApplicationPage() {
                         Created on:{" "}
                         {application?.project?.createdAt
                           ? formatDateWithOrdinal(
-                            new Date(Number(application?.project?.createdAt))
-                          )
+                              new Date(Number(application?.project?.createdAt))
+                            )
                           : "-"}
                       </span>
                     </span>
