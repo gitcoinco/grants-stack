@@ -7,6 +7,7 @@ import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
+import { Round } from "../../types";
 import { Status as ProjectStatus } from "../../reducers/projects";
 import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { Status } from "../../reducers/rounds";
@@ -20,7 +21,7 @@ import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import { GrantsMetadataState } from "../../reducers/grantsMetadata";
 
 interface ApplyButtonProps {
-  roundState: any;
+  round: Round;
   applicationsHaveStarted: boolean;
   applicationsHaveEnded: boolean;
   projects: GrantsMetadataState;
@@ -30,7 +31,7 @@ interface ApplyButtonProps {
 
 function ApplyButton(props: ApplyButtonProps) {
   const {
-    roundState,
+    round,
     applicationsHaveStarted,
     applicationsHaveEnded,
     projects,
@@ -77,7 +78,7 @@ function ApplyButton(props: ApplyButtonProps) {
         </Button>
         <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
           <span>The application period for this round will start on</span>
-          <span>{formatTimeUTC(roundState?.round?.applicationsStartTime)}</span>
+          <span>{formatTimeUTC(round.applicationsStartTime)}</span>
         </div>
       </>
     );
@@ -112,7 +113,7 @@ function ApplyButton(props: ApplyButtonProps) {
   );
 }
 
-function Round() {
+function ShowRound() {
   const [roundData, setRoundData] = useState<any>();
 
   const params = useParams();
@@ -353,7 +354,7 @@ function Round() {
         </div>
         <div className="flex flex-1 flex-col mt-8">
           <ApplyButton
-            roundState={props.roundState}
+            round={props.round}
             applicationsHaveStarted={props.applicationsHaveStarted}
             applicationsHaveEnded={props.applicationsHaveEnded}
             projects={props.projects}
@@ -367,4 +368,4 @@ function Round() {
   );
 }
 
-export default Round;
+export default ShowRound;
