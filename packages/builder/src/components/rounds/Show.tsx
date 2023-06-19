@@ -21,8 +21,8 @@ import { GrantsMetadataState } from "../../reducers/grantsMetadata";
 
 interface PeriodProps {
   roundState: any;
-  applicationStarted: boolean;
-  applicationEnded: boolean;
+  applicationsHaveStarted: boolean;
+  applicationsHaveEnded: boolean;
   projects: GrantsMetadataState;
   chainId: number;
   roundId: string | undefined;
@@ -31,32 +31,14 @@ interface PeriodProps {
 function Period(props: PeriodProps) {
   const {
     roundState,
-    applicationStarted,
-    applicationEnded,
+    applicationsHaveStarted,
+    applicationsHaveEnded,
     projects,
     chainId,
     roundId,
   } = props;
-  if (applicationStarted) {
-    return (
-      <>
-        <Button
-          styles={[
-            "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
-          ]}
-          variant={ButtonVariants.primary}
-          disabled
-        >
-          Apply
-        </Button>
-        <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
-          <span>The application period for this round will start on</span>
-          <span>{formatTimeUTC(roundState?.round?.applicationsStartTime)}</span>
-        </div>
-      </>
-    );
-  }
-  if (applicationEnded) {
+
+  if (applicationsHaveEnded) {
     return (
       <>
         <Button
@@ -80,6 +62,27 @@ function Period(props: PeriodProps) {
       </>
     );
   }
+
+  if (!applicationsHaveStarted) {
+    return (
+      <>
+        <Button
+          styles={[
+            "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
+          ]}
+          variant={ButtonVariants.primary}
+          disabled
+        >
+          Apply
+        </Button>
+        <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
+          <span>The application period for this round will start on</span>
+          <span>{formatTimeUTC(roundState?.round?.applicationsStartTime)}</span>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div className="flex flex-1 flex-col w-full">
       {Object.keys(projects).length !== 0 ? (
@@ -130,18 +133,24 @@ function Round() {
     const roundChainId = Number(chainId);
 
     const now = Math.trunc(Date.now() / 1000);
-    const applicationEnded = roundState
-      ? (roundState.round?.applicationsEndTime || now - 1000) < now
-      : true;
-    const applicationStarted = roundState
-      ? (roundState.round?.applicationsStartTime || now + 1000) > now
-      : true;
-    const roundVotingStarted = roundState
-      ? (roundState.round?.roundStartTime || now + 1000) > now
-      : true;
-    const roundVotingEnded = roundState
-      ? (roundState.round?.roundEndTime || now - 1000) < now
-      : true;
+
+    let applicationsHaveStarted = false;
+    let applicationsHaveEnded = false;
+    let votingHasStarted = false;
+    let votingHasEnded = false;
+
+    if (
+      roundState?.round &&
+      roundState?.round?.applicationsEndTime &&
+      roundState?.round?.applicationsStartTime &&
+      roundState?.round?.roundStartTime &&
+      roundState?.round?.roundEndTime
+    ) {
+      applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
+      applicationsHaveEnded = roundState.round?.applicationsEndTime <= now;
+      votingHasStarted = roundState.round?.roundStartTime <= now;
+      votingHasEnded = roundState.round?.roundEndTime <= now;
+    }
 
     return {
       roundState,
@@ -152,10 +161,10 @@ function Round() {
       roundChainId,
       projects: allProjectMetadata,
       projectsStatus,
-      applicationStarted,
-      applicationEnded,
-      roundVotingStarted,
-      roundVotingEnded,
+      applicationsHaveStarted,
+      applicationsHaveEnded,
+      votingHasStarted,
+      votingHasEnded,
     };
   }, shallowEqual);
 
@@ -185,18 +194,14 @@ function Round() {
   useEffect(() => {
     if (!isOnRoundChain) return;
 
-    if (
-      roundId &&
-      props.applicationEnded !== undefined &&
-      !props.applicationEnded
-    ) {
+    if (roundId && !props.applicationsHaveEnded) {
       setRoundToApply(`${chainId}:${roundId}`);
 
       if (roundApplicationModal === ApplicationModalStatus.Undefined) {
         setToggleRoundApplicationModal(ApplicationModalStatus.NotApplied);
       }
     }
-  }, [roundId, props.applicationEnded]);
+  }, [roundId, props.applicationsHaveEnded]);
 
   useEffect(() => {
     if (roundId !== undefined) {
@@ -349,8 +354,8 @@ function Round() {
         <div className="flex flex-1 flex-col mt-8">
           <Period
             roundState={props.roundState}
-            applicationStarted={props.applicationStarted}
-            applicationEnded={props.applicationEnded}
+            applicationsHaveStarted={props.applicationsHaveStarted}
+            applicationsHaveEnded={props.applicationsHaveEnded}
             projects={props.projects}
             roundId={roundId}
             chainId={props.roundChainId}
