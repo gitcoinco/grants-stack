@@ -336,7 +336,6 @@ export const loadRound =
 export const loadRounds =
   (addressAndChain: Map<string, number>) => async (dispatch: Dispatch) => {
     addressAndChain.forEach((chainId, address) => {
-      console.log("DASA loading round", address, chainId);
       dispatch<any>(loadRound(address, chainId));
     });
   };
