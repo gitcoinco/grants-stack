@@ -1,21 +1,16 @@
-import { Box } from "@chakra-ui/react";
 import { renderToHTML } from "common";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { loadRounds } from "../../actions/rounds";
 import { GithubLogo, TwitterLogo } from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
-import { Application } from "../../reducers/projects";
-import { Status } from "../../reducers/rounds";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import { formatDateFromMs } from "../../utils/components";
 import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
-import ApplicationCard from "./ApplicationCard";
+import ApplicationsBox from "./ApplicationsBox";
 
 export default function About({
   project,
@@ -29,7 +24,6 @@ export default function About({
   updatedAt: number;
 }) {
   const params = useParams();
-  const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const { chainId } = params;
 
@@ -42,46 +36,6 @@ export default function About({
       rounds: state.rounds,
     };
   });
-  const [applicationsToShow, setApplicationsToShow] = useState<Application[]>(
-    []
-  );
-
-  useEffect(() => {
-    const roundToChain = new Map<string, number>();
-    props.applications.forEach((application) => {
-      roundToChain.set(application.roundID, application.chainId);
-    });
-    dispatch(loadRounds(roundToChain));
-  }, [dispatch, props.applications]);
-
-  useEffect(() => {
-    if (
-      props.applications.filter((application) => {
-        if (
-          props.rounds[application.roundID]?.status !== Status.Loaded ||
-          props.rounds[application.roundID]?.round?.roundEndTime === undefined
-        ) {
-          return true;
-        }
-        return false;
-      }).length > 0
-    ) {
-      return;
-    }
-
-    const appsToShow = props.applications.filter((application) => {
-      const roundID = application?.roundID;
-      if (props.rounds[roundID]?.round?.roundEndTime! < Date.now() / 1000) {
-        return false;
-      }
-      return true;
-    });
-
-    setApplicationsToShow(appsToShow);
-  }, [props.applications, props.rounds]);
-
-  const canShowApplications =
-    props.applications.length !== 0 && showApplications;
 
   const { isValid: validTwitterCredential } = useValidateCredential(
     project?.credentials?.twitter,
@@ -94,27 +48,7 @@ export default function About({
   );
 
   const renderApplications = () => (
-    <>
-      <Box p={1}>
-        <span className="text-[20px]">My Applications</span>
-      </Box>
-      <Box>
-        {applicationsToShow.map((application, index) => {
-          const roundID = application?.roundID;
-          const cardData = {
-            application,
-            roundID,
-            chainId: application?.chainId,
-          };
-
-          return (
-            <Box key={[roundID, index].join("-")} m={2}>
-              <ApplicationCard applicationData={cardData} />
-            </Box>
-          );
-        })}
-      </Box>
-    </>
+    <ApplicationsBox applications={props.applications} />
   );
 
   return (
@@ -202,7 +136,7 @@ export default function About({
             )}
           </div>
         </div>
-        {canShowApplications && (
+        {showApplications && (
           <div className="flex flex-1 md:hidden flex-col">
             {renderApplications()}
           </div>
@@ -224,7 +158,7 @@ export default function About({
           </div>
         </div>
       </div>
-      {canShowApplications && (
+      {showApplications && (
         <div className="max-w-md w-full hidden md:flex flex-col">
           {renderApplications()}
         </div>
