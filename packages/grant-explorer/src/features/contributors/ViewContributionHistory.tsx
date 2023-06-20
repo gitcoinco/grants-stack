@@ -3,7 +3,7 @@ import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
 } from "allo-indexer-client";
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ethers } from "ethers";
@@ -16,6 +16,7 @@ import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import { payoutTokens } from "../api/utils";
+import { time } from "console";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -238,8 +239,22 @@ export function ViewContributionHistoryDisplay(props: {
                       ${contribution.amountUSD.toFixed(2)}
                     </div>
                   </td>
-                  <td className="border-b py-4 max-w-[300px] truncate">
-                    {contribution.transaction}
+                  <td className="border-b py-4">
+                    <div
+                      className="flex flex-row"
+                      onClick={() => {
+                        ViewTransactionDetails({
+                          txnHash: contribution.transaction,
+                          chainId: chainId,
+                          timestamp: 0,
+                        });
+                      }}
+                    >
+                      <div className=" max-w-[300px] truncate">
+                        {contribution.transaction}
+                      </div>
+                      <ChevronDownIcon className="h-5 inline mx-2" />
+                    </div>
                   </td>
                 </tr>
               );
@@ -250,6 +265,35 @@ export function ViewContributionHistoryDisplay(props: {
       <div className="my-11 h-11">
         <Footer />
       </div>
+    </div>
+  );
+}
+
+function ViewTransactionDetails(props: {
+  txnHash: string;
+  chainId: number;
+  timestamp: number;
+}) {
+  const { txnHash, chainId, timestamp } = props;
+
+  return (
+    <div>
+      <table className="border-collapse w-full">
+        <tr className="text-left text-md">
+          <th className="py-4">Transaction Hash</th>
+          <th className="py-4">Chain</th>
+          <th className="py-4">Timestamp</th>
+          <th className="py-4"></th>
+        </tr>
+
+        <tr>
+          <div className="flex items-center">
+            <td>{txnHash}</td>
+            <td>{chainId}</td>
+            <td>{timestamp}</td>
+          </div>
+        </tr>
+      </table>
     </div>
   );
 }
