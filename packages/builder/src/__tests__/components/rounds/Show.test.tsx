@@ -1,5 +1,7 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
+import { useParams } from "react-router-dom";
+
 import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
 import { loadRound, unloadRounds } from "../../../actions/rounds";
 import { web3ChainIDLoaded } from "../../../actions/web3";
@@ -17,10 +19,7 @@ jest.mock("../../../actions/projects");
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useParams: () => ({
-    roundId: addressFrom(1),
-    chainId: 5,
-  }),
+  useParams: jest.fn(),
 }));
 
 jest.mock("wagmi", () => ({
@@ -34,20 +33,53 @@ jest.mock("wagmi", () => ({
 }));
 
 describe("<Show />", () => {
-  describe("with a valid round", () => {
-    let store: any;
+  let store: any;
 
+  beforeEach(() => {
+    store = setupStore();
+    const round = buildRound({
+      address: addressFrom(1),
+    });
+
+    const pastRound = buildRound({
+      address: addressFrom(1),
+      applicationsStartTime: 0,
+      applicationsEndTime: 0,
+      roundStartTime: 0,
+      roundEndTime: 0,
+    });
+
+    const futureRound = buildRound({
+      address: addressFrom(1),
+      applicationsStartTime: Date.now() / 1000 + 60 * 30,
+      applicationsEndTime: Date.now() / 1000 + 60 * 60,
+      roundStartTime: Date.now() / 1000 + 60 * 60,
+      roundEndTime: Date.now() / 1000 + 60 * 120,
+    });
+
+    store.dispatch(web3ChainIDLoaded(5));
+    store.dispatch({
+      type: "ROUNDS_ROUND_LOADED",
+      address: addressFrom(1),
+      round,
+    });
+    store.dispatch({
+      type: "ROUNDS_ROUND_LOADED",
+      address: addressFrom(2),
+      round: pastRound,
+    });
+    store.dispatch({
+      type: "ROUNDS_ROUND_LOADED",
+      address: addressFrom(3),
+      round: futureRound,
+    });
+  });
+
+  describe("current round", () => {
     beforeEach(() => {
-      store = setupStore();
-      const round = buildRound({
-        address: addressFrom(1),
-      });
-
-      store.dispatch(web3ChainIDLoaded(5));
-      store.dispatch({
-        type: "ROUNDS_ROUND_LOADED",
-        address: addressFrom(1),
-        round,
+      (useParams as jest.Mock).mockReturnValue({
+        roundId: addressFrom(1),
+        chainId: 5,
       });
     });
 
@@ -168,6 +200,74 @@ describe("<Show />", () => {
         const a = button.parentElement!;
         expect(a.getAttribute("href")).toEqual("#/projects/new");
       });
+    });
+  });
+
+  describe("past round", () => {
+    beforeEach(() => {
+      (useParams as jest.Mock).mockReturnValue({
+        roundId: addressFrom(2),
+        chainId: 5,
+      });
+    });
+
+    it("should not allow you to apply", async () => {
+      (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+      (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+      (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+
+      store.dispatch({
+        type: "GRANT_METADATA_FETCHED",
+        data: buildProjectMetadata({}),
+      });
+
+      store.dispatch({
+        type: "PROJECTS_LOADED",
+        payload: {
+          chainID: 0,
+          events: {},
+        },
+      });
+
+      renderWrapped(<Show />, store);
+
+      expect(screen.getByText("Application Period Ended")).toBeInTheDocument();
+      expect(screen.queryByText("Apply")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("future round", () => {
+    beforeEach(() => {
+      (useParams as jest.Mock).mockReturnValue({
+        roundId: addressFrom(3),
+        chainId: 5,
+      });
+    });
+
+    it("should not allow you to apply", async () => {
+      (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+      (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+      (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+
+      store.dispatch({
+        type: "GRANT_METADATA_FETCHED",
+        data: buildProjectMetadata({}),
+      });
+
+      store.dispatch({
+        type: "PROJECTS_LOADED",
+        payload: {
+          chainID: 0,
+          events: {},
+        },
+      });
+
+      renderWrapped(<Show />, store);
+
+      expect(
+        screen.getByText("The application period for this round will start on")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Apply")).toBeDisabled();
     });
   });
 });
