@@ -49,7 +49,7 @@ function ApplyButton(props: ApplyButtonProps) {
           variant={ButtonVariants.primary}
           disabled
         >
-          Application Ended
+          Application Period Ended
         </Button>
         <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
           <span>The application period for this round has ended.</span>
@@ -142,10 +142,10 @@ function ShowRound() {
 
     if (
       roundState?.round &&
-      roundState?.round?.applicationsEndTime &&
-      roundState?.round?.applicationsStartTime &&
-      roundState?.round?.roundStartTime &&
-      roundState?.round?.roundEndTime
+      roundState?.round?.applicationsEndTime !== undefined &&
+      roundState?.round?.applicationsStartTime !== undefined &&
+      roundState?.round?.roundStartTime !== undefined &&
+      roundState?.round?.roundEndTime !== undefined
     ) {
       applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
       applicationsHaveEnded = roundState.round?.applicationsEndTime <= now;
