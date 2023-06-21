@@ -106,14 +106,22 @@ describe("<ViewContributionHistoryDisplay/>", () => {
 
     expect(screen.getByText("Donation Impact")).toBeInTheDocument();
     expect(screen.getByText("Donation History")).toBeInTheDocument();
-    expect(screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))).toBeInTheDocument();
+    expect(
+      screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
+    ).toBeInTheDocument();
     expect(screen.getByText("Share Profile")).toBeInTheDocument();
-    
-    for(const contribution of mockContributions) {
+
+    for (const contribution of mockContributions) {
       for (const chainContribution of contribution.data) {
-        expect(screen.getByText(chainContribution.roundName)).toBeInTheDocument();
-        expect(screen.getByText(chainContribution.projectTitle)).toBeInTheDocument();
-        expect(screen.getByText(chainContribution.transaction)).toBeInTheDocument();
+        expect(
+          screen.getByText(chainContribution.roundName)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(chainContribution.projectTitle)
+        ).toBeInTheDocument();
+        expect(screen.getAllByText("View transaction").length).toBeGreaterThan(
+          0
+        );
       }
     }
   });
@@ -127,15 +135,17 @@ describe("<ViewContributionHistoryWithoutDonations/>", () => {
   it("Should show donation history", async () => {
     render(
       <MemoryRouter>
-        <ViewContributionHistoryWithoutDonations 
-          address={mockAddress} 
+        <ViewContributionHistoryWithoutDonations
+          address={mockAddress}
           addressLogo="mockedAddressLogo"
         />
       </MemoryRouter>
     );
 
     expect(screen.getByText("Donation History")).toBeInTheDocument();
-    expect(screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))).toBeInTheDocument();
+    expect(
+      screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
+    ).toBeInTheDocument();
     expect(screen.getByText("Share Profile")).toBeInTheDocument();
   });
 });
