@@ -143,7 +143,7 @@ export default function ViewProjectDetails() {
                   }}
                 />
               </div>
-              <div className="flex flex-col md:flex-row xl:max-w-[1800px]">
+              <div className="flex flex-col md:flex-row xl:max-w-[1800px] w-full">
                 <div className="grow">
                   <div>
                     <ProjectTitle
