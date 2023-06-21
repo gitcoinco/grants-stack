@@ -3,7 +3,10 @@ import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
 } from "allo-indexer-client";
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronRightIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/solid";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ethers } from "ethers";
@@ -18,6 +21,7 @@ import Footer from "common/src/components/Footer";
 import { payoutTokens } from "../api/utils";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Button } from "common/src/styles";
+import ReactTooltip from "react-tooltip";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -188,7 +192,27 @@ export function ViewContributionHistoryDisplay(props: {
         >
           <tr className="text-left text-lg">
             <th className="py-4">Project</th>
-            <th className="py-4">Donation</th>
+            <th className="flex flex-row py-4">
+              Donation
+              <InformationCircleIcon
+                data-tip
+                data-background-color="#0E0333"
+                data-for="donation-tooltip"
+                className="inline h-4 w-4 ml-2 mr-3 mt-1.5"
+                data-testid={"donation-tooltip"}
+              />
+              <ReactTooltip
+                id="donation-tooltip"
+                place="bottom"
+                type="dark"
+                effect="solid"
+              >
+                <p className="text-xs">
+                  The displayed amount in USD reflects <br />
+                  the value at the time of your donation.
+                </p>
+              </ReactTooltip>
+            </th>
             <th className="py-4">Transaction information</th>
           </tr>
           {props.contributions.map((chainContribution) => {
