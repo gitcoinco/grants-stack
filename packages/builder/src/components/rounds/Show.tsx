@@ -7,6 +7,7 @@ import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
+import { Round } from "../../types";
 import { Status as ProjectStatus } from "../../reducers/projects";
 import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { Status } from "../../reducers/rounds";
@@ -17,8 +18,102 @@ import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
+import { GrantsMetadataState } from "../../reducers/grantsMetadata";
 
-function Round() {
+interface ApplyButtonProps {
+  round: Round;
+  applicationsHaveStarted: boolean;
+  applicationsHaveEnded: boolean;
+  projects: GrantsMetadataState;
+  chainId: number;
+  roundId: string | undefined;
+}
+
+function ApplyButton(props: ApplyButtonProps) {
+  const {
+    round,
+    applicationsHaveStarted,
+    applicationsHaveEnded,
+    projects,
+    chainId,
+    roundId,
+  } = props;
+
+  if (applicationsHaveEnded) {
+    return (
+      <>
+        <Button
+          styles={[
+            "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
+          ]}
+          variant={ButtonVariants.primary}
+          disabled
+        >
+          Application Period Ended
+        </Button>
+        <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
+          <span>The application period for this round has ended.</span>
+          <span>
+            If you&apos;ve applied to this round, view your projects on{" "}
+            <Link to={grantsPath()} className="text-gitcoin-violet-400">
+              My Projects.
+            </Link>
+          </span>
+        </div>
+      </>
+    );
+  }
+
+  if (!applicationsHaveStarted) {
+    return (
+      <>
+        <Button
+          styles={[
+            "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
+          ]}
+          variant={ButtonVariants.primary}
+          disabled
+        >
+          Apply
+        </Button>
+        <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
+          <span>The application period for this round will start on</span>
+          <span>{formatTimeUTC(round.applicationsStartTime)}</span>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="flex flex-1 flex-col w-full">
+      {Object.keys(projects).length !== 0 ? (
+        <Link to={roundApplicationPath(chainId.toString()!, roundId!)}>
+          <Button
+            styles={[
+              "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
+            ]}
+            variant={ButtonVariants.primary}
+          >
+            Apply
+          </Button>
+        </Link>
+      ) : (
+        <Link to={newGrantPath()}>
+          <Button
+            styles={[
+              "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
+            ]}
+            variant={ButtonVariants.primary}
+          >
+            Create Project
+          </Button>
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function ShowRound() {
   const [roundData, setRoundData] = useState<any>();
 
   const params = useParams();
@@ -39,12 +134,24 @@ function Round() {
     const roundChainId = Number(chainId);
 
     const now = Math.trunc(Date.now() / 1000);
-    const applicationEnded = roundState
-      ? (roundState.round?.applicationsEndTime || now - 1000) < now
-      : true;
-    const applicationStarted = roundState
-      ? (roundState.round?.applicationsStartTime || now + 1000) > now
-      : true;
+
+    let applicationsHaveStarted = false;
+    let applicationsHaveEnded = false;
+    let votingHasStarted = false;
+    let votingHasEnded = false;
+
+    if (
+      roundState?.round &&
+      roundState?.round?.applicationsEndTime !== undefined &&
+      roundState?.round?.applicationsStartTime !== undefined &&
+      roundState?.round?.roundStartTime !== undefined &&
+      roundState?.round?.roundEndTime !== undefined
+    ) {
+      applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
+      applicationsHaveEnded = roundState.round?.applicationsEndTime <= now;
+      votingHasStarted = roundState.round?.roundStartTime <= now;
+      votingHasEnded = roundState.round?.roundEndTime <= now;
+    }
 
     return {
       roundState,
@@ -55,8 +162,10 @@ function Round() {
       roundChainId,
       projects: allProjectMetadata,
       projectsStatus,
-      applicationStarted,
-      applicationEnded,
+      applicationsHaveStarted,
+      applicationsHaveEnded,
+      votingHasStarted,
+      votingHasEnded,
     };
   }, shallowEqual);
 
@@ -86,18 +195,14 @@ function Round() {
   useEffect(() => {
     if (!isOnRoundChain) return;
 
-    if (
-      roundId &&
-      props.applicationEnded !== undefined &&
-      !props.applicationEnded
-    ) {
+    if (roundId && !props.applicationsHaveEnded) {
       setRoundToApply(`${chainId}:${roundId}`);
 
       if (roundApplicationModal === ApplicationModalStatus.Undefined) {
         setToggleRoundApplicationModal(ApplicationModalStatus.NotApplied);
       }
     }
-  }, [roundId, props.applicationEnded]);
+  }, [roundId, props.applicationsHaveEnded]);
 
   useEffect(() => {
     if (roundId !== undefined) {
@@ -248,54 +353,14 @@ function Round() {
           </div>
         </div>
         <div className="flex flex-1 flex-col mt-8">
-          {props.applicationEnded || props.applicationStarted ? (
-            <>
-              <Button
-                styles={[
-                  "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
-                ]}
-                variant={ButtonVariants.primary}
-                disabled
-              >
-                Application Ended
-              </Button>
-              <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
-                <span>The application period for this round has ended.</span>
-                <span>
-                  If you&apos;ve applied to this round, view your projects on{" "}
-                  <Link to={grantsPath()} className="text-gitcoin-violet-400">
-                    My Projects.
-                  </Link>
-                </span>
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-1 flex-col w-full">
-              {Object.keys(props.projects).length !== 0 ? (
-                <Link to={roundApplicationPath(chainId!, roundId!)}>
-                  <Button
-                    styles={[
-                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
-                    ]}
-                    variant={ButtonVariants.primary}
-                  >
-                    Apply
-                  </Button>
-                </Link>
-              ) : (
-                <Link to={newGrantPath()}>
-                  <Button
-                    styles={[
-                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
-                    ]}
-                    variant={ButtonVariants.primary}
-                  >
-                    Create Project
-                  </Button>
-                </Link>
-              )}
-            </div>
-          )}
+          <ApplyButton
+            round={props.round}
+            applicationsHaveStarted={props.applicationsHaveStarted}
+            applicationsHaveEnded={props.applicationsHaveEnded}
+            projects={props.projects}
+            roundId={roundId}
+            chainId={props.roundChainId}
+          />
         </div>
       </div>
       {!isOnRoundChain && renderNetworkChangeModal()}
@@ -303,4 +368,4 @@ function Round() {
   );
 }
 
-export default Round;
+export default ShowRound;

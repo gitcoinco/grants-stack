@@ -59,9 +59,11 @@ export default function ViewRoundPage() {
 
   const debugModeEnabled = useDebugMode();
   const hasAccess =
-    debugModeEnabled || round
+    debugModeEnabled ||
+    (round
       ? round?.operatorWallets?.includes(address.toLowerCase() ?? "")
-      : true;
+      : true);
+
   const roundNotFound = fetchRoundStatus === ProgressStatus.IS_ERROR;
 
   return (
