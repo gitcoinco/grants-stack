@@ -245,6 +245,7 @@ export function ViewContributionHistoryDisplay(props: {
                         className="underline inline-block max-w-[200px] truncate"
                         title={contribution.roundName}
                         to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
+                        target="_blank"
                       >
                         {contribution.roundName}
                       </Link>
@@ -255,6 +256,7 @@ export function ViewContributionHistoryDisplay(props: {
                         to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
                           contribution.applicationId
                         }`}
+                        target="_blank"
                       >
                         {contribution.projectTitle}
                       </Link>

@@ -58,7 +58,7 @@
     "@testing-library/react": "^13.0.1",
     "@testing-library/user-event": "^14.1.1",
     "@wagmi/core": "0.5.4",
-    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#666dd35312bf29ac4f972ba9fe336543a603235a",
+    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#0549b473941a916b38426b32f59250f87ec3274d",
     "babel-loader": "^8.3.0",
     "buffer": "^6.0.3",
     "common": "workspace:*",
