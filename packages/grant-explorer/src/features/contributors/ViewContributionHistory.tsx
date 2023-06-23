@@ -8,7 +8,7 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
 import { CHAINS, getTxExplorer } from "../api/utils";
@@ -118,6 +118,7 @@ export function ViewContributionHistoryDisplay(props: {
   ensName?: string;
 }) {
   const currentOrigin = window.location.origin;
+  console.log("contributions", props.contributions);
 
   const [totalDonations, totalUniqueContributions, totalProjectsFunded] =
     useMemo(() => {
@@ -240,20 +241,23 @@ export function ViewContributionHistoryDisplay(props: {
                           alt="Round Chain Logo"
                         />
                       </div>
-                      {/*ToDo: add links to the round name & project */}
-                      <div
-                        className="inline-block max-2-[200px] truncate"
+                      <Link
+                        className="underline inline-block max-w-[200px] truncate"
                         title={contribution.roundName}
+                        to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
                       >
                         {contribution.roundName}
-                      </div>
+                      </Link>
                       <ChevronRightIcon className="h-4 inline mx-2" />
-                      <div
-                        className="inline-block max-w-[300px] truncate"
+                      <Link
+                        className="underline inline-block max-w-[300px] truncate"
                         title={contribution.projectTitle}
+                        to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
+                          contribution.applicationId
+                        }`}
                       >
                         {contribution.projectTitle}
-                      </div>
+                      </Link>
                     </div>
                     {/* Todo: display contribution timestamp */}
                     {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
@@ -264,7 +268,7 @@ export function ViewContributionHistoryDisplay(props: {
                       ${contribution.amountUSD.toFixed(2)}
                     </div>
                   </td>
-                  <td className="border-b py-4 pl-6">
+                  <td className="border-b py-4">
                     <ViewTransactionButton
                       chainId={chainId}
                       txHash={contribution.transaction}
