@@ -118,7 +118,6 @@ export function ViewContributionHistoryDisplay(props: {
   ensName?: string;
 }) {
   const currentOrigin = window.location.origin;
-  console.log("contributions", props.contributions);
 
   const [totalDonations, totalUniqueContributions, totalProjectsFunded] =
     useMemo(() => {
@@ -144,7 +143,7 @@ export function ViewContributionHistoryDisplay(props: {
     }, [props.contributions, props.tokens]);
 
   return (
-    <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
+    <div className="relative top-16 lg:mx-20 xl:mx-20 px-4 py-7 h-screen">
       <main>
         <div className="border-b pb-2 mb-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -192,8 +191,8 @@ export function ViewContributionHistoryDisplay(props: {
           data-testid="donation-history-table"
         >
           <tr className="text-left text-lg">
-            <th className="py-4">Project</th>
-            <th className="flex flex-row py-4">
+            <th className="py-4 w-1/2">Project</th>
+            <th className="flex flex-row py-4 w-1/4">
               Donation
               <InformationCircleIcon
                 data-tip
@@ -214,7 +213,7 @@ export function ViewContributionHistoryDisplay(props: {
                 </p>
               </ReactTooltip>
             </th>
-            <th className="py-4">Transaction information</th>
+            <th className="py-4 text-right w-1/4">Transaction information</th>
           </tr>
           {props.contributions.map((chainContribution) => {
             const { chainId, data } = chainContribution;
@@ -232,7 +231,7 @@ export function ViewContributionHistoryDisplay(props: {
 
               return (
                 <tr key={contribution.id}>
-                  <td className="border-b py-4 pr-16>">
+                  <td className="border-b py-4 pr-16 w-1/2">
                     <div className="flex items-center">
                       <div>
                         <img
@@ -242,7 +241,7 @@ export function ViewContributionHistoryDisplay(props: {
                         />
                       </div>
                       <Link
-                        className="underline inline-block max-w-[200px] truncate"
+                        className={`underline inline-block pr-2 custom_lg:max-w-[200px] truncate`}
                         title={contribution.roundName}
                         to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
                         target="_blank"
@@ -251,7 +250,7 @@ export function ViewContributionHistoryDisplay(props: {
                       </Link>
                       <ChevronRightIcon className="h-4 inline mx-2" />
                       <Link
-                        className="underline inline-block max-w-[300px] truncate"
+                        className={`underline inline-block pr-2 custom_lg:max-w-[300px] truncate`}
                         title={contribution.projectTitle}
                         to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
                           contribution.applicationId
@@ -264,17 +263,19 @@ export function ViewContributionHistoryDisplay(props: {
                     {/* Todo: display contribution timestamp */}
                     {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
                   </td>
-                  <td className="border-b py-4 max-w-[150px] truncate pr-16">
+                  <td className="border-b py-4 truncate pr-16 w-1/4">
                     {formattedAmount}
                     <div className="text-md text-gray-500">
                       ${contribution.amountUSD.toFixed(2)}
                     </div>
                   </td>
-                  <td className="border-b py-4">
-                    <ViewTransactionButton
-                      chainId={chainId}
-                      txHash={contribution.transaction}
-                    />
+                  <td className="border-b py-4 pr-12 w-1/4">
+                    <div className="flex justify-end">
+                      <ViewTransactionButton
+                        chainId={chainId}
+                        txHash={contribution.transaction}
+                      />
+                    </div>
                   </td>
                 </tr>
               );
@@ -297,7 +298,7 @@ function ViewTransactionButton(props: { chainId: number; txHash: string }) {
       onClick={() =>
         window.open(getTxExplorer(props.chainId, props.txHash), "_blank")
       }
-      className="flex flex-row text-gitcoin-violet-500"
+      className="flex flex-row text-gitcoin-violet-500 px-0"
     >
       <ArrowTopRightOnSquareIcon className="h-5 inline mx-2" />
       <div>View transaction</div>
