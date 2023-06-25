@@ -1,20 +1,20 @@
+import { datadogLogs } from "@datadog/browser-logs";
+import { Signer } from "@ethersproject/abstract-signer";
+import React, {
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from "react";
+import { updateApplicationStatuses } from "../../features/api/application";
+import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import {
   AppStatus,
   GrantApplication,
   ProgressStatus,
   Status,
 } from "../../features/api/types";
-import React, {
-  createContext,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useState,
-} from "react";
-import { updateApplicationStatuses } from "../../features/api/application";
-import { datadogLogs } from "@datadog/browser-logs";
-import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
-import { Signer } from "@ethersproject/abstract-signer";
 import { useWallet } from "../../features/common/Auth";
 
 export interface BulkUpdateGrantApplicationState {
@@ -31,28 +31,28 @@ export interface BulkUpdateGrantApplicationState {
 }
 
 export const initialBulkUpdateGrantApplicationState: BulkUpdateGrantApplicationState =
-{
-  roundId: "",
-  setRoundId: () => {
-    /**/
-  },
-  applications: [],
-  setApplications: () => {
-    /**/
-  },
-  selectedApplications: [],
-  setSelectedApplications: () => {
-    /**/
-  },
-  contractUpdatingStatus: ProgressStatus.NOT_STARTED,
-  setContractUpdatingStatus: () => {
-    /**/
-  },
-  indexingStatus: ProgressStatus.NOT_STARTED,
-  setIndexingStatus: () => {
-    /**/
-  },
-};
+  {
+    roundId: "",
+    setRoundId: () => {
+      /**/
+    },
+    applications: [],
+    setApplications: () => {
+      /**/
+    },
+    selectedApplications: [],
+    setSelectedApplications: () => {
+      /**/
+    },
+    contractUpdatingStatus: ProgressStatus.NOT_STARTED,
+    setContractUpdatingStatus: () => {
+      /**/
+    },
+    indexingStatus: ProgressStatus.NOT_STARTED,
+    setIndexingStatus: () => {
+      /**/
+    },
+  };
 
 export type BulkUpdateGrantApplicationParams = {
   roundId: string;
@@ -207,11 +207,8 @@ async function _bulkUpdateGrantApplication({
     const rowsToUpdate = Array.from(
       new Set(
         selectedApplications.map((application) => {
-          let applicationIndex = application.applicationIndex;
-          if (application.applicationIndex === undefined)
-            applicationIndex = Number(application.id.split("-")[1]);
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return Math.floor(applicationIndex! / 128);
+          return Math.floor(application.applicationIndex! / 128);
         })
       )
     );
