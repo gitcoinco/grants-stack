@@ -3,12 +3,15 @@ import {
   Client as AlloIndexerClient,
   DetailedVote as Contribution,
 } from "allo-indexer-client";
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronRightIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/solid";
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
-import { CHAINS } from "../api/utils";
+import { CHAINS, getTxExplorer } from "../api/utils";
 import Navbar from "../common/Navbar";
 import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-history-banner.svg";
 import { ChainId } from "../api/utils";
@@ -16,6 +19,9 @@ import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import { payoutTokens } from "../api/utils";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { Button } from "common/src/styles";
+import ReactTooltip from "react-tooltip";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -137,7 +143,7 @@ export function ViewContributionHistoryDisplay(props: {
     }, [props.contributions, props.tokens]);
 
   return (
-    <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
+    <div className="relative top-16 lg:mx-20 xl:mx-20 px-4 py-7 h-screen">
       <main>
         <div className="border-b pb-2 mb-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -161,7 +167,7 @@ export function ViewContributionHistoryDisplay(props: {
             iconStyle="h-4 w-4 mr-1"
           />
         </div>
-        <div className="text-2xl">Donation Impact</div>
+        <div className="text-2xl my-6">Donation Impact</div>
         <div className="flex gap-4 my-4">
           <StatCard
             title="Total Donations"
@@ -176,8 +182,8 @@ export function ViewContributionHistoryDisplay(props: {
             value={totalProjectsFunded.toString()}
           />
         </div>
-        <div className="text-2xl my-4">Donation History</div>
-        <div className="text-lg bg-violet-100 text-black px-1 py-1">
+        <div className="text-2xl my-6">Donation History</div>
+        <div className="text-lg bg-violet-100 text-black px-1 py-1 mb-2">
           All Rounds
         </div>
         <table
@@ -185,9 +191,29 @@ export function ViewContributionHistoryDisplay(props: {
           data-testid="donation-history-table"
         >
           <tr className="text-left text-lg">
-            <th className="py-4">Project</th>
-            <th className="py-4">Donation</th>
-            <th className="py-4">Transaction information</th>
+            <th className="py-4 w-1/2">Project</th>
+            <th className="flex flex-row py-4 w-1/4">
+              Donation
+              <InformationCircleIcon
+                data-tip
+                data-background-color="#0E0333"
+                data-for="donation-tooltip"
+                className="inline h-4 w-4 ml-2 mr-3 mt-1.5"
+                data-testid={"donation-tooltip"}
+              />
+              <ReactTooltip
+                id="donation-tooltip"
+                place="bottom"
+                type="dark"
+                effect="solid"
+              >
+                <p className="text-xs">
+                  The displayed amount in USD reflects <br />
+                  the value at the time of your donation.
+                </p>
+              </ReactTooltip>
+            </th>
+            <th className="py-4 text-right w-1/4">Transaction information</th>
           </tr>
           {props.contributions.map((chainContribution) => {
             const { chainId, data } = chainContribution;
@@ -205,7 +231,7 @@ export function ViewContributionHistoryDisplay(props: {
 
               return (
                 <tr key={contribution.id}>
-                  <td className="border-b py-4 pr-16>">
+                  <td className="border-b py-4 pr-16 w-1/2">
                     <div className="flex items-center">
                       <div>
                         <img
@@ -214,32 +240,42 @@ export function ViewContributionHistoryDisplay(props: {
                           alt="Round Chain Logo"
                         />
                       </div>
-                      {/*ToDo: add links to the round name & project */}
-                      <div
-                        className="inline-block max-2-[200px] truncate"
+                      <Link
+                        className={`underline inline-block pr-2 custom_lg:max-w-[200px] truncate`}
                         title={contribution.roundName}
+                        to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
+                        target="_blank"
                       >
                         {contribution.roundName}
-                      </div>
+                      </Link>
                       <ChevronRightIcon className="h-4 inline mx-2" />
-                      <div
-                        className="inline-block max-w-[300px] truncate"
+                      <Link
+                        className={`underline inline-block pr-2 custom_lg:max-w-[300px] truncate`}
                         title={contribution.projectTitle}
+                        to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
+                          contribution.applicationId
+                        }`}
+                        target="_blank"
                       >
                         {contribution.projectTitle}
-                      </div>
+                      </Link>
                     </div>
                     {/* Todo: display contribution timestamp */}
                     {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
                   </td>
-                  <td className="border-b py-4 max-w-[150px] truncate pr-16">
+                  <td className="border-b py-4 truncate pr-16 w-1/4">
                     {formattedAmount}
                     <div className="text-md text-gray-500">
                       ${contribution.amountUSD.toFixed(2)}
                     </div>
                   </td>
-                  <td className="border-b py-4 max-w-[300px] truncate">
-                    {contribution.transaction}
+                  <td className="border-b py-4 pr-12 w-1/4">
+                    <div className="flex justify-end">
+                      <ViewTransactionButton
+                        chainId={chainId}
+                        txHash={contribution.transaction}
+                      />
+                    </div>
                   </td>
                 </tr>
               );
@@ -247,10 +283,26 @@ export function ViewContributionHistoryDisplay(props: {
           })}
         </table>
       </main>
-      <div className="my-11 h-11">
+      <div className="mt-24 mb-11 h-11">
         <Footer />
       </div>
     </div>
+  );
+}
+
+function ViewTransactionButton(props: { chainId: number; txHash: string }) {
+  return (
+    <Button
+      type="button"
+      $variant="external-link"
+      onClick={() =>
+        window.open(getTxExplorer(props.chainId, props.txHash), "_blank")
+      }
+      className="flex flex-row text-gitcoin-violet-500 px-0"
+    >
+      <ArrowTopRightOnSquareIcon className="h-5 inline mx-2" />
+      <div>View transaction</div>
+    </Button>
   );
 }
 
@@ -323,7 +375,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
           <DonationHistoryBanner />
         </div>
       </main>
-      <div className="my-11 h-11">
+      <div className="mt-24 mb-11 h-11">
         <Footer />
       </div>
     </div>

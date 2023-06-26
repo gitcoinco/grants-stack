@@ -8,19 +8,19 @@ const navigation = [
     name: "Support",
     href: "https://support.gitcoin.co/gitcoin-knowledge-base",
     testid: "support",
-    icon: Support
+    icon: Support,
   },
   {
     name: "Discord",
     href: "https://discord.gg/gitcoin",
     testid: "discord",
-    icon: Discord
+    icon: Discord,
   },
   {
     name: "GitHub",
     href: "https://github.com/gitcoinco/grants-stack",
     testid: "github",
-    icon: Github
+    icon: Github,
   },
   {
     name: "GitBook",
@@ -33,7 +33,7 @@ const navigation = [
 export default function Footer() {
   return (
     <footer>
-      <div className="max-w-7xl flex flex-row-reverse justify-between mx-auto py-12 overflow-hidden">
+      <div className="max-w-full flex flex-row-reverse justify-between mx-auto py-12 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">
           {navigation.map((item) => (
             <a
