@@ -167,7 +167,7 @@ export function ViewContributionHistoryDisplay(props: {
             iconStyle="h-4 w-4 mr-1"
           />
         </div>
-        <div className="text-2xl">Donation Impact</div>
+        <div className="text-2xl my-6">Donation Impact</div>
         <div className="flex gap-4 my-4">
           <StatCard
             title="Total Donations"
@@ -182,8 +182,8 @@ export function ViewContributionHistoryDisplay(props: {
             value={totalProjectsFunded.toString()}
           />
         </div>
-        <div className="text-2xl my-4">Donation History</div>
-        <div className="text-lg bg-violet-100 text-black px-1 py-1">
+        <div className="text-2xl my-6">Donation History</div>
+        <div className="text-lg bg-violet-100 text-black px-1 py-1 mb-2">
           All Rounds
         </div>
         <table
@@ -283,7 +283,7 @@ export function ViewContributionHistoryDisplay(props: {
           })}
         </table>
       </main>
-      <div className="my-11 h-11">
+      <div className="mt-24 mb-11 h-11">
         <Footer />
       </div>
     </div>
@@ -375,7 +375,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
           <DonationHistoryBanner />
         </div>
       </main>
-      <div className="my-11 h-11">
+      <div className="mt-24 mb-11 h-11">
         <Footer />
       </div>
     </div>
