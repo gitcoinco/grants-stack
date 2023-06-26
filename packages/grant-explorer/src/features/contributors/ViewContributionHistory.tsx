@@ -184,7 +184,7 @@ export function ViewContributionHistoryDisplay(props: {
         </div>
         <div className="text-2xl my-6">Donation History</div>
         <div className="text-lg bg-violet-100 text-black px-1 py-1 mb-2">
-          All Rounds
+          Active Rounds
         </div>
         <table
           className="border-collapse w-full"
@@ -282,6 +282,9 @@ export function ViewContributionHistoryDisplay(props: {
             });
           })}
         </table>
+        <div className="text-lg bg-grey-100 text-black px-1 py-1 mb-2">
+          Past Rounds
+        </div>
       </main>
       <div className="mt-24 mb-11 h-11">
         <Footer />
