@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
+import { ChainId } from "common";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -25,7 +26,7 @@ interface ApplyButtonProps {
   applicationsHaveStarted: boolean;
   applicationsHaveEnded: boolean;
   projects: GrantsMetadataState;
-  chainId: number;
+  chainId: ChainId;
   roundId: string | undefined;
 }
 
