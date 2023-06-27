@@ -25,7 +25,7 @@ const graphQlEndpoints: GraphQLEndpoints = {
 const getGraphQLEndpoint = (chainId: ChainId): string =>
   graphQlEndpoints[chainId];
 
-export const graphqlFetch = async (
+export default async (
   query: string,
   chainId: number,
   variables: object = {}
