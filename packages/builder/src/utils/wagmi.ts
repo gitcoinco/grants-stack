@@ -9,6 +9,7 @@ import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
+import { pgnTestnet } from "common/src/chains";
 import { FantomFTMLogo, FTMTestnet, OPIcon } from "../assets";
 
 const ftmTestnetIcon = FTMTestnet;
@@ -91,7 +92,8 @@ if (process.env.REACT_APP_ENV === "production") {
     chain.goerli,
     fantomTestnet,
     fantomMainnet,
-    chain.mainnet
+    chain.mainnet,
+    pgnTestnet
   );
 }
 
@@ -100,7 +102,7 @@ export const { chains, provider } = configureChains(chainsAvailable, [
   alchemyProvider({ apiKey: alchemyId, priority: 1 }),
   publicProvider({ priority: 2 }),
 ]);
-
+console.log(chainsAvailable);
 // Custom wallet connectors: more can be added by going here:
 // https://www.rainbowkit.com/docs/custom-wallet-list
 const connectors = connectorsForWallets([
