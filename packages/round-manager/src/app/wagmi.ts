@@ -12,6 +12,7 @@ import { createClient, configureChains, chain } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
+import { pgnTestnet } from "common/src/chains";
 
 const testnetChains = () => {
   /***********************/
@@ -39,7 +40,7 @@ const testnetChains = () => {
     testnet: true,
   };
 
-  return [chain.goerli, fantomTestnet];
+  return [chain.goerli, fantomTestnet, pgnTestnet];
 };
 
 const mainnetChains = () => {
