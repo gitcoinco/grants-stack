@@ -142,6 +142,49 @@ export function ViewContributionHistoryDisplay(props: {
       return [totalDonations, totalUniqueContributions, projects.length];
     }, [props.contributions, props.tokens]);
 
+  const [activeRoundDonations] = useMemo(() => {
+    const activeRoundDonations: { chainId: number; data: Contribution[] }[] =
+      [];
+    const now = Date.now();
+
+    props.contributions.forEach((chainContribution) => {
+      const { data } = chainContribution;
+      const filteredRoundDonations = data.filter((contribution) => {
+        const formattedRoundEndTime = contribution.roundEndTime * 1000;
+        return formattedRoundEndTime >= now;
+      });
+      if (filteredRoundDonations.length > 0) {
+        activeRoundDonations.push({
+          chainId: chainContribution.chainId,
+          data: filteredRoundDonations,
+        });
+      }
+    });
+
+    return [activeRoundDonations];
+  }, [props.contributions]);
+
+  const [pastRoundDonations] = useMemo(() => {
+    const pastRoundDonations: { chainId: number; data: Contribution[] }[] = [];
+    const now = Date.now();
+
+    props.contributions.forEach((chainContribution) => {
+      const { data } = chainContribution;
+      const filteredRoundDonations = data.filter((contribution) => {
+        const formattedRoundEndTime = contribution.roundEndTime * 1000;
+        return formattedRoundEndTime < now;
+      });
+      if (filteredRoundDonations.length > 0) {
+        pastRoundDonations.push({
+          chainId: chainContribution.chainId,
+          data: filteredRoundDonations,
+        });
+      }
+    });
+
+    return [pastRoundDonations];
+  }, [props.contributions]);
+
   return (
     <div className="relative top-16 lg:mx-20 xl:mx-20 px-4 py-7 h-screen">
       <main>
@@ -186,110 +229,137 @@ export function ViewContributionHistoryDisplay(props: {
         <div className="text-lg bg-violet-100 text-black px-1 py-1 mb-2">
           Active Rounds
         </div>
-        <table
-          className="border-collapse w-full"
-          data-testid="donation-history-table"
-        >
-          <tr className="text-left text-lg">
-            <th className="py-4 w-1/2">Project</th>
-            <th className="flex flex-row py-4 w-1/4">
-              Donation
-              <InformationCircleIcon
-                data-tip
-                data-background-color="#0E0333"
-                data-for="donation-tooltip"
-                className="inline h-4 w-4 ml-2 mr-3 mt-1.5"
-                data-testid={"donation-tooltip"}
-              />
-              <ReactTooltip
-                id="donation-tooltip"
-                place="bottom"
-                type="dark"
-                effect="solid"
-              >
-                <p className="text-xs">
-                  The displayed amount in USD reflects <br />
-                  the value at the time of your donation.
-                </p>
-              </ReactTooltip>
-            </th>
-            <th className="py-4 text-right w-1/4">Transaction information</th>
-          </tr>
-          {props.contributions.map((chainContribution) => {
-            const { chainId, data } = chainContribution;
-            return data.map((contribution) => {
-              const token = props.tokens[contribution.token];
-
-              let formattedAmount = "N/A";
-
-              if (token) {
-                formattedAmount = `${ethers.utils.formatUnits(
-                  contribution.amount,
-                  token.decimal
-                )} ${token.name}`;
-              }
-
-              return (
-                <tr key={contribution.id}>
-                  <td className="border-b py-4 pr-16 w-1/2">
-                    <div className="flex items-center">
-                      <div>
-                        <img
-                          className="w-4 h-4 mr-2"
-                          src={CHAINS[chainId]?.logo}
-                          alt="Round Chain Logo"
-                        />
-                      </div>
-                      <Link
-                        className={`underline inline-block pr-2 custom_lg:max-w-[200px] truncate`}
-                        title={contribution.roundName}
-                        to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
-                        target="_blank"
-                      >
-                        {contribution.roundName}
-                      </Link>
-                      <ChevronRightIcon className="h-4 inline mx-2" />
-                      <Link
-                        className={`underline inline-block pr-2 custom_lg:max-w-[300px] truncate`}
-                        title={contribution.projectTitle}
-                        to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
-                          contribution.applicationId
-                        }`}
-                        target="_blank"
-                      >
-                        {contribution.projectTitle}
-                      </Link>
-                    </div>
-                    {/* Todo: display contribution timestamp */}
-                    {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
-                  </td>
-                  <td className="border-b py-4 truncate pr-16 w-1/4">
-                    {formattedAmount}
-                    <div className="text-md text-gray-500">
-                      ${contribution.amountUSD.toFixed(2)}
-                    </div>
-                  </td>
-                  <td className="border-b py-4 pr-12 w-1/4">
-                    <div className="flex justify-end">
-                      <ViewTransactionButton
-                        chainId={chainId}
-                        txHash={contribution.transaction}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            });
-          })}
-        </table>
+        <DonationsTable
+          contributions={activeRoundDonations}
+          tokens={props.tokens}
+          activeRound={true}
+        />
         <div className="text-lg bg-grey-100 text-black px-1 py-1 mb-2">
           Past Rounds
         </div>
+        <DonationsTable
+          contributions={pastRoundDonations}
+          tokens={props.tokens}
+          activeRound={false}
+        />
       </main>
       <div className="mt-24 mb-11 h-11">
         <Footer />
       </div>
     </div>
+  );
+}
+
+function DonationsTable(props: {
+  contributions: { chainId: number; data: Contribution[] }[];
+  tokens: Record<string, PayoutToken>;
+  activeRound: boolean;
+}) {
+  return (
+    <table
+      className="border-collapse w-full"
+      data-testid="donation-history-table"
+    >
+      <tr className="text-left text-lg">
+        <th className="py-4 w-1/2">Project</th>
+        <th className="flex flex-row py-4 w-1/4">
+          Donation
+          <InformationCircleIcon
+            data-tip
+            data-background-color="#0E0333"
+            data-for="donation-tooltip"
+            className="inline h-4 w-4 ml-2 mr-3 mt-1.5"
+            data-testid={"donation-tooltip"}
+          />
+          <ReactTooltip
+            id="donation-tooltip"
+            place="bottom"
+            type="dark"
+            effect="solid"
+          >
+            <p className="text-xs">
+              The displayed amount in USD reflects <br />
+              the value at the time of your donation.
+            </p>
+          </ReactTooltip>
+        </th>
+        <th className="py-4 text-right w-1/4">Transaction information</th>
+      </tr>
+      {props.contributions.length > 0 ? (
+        props.contributions.map((chainContribution) => {
+          const { chainId, data } = chainContribution;
+          return data.map((contribution) => {
+            const token = props.tokens[contribution.token];
+
+            let formattedAmount = "N/A";
+
+            if (token) {
+              formattedAmount = `${ethers.utils.formatUnits(
+                contribution.amount,
+                token.decimal
+              )} ${token.name}`;
+            }
+
+            return (
+              <tr key={contribution.id}>
+                <td className="border-b py-4 pr-16 w-1/2">
+                  <div className="flex items-center">
+                    <div>
+                      <img
+                        className="w-4 h-4 mr-2"
+                        src={CHAINS[chainId]?.logo}
+                        alt="Round Chain Logo"
+                      />
+                    </div>
+                    <Link
+                      className={`underline inline-block pr-2 custom_lg:max-w-[200px] truncate`}
+                      title={contribution.roundName}
+                      to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
+                      target="_blank"
+                    >
+                      {contribution.roundName}
+                    </Link>
+                    <ChevronRightIcon className="h-4 inline mx-2" />
+                    <Link
+                      className={`underline inline-block pr-2 custom_lg:max-w-[300px] truncate`}
+                      title={contribution.projectTitle}
+                      to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
+                        contribution.applicationId
+                      }`}
+                      target="_blank"
+                    >
+                      {contribution.projectTitle}
+                    </Link>
+                  </div>
+                  {/* Todo: display contribution timestamp */}
+                  {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
+                </td>
+                <td className="border-b py-4 truncate pr-16 w-1/4">
+                  {formattedAmount}
+                  <div className="text-md text-gray-500">
+                    ${contribution.amountUSD.toFixed(2)}
+                  </div>
+                </td>
+                <td className="border-b py-4 pr-12 w-1/4">
+                  <div className="flex justify-end">
+                    <ViewTransactionButton
+                      chainId={chainId}
+                      txHash={contribution.transaction}
+                    />
+                  </div>
+                </td>
+              </tr>
+            );
+          });
+        })
+      ) : (
+        <div className="text-md mt-2 mb-10">
+          {props.activeRound
+            ? "Donations made during active rounds will appear here."
+            : "Donations made during past rounds will appear here."}
+        </div>
+      )}
+    </table>
   );
 }
 
