@@ -102,7 +102,7 @@ export const { chains, provider } = configureChains(chainsAvailable, [
   alchemyProvider({ apiKey: alchemyId, priority: 1 }),
   publicProvider({ priority: 2 }),
 ]);
-console.log(chainsAvailable);
+
 // Custom wallet connectors: more can be added by going here:
 // https://www.rainbowkit.com/docs/custom-wallet-list
 const connectors = connectorsForWallets([
