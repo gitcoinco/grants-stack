@@ -1,15 +1,19 @@
-export const chains: { [key: number]: string } = {
-  31337: "localhost",
+import { ChainId } from "common";
+
+export const chains = {
+  1: "mainnet",
   5: "goerli",
   10: "optimism",
-  69: "optimisticKovan", // todo: update to 420: "optimisticGoerli"
-  4002: "fantomTestnet",
   250: "fantom",
-  1: "mainnet",
-};
+  4002: "fantomTestnet",
+  31337: "localhost",
+  58008: "pgnTestnet",
+} as const;
+
+export type ChainName = (typeof chains)[keyof typeof chains];
 
 export type DeploymentAddress = {
-  [key: string]: {
+  [key in ChainName]: {
     projectRegistry: string | undefined;
   };
 };
@@ -33,9 +37,12 @@ export const addresses: DeploymentAddress = {
   fantom: {
     projectRegistry: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
   },
+  pgnTestnet: {
+    projectRegistry: "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11",
+  },
 };
 
-export const addressesByChainID = (chainID: number) => {
-  const chainName: string = chains[chainID];
+export const addressesByChainID = (chainID: ChainId) => {
+  const chainName = chains[chainID];
   return addresses[chainName];
 };
