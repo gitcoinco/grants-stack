@@ -112,6 +112,8 @@ describe("<ViewContributionHistoryDisplay/>", () => {
 
     expect(screen.getByText("Donation Impact")).toBeInTheDocument();
     expect(screen.getByText("Donation History")).toBeInTheDocument();
+    expect(screen.getByText("Active Rounds")).toBeInTheDocument();
+    expect(screen.getByText("Past Rounds")).toBeInTheDocument();
     expect(
       screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
     ).toBeInTheDocument();
