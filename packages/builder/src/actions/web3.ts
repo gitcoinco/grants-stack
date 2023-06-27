@@ -1,4 +1,5 @@
 import { Dispatch } from "redux";
+import { ChainId } from "common";
 import { global } from "../global";
 import { chains } from "../contracts/deployments";
 
@@ -30,7 +31,7 @@ export interface Web3ErrorAction {
 export const WEB3_CHAIN_ID_LOADED = "WEB3_CHAIN_ID_LOADED";
 export interface Web3ChainIDLoadedAction {
   type: typeof WEB3_CHAIN_ID_LOADED;
-  chainID: number;
+  chainID: ChainId;
 }
 
 export const WEB3_ACCOUNT_LOADED = "WEB3_ACCOUNT_LOADED";

@@ -6,7 +6,7 @@ import { ChainId } from "common";
  * @param chainId
  * @returns GraphEndpoint
  */
-const getGraphQLEndpoint = (chainId: number): string | undefined => {
+const getGraphQLEndpoint = (chainId: ChainId): string | undefined => {
   switch (chainId) {
     case ChainId.MAINNET:
       return process.env.REACT_APP_SUBGRAPH_URL_MAINNET;
@@ -27,7 +27,7 @@ const getGraphQLEndpoint = (chainId: number): string | undefined => {
 
 export default async (
   query: string,
-  chainId: number,
+  chainId: ChainId,
   variables: object = {}
 ) => {
   const endpoint = getGraphQLEndpoint(chainId);
