@@ -57,7 +57,7 @@ export const payoutIcon: { [key in ChainName]: string } = {
 
 export function getNetworkIcon(chainId: ChainId): string {
   const rawName = chains[chainId];
-
+  console.log(rawName);
   return networkIcon[rawName];
 }
 
