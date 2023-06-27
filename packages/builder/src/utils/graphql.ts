@@ -9,7 +9,6 @@ import { ChainId } from "common";
 const getGraphQLEndpoint = (chainId: number): string | undefined => {
   switch (chainId) {
     case ChainId.MAINNET:
-      // eslint-disable-next-line max-len
       return process.env.REACT_APP_SUBGRAPH_URL_MAINNET;
     case ChainId.GOERLI_CHAIN_ID:
       return process.env.REACT_APP_SUBGRAPH_URL_GOERLI;
