@@ -6,6 +6,7 @@ import {
 } from "../ViewContributionHistory";
 import { mockSigner } from "../../../test-utils";
 import { MemoryRouter } from "react-router-dom";
+import { BreadcrumbItem } from "../../common/Breadcrumb";
 
 const mockAddress = faker.finance.ethereumAddress();
 
@@ -75,6 +76,17 @@ const useParamsFn = () => ({
   address: mockAddress,
 });
 
+const breadCrumbs = [
+  {
+    name: "Explorer Home",
+    path: "/",
+  },
+  {
+    name: "Contributors",
+    path: `/contributors/${mockAddress}`,
+  },
+] as BreadcrumbItem[];
+
 Object.defineProperty(window, "scrollTo", { value: () => {}, writable: true });
 
 jest.mock("../../common/Navbar");
@@ -106,6 +118,7 @@ describe("<ViewContributionHistoryDisplay/>", () => {
           contributions={mockContributions}
           address={mockAddress}
           addressLogo="mockedAddressLogo"
+          breadCrumbs={breadCrumbs}
         />
       </MemoryRouter>
     );
@@ -146,6 +159,7 @@ describe("<ViewContributionHistoryWithoutDonations/>", () => {
         <ViewContributionHistoryWithoutDonations
           address={mockAddress}
           addressLogo="mockedAddressLogo"
+          breadCrumbs={breadCrumbs}
         />
       </MemoryRouter>
     );
