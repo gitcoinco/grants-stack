@@ -22,6 +22,7 @@ import { payoutTokens } from "../api/utils";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Button } from "common/src/styles";
 import ReactTooltip from "react-tooltip";
+import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 
 type ContributionHistoryState =
   | { type: "loading" }
@@ -116,6 +117,7 @@ export function ViewContributionHistoryDisplay(props: {
   address: string;
   addressLogo: string;
   ensName?: string;
+  breadCrumbs: BreadcrumbItem[];
 }) {
   const currentOrigin = window.location.origin;
 
@@ -187,6 +189,9 @@ export function ViewContributionHistoryDisplay(props: {
 
   return (
     <div className="relative top-16 lg:mx-20 xl:mx-20 px-4 py-7 h-screen">
+      <div className="flex flex-col pb-4" data-testid="bread-crumbs">
+        <Breadcrumb items={props.breadCrumbs} />
+      </div>
       <main>
         <div className="border-b pb-2 mb-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -383,11 +388,15 @@ export function ViewContributionHistoryWithoutDonations(props: {
   address: string;
   addressLogo: string;
   ensName?: string;
+  breadCrumbs: BreadcrumbItem[];
 }) {
   const currentOrigin = window.location.origin;
   const { address: walletAddress } = useAccount();
   return (
     <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
+      <div className="flex flex-col pb-4" data-testid="bread-crumbs">
+        <Breadcrumb items={props.breadCrumbs} />
+      </div>
       <main>
         <div className="border-b pb-2 mb-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -464,6 +473,17 @@ function ViewContributionHistoryFetcher(props: {
     props.address
   );
 
+  const breadCrumbs = [
+    {
+      name: "Explorer Home",
+      path: "/",
+    },
+    {
+      name: "Contributors",
+      path: `/contributors/${props.address}`,
+    },
+  ] as BreadcrumbItem[];
+
   const addressLogo = useMemo(() => {
     return blockies.create({ seed: props.address.toLowerCase() }).toDataURL();
   }, [props.address]);
@@ -480,6 +500,7 @@ function ViewContributionHistoryFetcher(props: {
       <ViewContributionHistoryWithoutDonations
         address={props.address}
         addressLogo={addressLogo}
+        breadCrumbs={breadCrumbs}
       />
     );
   } else {
@@ -489,6 +510,7 @@ function ViewContributionHistoryFetcher(props: {
         addressLogo={addressLogo}
         contributions={contributionHistory.data}
         address={props.address}
+        breadCrumbs={breadCrumbs}
       />
     );
   }
