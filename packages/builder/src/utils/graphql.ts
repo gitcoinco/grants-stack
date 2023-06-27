@@ -1,13 +1,4 @@
-/**
- * Chain Id to network id
- */
-export enum ChainId {
-  MAINNET_CHAIN_ID = 1,
-  GOERLI_CHAIN_ID = 5,
-  OPTIMISM_MAINNET_CHAIN_ID = 10,
-  FANTOM_MAINNET_CHAIN_ID = 250,
-  FANTOM_TESTNET_CHAIN_ID = 0xfa2,
-}
+import { ChainId } from "common";
 
 /**
  * Fetch subgraph uri for a given chain id
@@ -17,7 +8,7 @@ export enum ChainId {
  */
 const getGraphQLEndpoint = (chainId: number): string | undefined => {
   switch (chainId) {
-    case ChainId.MAINNET_CHAIN_ID:
+    case ChainId.MAINNET:
       // eslint-disable-next-line max-len
       return process.env.REACT_APP_SUBGRAPH_URL_MAINNET;
     case ChainId.GOERLI_CHAIN_ID:
