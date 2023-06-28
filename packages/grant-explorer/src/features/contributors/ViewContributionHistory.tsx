@@ -7,13 +7,16 @@ import {
   ChevronRightIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
 import { CHAINS, getTxExplorer } from "../api/utils";
 import Navbar from "../common/Navbar";
-import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-history-banner.svg";
+// import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-history-banner.svg";
+const DonationHistoryBanner = lazy(
+  () => import("../../assets/DonationHistoryBanner")
+);
 import { ChainId } from "../api/utils";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -104,7 +107,7 @@ const useContributionHistory = (chainIds: number[], rawAddress: string) => {
 
 function StatCard(props: { title: string; value: string | undefined }) {
   return (
-    <div className="rounded border border-violet-400 p-4 flex-grow">
+    <div className="rounded border border-violet-400 p-4">
       <div className="font-bold text-md pb-4">{props.title}</div>
       <div className="text-grey-400 text-2xl">{props.value}</div>
     </div>
@@ -201,7 +204,7 @@ export function ViewContributionHistoryDisplay(props: {
               alt="Address Logo"
             />
             <div
-              className="text-[32px]"
+              className="text-[18px] lg:text-[32px]"
               data-testid="contributor-address"
               title={props.address}
             >
@@ -216,19 +219,25 @@ export function ViewContributionHistoryDisplay(props: {
           />
         </div>
         <div className="text-2xl my-6">Donation Impact</div>
-        <div className="flex gap-4 my-4">
-          <StatCard
-            title="Total Donations"
-            value={"$ " + totalDonations.toFixed(2).toString()}
-          />
-          <StatCard
-            title="Unique Contributions"
-            value={totalUniqueContributions.toString()}
-          />
-          <StatCard
-            title="Projects Funded"
-            value={totalProjectsFunded.toString()}
-          />
+        <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-3 lg:grid-row-1 gap-4">
+          <div className="col-span-2 lg:col-span-1">
+            <StatCard
+              title="Total Donations"
+              value={"$ " + totalDonations.toFixed(2).toString()}
+            />
+          </div>
+          <div className="col-span-1">
+            <StatCard
+              title="Contributions"
+              value={totalUniqueContributions.toString()}
+            />
+          </div>
+          <div className="col-span-1">
+            <StatCard
+              title="Projects Funded"
+              value={totalProjectsFunded.toString()}
+            />
+          </div>
         </div>
         <div className="text-2xl my-6">Donation History</div>
         <div className="text-lg bg-violet-100 text-black px-1 py-1 mb-2">
@@ -261,110 +270,118 @@ function DonationsTable(props: {
   activeRound: boolean;
 }) {
   return (
-    <table
-      className="border-collapse w-full"
-      data-testid="donation-history-table"
-    >
-      <tr className="text-left text-lg">
-        <th className="py-4 w-1/2">Project</th>
-        <th className="flex flex-row py-4 w-1/4">
-          Donation
-          <InformationCircleIcon
-            data-tip
-            data-background-color="#0E0333"
-            data-for="donation-tooltip"
-            className="inline h-4 w-4 ml-2 mr-3 mt-1.5"
-            data-testid={"donation-tooltip"}
-          />
-          <ReactTooltip
-            id="donation-tooltip"
-            place="bottom"
-            type="dark"
-            effect="solid"
-          >
-            <p className="text-xs">
-              The displayed amount in USD reflects <br />
-              the value at the time of your donation.
-            </p>
-          </ReactTooltip>
-        </th>
-        <th className="py-4 text-right w-1/4">Transaction information</th>
-      </tr>
-      {props.contributions.length > 0 ? (
-        props.contributions.map((chainContribution) => {
-          const { chainId, data } = chainContribution;
-          return data.map((contribution) => {
-            const token = props.tokens[contribution.token];
+    <>
+      <table
+        className="border-collapse w-full"
+        data-testid="donation-history-table"
+      >
+        <tr className="text-left text-lg">
+          <th className="py-4 w-1/3 lg:w-1/2">Project</th>
+          <th className="flex flex-row py-4 w-1/3 lg:w-1/4">
+            <div className="py-4">Donation</div>
+            <div className="py-4">
+              <InformationCircleIcon
+                data-tip
+                data-background-color="#0E0333"
+                data-for="donation-tooltip"
+                className="inline h-4 w-4 ml-2 mr-3"
+                data-testid={"donation-tooltip"}
+              />
+              <ReactTooltip
+                id="donation-tooltip"
+                place="bottom"
+                type="dark"
+                effect="solid"
+              >
+                <p className="text-xs">
+                  The displayed amount in USD reflects <br />
+                  the value at the time of your donation.
+                </p>
+              </ReactTooltip>
+            </div>
+          </th>
+          <th className="py-4 text-right w-1/3 lg:w-1/4">
+            Transaction information
+          </th>
+        </tr>
+        {props.contributions.length > 0 &&
+          props.contributions.map((chainContribution) => {
+            const { chainId, data } = chainContribution;
+            return data.map((contribution) => {
+              const token = props.tokens[contribution.token];
 
-            let formattedAmount = "N/A";
+              let formattedAmount = "N/A";
 
-            if (token) {
-              formattedAmount = `${ethers.utils.formatUnits(
-                contribution.amount,
-                token.decimal
-              )} ${token.name}`;
-            }
+              if (token) {
+                formattedAmount = `${ethers.utils.formatUnits(
+                  contribution.amount,
+                  token.decimal
+                )} ${token.name}`;
+              }
 
-            return (
-              <tr key={contribution.id}>
-                <td className="border-b py-4 pr-16 w-1/2">
-                  <div className="flex items-center">
-                    <div>
-                      <img
-                        className="w-4 h-4 mr-2"
-                        src={CHAINS[chainId]?.logo}
-                        alt="Round Chain Logo"
+              return (
+                <tr key={contribution.id}>
+                  <td className="border-b py-4 pr-2 lg:pr-16 w-1/3 lg:w-1/2">
+                    <div className="flex items-center">
+                      <div className="flex flex-col sm:flex-row">
+                        <div className="flex items-center">
+                          <img
+                            className="w-4 h-4 mr-2"
+                            src={CHAINS[chainId]?.logo}
+                            alt="Round Chain Logo"
+                          />
+                          <Link
+                            className={`underline inline-block lg:pr-2 lg:max-w-[200px] max-w-[75px] 2xl:max-w-fit truncate`}
+                            title={contribution.roundName}
+                            to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
+                            target="_blank"
+                          >
+                            {contribution.roundName}
+                          </Link>
+                          <ChevronRightIcon className="h-4 inline lg:mx-2" />
+                        </div>
+                        <Link
+                          className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
+                          title={contribution.projectTitle}
+                          to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
+                            contribution.applicationId
+                          }`}
+                          target="_blank"
+                        >
+                          {contribution.projectTitle}
+                        </Link>
+                      </div>
+                    </div>
+                    {/* Todo: display contribution timestamp */}
+                    {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
+                  </td>
+                  <td className="border-b py-4 truncate lg:pr-16 w-1/3 lg:w-1/4">
+                    {formattedAmount}
+                    <div className="text-md text-gray-500">
+                      ${contribution.amountUSD.toFixed(2)}
+                    </div>
+                  </td>
+                  <td className="border-b py-4 lg:pr-12 w-1/3 lg:w-1/4">
+                    <div className="flex justify-end">
+                      <ViewTransactionButton
+                        chainId={chainId}
+                        txHash={contribution.transaction}
                       />
                     </div>
-                    <Link
-                      className={`underline inline-block pr-2 custom_lg:max-w-[200px] truncate`}
-                      title={contribution.roundName}
-                      to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
-                      target="_blank"
-                    >
-                      {contribution.roundName}
-                    </Link>
-                    <ChevronRightIcon className="h-4 inline mx-2" />
-                    <Link
-                      className={`underline inline-block pr-2 custom_lg:max-w-[300px] truncate`}
-                      title={contribution.projectTitle}
-                      to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
-                        contribution.applicationId
-                      }`}
-                      target="_blank"
-                    >
-                      {contribution.projectTitle}
-                    </Link>
-                  </div>
-                  {/* Todo: display contribution timestamp */}
-                  {/* <div className="text-sm text-gray-500">4 mins ago</div> */}
-                </td>
-                <td className="border-b py-4 truncate pr-16 w-1/4">
-                  {formattedAmount}
-                  <div className="text-md text-gray-500">
-                    ${contribution.amountUSD.toFixed(2)}
-                  </div>
-                </td>
-                <td className="border-b py-4 pr-12 w-1/4">
-                  <div className="flex justify-end">
-                    <ViewTransactionButton
-                      chainId={chainId}
-                      txHash={contribution.transaction}
-                    />
-                  </div>
-                </td>
-              </tr>
-            );
-          });
-        })
-      ) : (
-        <div className="text-md mt-2 mb-10">
+                  </td>
+                </tr>
+              );
+            });
+          })}
+      </table>
+      {props.contributions.length == 0 && (
+        <div className="text-md mt-2 mb-12">
           {props.activeRound
             ? "Donations made during active rounds will appear here."
             : "Donations made during past rounds will appear here."}
         </div>
       )}
-    </table>
+    </>
   );
 }
 
@@ -406,7 +423,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
               alt="Address Logo"
             />
             <div
-              className="text-[32px]"
+              className="text-[18px] lg:text-[32px]"
               data-testid="contributor-address"
               title={props.address}
             >
@@ -454,7 +471,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
         </div>
         <div className="flex justify-center">
           {" "}
-          <DonationHistoryBanner />
+          <DonationHistoryBanner className="w-full h-auto object-cover rounded-t" />
         </div>
       </main>
       <div className="mt-24 mb-11 h-11">
