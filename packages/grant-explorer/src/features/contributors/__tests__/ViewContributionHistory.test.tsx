@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import {
   ViewContributionHistoryDisplay,
@@ -164,7 +164,9 @@ describe("<ViewContributionHistoryWithoutDonations/>", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Donation History")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Donation History")).toBeInTheDocument();
+    });
     expect(
       screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
     ).toBeInTheDocument();

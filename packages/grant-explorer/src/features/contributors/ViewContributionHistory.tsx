@@ -13,7 +13,6 @@ import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
 import { CHAINS, getTxExplorer } from "../api/utils";
 import Navbar from "../common/Navbar";
-// import { ReactComponent as DonationHistoryBanner } from "../../assets/donnation-history-banner.svg";
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")
 );
