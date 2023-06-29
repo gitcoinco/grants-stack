@@ -1,29 +1,29 @@
 import { ChainId } from "common";
 
+export type GraphQLEndpoints = {
+  [key in ChainId]: string;
+};
+
+const graphQlEndpoints: GraphQLEndpoints = {
+  [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_URL_MAINNET!,
+  [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_URL_GOERLI!,
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET!,
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET!,
+  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_URL_PGN_TESTNET!,
+};
+
 /**
  * Fetch subgraph uri for a given chain id
  *
  * @param chainId
  * @returns GraphEndpoint
  */
-const getGraphQLEndpoint = (chainId: number): string | undefined => {
-  switch (chainId) {
-    case ChainId.MAINNET:
-      return process.env.REACT_APP_SUBGRAPH_URL_MAINNET;
-    case ChainId.GOERLI_CHAIN_ID:
-      return process.env.REACT_APP_SUBGRAPH_URL_GOERLI;
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
-      return process.env.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET;
-    case ChainId.FANTOM_MAINNET_CHAIN_ID:
-      return process.env.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET;
-    case ChainId.FANTOM_TESTNET_CHAIN_ID:
-      return process.env.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET;
-    default:
-      throw new Error(
-        `Chain id (${chainId}) is invalid or subgraph is not deployed on requested chain`
-      );
-  }
-};
+const getGraphQLEndpoint = (chainId: ChainId): string =>
+  graphQlEndpoints[chainId];
 
 export default async (
   query: string,
