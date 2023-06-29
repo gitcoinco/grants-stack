@@ -239,7 +239,7 @@ export function ViewContributionHistoryDisplay(props: {
           </div>
         </div>
         <div className="text-2xl my-6">Donation History</div>
-        <div className="text-lg bg-violet-100 text-black px-1 py-1 mb-2">
+        <div className="text-lg bg-violet-100 text-black px-1 py-1 mb-2 font-semibold">
           Active Rounds
         </div>
         <DonationsTable
@@ -247,7 +247,7 @@ export function ViewContributionHistoryDisplay(props: {
           tokens={props.tokens}
           activeRound={true}
         />
-        <div className="text-lg bg-grey-100 text-black px-1 py-1 mb-2">
+        <div className="text-lg bg-grey-100 text-black px-1 py-1 mb-2 font-semibold">
           Past Rounds
         </div>
         <DonationsTable
@@ -275,8 +275,8 @@ function DonationsTable(props: {
         data-testid="donation-history-table"
       >
         <tr className="text-left text-lg">
-          <th className="py-4 w-1/3 lg:w-1/2">Project</th>
-          <th className="flex flex-row py-4 w-1/3 lg:w-1/4">
+          <th className="py-4 w-1/3 lg:w-1/2 font-medium">Project</th>
+          <th className="flex flex-row py-4 w-1/3 lg:w-1/4 font-medium">
             <div className="py-4">Donation</div>
             <div className="py-4">
               <InformationCircleIcon
@@ -299,7 +299,7 @@ function DonationsTable(props: {
               </ReactTooltip>
             </div>
           </th>
-          <th className="py-4 text-right w-1/3 lg:w-1/4">
+          <th className="py-4 text-right w-1/3 lg:w-1/4 font-medium">
             Transaction information
           </th>
         </tr>
