@@ -1,7 +1,7 @@
+import GreenVerifiedBadge from "common/src/components/badges/GreenVerifiedBadge";
 import {
   ArrowNarrowLeftIcon,
   CheckIcon,
-  ShieldCheckIcon,
   XCircleIcon,
   XIcon,
 } from "@heroicons/react/solid";
@@ -35,7 +35,7 @@ import { Lit } from "../api/lit";
 import { utils } from "ethers";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
-import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
+import { useApplicationById, useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
@@ -81,9 +81,8 @@ export default function ViewApplicationPage() {
   const { chain, address } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { applications, isLoading } = useApplicationByRoundId(roundId!);
-  const filteredApplication = applications?.filter((a) => a.id == id) || [];
-  const application = filteredApplication[0];
+  const { applications } = useApplicationByRoundId(roundId!);
+  const { application, isLoading } = useApplicationById(id);
 
   const {
     bulkUpdateGrantApplications,
@@ -198,13 +197,7 @@ export default function ViewApplicationPage() {
     switch (verifiedProviders[provider]) {
       case VerifiedCredentialState.VALID:
         return (
-          <span className="rounded-full bg-teal-100 px-3 inline-flex flex-row justify-center items-center">
-            <ShieldCheckIcon
-              className="w-5 h-5 text-teal-500 mr-2"
-              data-testid={`${provider}-verifiable-credential`}
-            />
-            <p className="text-teal-500 font-medium text-xs">Verified</p>
-          </span>
+          <GreenVerifiedBadge />
         );
       case VerifiedCredentialState.INVALID:
         return (
@@ -465,8 +458,8 @@ export default function ViewApplicationPage() {
                         Created on:{" "}
                         {application?.project?.createdAt
                           ? formatDateWithOrdinal(
-                              new Date(Number(application?.project?.createdAt))
-                            )
+                            new Date(Number(application?.project?.createdAt))
+                          )
                           : "-"}
                       </span>
                     </span>
