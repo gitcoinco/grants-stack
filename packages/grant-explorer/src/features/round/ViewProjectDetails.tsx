@@ -1,10 +1,10 @@
+import GreenVerifiedBadge from "common/src/components/badges/GreenVerifiedBadge";
 import { datadogLogs } from "@datadog/browser-logs";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   BoltIcon,
   GlobeAltIcon,
-  ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
 import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
@@ -277,13 +277,7 @@ function AboutProject(props: { projectToRender: Project }) {
     switch (verifiedProviders[provider]) {
       case VerifiedCredentialState.VALID:
         return (
-          <span className="rounded-full bg-teal-100 px-2.5 inline-flex flex-row justify-center items-center">
-            <ShieldCheckIcon
-              className="w-5 h-5 text-teal-500 mr-2"
-              data-testid={`${provider}-verifiable-credential`}
-            />
-            <p className="text-teal-500 font-medium text-xs">Verified</p>
-          </span>
+          <GreenVerifiedBadge />
         );
       default:
         return <></>;

@@ -8,5 +8,6 @@ const colors = {
   "quaternary-text": "#FFFFFF",
   "green-text": "#11BC92",
   "grey-text": "#0E0333",
+  "light-green-background": "#E6FFF9",
 };
 export default colors;
