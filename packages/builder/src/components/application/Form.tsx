@@ -25,7 +25,7 @@ import {
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import { editProjectPathByID } from "../../routes";
-import colors from "../../styles/colors";
+import colors from "common/src/colors";
 import {
   AddressType,
   ChangeHandlers,

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { grantsPath, newGrantPath } from "../routes";
 import CustomerSupport from "./base/CustomerSupport";
-import colors from "../styles/colors";
+import colors from "common/src/colors";
 import Hamburger from "./icons/Hamburger";
 import Plus from "./icons/Plus";
 import { GitcoinLogo, BuilderLogo } from "../assets";

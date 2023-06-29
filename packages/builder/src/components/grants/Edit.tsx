@@ -10,7 +10,7 @@ import {
 } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
-import colors from "../../styles/colors";
+import colors from "common/src/colors";
 import { ProjectFormStatus } from "../../types";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";

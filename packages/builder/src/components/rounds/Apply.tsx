@@ -14,7 +14,7 @@ import {
 } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantsPath, projectPath, roundPath } from "../../routes";
-import colors from "../../styles/colors";
+import colors from "common/src/colors";
 import { Round } from "../../types";
 import { RoundApplicationAnswers } from "../../types/roundApplication";
 import { applicationSteps } from "../../utils/steps";

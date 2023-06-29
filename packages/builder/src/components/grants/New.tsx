@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import colors from "../../styles/colors";
+import colors from "common/src/colors";
 import Button, { ButtonVariants } from "../base/Button";
 import ProjectForm from "../base/ProjectForm";
 import Cross from "../icons/Cross";
