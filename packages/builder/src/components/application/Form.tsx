@@ -44,7 +44,6 @@ import {
   getPayoutIcon,
   networkPrettyName,
 } from "../../utils/wallet";
-import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
 import ErrorModal from "../base/ErrorModal";
