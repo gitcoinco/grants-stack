@@ -40,7 +40,7 @@ export default function ApplicationsBox({
       roundToChain.set(application.roundID, application.chainId);
     });
     dispatch(loadRounds(roundToChain));
-  }, []);
+  }, [applications]);
 
   const applicationsToDisplay = useMemo(() => {
     if (props.isLoading) {
