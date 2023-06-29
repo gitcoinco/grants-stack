@@ -495,7 +495,7 @@ function ViewContributionHistoryFetcher(props: {
       path: "/",
     },
     {
-      name: "Contributors",
+      name: "Profile",
       path: `/contributors/${props.address}`,
     },
   ] as BreadcrumbItem[];
