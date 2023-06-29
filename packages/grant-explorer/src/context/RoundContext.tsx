@@ -7,6 +7,7 @@ import {
 } from "react";
 import { getRoundById } from "../features/api/round";
 import { Round } from "../features/api/types";
+import { ChainId } from "../features/api/utils";
 
 export interface RoundState {
   rounds: Round[];
@@ -87,7 +88,7 @@ export const RoundProvider = ({ children }: { children: ReactNode }) => {
 function fetchRoundsById(dispatch: Dispatch, chainId: string, roundId: string) {
   dispatch({ type: ActionType.SET_LOADING, payload: true });
 
-  getRoundById(roundId, chainId)
+  getRoundById(roundId, chainId as ChainId)
     .then((round) => dispatch({ type: ActionType.ADD_ROUND, payload: round }))
     .catch((error) =>
       dispatch({ type: ActionType.SET_ERROR_GET_ROUND, payload: error })
