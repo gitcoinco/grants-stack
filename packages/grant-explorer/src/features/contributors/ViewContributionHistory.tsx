@@ -300,7 +300,7 @@ function DonationsTable(props: {
             </div>
           </th>
           <th className="py-4 text-right w-1/3 lg:w-1/4 font-medium">
-            Transaction information
+            Transaction Information
           </th>
         </tr>
         {props.contributions.length > 0 &&
