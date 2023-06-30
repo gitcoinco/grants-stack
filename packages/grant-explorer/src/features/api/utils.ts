@@ -407,3 +407,16 @@ export const listenForOutsideClicks = ({
     });
   };
 };
+
+export function getChainIds(): number[] {
+  const isProduction = process.env.REACT_APP_ENV === "production";
+  if (isProduction) {
+    return [
+      Number(ChainId.MAINNET),
+      Number(ChainId.OPTIMISM_MAINNET_CHAIN_ID),
+      Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
+    ];
+  } else {
+    return Object.values(ChainId).map((chainId) => Number(chainId));
+  }
+}
