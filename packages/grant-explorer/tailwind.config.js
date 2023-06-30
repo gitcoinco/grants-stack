@@ -2,10 +2,6 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      screens: {
-        custom_lg: [{ min: "1200px", max: "1499px" }],
-        xl: "1500px",
-      },
       animation: {
         "pulse-scale": "pulse-scale 2s ease-in-out infinite",
       },

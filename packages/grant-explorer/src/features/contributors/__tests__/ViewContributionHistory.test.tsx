@@ -1,11 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import {
-  ViewContributionHistoryDisplay,
+  ViewContributionHistory,
   ViewContributionHistoryWithoutDonations,
 } from "../ViewContributionHistory";
 import { mockSigner } from "../../../test-utils";
 import { MemoryRouter } from "react-router-dom";
+import { BreadcrumbItem } from "../../common/Breadcrumb";
 
 const mockAddress = faker.finance.ethereumAddress();
 
@@ -75,6 +76,17 @@ const useParamsFn = () => ({
   address: mockAddress,
 });
 
+const breadCrumbs = [
+  {
+    name: "Explorer Home",
+    path: "/",
+  },
+  {
+    name: "Contributors",
+    path: `/contributors/${mockAddress}`,
+  },
+] as BreadcrumbItem[];
+
 Object.defineProperty(window, "scrollTo", { value: () => {}, writable: true });
 
 jest.mock("../../common/Navbar");
@@ -93,7 +105,7 @@ jest.mock("wagmi", () => ({
   useAccount: jest.fn().mockReturnValue({ data: "mockedAccount" }),
 }));
 
-describe("<ViewContributionHistoryDisplay/>", () => {
+describe("<ViewContributionHistory/>", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -101,17 +113,20 @@ describe("<ViewContributionHistoryDisplay/>", () => {
   it("Should show donation impact & donation history", async () => {
     render(
       <MemoryRouter>
-        <ViewContributionHistoryDisplay
+        <ViewContributionHistory
           tokens={mockTokens}
           contributions={mockContributions}
           address={mockAddress}
           addressLogo="mockedAddressLogo"
+          breadCrumbs={breadCrumbs}
         />
       </MemoryRouter>
     );
 
     expect(screen.getByText("Donation Impact")).toBeInTheDocument();
     expect(screen.getByText("Donation History")).toBeInTheDocument();
+    expect(screen.getByText("Active Rounds")).toBeInTheDocument();
+    expect(screen.getByText("Past Rounds")).toBeInTheDocument();
     expect(
       screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
     ).toBeInTheDocument();
@@ -144,11 +159,14 @@ describe("<ViewContributionHistoryWithoutDonations/>", () => {
         <ViewContributionHistoryWithoutDonations
           address={mockAddress}
           addressLogo="mockedAddressLogo"
+          breadCrumbs={breadCrumbs}
         />
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Donation History")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Donation History")).toBeInTheDocument();
+    });
     expect(
       screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
     ).toBeInTheDocument();
