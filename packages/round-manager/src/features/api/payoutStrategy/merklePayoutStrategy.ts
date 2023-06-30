@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { fetchProjectPaidInARound, Payout } from "common";
+import { ChainId, fetchProjectPaidInARound, Payout } from "common";
 import { BigNumber, ethers, Signer } from "ethers";
 import { useEffect, useState } from "react";
 // import dist from "tailwind-styled-components";
 import { useWallet } from "../../common/Auth";
 import {
   merklePayoutStrategyFactoryContract,
-  merklePayoutStrategyImplementationContract
+  merklePayoutStrategyImplementationContract,
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
-import { ChainId, generateMerkleTree } from "../utils";
+import { generateMerkleTree } from "../utils";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the

@@ -12,6 +12,7 @@ export enum ChainId {
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
   FANTOM_TESTNET_CHAIN_ID = 4002,
+  PGN_TESTNET = 58008,
 }
 
 export enum PassportState {
@@ -153,6 +154,9 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
 
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
+
+    case ChainId.PGN_TESTNET:
+      return `${process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API}`;
 
     case ChainId.GOERLI_CHAIN_ID:
     default:
