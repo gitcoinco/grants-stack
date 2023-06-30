@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import {
-  ViewContributionHistoryDisplay,
+  ViewContributionHistory,
   ViewContributionHistoryWithoutDonations,
 } from "../ViewContributionHistory";
 import { mockSigner } from "../../../test-utils";
@@ -105,7 +105,7 @@ jest.mock("wagmi", () => ({
   useAccount: jest.fn().mockReturnValue({ data: "mockedAccount" }),
 }));
 
-describe("<ViewContributionHistoryDisplay/>", () => {
+describe("<ViewContributionHistory/>", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -113,7 +113,7 @@ describe("<ViewContributionHistoryDisplay/>", () => {
   it("Should show donation impact & donation history", async () => {
     render(
       <MemoryRouter>
-        <ViewContributionHistoryDisplay
+        <ViewContributionHistory
           tokens={mockTokens}
           contributions={mockContributions}
           address={mockAddress}

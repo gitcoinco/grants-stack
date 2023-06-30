@@ -7,6 +7,11 @@ import {
   Project,
   Round,
 } from "./types";
+import {
+  Client as AlloIndexerClient,
+  DetailedVote as Contribution,
+} from "allo-indexer-client";
+import { useEffect, useState } from "react";
 
 /**
  * Shape of subgraph response
@@ -36,7 +41,6 @@ export interface RoundResult {
   projectsMetaPtr?: MetadataPointer | null;
   projects: RoundProjectResult[];
 }
-
 interface RoundProjectResult {
   id: string;
   project: string;
@@ -60,6 +64,14 @@ export type RoundProject = {
   status: ApplicationStatus;
   payoutAddress: string;
 };
+
+export type ContributionHistoryState =
+  | { type: "loading" }
+  | {
+      type: "loaded";
+      data: { chainId: number; data: Contribution[] }[];
+    }
+  | { type: "error"; error: string };
 
 export async function getRoundById(
   roundId: string,
@@ -255,3 +267,76 @@ export async function getProjectOwners(
     throw Error("Unable to fetch project owners");
   }
 }
+
+export const useContributionHistory = (
+  chainIds: number[],
+  rawAddress: string
+) => {
+  const [state, setState] = useState<ContributionHistoryState>({
+    type: "loading",
+  });
+
+  useEffect(() => {
+    if (!process.env.REACT_APP_ALLO_API_URL) {
+      throw new Error("REACT_APP_ALLO_API_URL is not set");
+    }
+
+    const fetchContributions = async () => {
+      const fetchPromises: Promise<{
+        chainId: number;
+        data: Contribution[];
+        error?: string;
+      }>[] = chainIds.map((chainId: number) => {
+        if (!process.env.REACT_APP_ALLO_API_URL) {
+          throw new Error("REACT_APP_ALLO_API_URL is not set");
+        }
+
+        const client = new AlloIndexerClient(
+          fetch.bind(window),
+          process.env.REACT_APP_ALLO_API_URL,
+          chainId
+        );
+
+        let address = "";
+        try {
+          // ensure the address is a valid address
+          address = ethers.utils.getAddress(rawAddress.toLowerCase());
+        } catch (e) {
+          return Promise.resolve({
+            chainId,
+            error: "Invalid address",
+            data: [],
+          });
+        }
+
+        return client
+          .getContributionsByAddress(address)
+          .then((data) => {
+            return { chainId, error: undefined, data };
+          })
+          .catch((error) => {
+            console.log(
+              `Error fetching contribution history for chain ${chainId}:`,
+              error
+            );
+            return { chainId, error: error.toString() as string, data: [] };
+          });
+      });
+
+      const fetchResults = await Promise.all(fetchPromises);
+
+      if (fetchResults.every((result) => result.error)) {
+        setState({
+          type: "error",
+          error: "Error fetching contribution history for all chains",
+        });
+      } else {
+        setState({ type: "loaded", data: fetchResults });
+      }
+    };
+
+    fetchContributions();
+  }, [chainIds, rawAddress]);
+
+  return state;
+};
