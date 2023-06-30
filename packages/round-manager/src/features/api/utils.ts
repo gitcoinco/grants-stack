@@ -7,15 +7,7 @@ import {
   MatchingStatsData,
   Program,
 } from "./types";
-import { RedstoneTokenIds } from "common";
-
-export enum ChainId {
-  MAINNET = 1,
-  GOERLI_CHAIN_ID = 5,
-  OPTIMISM_MAINNET_CHAIN_ID = 10,
-  FANTOM_MAINNET_CHAIN_ID = 250,
-  FANTOM_TESTNET_CHAIN_ID = 4002,
-}
+import { ChainId, RedstoneTokenIds } from "common";
 
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<number, Program["chain"]> = {
@@ -42,6 +34,11 @@ export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: {
     id: ChainId.FANTOM_TESTNET_CHAIN_ID,
     name: "Fantom Testnet",
+    logo: "./logos/fantom-logo.svg",
+  },
+  [ChainId.PGN_TESTNET]: {
+    id: ChainId.PGN_TESTNET,
+    name: "PGN Testnet",
     logo: "./logos/fantom-logo.svg",
   },
 };
