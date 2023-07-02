@@ -1,6 +1,6 @@
  pre-commit:
    parallel: true
-   commands:
+   commands: start
      prettier:
        glob: "*.{js,ts,jsx,tsx}"
        run: pnpm prettier --write {staged_files}
