@@ -770,7 +770,7 @@ function InfoModalBody() {
         You'll have to sign a transaction to deploy each of the following:
       </p>
       <ul className="list-disc list-inside pl-3">
-        <li>Quadratic Funding contract</li>
+        <li>Voting contract</li>
         <li>Payout contract</li>
         <li>Round core contract</li>
       </ul>
