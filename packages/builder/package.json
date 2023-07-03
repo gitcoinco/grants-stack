@@ -85,6 +85,7 @@
     "test:coverage": "jest --watchAll=false --coverage",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
+    "lint:ci": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
     "lint:fix": "eslint ./src --fix --cache",
     "typecheck": "tsc --noEmit"
   },
@@ -92,7 +93,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "import/prefer-default-export": "off"
+    }
   },
   "browserslist": {
     "production": [
