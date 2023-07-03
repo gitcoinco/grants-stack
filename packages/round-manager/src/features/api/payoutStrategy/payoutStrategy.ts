@@ -13,7 +13,7 @@ import {
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData, Round } from "../types";
 import { ChainId, generateMerkleTree } from "../utils";
-import { DirectPayoutStrategyFactory__factory } from "../../../types/generated/typechain/factories/DirectPayoutStrategyFactory__factory";
+import { DirectPayoutStrategyFactory__factory } from "../../../types/generated/typechain";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
