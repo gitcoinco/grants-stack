@@ -15,6 +15,7 @@ export type ChainName = (typeof chains)[keyof typeof chains];
 type DeploymentAddresses = {
   projectRegistry: string | undefined;
 };
+
 export type DeploymentAddressesMap = {
   [key in ChainName]: DeploymentAddresses;
 };
