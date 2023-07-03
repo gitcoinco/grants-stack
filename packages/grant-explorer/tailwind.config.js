@@ -49,6 +49,13 @@ module.exports = {
         red: {
           100: "#D44D6E",
         },
+        "gitcoin-violet": {
+          100: "#F0EBFF",
+          200: "#C9B8FF",
+          300: "#8C65F7",
+          400: "#6F3FF5",
+          500: "#5932C4",
+        },
       },
       keyframes: {
         violetTransition: {

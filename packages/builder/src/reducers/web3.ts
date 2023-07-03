@@ -1,3 +1,4 @@
+import { ChainId } from "common";
 import {
   Web3Actions,
   WEB3_INITIALIZING,
@@ -11,7 +12,7 @@ import {
 export interface Web3State {
   initializing: boolean;
   initialized: boolean;
-  chainID: number | undefined;
+  chainID: ChainId | undefined;
   error: Web3Errors | undefined;
   account: string | undefined;
 }

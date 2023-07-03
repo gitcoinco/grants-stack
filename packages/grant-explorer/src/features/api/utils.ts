@@ -231,18 +231,22 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
  * @param txHash - The transaction hash
  * @returns the transaction explorer URL for the provided transaction hash and network
  */
-export const getTxExplorer = (chainId?: ChainId, txHash?: string) => {
+export const getTxExplorer = (chainId?: ChainId | number, txHash?: string) => {
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+    case 10:
       return `https://optimistic.etherscan.io/tx/${txHash}`;
 
     case ChainId.FANTOM_MAINNET_CHAIN_ID:
+    case 250:
       return `https://ftmscan.com/tx/${txHash}`;
 
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
+    case 4002:
       return `https://testnet.ftmscan.com/tx/${txHash}`;
 
     case ChainId.MAINNET:
+    case 1:
       return `https://etherscan.io/tx/${txHash}`;
 
     default:
@@ -403,3 +407,16 @@ export const listenForOutsideClicks = ({
     });
   };
 };
+
+export function getChainIds(): number[] {
+  const isProduction = process.env.REACT_APP_ENV === "production";
+  if (isProduction) {
+    return [
+      Number(ChainId.MAINNET),
+      Number(ChainId.OPTIMISM_MAINNET_CHAIN_ID),
+      Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
+    ];
+  } else {
+    return Object.values(ChainId).map((chainId) => Number(chainId));
+  }
+}
