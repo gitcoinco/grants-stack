@@ -92,7 +92,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "import/prefer-default-export": "off"
+    }
   },
   "browserslist": {
     "production": [

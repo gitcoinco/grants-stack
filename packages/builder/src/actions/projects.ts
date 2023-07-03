@@ -8,7 +8,7 @@ import { global } from "../global";
 import { RootState } from "../reducers";
 import { AppStatus, Application, ProjectStats } from "../reducers/projects";
 import { ProjectEvents, ProjectEventsMap } from "../types";
-import graphqlFetch from "../utils/graphql";
+import { graphqlFetch } from "../utils/graphql";
 import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";

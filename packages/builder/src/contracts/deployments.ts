@@ -12,13 +12,14 @@ export const chains = {
 
 export type ChainName = (typeof chains)[keyof typeof chains];
 
-export type DeploymentAddress = {
-  [key in ChainName]: {
-    projectRegistry: string | undefined;
-  };
+type DeploymentAddresses = {
+  projectRegistry: string | undefined;
+};
+export type DeploymentAddressesMap = {
+  [key in ChainName]: DeploymentAddresses;
 };
 
-export const addresses: DeploymentAddress = {
+export const addresses: DeploymentAddressesMap = {
   localhost: {
     projectRegistry: "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5",
   },
@@ -42,7 +43,7 @@ export const addresses: DeploymentAddress = {
   },
 };
 
-export const addressesByChainID = (chainID: ChainId) => {
+export const addressesByChainID = (chainID: ChainId): DeploymentAddresses => {
   const chainName = chains[chainID];
   return addresses[chainName];
 };
