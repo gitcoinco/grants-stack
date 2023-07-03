@@ -60,11 +60,11 @@ export type SupportType = {
 };
 
 export const TokenNamesAndLogos: Record<string, string> = {
-  FTM: "./logos/fantom-logo.svg",
-  BUSD: "./logos/busd-logo.svg",
-  DAI: "./logos/dai-logo.svg",
-  ETH: "./logos/ethereum-eth-logo.svg",
-  OP: "./logos/optimism-logo.svg",
+  FTM: "/logos/fantom-logo.svg",
+  BUSD: "/logos/busd-logo.svg",
+  DAI: "/logos/dai-logo.svg",
+  ETH: "/logos/ethereum-eth-logo.svg",
+  OP: "/logos/optimism-logo.svg",
 };
 
 const MAINNET_TOKENS: PayoutToken[] = [
