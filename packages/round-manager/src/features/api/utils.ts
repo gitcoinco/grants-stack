@@ -14,32 +14,32 @@ export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
     name: "Mainnet", // TODO get canonical network names
-    logo: "./logos/ethereum-eth-logo.svg",
+    logo: "/logos/ethereum-eth-logo.svg",
   },
   [ChainId.GOERLI_CHAIN_ID]: {
     id: ChainId.GOERLI_CHAIN_ID,
     name: "Goerli", // TODO get canonical network names
-    logo: "./logos/ethereum-eth-logo.svg",
+    logo: "/logos/ethereum-eth-logo.svg",
   },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     name: "Optimism",
-    logo: "./logos/optimism-logo.svg",
+    logo: "/logos/optimism-logo.svg",
   },
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
     id: ChainId.FANTOM_MAINNET_CHAIN_ID,
     name: "Fantom",
-    logo: "./logos/fantom-logo.svg",
+    logo: "/logos/fantom-logo.svg",
   },
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: {
     id: ChainId.FANTOM_TESTNET_CHAIN_ID,
     name: "Fantom Testnet",
-    logo: "./logos/fantom-logo.svg",
+    logo: "/logos/fantom-logo.svg",
   },
   [ChainId.PGN_TESTNET]: {
     id: ChainId.PGN_TESTNET,
     name: "PGN Testnet",
-    logo: "./logos/fantom-logo.svg",
+    logo: "/logos/pgn-logo.svg",
   },
 };
 
