@@ -131,11 +131,5 @@
     "tailwind-styled-components": "2.1.6",
     "tailwindcss": "^3.0.24",
     "typechain": "^8.2.0"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "prettier --write",
-      "pnpm lint:fix"
-    ]
   }
 }
