@@ -21,8 +21,10 @@ import AccessDenied from "../common/AccessDenied";
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { Spinner } from "../common/Spinner";
 import { useRounds } from "../../context/round/RoundContext";
-import { ProgressStatus } from "../api/types";
+import { ProgressStatus, Round } from "../api/types";
 import { useDebugMode } from "../../hooks";
+import { maxDate } from "../../constants";
+import moment from "moment";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -63,98 +65,102 @@ export default function ViewProgram() {
   }, [isProgramFetched, programToRender, address, debugModeEnabled]);
 
   const roundItems = rounds
-    ? rounds.map((round, index) => (
-        <Link to={`/round/${round.id}`} key={index}>
-          <div
-            key={index}
-            className="relative w-full border-t border-b border-grey-100 bg-white py-4 my-4 flex items-center justify-between space-x-3"
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-sm pb-3 mb-1 font-medium text-gray-900">
-                {round.roundMetadata.name}
-              </p>
+    ? rounds.map((round, index) => {
+        const parsedRoundInfo = formatRound(round);
 
-              <div className="grid sm:grid-cols-3">
-                <p className="text-xs flex gap-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-grey-500 my-auto"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-grey-400 my-auto mr-2">
-                    Applications:{" "}
-                  </span>
-                  <div>
-                    <p
-                      className="my-auto text-xs"
-                      data-testid="application-time-period"
-                    >
-                      <span data-testid="application-start-time-period">
-                        {formatUTCDateAsISOString(round.applicationsStartTime)}
-                      </span>
-                      <span className="mx-1">-</span>
-                      <span data-testid="application-end-time-period">
-                        {formatUTCDateAsISOString(round.applicationsEndTime)}
-                      </span>
-                    </p>
-                    <p className="text-xs text-grey-400">
-                      <span className="mr-2">
-                        ({getUTCTime(round.applicationsStartTime)})
-                      </span>
-                      <span>({getUTCTime(round.applicationsEndTime)})</span>
-                    </p>
-                  </div>
+        return (
+          <Link to={`/round/${round.id}`} key={index}>
+            <div
+              key={index}
+              className="relative w-full border-t border-b border-grey-100 bg-white py-4 my-4 flex items-center justify-between space-x-3"
+            >
+              <div className="flex-1 min-w-0">
+                <p className="text-sm pb-3 mb-1 font-medium text-gray-900">
+                  {round.roundMetadata.name}
                 </p>
-                <p className="text-xs flex gap-1 md:ml-8">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 my-auto"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-grey-400 my-auto mr-2">Round: </span>
-                  <span className="my-auto" data-testid="round-time-period">
-                    <p
-                      className="my-auto text-xs"
-                      data-testid="round-time-period"
-                    >
-                      <span data-testid="round-start-time-period">
-                        {formatUTCDateAsISOString(round.roundStartTime)}
-                      </span>
-                      <span className="mx-1">-</span>
-                      <span data-testid="round-end-time-period">
-                        {formatUTCDateAsISOString(round.roundEndTime)}
-                      </span>
-                    </p>
 
-                    <p className="text-xs text-grey-400">
-                      <span className="mr-2">
-                        ({getUTCTime(round.roundStartTime)})
-                      </span>
-                      <span>({getUTCTime(round.roundEndTime)})</span>
-                    </p>
-                  </span>
-                </p>
+                <div className="grid sm:grid-cols-3">
+                  <p className="text-xs flex gap-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-grey-500 my-auto"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-grey-400 my-auto mr-2">
+                      Applications:{" "}
+                    </span>
+                    <div>
+                      <p
+                        className="my-auto text-xs"
+                        data-testid="application-time-period"
+                      >
+                        <span data-testid="application-start-time-period">
+                          {parsedRoundInfo.application.iso.start}
+                        </span>
+                        <span className="mx-1">-</span>
+                        <span data-testid="application-end-time-period">
+                          {parsedRoundInfo.application.iso.end}
+                        </span>
+                      </p>
+                      <p className="text-xs text-grey-400">
+                        <span className="mr-2">
+                          ({parsedRoundInfo.application.utc.start})
+                        </span>
+                        <span>{parsedRoundInfo.application.utc.end}</span>
+                      </p>
+                    </div>
+                  </p>
+                  <p className="text-xs flex gap-1 md:ml-8">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 my-auto"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-grey-400 my-auto mr-2">Round: </span>
+                    <span className="my-auto" data-testid="round-time-period">
+                      <p
+                        className="my-auto text-xs"
+                        data-testid="round-time-period"
+                      >
+                        <span data-testid="round-start-time-period">
+                          {parsedRoundInfo.round.iso.start}
+                        </span>
+                        <span className="mx-1">-</span>
+                        <span data-testid="round-end-time-period">
+                          {parsedRoundInfo.round.iso.end}
+                        </span>
+                      </p>
+
+                      <p className="text-xs text-grey-400">
+                        <span className="mr-2">
+                          {parsedRoundInfo.round.utc.start}
+                        </span>
+                        <span>{parsedRoundInfo.round.utc.end}</span>
+                      </p>
+                    </span>
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <ChevronRightIcon className="h-5 w-5" />
-          </div>
-        </Link>
-      ))
+              <ChevronRightIcon className="h-5 w-5" />
+            </div>
+          </Link>
+        );
+      })
     : [];
 
   const operatorWallets = (
@@ -200,6 +206,20 @@ export default function ViewProgram() {
             Create round
           </Button>
         </Link>
+
+        {process.env.REACT_APP_DIRECT_GRANT_ENABLED && (
+          <Link
+            to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
+          >
+            <Button className="my-4 px-4 mt-10">
+              <PlusIcon
+                className="h-4 w-4 inline-flex -translate-y-0.5"
+                aria-hidden="true"
+              />{" "}
+              Create direct round
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   );
@@ -254,6 +274,20 @@ export default function ViewProgram() {
                             />{" "}
                             Create round
                           </Link>
+                          {process.env.REACT_APP_DIRECT_GRANT_ENABLED !==
+                            undefined && (
+                            <Link
+                              to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
+                              className="text-violet-400 font-thin"
+                              data-testid="create-round-small-link"
+                            >
+                              <PlusSmIcon
+                                className="h-5 w-5 inline -translate-y-0.5"
+                                aria-hidden="true"
+                              />{" "}
+                              Create direct round
+                            </Link>
+                          )}
                         </div>
                         {roundItems}
                       </div>
@@ -273,4 +307,39 @@ export default function ViewProgram() {
       )}
     </>
   );
+
+  function formatRound(round: Round) {
+    const noEndTime = "No end time";
+
+    return {
+      application: {
+        iso: {
+          start: formatUTCDateAsISOString(round.applicationsStartTime),
+          end: moment(round.applicationsEndTime).isSame(maxDate)
+            ? noEndTime
+            : formatUTCDateAsISOString(round.applicationsEndTime),
+        },
+        utc: {
+          start: getUTCTime(round.applicationsStartTime),
+          end: moment(round.applicationsEndTime).isSame(maxDate)
+            ? ""
+            : `(${getUTCTime(round.applicationsEndTime)})`,
+        },
+      },
+      round: {
+        iso: {
+          start: formatUTCDateAsISOString(round.roundStartTime),
+          end: moment(round.roundEndTime).isSame(maxDate)
+            ? noEndTime
+            : formatUTCDateAsISOString(round.roundEndTime),
+        },
+        utc: {
+          start: `(${getUTCTime(round.roundStartTime)})`,
+          end: moment(round.roundEndTime).isSame(maxDate)
+            ? ""
+            : `(${getUTCTime(round.roundEndTime)})`,
+        },
+      },
+    };
+  }
 }

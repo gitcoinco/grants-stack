@@ -1,6 +1,6 @@
 import { fetchProjectPaidInARound } from "common";
 import { makeQFDistribution, makeRoundData } from "../../../../test-utils";
-import { useGroupProjectsByPaymentStatus } from "../../payoutStrategy/merklePayoutStrategy";
+import { useGroupProjectsByPaymentStatus } from "../../payoutStrategy/payoutStrategy";
 import { ChainId } from "../../utils";
 import { fetchMatchingDistribution } from "../../round";
 import React, { useState as useStateMock } from "react";

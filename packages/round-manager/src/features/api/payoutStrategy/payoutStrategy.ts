@@ -5,12 +5,15 @@ import { useEffect, useState } from "react";
 // import dist from "tailwind-styled-components";
 import { useWallet } from "../../common/Auth";
 import {
+  alloSettingsContract,
+  directPayoutStrategyFactoryContract,
   merklePayoutStrategyFactoryContract,
-  merklePayoutStrategyImplementationContract
+  merklePayoutStrategyImplementationContract,
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
-import { MatchingStatsData } from "../types";
+import { MatchingStatsData, Round } from "../types";
 import { ChainId, generateMerkleTree } from "../utils";
+import { DirectPayoutStrategyFactory__factory } from "../../../types/generated/typechain/factories/DirectPayoutStrategyFactory__factory";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -63,6 +66,63 @@ export const deployMerklePayoutStrategyContract = async (
   }
 };
 
+/**
+ * Deploys a DirectPayoutStrategy contract by invoking the
+ * create on QuadraticFundingVotingStrategyFactory contract
+ *
+ * @param signerOrProvider
+ * @param round
+ * @returns
+ */
+export const deployDirectPayoutStrategyContract = async (
+  signerOrProvider: Signer,
+  round: Round
+): Promise<{ payoutContractAddress: string }> => {
+  try {
+    const chainId = await signerOrProvider.getChainId();
+    const factoryAddress = directPayoutStrategyFactoryContract(chainId);
+    const factory = DirectPayoutStrategyFactory__factory.connect(
+      factoryAddress,
+      signerOrProvider
+    );
+
+    if (!round.vaultAddress) throw new Error("Vault address not found");
+
+    // get DirectPayoutStrategy instance
+    const tx = await factory.create(
+      alloSettingsContract(chainId).address as string,
+      round.vaultAddress,
+      round.feesPercentage || 0,
+      round.feesAddress || ethers.constants.AddressZero,
+      chainId == 5
+        ? {
+            // Sometimes goerli estimateGas is not enough
+            gasLimit: 250000,
+          }
+        : {}
+    );
+
+    const receipt = await tx.wait();
+
+    // get payout address from event
+    const event = receipt.events?.find(
+      (e) => e.event === "PayoutContractCreated"
+    );
+    if (!event || !event.args) {
+      throw new Error("No PayoutContractCreated event");
+    }
+    const payoutContractAddress = event.args.payoutContractAddress;
+
+    console.log("✅ Direct Payout Transaction hash: ", tx.hash);
+    console.log("✅ Direct Payout Strategy address: ", payoutContractAddress);
+
+    return { payoutContractAddress };
+  } catch (error) {
+    console.error("directPayoutStrategyFactoryContract", error);
+    throw new Error("Unable to deploy direct payout strategy contract");
+  }
+};
+
 interface UpdateDistributionProps {
   payoutStrategy: string;
   encodedDistribution: string;
@@ -98,7 +158,7 @@ export async function updateDistributionToContract({
 }
 
 export const useFetchMatchingDistributionFromContract = (
-  roundId: string | undefined,
+  roundId: string | undefined
 ): {
   distributionMetaPtr: string;
   matchingDistributionContract: MatchingStatsData[];
@@ -161,7 +221,7 @@ export const useGroupProjectsByPaymentStatus = (
 
   const allProjects =
     useFetchMatchingDistributionFromContract(
-      roundId,
+      roundId
     ).matchingDistributionContract;
 
   useEffect(() => {
@@ -172,14 +232,10 @@ export const useGroupProjectsByPaymentStatus = (
       };
 
       const paidProjects: Payout[] = await paidProjectsFromGraph;
-      const paidProjectIds = paidProjects.map((project) =>
-        project.projectId,
-      );
+      const paidProjectIds = paidProjects.map((project) => project.projectId);
 
       allProjects?.forEach((project) => {
-        const projectStatus = paidProjectIds.includes(
-          project.projectId
-        )
+        const projectStatus = paidProjectIds.includes(project.projectId)
           ? "paid"
           : "unpaid";
 
@@ -188,11 +244,8 @@ export const useGroupProjectsByPaymentStatus = (
         if (projectStatus === "paid") {
           tmpProject = {
             ...project,
-            hash: paidProjects.find(
-              (p) =>
-                p.projectId ===
-                project.projectId,
-            )?.txnHash,
+            hash: paidProjects.find((p) => p.projectId === project.projectId)
+              ?.txnHash,
             status: "",
           };
         }
@@ -236,7 +289,7 @@ export const batchDistributeFunds = async (
 
     // Filter projects to be paid from matching results
     const projectsToBePaid = matchingResults.filter((project) =>
-      projectIdsToBePaid.includes(project.projectId),
+      projectIdsToBePaid.includes(project.projectId)
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -296,17 +349,17 @@ export const batchDistributeFunds = async (
 export async function reclaimFundsFromContract(
   payoutStrategy: string,
   signerOrProvider: Signer,
-  recipient: string,
+  recipient: string
 ) {
   try {
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
 
     const tx = await merklePayoutStrategyImplementation.withdrawFunds(
-      recipient,
+      recipient
     );
 
     const receipt = await tx.wait();

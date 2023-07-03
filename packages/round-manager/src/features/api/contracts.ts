@@ -101,9 +101,7 @@ export const programImplementationContract: Contract = {
 /************************/
 
 /* RoundFactory  */
-export const roundFactoryContract = (
-  chainId: ChainId | undefined
-): Contract => {
+export const roundFactoryContract = (chainId: ChainId | undefined): string => {
   let address;
 
   switch (chainId) {
@@ -130,10 +128,7 @@ export const roundFactoryContract = (
     }
   }
 
-  return {
-    address: address,
-    abi: abi.roundFactory,
-  };
+  return address;
 };
 
 /* RoundImplementation */
@@ -146,18 +141,19 @@ export const roundImplementationContract: Contract = {
 /************************/
 
 /* QuadraticFundingVotingStrategy */
-export const qfVotingStrategyFactoryContract = (
-  chainId: ChainId | undefined
+export const votingStrategyFactoryContract = (
+  chainId: ChainId | undefined,
+  isQF = true
 ): Contract => {
   let address;
 
   switch (chainId) {
     case ChainId.MAINNET: {
-      address = "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F";
+      address = isQF ? "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F" : "TODO";
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x838C5e10dcc1e54d62761d994722367BA167AC22";
+      address = isQF ? "0x838C5e10dcc1e54d62761d994722367BA167AC22" : "TODO";
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
@@ -170,14 +166,16 @@ export const qfVotingStrategyFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
+      address = isQF
+        ? "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38"
+        : "0xBBc57Ec75a32A5C169bFD6F0234D941506509c6e";
       break;
     }
   }
 
   return {
     address: address,
-    abi: abi.qfVotingStrategyFactory,
+    abi: isQF ? abi.qfVotingStrategyFactory : [],
   };
 };
 
@@ -221,7 +219,115 @@ export const merklePayoutStrategyFactoryContract = (
   };
 };
 
+export const directPayoutStrategyFactoryContract = (
+  chainId: ChainId | undefined
+): string => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0xEA5cddfb6B755636852CE10c4407Cc1613B78355";
+      break;
+    }
+  }
+
+  return address;
+};
+
 /* MerklePayoutStrategyImplementation */
 export const merklePayoutStrategyImplementationContract: Contract = {
   abi: abi.merklePayoutStrategyImplementation,
+};
+
+/* AlloSettings contract  */
+export const alloSettingsContract = (
+  chainId: ChainId | undefined
+): Contract => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x991cd65cb6AE183F06a489857775D7aE14794055";
+      break;
+    }
+  }
+
+  return {
+    address: address,
+    // For direct grants we have implemented typechain so it is not needed to export ABIs anymore.
+    // that's why we are
+    abi: [],
+  };
+};
+
+/* Strategy Imp  */
+export const strategyImplementationContract = (
+  chainId: ChainId | undefined
+): Contract => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x631De84A116314eCD6F5a87ff3893fced7E5f33F";
+      break;
+    }
+  }
+
+  return {
+    address: address,
+    // For direct grants we have implemented typechain so it is not needed to export ABIs anymore.
+    // that's why we are
+    abi: [],
+  };
 };

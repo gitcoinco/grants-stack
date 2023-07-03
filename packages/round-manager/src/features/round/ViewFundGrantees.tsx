@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
-import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
+import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/payoutStrategy";
 import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
 import { formatCurrency, PayoutToken, payoutTokens } from "../api/utils";
 import { useWallet } from "../common/Auth";
@@ -91,9 +91,9 @@ function FinalizedRoundContent(props: { round: Round }) {
 
   const matchingFundPayoutToken: PayoutToken =
     payoutTokens.filter(
-      (t) =>
-        t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
-    )[0];
+    (t) =>
+      t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
+  )[0];
 
   const { data, error, loading } = useTokenPrice(
     matchingFundPayoutToken?.redstoneTokenId
@@ -109,7 +109,7 @@ function FinalizedRoundContent(props: { round: Round }) {
     setUnpaidProjects(
       projects['unpaid']
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects]);
 
   /* Fetch distributions data for this round */
@@ -243,7 +243,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
         </div>
       </div>
       <div className="text-gray-400 text-sm px-4 py-2 italic font-['Libre_Franklin']">Changes could be subject to additional gas fees.</div>
-    </div>
+      </div>
   )
 
   const handleFundGrantees = async () => {
@@ -362,9 +362,9 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                               e.target.checked
                                 ? [...selectedProjects, project]
                                 : selectedProjects.filter(
-                                  (p) =>
+                                    (p) =>
                                     p.projectPayoutAddress !== project.projectPayoutAddress
-                                )
+                                  )
                             );
                           }}
                         />
@@ -389,7 +389,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                         {formatCurrency(project.matchAmountInToken, props.token.decimal)}
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) && " ($" +
-                          formatCurrency(
+                            formatCurrency(
                             project.matchAmountInToken.mul(Math.trunc(props.price * 10000)).div(10000),
                             props.token.decimal, 2)
                           + " USD) "}
@@ -420,7 +420,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
           handleFundGrantees();
         }}
         body={<ConfirmationModalContent
-          granteeCount={selectedProjects.length}
+            granteeCount={selectedProjects.length}
           amount={
             formatCurrency(
               selectedProjects.reduce(
@@ -428,7 +428,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
               props.token.decimal
             )
           }
-          symbol={props.token.name.toUpperCase()}
+            symbol={props.token.name.toUpperCase()}
         />}
         isOpen={showConfirmationModal}
         setIsOpen={setShowConfirmationModal}
@@ -555,7 +555,7 @@ export function PaidProjectsTable(props: {
                         {ethers.utils.formatEther(project.matchAmountInToken.toString())}
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) && " ($" +
-                          formatCurrency(
+                            formatCurrency(
                             project.matchAmountInToken.mul(Math.trunc(props.price * 10000)).div(10000),
                             props.token.decimal, 2)
                           + " USD) "}
@@ -563,9 +563,9 @@ export function PaidProjectsTable(props: {
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <span
                           className={`inline-flex items-center rounded-full text-xs font-medium px-2.5 py-0.5 ${project.hash
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-200 text-red-800"
-                            }`}
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-200 text-red-800"
+                          }`}
                         >
                           Success
                         </span>

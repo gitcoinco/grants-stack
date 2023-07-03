@@ -24,10 +24,11 @@ import {
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
 import * as yup from "yup";
-import { Program, Round } from "../api/types";
+import { Program, Round, RoundCategory } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+import { utils } from "ethers";
 
 export const RoundValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -67,59 +68,91 @@ export const RoundValidationSchema = yup.object().shape({
         }),
     }),
   }),
-  applicationsStartTime: yup
-    .date()
-    .required("This field is required.")
-    .min(
-      yup.ref("applicationsStartTime"),
-      "You must enter a date and time in the future."
-    )
-    .max(
-      yup.ref("roundStartTime"),
-      "Applications start date must be before the round start date."
-    )
-    .max(
-      yup.ref("roundEndTime"),
-      "Applications start date must be before the round end date."
-    ),
-  applicationsEndTime: yup
-    .date()
-    .required("This field is required.")
-    .min(
-      yup.ref("applicationsStartTime"),
-      "Applications end date must be later than applications start date."
-    )
-    .max(
-      yup.ref("roundEndTime"),
-      "Applications end date must be before the round end date."
-    ),
+  applicationsStartTime: yup.date().when("$roundCategory", {
+    is: RoundCategory.QuadraticFunding,
+    then: yup
+      .date()
+      .required("This field is required.")
+      .min(
+        yup.ref("applicationsStartTime"),
+        "You must enter a date and time in the future."
+      )
+      .max(
+        yup.ref("roundStartTime"),
+        "Applications start date must be before the round start date."
+      )
+      .max(
+        yup.ref("roundEndTime"),
+        "Applications start date must be before the round end date."
+      ),
+  }),
+  applicationsEndTime: yup.date().when("$roundCategory", {
+    is: RoundCategory.QuadraticFunding,
+    then: yup
+      .date()
+      .required("This field is required.")
+      .min(
+        yup.ref("applicationsStartTime"),
+        "Applications end date must be later than applications start date."
+      )
+      .max(
+        yup.ref("roundEndTime"),
+        "Applications end date must be before the round end date."
+      ),
+  }),
   roundStartTime: yup
     .date()
     .required("This field is required.")
-    .min(
-      yup.ref("applicationsStartTime"),
-      "Round start date must be later than the applications start date."
-    )
-    .max(
-      yup.ref("roundEndTime"),
-      "Round start date must be earlier than the round end date."
-    ),
+    .when("$roundCategory", {
+      is: RoundCategory.QuadraticFunding,
+      then: yup
+        .date()
+        .min(
+          yup.ref("applicationsStartTime"),
+          "Round start date must be later than the applications start date."
+        )
+        .max(
+          yup.ref("roundEndTime"),
+          "Round start date must be earlier than the round end date."
+        ),
+    }),
+  roundEndTimeDisabled: yup.boolean(),
   roundEndTime: yup
     .date()
-    .required("This field is required.")
-    .min(
-      yup.ref("roundStartTime"),
-      "Round end date must be later than the round start date."
-    ),
+    .nullable()
+    .when("roundEndTimeDisabled", {
+      is: false,
+      then: yup
+        .date()
+        .nullable()
+        .required("This field is required.")
+        .min(
+          yup.ref("roundStartTime"),
+          "Round end date must be later than the round start date."
+        ),
+    }),
+  vaultAddress: yup.string().when("$roundCategory", {
+    is: RoundCategory.Direct,
+    then: yup
+      .string()
+      .required("Address required.")
+      .test("is-address", "Invalid address.", (value) =>
+        utils.isAddress(value?.toLowerCase() || "")
+      ),
+  }),
 });
 
 interface RoundDetailFormProps {
   stepper: typeof FormStepper;
   initialData?: { program?: Program };
+  configuration?: { roundCategory?: RoundCategory };
 }
 
 export function RoundDetailForm(props: RoundDetailFormProps) {
   const program = props.initialData?.program;
+  const roundCategory =
+    props.configuration?.roundCategory || RoundCategory.QuadraticFunding;
+
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
   const defaultRoundMetadata = {
@@ -133,13 +166,18 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     handleSubmit,
     setValue,
     formState: { errors },
+    watch,
   } = useForm<Round>({
     defaultValues: {
       ...formData,
       roundMetadata: defaultRoundMetadata,
+      roundEndTimeDisabled: false,
     },
+    context: { roundCategory },
     resolver: yupResolver(RoundValidationSchema),
   });
+
+  const isRoundEndTimeDisabled = watch("roundEndTimeDisabled");
 
   const FormStepper = props.stepper;
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
@@ -205,6 +243,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
             onSubmit={handleSubmit(next)}
             className="shadow-sm text-grey-500"
           >
+            {/* Round inputs */}
             <div className="pt-7 sm:px-6 bg-white">
               <div className="grid grid-cols-6 gap-6">
                 <RoundName
@@ -214,6 +253,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 {program && <ProgramChain program={program} />}
               </div>
 
+              {/* support */}
               <p className="mt-6 mb-2 text-sm text-grey-400">
                 Where can applicants reach you and/or your team if support is
                 needed?
@@ -234,326 +274,408 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 </div>
               </div>
 
+              {/* vault Address */}
+              {roundCategory == RoundCategory.Direct && (
+                <VaultAddress
+                  register={register("vaultAddress")}
+                  errors={errors}
+                />
+              )}
+
+              {/* Dates explanation */}
               <div className="mt-6 mb-4 text-sm text-grey-400">
-                <p>
-                  What are the dates for the Applications and Round voting
-                  period(s)?
-                  <ApplicationDatesInformation />
+                {roundCategory == RoundCategory.QuadraticFunding ? (
+                  <>
+                    <p>
+                      What are the dates for the Applications and Round voting
+                      period(s)?
+                      <ApplicationDatesInformation />
+                    </p>
+                    <p className="text-sm mt-0.5">
+                      Tips: You can accept applications even after the round
+                      starts by setting up overlapping Applications and Round
+                      periods!
+                    </p>
+                  </>
+                ) : (
+                  <p>What are the dates for this round? </p>
+                )}
+              </div>
+
+              {/* Application dates */}
+              {roundCategory == RoundCategory.QuadraticFunding && (
+                <>
+                  <p className="text-sm mb-2">
+                    <span>Applications</span>
+                    <span className="text-right text-violet-400 float-right text-xs mt-1">
+                      *Required
+                    </span>
+                  </p>
+
+                  <div className="grid grid-cols-6 gap-6 mb-1">
+                    {/* Application start date */}
+                    <div className="col-span-6 sm:col-span-3">
+                      <div
+                        className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
+                          errors.applicationsStartTime
+                            ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                            : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                        }`}
+                      >
+                        <label
+                          htmlFor="applicationsStartTime"
+                          className="block text-[10px]"
+                        >
+                          Start Date
+                        </label>
+                        <Controller
+                          control={control}
+                          name="applicationsStartTime"
+                          render={({ field }) => (
+                            <Datetime
+                              {...field}
+                              closeOnSelect
+                              onChange={(date) => {
+                                setApplicationStartDate(moment(date));
+                                field.onChange(moment(date));
+                              }}
+                              inputProps={{
+                                id: "applicationsStartTime",
+                                placeholder: "",
+                                className:
+                                  "block w-full border-0 p-0 text-gray-900 placeholder-grey-40  0 focus:ring-0 text-sm",
+                              }}
+                              isValidDate={disablePastAndBeforeRoundStartDate}
+                              initialViewDate={now}
+                              utc={true}
+                              dateFormat={"YYYY-MM-DD"}
+                              timeFormat={"HH:mm UTC"}
+                            />
+                          )}
+                        />
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      {errors.applicationsStartTime && (
+                        <p
+                          className="text-xs text-pink-500"
+                          data-testid="application-start-date-error"
+                        >
+                          {errors.applicationsStartTime?.message}
+                        </p>
+                      )}
+                      <div className="flex items-center mt-2">
+                        <input
+                          id="rollingApplications"
+                          name="rollingApplications"
+                          type="checkbox"
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          checked={rollingApplications}
+                          onChange={(e) =>
+                            setRollingApplications(e.target.checked)
+                          }
+                        />
+                        <label
+                          htmlFor="rollingApplications"
+                          className="ml-2 block text-sm text-grey-400"
+                        >
+                          Enable rolling applications
+                        </label>
+                        <InformationCircleIcon
+                          data-tip
+                          data-for="rollingApplicationsTooltip"
+                          className="h-4 w-4 ml-1 text-grey-400"
+                        />
+                        <ReactTooltip
+                          id="rollingApplicationsTooltip"
+                          place="top"
+                          effect="solid"
+                          className="text-grey-400"
+                        >
+                          <span>
+                            If enabled, applications will be accepted until the
+                            round ends.
+                          </span>
+                        </ReactTooltip>
+                      </div>
+                    </div>
+
+                    {/* Application end date */}
+                    <div className="col-span-6 sm:col-span-3">
+                      <div
+                        className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
+                          errors.applicationsEndTime
+                            ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                            : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                        } ${
+                          rollingApplications
+                            ? "cursor-not-allowed bg-gray-100"
+                            : ""
+                        }`}
+                      >
+                        <label
+                          htmlFor="applicationsEndTime"
+                          className="block text-[10px]"
+                        >
+                          End Date
+                        </label>
+                        <Controller
+                          control={control}
+                          name="applicationsEndTime"
+                          render={({ field }) => (
+                            <Datetime
+                              {...field}
+                              closeOnSelect
+                              onChange={(date) => {
+                                setApplicationEndDate(moment(date));
+                                field.onChange(moment(date));
+                              }}
+                              inputProps={{
+                                id: "applicationsEndTime",
+                                placeholder: "",
+                                className:
+                                  "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
+                                disabled: rollingApplications,
+                              }}
+                              isValidDate={disableBeforeApplicationStartDate}
+                              utc={true}
+                              dateFormat={"YYYY-MM-DD"}
+                              timeFormat={"HH:mm UTC"}
+                            />
+                          )}
+                        />
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      {errors.applicationsEndTime && (
+                        <p
+                          className="text-xs text-pink-500"
+                          data-testid="application-end-date-error"
+                        >
+                          {errors.applicationsEndTime?.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Round dates */}
+              <>
+                <p className="text-sm mt-4 mb-2">
+                  Round
+                  <span className="text-right text-violet-400 float-right text-xs mt-1">
+                    *Required
+                  </span>
                 </p>
-                <p className="text-sm mt-0.5">
-                  Tips: You can accept applications even after the round starts
-                  by setting up overlapping Applications and Round periods!
-                </p>
-              </div>
+                <div className="grid grid-cols-6 gap-6">
+                  {/* Round start date */}
+                  <div className="col-span-6 sm:col-span-3">
+                    <div
+                      className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
+                        errors.roundStartTime
+                          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                          : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                      }`}
+                    >
+                      <label
+                        htmlFor="roundStartTime"
+                        className="block text-[10px]"
+                      >
+                        Start Date
+                      </label>
+                      <Controller
+                        control={control}
+                        name="roundStartTime"
+                        render={({ field }) => (
+                          <Datetime
+                            {...field}
+                            closeOnSelect
+                            onChange={(date) => {
+                              setRoundStartDate(moment(date));
+                              field.onChange(moment(date));
+                            }}
+                            inputProps={{
+                              id: "roundStartTime",
+                              placeholder: "",
+                              className:
+                                "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                            }}
+                            isValidDate={disableBeforeApplicationStartDate}
+                            utc={true}
+                            dateFormat={"YYYY-MM-DD"}
+                            timeFormat={"HH:mm UTC"}
+                          />
+                        )}
+                      />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    {errors.roundStartTime && (
+                      <p
+                        className="text-xs text-pink-500"
+                        data-testid="round-start-date-error"
+                      >
+                        {errors.roundStartTime?.message}
+                      </p>
+                    )}
 
-              <p className="text-sm mb-2">
-                <span>Applications</span>
-                <span className="text-right text-violet-400 float-right text-xs mt-1">
-                  *Required
-                </span>
-              </p>
-              <div className="grid grid-cols-6 gap-6 mb-1">
-                <div className="col-span-6 sm:col-span-3">
-                  <div
-                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                      errors.applicationsStartTime
-                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    }`}
-                  >
-                    <label
-                      htmlFor="applicationsStartTime"
-                      className="block text-[10px]"
-                    >
-                      Start Date
-                    </label>
-                    <Controller
-                      control={control}
-                      name="applicationsStartTime"
-                      render={({ field }) => (
-                        <Datetime
-                          {...field}
-                          closeOnSelect
-                          onChange={(date) => {
-                            setApplicationStartDate(moment(date));
-                            field.onChange(moment(date));
-                          }}
-                          inputProps={{
-                            id: "applicationsStartTime",
-                            placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-40  0 focus:ring-0 text-sm",
-                          }}
-                          isValidDate={disablePastAndBeforeRoundStartDate}
-                          initialViewDate={now}
-                          utc={true}
-                          dateFormat={"YYYY-MM-DD"}
-                          timeFormat={"HH:mm UTC"}
-                        />
-                      )}
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
+                    {roundCategory == RoundCategory.Direct && (
+                      <Controller
+                        control={control}
+                        name="roundEndTimeDisabled"
+                        render={({ field }) => (
+                          <>
+                            <input
+                              type="checkbox"
+                              className="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                              checked={field.value}
+                              onChange={(e) => {
+                                field.onChange(e.target.checked);
+                                if (e.target.checked) {
+                                  // reset input and trick type validation
+                                  // for direct round, when date is empty it will be set to maxDate
+                                  setValue(
+                                    "roundEndTime",
+                                    null as unknown as Date
+                                  );
+                                }
+                              }}
+                            />
+                            <span>This round does not have an end date</span>
+                          </>
+                        )}
+                      />
+                    )}
                   </div>
-                  {errors.applicationsStartTime && (
-                    <p
-                      className="text-xs text-pink-500"
-                      data-testid="application-start-date-error"
-                    >
-                      {errors.applicationsStartTime?.message}
-                    </p>
-                  )}
-                  <div className="flex items-center mt-2">
-                    <input
-                      id="rollingApplications"
-                      name="rollingApplications"
-                      type="checkbox"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      checked={rollingApplications}
-                      onChange={(e) => setRollingApplications(e.target.checked)}
-                    />
-                    <label
-                      htmlFor="rollingApplications"
-                      className="ml-2 block text-sm text-grey-400"
-                    >
-                      Enable rolling applications
-                    </label>
-                    <InformationCircleIcon
-                      data-tip
-                      data-for="rollingApplicationsTooltip"
-                      className="h-4 w-4 ml-1 text-grey-400"
-                    />
-                    <ReactTooltip
-                      id="rollingApplicationsTooltip"
-                      place="top"
-                      effect="solid"
-                      className="text-grey-400"
-                    >
-                      <span>
-                        If enabled, applications will be accepted until the
-                        round ends.
-                      </span>
-                    </ReactTooltip>
-                  </div>
-                </div>
 
-                <div className="col-span-6 sm:col-span-3">
-                  <div
-                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                      errors.applicationsEndTime
-                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    } ${
-                      rollingApplications
-                        ? "cursor-not-allowed bg-gray-100"
-                        : ""
-                    }`}
-                  >
-                    <label
-                      htmlFor="applicationsEndTime"
-                      className="block text-[10px]"
+                  {/* Round end date */}
+                  <div className="col-span-6 sm:col-span-3">
+                    <div
+                      className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
+                        errors.roundEndTime
+                          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                          : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                      }`}
                     >
-                      End Date
-                    </label>
-                    <Controller
-                      control={control}
-                      name="applicationsEndTime"
-                      render={({ field }) => (
-                        <Datetime
-                          {...field}
-                          closeOnSelect
-                          onChange={(date) => {
-                            setApplicationEndDate(moment(date));
-                            field.onChange(moment(date));
-                          }}
-                          inputProps={{
-                            id: "applicationsEndTime",
-                            placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
-                            disabled: rollingApplications,
-                          }}
-                          isValidDate={disableBeforeApplicationStartDate}
-                          utc={true}
-                          dateFormat={"YYYY-MM-DD"}
-                          timeFormat={"HH:mm UTC"}
-                        />
-                      )}
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                      <label
+                        htmlFor="roundEndTime"
+                        className="block text-[10px]"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                        End Date
+                      </label>
+                      <Controller
+                        control={control}
+                        name="roundEndTime"
+                        render={({ field }) => {
+                          return (
+                            <Datetime
+                              {...field}
+                              closeOnSelect
+                              inputProps={{
+                                id: "roundEndTime",
+                                placeholder: "",
+                                disabled: isRoundEndTimeDisabled,
+                                className:
+                                  "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                              }}
+                              onChange={(date) => {
+                                field.onChange(moment(date));
+                                setRoundEndDate(moment(date));
+                                if (rollingApplications) {
+                                  setApplicationEndDate(moment(date));
+                                  setValue(
+                                    "applicationsEndTime",
+                                    moment(date).toDate()
+                                  );
+                                }
+                              }}
+                              isValidDate={disableBeforeRoundStartDate}
+                              utc={true}
+                              // we use renderInput because there is a bug with the library
+                              // if the input is cleared programmatically the value is removed
+                              // but the visual date is not updated
+                              // ref: https://stackoverflow.com/a/64972324/2524608
+                              renderInput={(props) => {
+                                return (
+                                  <input
+                                    {...props}
+                                    value={
+                                      field.value
+                                        ? moment(field.value).format(
+                                            "YYYY-MM-DD HH:mm UTC"
+                                          )
+                                        : ""
+                                    }
+                                  />
+                                );
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
                     </div>
-                  </div>
-                  {errors.applicationsEndTime && (
-                    <p
-                      className="text-xs text-pink-500"
-                      data-testid="application-end-date-error"
-                    >
-                      {errors.applicationsEndTime?.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <p className="text-sm mt-4 mb-2">
-                Round
-                <span className="text-right text-violet-400 float-right text-xs mt-1">
-                  *Required
-                </span>
-              </p>
-              <div className="grid grid-cols-6 gap-6">
-                <div className="col-span-6 sm:col-span-3">
-                  <div
-                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                      errors.roundStartTime
-                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    }`}
-                  >
-                    <label
-                      htmlFor="roundStartTime"
-                      className="block text-[10px]"
-                    >
-                      Start Date
-                    </label>
-                    <Controller
-                      control={control}
-                      name="roundStartTime"
-                      render={({ field }) => (
-                        <Datetime
-                          {...field}
-                          closeOnSelect
-                          onChange={(date) => {
-                            setRoundStartDate(moment(date));
-                            field.onChange(moment(date));
-                          }}
-                          inputProps={{
-                            id: "roundStartTime",
-                            placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
-                          }}
-                          isValidDate={disableBeforeApplicationStartDate}
-                          utc={true}
-                          dateFormat={"YYYY-MM-DD"}
-                          timeFormat={"HH:mm UTC"}
-                        />
-                      )}
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                    {errors.roundEndTime && (
+                      <p
+                        className="text-xs text-pink-500"
+                        data-testid="round-end-date-error"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
+                        {errors.roundEndTime?.message}
+                      </p>
+                    )}
                   </div>
-                  {errors.roundStartTime && (
-                    <p
-                      className="text-xs text-pink-500"
-                      data-testid="round-start-date-error"
-                    >
-                      {errors.roundStartTime?.message}
-                    </p>
-                  )}
                 </div>
-
-                <div className="col-span-6 sm:col-span-3">
-                  <div
-                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                      errors.roundEndTime
-                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    }`}
-                  >
-                    <label htmlFor="roundEndTime" className="block text-[10px]">
-                      End Date
-                    </label>
-                    <Controller
-                      control={control}
-                      name="roundEndTime"
-                      render={({ field }) => (
-                        <Datetime
-                          {...field}
-                          closeOnSelect
-                          inputProps={{
-                            id: "roundEndTime",
-                            placeholder: "",
-                            className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
-                          }}
-                          onChange={(date) => {
-                            field.onChange(moment(date));
-                            setRoundEndDate(moment(date));
-                            if (rollingApplications) {
-                              setApplicationEndDate(moment(date));
-                              setValue(
-                                "applicationsEndTime",
-                                moment(date).toDate()
-                              );
-                            }
-                          }}
-                          isValidDate={disableBeforeRoundStartDate}
-                          utc={true}
-                          dateFormat={"YYYY-MM-DD"}
-                          timeFormat={"HH:mm UTC"}
-                        />
-                      )}
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  {errors.roundEndTime && (
-                    <p
-                      className="text-xs text-pink-500"
-                      data-testid="round-end-date-error"
-                    >
-                      {errors.roundEndTime?.message}
-                    </p>
-                  )}
-                </div>
-              </div>
+              </>
             </div>
 
             {/* Round Type */}
@@ -591,6 +713,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               )}
             </div>
 
+            {/* Footer */}
             <div className="px-6 align-middle py-3.5 shadow-md">
               <FormStepper
                 currentStep={currentStep}
@@ -629,6 +752,37 @@ function RoundName(props: {
       {props.errors.roundMetadata?.name && (
         <p className="text-xs text-pink-500">
           {props.errors.roundMetadata?.name?.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function VaultAddress(props: {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+}) {
+  return (
+    <div className="col-span-6 sm:col-span-3">
+      <div className="flex justify-between">
+        <label htmlFor="vaultAddress" className="text-sm">
+          Vault Address
+        </label>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">
+          *Required
+        </span>
+      </div>
+      <Input
+        {...props.register}
+        placeholder="Address from where the grant will be paid"
+        className={"h-10"}
+        $hasError={props.errors.vaultAddress}
+        type="text"
+        id={"vaultAddress"}
+      />
+      {props.errors.vaultAddress && (
+        <p className="text-xs text-pink-500">
+          {props.errors.vaultAddress.message}
         </p>
       )}
     </div>

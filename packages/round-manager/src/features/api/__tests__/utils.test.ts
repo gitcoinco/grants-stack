@@ -8,7 +8,7 @@ import {
 } from "../utils";
 
 import {
-  initialQuestions,
+  initialQuestionsQF,
   initialRequirements,
 } from "../../round/RoundApplicationForm";
 import { checkGrantApplicationStatus } from "../application";
@@ -356,7 +356,7 @@ describe("graphql_fetch", () => {
 describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
     const expectedSchema = {
-      questions: initialQuestions.map((question) => ({
+      questions: initialQuestionsQF.map((question) => ({
         title: question.title,
         type: question.type,
         required: question.required,
@@ -378,7 +378,7 @@ describe("generateApplicationSchema", () => {
     };
 
     const schema = generateApplicationSchema(
-      initialQuestions,
+      initialQuestionsQF,
       initialRequirements
     );
 
