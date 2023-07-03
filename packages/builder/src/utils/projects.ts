@@ -3,6 +3,7 @@ import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { getProviderByChainId } from "./utils";
 import { addressesByChainID } from "../contracts/deployments";
 
+// eslint-disable-next-line import/prefer-default-export
 export const fetchProjectOwners = (chainID: number, projectID: string) => {
   const addresses = addressesByChainID(chainID);
   const appProvider = getProviderByChainId(chainID);
