@@ -194,7 +194,9 @@ export interface Round {
    */
   payoutStrategy: {
     id: string;
-    isReadyForPayout: boolean;
+    isReadyForPayout?: boolean;
+    vaultAddress?: string;
+    strategyName?: string;
   };
   /**
    * Used in RoundCategory.Direct
@@ -373,6 +375,7 @@ export enum ApplicationStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
   CANCELLED = "CANCELLED",
+  IN_REVIEW = "IN_REVIEW",
 }
 
 export type Status = {

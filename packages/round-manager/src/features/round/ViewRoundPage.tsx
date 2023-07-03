@@ -12,7 +12,6 @@ import {
   InboxIcon,
   UserGroupIcon,
 } from "@heroicons/react/solid";
-import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { Button } from "common/src/styles";
 import { Link, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
@@ -33,9 +32,15 @@ import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
-import { horizontalTabStyles, verticalTabStyles } from "../common/Utils";
+import {
+  ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE,
+  getPayoutRoundDescription,
+  horizontalTabStyles,
+  verticalTabStyles,
+} from "../common/Utils";
 import ApplicationsApproved from "./ApplicationsApproved";
-import ApplicationsReceived from "./ApplicationsReceived";
+import ApplicationsByStatus from "./ApplicationsByStatus";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
@@ -43,6 +48,8 @@ import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundResults from "./ViewRoundResults/ViewRoundResults";
 import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
+import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
+import moment from "moment";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -87,20 +94,29 @@ export default function ViewRoundPage() {
                 <Link to={`/round/${id}`}>
                   <span>{"Round Details"}</span>
                 </Link>
+                <RoundBadgeStatus round={round} />
               </div>
-              <div className="flex flex-row mb-4 mt-4 items-center">
+              {/* Round type */}
+              {getPayoutRoundDescription(
+                round.payoutStrategy.strategyName || ""
+              ) && (
+                <div
+                  className={`text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mt-4`}
+                  style={{ borderRadius: "20px" }}
+                >
+                  {getPayoutRoundDescription(
+                    round.payoutStrategy.strategyName || ""
+                  )}
+                </div>
+              )}
+              <div className="flex flex-row mb-1 items-center">
                 <RoundName round={round} />
               </div>
-
               <div className="flex flex-row flex-wrap relative">
-                <ApplicationOpenDateRange
-                  startTime={round?.applicationsStartTime}
-                  endTime={round?.applicationsEndTime}
-                />
-                <RoundOpenDateRange
-                  startTime={round?.roundStartTime}
-                  endTime={round?.roundEndTime}
-                />
+                {round.payoutStrategy.strategyName != ROUND_PAYOUT_DIRECT && (
+                  <ApplicationOpenDateRange round={round} />
+                )}
+                <RoundOpenDateRange round={round} />
                 <div className="absolute right-0">
                   <ViewGrantsExplorerButton
                     iconStyle="h-4 w-4"
@@ -110,7 +126,6 @@ export default function ViewRoundPage() {
                 </div>
               </div>
             </header>
-
             <main className="px-3 md:px-20 pt-6">
               <Tab.Group vertical>
                 <div className="flex flex-row">
@@ -284,6 +299,10 @@ export default function ViewRoundPage() {
                   <Tab.Panels className="basis-5/6 ml-6">
                     <Tab.Panel>
                       <GrantApplications
+                        isDirect={
+                          round.payoutStrategy.strategyName ==
+                          ROUND_PAYOUT_DIRECT
+                        }
                         applications={applications}
                         isRoundsFetched={isRoundFetched}
                         fetchRoundStatus={fetchRoundStatus}
@@ -331,6 +350,7 @@ export default function ViewRoundPage() {
 }
 
 function GrantApplications(props: {
+  isDirect?: boolean;
   applications: GrantApplication[] | undefined;
   isRoundsFetched: boolean;
   fetchRoundStatus: ProgressStatus;
@@ -348,6 +368,10 @@ function GrantApplications(props: {
   const rejectedApplications =
     props.applications?.filter(
       (a) => a.status === ApplicationStatus.REJECTED.toString()
+    ) || [];
+  const inReviewApplications =
+    props.applications?.filter(
+      (a) => a.status === ApplicationStatus.IN_REVIEW.toString()
     ) || [];
 
   const TabApplicationCounter = tw.div`
@@ -388,6 +412,27 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
+                    {props.isDirect && (
+                      <Tab
+                        className={({ selected }) =>
+                          horizontalTabStyles(selected)
+                        }
+                      >
+                        {({ selected }) => (
+                          <div className={selected ? "text-violet-500" : ""}>
+                            In Review
+                            <TabApplicationCounter
+                              className={
+                                selected ? "bg-violet-100" : "bg-grey-150"
+                              }
+                              data-testid="received-application-counter"
+                            >
+                              {inReviewApplications?.length || 0}
+                            </TabApplicationCounter>
+                          </div>
+                        )}
+                      </Tab>
+                    )}
                     <Tab
                       className={({ selected }) =>
                         horizontalTabStyles(selected)
@@ -438,8 +483,15 @@ function GrantApplications(props: {
               </div>
               <Tab.Panels>
                 <Tab.Panel>
-                  <ApplicationsReceived />
+                  <ApplicationsByStatus />
                 </Tab.Panel>
+                {props.isDirect && (
+                  <Tab.Panel>
+                    <ApplicationsByStatus
+                      status={ApplicationStatus.IN_REVIEW}
+                    />
+                  </Tab.Panel>
+                )}
                 <Tab.Panel>
                   <ApplicationsApproved />
                 </Tab.Panel>
@@ -451,7 +503,6 @@ function GrantApplications(props: {
           </div>
         </div>
       )}
-
       {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
         <Spinner text="We're fetching your Round." />
       )}
@@ -499,52 +550,65 @@ function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
   }, 1000);
 }
 
-function ApplicationOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
-  const { startTime, endTime } = props;
+function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
+  const res = parseRoundDates(round);
 
   return (
-    <div className="flex mr-8 lg:mr-36">
-      <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
-      <p className="text-sm mr-2 text-grey-400">Applications:</p>
-      <div>
-        <p className="text-sm">
-          <span>
-            {(startTime && formatUTCDateAsISOString(startTime)) || "..."}
-          </span>
-          <span className="mx-2">-</span>
-          <span>{(endTime && formatUTCDateAsISOString(endTime)) || "..."}</span>
-        </p>
-        <p className="flex justify-center items-center text-sm text-grey-400">
-          <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
-          <span className="mx-2">-</span>
-          <span>({(endTime && getUTCTime(endTime)) || "..."})</span>
-        </p>
-      </div>
+    <div className="flex gap-1 text-sm">
+      <CalendarIcon className="h-5 w-5 text-grey-400" />
+      <span className="text-grey-400">Applications:</span>
+      <span className="mr-1">{res.application.iso.start}</span>
+      <span className="text-grey-400">({res.application.utc.start})</span>
+      <span className="mx-1">-</span>
+      <span className="mr-1">{res.application.iso.end}</span>
+      {res.application.utc.end && (
+        <span className="text-grey-400">({res.application.utc.end})</span>
+      )}
     </div>
   );
 }
 
-function RoundOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
-  const { startTime, endTime } = props;
+function RoundOpenDateRange({ round }: { round: RoundDates }) {
+  const res = parseRoundDates(round);
 
   return (
-    <div className="flex">
-      <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />
-      <p className="text-sm mr-2 text-grey-400">Round:</p>
-      <div>
-        <p className="flex justify-center items-center text-sm">
-          <span>
-            {(startTime && formatUTCDateAsISOString(startTime)) || "..."}
-          </span>
-          <span className="mx-2">-</span>
-          <span>{(endTime && formatUTCDateAsISOString(endTime)) || "..."}</span>
-        </p>
-        <p className="flex justify-center items-center text-sm text-grey-400">
-          <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
-          <span className="mx-2">-</span>
-          <span>({(endTime && getUTCTime(endTime)) || "..."})</span>
-        </p>
-      </div>
+    <div className="flex gap-1 text-sm">
+      <ClockIcon className="h-5 w-5 text-grey-400" />
+      <span className="text-grey-400">Round:</span>
+      <span className="mr-1">{res.round.iso.start}</span>
+      <span className="text-grey-400">{res.round.utc.start}</span>
+      <span className="mx-1">-</span>
+      <span className="mr-1">{res.round.iso.end}</span>
+      {res.round.utc.end && (
+        <span className="text-grey-400">{res.round.utc.end}</span>
+      )}
     </div>
   );
+}
+
+function RoundBadgeStatus({ round }: { round: Round }) {
+  const applicationEnds = round.applicationsEndTime;
+  const roundEnds = round.roundEndTime;
+  const now = moment();
+
+  if (
+    (round.payoutStrategy.strategyName == ROUND_PAYOUT_MERKLE &&
+      now.isBefore(applicationEnds)) ||
+    (round.payoutStrategy.strategyName == ROUND_PAYOUT_DIRECT &&
+      now.isBefore(roundEnds))
+  ) {
+    return (
+      <div
+        style={{
+          borderRadius: "24px",
+          lineHeight: "1.2",
+        }}
+        className={`text-sm h-[24px] inline-flex flex-col justify-center px-4 ml-auto bg-violet-500 text-white font-normal`}
+      >
+        Applications in progress
+      </div>
+    );
+  }
+
+  return null;
 }

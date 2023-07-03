@@ -277,7 +277,7 @@ export function PayProjectsTable(props: {
         </div>
       </div>
       <div className="text-gray-400 text-sm px-4 py-2 italic font-['Libre_Franklin']">Changes could be subject to additional gas fees.</div>
-    </div>
+      </div>
   )
 
   const handleFundGrantees = async () => {
@@ -426,16 +426,11 @@ export function PayProjectsTable(props: {
                           props.token.decimal
                         )}
                         {" " + props.token.name.toUpperCase()}
-                        {Boolean(props.price) &&
-                          " ($" +
+                        {Boolean(props.price) && " ($" +
                             formatCurrency(
-                              project.matchAmountInToken
-                                .mul(Math.trunc(props.price * 10000))
-                                .div(10000),
-                              props.token.decimal,
-                              2
-                            ) +
-                            " USD) "}
+                            project.matchAmountInToken.mul(Math.trunc(props.price * 10000)).div(10000),
+                            props.token.decimal, 2)
+                          + " USD) "}
                       </td>
                     </tr>
                   ))}

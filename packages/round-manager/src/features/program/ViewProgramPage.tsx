@@ -6,6 +6,8 @@ import {
   PlusIcon,
   PlusSmIcon,
   UserIcon,
+  CalendarIcon,
+  ClockIcon,
 } from "@heroicons/react/solid";
 import { RefreshIcon } from "@heroicons/react/outline";
 
@@ -18,7 +20,6 @@ import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import Footer from "common/src/components/Footer";
 import { abbreviateAddress } from "../api/utils";
-import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useEffect, useState } from "react";
 import NotFoundPage from "../common/NotFoundPage";
@@ -27,10 +28,14 @@ import AccessDenied from "../common/AccessDenied";
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { Spinner } from "../common/Spinner";
 import { useRounds } from "../../context/round/RoundContext";
-import { ProgressStatus, Round } from "../api/types";
+import { ProgressStatus } from "../api/types";
 import { useDebugMode } from "../../hooks";
-import { maxDateForUint256 } from "../../constants";
-import moment from "moment";
+import { getRoundDescriptionStatus } from "./getRoundDescriptionStatus";
+import { parseRoundDates } from "../common/parseRoundDates";
+import {
+  ROUND_PAYOUT_DIRECT,
+  getPayoutRoundDescription,
+} from "../common/Utils";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -79,96 +84,133 @@ export default function ViewProgram() {
 
   const roundItems = rounds
     ? rounds.map((round, index) => {
-        const parsedRoundInfo = formatRound(round);
+        const parsedRoundInfo = parseRoundDates(round);
 
         return (
           <Link to={`/round/${round.id}`} key={index}>
             <div
               key={index}
-              className="relative w-full border-t border-b border-grey-100 bg-white py-4 my-4 flex items-center justify-between space-x-3"
+              className="relative w-full border-b border-grey-100 py-3 grid items-center"
+              style={{ gridTemplateColumns: "80% auto 20px" }}
             >
               <div className="flex-1 min-w-0">
-                <p className="text-sm pb-3 mb-1 font-medium text-gray-900">
+                {/* Round type */}
+                {getPayoutRoundDescription(
+                  round.payoutStrategy.strategyName || ""
+                ) && (
+                  <div
+                    className={`text-xs text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-3`}
+                    style={{ borderRadius: "20px" }}
+                  >
+                    {getPayoutRoundDescription(
+                      round.payoutStrategy.strategyName || ""
+                    )}
+                  </div>
+                )}
+                {/* Round name */}
+                <p className="text-sm mb-3 font-medium text-gray-900">
                   {round.roundMetadata.name}
                 </p>
-
-                <div className="grid sm:grid-cols-3">
-                  <p className="text-xs flex gap-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-grey-500 my-auto"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="text-grey-400 my-auto mr-2">
-                      Applications:{" "}
-                    </span>
-                    <div>
-                      <p
-                        className="my-auto text-xs"
+                {/* Round details */}
+                <div className="grid sm:grid-cols-2">
+                  {/* Application */}
+                  {round.payoutStrategy.strategyName != ROUND_PAYOUT_DIRECT && (
+                    <div className="text-xs flex gap-1">
+                      <CalendarIcon className="h-5 w-5 text-grey-500" />
+                      <span className="mt-[3px] text-grey-400">
+                        Applications:
+                      </span>
+                      <div
+                        className="mt-[3px] text-xs"
                         data-testid="application-time-period"
                       >
                         <span data-testid="application-start-time-period">
                           {parsedRoundInfo.application.iso.start}
                         </span>
+                        &nbsp;
+                        <span className="text-grey-400">
+                          {parsedRoundInfo.application.utc.start}
+                        </span>
                         <span className="mx-1">-</span>
                         <span data-testid="application-end-time-period">
                           {parsedRoundInfo.application.iso.end}
                         </span>
-                      </p>
-                      <p className="text-xs text-grey-400">
-                        <span className="mr-2">
-                          ({parsedRoundInfo.application.utc.start})
+                        &nbsp;
+                        <span className="text-grey-400">
+                          {parsedRoundInfo.application.utc.end}
                         </span>
-                        <span>{parsedRoundInfo.application.utc.end}</span>
-                      </p>
+                      </div>
                     </div>
-                  </p>
-                  <p className="text-xs flex gap-1 md:ml-8">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 my-auto"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
+                  )}
+                  {/* Round */}
+                  <div className="text-xs flex gap-1">
+                    <ClockIcon className="h-5 w-5 text-grey-500" />
+                    <span className="mt-[3px] text-grey-400">Round:</span>
+                    <div
+                      className="mt-[3px] text-xs"
+                      data-testid="round-time-period"
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="text-grey-400 my-auto mr-2">Round: </span>
-                    <span className="my-auto" data-testid="round-time-period">
-                      <p
-                        className="my-auto text-xs"
-                        data-testid="round-time-period"
+                      <span
+                        className="mr-1"
+                        data-testid="round-start-time-period"
                       >
-                        <span data-testid="round-start-time-period">
-                          {parsedRoundInfo.round.iso.start}
-                        </span>
-                        <span className="mx-1">-</span>
-                        <span data-testid="round-end-time-period">
-                          {parsedRoundInfo.round.iso.end}
-                        </span>
-                      </p>
-
-                      <p className="text-xs text-grey-400">
-                        <span className="mr-2">
-                          {parsedRoundInfo.round.utc.start}
-                        </span>
-                        <span>{parsedRoundInfo.round.utc.end}</span>
-                      </p>
-                    </span>
-                  </p>
+                        {parsedRoundInfo.round.iso.start}
+                      </span>
+                      <span className="text-grey-400">
+                        {parsedRoundInfo.round.utc.start}
+                      </span>
+                      <span className="mx-1">-</span>
+                      <span
+                        className="mr-1"
+                        data-testid="round-end-time-period"
+                      >
+                        {parsedRoundInfo.round.iso.end}
+                      </span>
+                      <span className="text-grey-400">
+                        {parsedRoundInfo.round.utc.end}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <ChevronRightIcon className="h-5 w-5" />
+              {/* Status */}
+              <div
+                className={`text-xs h-[20px] inline-flex flex-col justify-center px-3 ml-auto mr-6
+                  ${
+                    getRoundDescriptionStatus(round) ===
+                    "Applications not started"
+                      ? "bg-moon-600 text-white"
+                      : ""
+                  }
+                  ${
+                    getRoundDescriptionStatus(round) ===
+                    "Applications in progress"
+                      ? "bg-violet-500 text-white"
+                      : ""
+                  }
+                  ${
+                    getRoundDescriptionStatus(round) === "Applications ended"
+                      ? "bg-grey-100 text-gray-900"
+                      : ""
+                  }
+                  ${
+                    getRoundDescriptionStatus(round) === "Round in progress"
+                      ? "bg-teal-100 text-gray-900"
+                      : ""
+                  }
+                  ${
+                    getRoundDescriptionStatus(round) === "Round ended"
+                      ? "bg-pink-100 text-gray-900"
+                      : ""
+                  }
+                `}
+                style={{
+                  borderRadius: "20px",
+                }}
+              >
+                {getRoundDescriptionStatus(round)}
+              </div>
+              <ChevronRightIcon className="h-5 w-5 ml-auto" />
             </div>
           </Link>
         );
@@ -448,39 +490,4 @@ export default function ViewProgram() {
       )}
     </>
   );
-
-  function formatRound(round: Round) {
-    const noEndTime = "No end time";
-
-    return {
-      application: {
-        iso: {
-          start: formatUTCDateAsISOString(round.applicationsStartTime),
-          end: moment(round.applicationsEndTime).isSame(maxDateForUint256)
-            ? noEndTime
-            : formatUTCDateAsISOString(round.applicationsEndTime),
-        },
-        utc: {
-          start: getUTCTime(round.applicationsStartTime),
-          end: moment(round.applicationsEndTime).isSame(maxDateForUint256)
-            ? ""
-            : `(${getUTCTime(round.applicationsEndTime)})`,
-        },
-      },
-      round: {
-        iso: {
-          start: formatUTCDateAsISOString(round.roundStartTime),
-          end: moment(round.roundEndTime).isSame(maxDateForUint256)
-            ? noEndTime
-            : formatUTCDateAsISOString(round.roundEndTime),
-        },
-        utc: {
-          start: `(${getUTCTime(round.roundStartTime)})`,
-          end: moment(round.roundEndTime).isSame(maxDateForUint256)
-            ? ""
-            : `(${getUTCTime(round.roundEndTime)})`,
-        },
-      },
-    };
-  }
 }
