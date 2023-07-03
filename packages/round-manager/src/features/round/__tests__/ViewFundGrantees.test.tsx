@@ -12,7 +12,7 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import * as merklePayoutStrategy from "../../api/payoutStrategy/merklePayoutStrategy";
+import * as merklePayoutStrategy from "../../api/payoutStrategy/payoutStrategy";
 import * as roundTs from "../../api/round";
 import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";

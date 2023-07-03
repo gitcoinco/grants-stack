@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { saveToIPFS } from "../../../features/api/ipfs";
-import { updateDistributionToContract } from "../../../features/api/payoutStrategy/merklePayoutStrategy";
+import { updateDistributionToContract } from "../../../features/api/payoutStrategy/payoutStrategy";
 import { ProgressStatus } from "../../../features/api/types";
 import { makeMatchingStatsData } from "../../../test-utils";
 import {

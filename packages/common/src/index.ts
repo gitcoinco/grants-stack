@@ -160,7 +160,9 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
 
     case ChainId.GOERLI_CHAIN_ID:
     default:
-      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+      return "https://api.thegraph.com/subgraphs/name/lmcorbalan/gc-rounds-v0";
+    // TODO: rollback this change once the subgraph is deployed
+    // return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
   }
 };
 

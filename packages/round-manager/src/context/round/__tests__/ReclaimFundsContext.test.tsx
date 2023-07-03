@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { reclaimFundsFromContract } from "../../../features/api/payoutStrategy/merklePayoutStrategy";
+import { reclaimFundsFromContract } from "../../../features/api/payoutStrategy/payoutStrategy";
 import { ProgressStatus } from "../../../features/api/types";
 import {
   ReclaimFundsParams,

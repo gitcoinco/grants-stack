@@ -2,6 +2,7 @@ import {
   ProgressStatus,
   ProjectRequirements,
   Round,
+  RoundCategory,
   StorageProtocolID,
 } from "../../features/api/types";
 import React, {
@@ -17,10 +18,10 @@ import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
-
 import {
+  directPayoutStrategyFactoryContract,
   merklePayoutStrategyFactoryContract,
-  qfVotingStrategyFactoryContract,
+  votingStrategyFactoryContract,
 } from "../../features/api/contracts";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
@@ -49,6 +50,7 @@ export type CreateRoundData = {
     };
   };
   round: Round;
+  roundCategory: RoundCategory;
 };
 
 export const initialCreateRoundState: CreateRoundState = {
@@ -138,7 +140,11 @@ const _createRound = async ({
     roundMetadataWithProgramContractAddress,
     applicationQuestions,
     round,
+    roundCategory,
   } = createRoundData;
+
+  const isQF = roundCategory === RoundCategory.QuadraticFunding;
+
   try {
     datadogLogs.logger.info(`_createRound: ${round}`);
 
@@ -179,10 +185,12 @@ const _createRound = async ({
 
     const roundContractInputsWithContracts = {
       ...roundContractInputsWithPointers,
-      votingStrategy: qfVotingStrategyFactoryContract(chainId)
+      votingStrategy: votingStrategyFactoryContract(chainId, isQF)
         .address as string,
       payoutStrategy: {
-        id: merklePayoutStrategyFactoryContract(chainId).address as string,
+        id: isQF
+          ? merklePayoutStrategyFactoryContract(chainId)
+          : directPayoutStrategyFactoryContract(chainId),
         isReadyForPayout: false,
       },
     };
@@ -194,7 +202,8 @@ const _createRound = async ({
         setRoundContractDeploymentStatus,
       ],
       roundContractInputsWithContracts,
-      signerOrProvider
+      signerOrProvider,
+      isQF
     );
 
     await waitForSubgraphToUpdate(
@@ -308,16 +317,62 @@ async function storeDocuments(
   }
 }
 
+// async function handleDeployVotingContract(
+//   setDeploymentStatus: SetStatusFn,
+//   signerOrProvider: Signer,
+//   isQF: boolean
+// ): Promise<string> {
+//   try {
+//     setDeploymentStatus(ProgressStatus.IN_PROGRESS);
+
+//     const { votingContractAddress } = await deployVotingContract(
+//       signerOrProvider,
+//       isQF
+//     );
+
+//     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
+//     return votingContractAddress;
+//   } catch (error) {
+//     console.error("handleDeployVotingContract", error);
+//     setDeploymentStatus(ProgressStatus.IS_ERROR);
+//     throw error;
+//   }
+// }
+
+// async function handleDeployPayoutContract(
+//   setDeploymentStatus: SetStatusFn,
+//   round: Round,
+//   signerOrProvider: Signer,
+//   isQF: boolean
+// ): Promise<string> {
+//   try {
+//     setDeploymentStatus(ProgressStatus.IN_PROGRESS);
+
+//     const { payoutContractAddress } = isQF
+//       ? await deployMerklePayoutStrategyContract(signerOrProvider)
+//       : await deployDirectPayoutStrategyContract(signerOrProvider, round);
+
+//     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
+//     return payoutContractAddress;
+//   } catch (error) {
+//     console.error("handleDeployPayoutContract", error);
+//     setDeploymentStatus(ProgressStatus.IS_ERROR);
+//     throw error;
+//   }
+// }
+
 async function handleDeployUnifiedRoundContract(
   setDeploymentStatusFns: SetStatusFn[],
   round: Round,
-  signerOrProvider: Signer
+  signerOrProvider: Signer,
+  isQF: boolean
 ): Promise<number> {
   try {
     setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IN_PROGRESS));
     const { transactionBlockNumber } = await deployRoundContract(
       round,
-      signerOrProvider
+      signerOrProvider,
+      isQF
     );
 
     setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IS_SUCCESS));

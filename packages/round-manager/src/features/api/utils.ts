@@ -418,6 +418,7 @@ export interface SchemaQuestion {
   hidden: boolean;
   choices?: string[];
   encrypted: boolean;
+  fixed?: boolean;
 }
 
 export interface ProjectRequirementsSchema {

@@ -14,7 +14,7 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
+import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/payoutStrategy";
 import { ProgressStatus } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
 import { useRound, useRoundMatchingFunds } from "../../../hooks";
