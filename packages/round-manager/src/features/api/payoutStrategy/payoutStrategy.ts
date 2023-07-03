@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { useWallet } from "../../common/Auth";
 import { fetchMatchingDistribution } from "../round";
 import { generateMerkleTree } from "../utils";
-import { merklePayoutStrategyImplementationContract } from "../contracts";
+import {
+  directPayoutStrategyFactoryContract,
+  merklePayoutStrategyImplementationContract,
+} from "../contracts";
 import { MatchingStatsData } from "../types";
 
 /**
@@ -14,6 +17,20 @@ import { MatchingStatsData } from "../types";
  * @param signerOrProvider
  * @returns
  */
+
+/**
+ * @param signerOrProvider
+ * @returns the factory address.
+ */
+export const getDirectPayoutFactoryAddress = async (
+  signerOrProvider: Signer
+): Promise<{ payoutContractAddress: string }> => {
+  const chainId = await signerOrProvider.getChainId();
+  const factoryAddress = directPayoutStrategyFactoryContract(chainId);
+  return {
+    payoutContractAddress: factoryAddress,
+  };
+};
 
 interface UpdateDistributionProps {
   payoutStrategy: string;

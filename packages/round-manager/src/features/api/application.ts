@@ -119,6 +119,8 @@ function convertStatus(status: number) {
       return "REJECTED";
     case 3:
       return "CANCELLED";
+    case 4:
+      return "IN_REVIEW";
     default:
       return "PENDING";
   }
@@ -156,6 +158,9 @@ export const getApplicationsByRoundId = async (
               projectsMetaPtr {
                 protocol
                 pointer
+              }
+              payoutStrategy {
+                strategyName
               }
             }
           }
