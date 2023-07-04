@@ -1,6 +1,9 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { ethers } from "ethers";
-import { votingStrategyFactoryContract } from "../contracts";
+import {
+  dgVotingStrategyDummyContract,
+  qfVotingStrategyFactoryContract,
+} from "../contracts";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -16,15 +19,16 @@ export const deployVotingContract = async (
   try {
     const chainId = await signerOrProvider.getChainId();
 
-    const _votingStrategyFactory = votingStrategyFactoryContract(chainId, isQF);
-    if (!_votingStrategyFactory.address)
-      throw new Error("No votingStrategyFactoryContract address");
-
     if (!isQF) {
+      // Note: In direct-rounds, we use a dummy contract for the voting contract.
       return Promise.resolve({
-        votingContractAddress: _votingStrategyFactory.address,
+        votingContractAddress: dgVotingStrategyDummyContract(chainId),
       });
     }
+
+    const _votingStrategyFactory = qfVotingStrategyFactoryContract(chainId);
+    if (!_votingStrategyFactory.address)
+      throw new Error("No votingStrategyFactoryContract address");
 
     const votingStrategyFactory = new ethers.Contract(
       _votingStrategyFactory.address,

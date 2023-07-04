@@ -19,9 +19,10 @@ import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
 import {
+  dgVotingStrategyDummyContract,
   directPayoutStrategyFactoryContract,
   merklePayoutStrategyFactoryContract,
-  votingStrategyFactoryContract,
+  qfVotingStrategyFactoryContract,
 } from "../../features/api/contracts";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
@@ -185,8 +186,9 @@ const _createRound = async ({
 
     const roundContractInputsWithContracts = {
       ...roundContractInputsWithPointers,
-      votingStrategy: votingStrategyFactoryContract(chainId, isQF)
-        .address as string,
+      votingStrategy: isQF
+        ? qfVotingStrategyFactoryContract(chainId)
+        : dgVotingStrategyDummyContract(chainId),
       payoutStrategy: {
         id: isQF
           ? merklePayoutStrategyFactoryContract(chainId)
@@ -316,50 +318,6 @@ async function storeDocuments(
     throw error;
   }
 }
-
-// async function handleDeployVotingContract(
-//   setDeploymentStatus: SetStatusFn,
-//   signerOrProvider: Signer,
-//   isQF: boolean
-// ): Promise<string> {
-//   try {
-//     setDeploymentStatus(ProgressStatus.IN_PROGRESS);
-
-//     const { votingContractAddress } = await deployVotingContract(
-//       signerOrProvider,
-//       isQF
-//     );
-
-//     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
-//     return votingContractAddress;
-//   } catch (error) {
-//     console.error("handleDeployVotingContract", error);
-//     setDeploymentStatus(ProgressStatus.IS_ERROR);
-//     throw error;
-//   }
-// }
-
-// async function handleDeployPayoutContract(
-//   setDeploymentStatus: SetStatusFn,
-//   round: Round,
-//   signerOrProvider: Signer,
-//   isQF: boolean
-// ): Promise<string> {
-//   try {
-//     setDeploymentStatus(ProgressStatus.IN_PROGRESS);
-
-//     const { payoutContractAddress } = isQF
-//       ? await deployMerklePayoutStrategyContract(signerOrProvider)
-//       : await deployDirectPayoutStrategyContract(signerOrProvider, round);
-
-//     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
-//     return payoutContractAddress;
-//   } catch (error) {
-//     console.error("handleDeployPayoutContract", error);
-//     setDeploymentStatus(ProgressStatus.IS_ERROR);
-//     throw error;
-//   }
-// }
 
 async function handleDeployUnifiedRoundContract(
   setDeploymentStatusFns: SetStatusFn[],
