@@ -272,14 +272,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
       return [
         {
           name: "DAI",
-          chainId: ChainId.GOERLI_CHAIN_ID,
+          chainId: ChainId.PGN_TESTNET,
           address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
           logo: TokenNamesAndLogos["TEST"],
           decimal: 18,
         },
         {
           name: "ETH",
-          chainId: ChainId.GOERLI_CHAIN_ID,
+          chainId: ChainId.PGN_TESTNET,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
           decimal: 18,
