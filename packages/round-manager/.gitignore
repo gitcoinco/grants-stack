@@ -27,3 +27,5 @@
 
 npm-debug.log*
 /.eslintcache
+
+/src/types/generated
