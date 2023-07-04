@@ -20,7 +20,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
 import { deployVotingContract } from "../../features/api/votingStrategy/votingStrategy";
 import {
-  deployDirectPayoutStrategyContract,
+  getDirectPayoutFactoryAddress,
   deployMerklePayoutStrategyContract,
 } from "../../features/api/payoutStrategy/payoutStrategy";
 
@@ -173,6 +173,15 @@ const _createRound = async ({
       },
     };
 
+    /**
+     * @note The new version of the contracts require to pass Voting and Payout factories
+     * instead of deploying the contracts directly and passing the addresses.
+     * As a temporal fix to make directRounds works we are tricking the UI stepper like so:
+     * Instead of deploying the factories we are passing the addresses of the factory as result.
+     * The new RoundFactory will use the address of the factory to create the contracts.
+     * @note For Direct rounds, the voting contract is not a factory buy a dummy-contract instead.
+     */
+
     const votingContractAddress = await handleDeployVotingContract(
       setVotingContractDeploymentStatus,
       signerOrProvider,
@@ -181,7 +190,6 @@ const _createRound = async ({
 
     const payoutContractAddress = await handleDeployPayoutContract(
       setPayoutContractDeploymentStatus,
-      roundContractInputsWithPointers,
       signerOrProvider,
       isQF
     );
@@ -337,7 +345,6 @@ async function handleDeployVotingContract(
 
 async function handleDeployPayoutContract(
   setDeploymentStatus: SetStatusFn,
-  round: Round,
   signerOrProvider: Signer,
   isQF: boolean
 ): Promise<string> {
@@ -346,7 +353,7 @@ async function handleDeployPayoutContract(
 
     const { payoutContractAddress } = isQF
       ? await deployMerklePayoutStrategyContract(signerOrProvider)
-      : await deployDirectPayoutStrategyContract(signerOrProvider, round);
+      : await getDirectPayoutFactoryAddress(signerOrProvider);
 
     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
     return payoutContractAddress;

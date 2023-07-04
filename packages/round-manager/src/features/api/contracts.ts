@@ -140,20 +140,19 @@ export const roundImplementationContract: Contract = {
 /* == VotingStrategy == */
 /************************/
 
-/* QuadraticFundingVotingStrategy */
-export const votingStrategyFactoryContract = (
-  chainId: ChainId | undefined,
-  isQF = true
+/* QFVotingStrategyFactory */
+export const qfVotingStrategyFactoryContract = (
+  chainId: ChainId | undefined
 ): Contract => {
   let address;
 
   switch (chainId) {
     case ChainId.MAINNET: {
-      address = isQF ? "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F" : "TODO";
+      address = "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F";
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = isQF ? "0x838C5e10dcc1e54d62761d994722367BA167AC22" : "TODO";
+      address = "0x838C5e10dcc1e54d62761d994722367BA167AC22";
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
@@ -166,17 +165,49 @@ export const votingStrategyFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = isQF
-        ? "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38"
-        : "0xBBc57Ec75a32A5C169bFD6F0234D941506509c6e";
+      address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
+
       break;
     }
   }
 
   return {
     address: address,
-    abi: isQF ? abi.qfVotingStrategyFactory : [],
+    abi: abi.qfVotingStrategyFactory,
   };
+};
+
+/* VotingStrategyFactory */
+export const dgVotingStrategyDummyContract = (
+  chainId: ChainId | undefined
+): string => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
+      break;
+    }
+  }
+
+  return address;
 };
 
 /************************/
@@ -243,7 +274,7 @@ export const directPayoutStrategyFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0xEA5cddfb6B755636852CE10c4407Cc1613B78355";
+      address = "0x0077551e24bfB910aBABedC4336246e34B5fB0A2";
       break;
     }
   }
@@ -282,44 +313,6 @@ export const alloSettingsContract = (
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x991cd65cb6AE183F06a489857775D7aE14794055";
-      break;
-    }
-  }
-
-  return {
-    address: address,
-    // For direct grants we have implemented typechain so it is not needed to export ABIs anymore.
-    // that's why we are
-    abi: [],
-  };
-};
-
-/* Strategy Imp  */
-export const strategyImplementationContract = (
-  chainId: ChainId | undefined
-): Contract => {
-  let address;
-
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      address = "";
-      break;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      address = "0x631De84A116314eCD6F5a87ff3893fced7E5f33F";
       break;
     }
   }

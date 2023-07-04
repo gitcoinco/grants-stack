@@ -67,60 +67,17 @@ export const deployMerklePayoutStrategyContract = async (
 };
 
 /**
- * Deploys a DirectPayoutStrategy contract by invoking the
- * create on QuadraticFundingVotingStrategyFactory contract
- *
  * @param signerOrProvider
- * @param round
- * @returns
+ * @returns the factory address.
  */
-export const deployDirectPayoutStrategyContract = async (
-  signerOrProvider: Signer,
-  round: Round
+export const getDirectPayoutFactoryAddress = async (
+  signerOrProvider: Signer
 ): Promise<{ payoutContractAddress: string }> => {
-  try {
-    const chainId = await signerOrProvider.getChainId();
-    const factoryAddress = directPayoutStrategyFactoryContract(chainId);
-    const factory = DirectPayoutStrategyFactory__factory.connect(
-      factoryAddress,
-      signerOrProvider
-    );
-
-    if (!round.vaultAddress) throw new Error("Vault address not found");
-
-    // get DirectPayoutStrategy instance
-    const tx = await factory.create(
-      alloSettingsContract(chainId).address as string,
-      round.vaultAddress,
-      round.feesPercentage || 0,
-      round.feesAddress || ethers.constants.AddressZero,
-      chainId == 5
-        ? {
-            // Sometimes goerli estimateGas is not enough
-            gasLimit: 250000,
-          }
-        : {}
-    );
-
-    const receipt = await tx.wait();
-
-    // get payout address from event
-    const event = receipt.events?.find(
-      (e) => e.event === "PayoutContractCreated"
-    );
-    if (!event || !event.args) {
-      throw new Error("No PayoutContractCreated event");
-    }
-    const payoutContractAddress = event.args.payoutContractAddress;
-
-    console.log("✅ Direct Payout Transaction hash: ", tx.hash);
-    console.log("✅ Direct Payout Strategy address: ", payoutContractAddress);
-
-    return { payoutContractAddress };
-  } catch (error) {
-    console.error("directPayoutStrategyFactoryContract", error);
-    throw new Error("Unable to deploy direct payout strategy contract");
-  }
+  const chainId = await signerOrProvider.getChainId();
+  const factoryAddress = directPayoutStrategyFactoryContract(chainId);
+  return {
+    payoutContractAddress: factoryAddress,
+  };
 };
 
 interface UpdateDistributionProps {
