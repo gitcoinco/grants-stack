@@ -271,10 +271,10 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
     case ChainId.PGN_TESTNET:
       return [
         {
-          name: "DAI",
+          name: "TEST",
           chainId: ChainId.PGN_TESTNET,
           address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          logo: TokenNamesAndLogos["TEST"],
+          logo: TokenNamesAndLogos["DAI"],
           decimal: 18,
         },
         {
