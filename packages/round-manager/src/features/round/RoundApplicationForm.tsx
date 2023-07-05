@@ -184,12 +184,13 @@ export function RoundApplicationForm(props: {
   const roundCategory =
     props.configuration?.roundCategory || RoundCategory.QuadraticFunding;
 
-  const defaultQuestions: ApplicationMetadata["questions"] =
-    // @ts-expect-error TODO: either fix this or refactor the whole formstepper
-    formData?.applicationMetadata?.questions ??
-    roundCategory == RoundCategory.QuadraticFunding
-      ? initialQuestionsQF
-      : initialQuestionsDirect;
+  // @ts-expect-error TODO: either fix this or refactor the whole formstepper
+  const questionsArg = formData?.applicationMetadata?.questions;
+  const defaultQuestions: ApplicationMetadata["questions"] = questionsArg
+    ? questionsArg
+    : roundCategory == RoundCategory.QuadraticFunding
+    ? initialQuestionsQF
+    : initialQuestionsDirect;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { control, handleSubmit, register, getValues } = useForm<Round>({
