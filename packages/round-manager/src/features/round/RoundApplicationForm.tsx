@@ -30,7 +30,6 @@ import BaseSwitch from "../common/BaseSwitch";
 import ErrorModal from "../common/ErrorModal";
 import { FormStepper as FS } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
-import InfoModal from "../common/InfoModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
@@ -103,7 +102,6 @@ export function RoundApplicationForm(props: {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
-  const [openHeadsUpModal, setOpenHeadsUpModal] = useState(false);
   const [toEdit, setToEdit] = useState<EditQuestion | undefined>();
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
@@ -198,10 +196,6 @@ export function RoundApplicationForm(props: {
   const prev = () => setCurrentStep(currentStep - 1);
 
   const next: SubmitHandler<Round> = async (values) => {
-    if (!openHeadsUpModal) {
-      setOpenHeadsUpModal(true);
-      return;
-    }
     try {
       setOpenProgressModal(true);
       const data: Partial<Round> = _.merge(formData, values);
@@ -313,32 +307,21 @@ export function RoundApplicationForm(props: {
   };
 
   const formSubmitModals = () => (
-    <InfoModal
-      title={"Heads up!"}
-      body={<InfoModalBody />}
-      isOpen={openHeadsUpModal}
-      setIsOpen={setOpenHeadsUpModal}
-      continueButtonAction={() => {
-        handleSubmit(next)();
-      }}
+    <ProgressModal
+      isOpen={openProgressModal}
+      subheading={"Please hold while we create your Grant Round."}
+      steps={progressSteps}
     >
-      <ProgressModal
-        isOpen={openProgressModal}
-        subheading={"Please hold while we create your Grant Round."}
-        steps={progressSteps}
-      >
-        <ErrorModal
-          isOpen={openErrorModal}
-          setIsOpen={setOpenErrorModal}
-          tryAgainFn={handleSubmit(next)}
-          doneFn={() => {
-            setOpenErrorModal(false);
-            setOpenProgressModal(false);
-            setOpenHeadsUpModal(false);
-          }}
-        />
-      </ProgressModal>
-    </InfoModal>
+      <ErrorModal
+        isOpen={openErrorModal}
+        setIsOpen={setOpenErrorModal}
+        tryAgainFn={handleSubmit(next)}
+        doneFn={() => {
+          setOpenErrorModal(false);
+          setOpenProgressModal(false);
+        }}
+      />
+    </ProgressModal>
   );
 
   const singleQuestion = (field: SchemaQuestion, key: number) => (
@@ -692,24 +675,6 @@ const Box = ({
     </div>
   </div>
 );
-
-function InfoModalBody() {
-  return (
-    <div className="text-sm text-grey-400 gap-16">
-      <p className="text-sm">
-        Each grant round on the protocol requires three smart contracts.
-      </p>
-      <p className="text-sm my-2">
-        You'll have to sign a transaction to deploy each of the following:
-      </p>
-      <ul className="list-disc list-inside pl-3">
-        <li>Quadratic Funding contract</li>
-        <li>Payout contract</li>
-        <li>Round core contract</li>
-      </ul>
-    </div>
-  );
-}
 
 function redirectToProgramDetails(
   navigate: NavigateFunction,

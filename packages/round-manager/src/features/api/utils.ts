@@ -178,12 +178,30 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const PGN_TESTNET_TOKENS: PayoutToken[] = [
+  {
+    name: "TEST",
+    chainId: ChainId.PGN_TESTNET,
+    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    logo: TokenNamesAndLogos["DAI"],
+    decimal: 18,
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.PGN_TESTNET,
+    address: ethers.constants.AddressZero,
+    logo: TokenNamesAndLogos["ETH"],
+    decimal: 18,
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
   ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
+  ...PGN_TESTNET_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
