@@ -20,8 +20,8 @@ const mockWallet = {
   },
 };
 
-jest.mock("../../../features/api/votingStrategy/qfVotingStrategy");
-jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
+jest.mock("../../../features/api/votingStrategy/votingStrategy");
+jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 jest.mock("../../../features/api/round");
 jest.mock("../../../features/api/ipfs");
 jest.mock("../../../features/api/subgraph");

@@ -17,7 +17,7 @@ const mockWallet = {
     },
   },
 };
-jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
+jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 jest.mock("../../../features/api/round");
 jest.mock("../../../features/api/ipfs");
 jest.mock("../../../features/common/Auth", () => ({

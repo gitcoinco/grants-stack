@@ -64,8 +64,8 @@ jest.mock("../../../hooks", () => ({
   })),
 }));
 
-jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
-  ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
+jest.mock("../../api/payoutStrategy/payoutStrategy", () => ({
+  ...jest.requireActual("../../api/payoutStrategy/payoutStrategy"),
   useFetchMatchingDistributionFromContract: jest.fn(),
 }));
 

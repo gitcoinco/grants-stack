@@ -8,7 +8,7 @@ import {
 } from "../ReclaimFundsContext";
 
 jest.mock("wagmi");
-jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
+jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 
 const mockSigner = {
   getChainId: () => {

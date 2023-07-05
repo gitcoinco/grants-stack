@@ -13,7 +13,7 @@ import {
 } from "../../round/RoundApplicationForm";
 import { checkGrantApplicationStatus } from "../application";
 import { MetadataPointer } from "../types";
-import { graphql_fetch } from "common";
+import { graphql_fetch, TMP_DIRECT_ROUND_SUBGRAPH_URL } from "common";
 
 enableFetchMocks();
 
@@ -298,7 +298,9 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      process.env.REACT_APP_DIRECT_GRANT_ENABLED
+        ? TMP_DIRECT_ROUND_SUBGRAPH_URL
+        : `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
       params
     );
     expect(res.data.programs[0]).toEqual({
@@ -332,7 +334,9 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      process.env.REACT_APP_DIRECT_GRANT_ENABLED
+        ? TMP_DIRECT_ROUND_SUBGRAPH_URL
+        : `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
       params
     );
   });

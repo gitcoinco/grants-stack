@@ -32,8 +32,8 @@ jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
 jest.mock("../../api/subgraph");
 jest.mock("../../common/Auth");
-jest.mock("../../api/payoutStrategy/merklePayoutStrategy");
-jest.mock("../../api/votingStrategy/qfVotingStrategy");
+jest.mock("../../api/payoutStrategy/payoutStrategy");
+jest.mock("../../api/votingStrategy/votingStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
