@@ -1,6 +1,6 @@
 import { saveToIPFS } from "../../../features/api/ipfs";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ProgressStatus } from "../../../features/api/types";
+import { ProgressStatus, RoundCategory } from "../../../features/api/types";
 import {
   CreateRoundData,
   CreateRoundProvider,
@@ -415,7 +415,11 @@ const TestUseCreateRoundComponent = () => {
   return (
     <div>
       <button
-        onClick={() => createRound({} as unknown as CreateRoundData)}
+        onClick={() =>
+          createRound({
+            roundCategory: RoundCategory.QuadraticFunding,
+          } as unknown as CreateRoundData)
+        }
         data-testid="create-round"
       >
         Create My Program
