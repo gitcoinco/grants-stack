@@ -254,7 +254,9 @@ describe("Application Form Builder", () => {
 
   describe("Edit question", () => {
     it("displays edit icons for each editable question", () => {
-      const editableQuestions = initialQuestionsQF;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
 
       renderWithContext(
         <RoundApplicationForm
@@ -274,7 +276,9 @@ describe("Application Form Builder", () => {
     });
 
     it("enters editable state showing current title for that question when edit is clicked on that question", () => {
-      const editableQuestions = initialQuestionsQF;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
       const questionIndex = randomInt(0, editableQuestions.length);
 
       renderWithContext(
@@ -297,7 +301,10 @@ describe("Application Form Builder", () => {
     });
 
     it("when in edit mode, saves input as question when save is clicked on that question and reverts to default ui", async () => {
-      const questionIndex = randomInt(0, initialQuestionsQF.length);
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
+      const questionIndex = randomInt(0, editableQuestions.length);
       const newTitle = faker.lorem.sentence();
 
       renderWithContext(
@@ -333,7 +340,9 @@ describe("Application Form Builder", () => {
 
   describe("Encrypted toggle", () => {
     it("displays toggle for encryption option for each editable question", () => {
-      const editableQuestions = initialQuestionsQF;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
 
       renderWithContext(
         <RoundApplicationForm
@@ -353,6 +362,10 @@ describe("Application Form Builder", () => {
     });
 
     it("toggles each encryption option when clicked", async () => {
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
+
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -365,7 +378,7 @@ describe("Application Form Builder", () => {
         />
       );
 
-      for (let i = 0; i < initialQuestionsQF.length; i++) {
+      for (let i = 0; i < editableQuestions.length; i++) {
         const editIcons = screen.getAllByTestId("edit-question");
         fireEvent.click(editIcons[i]);
         const encryptionToggles = screen.getAllByTestId("encrypted-toggle");
@@ -384,7 +397,9 @@ describe("Application Form Builder", () => {
 
   describe("Required toggle", () => {
     it("displays *Required for required option for each editable question", () => {
-      const editableQuestions = initialQuestionsQF;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -404,6 +419,9 @@ describe("Application Form Builder", () => {
     });
 
     it("toggle each required option when clicked", () => {
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -428,7 +446,7 @@ describe("Application Form Builder", () => {
       // 7. Email Required
       // 8. Funding Source Required
       // 9. Team Size Required
-      for (let i = 0; i < initialQuestionsQF.length; i++) {
+      for (let i = 0; i < editableQuestions.length; i++) {
         const editIcons = screen.getAllByTestId("edit-question");
         fireEvent.click(editIcons[i]);
         const requiredToggles = screen.getAllByTestId("required-toggle");
@@ -460,7 +478,9 @@ describe("Application Form Builder", () => {
 
   describe("Remove question", () => {
     it("displays remove icon for each editable question", () => {
-      const editableQuestions = initialQuestionsQF;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -479,7 +499,9 @@ describe("Application Form Builder", () => {
     });
 
     it("removes question when remove icon is clicked", () => {
-      const editableQuestions = initialQuestionsQF;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
 
       const indexToBeRemoved = randomInt(0, 3);
 
@@ -547,7 +569,7 @@ describe("Application Form Builder", () => {
 
       // +1: Wallet Address
       expect(screen.getAllByTestId("application-question")).toHaveLength(
-        editableQuestions.length + 1
+        editableQuestions.length
       );
 
       const addAQuestion = screen.getByRole("button", {

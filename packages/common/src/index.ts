@@ -163,7 +163,9 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
 
     case ChainId.GOERLI_CHAIN_ID:
     default:
-      return TMP_DIRECT_ROUND_SUBGRAPH_URL;
+      return process.env.REACT_APP_DIRECT_GRANT_ENABLED
+        ? TMP_DIRECT_ROUND_SUBGRAPH_URL
+        : `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
     // TODO: rollback this change once the subgraph is deployed
     // return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
   }
