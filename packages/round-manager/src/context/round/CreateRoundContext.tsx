@@ -151,6 +151,7 @@ const _createRound = async ({
     ) {
       roundMetadataWithProgramContractAddress.eligibility.requirements =
         roundMetadataWithProgramContractAddress.eligibility?.requirements.filter(
+          // Loose comparison might be intentional here, leave as is
           (obj) => obj.requirement != ""
         );
     }
