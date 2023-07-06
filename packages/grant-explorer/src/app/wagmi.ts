@@ -10,10 +10,10 @@ import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { mainnet, goerli,fantom, fantomTestnet, optimism } from "wagmi/chains";
+import { mainnet, goerli, fantom, fantomTestnet, optimism } from "wagmi/chains";
 import { createClient, configureChains, Chain } from "wagmi";
 
-import { pgnTestnet, fantomMainnet } from "common/src/chains";
+import { pgnTestnet } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 
@@ -22,7 +22,7 @@ const testnetChains = () => {
 };
 
 const mainnetChains = () => {
-  return [mainnet, optimism, fantomMainnet];
+  return [mainnet, optimism, fantom];
 };
 
 const allChains: Chain[] =
@@ -55,7 +55,7 @@ const connectors = connectorsForWallets([
     ...wallets,
     groupName: "Recommended",
     wallets: [
-      injectedWallet({ chains, projectId }),
+      injectedWallet({ chains }),
       walletConnectWallet({ chains, projectId }),
       coinbaseWallet({ appName: "Gitcoin Explorer", chains }),
       metaMaskWallet({ chains, projectId }),
