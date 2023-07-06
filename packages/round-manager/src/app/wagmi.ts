@@ -9,13 +9,13 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { createClient, configureChains, chain } from "wagmi";
 
-import { fantomMainnet, fantomTestnet } from "common/src/chains";
+import { fantomMainnet, fantomTestnet, pgnTestnet } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 
 const testnetChains = () => {
-  return [chain.goerli, fantomTestnet];
+  return [chain.goerli, fantomTestnet, pgnTestnet];
 };
 
 const mainnetChains = () => {

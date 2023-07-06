@@ -1,8 +1,9 @@
 import { getProgramById, listPrograms } from "../program";
 import { Program } from "../types";
 import { makeProgramData } from "../../../test-utils";
-import { fetchFromIPFS, ChainId, CHAINS } from "../utils";
+import { fetchFromIPFS, CHAINS } from "../utils";
 import { graphql_fetch } from "common";
+import { ChainId } from "common";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),

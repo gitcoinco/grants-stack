@@ -4,11 +4,12 @@ import { makeProgramData, renderWrapped } from "../../../test-utils";
 
 import { faker } from "@faker-js/faker";
 import moment from "moment";
-import { ChainId, CHAINS } from "../../api/utils";
+import { CHAINS } from "../../api/utils";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import { RoundDetailForm } from "../RoundDetailForm";
+import { ChainId } from "common";
 
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({

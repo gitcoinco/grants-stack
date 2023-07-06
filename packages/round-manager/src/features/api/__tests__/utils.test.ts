@@ -1,11 +1,7 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
 
-import {
-  ChainId,
-  fetchFromIPFS,
-  generateApplicationSchema,
-  pinToIPFS,
-} from "../utils";
+import { fetchFromIPFS, generateApplicationSchema, pinToIPFS } from "../utils";
+import { ChainId } from "common";
 
 import {
   initialQuestions,

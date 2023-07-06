@@ -17,13 +17,16 @@
     "format": "prettier . --write",
     "lint:ci": "pnpm lint:fix --max-warnings=0",
     "lint:fix": "eslint ./src --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typechain": "typechain --target=ethers-v5 ./src/features/api/abi/**/*.json --out-dir ./src/types/generated/typechain/",
+    "postinstall": "pnpm typechain"
   },
   "dependencies": {
     "@babel/core": "^7.20.12",
     "@craco/craco": "^6.4.5",
     "@datadog/browser-logs": "^4.17.1",
     "@datadog/browser-rum": "^4.17.1",
+    "@ethersproject/abi": "5.7.0",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@gitcoinco/passport-sdk-verifier": "^0.1.2",
@@ -113,6 +116,7 @@
     "@faker-js/faker": "^7.4.0",
     "@gitcoinco/passport-sdk-types": "^0.1.2",
     "@tailwindcss/line-clamp": "^0.4.0",
+    "@typechain/ethers-v5": "10.2.0",
     "@types/lodash": "^4.14.192",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.10",
@@ -125,6 +129,7 @@
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",
     "tailwind-styled-components": "2.1.6",
-    "tailwindcss": "^3.0.24"
+    "tailwindcss": "^3.0.24",
+    "typechain": "^8.2.0"
   }
 }
