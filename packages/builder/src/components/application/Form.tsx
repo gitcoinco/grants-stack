@@ -131,7 +131,7 @@ function AboutProject(props: {
     : undefined;
 
   const { data: ensName } = useEnsName({
-    address: recipient ?? "",
+    address: recipient as `0x{string}`,
   });
 
   return (

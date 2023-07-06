@@ -145,7 +145,7 @@ function ReclaimFundsContent(props: {
       ? { addressOrName: payoutStrategy }
       : {
           addressOrName: payoutStrategy,
-          token: matchingFundPayoutToken?.address,
+          token: matchingFundPayoutToken?.address as `0x{string}`,
         };
 
   const {
@@ -302,7 +302,7 @@ function ReclaimFundsContent(props: {
                 })}{" "}
                 USD
               </span>
-            ): null}
+            ) : null}
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">

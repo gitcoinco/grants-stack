@@ -40,7 +40,8 @@ export const { chains, provider, webSocketProvider } = configureChains(
 
 /* TODO: remove hardcoded value once we have environment variables validation */
 const projectId =
-  process.env.WALLETCONNECT_PROJECT_ID ?? "2685061cae0bcaf2b244446153eda9e1";
+  process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
+  "2685061cae0bcaf2b244446153eda9e1";
 
 const { wallets } = getDefaultWallets({
   appName: "Grant Explorer",
