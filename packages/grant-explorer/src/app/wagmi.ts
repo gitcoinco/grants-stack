@@ -25,11 +25,15 @@ import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 
 const testnetChains = () => {
-  return [goerli, fantomTestnet, pgnTestnet];
+  return [
+    goerli,
+    { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
+    pgnTestnet,
+  ];
 };
 
 const mainnetChains = () => {
-  return [mainnet, optimism, fantom];
+  return [mainnet, optimism, { ...fantom, iconUrl: "/logos/fantom-logo.svg" }];
 };
 
 const allChains: Chain[] =
