@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { reclaimFundsFromContract } from "../../../features/api/payoutStrategy/merklePayoutStrategy";
+import { reclaimFundsFromContract } from "../../../features/api/payoutStrategy/payoutStrategy";
 import { ProgressStatus } from "../../../features/api/types";
 import {
   ReclaimFundsParams,
@@ -8,7 +8,7 @@ import {
 } from "../ReclaimFundsContext";
 
 jest.mock("wagmi");
-jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
+jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 
 const mockSigner = {
   getChainId: () => {

@@ -101,9 +101,7 @@ export const programImplementationContract: Contract = {
 /************************/
 
 /* RoundFactory  */
-export const roundFactoryContract = (
-  chainId: ChainId | undefined
-): Contract => {
+export const roundFactoryContract = (chainId: ChainId | undefined): string => {
   let address;
 
   switch (chainId) {
@@ -130,10 +128,7 @@ export const roundFactoryContract = (
     }
   }
 
-  return {
-    address: address,
-    abi: abi.roundFactory,
-  };
+  return address;
 };
 
 /* RoundImplementation */
@@ -145,7 +140,7 @@ export const roundImplementationContract: Contract = {
 /* == VotingStrategy == */
 /************************/
 
-/* QuadraticFundingVotingStrategy */
+/* QFVotingStrategyFactory */
 export const qfVotingStrategyFactoryContract = (
   chainId: ChainId | undefined
 ): Contract => {
@@ -170,7 +165,8 @@ export const qfVotingStrategyFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
+      address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
+
       break;
     }
   }
@@ -179,6 +175,39 @@ export const qfVotingStrategyFactoryContract = (
     address: address,
     abi: abi.qfVotingStrategyFactory,
   };
+};
+
+/* VotingStrategyFactory */
+export const dgVotingStrategyDummyContract = (
+  chainId: ChainId | undefined
+): string => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
+      break;
+    }
+  }
+
+  return address;
 };
 
 /************************/
@@ -221,7 +250,77 @@ export const merklePayoutStrategyFactoryContract = (
   };
 };
 
+export const directPayoutStrategyFactoryContract = (
+  chainId: ChainId | undefined
+): string => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x0077551e24bfB910aBABedC4336246e34B5fB0A2";
+      break;
+    }
+  }
+
+  return address;
+};
+
 /* MerklePayoutStrategyImplementation */
 export const merklePayoutStrategyImplementationContract: Contract = {
   abi: abi.merklePayoutStrategyImplementation,
+};
+
+/* AlloSettings contract  */
+export const alloSettingsContract = (
+  chainId: ChainId | undefined
+): Contract => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x991cd65cb6AE183F06a489857775D7aE14794055";
+      break;
+    }
+  }
+
+  return {
+    address: address,
+    // For direct grants we have implemented typechain so it is not needed to export ABIs anymore.
+    // that's why we are
+    abi: [],
+  };
 };

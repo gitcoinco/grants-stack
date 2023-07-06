@@ -18,7 +18,7 @@
     "lint:ci": "pnpm lint:fix --max-warnings=0",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit",
-    "typechain": "typechain --target=ethers-v5 ./src/features/api/abi/**/*.json --out-dir ./src/types/generated/typechain/",
+    "typechain": "typechain --target=ethers-v5 ./src/features/**/*.json --out-dir ./src/types/generated/typechain/",
     "postinstall": "pnpm typechain"
   },
   "dependencies": {

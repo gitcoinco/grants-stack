@@ -4,7 +4,7 @@ import {
   render,
   screen,
   waitFor,
-  within
+  within,
 } from "@testing-library/react";
 import { randomInt } from "crypto";
 import { act } from "react-dom/test-utils";
@@ -12,28 +12,28 @@ import { MemoryRouter } from "react-router-dom";
 import {
   CreateRoundContext,
   CreateRoundState,
-  initialCreateRoundState
+  initialCreateRoundState,
 } from "../../../context/round/CreateRoundContext";
 import { saveToIPFS } from "../../api/ipfs";
-import { deployMerklePayoutStrategyContract } from "../../api/payoutStrategy/merklePayoutStrategy";
+import { deployMerklePayoutStrategyContract } from "../../api/payoutStrategy/payoutStrategy";
 import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import { ApplicationMetadata, ProgressStatus } from "../../api/types";
-import { deployQFVotingContract } from "../../api/votingStrategy/qfVotingStrategy";
+import { deployVotingContract } from "../../api/votingStrategy/votingStrategy";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
-  initialQuestions,
-  RoundApplicationForm
+  initialQuestionsQF,
+  RoundApplicationForm,
 } from "../RoundApplicationForm";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
 jest.mock("../../api/subgraph");
 jest.mock("../../common/Auth");
-jest.mock("../../api/payoutStrategy/merklePayoutStrategy");
-jest.mock("../../api/votingStrategy/qfVotingStrategy");
+jest.mock("../../api/payoutStrategy/payoutStrategy");
+jest.mock("../../api/votingStrategy/votingStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
@@ -66,7 +66,7 @@ describe("<RoundApplicationForm />", () => {
       address: "0x0",
     });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
-    (deployQFVotingContract as jest.Mock).mockResolvedValue({
+    (deployVotingContract as jest.Mock).mockResolvedValue({
       votingContractAddress: "0xVotingContract",
     });
     (deployMerklePayoutStrategyContract as jest.Mock).mockResolvedValue({
@@ -293,7 +293,9 @@ describe("Application Form Builder", () => {
 
   describe("Edit question", () => {
     it("displays edit icons for each editable question", () => {
-      const editableQuestions = initialQuestions;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
 
       renderWithContext(
         <RoundApplicationForm
@@ -313,7 +315,9 @@ describe("Application Form Builder", () => {
     });
 
     it("enters editable state showing current title for that question when edit is clicked on that question", () => {
-      const editableQuestions = initialQuestions;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
       const questionIndex = randomInt(0, editableQuestions.length);
 
       renderWithContext(
@@ -336,7 +340,10 @@ describe("Application Form Builder", () => {
     });
 
     it("when in edit mode, saves input as question when save is clicked on that question and reverts to default ui", async () => {
-      const questionIndex = randomInt(0, initialQuestions.length);
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
+      const questionIndex = randomInt(0, editableQuestions.length);
       const newTitle = faker.lorem.sentence();
 
       renderWithContext(
@@ -372,7 +379,9 @@ describe("Application Form Builder", () => {
 
   describe("Encrypted toggle", () => {
     it("displays toggle for encryption option for each editable question", () => {
-      const editableQuestions = initialQuestions;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
 
       renderWithContext(
         <RoundApplicationForm
@@ -392,6 +401,10 @@ describe("Application Form Builder", () => {
     });
 
     it("toggles each encryption option when clicked", async () => {
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
+
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -404,7 +417,7 @@ describe("Application Form Builder", () => {
         />
       );
 
-      for (let i = 0; i < initialQuestions.length; i++) {
+      for (let i = 0; i < editableQuestions.length; i++) {
         const editIcons = screen.getAllByTestId("edit-question");
         fireEvent.click(editIcons[i]);
         const encryptionToggles = screen.getAllByTestId("encrypted-toggle");
@@ -415,9 +428,7 @@ describe("Application Form Builder", () => {
         fireEvent.click(save);
       }
 
-      const encryptionToggleLabels = screen.getAllByText(
-        "Encrypted"
-      );
+      const encryptionToggleLabels = screen.getAllByText("Encrypted");
 
       expect(encryptionToggleLabels.length).toBe(1);
     });
@@ -425,7 +436,9 @@ describe("Application Form Builder", () => {
 
   describe("Required toggle", () => {
     it("displays *Required for required option for each editable question", () => {
-      const editableQuestions = initialQuestions;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -445,6 +458,9 @@ describe("Application Form Builder", () => {
     });
 
     it("toggle each required option when clicked", () => {
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -469,7 +485,7 @@ describe("Application Form Builder", () => {
       // 7. Email Required
       // 8. Funding Source Required
       // 9. Team Size Required
-      for (let i = 0; i < initialQuestions.length; i++) {
+      for (let i = 0; i < editableQuestions.length; i++) {
         const editIcons = screen.getAllByTestId("edit-question");
         fireEvent.click(editIcons[i]);
         const requiredToggles = screen.getAllByTestId("required-toggle");
@@ -493,9 +509,7 @@ describe("Application Form Builder", () => {
       // 8. Funding Source Optional
       // 9. Team Size Optional
 
-      const requiredToggleLabels = screen.getAllByText(
-        "*Required"
-      );
+      const requiredToggleLabels = screen.getAllByText("*Required");
 
       expect(requiredToggleLabels.length).toBe(4);
     });
@@ -503,7 +517,9 @@ describe("Application Form Builder", () => {
 
   describe("Remove question", () => {
     it("displays remove icon for each editable question", () => {
-      const editableQuestions = initialQuestions;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -522,7 +538,9 @@ describe("Application Form Builder", () => {
     });
 
     it("removes question when remove icon is clicked", () => {
-      const editableQuestions = initialQuestions;
+      const editableQuestions = initialQuestionsQF.filter(
+        (q) => q.fixed !== true
+      );
 
       const indexToBeRemoved = randomInt(0, 3);
 
@@ -573,7 +591,7 @@ describe("Application Form Builder", () => {
     });
 
     it("adds a new question on clicking add a new question button", async () => {
-      const editableQuestions = initialQuestions;
+      const editableQuestions = initialQuestionsQF;
       const newTitle = "New Question";
 
       renderWithContext(
@@ -590,7 +608,7 @@ describe("Application Form Builder", () => {
 
       // +1: Wallet Address
       expect(screen.getAllByTestId("application-question")).toHaveLength(
-        editableQuestions.length + 1
+        editableQuestions.length
       );
 
       const addAQuestion = screen.getByRole("button", {
@@ -604,7 +622,7 @@ describe("Application Form Builder", () => {
 
       selectList = screen.getByTestId("select-question");
 
-      const selectType = within(selectList).getAllByText("Paragraph")
+      const selectType = within(selectList).getAllByText("Paragraph");
       fireEvent.click(selectType[0]);
 
       const inputField = screen.getByTestId("question-title-input");

@@ -10,7 +10,7 @@ import { saveToIPFS } from "../../features/api/ipfs";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ethers } from "ethers";
 import { generateMerkleTree } from "../../features/api/utils";
-import { updateDistributionToContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
+import { updateDistributionToContract } from "../../features/api/payoutStrategy/payoutStrategy";
 
 export interface FinalizeRoundState {
   IPFSCurrentStatus: ProgressStatus;

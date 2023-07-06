@@ -5,12 +5,15 @@ import { useEffect, useState } from "react";
 // import dist from "tailwind-styled-components";
 import { useWallet } from "../../common/Auth";
 import {
+  alloSettingsContract,
+  directPayoutStrategyFactoryContract,
   merklePayoutStrategyFactoryContract,
-  merklePayoutStrategyImplementationContract
+  merklePayoutStrategyImplementationContract,
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
-import { MatchingStatsData } from "../types";
+import { MatchingStatsData, Round } from "../types";
 import { ChainId, generateMerkleTree } from "../utils";
+import { DirectPayoutStrategyFactory__factory } from "../../../types/generated/typechain";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -63,6 +66,20 @@ export const deployMerklePayoutStrategyContract = async (
   }
 };
 
+/**
+ * @param signerOrProvider
+ * @returns the factory address.
+ */
+export const getDirectPayoutFactoryAddress = async (
+  signerOrProvider: Signer
+): Promise<{ payoutContractAddress: string }> => {
+  const chainId = await signerOrProvider.getChainId();
+  const factoryAddress = directPayoutStrategyFactoryContract(chainId);
+  return {
+    payoutContractAddress: factoryAddress,
+  };
+};
+
 interface UpdateDistributionProps {
   payoutStrategy: string;
   encodedDistribution: string;
@@ -98,7 +115,7 @@ export async function updateDistributionToContract({
 }
 
 export const useFetchMatchingDistributionFromContract = (
-  roundId: string | undefined,
+  roundId: string | undefined
 ): {
   distributionMetaPtr: string;
   matchingDistributionContract: MatchingStatsData[];
@@ -161,7 +178,7 @@ export const useGroupProjectsByPaymentStatus = (
 
   const allProjects =
     useFetchMatchingDistributionFromContract(
-      roundId,
+      roundId
     ).matchingDistributionContract;
 
   useEffect(() => {
@@ -172,14 +189,10 @@ export const useGroupProjectsByPaymentStatus = (
       };
 
       const paidProjects: Payout[] = await paidProjectsFromGraph;
-      const paidProjectIds = paidProjects.map((project) =>
-        project.projectId,
-      );
+      const paidProjectIds = paidProjects.map((project) => project.projectId);
 
       allProjects?.forEach((project) => {
-        const projectStatus = paidProjectIds.includes(
-          project.projectId
-        )
+        const projectStatus = paidProjectIds.includes(project.projectId)
           ? "paid"
           : "unpaid";
 
@@ -188,11 +201,8 @@ export const useGroupProjectsByPaymentStatus = (
         if (projectStatus === "paid") {
           tmpProject = {
             ...project,
-            hash: paidProjects.find(
-              (p) =>
-                p.projectId ===
-                project.projectId,
-            )?.txnHash,
+            hash: paidProjects.find((p) => p.projectId === project.projectId)
+              ?.txnHash,
             status: "",
           };
         }
@@ -236,7 +246,7 @@ export const batchDistributeFunds = async (
 
     // Filter projects to be paid from matching results
     const projectsToBePaid = matchingResults.filter((project) =>
-      projectIdsToBePaid.includes(project.projectId),
+      projectIdsToBePaid.includes(project.projectId)
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -296,17 +306,17 @@ export const batchDistributeFunds = async (
 export async function reclaimFundsFromContract(
   payoutStrategy: string,
   signerOrProvider: Signer,
-  recipient: string,
+  recipient: string
 ) {
   try {
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
 
     const tx = await merklePayoutStrategyImplementation.withdrawFunds(
-      recipient,
+      recipient
     );
 
     const receipt = await tx.wait();

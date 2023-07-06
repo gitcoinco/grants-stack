@@ -136,6 +136,11 @@ export interface ApplicationMetadata {
   requirements: ProjectRequirements;
 }
 
+export enum RoundCategory {
+  QuadraticFunding,
+  Direct,
+}
+
 export interface Round {
   /**
    * The on-chain unique round ID
@@ -192,6 +197,11 @@ export interface Round {
     isReadyForPayout: boolean;
   };
   /**
+   * Used in RoundCategory.Direct
+   * Is the address from where the grant will be paid out
+   */
+  vaultAddress?: string;
+  /**
    * Unix timestamp of the start of the round
    */
   roundStartTime: Date;
@@ -199,6 +209,10 @@ export interface Round {
    * Unix timestamp of the end of the round
    */
   roundEndTime: Date;
+  /**
+   * enable/disable validations for round end time
+   */
+  roundEndTimeDisabled?: boolean;
   /**
    * Unix timestamp of when grants can apply to a round
    */
