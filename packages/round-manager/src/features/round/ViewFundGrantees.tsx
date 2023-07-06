@@ -169,6 +169,7 @@ function FinalizedRoundContent(props: { round: Round }) {
               <PaidProjectsTable
                 projects={paidProjects}
                 chainId={chain?.id}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 token={matchingFundPayoutToken!}
                 price={price}
               />
