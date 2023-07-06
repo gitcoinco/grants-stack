@@ -4,7 +4,7 @@
   "private": true,
   "license": "AGPL-3.0-only",
   "scripts": {
-    "build": "craco build",
+    "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
     "eject": "react-scripts eject",
     "lint:ci": "pnpm lint:fix --max-warnings=0",
     "lint:fix": "eslint ./src --fix",

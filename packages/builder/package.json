@@ -79,7 +79,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "export REACT_APP_GIT_SHA=$(git rev-parse --short HEAD); env REACT_APP_GIT_SHA=${REACT_APP_GIT_SHA:-$CF_PAGES_COMMIT_SHA} craco build",
+    "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
     "test": "jest --watchAll=false",
     "test:dev": "jest --watch",
     "test:coverage": "jest --watchAll=false --coverage",
