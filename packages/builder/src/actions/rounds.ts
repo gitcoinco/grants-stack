@@ -63,6 +63,9 @@ const loadingError = (address: string, error: string): RoundsActions => ({
 
 export const unloadRounds = () => roundsUnloaded();
 
+const isTooBig = (bigNumber: BigNumber) =>
+  bigNumber.eq(ethers.constants.MaxUint256);
+
 export const loadRound =
   (address: string, roundChainId?: number) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
@@ -116,7 +119,10 @@ export const loadRound =
     let applicationsEndTime;
     try {
       const aet: BigNumber = await contract.applicationsEndTime();
-      applicationsEndTime = aet.toNumber();
+      // fixes infinite applicationsEndTime representation
+      applicationsEndTime = isTooBig(aet)
+        ? Number.MAX_SAFE_INTEGER
+        : aet.toNumber();
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
@@ -156,7 +162,8 @@ export const loadRound =
     let roundEndTime;
     try {
       const ret: BigNumber = await contract.roundEndTime();
-      roundEndTime = ret.toNumber();
+      // fixes infinite roundEndTime representation
+      roundEndTime = isTooBig(ret) ? Number.MAX_SAFE_INTEGER : ret.toNumber();
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(

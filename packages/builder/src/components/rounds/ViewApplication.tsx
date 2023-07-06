@@ -17,6 +17,7 @@ import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import Cross from "../icons/Cross";
 import { RoundApplicationAnswers } from "../../types/roundApplication";
+import { isInfinite } from "../../utils/components";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -159,12 +160,16 @@ function ViewApplication() {
           <p className="font-semibold mt-4">Application Period:</p>
           <p>
             {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
-            {formatDate(props.round.applicationsEndTime * 1000)}
+            {isInfinite(props.round.applicationsEndTime)
+              ? "No End Date"
+              : formatDate(props.round.applicationsEndTime * 1000)}
           </p>
           <p className="font-semibold mt-4">Round Dates:</p>
           <p>
             {formatDate(props.round.roundStartTime * 1000)} -{" "}
-            {formatDate(props.round.roundEndTime * 1000)}
+            {isInfinite(props.round.applicationsEndTime)
+              ? "No End Date"
+              : formatDate(props.round.roundEndTime * 1000)}
           </p>
           <p className="mt-4">
             Need Help? Check out the{" "}

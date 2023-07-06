@@ -12,7 +12,7 @@ import { Status as ProjectStatus } from "../../reducers/projects";
 import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { Status } from "../../reducers/rounds";
 import { grantsPath, newGrantPath, roundApplicationPath } from "../../routes";
-import { formatTimeUTC } from "../../utils/components";
+import { formatTimeUTC, isInfinite } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -140,16 +140,21 @@ function ShowRound() {
     let votingHasStarted = false;
     let votingHasEnded = false;
 
+    // covers QF and DF application and voting periods condition evaluation
+    if (
+      roundState?.round &&
+      roundState?.round?.applicationsStartTime !== undefined &&
+      roundState?.round?.roundStartTime !== undefined
+    ) {
+      applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
+      votingHasStarted = roundState.round?.roundStartTime <= now;
+    }
     if (
       roundState?.round &&
       roundState?.round?.applicationsEndTime !== undefined &&
-      roundState?.round?.applicationsStartTime !== undefined &&
-      roundState?.round?.roundStartTime !== undefined &&
       roundState?.round?.roundEndTime !== undefined
     ) {
-      applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
       applicationsHaveEnded = roundState.round?.applicationsEndTime <= now;
-      votingHasStarted = roundState.round?.roundStartTime <= now;
       votingHasEnded = roundState.round?.roundEndTime <= now;
     }
 
@@ -172,14 +177,19 @@ function ShowRound() {
   const renderApplicationDate = () => (
     <>
       {formatTimeUTC(roundData?.applicationsStartTime)} -{" "}
-      {formatTimeUTC(roundData?.applicationsEndTime)}
+      {isInfinite(roundData?.applicationsEndTime)
+        ? "No End Date"
+        : formatTimeUTC(roundData?.applicationsEndTime)}
     </>
   );
 
   const renderRoundDate = () => (
     <>
       {formatTimeUTC(roundData?.roundStartTime)} -{" "}
-      {formatTimeUTC(roundData?.roundEndTime)}
+      {isInfinite(roundData?.roundEndTime)
+        ? "No End Date"
+        : formatTimeUTC(roundData?.roundEndTime)}
+      {}
     </>
   );
 
