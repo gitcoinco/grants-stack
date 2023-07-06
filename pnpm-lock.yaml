@@ -217,7 +217,7 @@ importers:
   packages/common:
     specifiers:
       '@ethersproject/providers': ^5.7.2
-      '@rainbow-me/rainbowkit': ^1.0.3
+      '@rainbow-me/rainbowkit': ^0.12.16
       '@types/dompurify': ^2.4.0
       '@types/markdown-it': ^12.2.3
       '@types/node': ^18.15.5
@@ -237,7 +237,7 @@ importers:
       viem: ^0.1.22
     dependencies:
       '@ethersproject/providers': 5.7.2
-      '@rainbow-me/rainbowkit': 1.0.3_eny3wv6hcem6r4fs4mxqrpce5y
+      '@rainbow-me/rainbowkit': 0.12.16_lgctjrjlmxc33je4ryimelgyb4
       dompurify: 2.4.3
       ethers: 5.7.2
       framer-motion: 10.12.7_react@18.2.0
@@ -5635,6 +5635,27 @@ packages:
       - '@types/react'
     dev: false
 
+  /@rainbow-me/rainbowkit/0.12.16_lgctjrjlmxc33je4ryimelgyb4:
+    resolution: {integrity: sha512-4uuJIOJaBjPVM/8HqM1kNf2Yqb52lNYkQD1m8p8e7zcIK2K3nml6BfG5r04f4kqUWRmT3yosZOz2+AYL1zFqdA==}
+    engines: {node: '>=12.4'}
+    peerDependencies:
+      ethers: '>=5.6.8'
+      react: '>=17'
+      react-dom: '>=17'
+      wagmi: '>=0.12.18 <1.0.0'
+    dependencies:
+      '@vanilla-extract/css': 1.9.1
+      '@vanilla-extract/dynamic': 2.0.2
+      '@vanilla-extract/sprinkles': 1.5.0_@vanilla-extract+css@1.9.1
+      clsx: 1.1.1
+      ethers: 5.7.2
+      qrcode: 1.5.0
+      react: 18.2.0
+      react-remove-scroll: 2.5.4_pofolu2o2erjq4lhyzl3hqovzq
+    transitivePeerDependencies:
+      - '@types/react'
+    dev: false
+
   /@rainbow-me/rainbowkit/0.7.4_ulxy6qkyayp2ztn76d5qis6x6y:
     resolution: {integrity: sha512-o3kwaHZw9O40gfK2DamJZzoqPbK7EHC+8++QtFy5AQ0Sw5P+U0tzb/87KHatSIXyIwrZTEGD0uciPjCGikJMjg==}
     engines: {node: '>=12.4'}
@@ -5654,27 +5675,6 @@ packages:
       react-dom: 18.2.0_react@18.2.0
       react-remove-scroll: 2.5.4_3stiutgnnbnfnf3uowm5cip22i
       wagmi: 0.6.8_3gr4o6b4xogwf7nw23g5547liq
-    transitivePeerDependencies:
-      - '@types/react'
-    dev: false
-
-  /@rainbow-me/rainbowkit/1.0.3_eny3wv6hcem6r4fs4mxqrpce5y:
-    resolution: {integrity: sha512-42rqgv22V0S1c5ukjVYuNlQxenzAqGBJBdIOTp+nryw92JL5C5jJT/FJgFsObZzjK/2rGIy0SbP7WgbWRVuROw==}
-    engines: {node: '>=12.4'}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-      viem: ~0.3.19 || ^1.0.0
-      wagmi: ~1.0.1 || ~1.1.0 || ~1.2.0
-    dependencies:
-      '@vanilla-extract/css': 1.9.1
-      '@vanilla-extract/dynamic': 2.0.2
-      '@vanilla-extract/sprinkles': 1.5.0_@vanilla-extract+css@1.9.1
-      clsx: 1.1.1
-      qrcode: 1.5.0
-      react: 18.2.0
-      react-remove-scroll: 2.5.4_pofolu2o2erjq4lhyzl3hqovzq
-      viem: 0.1.22_typescript@5.1.6
     transitivePeerDependencies:
       - '@types/react'
     dev: false

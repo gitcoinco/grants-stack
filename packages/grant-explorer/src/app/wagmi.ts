@@ -10,8 +10,15 @@ import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { mainnet, goerli, fantom, fantomTestnet, optimism } from "wagmi/chains";
-import { createClient, configureChains, Chain } from "wagmi";
+import {
+  mainnet,
+  goerli,
+  fantom,
+  fantomTestnet,
+  optimism,
+  Chain,
+} from "wagmi/chains";
+import { createClient, configureChains } from "wagmi";
 
 import { pgnTestnet } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";

@@ -8,7 +8,7 @@
       "outputs": [
         "build"
       ],
-      "outputMode": "new-only"
+      "outputMode": "errors-only"
     },
     "test": {
       "inputs": [
