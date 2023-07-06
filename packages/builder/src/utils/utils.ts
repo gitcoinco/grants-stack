@@ -73,7 +73,7 @@ export const getProviderByChainId = (chainId: ChainId) => {
   }
 
   // TODO: Create a more robust RPC here to avoid fails
-  return ethers.getDefaultProvider(chainConfig.rpcUrls.public.http[0]);
+  return ethers.getDefaultProvider(chainConfig.rpcUrls.default);
 };
 
 export const getAddressType = async (address: string): Promise<AddressType> => {

@@ -11,9 +11,6 @@
       "outputMode": "new-only"
     },
     "test": {
-      "dependsOn": [
-        "build"
-      ],
       "inputs": [
         "src/**/*.tsx",
         "src/**/*.ts"
