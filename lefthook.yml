@@ -10,4 +10,4 @@ pre-push:
   commands:
     eslint:
       glob: "*.{js,ts,jsx,tsx}"
-      run: pnpm lint:ci
+      run: turbo lint:ci
