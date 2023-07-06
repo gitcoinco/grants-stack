@@ -4,7 +4,7 @@ import {
   render,
   screen,
   waitFor,
-  within
+  within,
 } from "@testing-library/react";
 import { randomInt } from "crypto";
 import { act } from "react-dom/test-utils";
@@ -12,20 +12,18 @@ import { MemoryRouter } from "react-router-dom";
 import {
   CreateRoundContext,
   CreateRoundState,
-  initialCreateRoundState
+  initialCreateRoundState,
 } from "../../../context/round/CreateRoundContext";
 import { saveToIPFS } from "../../api/ipfs";
-import { deployMerklePayoutStrategyContract } from "../../api/payoutStrategy/merklePayoutStrategy";
 import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import { ApplicationMetadata, ProgressStatus } from "../../api/types";
-import { deployQFVotingContract } from "../../api/votingStrategy/qfVotingStrategy";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
   initialQuestions,
-  RoundApplicationForm
+  RoundApplicationForm,
 } from "../RoundApplicationForm";
 
 jest.mock("../../api/ipfs");
@@ -33,7 +31,6 @@ jest.mock("../../api/round");
 jest.mock("../../api/subgraph");
 jest.mock("../../common/Auth");
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy");
-jest.mock("../../api/votingStrategy/qfVotingStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
@@ -66,47 +63,16 @@ describe("<RoundApplicationForm />", () => {
       address: "0x0",
     });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
-    (deployQFVotingContract as jest.Mock).mockResolvedValue({
-      votingContractAddress: "0xVotingContract",
-    });
-    (deployMerklePayoutStrategyContract as jest.Mock).mockResolvedValue({
-      contractAddress: "0xPayoutContract",
-    });
     (deployRoundContract as jest.Mock).mockResolvedValue({
       transactionBlockNumber: 0,
     });
     (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(0);
   });
 
-  describe("when submitting form", () => {
-    it("shows headsup modal when form is submitted to create a round", async () => {
-      renderWithContext(
-        <RoundApplicationForm
-          initialData={{
-            // @ts-expect-error Test file
-            program: {
-              operatorWallets: [],
-            },
-          }}
-          stepper={FormStepper}
-        />
-      );
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
-
-      expect(await screen.findByTestId("info-modal")).toBeInTheDocument();
-    });
-  });
-
   describe("when saving metadata fails", () => {
     const startProgressModal = async () => {
       const launch = screen.getByRole("button", { name: /Launch/i });
       fireEvent.click(launch);
-
-      const continueButton = await screen.findByRole("button", {
-        name: /Continue/i,
-      });
-      fireEvent.click(continueButton);
     };
 
     it("shows error modal when saving round application metadata fails", async () => {
@@ -188,11 +154,6 @@ describe("<RoundApplicationForm />", () => {
     const startProgressModal = async () => {
       const launch = screen.getByRole("button", { name: /Launch/i });
       fireEvent.click(launch);
-
-      const continueButton = await screen.findByRole("button", {
-        name: /Continue/i,
-      });
-      fireEvent.click(continueButton);
     };
 
     it("shows error modal when create round transaction fails", async () => {
@@ -415,9 +376,7 @@ describe("Application Form Builder", () => {
         fireEvent.click(save);
       }
 
-      const encryptionToggleLabels = screen.getAllByText(
-        "Encrypted"
-      );
+      const encryptionToggleLabels = screen.getAllByText("Encrypted");
 
       expect(encryptionToggleLabels.length).toBe(1);
     });
@@ -493,9 +452,7 @@ describe("Application Form Builder", () => {
       // 8. Funding Source Optional
       // 9. Team Size Optional
 
-      const requiredToggleLabels = screen.getAllByText(
-        "*Required"
-      );
+      const requiredToggleLabels = screen.getAllByText("*Required");
 
       expect(requiredToggleLabels.length).toBe(4);
     });
@@ -604,7 +561,7 @@ describe("Application Form Builder", () => {
 
       selectList = screen.getByTestId("select-question");
 
-      const selectType = within(selectList).getAllByText("Paragraph")
+      const selectType = within(selectList).getAllByText("Paragraph");
       fireEvent.click(selectType[0]);
 
       const inputField = screen.getByTestId("question-title-input");
