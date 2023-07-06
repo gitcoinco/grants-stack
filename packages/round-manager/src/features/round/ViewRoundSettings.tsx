@@ -1223,6 +1223,7 @@ function RoundApplicationPeriod(props: {
                   <p className="block text-[10px]">Start Date</p>
                   <Controller
                     name="applicationsStartTime"
+                    autocomplete="off"
                     control={props.control}
                     render={({ field }) => (
                       <Datetime
@@ -1341,6 +1342,7 @@ function RoundApplicationPeriod(props: {
                   <p className="block text-[10px]">End Date</p>
                   <Controller
                     name="applicationsEndTime"
+                    autocomplete="off"
                     control={props.control}
                     render={({ field }) => (
                       <Datetime
@@ -1455,6 +1457,7 @@ function RoundApplicationPeriod(props: {
                   <p className="block text-[10px]">Start Date</p>
                   <Controller
                     name="roundStartTime"
+                    autocomplete="off"
                     control={props.control}
                     render={({ field }) => (
                       <div>
@@ -1568,6 +1571,7 @@ function RoundApplicationPeriod(props: {
                   <p className="block text-[10px]">End Date</p>
                   <Controller
                     name="roundEndTime"
+                    autocomplete="off"
                     control={props.control}
                     render={({ field }) => (
                       <div>
@@ -1641,6 +1645,7 @@ function RoundApplicationPeriod(props: {
                     editedRound.roundEndTime
                   )} ${getUTCTime(editedRound.roundEndTime)}`}
                   disabled
+                  autocomplete="off"
                 />
               </div>
             )}
