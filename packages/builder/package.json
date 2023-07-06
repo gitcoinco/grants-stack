@@ -35,6 +35,7 @@
     "@types/react-redux": "^7.1.24",
     "@types/testing-library__jest-dom": "^5.14.5",
     "@wagmi/core": "0.10.16",
+    "@walletconnect/modal": "^2.5.9",
     "allo-indexer-client": "github:gitcoinco/allo-indexer-client#0487c02c9bb89307b12ffe75f5bfb578278994a1",
     "assert": "^2.0.0",
     "autoprefixer": "^10.4.7",
@@ -132,6 +133,7 @@
     "jest-environment-jsdom": "^27.0",
     "jest-transform-stub": "^2.0.0",
     "jest-when": "^3.5.1",
+    "lokijs": "^1.5.12",
     "msw": "^0.47.4",
     "postcss-import": "^14.1.0",
     "prettier": "^2.6.2"

@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { act, fireEvent, screen } from "@testing-library/react";
 import * as wagmi from "wagmi";
 import { Store } from "redux";
+import { goerli, mainnet } from "wagmi/chains";
 import NetworkForm from "../NetworkForm";
 import setupStore from "../../../store";
 import { renderWrapped } from "../../../utils/test_utils";
@@ -10,20 +11,7 @@ import { web3ChainIDLoaded } from "../../../actions/web3";
 import { RootState } from "../../../reducers/index";
 import { ProjectFormStatus } from "../../../types";
 
-const chains = [
-  {
-    id: 1,
-    name: "Mainnet",
-    network: "",
-    rpcUrls: { default: "rpc" },
-  },
-  {
-    id: 5,
-    name: "Goerli",
-    network: "",
-    rpcUrls: { default: "rpc" },
-  },
-];
+const chains = [mainnet, goerli];
 
 describe("NetworkForm", () => {
   let store: Store<RootState>;

@@ -1,6 +1,8 @@
 const esmModules = [
   "@rainbow-me",
   "@spruceid",
+  "wagmi",
+  "@wagmi",
   "github\\.com\\+gitcoinco\\+allo\\-indexer\\-client",
 ];
 

@@ -92,7 +92,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "/round-manager/node_modules/(?!(@spruceid))/"
+      "/round-manager/node_modules/(?!(@spruceid|wagmi|@wagmi))/"
     ],
     "moduleNameMapper": {
       "^csv-stringify/sync": "<rootDir>/node_modules/csv-stringify/dist/cjs/sync.cjs"
