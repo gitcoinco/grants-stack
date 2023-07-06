@@ -7,7 +7,7 @@ import {
   GlobeAltIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
-import { renderToHTML } from "common";
+import { ChainId, renderToHTML } from "common";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -108,7 +108,7 @@ function AboutProject(props: {
   projectToRender: Metadata;
   questions: RoundApplicationQuestion[];
   answers: RoundApplicationAnswers;
-  chainId: number;
+  chainId: ChainId;
 }) {
   const { projectToRender, answers, questions, chainId } = props;
 
@@ -252,7 +252,7 @@ function FullPreview(props: {
   preview: boolean;
   setPreview: Function;
   disableSubmit: boolean;
-  chainId: number;
+  chainId: ChainId;
 }) {
   const {
     project,

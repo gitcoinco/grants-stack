@@ -1,5 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
+import { ChainId } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
@@ -332,7 +333,7 @@ export const submitApplication =
   };
 
 export const checkRoundApplications =
-  (chainID: number, roundAddress: string, projectIDs: Array<string>) =>
+  (chainID: ChainId, roundAddress: string, projectIDs: Array<string>) =>
   async (dispatch: Dispatch) => {
     const { signer } = global;
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
