@@ -17,8 +17,7 @@ import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
-import { deployQFVotingContract } from "../../features/api/votingStrategy/qfVotingStrategy";
-import { deployMerklePayoutStrategyContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
+
 import {
   merklePayoutStrategyFactoryContract,
   qfVotingStrategyFactoryContract,
@@ -121,14 +120,12 @@ interface _createRoundParams {
   context: CreateRoundState;
   signerOrProvider: Signer;
   createRoundData: CreateRoundData;
-  useNewRoundInit: boolean;
 }
 
 const _createRound = async ({
   context,
   signerOrProvider,
   createRoundData,
-  useNewRoundInit,
 }: _createRoundParams) => {
   const {
     setIPFSCurrentStatus,
@@ -175,58 +172,30 @@ const _createRound = async ({
       },
     };
 
-    let transactionBlockNumber: number;
-
     /* On newer RoundImplementations, we create all the contracts during the round init process
      * Therefore we pass in the factories for the voting and payout contracts instead of
      * the implementations, and let the round deploy and init the strategies themselves */
-    if (useNewRoundInit) {
-      const chainId = await signerOrProvider.getChainId();
+    const chainId = await signerOrProvider.getChainId();
 
-      const roundContractInputsWithContracts = {
-        ...roundContractInputsWithPointers,
-        votingStrategy: qfVotingStrategyFactoryContract(chainId)
-          .address as string,
-        payoutStrategy: {
-          id: merklePayoutStrategyFactoryContract(chainId).address as string,
-          isReadyForPayout: false,
-        },
-      };
+    const roundContractInputsWithContracts = {
+      ...roundContractInputsWithPointers,
+      votingStrategy: qfVotingStrategyFactoryContract(chainId)
+        .address as string,
+      payoutStrategy: {
+        id: merklePayoutStrategyFactoryContract(chainId).address as string,
+        isReadyForPayout: false,
+      },
+    };
 
-      transactionBlockNumber = await handleDeployUnifiedRoundContract(
-        [
-          setVotingContractDeploymentStatus,
-          setPayoutContractDeploymentStatus,
-          setRoundContractDeploymentStatus,
-        ],
-        roundContractInputsWithContracts,
-        signerOrProvider
-      );
-    } else {
-      const votingContractAddress = await handleDeployVotingContract(
+    const transactionBlockNumber = await handleDeployUnifiedRoundContract(
+      [
         setVotingContractDeploymentStatus,
-        signerOrProvider
-      );
-
-      const payoutContractAddress = await handleDeployPayoutContract(
         setPayoutContractDeploymentStatus,
-        signerOrProvider
-      );
-      const roundContractInputsWithContracts = {
-        ...roundContractInputsWithPointers,
-        votingStrategy: votingContractAddress,
-        payoutStrategy: {
-          id: payoutContractAddress,
-          isReadyForPayout: false,
-        },
-      };
-
-      transactionBlockNumber = await handleDeployRoundContract(
         setRoundContractDeploymentStatus,
-        roundContractInputsWithContracts,
-        signerOrProvider
-      );
-    }
+      ],
+      roundContractInputsWithContracts,
+      signerOrProvider
+    );
 
     await waitForSubgraphToUpdate(
       setIndexingStatus,
@@ -257,10 +226,7 @@ export const useCreateRound = () => {
   } = context;
   const { signer: walletSigner } = useWallet();
 
-  const createRound = (
-    createRoundData: CreateRoundData,
-    useNewRoundInit = false
-  ) => {
+  const createRound = (createRoundData: CreateRoundData) => {
     resetToInitialState(
       setIPFSCurrentStatus,
       setVotingContractDeploymentStatus,
@@ -273,7 +239,6 @@ export const useCreateRound = () => {
       context,
       signerOrProvider: walletSigner as Signer,
       createRoundData,
-      useNewRoundInit,
     });
   };
 
@@ -343,44 +308,6 @@ async function storeDocuments(
   }
 }
 
-async function handleDeployVotingContract(
-  setDeploymentStatus: SetStatusFn,
-  signerOrProvider: Signer
-): Promise<string> {
-  try {
-    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
-    const { votingContractAddress } = await deployQFVotingContract(
-      signerOrProvider
-    );
-
-    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
-    return votingContractAddress;
-  } catch (error) {
-    console.error("handleDeployVotingContract", error);
-    setDeploymentStatus(ProgressStatus.IS_ERROR);
-    throw error;
-  }
-}
-
-async function handleDeployPayoutContract(
-  setDeploymentStatus: SetStatusFn,
-  signerOrProvider: Signer
-): Promise<string> {
-  try {
-    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
-    const { payoutContractAddress } = await deployMerklePayoutStrategyContract(
-      signerOrProvider
-    );
-
-    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
-    return payoutContractAddress;
-  } catch (error) {
-    console.error("handleDeployPayoutContract", error);
-    setDeploymentStatus(ProgressStatus.IS_ERROR);
-    throw error;
-  }
-}
-
 async function handleDeployUnifiedRoundContract(
   setDeploymentStatusFns: SetStatusFn[],
   round: Round,
@@ -399,28 +326,6 @@ async function handleDeployUnifiedRoundContract(
   } catch (error) {
     console.error("handleDeployRoundContract", error);
     setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IS_ERROR));
-    throw error;
-  }
-}
-
-async function handleDeployRoundContract(
-  setDeploymentStatus: SetStatusFn,
-  round: Round,
-  signerOrProvider: Signer
-): Promise<number> {
-  try {
-    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
-    const { transactionBlockNumber } = await deployRoundContract(
-      round,
-      signerOrProvider
-    );
-
-    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
-
-    return transactionBlockNumber;
-  } catch (error) {
-    console.error("handleDeployRoundContract", error);
-    setDeploymentStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
 }

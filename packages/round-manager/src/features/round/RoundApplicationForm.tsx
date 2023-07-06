@@ -34,8 +34,6 @@ import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
 import _ from "lodash";
-import { useWallet } from "../common/Auth";
-import { pgnTestnet } from "common/src/chains";
 
 const payoutQuestion: SchemaQuestion = {
   id: 0,
@@ -98,7 +96,6 @@ export function RoundApplicationForm(props: {
   };
   stepper: typeof FS;
 }) {
-  const { chain } = useWallet();
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
@@ -220,17 +217,11 @@ export function RoundApplicationForm(props: {
         operatorWallets: props.initialData.program.operatorWallets,
       } as Round;
 
-      /*TODO: detect version from round impl contract? */
-      const useNewRoundInit = chain.id === pgnTestnet.id;
-
-      await createRound(
-        {
-          roundMetadataWithProgramContractAddress,
-          applicationQuestions,
-          round,
-        },
-        useNewRoundInit
-      );
+      await createRound({
+        roundMetadataWithProgramContractAddress,
+        applicationQuestions,
+        round,
+      });
     } catch (error) {
       datadogLogs.logger.error(
         `error: RoundApplcationForm next - ${error}, programId - ${programId}`
