@@ -10,48 +10,19 @@ import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { mainnet, goerli, fantomTestnet, optimism } from "wagmi/chains";
+import { mainnet, goerli,fantom, fantomTestnet, optimism } from "wagmi/chains";
 import { createClient, configureChains, Chain } from "wagmi";
 
+import { pgnTestnet, fantomMainnet } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 
 const testnetChains = () => {
-  /***********************/
-  /* == Custom Chains == */
-  /***********************/
-
-  return [goerli, fantomTestnet];
+  return [goerli, fantomTestnet, pgnTestnet];
 };
 
 const mainnetChains = () => {
-  /***********************/
-  /* == Custom Chains == */
-  /***********************/
-
-  // Fantom Mainnet
-  // const fantomMainnet: Chain = {
-  //   id: 250,
-  //   name: "Fantom",
-  //   network: "fantom mainnet",
-  //   iconUrl:
-  //     "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
-  //   nativeCurrency: {
-  //     decimals: 18,
-  //     name: "Fantom",
-  //     symbol: "FTM",
-  //   },
-  //   rpcUrls: {
-  //     default: "https://rpc.ankr.com/fantom/",
-  //   },
-  //   blockExplorers: {
-  //     default: { name: "ftmscan", url: "https://ftmscan.com" },
-  //   },
-  //   testnet: false,
-  // };
-
-  // return [chain.mainnet, chain.optimism, fantomMainnet];
-  return [mainnet, optimism];
+  return [mainnet, optimism, fantomMainnet];
 };
 
 const allChains: Chain[] =

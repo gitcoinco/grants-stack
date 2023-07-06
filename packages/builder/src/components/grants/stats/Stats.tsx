@@ -1,4 +1,5 @@
 import { Spinner } from "@chakra-ui/react";
+import { ChainId } from "common";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -40,7 +41,7 @@ export default function RoundStats() {
 
       if (applications.length > 0) setNoStats(false);
 
-      const rounds: Array<{ roundId: string; chainId: number }> = [];
+      const rounds: Array<{ roundId: string; chainId: ChainId }> = [];
       applications.forEach((app) => {
         rounds.push({
           roundId: app.roundID,

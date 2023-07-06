@@ -27,7 +27,7 @@ const getGraphQLEndpoint = (chainId: ChainId): string =>
 
 export const graphqlFetch = async (
   query: string,
-  chainId: number,
+  chainId: ChainId,
   variables: object = {}
 ) => {
   const endpoint = getGraphQLEndpoint(chainId);
