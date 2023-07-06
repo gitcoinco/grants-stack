@@ -429,6 +429,7 @@ export const fetchProjectApplications =
               round {
                 id
               }
+              inReview
               metaPtr {
                 pointer
                 protocol
@@ -450,6 +451,7 @@ export const fetchProjectApplications =
             (application: any) => ({
               status: convertStatusToText(application.status),
               roundID: application.round.id,
+              inReview: application.inReview,
               chainId: chain.id,
               metaPtr: application.metaPtr,
             })

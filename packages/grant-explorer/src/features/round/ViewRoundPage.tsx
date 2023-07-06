@@ -35,23 +35,30 @@ import {
 } from "../common/styles";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 
+const isInfiniteDate = (roundTime: Date) => roundTime.toString() === "Invalid Date";
+const builderURL = process.env.REACT_APP_BUILDER_URL;
+
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-
+  
   const { chainId, roundId } = useParams();
-
+  
   const { round, isLoading } = useRoundById(
     chainId as string,
     roundId as string
   );
 
   const currentTime = new Date();
-
   const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
   const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
-  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
-  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
+  // covers infinte dates for roundEndDate
+  const isAfterRoundEndDate = 
+    round && 
+    (isInfiniteDate(round.roundEndTime) ? false : (round && round.roundEndTime <= currentTime));
+  const isBeforeRoundEndDate =
+    round && 
+    (!isInfiniteDate(round.roundEndTime) ? (round.roundEndTime > currentTime) : true);
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
@@ -225,6 +232,9 @@ function AfterRoundStart(props: {
     },
   ] as BreadcrumbItem[];
 
+  const applicationURL = `${builderURL}/#/chains/${chainId}/rounds/${roundId}`;
+  const isDirectRound = round?.payoutStrategy && round?.payoutStrategy.strategyName === "DIRECT";
+
   return (
     <>
       {showChangeNetworkModal && renderNetworkChangeModal()}
@@ -259,11 +269,20 @@ function AfterRoundStart(props: {
             <p className="text-sm">
               <span className="mr-1">Round ends on:</span>
 
-              <span className="mr-1">
-                {formatUTCDateAsISOString(round.roundEndTime)}
-              </span>
+              {!isInfiniteDate(round.roundEndTime) && (
+                <>
+                  <span className="mr-1">
+                    {formatUTCDateAsISOString(round.roundEndTime)}
+                  </span>
 
-              <span>{getUTCTime(round.roundEndTime)}</span>
+                  <span>{getUTCTime(round.roundEndTime)}</span>
+                </>
+              )}
+              {isInfiniteDate(round.roundEndTime) && (
+                <>
+                  <span>No End Date</span>
+                </>
+              )}
             </p>
           </div>
 
@@ -285,13 +304,18 @@ function AfterRoundStart(props: {
             &nbsp;
             {matchingFundPayoutTokenName}
           </p>
+
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
+
+          {isDirectRound && (
+              <ApplyButton applicationURL={applicationURL} />
+          )}
           <hr className="mt-4 mb-4" />
           <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
             <p className="text-2xl mb-4">
-              All Projects ({projects ? projects.length : 0})
+              {isDirectRound ? 'Approved Projects' : 'All Projects' } ({projects ? projects.length : 0})
             </p>
             <div className="relative">
               <Search className="absolute h-4 w-4 mt-3 ml-3" />
@@ -473,19 +497,20 @@ function PreRoundPage(props: {
 }) {
   const { round, chainId, roundId, element } = props;
 
-  const applicationURL = `https://builder.gitcoin.co/#/chains/${chainId}/rounds/${roundId}`;
+  const applicationURL = `${builderURL}/#/chains/${chainId}/rounds/${roundId}`;
+  
   const currentTime = new Date();
-
   const isBeforeApplicationStartDate =
     round && round.applicationsStartTime >= currentTime;
+  // covers infinite dates for applicationsEndTime
   const isDuringApplicationPeriod =
     round &&
     round.applicationsStartTime <= currentTime &&
-    round.applicationsEndTime >= currentTime;
+    (!isInfiniteDate(round.applicationsEndTime) ? round.applicationsEndTime >= currentTime : true);
   const isAfterApplicationEndDateAndBeforeRoundStartDate =
     round &&
-    round.applicationsEndTime <= currentTime &&
-    round.roundStartTime >= currentTime;
+    round.roundStartTime >= currentTime &&
+    (!isInfiniteDate(round.applicationsEndTime) ? round.applicationsEndTime <= currentTime : true);
 
   const matchingFundPayoutTokenName =
     round &&
@@ -515,11 +540,20 @@ function PreRoundPage(props: {
 
               <span className="mx-1">-</span>
 
-              <span className="mr-1">
-                {formatUTCDateAsISOString(round.applicationsEndTime)}
-              </span>
+              {!isInfiniteDate(round.applicationsEndTime) && (
+                <>
+                  <span className="mr-1">
+                    {formatUTCDateAsISOString(round.applicationsEndTime)}
+                  </span>
 
-              <span>( {getUTCTime(round.applicationsEndTime)} )</span>
+                  <span>{getUTCTime(round.applicationsEndTime)}</span>
+                </>
+              )}
+              {isInfiniteDate(round.applicationsEndTime) && (
+                <>
+                  <span>No End Date</span>
+                </>
+              )}
             </span>
           </p>
           <p
@@ -536,11 +570,20 @@ function PreRoundPage(props: {
 
               <span className="mx-1">-</span>
 
-              <span className="mr-1">
-                {formatUTCDateAsISOString(round.roundEndTime)}
-              </span>
+              {!isInfiniteDate(round.roundEndTime) && (
+                <>
+                  <span className="mr-1">
+                    {formatUTCDateAsISOString(round.roundEndTime)}
+                  </span>
 
-              <span>( {getUTCTime(round.roundEndTime)} )</span>
+                  <span>{getUTCTime(round.roundEndTime)}</span>
+                </>
+              )}
+              {isInfiniteDate(round.roundEndTime) && (
+                <>
+                  <span>No End Date</span>
+                </>
+              )}
             </span>
           </p>
           <p
@@ -601,6 +644,8 @@ function PreRoundPage(props: {
                 testid="applications-closed-button"
               />
             )}
+
+            <ApplyButton applicationURL={applicationURL} />
           </div>
         </div>
         <div className="basis-1/2 right-0"></div>

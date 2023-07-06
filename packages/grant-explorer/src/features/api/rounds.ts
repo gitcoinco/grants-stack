@@ -2,6 +2,7 @@ import { ChainId, graphql_fetch } from "common";
 import { RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { fetchFromIPFS } from "./utils";
+import { ethers } from "ethers";
 
 interface GetRoundOverviewResult {
   data: {
@@ -40,11 +41,12 @@ async function fetchRoundsByTimestamp(
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
     const currentTimestamp = Math.floor(Date.now() / 1000).toString();
+    const infiniteTimestamp = ethers.constants.MaxUint256.toString()
 
     const res: GetRoundOverviewResult = await graphql_fetch(
       query,
       chainIdEnumValue,
-      { currentTimestamp }
+      { currentTimestamp, infiniteTimestamp }
     );
 
     if (!res.data || !res.data.rounds) {
@@ -123,11 +125,16 @@ export async function getRoundsInApplicationPhase(
     const rounds: RoundOverview[] = [];
 
     const query = `
-      query GetRoundsInApplicationPhase($currentTimestamp: String) {
-        rounds(where: {
-          applicationsStartTime_lt: $currentTimestamp
-          applicationsEndTime_gt: $currentTimestamp
-        }) {
+      query GetRoundsInApplicationPhase($currentTimestamp: String, $infiniteTimestamp: String) {
+        rounds(where:
+          { and: [
+            { applicationsStartTime_lte: $currentTimestamp }, 
+            { or: [
+              { applicationsEndTime: $infiniteTimestamp }, 
+              { applicationsEndTime_gte: $currentTimestamp }] 
+            }]
+          }
+        ) {
           id
           roundMetaPtr {
             protocol
@@ -139,6 +146,10 @@ export async function getRoundsInApplicationPhase(
           roundEndTime
           matchAmount
           token
+          payoutStrategy {
+            id
+            strategyName
+          }
 
           projects(where:{
             status: 1
@@ -200,6 +211,10 @@ export async function getActiveRounds(debugModeEnabled: boolean): Promise<{
           roundEndTime
           matchAmount
           token
+          payoutStrategy {
+            id
+            strategyName
+          }
 
           projects(where:{
             status: 1

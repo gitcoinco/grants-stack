@@ -37,7 +37,10 @@ import {
   RoundApplicationAnswers,
   RoundApplicationMetadata,
 } from "../../types/roundApplication";
-import { getProjectURIComponents } from "../../utils/utils";
+import {
+  ROUND_PAYOUT_DIRECT,
+  getProjectURIComponents,
+} from "../../utils/utils";
 import {
   getNetworkIcon,
   getPayoutIcon,
@@ -678,9 +681,11 @@ export default function Form({
 
   const haveProjectRequirementsBeenMet = projectRequirementsResult.length === 0;
 
+  const isDirectRound =
+    round.payoutStrategy && round.payoutStrategy === ROUND_PAYOUT_DIRECT;
   // todo: ensure that the applications are made by a project owner
   const isValidProjectSelected =
-    !hasExistingApplication &&
+    (isDirectRound || !hasExistingApplication) &&
     selectedProjectID &&
     publishedApplication === undefined;
 
@@ -1080,7 +1085,7 @@ export default function Form({
             return null;
           })}
 
-          {selectedProjectID && hasExistingApplication && (
+          {selectedProjectID && !isDirectRound && hasExistingApplication && (
             <div className="rounded-md bg-red-50 p-4 mt-5">
               <div className="flex">
                 <ExclamationCircleIcon className="h-5 w-5 text-red-400" />
@@ -1225,7 +1230,9 @@ export default function Form({
             </h5>
             <p className="mb-6">
               Please note that once you submit this application, you will NOT be
-              able to edit or re-apply with the same project to this round.
+              able to edit
+              {!isDirectRound &&
+                "or re-apply with the same project to this round."}
             </p>
           </>
         </CallbackModal>

@@ -7,8 +7,10 @@ import { RootState } from "../../reducers";
 import { AppStatus } from "../../reducers/projects";
 import { roundApplicationViewPath } from "../../routes";
 import { RoundSupport } from "../../types";
-import { formatDateFromSecs } from "../../utils/components";
+import { formatDateFromSecs, isInfinite } from "../../utils/components";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
+import { PayoutStrategy } from "../../reducers/rounds";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 
 export default function ApplicationCard({
   applicationData,
@@ -39,8 +41,10 @@ export default function ApplicationCard({
 
   const renderApplicationDate = () => (
     <>
-      {formatDateFromSecs(roundData?.roundStartTime)} -{" "}
-      {formatDateFromSecs(roundData?.roundEndTime)}
+      {formatDateFromSecs(roundData?.applicationsStartTime!)} -{" "}
+      {!isInfinite(roundData?.applicationsEndTime!)
+        ? formatDateFromSecs(roundData?.applicationsEndTime!)
+        : "No End Date"}
     </>
   );
 
@@ -55,6 +59,58 @@ export default function ApplicationCard({
       setRoundData(props.round);
     }
   }, [props.round]);
+
+  const renderRoundBadge = () => {
+    let colorScheme:
+      | {
+          bg: string;
+          text: string;
+        }
+      | undefined;
+
+    switch (roundData?.payoutStrategy as PayoutStrategy) {
+      case "MERKLE":
+        colorScheme = {
+          bg: "#E6FFF9",
+          text: "gitcoin-grey-500",
+        };
+        break;
+      case "DIRECT":
+        colorScheme = {
+          bg: "#FDDEE4",
+          text: "gitcoin-grey-500",
+        };
+        break;
+      default:
+        colorScheme = undefined;
+        break;
+    }
+
+    const roundPayoutStrategy = roundData?.payoutStrategy;
+
+    return (
+      <span>
+        <Badge
+          backgroundColor={colorScheme?.bg}
+          className="max-w-fit"
+          borderRadius="full"
+          p={2}
+          textTransform="inherit"
+        >
+          {roundPayoutStrategy === "MERKLE" ? (
+            <span className={`text-${colorScheme?.text} text-sm`}>
+              QuadraticFunding
+            </span>
+          ) : null}
+          {roundPayoutStrategy === "DIRECT" ? (
+            <span className={`text-${colorScheme?.text} text-sm`}>
+              DirectGrant
+            </span>
+          ) : null}
+        </Badge>
+      </span>
+    );
+  };
 
   const renderApplicationBadge = () => {
     let colorScheme:
@@ -82,10 +138,20 @@ export default function ApplicationCard({
           bg: "#E2E0E7",
         };
         break;
+      case "RECEIVED":
+        colorScheme = {
+          text: "gitcoin-grey-500",
+          bg: "#E2E0E7",
+        };
+        break;
       default:
         colorScheme = undefined;
         break;
     }
+
+    const applicationStatus = applicationData?.application.status;
+    const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
+    const applicationInReview = applicationData?.application.inReview;
 
     return (
       <Badge
@@ -95,13 +161,17 @@ export default function ApplicationCard({
         p={2}
         textTransform="inherit"
       >
-        {applicationData?.application.status === "REJECTED" ? (
-          <span className={`text-${colorScheme?.text} text-sm`}>Rejected</span>
+        {applicationStatus === "PENDING" && !applicationInReview ? (
+          <span className={`text-${colorScheme?.text} text-sm`}>Received</span>
         ) : null}
-        {applicationData?.application.status === "PENDING" ? (
+        {(applicationStatus === "PENDING" && !isDirectRound) ||
+        (isDirectRound && applicationInReview) ? (
           <span className={`text-${colorScheme?.text} text-sm`}>In Review</span>
         ) : null}
-        {applicationData?.application.status === "APPROVED" ? (
+        {applicationStatus === "REJECTED" ? (
+          <span className={`text-${colorScheme?.text} text-sm`}>Rejected</span>
+        ) : null}
+        {applicationStatus === "APPROVED" ? (
           <span className={`text-${colorScheme?.text} text-sm`}>Approved</span>
         ) : null}
       </Badge>
@@ -133,6 +203,7 @@ export default function ApplicationCard({
           <div className="mb-1 text-sm">{props.round?.roundMetadata.name}</div>
           {roundData ? <span>{renderApplicationDate()}</span> : <Spinner />}
         </Box>
+        <Box className="pl-2 mt-2 md:mt-0">{renderRoundBadge()}</Box>
         <Box className="pl-2 mt-2 md:mt-0">{renderApplicationBadge()}</Box>
       </div>
       {props.support && (

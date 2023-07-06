@@ -17,6 +17,8 @@ import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import Cross from "../icons/Cross";
 import { RoundApplicationAnswers } from "../../types/roundApplication";
+import { isInfinite } from "../../utils/components";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -112,6 +114,8 @@ function ViewApplication() {
     </div>;
   }
 
+  const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
+
   if (
     props.roundState === undefined ||
     props.round === undefined ||
@@ -156,15 +160,25 @@ function ViewApplication() {
           <p className="font-semibold">Grant Round</p>
           <p>{props.round.programName}</p>
           <p>{props.round.roundMetadata.name}</p>
-          <p className="font-semibold mt-4">Application Period:</p>
-          <p>
-            {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
-            {formatDate(props.round.applicationsEndTime * 1000)}
-          </p>
+          <p className="font-semibold mt-4">Contact Information:</p>
+          <p>{props.round.roundMetadata.support?.info}</p>
+          {!isDirectRound && (
+            <>
+              <p className="font-semibold mt-4">Application Period:</p>
+              <p>
+                {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
+                {isInfinite(props.round.applicationsEndTime)
+                  ? "No End Date"
+                  : formatDate(props.round.applicationsEndTime * 1000)}
+              </p>
+            </>
+          )}
           <p className="font-semibold mt-4">Round Dates:</p>
           <p>
             {formatDate(props.round.roundStartTime * 1000)} -{" "}
-            {formatDate(props.round.roundEndTime * 1000)}
+            {isInfinite(props.round.applicationsEndTime)
+              ? "No End Date"
+              : formatDate(props.round.roundEndTime * 1000)}
           </p>
           <p className="mt-4">
             Need Help? Check out the{" "}

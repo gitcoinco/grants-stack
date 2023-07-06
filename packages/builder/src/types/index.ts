@@ -150,6 +150,7 @@ export type Round = {
   applicationMetaPtr: MetaPtr;
   applicationMetadata: RoundApplicationMetadata;
   programName: string;
+  payoutStrategy: string;
 };
 
 export enum RoundDisplayType {
