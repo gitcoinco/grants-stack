@@ -1112,14 +1112,14 @@ function RoundType(props: {
           <div>
             <RadioGroup.Option value="public" className="mb-2">
               {({ checked, active }) => (
-                <span className="flex items-center text-sm">
+                <span className="flex items-start text-sm">
                   <span
                     className={classNames(
                       checked
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 mt-1 rounded-full border flex items-center justify-center"
                     )}
                     aria-hidden="true"
                   >
@@ -1141,14 +1141,14 @@ function RoundType(props: {
             </RadioGroup.Option>
             <RadioGroup.Option value="private">
               {({ checked, active }) => (
-                <span className="flex items-center text-sm">
+                <span className="flex items-start text-sm">
                   <span
                     className={classNames(
                       checked
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 mt-1 rounded-full border flex items-center justify-center"
                     )}
                     aria-hidden="true"
                   >
