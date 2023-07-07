@@ -165,10 +165,10 @@ function FinalizedRoundContent(props: { round: Round }) {
               />
             </Tab.Panel>
             <Tab.Panel>
-              {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
               <PaidProjectsTable
                 projects={paidProjects}
                 chainId={chain?.id}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 token={matchingFundPayoutToken!}
                 price={price}
               />
