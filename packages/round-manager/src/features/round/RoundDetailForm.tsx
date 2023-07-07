@@ -245,7 +245,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
           >
             {/* Round inputs */}
             <div className="pt-7 sm:px-6 bg-white">
-              <div className="grid grid-cols-6 gap-6">
+              <div className="grid grid-cols-6 gap-6 mb-4">
                 <RoundName
                   register={register("roundMetadata.name")}
                   errors={errors}
@@ -253,11 +253,21 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 {program && <ProgramChain program={program} />}
               </div>
 
+              {/* vault Address */}
+              {roundCategory == RoundCategory.Direct && (
+                <VaultAddress
+                  register={register("vaultAddress")}
+                  errors={errors}
+                />
+              )}
+
               {/* support */}
-              <p className="mt-6 mb-2 text-sm text-grey-400">
-                Where can applicants reach you and/or your team if support is
-                needed?
-              </p>
+              <div className="mt-8 mb-3 text-sm text-grey-400">
+                <p>
+                  Where can applicants reach you and/or your team if support is
+                  needed?
+                </p>
+              </div>
               <div className="grid grid-cols-6 gap-6 mb-1">
                 <div className="col-span-6 sm:col-span-3">
                   <Support
@@ -274,16 +284,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 </div>
               </div>
 
-              {/* vault Address */}
-              {roundCategory == RoundCategory.Direct && (
-                <VaultAddress
-                  register={register("vaultAddress")}
-                  errors={errors}
-                />
-              )}
-
               {/* Dates explanation */}
-              <div className="mt-6 mb-4 text-sm text-grey-400">
+              <div className="mt-6 mb-3 text-sm text-grey-400">
                 {roundCategory == RoundCategory.QuadraticFunding ? (
                   <>
                     <p>
