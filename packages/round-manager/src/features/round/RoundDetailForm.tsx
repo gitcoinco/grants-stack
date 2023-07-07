@@ -563,10 +563,11 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         control={control}
                         name="roundEndTimeDisabled"
                         render={({ field }) => (
-                          <>
+                          <div className="flex items-center mt-2">
                             <input
+                              id="noEndDate"
                               type="checkbox"
-                              className="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                               checked={field.value}
                               onChange={(e) => {
                                 field.onChange(e.target.checked);
@@ -580,8 +581,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 }
                               }}
                             />
-                            <span>This round does not have an end date</span>
-                          </>
+                            <label
+                              htmlFor="noEndDate"
+                              className="ml-2 block text-sm text-grey-400"
+                            >
+                              This round does not have an end date
+                            </label>
+                          </div>
                         )}
                       />
                     )}
