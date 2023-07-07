@@ -558,6 +558,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                       </p>
                     )}
 
+                    {/* Round end date */}
                     {roundCategory == RoundCategory.Direct && (
                       <Controller
                         control={control}
@@ -600,6 +601,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         errors.roundEndTime
                           ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                           : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                      } ${
+                        isRoundEndTimeDisabled
+                          ? "cursor-not-allowed bg-gray-100"
+                          : ""
                       }`}
                     >
                       <label
@@ -621,7 +626,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 placeholder: "",
                                 disabled: isRoundEndTimeDisabled,
                                 className:
-                                  "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                                  "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
                               }}
                               onChange={(date) => {
                                 field.onChange(moment(date));
