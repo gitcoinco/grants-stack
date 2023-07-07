@@ -3,19 +3,13 @@ import { act, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import * as wagmi from "wagmi";
 import { Store } from "redux";
+import { mainnet } from "wagmi/chains";
 import NetworkSwitchModal from "../NetworkSwitchModal";
 import { renderWrapped } from "../../../utils/test_utils";
 import setupStore from "../../../store";
 import { RootState } from "../../../reducers/index";
 
-const chains = [
-  {
-    id: 1,
-    name: "Mainnet",
-    network: "",
-    rpcUrls: { default: "rpc" },
-  },
-];
+const chains = [mainnet];
 
 describe("NetworkSwitchModal", () => {
   let store: Store<RootState>;
