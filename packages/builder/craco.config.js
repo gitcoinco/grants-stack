@@ -1,8 +1,16 @@
 const path = require("path");
 const CracoEsbuildPlugin = require("craco-esbuild");
+const VerifyEnvPlugin = require("./VerifyEnvWebpackPlugin");
 
 module.exports = {
   webpack: {
+    plugins: {
+      add: [
+        new VerifyEnvPlugin({
+          filePath: ".env.example", // Specify the path to your .env.example file
+        }),
+      ],
+    },
     configure: {
       devtool: "eval-source-map",
       module: {
