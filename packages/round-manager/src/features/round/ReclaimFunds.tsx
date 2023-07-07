@@ -302,7 +302,7 @@ function ReclaimFundsContent(props: {
                 })}{" "}
                 USD
               </span>
-            ): null}
+            ) : null}
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
