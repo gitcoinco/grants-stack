@@ -7,6 +7,9 @@ import {
 } from "@heroicons/react/solid";
 import { RefreshIcon } from "@heroicons/react/outline";
 
+import QuadraticFunding from "../../assets/quadratic-funding.svg";
+import DirectGrants from "../../assets/direct-grants.svg";
+
 import { Button } from "common/src/styles";
 import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
@@ -155,13 +158,16 @@ export default function ViewProgram() {
                   </p>
                 </div>
               </div>
-
               <ChevronRightIcon className="h-5 w-5" />
             </div>
           </Link>
         );
       })
     : [];
+
+  const [grantType, setGrantType] = useState<
+    "quadraticFunding" | "directGrant" | undefined
+  >();
 
   const operatorWallets = (
     <div className="flex flex-row flex-wrap">
@@ -183,43 +189,135 @@ export default function ViewProgram() {
   );
 
   const noRoundsGroup = (
-    <div className="flex justify-center">
-      <div className="text-center md:px-8 w-full lg:w-1/3">
-        <RefreshIcon
-          className="h-12 w-12 mt-8 mx-auto bg-zinc-100 rounded-full p-3"
-          aria-hidden="true"
-        ></RefreshIcon>
-        <h2 className="text-2xl my-4 pt-8">My Rounds</h2>
-        <p
-          className="text-grey-400 text-sm"
-          data-testid="program-details-intro"
+    <div
+      className="flex px-12 ml-10 mr-10
+     justify-center flex-col text-center"
+    >
+      <RefreshIcon
+        className="h-12 w-12 mt-8 mx-auto bg-white rounded-full p-3"
+        aria-hidden="true"
+      ></RefreshIcon>
+      <h2 className="text-2xl my-4 pt-8">My Rounds</h2>
+      <p
+        className="text-grey-400 text-sm mb-8"
+        data-testid="program-details-intro"
+      >
+        Manage date details and acceptance criteria for your Grant Program
+        Round.
+      </p>
+      <div className="w-full px-12">
+        <button
+          onClick={() => setGrantType("quadraticFunding")}
+          className={`flex w-full mb-4 rounded border  ${
+            grantType === "quadraticFunding"
+              ? "border-violet-400"
+              : "border-grey-100"
+          } bg-white p-6 cursor-pointer`}
+          style={{
+            boxShadow:
+              grantType === "quadraticFunding"
+                ? " 0px 10px 15px -3px #0000001A"
+                : "none",
+          }}
         >
-          Manage date details and acceptance criteria for your Grant Program
-          Round.
-        </p>
-        <Link to={`/round/create?programId=${programToRender?.id}`}>
-          <Button className="my-4 px-4 mt-10">
-            <PlusIcon
-              className="h-4 w-4 inline-flex -translate-y-0.5"
-              aria-hidden="true"
-            />{" "}
-            Create round
-          </Button>
-        </Link>
-
-        {process.env.REACT_APP_DIRECT_GRANT_ENABLED && (
-          <Link
-            to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
-          >
-            <Button className="my-4 px-4 mt-10">
+          <div className="flex pr-6 m-auto">
+            <div
+              className={`rounded-full border ${
+                grantType === "quadraticFunding"
+                  ? "border-violet-400"
+                  : "border-grey-100"
+              } h-[24px] w-[24px]`}
+              style={{
+                borderWidth: grantType === "quadraticFunding" ? "6px" : "2px",
+              }}
+            ></div>
+          </div>
+          <div className="pr-6 flex-grow text-left mt-auto mb-auto">
+            <h3 className="text-xl mb-2">Quadratic Funding</h3>
+            <p
+              className="text-grey-400 text-sm pr-4"
+              data-testid="program-details-intro"
+            >
+              Choose this type of round for individual donors to determine how
+              matching funds should be allocated.
+            </p>
+          </div>
+          <img
+            src={QuadraticFunding}
+            alt="Quadratic Funding"
+            className="object-cover pl-6 pr-4"
+          />
+        </button>
+        <button
+          onClick={() => setGrantType("directGrant")}
+          className={`flex w-full rounded border  ${
+            grantType === "directGrant"
+              ? "border-violet-400"
+              : "border-grey-100"
+          } bg-white p-6 cursor-pointer`}
+          style={{
+            boxShadow:
+              grantType === "directGrant"
+                ? " 0px 10px 15px -3px #0000001A"
+                : "none",
+          }}
+        >
+          <div className="flex pr-6 m-auto">
+            <div
+              className={`rounded-full border ${
+                grantType === "directGrant"
+                  ? "border-violet-400"
+                  : "border-grey-100"
+              } h-[24px] w-[24px]`}
+              style={{
+                borderWidth: grantType === "directGrant" ? "6px" : "2px",
+              }}
+            ></div>
+          </div>
+          <div className="pr-6 flex-grow text-left mt-auto mb-auto">
+            <h3 className="text-xl mb-2">Direct Grants</h3>
+            <p
+              className="text-grey-400 text-sm pr-4"
+              data-testid="program-details-intro"
+            >
+              Choose this type of round to directly allocate funds to selected
+              projects yourself.
+            </p>
+          </div>
+          <img
+            src={DirectGrants}
+            alt="Direct Grants"
+            className="object-cover pl-6 pr-4"
+          />
+        </button>
+      </div>
+      <div className="w-full px-12">
+        <div className="border-t border-grey-100 h-[1px] mt-6 mb-6" />
+        {grantType === "quadraticFunding" && (
+          <Link to={`/round/create?programId=${programToRender?.id}`}>
+            <Button className="px-4 w-full h-[48px]">
               <PlusIcon
                 className="h-4 w-4 inline-flex -translate-y-0.5"
                 aria-hidden="true"
-              />{" "}
-              Create direct round
+              />
+              &nbsp;Create round
             </Button>
           </Link>
         )}
+        {grantType === "directGrant" &&
+          process.env.REACT_APP_DIRECT_GRANT_ENABLED && (
+            <Link
+              to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
+            >
+              <Button className="px-4 w-full h-[48px]">
+                <PlusIcon
+                  className="h-4 w-4 inline-flex -translate-y-0.5"
+                  aria-hidden="true"
+                />
+                &nbsp;Create round
+              </Button>
+            </Link>
+          )}
       </div>
     </div>
   );
@@ -234,7 +332,7 @@ export default function ViewProgram() {
         <>
           <Navbar programCta={true} />
           <div className="container mx-auto flex flex-col w-screen">
-            <header className="flex flex-col justify-center border-b pl-2 md:pl-20 py-6">
+            <header className="flex flex-col justify-center border-b border-grey-100 pl-2 md:pl-20 py-6">
               <div className="flex flex-row items-center">
                 <Link to={`/`}>
                   <p className="text-sm text-grey-400 font-semibold">
@@ -255,16 +353,31 @@ export default function ViewProgram() {
               {operatorWallets}
             </header>
 
-            <main className="flex-grow">
-              <div className="px-2 md:px-20 py-3 md:py-6">
-                <div>
-                  <div>
-                    {isRoundsFetched && roundItems.length > 0 && (
-                      <div className="md:mb-8">
-                        <div className="flex flex-row justify-between">
-                          <p className="font-bold">My Rounds</p>
+            <main className="flex-grow flex flex-col">
+              <div className="bg-[#F3F3F5] mt-8 p-8 rounded">
+                {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+                  <Spinner text="We're fetching your Rounds." />
+                )}
+                {isRoundsFetched && roundItems.length > 0 && (
+                  <div className="px-2 md:px-20 py-3 md:py-6">
+                    <div className="md:mb-8">
+                      <div className="flex flex-row justify-between">
+                        <p className="font-bold">My Rounds</p>
+                        <Link
+                          to={`/round/create?programId=${programToRender?.id}`}
+                          className="text-violet-400 font-thin"
+                          data-testid="create-round-small-link"
+                        >
+                          <PlusSmIcon
+                            className="h-5 w-5 inline -translate-y-0.5"
+                            aria-hidden="true"
+                          />{" "}
+                          Create round
+                        </Link>
+                        {process.env.REACT_APP_DIRECT_GRANT_ENABLED !==
+                          undefined && (
                           <Link
-                            to={`/round/create?programId=${programToRender?.id}`}
+                            to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
                             className="text-violet-400 font-thin"
                             data-testid="create-round-small-link"
                           >
@@ -272,34 +385,18 @@ export default function ViewProgram() {
                               className="h-5 w-5 inline -translate-y-0.5"
                               aria-hidden="true"
                             />{" "}
-                            Create round
+                            Create direct round
                           </Link>
-                          {process.env.REACT_APP_DIRECT_GRANT_ENABLED !==
-                            undefined && (
-                            <Link
-                              to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
-                              className="text-violet-400 font-thin"
-                              data-testid="create-round-small-link"
-                            >
-                              <PlusSmIcon
-                                className="h-5 w-5 inline -translate-y-0.5"
-                                aria-hidden="true"
-                              />{" "}
-                              Create direct round
-                            </Link>
-                          )}
-                        </div>
-                        {roundItems}
+                        )}
                       </div>
-                    )}
+                      {roundItems}
+                    </div>
                   </div>
-                </div>
-                {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-                  <Spinner text="We're fetching your Rounds." />
                 )}
+                <div className="px-12 ml-10 mr-10">
+                  {isRoundsFetched && roundItems.length === 0 && noRoundsGroup}
+                </div>
               </div>
-
-              {isRoundsFetched && roundItems.length === 0 && noRoundsGroup}
             </main>
           </div>
           <Footer />
