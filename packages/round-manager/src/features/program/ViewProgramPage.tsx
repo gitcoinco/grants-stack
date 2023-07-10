@@ -189,10 +189,7 @@ export default function ViewProgram() {
   );
 
   const noRoundsGroup = (
-    <div
-      className="flex px-12 ml-10 mr-10
-     justify-center flex-col text-center"
-    >
+    <div className="flex px-12 ml-10 mr-10 justify-center flex-col text-center">
       <RefreshIcon
         className="h-12 w-12 mt-8 mx-auto bg-white rounded-full p-3"
         aria-hidden="true"
@@ -332,7 +329,7 @@ export default function ViewProgram() {
         <>
           <Navbar programCta={true} />
           <div className="container mx-auto flex flex-col w-screen">
-            <header className="flex flex-col justify-center border-b border-grey-100 pl-2 md:pl-20 py-6">
+            <header className="flex flex-col justify-center border-b border-grey-100 pl-2 py-6">
               <div className="flex flex-row items-center">
                 <Link to={`/`}>
                   <p className="text-sm text-grey-400 font-semibold">
@@ -354,17 +351,29 @@ export default function ViewProgram() {
             </header>
 
             <main className="flex-grow flex flex-col">
-              <div className="bg-[#F3F3F5] mt-8 p-8 rounded">
-                {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-                  <Spinner text="We're fetching your Rounds." />
-                )}
-                {isRoundsFetched && roundItems.length > 0 && (
-                  <div className="px-2 md:px-20 py-3 md:py-6">
-                    <div className="md:mb-8">
-                      <div className="flex flex-row justify-between">
-                        <p className="font-bold">My Rounds</p>
+              {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+                <Spinner text="We're fetching your Rounds." />
+              )}
+              {isRoundsFetched && roundItems.length > 0 && (
+                <div className="px-2 py-3 md:py-6">
+                  <div className="md:mb-8">
+                    <div className="flex flex-row justify-between">
+                      <p className="font-bold">My Rounds</p>
+                      <Link
+                        to={`/round/create?programId=${programToRender?.id}`}
+                        className="text-violet-400 font-thin"
+                        data-testid="create-round-small-link"
+                      >
+                        <PlusSmIcon
+                          className="h-5 w-5 inline -translate-y-0.5"
+                          aria-hidden="true"
+                        />{" "}
+                        Create round
+                      </Link>
+                      {process.env.REACT_APP_DIRECT_GRANT_ENABLED !==
+                        undefined && (
                         <Link
-                          to={`/round/create?programId=${programToRender?.id}`}
+                          to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
                           className="text-violet-400 font-thin"
                           data-testid="create-round-small-link"
                         >
@@ -372,31 +381,19 @@ export default function ViewProgram() {
                             className="h-5 w-5 inline -translate-y-0.5"
                             aria-hidden="true"
                           />{" "}
-                          Create round
+                          Create direct round
                         </Link>
-                        {process.env.REACT_APP_DIRECT_GRANT_ENABLED !==
-                          undefined && (
-                          <Link
-                            to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
-                            className="text-violet-400 font-thin"
-                            data-testid="create-round-small-link"
-                          >
-                            <PlusSmIcon
-                              className="h-5 w-5 inline -translate-y-0.5"
-                              aria-hidden="true"
-                            />{" "}
-                            Create direct round
-                          </Link>
-                        )}
-                      </div>
-                      {roundItems}
+                      )}
                     </div>
+                    {roundItems}
                   </div>
-                )}
-                <div className="px-12 ml-10 mr-10">
-                  {isRoundsFetched && roundItems.length === 0 && noRoundsGroup}
                 </div>
-              </div>
+              )}
+              {isRoundsFetched && roundItems.length === 0 && (
+                <div className="bg-[#F3F3F5] mt-8 p-8 rounded">
+                  <div className="px-12 ml-10 mr-10">{noRoundsGroup}</div>
+                </div>
+              )}
             </main>
           </div>
           <Footer />
