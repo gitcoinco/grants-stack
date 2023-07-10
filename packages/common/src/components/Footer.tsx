@@ -33,7 +33,7 @@ const navigation = [
 export default function Footer() {
   return (
     <footer>
-      <div className="max-w-full flex flex-row-reverse justify-between mx-auto py-12 overflow-hidden">
+      <div className="max-w-full flex flex-row-reverse justify-between mx-auto px-4 sm:px-6 lg:px-20 py-12 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">
           {navigation.map((item) => (
             <a
