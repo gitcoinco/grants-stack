@@ -361,14 +361,14 @@ export default function ViewProgram() {
                       <p className="font-bold">My Rounds</p>
                       <Link
                         to={`/round/create?programId=${programToRender?.id}`}
-                        className="text-violet-400 font-thin"
+                        className="text-violet-400 font-thin ml-auto mr-4"
                         data-testid="create-round-small-link"
                       >
                         <PlusSmIcon
                           className="h-5 w-5 inline -translate-y-0.5"
                           aria-hidden="true"
-                        />{" "}
-                        Create round
+                        />
+                        &nbsp;Create round
                       </Link>
                       {process.env.REACT_APP_DIRECT_GRANT_ENABLED !==
                         undefined && (
@@ -380,8 +380,8 @@ export default function ViewProgram() {
                           <PlusSmIcon
                             className="h-5 w-5 inline -translate-y-0.5"
                             aria-hidden="true"
-                          />{" "}
-                          Create direct round
+                          />
+                          &nbsp;Create direct round
                         </Link>
                       )}
                     </div>
