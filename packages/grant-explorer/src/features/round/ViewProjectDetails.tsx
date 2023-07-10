@@ -234,6 +234,7 @@ function AboutProject(props: { projectToRender: Project }) {
     "..." +
     projectToRender.recipient.slice(-4);
   const { data: ensName } = useEnsName({
+    // @ts-expect-error Temp until viem
     address: projectToRender.recipient ?? "",
   });
   const projectWebsite = projectToRender.projectMetadata.website;

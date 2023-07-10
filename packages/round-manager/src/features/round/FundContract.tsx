@@ -101,13 +101,16 @@ export default function FundContract(props: {
       matchingFundPayoutToken?.address ===
       "0x0000000000000000000000000000000000000000"
         ? undefined
-        : matchingFundPayoutToken?.address,
+        : (matchingFundPayoutToken?.address as `0x{string}`),
   };
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero
       ? { addressOrName: address }
-      : { addressOrName: address, token: matchingFundPayoutToken?.address };
+      : {
+          addressOrName: address,
+          token: matchingFundPayoutToken?.address as `0x{string}`,
+        };
 
   const {
     data: balanceData,

@@ -98,6 +98,7 @@ export default function ViewCart() {
       ? { addressOrName: address }
       : { addressOrName: address, token: selectedPayoutToken.address };
 
+  // @ts-expect-error Temp until viem
   const selectedPayoutTokenBalance = useBalance(tokenDetail);
 
   const [wrongChain, setWrongChain] = useState(false);

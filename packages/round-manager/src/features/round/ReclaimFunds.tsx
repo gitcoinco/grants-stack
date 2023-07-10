@@ -145,7 +145,7 @@ function ReclaimFundsContent(props: {
       ? { addressOrName: payoutStrategy }
       : {
           addressOrName: payoutStrategy,
-          token: matchingFundPayoutToken?.address,
+          token: matchingFundPayoutToken?.address as `0x{string}`,
         };
 
   const {
