@@ -216,7 +216,7 @@ export function PayProjectsTable(props: {
       ? { addressOrName: props.round?.payoutStrategy.id }
       : {
           addressOrName: props.round?.payoutStrategy.id,
-          token: props.token.address,
+          token: props.token.address as `0x{string}`,
         };
 
   const tokenBalance = useBalance(tokenDetail);
