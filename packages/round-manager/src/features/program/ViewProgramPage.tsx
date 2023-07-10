@@ -1,4 +1,6 @@
 import { Link, useParams } from "react-router-dom";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
 import {
   ChevronRightIcon,
   PlusIcon,
@@ -9,6 +11,7 @@ import { RefreshIcon } from "@heroicons/react/outline";
 
 import QuadraticFunding from "../../assets/quadratic-funding.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
+import Close from "../../assets/close.svg";
 
 import { Button } from "common/src/styles";
 import { useWallet } from "../common/Auth";
@@ -189,135 +192,142 @@ export default function ViewProgram() {
   );
 
   const noRoundsGroup = (
-    <div className="flex px-12 ml-10 mr-10 justify-center flex-col text-center">
-      <RefreshIcon
-        className="h-12 w-12 mt-8 mx-auto bg-white rounded-full p-3"
-        aria-hidden="true"
-      ></RefreshIcon>
-      <h2 className="text-2xl my-4 pt-8">My Rounds</h2>
-      <p
-        className="text-grey-400 text-sm mb-8"
-        data-testid="program-details-intro"
-      >
-        Manage date details and acceptance criteria for your Grant Program
-        Round.
-      </p>
-      <div className="w-full px-12">
-        <button
-          onClick={() => setGrantType("quadraticFunding")}
-          className={`flex w-full mb-4 rounded border  ${
-            grantType === "quadraticFunding"
-              ? "border-violet-400"
-              : "border-grey-100"
-          } bg-white p-6 cursor-pointer`}
-          style={{
-            boxShadow:
-              grantType === "quadraticFunding"
-                ? " 0px 10px 15px -3px #0000001A"
-                : "none",
-          }}
-        >
-          <div className="flex pr-6 m-auto">
-            <div
-              className={`rounded-full border ${
+    <div className="bg-[#F3F3F5] p-8 rounded">
+      <div className="px-12 ml-10 mr-10">
+        <div className="flex px-12 ml-10 mr-10 justify-center flex-col text-center">
+          <RefreshIcon
+            className="h-12 w-12 mt-8 mx-auto bg-white rounded-full p-3"
+            aria-hidden="true"
+          ></RefreshIcon>
+          <h2 className="text-2xl my-4 pt-8">My Rounds</h2>
+          <p
+            className="text-grey-400 text-sm mb-8"
+            data-testid="program-details-intro"
+          >
+            Manage date details and acceptance criteria for your Grant Program
+            Round.
+          </p>
+          <div className="w-full px-12">
+            <button
+              onClick={() => setGrantType("quadraticFunding")}
+              className={`flex w-full mb-4 rounded border  ${
                 grantType === "quadraticFunding"
                   ? "border-violet-400"
                   : "border-grey-100"
-              } h-[24px] w-[24px]`}
+              } bg-white p-6 cursor-pointer`}
               style={{
-                borderWidth: grantType === "quadraticFunding" ? "6px" : "2px",
+                boxShadow:
+                  grantType === "quadraticFunding"
+                    ? " 0px 10px 15px -3px #0000001A"
+                    : "none",
               }}
-            ></div>
-          </div>
-          <div className="pr-6 flex-grow text-left mt-auto mb-auto">
-            <h3 className="text-xl mb-2">Quadratic Funding</h3>
-            <p
-              className="text-grey-400 text-sm pr-4"
-              data-testid="program-details-intro"
             >
-              Choose this type of round for individual donors to determine how
-              matching funds should be allocated.
-            </p>
-          </div>
-          <img
-            src={QuadraticFunding}
-            alt="Quadratic Funding"
-            className="object-cover pl-6 pr-4"
-          />
-        </button>
-        <button
-          onClick={() => setGrantType("directGrant")}
-          className={`flex w-full rounded border  ${
-            grantType === "directGrant"
-              ? "border-violet-400"
-              : "border-grey-100"
-          } bg-white p-6 cursor-pointer`}
-          style={{
-            boxShadow:
-              grantType === "directGrant"
-                ? " 0px 10px 15px -3px #0000001A"
-                : "none",
-          }}
-        >
-          <div className="flex pr-6 m-auto">
-            <div
-              className={`rounded-full border ${
+              <div className="flex pr-6 m-auto">
+                <div
+                  className={`rounded-full border ${
+                    grantType === "quadraticFunding"
+                      ? "border-violet-400"
+                      : "border-grey-100"
+                  } h-[24px] w-[24px]`}
+                  style={{
+                    borderWidth:
+                      grantType === "quadraticFunding" ? "6px" : "2px",
+                  }}
+                ></div>
+              </div>
+              <div className="pr-6 flex-grow text-left mt-auto mb-auto">
+                <h3 className="text-xl mb-2">Quadratic Funding</h3>
+                <p
+                  className="text-grey-400 text-sm pr-4"
+                  data-testid="program-details-intro"
+                >
+                  Choose this type of round for individual donors to determine
+                  how matching funds should be allocated.
+                </p>
+              </div>
+              <img
+                src={QuadraticFunding}
+                alt="Quadratic Funding"
+                className="object-cover pl-6 pr-4"
+              />
+            </button>
+            <button
+              onClick={() => setGrantType("directGrant")}
+              className={`flex w-full rounded border  ${
                 grantType === "directGrant"
                   ? "border-violet-400"
                   : "border-grey-100"
-              } h-[24px] w-[24px]`}
+              } bg-white p-6 cursor-pointer`}
               style={{
-                borderWidth: grantType === "directGrant" ? "6px" : "2px",
+                boxShadow:
+                  grantType === "directGrant"
+                    ? " 0px 10px 15px -3px #0000001A"
+                    : "none",
               }}
-            ></div>
-          </div>
-          <div className="pr-6 flex-grow text-left mt-auto mb-auto">
-            <h3 className="text-xl mb-2">Direct Grants</h3>
-            <p
-              className="text-grey-400 text-sm pr-4"
-              data-testid="program-details-intro"
             >
-              Choose this type of round to directly allocate funds to selected
-              projects yourself.
-            </p>
-          </div>
-          <img
-            src={DirectGrants}
-            alt="Direct Grants"
-            className="object-cover pl-6 pr-4"
-          />
-        </button>
-      </div>
-      <div className="w-full px-12">
-        <div className="border-t border-grey-100 h-[1px] mt-6 mb-6" />
-        {grantType === "quadraticFunding" && (
-          <Link to={`/round/create?programId=${programToRender?.id}`}>
-            <Button className="px-4 w-full h-[48px]">
-              <PlusIcon
-                className="h-4 w-4 inline-flex -translate-y-0.5"
-                aria-hidden="true"
+              <div className="flex pr-6 m-auto">
+                <div
+                  className={`rounded-full border ${
+                    grantType === "directGrant"
+                      ? "border-violet-400"
+                      : "border-grey-100"
+                  } h-[24px] w-[24px]`}
+                  style={{
+                    borderWidth: grantType === "directGrant" ? "6px" : "2px",
+                  }}
+                ></div>
+              </div>
+              <div className="pr-6 flex-grow text-left mt-auto mb-auto">
+                <h3 className="text-xl mb-2">Direct Grants</h3>
+                <p
+                  className="text-grey-400 text-sm pr-4"
+                  data-testid="program-details-intro"
+                >
+                  Choose this type of round to directly allocate funds to
+                  selected projects yourself.
+                </p>
+              </div>
+              <img
+                src={DirectGrants}
+                alt="Direct Grants"
+                className="object-cover pl-6 pr-4"
               />
-              &nbsp;Create round
-            </Button>
-          </Link>
-        )}
-        {grantType === "directGrant" &&
-          process.env.REACT_APP_DIRECT_GRANT_ENABLED && (
-            <Link
-              to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
-            >
-              <Button className="px-4 w-full h-[48px]">
-                <PlusIcon
-                  className="h-4 w-4 inline-flex -translate-y-0.5"
-                  aria-hidden="true"
-                />
-                &nbsp;Create round
-              </Button>
-            </Link>
-          )}
+            </button>
+          </div>
+          <div className="w-full px-12">
+            <div className="border-t border-grey-100 h-[1px] mt-6 mb-6" />
+            {grantType === "quadraticFunding" && (
+              <Link to={`/round/create?programId=${programToRender?.id}`}>
+                <Button className="px-4 w-full h-[48px]">
+                  <PlusIcon
+                    className="h-4 w-4 inline-flex -translate-y-0.5"
+                    aria-hidden="true"
+                  />
+                  &nbsp;Create round
+                </Button>
+              </Link>
+            )}
+            {grantType === "directGrant" &&
+              process.env.REACT_APP_DIRECT_GRANT_ENABLED && (
+                <Link
+                  to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
+                >
+                  <Button className="px-4 w-full h-[48px]">
+                    <PlusIcon
+                      className="h-4 w-4 inline-flex -translate-y-0.5"
+                      aria-hidden="true"
+                    />
+                    &nbsp;Create round
+                  </Button>
+                </Link>
+              )}
+          </div>
+        </div>
       </div>
     </div>
   );
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return fetchProgramsStatus !== ProgressStatus.IS_SUCCESS ? (
     <Spinner text="We're fetching your Program." />
@@ -359,9 +369,9 @@ export default function ViewProgram() {
                   <div className="md:mb-8">
                     <div className="flex flex-row justify-between">
                       <p className="font-bold">My Rounds</p>
-                      <Link
-                        to={`/round/create?programId=${programToRender?.id}`}
-                        className="text-violet-400 font-thin ml-auto mr-4"
+                      <span
+                        onClick={() => setIsModalOpen(true)}
+                        className="text-violet-400 font-thin ml-auto mr-4 cursor-pointer"
                         data-testid="create-round-small-link"
                       >
                         <PlusSmIcon
@@ -369,31 +379,57 @@ export default function ViewProgram() {
                           aria-hidden="true"
                         />
                         &nbsp;Create round
-                      </Link>
-                      {process.env.REACT_APP_DIRECT_GRANT_ENABLED !==
-                        undefined && (
-                        <Link
-                          to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
-                          className="text-violet-400 font-thin"
-                          data-testid="create-round-small-link"
-                        >
-                          <PlusSmIcon
-                            className="h-5 w-5 inline -translate-y-0.5"
-                            aria-hidden="true"
-                          />
-                          &nbsp;Create direct round
-                        </Link>
-                      )}
+                      </span>
                     </div>
                     {roundItems}
                   </div>
                 </div>
               )}
-              {isRoundsFetched && roundItems.length === 0 && (
-                <div className="bg-[#F3F3F5] mt-8 p-8 rounded">
-                  <div className="px-12 ml-10 mr-10">{noRoundsGroup}</div>
-                </div>
-              )}
+              {isRoundsFetched && roundItems.length === 0 && noRoundsGroup}
+              <Transition.Root show={isModalOpen} as={Fragment}>
+                <Dialog
+                  as="div"
+                  onClose={() => setIsModalOpen(false)}
+                  className="relative z-10"
+                >
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="fixed inset-0 bg-grey-400 bg-opacity-75 transition-opacity" />
+                  </Transition.Child>
+                  <div className="fixed z-10 inset-0 overflow-y-auto">
+                    <div className="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
+                      <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        enterTo="opacity-100 translate-y-0 sm:scale-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                        leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                      >
+                        <Dialog.Panel className="w-[1280px] max-w-[100%] relative bg-white px-4 pt-5 pb-4 text-left shadow-xl transform transition-all">
+                          <button
+                            className="w-[40px] h-[40px] cursor-pointer absolute right-[-20px] top-[-20px]"
+                            onClick={() => setIsModalOpen(false)}
+                          >
+                            <img src={Close} alt="Close" />
+                          </button>
+                          <div className="flex-grow flex flex-col justify-center">
+                            {noRoundsGroup}
+                          </div>
+                        </Dialog.Panel>
+                      </Transition.Child>
+                    </div>
+                  </div>
+                </Dialog>
+              </Transition.Root>
             </main>
           </div>
           <Footer />
