@@ -338,7 +338,7 @@ export default function ViewProgram() {
       {programExists && hasAccess && (
         <>
           <Navbar programCta={true} />
-          <div className="container mx-auto flex flex-col w-screen">
+          <div className="container mx-auto flex flex-col">
             <header className="flex flex-col justify-center border-b border-grey-100 pl-2 py-6">
               <div className="flex flex-row items-center">
                 <Link to={`/`}>
@@ -414,7 +414,7 @@ export default function ViewProgram() {
                         leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                         leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                       >
-                        <Dialog.Panel className="w-[1280px] max-w-[100%] relative bg-white px-4 pt-5 pb-4 text-left shadow-xl transform transition-all">
+                        <Dialog.Panel className="w-[1280px] max-w-[90%] relative bg-white px-4 pt-5 pb-4 text-left shadow-xl transform transition-all">
                           <button
                             className="w-[40px] h-[40px] cursor-pointer absolute right-[-20px] top-[-20px]"
                             onClick={() => setIsModalOpen(false)}
