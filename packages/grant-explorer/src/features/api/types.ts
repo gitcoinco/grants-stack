@@ -113,6 +113,10 @@ export interface Round {
    */
   applicationStore?: MetadataPointer;
   /**
+   * Helps identifying Round Types from QF and DG
+   */
+  payoutStrategy: string;
+  /**
    * Voting contract address
    */
   votingStrategy: string;

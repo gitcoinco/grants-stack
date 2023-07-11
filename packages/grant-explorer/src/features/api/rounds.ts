@@ -2,6 +2,7 @@ import { ChainId, graphql_fetch } from "common";
 import { RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { fetchFromIPFS } from "./utils";
+import { current } from "@reduxjs/toolkit";
 
 interface GetRoundOverviewResult {
   data: {
@@ -139,6 +140,10 @@ export async function getRoundsInApplicationPhase(
           roundEndTime
           matchAmount
           token
+          payoutStrategy {
+            id
+            strategyName
+          }
 
           projects(where:{
             status: 1
@@ -200,6 +205,10 @@ export async function getActiveRounds(debugModeEnabled: boolean): Promise<{
           roundEndTime
           matchAmount
           token
+          payoutStrategy {
+            id
+            strategyName
+          }
 
           projects(where:{
             status: 1

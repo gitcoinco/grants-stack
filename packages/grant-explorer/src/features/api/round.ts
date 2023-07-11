@@ -37,6 +37,7 @@ export interface RoundResult {
   roundStartTime: string;
   roundEndTime: string;
   token: string;
+  payoutStrategy: string;
   votingStrategy: string;
   projectsMetaPtr?: MetadataPointer | null;
   projects: RoundProjectResult[];
@@ -103,6 +104,10 @@ export async function getRoundById(
             roundStartTime
             roundEndTime
             token
+            payoutStrategy {
+              id
+              strategyName
+            }
             votingStrategy
             projectsMetaPtr {
               pointer
@@ -130,6 +135,7 @@ export async function getRoundById(
     );
 
     const round: RoundResult = res.data.rounds[0];
+    console.log("RoundResult ", res.data.rounds);
 
     const roundMetadata: RoundMetadata = await fetchFromIPFS(
       round.roundMetaPtr.pointer
@@ -147,6 +153,13 @@ export async function getRoundById(
       chainId
     );
 
+    console.log("round.applicationsEndTime.toString() ", round.applicationsEndTime.toString())
+    if (round.applicationsEndTime.toString() == "Invalid Date") {
+      console.log("round.applicationsEndTime INVALID!!!!  ");
+    }
+    console.log("getRoundById round ", round);
+  
+
     return {
       id: roundId,
       roundMetadata,
@@ -157,6 +170,7 @@ export async function getRoundById(
       roundStartTime: new Date(parseInt(round.roundStartTime) * 1000),
       roundEndTime: new Date(parseInt(round.roundEndTime) * 1000),
       token: round.token,
+      payoutStrategy: round.payoutStrategy,
       votingStrategy: round.votingStrategy,
       ownedBy: round.program.id,
       approvedProjects: approvedProjectsWithMetadata,

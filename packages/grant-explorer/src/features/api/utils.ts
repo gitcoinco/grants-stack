@@ -219,6 +219,8 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
       return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
 
     case ChainId.GOERLI_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+    
     default:
       return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
   }

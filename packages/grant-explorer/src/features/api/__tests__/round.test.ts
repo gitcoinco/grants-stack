@@ -52,6 +52,7 @@ describe("getRoundById", () => {
               expectedRoundData.roundEndTime
             ),
             token: expectedRoundData.token,
+            payoutStrategy: "MERKLE",
             votingStrategy: expectedRoundData.votingStrategy,
             projectsMetaPtr: null,
             projects: [],

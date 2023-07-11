@@ -62,6 +62,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     roundStartTime,
     roundEndTime,
     token: faker.finance.ethereumAddress(),
+    payoutStrategy: "MERKLE",
     votingStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),
     ...overrides,
