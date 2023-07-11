@@ -52,6 +52,9 @@ import moment from "moment";
 import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
 
+export const isDirectRound = (round: Round) => round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+
+
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
@@ -114,7 +117,7 @@ export default function ViewRoundPage() {
                 <RoundName round={round} />
               </div>
               <div className="flex flex-row flex-wrap relative gap-2 md:gap-8 xl:gap-36 pr-44">
-                {round.payoutStrategy.strategyName != ROUND_PAYOUT_DIRECT && (
+                {!isDirectRound(round) && (
                   <ApplicationOpenDateRange round={round} />
                 )}
                 <RoundOpenDateRange round={round} />
@@ -158,30 +161,31 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
-                            }
-                          >
-                            <DocumentTextIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="fund-contract"
+                      {!isDirectRound(round) && (
+                        <Tab
+                          className={({ selected }) =>
+                            verticalTabStyles(selected)
+                          }
+                        >
+                          {({ selected }) => (
+                            <div
+                              className={
+                                selected
+                                  ? "text-black-500 flex flex-row"
+                                  : "flex flex-row"
+                              }
                             >
-                              Fund Contract
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
-
+                              <DocumentTextIcon className="h-6 w-6 mr-2" />
+                              <span
+                                className="mt-0.5"
+                                data-testid="fund-contract"
+                              >
+                                Fund Contract
+                              </span>
+                            </div>
+                          )}
+                        </Tab>
+                      )}
                       <Tab
                         className={({ selected }) =>
                           verticalTabStyles(selected)
@@ -205,96 +209,101 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
-                            }
-                          >
-                            <ChartBarIcon className="h-6 w-6 mr-2" />
-                            <span className="mt-0.5" data-testid="round-stats">
-                              Round Stats
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
-                            }
-                          >
-                            <DocumentReportIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="round-results"
+                      {!isDirectRound(round) && (
+                        <Tab
+                          className={({ selected }) =>
+                            verticalTabStyles(selected)
+                          }
+                        >
+                          {({ selected }) => (
+                            <div
+                              className={
+                                selected
+                                  ? "text-black-500 flex flex-row"
+                                  : "flex flex-row"
+                              }
                             >
-                              Round Results
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
+                              <ChartBarIcon className="h-6 w-6 mr-2" />
+                              <span className="mt-0.5" data-testid="round-stats">
+                                Round Stats
+                              </span>
+                            </div>
+                          )}
+                        </Tab>
+                      )}
+                      {!isDirectRound(round) && (
+                        <>
+                          <Tab
+                            className={({ selected }) =>
+                              verticalTabStyles(selected)
                             }
                           >
-                            <UserGroupIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="fund-grantees"
-                            >
-                              Fund Grantees
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
-                      <Tab
-                        className={({ selected }) =>
+                            {({ selected }) => (
+                              <div
+                                className={
+                                  selected
+                                    ? "text-black-500 flex flex-row"
+                                    : "flex flex-row"
+                                }
+                              >
+                                <DocumentReportIcon className="h-6 w-6 mr-2" />
+                                <span
+                                  className="mt-0.5"
+                                  data-testid="round-results"
+                                >
+                                  Round Results
+                                </span>
+                              </div>
+                            )}
+                          </Tab>
+                          <Tab
+                          className={({ selected }) =>
                           verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
                             }
                           >
-                            <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="reclaim-funds"
-                            >
-                              Reclaim Funds
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
+                            {({ selected }) => (
+                              <div
+                                className={
+                                  selected
+                                    ? "text-black-500 flex flex-row"
+                                    : "flex flex-row"
+                                }
+                              >
+                                <UserGroupIcon className="h-6 w-6 mr-2" />
+                                <span
+                                  className="mt-0.5"
+                                  data-testid="fund-grantees"
+                                >
+                                  Fund Grantees
+                                </span>
+                              </div>
+                            )}
+                          </Tab>
+                          <Tab
+                            className={({ selected }) =>
+                              verticalTabStyles(selected)
+                            }
+                          >
+                            {({ selected }) => (
+                              <div
+                                className={
+                                  selected
+                                    ? "text-black-500 flex flex-row"
+                                    : "flex flex-row"
+                                }
+                              >
+                                <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
+                                <span
+                                  className="mt-0.5"
+                                  data-testid="reclaim-funds"
+                                >
+                                  Reclaim Funds
+                                </span>
+                              </div>
+                            )}
+                          </Tab>
+                        </>
+                      )}
                     </Tab.List>
                   </div>
                   <Tab.Panels className="basis-5/6 ml-6">
@@ -311,33 +320,39 @@ export default function ViewRoundPage() {
                         roundId={id}
                       />
                     </Tab.Panel>
-                    <Tab.Panel>
-                      <FundContract round={round} roundId={id} />
-                    </Tab.Panel>
+                    {!isDirectRound(round) && (
+                      <Tab.Panel>
+                        <FundContract round={round} roundId={id} />
+                      </Tab.Panel>
+                    )}
                     <Tab.Panel>
                       <ViewRoundSettings id={round?.id} />
                     </Tab.Panel>
-                    <Tab.Panel>
-                      <ViewRoundStats />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                      <ViewRoundResults />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                      <ViewFundGrantees
-                        isRoundFinalized={
-                          round?.payoutStrategy?.isReadyForPayout ?? undefined
-                        }
-                        round={round}
-                      />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                      <ReclaimFunds
-                        round={round}
-                        chainId={`${chain.id}`}
-                        roundId={id}
-                      />
-                    </Tab.Panel>
+                    {!isDirectRound(round) && (
+                      <>
+                        <Tab.Panel>
+                          <ViewRoundStats />
+                        </Tab.Panel>
+                        <Tab.Panel>
+                          <ViewRoundResults />
+                        </Tab.Panel>
+                        <Tab.Panel>
+                          <ViewFundGrantees
+                            isRoundFinalized={
+                              round?.payoutStrategy?.isReadyForPayout ?? undefined
+                            }
+                            round={round}
+                          />
+                        </Tab.Panel>
+                        <Tab.Panel>
+                          <ReclaimFunds
+                            round={round}
+                            chainId={`${chain.id}`}
+                            roundId={id}
+                          />
+                        </Tab.Panel>
+                      </>
+                    )}
                   </Tab.Panels>
                 </div>
               </Tab.Group>
