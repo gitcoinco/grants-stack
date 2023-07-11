@@ -1,14 +1,16 @@
 // eslint-disable max-len
 import { Badge, Box, Spinner } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { RootState } from "../../../reducers";
 import { Application, AppStatus } from "../../../reducers/projects";
 import { roundApplicationPathForProject } from "../../../routes";
 import { RoundDisplayType } from "../../../types";
-import { formatDateFromSecs } from "../../../utils/components";
+import { formatDateFromSecs, isInfinite } from "../../../utils/components";
 import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
 import { getProjectURIComponents } from "../../../utils/utils";
 import LinkManager from "./LinkManager";
+import { PayoutStrategy } from "../../../reducers/rounds";
 
 export default function RoundListItem({
   applicationData,
@@ -19,6 +21,7 @@ export default function RoundListItem({
   displayType?: RoundDisplayType;
   projectId: string;
 }) {
+  const [roundData, setRoundData] = useState<any>();
   const props = useSelector((state: RootState) => {
     const { roundID: roundId, chainId: projectChainId } = applicationData!;
     const roundState = state.rounds[roundId];
@@ -47,10 +50,64 @@ export default function RoundListItem({
 
   const renderApplicationDate = () => (
     <>
-      {formatDateFromSecs(props.round?.roundStartTime!)} -{" "}
-      {formatDateFromSecs(props.round?.roundEndTime!)}
+      {formatDateFromSecs(roundData?.roundStartTime!)} -{" "}
+      {!isInfinite(roundData?.roundEndTime!)
+        ? formatDateFromSecs(roundData?.roundEndTime!)
+        : "No End Date"}
     </>
   );
+
+  const renderRoundBadge = () => {
+    let colorScheme:
+      | {
+          bg: string;
+          text: string;
+        }
+      | undefined;
+
+    switch (roundData?.payoutStrategy as PayoutStrategy) {
+      case "MERKLE":
+        colorScheme = {
+          bg: "#E6FFF9",
+          text: "gitcoin-grey-500",
+        };
+        break;
+      case "DIRECT":
+        colorScheme = {
+          bg: "#FDDEE4",
+          text: "gitcoin-grey-500",
+        };
+        break;
+      default:
+        colorScheme = undefined;
+        break;
+    }
+
+    const roundPayoutStrategy = roundData?.payoutStrategy;
+
+    return (
+      <span>
+        <Badge
+          backgroundColor={colorScheme?.bg}
+          className="max-w-fit"
+          borderRadius="full"
+          p={2}
+          textTransform="inherit"
+        >
+          {roundPayoutStrategy === "MERKLE" ? (
+            <span className={`text-${colorScheme?.text} text-sm`}>
+              QuadraticFunding
+            </span>
+          ) : null}
+          {roundPayoutStrategy === "DIRECT" ? (
+            <span className={`text-${colorScheme?.text} text-sm`}>
+              DirectGrant
+            </span>
+          ) : null}
+        </Badge>
+      </span>
+    );
+  };
 
   const renderApplicationBadge = (dt: RoundDisplayType) => {
     let colorScheme:
@@ -153,6 +210,12 @@ export default function RoundListItem({
   //   applicationData?.status === "APPROVED" &&
   //   displayType === RoundDisplayType.Past;
 
+  useEffect(() => {
+    if (props.round) {
+      setRoundData(props.round);
+    }
+  }, [props.round]);
+
   return (
     <Box>
       <Box className="w-full my-8 lg:flex md:flex basis-0 justify-between items-center text-[14px] text-gitcoin-grey-400">
@@ -177,6 +240,7 @@ export default function RoundListItem({
             <span>{renderApplicationDate()}</span>
           )}
         </Box>
+        <Box className="flex-1 my-2">{renderRoundBadge()}</Box>
         <Box className="flex-1 my-2">
           {renderApplicationBadge(displayType!)}
         </Box>

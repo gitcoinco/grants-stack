@@ -3,10 +3,12 @@ import { Dispatch } from "redux";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
+import { graphqlFetch } from "../utils/graphql";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { RootState } from "../reducers";
-import { Status } from "../reducers/rounds";
+// import { Status } from "../reducers/rounds";
+import { PayoutStrategy, Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
 import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
 import { getProviderByChainId } from "../utils/utils";
@@ -317,6 +319,40 @@ export const loadRound =
       }
     }
 
+    dispatch({
+      type: ROUNDS_LOADING_ROUND,
+      address,
+      status: Status.LoadingRoundPayoutStrategy,
+    });
+
+    let roundPayoutStrategy: PayoutStrategy;
+    try {
+      const resp = await graphqlFetch(
+        `
+          query GetRoundById($roundId: String) {
+            rounds(where: {
+              id: $roundId
+            }) {
+              id
+              payoutStrategy {
+                id
+                strategyName
+              }
+            }
+          }
+        `,
+        chainId!,
+        { roundId: address }
+      );
+      roundPayoutStrategy = resp.data.rounds[0].payoutStrategy.strategyName;
+    } catch (e) {
+      datadogRum.addError(e);
+      datadogLogs.logger.error("sg: error loading round payoutStrategy");
+      dispatch(loadingError(address, "error loading round payoutStrategy"));
+      console.error(e);
+      return;
+    }
+
     const round = {
       address,
       applicationsStartTime,
@@ -335,6 +371,7 @@ export const loadRound =
       },
       applicationMetadata,
       programName,
+      payoutStrategy: roundPayoutStrategy,
     };
 
     dispatch(roundLoaded(address, round));

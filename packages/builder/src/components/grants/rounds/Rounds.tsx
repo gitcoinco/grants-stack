@@ -6,6 +6,7 @@ import { Application } from "../../../reducers/projects";
 import { Status } from "../../../reducers/rounds";
 import { RoundDisplayType } from "../../../types";
 import RoundListItem from "./RoundListItem";
+import { isInfinite } from "../../../utils/components";
 
 const displayHeaders = {
   [RoundDisplayType.Active]: "Active Rounds",
@@ -36,33 +37,41 @@ export default function Rounds() {
       const status = roundState.status ?? Status.Undefined;
       const { round } = roundState;
 
+      const infiniteApplicationsEndDate = isInfinite(
+        Number(round?.applicationsEndTime)
+      );
+      const infiniteRoundEndDate = isInfinite(Number(round?.roundEndTime));
+
       if (status === Status.Loaded && round) {
         let category = null;
         const currentTime = secondsSinceEpoch();
         // Current Applications
         if (
-          round.applicationsStartTime < currentTime &&
-          round.applicationsEndTime > currentTime &&
-          round.roundStartTime > currentTime &&
-          round.roundEndTime > currentTime
+          (infiniteRoundEndDate && infiniteApplicationsEndDate) ||
+          (round.applicationsStartTime < currentTime &&
+            round.applicationsEndTime > currentTime &&
+            round.roundStartTime > currentTime &&
+            round.roundEndTime > currentTime)
         ) {
           category = RoundDisplayType.Current;
         }
         // Active Rounds
         if (
-          round.roundEndTime > currentTime &&
-          round.roundStartTime < currentTime &&
-          round.applicationsEndTime < currentTime &&
-          round.applicationsStartTime < currentTime
+          (infiniteRoundEndDate && infiniteApplicationsEndDate) ||
+          (round.roundEndTime > currentTime &&
+            round.roundStartTime < currentTime &&
+            round.applicationsEndTime < currentTime &&
+            round.applicationsStartTime < currentTime)
         ) {
           category = RoundDisplayType.Active;
         }
         // Past Rounds
         if (
-          round.roundEndTime < currentTime &&
-          round.roundStartTime < currentTime &&
-          round.applicationsEndTime < currentTime &&
-          round.applicationsStartTime < currentTime
+          (!infiniteRoundEndDate && !infiniteApplicationsEndDate) &&
+          (round.roundEndTime < currentTime &&
+            round.roundStartTime < currentTime &&
+            round.applicationsEndTime < currentTime &&
+            round.applicationsStartTime < currentTime)
         ) {
           category = RoundDisplayType.Past;
         }
