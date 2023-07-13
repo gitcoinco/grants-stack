@@ -33,7 +33,7 @@ jest.mock("wagmi", () => ({
 }));
 
 const roundId = faker.finance.ethereumAddress();
-const donationToken = getPayoutTokenOptions("5")[0];
+const donationToken = getPayoutTokenOptions(5)[0];
 const totalDonation = BigNumber.from(10);
 
 describe("<QFDonationProvider />", () => {

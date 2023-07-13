@@ -13,7 +13,7 @@ const mockAddress = faker.finance.ethereumAddress();
 const mockTokens = {
   ETH: {
     name: "Ethereum",
-    chainId: "1",
+    chainId: 1,
     address: "0x0000000000000000000000000000000000000000",
     decimal: 18,
     logo: "https://example.com/eth_logo.png",
@@ -22,7 +22,7 @@ const mockTokens = {
   },
   DAI: {
     name: "Dai",
-    chainId: "1",
+    chainId: 1,
     address: "0x123456789abcdef",
     decimal: 18,
   },

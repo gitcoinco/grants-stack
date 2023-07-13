@@ -20,7 +20,7 @@ import {
 } from "wagmi/chains";
 import { createClient, configureChains } from "wagmi";
 
-import { pgnTestnet } from "common/src/chains";
+import { pgnTestnet, pgn } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 
@@ -33,7 +33,12 @@ const testnetChains = () => {
 };
 
 const mainnetChains = () => {
-  return [mainnet, optimism, { ...fantom, iconUrl: "/logos/fantom-logo.svg" }];
+  return [
+    mainnet,
+    optimism,
+    pgn,
+    { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
+  ];
 };
 
 const allChains: Chain[] =

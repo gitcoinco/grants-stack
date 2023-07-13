@@ -6,46 +6,29 @@ import abi from "./abi";
 import { Contract } from "./types";
 import { ChainId } from "common";
 
+type ChainIdToStringMap = Record<ChainId, string>;
+
 /************************/
 /* == External ABI == */
 /************************/
 
+const projectRegistryMap: ChainIdToStringMap = {
+  [ChainId.MAINNET]: "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
+  [ChainId.GOERLI_CHAIN_ID]: "0xa71864fAd36439C50924359ECfF23Bb185FFDf21",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
+    "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
+    "0x984749e408FF0446d8ADaf20E293F2F299396631",
+  [ChainId.PGN_TESTNET]: "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11",
+  [ChainId.PGN]: /*TODO*/ "",
+};
+
 /* GrantHub's ProjectRegistry */
-export const projectRegistryContract = (
-  chainId: ChainId | undefined
-): Contract => {
-  let address;
-
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      address = "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4";
-      break;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
-      break;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
-      break;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "0x984749e408FF0446d8ADaf20E293F2F299396631";
-      break;
-    }
-    case ChainId.PGN_TESTNET: {
-      address = "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11";
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      address = "0xa71864fAd36439C50924359ECfF23Bb185FFDf21";
-      break;
-    }
-  }
-
+export const projectRegistryContract = (chainId: ChainId): Contract => {
   return {
-    address: address,
+    address: projectRegistryMap[chainId],
     abi: abi.projectRegistry,
   };
 };
@@ -58,92 +41,41 @@ export const ERC20Contract: Contract = {
 /************************/
 /* ===== Program ====== */
 /************************/
-
+const programFactoryMap: ChainIdToStringMap = {
+  [ChainId.MAINNET]: "0x56296242CA408bA36393f3981879fF9692F193cC",
+  [ChainId.GOERLI_CHAIN_ID]: "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    "0xd5Fb00093Ebd30011d932cB69bb6313c550aB05f",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
+  [ChainId.PGN_TESTNET]: "0x2Ff06F96Bb265698e47BfdED83f1aa0aC7c3a4Ce",
+  [ChainId.PGN]: /*TODO*/ "",
+};
 /* ProgramFactory  */
-export const programFactoryContract = (
-  chainId: ChainId | undefined
-): Contract => {
-  let address;
-
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      address = "0x56296242CA408bA36393f3981879fF9692F193cC";
-      break;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0xd5Fb00093Ebd30011d932cB69bb6313c550aB05f";
-      break;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.PGN_TESTNET: {
-      address = "0x2Ff06F96Bb265698e47BfdED83f1aa0aC7c3a4Ce";
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      address = "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e";
-      break;
-    }
-  }
-
+export const programFactoryContract = (chainId: ChainId): Contract => {
   return {
-    address: address,
+    address: programFactoryMap[chainId],
     abi: abi.programFactory,
   };
-};
-
-/* ProgramImplementation */
-export const programImplementationContract: Contract = {
-  abi: abi.programImplementation,
 };
 
 /************************/
 /* ====== Round ======= */
 /************************/
-
+const roundFactoryMap: ChainIdToStringMap = {
+  [ChainId.MAINNET]: "0x9Cb7f434aD3250d1656854A9eC7A71EceC6eE1EF",
+  [ChainId.GOERLI_CHAIN_ID]: "0x24F9EBFAdf095e0afe3d98635ee83CD72e49B5B0",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    "0x04E753cFB8c8D1D7f776f7d7A033740961b6AEC2",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
+  [ChainId.PGN_TESTNET]: "0x0479b9DA9f287539FEBd597350B1eBaEBF7479ac",
+  [ChainId.PGN]: /*TODO*/ "",
+};
 /* RoundFactory  */
-export const roundFactoryContract = (
-  chainId: ChainId | undefined
-): Contract => {
-  let address;
-
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      address = "0x9Cb7f434aD3250d1656854A9eC7A71EceC6eE1EF";
-      break;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x04E753cFB8c8D1D7f776f7d7A033740961b6AEC2";
-      break;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.PGN_TESTNET: {
-      address = "0x0479b9DA9f287539FEBd597350B1eBaEBF7479ac";
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      address = "0x24F9EBFAdf095e0afe3d98635ee83CD72e49B5B0";
-      break;
-    }
-  }
-
+export const roundFactoryContract = (chainId: ChainId): Contract => {
   return {
-    address: address,
+    address: roundFactoryMap[chainId],
     abi: abi.roundFactory,
   };
 };
@@ -156,43 +88,20 @@ export const roundImplementationContract: Contract = {
 /************************/
 /* == VotingStrategy == */
 /************************/
-
+const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
+  [ChainId.MAINNET]: "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F",
+  [ChainId.GOERLI_CHAIN_ID]: "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    "0x838C5e10dcc1e54d62761d994722367BA167AC22",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
+  [ChainId.PGN_TESTNET]: "0xE8027a807Bb85e57da4B7A5ecE65b0aBDf231ce8",
+  [ChainId.PGN]: /*TODO*/ "",
+};
 /* QuadraticFundingVotingStrategy */
-export const qfVotingStrategyFactoryContract = (
-  chainId: ChainId | undefined
-): Contract => {
-  let address;
-
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      address = "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F";
-      break;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x838C5e10dcc1e54d62761d994722367BA167AC22";
-      break;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.PGN_TESTNET: {
-      address = "0xE8027a807Bb85e57da4B7A5ecE65b0aBDf231ce8";
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
-      break;
-    }
-  }
-
+export const qfVotingStrategyFactoryContract = (chainId: ChainId): Contract => {
   return {
-    address: address,
+    address: qfVotingStrategyFactoryMap[chainId],
     abi: abi.qfVotingStrategyFactory,
   };
 };
@@ -200,43 +109,21 @@ export const qfVotingStrategyFactoryContract = (
 /************************/
 /* == PayoutStrategy == */
 /************************/
-
-/* MerklePayoutStrategyFactory */
+const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
+  [ChainId.MAINNET]: "0x8F8d78f119Aa722453d33d6881f4D400D67D054F",
+  [ChainId.GOERLI_CHAIN_ID]: "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    "0xB5365543cdDa2C795AD104F4cB784EF3DB1CD383",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
+  [ChainId.PGN_TESTNET]: "0xE42D1Da8d75Cf1d6f6C460DAa3f1b10a79D689B1",
+  [ChainId.PGN]: /*TODO*/ "",
+};
 export const merklePayoutStrategyFactoryContract = (
-  chainId: ChainId | undefined
+  chainId: ChainId
 ): Contract => {
-  let address;
-
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      address = "0x8F8d78f119Aa722453d33d6881f4D400D67D054F";
-      break;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0xB5365543cdDa2C795AD104F4cB784EF3DB1CD383";
-      break;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.PGN_TESTNET: {
-      address = "0xE42D1Da8d75Cf1d6f6C460DAa3f1b10a79D689B1";
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      address = "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe";
-      break;
-    }
-  }
-
   return {
-    address: address,
+    address: merklePayoutStrategyFactoryMap[chainId],
     abi: abi.merklePayoutStrategyFactory,
   };
 };

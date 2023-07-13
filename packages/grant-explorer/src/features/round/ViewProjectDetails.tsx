@@ -114,7 +114,7 @@ export default function ViewProjectDetails() {
 
       {isBeforeRoundEndDate && (
         /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-        <PassportBanner chainId={chainId!} round={round} />
+        <PassportBanner chainId={Number(chainId)} round={round} />
       )}
       {isAfterRoundEndDate && (
         <div>

@@ -34,7 +34,7 @@ describe("PassportBanner", () => {
   describe("renders the correct banner", () => {
     it("WHEN user is not connected to passport THEN it shows the not connected banner", () => {
       mockAccount.isConnected = false;
-      render(<PassportBanner chainId="5" round={mockRound} />, {
+      render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
       });
       expect(screen.getByTestId("wallet-not-connected")).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner chainId="5" round={mockRound} />, {
+      render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
       });
 
@@ -93,7 +93,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner chainId="5" round={mockRound} />, {
+      render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
       });
 
@@ -124,7 +124,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner chainId="5" round={mockRound} />, {
+      render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
       });
 
@@ -152,7 +152,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner chainId="5" round={mockRound} />, {
+      render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
       });
 
@@ -176,7 +176,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner chainId="5" round={mockRound} />, {
+      render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
       });
 
@@ -209,7 +209,7 @@ describe("PassportBanner", () => {
         mockFetchPassportPromise
       );
 
-      render(<PassportBanner chainId="5" round={mockRound} />, {
+      render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
       });
 

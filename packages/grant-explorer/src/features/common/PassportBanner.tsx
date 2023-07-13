@@ -3,7 +3,7 @@ import {
   CheckBadgeIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/solid";
-import { getUTCDateTime } from "common";
+import { ChainId, getUTCDateTime } from "common";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
@@ -16,7 +16,7 @@ import {
 import { Round } from "../api/types";
 
 export default function PassportBanner(props: {
-  chainId: string;
+  chainId: ChainId;
   round: Round;
 }) {
   const chainId = props.chainId;
