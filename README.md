@@ -54,7 +54,7 @@ More information can be found within the [Allo graph repository](https://github.
 This package serves the app which holds all the features w.r.t to
 
 - creating a program
-- maintaing a program
+- maintaining a program
 - creating a round
 - maintaining a program
 
