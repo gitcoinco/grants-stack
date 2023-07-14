@@ -127,7 +127,6 @@ const dispatchAndLogApplicationError = (
   datadogLogs.logger.error(error, {
     roundAddress,
   });
-  debugger;
   dispatch(applicationError(roundAddress, error, step));
 };
 
