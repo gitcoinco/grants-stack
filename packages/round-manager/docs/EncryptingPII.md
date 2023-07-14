@@ -15,13 +15,13 @@ Documentation related to supported chains can be found on [lit-docs](https://dev
 **To Encrypt data**
 
 You would use the `encryptString` function.
-It would be upto the grant-hub / project manager to specify the conditions on who would be allowed to decrypt the data and this would be done by specifying the `unifiedAccessControlConditions`.
+It would be up to the grant-hub / project manager to specify the conditions on who would be allowed to decrypt the data and this would be done by specifying the `unifiedAccessControlConditions`.
 
 To ensure only the round operators are allowed, `isRoundOperatorAccessControl` would have to be set as the `unifiedAccessControlConditions.
 
 **To Decrypt data**
 
-Assuming the `unifiedAccessControlConditions` was set to `isRoundOperatorAccessControl`, then upon recieving the encrypted content, round-manager would use `decryptString` to decrypt the encrypted data.
+Assuming the `unifiedAccessControlConditions` was set to `isRoundOperatorAccessControl`, then upon receiving the encrypted content, round-manager would use `decryptString` to decrypt the encrypted data.
 
 Ideally when the project applies to the round, they would be expected to pass:
 
