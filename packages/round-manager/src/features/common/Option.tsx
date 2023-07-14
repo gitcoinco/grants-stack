@@ -1,14 +1,27 @@
 import { XIcon } from "@heroicons/react/solid";
 import { SchemaQuestion } from "../api/utils";
 
-// eslint-disable-next-line
-function Option({ index, value, onChange, onDeleteOption, options }: { index: number, value: string, onChange: (event: any) => void, onDeleteOption: (index: number) => void, options: SchemaQuestion[] }) {
+function Option({
+  index,
+  value,
+  onChange,
+  onDeleteOption,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  options,
+}: {
+  index: number;
+  value: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onChange: (event: any) => void;
+  onDeleteOption: (index: number) => void;
+  options: SchemaQuestion[];
+}) {
   const renderDeleteOption = (index: number) => {
     return (
       <button onClick={() => onDeleteOption(index)}>
         <XIcon className="h-5 w-5 text-[#D03E63] ml-6" aria-hidden="true" />
       </button>
-    )
+    );
   };
 
   return (

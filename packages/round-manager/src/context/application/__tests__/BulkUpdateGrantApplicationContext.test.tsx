@@ -287,5 +287,4 @@ function renderWithProvider(ui: JSX.Element) {
   );
 }
 
-export { };
-
+export {};
