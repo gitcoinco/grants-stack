@@ -127,6 +127,7 @@ const dispatchAndLogApplicationError = (
   datadogLogs.logger.error(error, {
     roundAddress,
   });
+  debugger;
   dispatch(applicationError(roundAddress, error, step));
 };
 
@@ -233,6 +234,7 @@ export const submitApplication =
 
       deterministicApplication = objectToDeterministicJSON(application as any);
     } catch (error) {
+      console.error(error);
       dispatchAndLogApplicationError(
         dispatch,
         roundAddress,
