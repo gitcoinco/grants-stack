@@ -22,6 +22,7 @@ const graphQlEndpoints: Record<ChainId, string> = {
 const getGraphQLEndpoint = (chainId: ChainId): string =>
   graphQlEndpoints[chainId];
 
+// eslint-disable-next-line import/prefer-default-export
 export const graphqlFetch = async (
   query: string,
   chainId: ChainId,
