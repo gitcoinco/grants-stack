@@ -233,7 +233,6 @@ export const submitApplication =
 
       deterministicApplication = objectToDeterministicJSON(application as any);
     } catch (error) {
-      console.error(error);
       dispatchAndLogApplicationError(
         dispatch,
         roundAddress,
