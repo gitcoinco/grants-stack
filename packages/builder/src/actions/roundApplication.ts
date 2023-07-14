@@ -200,7 +200,7 @@ export const submitApplication =
     const project: Project = metadataToProject(projectMetadata, 0);
 
     const { chainID } = state.web3;
-    const chainName = chains[chainID!];
+    const chainName = chains[chainID ?? 1];
     if (chainID === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
