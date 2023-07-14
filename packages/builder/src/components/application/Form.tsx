@@ -333,9 +333,6 @@ export default function Form({
   const needsProject = schema.questions.find((q) => q.type === "project");
   const now = new Date().getTime() / 1000;
 
-  console.log(now, round.applicationsEndTime);
-  console.log(round.applicationsEndTime > now);
-
   return (
     <>
       {preview && selectedProjectMetadata && (
