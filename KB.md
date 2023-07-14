@@ -25,7 +25,7 @@ This is most likely a package that ships as an ES Module, but doesn't correctly 
 
 ### Importing svgs, css etc.
 
-This usually happens when you are testing a React Component that imports some kind of static asset - svgs, images etc. Jest uses Node to run tests. When you node comes accross an import of `svg`, it will error out since it doesn't understand it. You need to tell Jest to transform those modules to some kind of stub, empty javascript object etc. so that Node can correctly import it. This is done automatically by `craco test`, and can be implemented manually [as described here](https://jestjs.io/docs/configuration/#transform-objectstring-pathtotransformer--pathtotransformer-object)
+This usually happens when you are testing a React Component that imports some kind of static asset - svgs, images etc. Jest uses Node to run tests. When your node comes across an import of `svg`, it will error out since it doesn't understand it. You need to tell Jest to transform those modules to some kind of stub, empty javascript object etc. so that Node can correctly import it. This is done automatically by `craco test`, and can be implemented manually [as described here](https://jestjs.io/docs/configuration/#transform-objectstring-pathtotransformer--pathtotransformer-object)
 
 ## Linting
 
