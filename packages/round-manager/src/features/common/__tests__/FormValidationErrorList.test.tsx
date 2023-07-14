@@ -31,12 +31,12 @@ describe("FormValidationErrorList", () => {
     expect(alertElement).toBeInTheDocument();
 
     const errorElement1 = screen.getByText(
-      "Field1: Lorem ipsum dolor sit amet",
+      "Field1: Lorem ipsum dolor sit amet"
     );
     expect(errorElement1).toBeInTheDocument();
 
     const errorElement2 = screen.getByText(
-      "Field2: Consectetur adipiscing elit",
+      "Field2: Consectetur adipiscing elit"
     );
     expect(errorElement2).toBeInTheDocument();
   });

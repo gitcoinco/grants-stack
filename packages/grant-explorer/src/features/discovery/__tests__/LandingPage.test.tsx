@@ -1,6 +1,12 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
-import { makeRoundOverviewData, mockBalance, mockNetwork, mockSigner, renderWithContext } from "../../../test-utils";
+import {
+  makeRoundOverviewData,
+  mockBalance,
+  mockNetwork,
+  mockSigner,
+  renderWithContext,
+} from "../../../test-utils";
 import { RoundMetadata } from "../../api/round";
 import {
   RoundOverview,
