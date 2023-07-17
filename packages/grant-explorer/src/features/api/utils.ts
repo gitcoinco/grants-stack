@@ -228,7 +228,7 @@ const graphQlEndpoints: Record<ChainId, string> = {
  * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
  */
-const getGraphQLEndpoint = (chainId: ChainId) => graphQlEndpoints[chainId];
+const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
 
 export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.MAINNET]: "https://etherscan.io/tx/",

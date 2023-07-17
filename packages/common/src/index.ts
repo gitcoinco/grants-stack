@@ -115,7 +115,7 @@ const graphQlEndpoints: Record<ChainId, string> = {
  * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
  */
-const getGraphQLEndpoint = (chainId: ChainId) => graphQlEndpoints[chainId];
+const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
 
 /**
  * Fetch data from a GraphQL endpoint
