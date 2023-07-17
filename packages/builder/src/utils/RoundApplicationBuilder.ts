@@ -27,7 +27,6 @@ export default class RoundApplicationBuilder {
     this.ram = ram;
     this.roundAddress = roundAddress;
     this.chainName = chainName;
-
     const litInit = {
       chain: chainName,
       contract: this.roundAddress,
