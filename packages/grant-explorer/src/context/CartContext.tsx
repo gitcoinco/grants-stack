@@ -1,4 +1,4 @@
-import { Project } from "../features/api/types";
+import { CartProject } from "../features/api/types";
 import React, {
   createContext,
   ReactNode,
@@ -14,8 +14,8 @@ import {
 import { RoundContext } from "./RoundContext";
 
 export interface CartContextState {
-  cart: Project[];
-  setCart: React.Dispatch<SetStateAction<Project[]>>;
+  cart: CartProject[];
+  setCart: React.Dispatch<SetStateAction<CartProject[]>>;
 }
 
 export const initialCartState: CartContextState = {
@@ -34,15 +34,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect((): void => {
     if (currentRoundId) {
-      const storedCart =
-        loadCartFromLocalStorage(currentRoundId) ?? initialCartState.cart;
+      const storedCart = loadCartFromLocalStorage() ?? initialCartState.cart;
       setCart(storedCart);
     }
   }, [currentRoundId]);
 
   useEffect((): void => {
     if (currentRoundId) {
-      saveCartToLocalStorage(cart, currentRoundId);
+      saveCartToLocalStorage(cart);
     }
   }, [cart, currentRoundId]);
 
@@ -61,8 +60,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 /* Custom Hooks */
 type UseCart = [
   cart: CartContextState["cart"],
-  handleAddProjectsToCart: (projects: Project[], roundId: string) => void,
-  handleRemoveProjectsFromCart: (projects: Project[], roundId: string) => void
+  handleAddProjectsToCart: (projects: CartProject[]) => void,
+  handleRemoveProjectsFromCart: (projects: CartProject[]) => void
 ];
 
 export const useCart = (): UseCart => {
@@ -73,11 +72,8 @@ export const useCart = (): UseCart => {
 
   const { cart, setCart } = context;
 
-  const handleAddProjectsToCart = (
-    projectsToAdd: Project[],
-    roundId: string
-  ): void => {
-    const currentCart = loadCartFromLocalStorage(roundId) ?? [];
+  const handleAddProjectsToCart = (projectsToAdd: CartProject[]): void => {
+    const currentCart = loadCartFromLocalStorage() ?? [];
 
     // Add projects to the cart if they are not already present
     const newCart = projectsToAdd.reduce((acc, projectToAdd) => {
@@ -89,14 +85,14 @@ export const useCart = (): UseCart => {
     }, currentCart);
 
     setCart(newCart);
-    saveCartToLocalStorage(newCart, roundId);
+    saveCartToLocalStorage(newCart);
+    console.log("newCart", newCart);
   };
 
   const handleRemoveProjectsFromCart = (
-    projectsToRemove: Project[],
-    roundId: string
+    projectsToRemove: CartProject[]
   ): void => {
-    const currentCart = loadCartFromLocalStorage(roundId) ?? [];
+    const currentCart = loadCartFromLocalStorage() ?? [];
 
     // Remove projects from the cart if they are present
     const newCart = currentCart.filter(
@@ -108,7 +104,8 @@ export const useCart = (): UseCart => {
     );
 
     setCart(newCart);
-    saveCartToLocalStorage(newCart, roundId);
+    saveCartToLocalStorage(newCart);
+    console.log("newCart", newCart);
   };
 
   return [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart];
