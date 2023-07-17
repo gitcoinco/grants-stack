@@ -15,7 +15,7 @@ import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
-import { Project, Requirement, Round } from "../api/types";
+import { CartProject, Project, Requirement, Round } from "../api/types";
 import { CHAINS, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Footer from "common/src/components/Footer";
@@ -311,6 +311,7 @@ function AfterRoundStart(props: {
               roundRoutePath={`/round/${chainId}/${roundId}`}
               isBeforeRoundEndDate={props.isBeforeRoundEndDate}
               roundId={roundId}
+              chainId={chainId}
             />
           )}
         </main>
@@ -327,6 +328,7 @@ const ProjectList = (props: {
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
+  chainId: string;
 }): JSX.Element => {
   const { projects, roundRoutePath } = props;
 
@@ -340,6 +342,7 @@ const ProjectList = (props: {
             roundRoutePath={roundRoutePath}
             isBeforeRoundEndDate={props.isBeforeRoundEndDate}
             roundId={props.roundId}
+            chainId={props.chainId}
           />
         );
       })}
@@ -352,6 +355,7 @@ function ProjectCard(props: {
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
+  chainId: string;
 }) {
   const { project, roundRoutePath } = props;
   const projectRecipient =
@@ -364,6 +368,10 @@ function ProjectCard(props: {
     (cartProject) =>
       cartProject.grantApplicationId === project.grantApplicationId
   );
+
+  const cartProject = project as CartProject;
+  cartProject.roundId = props.roundId;
+  cartProject.chainId = Number(props.chainId);
 
   return (
     <BasicCard className="relative md:w-[296px]" data-testid="project-card">
@@ -405,10 +413,10 @@ function ProjectCard(props: {
               project={project}
               isAlreadyInCart={isAlreadyInCart}
               removeFromCart={() => {
-                handleRemoveProjectsFromCart([project], props.roundId);
+                handleRemoveProjectsFromCart([cartProject]);
               }}
               addToCart={() => {
-                handleAddProjectsToCart([project], props.roundId);
+                handleAddProjectsToCart([cartProject]);
               }}
             />
           )}
