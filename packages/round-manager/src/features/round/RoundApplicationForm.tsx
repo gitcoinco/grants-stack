@@ -180,13 +180,13 @@ export function RoundApplicationForm(props: {
   const navigate = useNavigate();
 
   const roundCategory =
-    props.configuration?.roundCategory || RoundCategory.QuadraticFunding;
+    props.configuration?.roundCategory ?? RoundCategory.QuadraticFunding;
 
   // @ts-expect-error TODO: either fix this or refactor the whole formstepper
   const questionsArg = formData?.applicationMetadata?.questions;
   const defaultQuestions: ApplicationMetadata["questions"] = questionsArg
     ? questionsArg
-    : roundCategory == RoundCategory.QuadraticFunding
+    : roundCategory === RoundCategory.QuadraticFunding
     ? initialQuestionsQF
     : initialQuestionsDirect;
 

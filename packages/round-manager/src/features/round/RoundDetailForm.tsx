@@ -151,7 +151,7 @@ interface RoundDetailFormProps {
 export function RoundDetailForm(props: RoundDetailFormProps) {
   const program = props.initialData?.program;
   const roundCategory =
-    props.configuration?.roundCategory || RoundCategory.QuadraticFunding;
+    props.configuration?.roundCategory ?? RoundCategory.QuadraticFunding;
 
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
@@ -254,7 +254,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               </div>
 
               {/* vault Address */}
-              {roundCategory == RoundCategory.Direct && (
+              {roundCategory === RoundCategory.Direct && (
                 <VaultAddress
                   register={register("vaultAddress")}
                   errors={errors}
@@ -286,7 +286,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
               {/* Dates explanation */}
               <div className="mt-6 mb-3 text-sm text-grey-400">
-                {roundCategory == RoundCategory.QuadraticFunding ? (
+                {roundCategory === RoundCategory.QuadraticFunding ? (
                   <>
                     <p>
                       What are the dates for the Applications and Round voting
@@ -305,7 +305,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               </div>
 
               {/* Application dates */}
-              {roundCategory == RoundCategory.QuadraticFunding && (
+              {roundCategory === RoundCategory.QuadraticFunding && (
                 <>
                   <p className="text-sm mb-2">
                     <span>Applications</span>
@@ -559,7 +559,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                     )}
 
                     {/* Round end date */}
-                    {roundCategory == RoundCategory.Direct && (
+                    {roundCategory === RoundCategory.Direct && (
                       <Controller
                         control={control}
                         name="roundEndTimeDisabled"

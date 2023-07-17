@@ -21,13 +21,13 @@ export const deployVotingContract = async (
 
     if (!isQF) {
       // Note: In direct-rounds, we use a dummy contract for the voting contract.
-      return Promise.resolve({
+      return {
         votingContractAddress: dgVotingStrategyDummyContract(chainId),
-      });
+      };
     }
 
     const _votingStrategyFactory = qfVotingStrategyFactoryContract(chainId);
-    if (!_votingStrategyFactory.address)
+    if (_votingStrategyFactory.address === undefined)
       throw new Error("No votingStrategyFactoryContract address");
 
     const votingStrategyFactory = new ethers.Contract(

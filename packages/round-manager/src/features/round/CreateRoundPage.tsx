@@ -35,7 +35,7 @@ export default function CreateRound() {
   const programId = searchParams.get("programId");
   const roundCategoryParam = searchParams.get("roundCategory");
   const roundCategory =
-    roundCategoryParam == "direct"
+    roundCategoryParam === "direct"
       ? RoundCategory.Direct
       : RoundCategory.QuadraticFunding;
   const steps =

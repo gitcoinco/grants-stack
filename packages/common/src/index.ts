@@ -165,8 +165,9 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
     default:
       return process.env.REACT_APP_DIRECT_GRANT_ENABLED
         ? TMP_DIRECT_ROUND_SUBGRAPH_URL
-        : `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
-    // TODO: rollback this change once the subgraph is deployed
+        : (process.env.REACT_APP_SUBGRAPH_GOERLI_API as string);
+    // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
+    // as we need to fetch data from the new version of the subgraph.
     // return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
   }
 };

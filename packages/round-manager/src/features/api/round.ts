@@ -16,7 +16,7 @@ import {
   Round,
 } from "./types";
 import { fetchFromIPFS, payoutTokens } from "./utils";
-import { maxDate } from "../../constants";
+import { maxDateForUint256 } from "../../constants";
 import { RoundFactory__factory } from "../../types/generated/typechain/factories/RoundFactory__factory";
 
 export enum UpdateAction {
@@ -276,13 +276,13 @@ export async function listRounds(
         applicationMetadata,
         applicationsStartTime: new Date(round.applicationsStartTime * 1000),
         applicationsEndTime:
-          round.applicationsEndTime == ethers.constants.MaxUint256.toString()
-            ? maxDate
+          round.applicationsEndTime === ethers.constants.MaxUint256.toString()
+            ? maxDateForUint256
             : new Date(round.applicationsEndTime * 1000),
         roundStartTime: new Date(round.roundStartTime * 1000),
         roundEndTime:
-          round.roundEndTime == ethers.constants.MaxUint256.toString()
-            ? maxDate
+          round.roundEndTime === ethers.constants.MaxUint256.toString()
+            ? maxDateForUint256
             : new Date(round.roundEndTime * 1000),
         token: round.token,
         votingStrategy: round.votingStrategy,
@@ -301,7 +301,7 @@ export async function listRounds(
 }
 
 /**
- * Deploys a round by invoking the create funciton on RoundFactory
+ * Deploys a round by invoking the create function on RoundFactory
  *
  * @param round
  * @param signerOrProvider
@@ -321,35 +321,34 @@ export async function deployRoundContract(
     );
 
     let initRoundTimes: string[] = [];
-    const parseDate = (date: Date) =>
-      (new Date(date).getTime() / 1000).toString();
+    const formatDate = (date: Date) => (date.getTime() / 1000).toString();
     if (isQF) {
-      if (!round.applicationsEndTime) {
+      if (round.applicationsEndTime === undefined) {
         round.applicationsEndTime = round.roundStartTime;
       }
       initRoundTimes = [
-        parseDate(round.applicationsStartTime),
-        parseDate(round.applicationsEndTime),
-        parseDate(round.roundStartTime),
-        parseDate(round.roundEndTime as Date),
+        formatDate(round.applicationsStartTime),
+        formatDate(round.applicationsEndTime),
+        formatDate(round.roundStartTime),
+        formatDate(round.roundEndTime),
       ];
     } else {
       // note: DirectRounds does not set application dates.
       // in those cases, we set:
       // application start time with the round start time
       // application end time with MaxUint256.
-      // if the round has not end time, we set with MaxUint256.
+      // if the round has not end time, we set it with MaxUint256.
 
       initRoundTimes = [
-        parseDate(round.applicationsStartTime ?? round.roundStartTime),
+        formatDate(round.applicationsStartTime ?? round.roundStartTime),
         round.applicationsEndTime
-          ? parseDate(round.applicationsEndTime)
+          ? formatDate(round.applicationsEndTime)
           : round.roundEndTime
-          ? parseDate(round.roundEndTime)
+          ? formatDate(round.roundEndTime)
           : ethers.constants.MaxUint256.toString(),
-        parseDate(round.roundStartTime),
+        formatDate(round.roundStartTime),
         round.roundEndTime
-          ? parseDate(round.roundEndTime)
+          ? formatDate(round.roundEndTime)
           : ethers.constants.MaxUint256.toString(),
       ];
     }
@@ -368,9 +367,9 @@ export async function deployRoundContract(
     if (isQF) {
       // Ensure tokenAmount is normalized to token decimals
       const tokenAmount =
-        round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable || 0;
+        round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable ?? 0;
       const pyToken = payoutTokens.filter(
-        (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+        (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
       )[0];
       parsedTokenAmount = utils.parseUnits(
         tokenAmount.toString(),
@@ -405,7 +404,11 @@ export async function deployRoundContract(
     );
 
     // Deploy a new Round contract
-    const tx = await roundFactory.create(encodedParameters, round.ownedBy);
+    const tx = await roundFactory.create(
+      encodedParameters,
+      round.ownedBy,
+      process.env.NODE_ENV != "production" ? { gasLimit: 900000 } : undefined
+    );
 
     const receipt = await tx.wait(); // wait for transaction receipt
 

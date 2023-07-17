@@ -29,7 +29,7 @@ import { Spinner } from "../common/Spinner";
 import { useRounds } from "../../context/round/RoundContext";
 import { ProgressStatus, Round } from "../api/types";
 import { useDebugMode } from "../../hooks";
-import { maxDate } from "../../constants";
+import { maxDateForUint256 } from "../../constants";
 import moment from "moment";
 
 export default function ViewProgram() {
@@ -445,13 +445,13 @@ export default function ViewProgram() {
       application: {
         iso: {
           start: formatUTCDateAsISOString(round.applicationsStartTime),
-          end: moment(round.applicationsEndTime).isSame(maxDate)
+          end: moment(round.applicationsEndTime).isSame(maxDateForUint256)
             ? noEndTime
             : formatUTCDateAsISOString(round.applicationsEndTime),
         },
         utc: {
           start: getUTCTime(round.applicationsStartTime),
-          end: moment(round.applicationsEndTime).isSame(maxDate)
+          end: moment(round.applicationsEndTime).isSame(maxDateForUint256)
             ? ""
             : `(${getUTCTime(round.applicationsEndTime)})`,
         },
@@ -459,13 +459,13 @@ export default function ViewProgram() {
       round: {
         iso: {
           start: formatUTCDateAsISOString(round.roundStartTime),
-          end: moment(round.roundEndTime).isSame(maxDate)
+          end: moment(round.roundEndTime).isSame(maxDateForUint256)
             ? noEndTime
             : formatUTCDateAsISOString(round.roundEndTime),
         },
         utc: {
           start: `(${getUTCTime(round.roundStartTime)})`,
-          end: moment(round.roundEndTime).isSame(maxDate)
+          end: moment(round.roundEndTime).isSame(maxDateForUint256)
             ? ""
             : `(${getUTCTime(round.roundEndTime)})`,
         },
