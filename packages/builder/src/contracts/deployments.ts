@@ -47,7 +47,7 @@ export const addresses: DeploymentAddressesMap = {
     projectRegistry: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
   },
   pgn: {
-    projectRegistry: "",
+    projectRegistry: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
   },
   pgnTestnet: {
     projectRegistry: "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11",

@@ -22,7 +22,7 @@ const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]:
     "0x984749e408FF0446d8ADaf20E293F2F299396631",
   [ChainId.PGN_TESTNET]: "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11",
-  [ChainId.PGN]: /*TODO*/ "",
+  [ChainId.PGN]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -49,7 +49,7 @@ const programFactoryMap: ChainIdToStringMap = {
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
   [ChainId.PGN_TESTNET]: "0x2Ff06F96Bb265698e47BfdED83f1aa0aC7c3a4Ce",
-  [ChainId.PGN]: /*TODO*/ "",
+  [ChainId.PGN]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -70,7 +70,7 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
   [ChainId.PGN_TESTNET]: "0x0479b9DA9f287539FEBd597350B1eBaEBF7479ac",
-  [ChainId.PGN]: /*TODO*/ "",
+  [ChainId.PGN]: "0x8AdFcF226dfb2fA73788Ad711C958Ba251369cb3",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (chainId: ChainId): Contract => {
@@ -96,7 +96,7 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
   [ChainId.PGN_TESTNET]: "0xE8027a807Bb85e57da4B7A5ecE65b0aBDf231ce8",
-  [ChainId.PGN]: /*TODO*/ "",
+  [ChainId.PGN]: "0x2AFA4bE0f2468347A2F086c2167630fb1E58b725",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (chainId: ChainId): Contract => {
@@ -117,7 +117,7 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
   [ChainId.PGN_TESTNET]: "0xE42D1Da8d75Cf1d6f6C460DAa3f1b10a79D689B1",
-  [ChainId.PGN]: /*TODO*/ "",
+  [ChainId.PGN]: "0x27efa1C90e097c980c669AB1a6e326AD4164f1Cb",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId
