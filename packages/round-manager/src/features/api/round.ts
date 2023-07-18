@@ -404,11 +404,7 @@ export async function deployRoundContract(
     );
 
     // Deploy a new Round contract
-    const tx = await roundFactory.create(
-      encodedParameters,
-      round.ownedBy,
-      process.env.NODE_ENV != "production" ? { gasLimit: 900000 } : undefined
-    );
+    const tx = await roundFactory.create(encodedParameters, round.ownedBy);
 
     const receipt = await tx.wait(); // wait for transaction receipt
 

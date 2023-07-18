@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import {
@@ -35,6 +35,8 @@ import moment from "moment";
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
+
+  const navigate = useNavigate();
 
   const { id: programId } = useParams();
 
@@ -370,7 +372,13 @@ export default function ViewProgram() {
                     <div className="flex flex-row justify-between">
                       <p className="font-bold">My Rounds</p>
                       <span
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                          process.env.REACT_APP_DIRECT_GRANT_ENABLED
+                            ? setIsModalOpen(true)
+                            : navigate(
+                                `/round/create?programId=${programToRender?.id}`
+                              );
+                        }}
                         className="text-violet-400 font-thin ml-auto mr-4 cursor-pointer"
                         data-testid="create-round-small-link"
                       >
