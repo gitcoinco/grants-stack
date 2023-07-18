@@ -5,7 +5,7 @@ This package serves the app which holds all the features w.r.t to
 - exploring a round
 - voting for a project
 
-This package is meant to be used by the users who would wnat to explore rounds and contribute to the projects within a round
+This package is meant to be used by the users who would want to explore rounds and contribute to the projects within a round
 It relies on the contracts deployed from the [contracts](../contracts) package.
 Indexed data can be queried by the graphs deployed from the Allo's [graph](https://github.com/Allo-Protocol/graph/blob/main/round/README.md) repository.
 
@@ -55,7 +55,7 @@ To contribute to this project, fork the project and follow the instructions at [
 
 ### Passport Integration
 
-In your `.env` you will need to specify two enviroment variables for [Gitcoin Passport Integration](https://passport.gitcoin.co/#/).
+In your `.env` you will need to specify two environment variables for [Gitcoin Passport Integration](https://passport.gitcoin.co/#/).
 
 Generate a community scorer API Key with the Passport Scorer Dashboard [here](https://www.scorer.gitcoin.co/dashboard) by selecting API Keys in the sidebar.
 

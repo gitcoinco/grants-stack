@@ -11,7 +11,7 @@ const programFactory = [
   "function programContract() view returns (address)",
   "function renounceOwnership()",
   "function transferOwnership(address newOwner)",
-  "function updateProgramContract(address newProgramContract)"
+  "function updateProgramContract(address newProgramContract)",
 ];
 
 export default programFactory;
