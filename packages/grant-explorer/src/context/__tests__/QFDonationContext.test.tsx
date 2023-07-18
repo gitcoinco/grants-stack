@@ -78,8 +78,6 @@ describe("<QFDonationProvider />", () => {
 
       fireEvent.click(screen.getByTestId("submit-qf-donations"));
 
-      screen.logTestingPlaygroundURL();
-
       expect(
         await screen.findByTestId(
           `token-approval-status-is-${ProgressStatus.IS_SUCCESS}`
