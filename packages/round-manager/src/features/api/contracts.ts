@@ -37,14 +37,11 @@ export const projectRegistryContract = (
       address = "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID: {
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
       address = "0xa71864fAd36439C50924359ECfF23Bb185FFDf21";
       break;
     }
-    default:
-      throw new Error(
-        `No projectRegistryContract address for chain id: ${chainId}`
-      );
   }
 
   return {
@@ -89,14 +86,11 @@ export const programFactoryContract = (
       address = "0x2Ff06F96Bb265698e47BfdED83f1aa0aC7c3a4Ce";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID: {
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
       address = "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e";
       break;
     }
-    default:
-      throw new Error(
-        `No programFactoryContract address for chain id: ${chainId}}`
-      );
   }
 
   return {
@@ -139,12 +133,11 @@ export const roundFactoryContract = (chainId: ChainId | undefined): string => {
       address = "0x0479b9DA9f287539FEBd597350B1eBaEBF7479ac";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID: {
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
       address = "0x24F9EBFAdf095e0afe3d98635ee83CD72e49B5B0";
       break;
     }
-    default:
-      throw new Error(`No round factory address for chainId ${chainId}`);
   }
 
   return address;
@@ -186,14 +179,11 @@ export const qfVotingStrategyFactoryContract = (
       address = "0xE8027a807Bb85e57da4B7A5ecE65b0aBDf231ce8";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID: {
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
       address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
       break;
     }
-    default:
-      throw new Error(
-        `No QFVotingStrategyFactory address for chainId ${chainId}`
-      );
   }
 
   return {
@@ -229,14 +219,11 @@ export const dgVotingStrategyDummyContract = (
       address = "0xE42D1Da8d75Cf1d6f6C460DAa3f1b10a79D689B1";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID: {
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
     }
-    default:
-      throw new Error(
-        `No VotingStrategyFactory address for chainId ${chainId}`
-      );
   }
 
   return address;
@@ -269,14 +256,12 @@ export const merklePayoutStrategyFactoryContract = (
       address = "";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID: {
-      address = "0xD8d9c9090A5651c361fd19C5669ba9AA48a8cFcD";
+
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe";
       break;
     }
-    default:
-      throw new Error(
-        `No MerklePayoutStrategyFactory address for chainId ${chainId}`
-      );
   }
 
   return address;
@@ -304,14 +289,11 @@ export const directPayoutStrategyFactoryContract = (
       address = "";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID: {
-      address = "0xEA5cddfb6B755636852CE10c4407Cc1613B78355";
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x0077551e24bfB910aBABedC4336246e34B5fB0A2";
       break;
     }
-    default:
-      throw new Error(
-        `No directPayoutStrategyFactory address for chainId ${chainId}`
-      );
   }
 
   return address;
@@ -345,12 +327,11 @@ export const alloSettingsContract = (
       address = "";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID: {
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
       address = "0x991cd65cb6AE183F06a489857775D7aE14794055";
       break;
     }
-    default:
-      throw new Error(`No alloSettings address for chainId ${chainId}`);
   }
 
   return {

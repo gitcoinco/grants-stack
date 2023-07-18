@@ -17,7 +17,11 @@ import {
 import { saveToIPFS } from "../../api/ipfs";
 import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
-import { ApplicationMetadata, ProgressStatus } from "../../api/types";
+import {
+  ApplicationMetadata,
+  ProgressStatus,
+  RoundCategory,
+} from "../../api/types";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
@@ -25,12 +29,13 @@ import {
   RoundApplicationForm,
   initialQuestionsQF,
 } from "../RoundApplicationForm";
+import { errorModalDelayMs } from "../../../constants";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
 jest.mock("../../api/subgraph");
 jest.mock("../../common/Auth");
-jest.mock("../../api/payoutStrategy/merklePayoutStrategy");
+jest.mock("../../api/payoutStrategy/payoutStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
@@ -41,6 +46,7 @@ jest.mock("../../../constants", () => ({
 }));
 
 beforeEach(() => {
+  jest.setTimeout(10000);
   jest.clearAllMocks();
 });
 
@@ -54,11 +60,11 @@ describe("<RoundApplicationForm />", () => {
       chain: { name: "my blockchain" },
       provider: {
         getNetwork: () => ({
-          chainId: 0,
+          chainId: 5,
         }),
       },
       signer: {
-        getChainId: () => 0,
+        getChainId: () => 5,
       },
       address: "0x0",
     });
@@ -85,12 +91,16 @@ describe("<RoundApplicationForm />", () => {
             },
           }}
           stepper={FormStepper}
+          configuration={{ roundCategory: RoundCategory.QuadraticFunding }}
         />,
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
       await startProgressModal();
-
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
     });
 
     it("choosing done closes the error modal", async () => {
@@ -129,7 +139,11 @@ describe("<RoundApplicationForm />", () => {
       );
       await startProgressModal();
 
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
       const saveToIpfsCalls = (saveToIPFS as jest.Mock).mock.calls.length;
       expect(saveToIpfsCalls).toEqual(2);
 
@@ -170,8 +184,11 @@ describe("<RoundApplicationForm />", () => {
         createRoundStateOverride
       );
       await startProgressModal();
-
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
     });
   });
 });

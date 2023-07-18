@@ -72,8 +72,10 @@ describe("<ApplicationProvider />", () => {
     it("sets isLoading back to false and when getApplicationById call succeeds", async () => {
       const expectedApplication = makeGrantApplicationData();
       const expectedApplicationId: string = expectedApplication.id;
-      (getApplicationById as any).mockResolvedValue(expectedApplication);
-
+      (getApplicationById as any).mockResolvedValue(
+        Promise.resolve(expectedApplication)
+      );
+      
       render(
         <ApplicationProvider>
           <TestingUseApplicationByIdComponent

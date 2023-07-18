@@ -13,12 +13,12 @@ const mockWallet = {
   address: "0x0",
   signer: {
     getChainId: () => {
-      /* do nothing.*/
+      return 5;
     },
   },
 };
 
-jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
+jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 jest.mock("../../../features/api/round");
 jest.mock("../../../features/api/ipfs");
 jest.mock("../../../features/api/subgraph");
