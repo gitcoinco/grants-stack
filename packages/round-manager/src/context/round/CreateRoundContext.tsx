@@ -187,7 +187,7 @@ const _createRound = async ({
     const roundContractInputsWithContracts = {
       ...roundContractInputsWithPointers,
       votingStrategy: isQF
-        ? qfVotingStrategyFactoryContract(chainId)
+        ? qfVotingStrategyFactoryContract(chainId).address
         : dgVotingStrategyDummyContract(chainId),
       payoutStrategy: {
         id: isQF

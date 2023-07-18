@@ -162,7 +162,7 @@ export const roundImplementationContract: Contract = {
 /* QFVotingStrategyFactory */
 export const qfVotingStrategyFactoryContract = (
   chainId: ChainId | undefined
-): string => {
+): Contract & { address: string } => {
   let address;
 
   switch (chainId) {
@@ -187,7 +187,7 @@ export const qfVotingStrategyFactoryContract = (
       break;
     }
     case ChainId.GOERLI_CHAIN_ID: {
-      address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
+      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
       break;
     }
     default:
@@ -196,7 +196,10 @@ export const qfVotingStrategyFactoryContract = (
       );
   }
 
-  return address;
+  return {
+    address,
+    abi: abi.qfVotingStrategyFactory,
+  };
 };
 
 /* VotingStrategyFactory */
@@ -267,7 +270,7 @@ export const merklePayoutStrategyFactoryContract = (
       break;
     }
     case ChainId.GOERLI_CHAIN_ID: {
-      address = "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe";
+      address = "0xD8d9c9090A5651c361fd19C5669ba9AA48a8cFcD";
       break;
     }
     default:
@@ -302,7 +305,7 @@ export const directPayoutStrategyFactoryContract = (
       break;
     }
     case ChainId.GOERLI_CHAIN_ID: {
-      address = "0x0077551e24bfB910aBABedC4336246e34B5fB0A2";
+      address = "0xEA5cddfb6B755636852CE10c4407Cc1613B78355";
       break;
     }
     default:
