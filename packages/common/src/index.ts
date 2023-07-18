@@ -110,7 +110,9 @@ const graphQlEndpoints: Record<ChainId, string> = {
 };
 
 /**
- * Fetch subgraph network for provided web3 network
+ * Fetch subgraph network for provided web3 network.
+ * The backticks are here to work around a failure of a test that tetsts graphql_fetch,
+ * and fails if the endpoint is undefined, so we convert the undefined to a string here in order not to fail the test.
  *
  * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
