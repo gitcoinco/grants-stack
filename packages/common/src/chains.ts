@@ -62,5 +62,4 @@ export const pgn: Chain = {
       url: "https://explorer.publicgoods.network",
     },
   },
-  testnet: true,
 };

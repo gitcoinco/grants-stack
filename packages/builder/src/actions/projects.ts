@@ -17,12 +17,14 @@ import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
+
 interface ProjectsLoadingAction {
   payload: number;
   type: typeof PROJECTS_LOADING;
 }
 
 export const PROJECTS_LOADED = "PROJECTS_LOADED";
+
 interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
   payload: {
@@ -32,23 +34,27 @@ interface ProjectsLoadedAction {
 }
 
 export const PROJECTS_ERROR = "PROJECTS_ERROR";
+
 interface ProjectsErrorAction {
   type: typeof PROJECTS_ERROR;
   error: string;
 }
 
 export const PROJECTS_UNLOADED = "PROJECTS_UNLOADED";
+
 export interface ProjectsUnloadedAction {
   type: typeof PROJECTS_UNLOADED;
 }
 
 export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
+
 interface ProjectApplicationsLoadingAction {
   type: typeof PROJECT_APPLICATIONS_LOADING;
   projectID: string;
 }
 
 export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
+
 interface ProjectApplicationsLoadedAction {
   type: typeof PROJECT_APPLICATIONS_LOADED;
   projectID: string;
@@ -56,6 +62,7 @@ interface ProjectApplicationsLoadedAction {
 }
 
 export const PROJECT_APPLICATION_UPDATED = "PROJECT_APPLICATION_UPDATED";
+
 interface ProjectApplicationUpdatedAction {
   type: typeof PROJECT_APPLICATION_UPDATED;
   projectID: string;
@@ -64,6 +71,7 @@ interface ProjectApplicationUpdatedAction {
 }
 
 export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
+
 interface ProjectApplicationsErrorAction {
   type: typeof PROJECT_APPLICATIONS_ERROR;
   projectID: string;
@@ -71,6 +79,7 @@ interface ProjectApplicationsErrorAction {
 }
 
 export const PROJECT_OWNERS_LOADED = "PROJECT_OWNERS_LOADED";
+
 interface ProjectOwnersLoadedAction {
   type: typeof PROJECT_OWNERS_LOADED;
   payload: {
@@ -80,12 +89,14 @@ interface ProjectOwnersLoadedAction {
 }
 
 export const PROJECT_STATS_LOADING = "PROJECT_STATS_LOADING";
+
 interface ProjectStatsLoadingAction {
   type: typeof PROJECT_STATS_LOADING;
   projectID: string;
 }
 
 export const PROJECT_STATS_LOADED = "PROJECT_STATS_LOADED";
+
 interface ProjectStatsLoadedAction {
   type: typeof PROJECT_STATS_LOADED;
   projectID: string;
@@ -321,6 +332,14 @@ export const loadProjects =
       datadogRum.addError(error, { chainID });
       console.error(chainName, chainID, error);
 
+      dispatch(projectsLoaded(chainID, {}));
+
+      /* TODO: Once ENS is deployed on PGN Mainnet and testnet, undo this */
+      // @ts-expect-error
+      if (chainID === 424 && error?.reason === "ENS name not configured") {
+        return;
+      }
+
       dispatch(
         addAlert(
           "error",
@@ -328,8 +347,6 @@ export const loadProjects =
           "Please try refreshing the page."
         )
       );
-
-      dispatch(projectsLoaded(chainID, {}));
     }
   };
 

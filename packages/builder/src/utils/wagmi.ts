@@ -18,6 +18,27 @@ const ftmMainnetIcon = FantomFTMLogo;
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID;
 const infuraId = process.env.REACT_APP_INFURA_ID;
 
+export const pgn: Chain = {
+  id: 424,
+  name: "PGN",
+  network: "pgn",
+  iconUrl: PublicGoodsNetworkIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: "https://rpc.publicgoods.network",
+  },
+  blockExplorers: {
+    default: {
+      name: "pgnscan",
+      url: "https://explorer.publicgoods.network",
+    },
+  },
+};
+
 const chainsAvailable: Chain[] = [];
 export const pgnTestnet: Chain = {
   id: 58008,
@@ -104,7 +125,7 @@ if (process.env.REACT_APP_LOCALCHAIN) {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(chain.mainnet, fantomMainnet, optimismMainnet);
+  chainsAvailable.push(chain.mainnet, fantomMainnet, optimismMainnet, pgn);
 } else {
   chainsAvailable.push(
     optimismMainnet,
@@ -112,7 +133,8 @@ if (process.env.REACT_APP_ENV === "production") {
     fantomTestnet,
     fantomMainnet,
     chain.mainnet,
-    pgnTestnet
+    pgnTestnet,
+    pgn
   );
 }
 
