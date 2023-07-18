@@ -195,6 +195,17 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const PGN_MAINNET_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -202,6 +213,7 @@ export const payoutTokens = [
   ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
+  ...PGN_MAINNET_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -303,6 +315,9 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           decimal: 18,
         },
       ];
+    case ChainId.PGN:
+      return PGN_MAINNET_TOKENS;
+
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       return [

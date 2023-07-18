@@ -177,12 +177,31 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
 
 const PGN_TESTNET_TOKENS: PayoutToken[] = [
   {
-    name: "DAI",
+    name: "TEST",
     chainId: ChainId.PGN_TESTNET,
     address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.PGN_TESTNET,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+];
+
+const PGN_MAINNET_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
 
@@ -193,6 +212,7 @@ export const payoutTokens = [
   ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
+  ...PGN_MAINNET_TOKENS,
 ];
 
 type PayoutTokensMap = Record<ChainId, PayoutToken[]>;
@@ -202,7 +222,7 @@ const payoutTokensMap: PayoutTokensMap = {
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: FANTOM_MAINNET_TOKENS,
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: FANTOM_TESTNET_TOKENS,
-  [ChainId.PGN]: [],
+  [ChainId.PGN]: PGN_MAINNET_TOKENS,
   [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
 };
 
