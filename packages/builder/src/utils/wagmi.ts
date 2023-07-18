@@ -125,7 +125,7 @@ if (process.env.REACT_APP_LOCALCHAIN) {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(chain.mainnet, fantomMainnet, optimismMainnet, pgn);
+  chainsAvailable.push(chain.mainnet, fantomMainnet, optimismMainnet);
 } else {
   chainsAvailable.push(
     optimismMainnet,
