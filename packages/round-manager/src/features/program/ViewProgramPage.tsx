@@ -90,7 +90,7 @@ export default function ViewProgram() {
           <Link to={`/round/${round.id}`} key={index}>
             <div
               key={index}
-              className="relative w-full border-b border-grey-100 py-3 grid items-center"
+              className="relative w-full border-b border-grey-100 py-4 grid items-center"
               style={{ gridTemplateColumns: "80% auto 20px" }}
             >
               <div className="flex-1 min-w-0">

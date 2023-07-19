@@ -49,8 +49,9 @@ import {
 } from "common";
 import { renderToHTML } from "common";
 import { useDebugMode } from "../../hooks";
+import { ROUND_PAYOUT_DIRECT } from "../common/Utils";
 
-type ApplicationStatus = "APPROVED" | "REJECTED";
+type ApplicationStatus = "APPROVED" | "REJECTED" | "IN_REVIEW";
 
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
@@ -173,12 +174,21 @@ export default function ViewApplicationPage() {
       setOpenProgressModal(true);
       setOpenModal(false);
 
-      application.status = reviewDecision;
+      if (reviewDecision == "IN_REVIEW") {
+        application.inReview = true;
+      } else {
+        application.status = reviewDecision;
+      }
 
       await bulkUpdateGrantApplications({
         roundId: roundId,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         applications: applications!,
+        payoutAddress:
+          reviewDecision == "IN_REVIEW"
+            ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              applications![0].payoutStrategy?.id
+            : undefined,
         selectedApplications: [application],
       });
     } catch (error) {
@@ -339,6 +349,28 @@ export default function ViewApplicationPage() {
                     </div>
                     <div className="mt-16 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                       <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
+                        {application &&
+                          application.payoutStrategy?.strategyName ==
+                            ROUND_PAYOUT_DIRECT && (
+                            <Button
+                              type="button"
+                              $variant={
+                                application?.inReview ? "solid" : "outline"
+                              }
+                              className="inline-flex justify-center px-4 py-2 text-sm m-auto"
+                              disabled={isLoading || isUpdateLoading}
+                              onClick={() => confirmReviewDecision("IN_REVIEW")}
+                            >
+                              <CheckIcon
+                                className="h-5 w-5 mr-1"
+                                aria-hidden="true"
+                              />
+                              {application?.inReview
+                                ? "Reviewing"
+                                : "In Review"}
+                            </Button>
+                          )}
+
                         <Button
                           type="button"
                           $variant={
@@ -390,7 +422,9 @@ export default function ViewApplicationPage() {
                 }
                 body={
                   <p className="text-sm text-grey-400">
-                    {`You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network`}
+                    {reviewDecision == "IN_REVIEW"
+                      ? 'You have moved to "In Review" status a Grant Application. This will carry gas fees based on the selected network.'
+                      : `You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network.`}
                   </p>
                 }
                 confirmButtonAction={handleReview}

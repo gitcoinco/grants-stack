@@ -40,7 +40,6 @@ import {
   verticalTabStyles,
 } from "../common/Utils";
 import ApplicationsApproved from "./ApplicationsApproved";
-import ApplicationsByStatus from "./ApplicationsByStatus";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
@@ -50,6 +49,8 @@ import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
 import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
 import moment from "moment";
+import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
+import ApplicationsToReview from "./ApplicationsToReview";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -112,7 +113,7 @@ export default function ViewRoundPage() {
               <div className="flex flex-row mb-1 items-center">
                 <RoundName round={round} />
               </div>
-              <div className="flex flex-row flex-wrap relative">
+              <div className="flex flex-row flex-wrap relative gap-2 md:gap-8 xl:gap-36 pr-44">
                 {round.payoutStrategy.strategyName != ROUND_PAYOUT_DIRECT && (
                   <ApplicationOpenDateRange round={round} />
                 )}
@@ -299,7 +300,7 @@ export default function ViewRoundPage() {
                   <Tab.Panels className="basis-5/6 ml-6">
                     <Tab.Panel>
                       <GrantApplications
-                        isDirect={
+                        isDirectRound={
                           round.payoutStrategy.strategyName ==
                           ROUND_PAYOUT_DIRECT
                         }
@@ -350,29 +351,26 @@ export default function ViewRoundPage() {
 }
 
 function GrantApplications(props: {
-  isDirect?: boolean;
+  isDirectRound?: boolean;
   applications: GrantApplication[] | undefined;
   isRoundsFetched: boolean;
   fetchRoundStatus: ProgressStatus;
   chainId: string;
   roundId: string | undefined;
 }) {
-  const pendingApplications =
-    props.applications?.filter(
-      (a) => a.status === ApplicationStatus.PENDING.toString()
-    ) || [];
-  const approvedApplications =
-    props.applications?.filter(
-      (a) => a.status === ApplicationStatus.APPROVED.toString()
-    ) || [];
-  const rejectedApplications =
-    props.applications?.filter(
-      (a) => a.status === ApplicationStatus.REJECTED.toString()
-    ) || [];
-  const inReviewApplications =
-    props.applications?.filter(
-      (a) => a.status === ApplicationStatus.IN_REVIEW.toString()
-    ) || [];
+  const pendingApplications = (props.applications || [])
+    .filter((a) => a.status === ApplicationStatus.PENDING.toString())
+    .filter((a) => (props.isDirectRound ? !a.inReview : true));
+
+  const approvedApplications = (props.applications || []).filter(
+    (a) => a.status === ApplicationStatus.APPROVED.toString()
+  );
+  const rejectedApplications = (props.applications || []).filter(
+    (a) => a.status === ApplicationStatus.REJECTED.toString()
+  );
+  const inReviewApplications = (props.applications || []).filter((a) =>
+    props.isDirectRound ? a.inReview : true
+  );
 
   const TabApplicationCounter = tw.div`
   rounded-md
@@ -412,7 +410,7 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
-                    {props.isDirect && (
+                    {props.isDirectRound && (
                       <Tab
                         className={({ selected }) =>
                           horizontalTabStyles(selected)
@@ -483,12 +481,18 @@ function GrantApplications(props: {
               </div>
               <Tab.Panels>
                 <Tab.Panel>
-                  <ApplicationsByStatus />
+                  {props.isDirectRound ? (
+                    <ApplicationsToReview />
+                  ) : (
+                    <ApplicationsToApproveReject
+                      isDirectRound={Boolean(props.isDirectRound)}
+                    />
+                  )}
                 </Tab.Panel>
-                {props.isDirect && (
+                {props.isDirectRound && (
                   <Tab.Panel>
-                    <ApplicationsByStatus
-                      status={ApplicationStatus.IN_REVIEW}
+                    <ApplicationsToApproveReject
+                      isDirectRound={Boolean(props.isDirectRound)}
                     />
                   </Tab.Panel>
                 )}
@@ -554,16 +558,26 @@ function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
   const res = parseRoundDates(round);
 
   return (
-    <div className="flex gap-1 text-sm">
+    <div className="flex gap-2 text-sm">
       <CalendarIcon className="h-5 w-5 text-grey-400" />
-      <span className="text-grey-400">Applications:</span>
-      <span className="mr-1">{res.application.iso.start}</span>
-      <span className="text-grey-400">({res.application.utc.start})</span>
-      <span className="mx-1">-</span>
-      <span className="mr-1">{res.application.iso.end}</span>
-      {res.application.utc.end && (
-        <span className="text-grey-400">({res.application.utc.end})</span>
-      )}
+      <span className="text-grey-400 mr-2">Applications:</span>
+      <div className="flex flex-row gap-2">
+        <p className="flex flex-col">
+          <span>{res.application.iso.start}</span>
+          <span className="text-grey-400 text-xs">({res.application.utc.start})</span>
+        </p>
+        <p className="flex flex-col">
+          <span className="mx-1">-</span>
+        </p>
+        <p className="flex flex-col">
+          <span className="[&>*]:flex [&>*]:flex-col">
+            {res.application.iso.end}
+          </span>
+          {res.application.utc.end && (
+            <span className="text-grey-400 text-xs">{res.application.utc.end}</span>
+          )}
+        </p>
+      </div>
     </div>
   );
 }
@@ -572,16 +586,26 @@ function RoundOpenDateRange({ round }: { round: RoundDates }) {
   const res = parseRoundDates(round);
 
   return (
-    <div className="flex gap-1 text-sm">
+    <div className="flex gap-2 text-sm">
       <ClockIcon className="h-5 w-5 text-grey-400" />
-      <span className="text-grey-400">Round:</span>
-      <span className="mr-1">{res.round.iso.start}</span>
-      <span className="text-grey-400">{res.round.utc.start}</span>
-      <span className="mx-1">-</span>
-      <span className="mr-1">{res.round.iso.end}</span>
-      {res.round.utc.end && (
-        <span className="text-grey-400">{res.round.utc.end}</span>
-      )}
+      <span className="text-grey-400 mr-2">Round:</span>
+      <div className="flex flex-row gap-2">
+        <p className="flex flex-col">
+          <span>{res.round.iso.start}</span>
+          <span className="text-grey-400 text-xs">{res.round.utc.start}</span>
+        </p>
+        <p className="flex flex-col">
+          <span className="mx-1">-</span>
+        </p>
+        <p className="flex flex-col">
+          <span className="[&>*]:flex [&>*]:flex-col">
+            {res.round.iso.end}
+          </span>
+          {res.round.utc.end && (
+            <span className="text-grey-400 text-xs">{res.round.utc.end}</span>
+          )}
+        </p>
+      </div>
     </div>
   );
 }
