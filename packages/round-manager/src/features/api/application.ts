@@ -166,6 +166,11 @@ export const getApplicationsByRoundId = async (
                 strategyName
               }
             }
+            statusSnapshots {
+              status
+              statusDescription
+              timestamp
+            }
           }
         }
       `,
@@ -193,6 +198,16 @@ export const getApplicationsByRoundId = async (
         id: project.id,
         projectsMetaPtr: project.round.projectsMetaPtr,
         payoutStrategy: project.round.payoutStrategy,
+        statusSnapshots: project.statusSnapshots?.map(
+          (s: {
+            status: number;
+            statusDescription: string;
+            timestamp: string;
+          }) => ({
+            ...s,
+            timestamp: new Date(Number(s.timestamp) * 1000),
+          })
+        ),
       });
     }
 
