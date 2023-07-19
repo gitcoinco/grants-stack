@@ -274,7 +274,8 @@ export type ProjectStatus =
   | "REJECTED"
   | "CANCELLED"
   | "APPEAL"
-  | "FRAUD";
+  | "FRAUD"
+  | "IN_REVIEW";
 
 export type ProjectCredentials = {
   [key: string]: VerifiableCredential;
@@ -340,7 +341,14 @@ export interface GrantApplication {
   /**
    * Status of each grant application
    */
-  status?: ProjectStatus;
+  status?: ProjectStatus; // handle round status 0,1,2,3
+  inReview?: boolean; // handle payoutStatus for DirectStrategy
+
+  payoutStrategy?: {
+    strategyName: string;
+    id: string;
+  };
+
   /**
    * Index of a grant application
    */
@@ -381,6 +389,11 @@ export enum ApplicationStatus {
 export type Status = {
   index: number;
   status: number;
+};
+
+export type StatusForDirectPayout = {
+  index: number;
+  status: boolean;
 };
 
 export type AppStatus = {
