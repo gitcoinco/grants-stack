@@ -295,7 +295,7 @@ describe("graphql_fetch", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       TMP_DIRECT_ROUND_SUBGRAPH_URL,
-      //process.env.REACT_APP_SUBGRAPH_GOERLI_API as string,
+      //(process.env.REACT_APP_SUBGRAPH_GOERLI_API as string),
       // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
       // as we need to fetch data from the new version of the subgraph.
       params
@@ -331,9 +331,10 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      process.env.REACT_APP_DIRECT_GRANT_ENABLED
-        ? TMP_DIRECT_ROUND_SUBGRAPH_URL
-        : `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      TMP_DIRECT_ROUND_SUBGRAPH_URL,
+      //(process.env.REACT_APP_SUBGRAPH_GOERLI_API as string),
+      // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
+      // as we need to fetch data from the new version of the subgraph.
       params
     );
   });
