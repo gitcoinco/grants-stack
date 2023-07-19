@@ -349,6 +349,12 @@ export interface GrantApplication {
     id: string;
   };
 
+  statusSnapshots?: {
+    status: ProjectStatus;
+    statusDescription: string;
+    timestamp: Date;
+  }[];
+
   /**
    * Index of a grant application
    */
