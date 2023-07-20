@@ -149,6 +149,7 @@ export const getApplicationsByRoundId = async (
           }
           first: 1000) {
             id
+            project
             metaPtr {
               protocol
               pointer
@@ -164,6 +165,12 @@ export const getApplicationsByRoundId = async (
               payoutStrategy {
                 id
                 strategyName
+                payouts {
+                  amount
+                  createdAt
+                  txnHash
+                  applicationIndex
+                }
               }
             }
             statusSnapshots {
@@ -196,6 +203,7 @@ export const getApplicationsByRoundId = async (
         inReview: Boolean(project.inReview),
         applicationIndex: project.applicationIndex,
         id: project.id,
+        projectId: project.project,
         projectsMetaPtr: project.round.projectsMetaPtr,
         payoutStrategy: project.round.payoutStrategy,
         statusSnapshots: project.statusSnapshots?.map(

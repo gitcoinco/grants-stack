@@ -108,7 +108,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     encrypted: false,
     hidden: true,
     type: "dropdown",
-    choices: ["ETH", "DAI"],
+    choices: ["DAI"], // ETH is not supported. 
     fixed: true,
   },
   {
