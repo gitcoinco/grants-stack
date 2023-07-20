@@ -1,6 +1,4 @@
-import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { listenForOutsideClicks } from "../api/utils";
 import { Project } from "../api/types";
 import { Button } from "common/src/styles";
 import { CheckIcon, EyeIcon } from "@heroicons/react/24/outline";
@@ -12,31 +10,19 @@ export default function NavbarCart(props: {
   cart: Project[];
   roundUrlPath: string;
 }) {
-  const menuRef = useRef(null);
-  const [open, setOpen] = useState<boolean>(false);
-  const [listening, setListening] = useState<boolean>(false);
-
   const projectCount = props.cart.length;
 
-  const toggleMenu = () => setOpen(!open);
+  const navigate = useNavigate();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(
-    listenForOutsideClicks({ listening, setListening, menuRef, setOpen })
-  );
 
   return (
     <div
       data-testid="navbar-cart"
       className="relative flex-row"
-      onClick={toggleMenu}
-      ref={menuRef}
+      onClick={() => navigate(`${props.roundUrlPath}/cart`)}
     >
       <QuickViewIcon count={projectCount} />
-
-      {open && Boolean(projectCount) && (
-        <QuickViewSummary roundUrlPath={props.roundUrlPath} cart={props.cart} />
-      )}
     </div>
   );
 }
@@ -89,7 +75,10 @@ function QuickViewIcon(props: { count: number }) {
   );
 }
 
-function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
+export function QuickViewSummary(props: {
+  roundUrlPath: string;
+  cart: Project[];
+}) {
   const navigate = useNavigate();
 
   const QuickViewSummary = tw.div`
