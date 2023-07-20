@@ -132,7 +132,13 @@ export async function getRoundById(
               }
               payoutStrategy {
                 id
-                isReadyForPayout
+                type: __typename
+                ... on DirectPayout {
+                  vaultAddress
+                }
+                ... on MerklePayout {
+                  isReadyForPayout
+                }
               }
             }
           }
