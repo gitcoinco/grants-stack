@@ -4,7 +4,7 @@
 import { Listbox, RadioGroup, Tab, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { classNames, getUTCDate, getUTCTime } from "common";
+import { ChainId, classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
 import moment from "moment";
@@ -615,9 +615,9 @@ function DetailsPage(props: {
             }`}
           >
             <span className="flex items-center">
-              {chain && CHAINS[chain.id]?.logo && (
+              {chain && CHAINS[chain.id as ChainId]?.logo && (
                 <img
-                  src={CHAINS[chain.id]?.logo}
+                  src={CHAINS[chain.id as ChainId]?.logo}
                   alt="chain logo"
                   data-testid="chain-logo"
                   className="h-5 w-5 flex-shrink-0 rounded-full"
