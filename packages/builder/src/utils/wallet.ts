@@ -33,6 +33,7 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   optimism: "Optimism",
   localhost: "Localhost",
   pgnTestnet: "PGN Testnet",
+  pgn: "PGN",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -42,6 +43,7 @@ export const networkIcon: { [key in ChainName]: string } = {
   fantom: FantomFTMLogo,
   optimism: OPIcon,
   pgnTestnet: PGNIcon,
+  pgn: PGNIcon,
   localhost: EthDiamondGlyph,
 };
 
@@ -52,6 +54,7 @@ export const payoutIcon: { [key in ChainName]: string } = {
   fantom: FantomFTMLogo,
   optimism: OPIcon,
   pgnTestnet: PGNIcon,
+  pgn: PGNIcon,
   localhost: EthDiamondGlyph,
 };
 

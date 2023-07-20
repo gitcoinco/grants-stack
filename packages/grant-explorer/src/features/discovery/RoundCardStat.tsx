@@ -1,8 +1,9 @@
+import { ChainId } from "common";
 import { BigNumber } from "ethers";
 import { CHAINS } from "../api/utils";
 
 type RoundCardStatProps = {
-  chainId: number;
+  chainId: ChainId;
   matchAmount: string;
   token: string;
   approvedApplicationsCount: number;

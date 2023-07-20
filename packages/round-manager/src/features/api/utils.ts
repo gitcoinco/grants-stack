@@ -10,7 +10,7 @@ import {
 import { ChainId, RedstoneTokenIds } from "common";
 
 // NB: number keys are coerced into strings for JS object keys
-export const CHAINS: Record<number, Program["chain"]> = {
+export const CHAINS: Record<ChainId, Program["chain"]> = {
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
     name: "Mainnet", // TODO get canonical network names
@@ -39,6 +39,11 @@ export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.PGN_TESTNET]: {
     id: ChainId.PGN_TESTNET,
     name: "PGN Testnet",
+    logo: "/logos/pgn-logo.svg",
+  },
+  [ChainId.PGN]: {
+    id: ChainId.PGN_TESTNET,
+    name: "PGN",
     logo: "/logos/pgn-logo.svg",
   },
 };
@@ -195,6 +200,17 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const PGN_MAINNET_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -202,6 +218,7 @@ export const payoutTokens = [
   ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
+  ...PGN_MAINNET_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -303,6 +320,9 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           decimal: 18,
         },
       ];
+    case ChainId.PGN:
+      return PGN_MAINNET_TOKENS;
+
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       return [

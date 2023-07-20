@@ -21,7 +21,7 @@
     "swr": "^2.0.1",
     "tailwind-styled-components": "^2.2.0",
     "typescript": "latest",
-    "viem": "^0.1.22"
+    "wagmi": "0.12.19"
   },
   "devDependencies": {
     "@types/dompurify": "^2.4.0",

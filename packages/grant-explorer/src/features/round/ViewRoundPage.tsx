@@ -1,5 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import {
+  ChainId,
   formatUTCDateAsISOString,
   getUTCTime,
   renderToPlainText,
@@ -70,7 +71,7 @@ export default function ViewRound() {
           {isAfterRoundStartDate && (
             <AfterRoundStart
               round={round}
-              chainId={chainId}
+              chainId={Number(chainId)}
               roundId={roundId}
               isBeforeRoundEndDate={isBeforeRoundEndDate}
               isAfterRoundEndDate={isAfterRoundEndDate}
@@ -118,7 +119,7 @@ function BeforeRoundStart(props: {
 
 function AfterRoundStart(props: {
   round: Round;
-  chainId: string;
+  chainId: ChainId;
   roundId: string;
   isBeforeRoundEndDate?: boolean;
   isAfterRoundEndDate?: boolean;
@@ -272,10 +273,10 @@ function AfterRoundStart(props: {
             <div className="flex">
               <img
                 className="w-4 h-4 mt-0.5 mr-1"
-                src={CHAINS[Number(chainId)]?.logo}
+                src={CHAINS[chainId].logo}
                 alt="Round Chain Logo"
               />
-              <span>{CHAINS[Number(chainId)]?.name}</span>
+              <span>{CHAINS[chainId].name}</span>
             </div>
           </p>
 

@@ -1,6 +1,6 @@
-import { renderToPlainText, truncateDescription } from "common";
+import { ChainId, renderToPlainText, truncateDescription } from "common";
 import { RoundOverview } from "../api/rounds";
-import { ChainId, getDaysLeft, payoutTokens } from "../api/utils";
+import { getDaysLeft, payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,

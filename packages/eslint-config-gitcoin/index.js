@@ -11,9 +11,6 @@ module.exports = {
     browser: true,
     node: true,
   },
-  rules: {
-    // "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
-  },
   overrides: [
     {
       files: ["**/*.test.{ts,tsx}"],

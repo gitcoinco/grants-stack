@@ -8,8 +8,8 @@ import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-log
 import { useCart } from "../../context/CartContext";
 import { useQFDonation } from "../../context/QFDonationContext";
 import { useRoundById } from "../../context/RoundContext";
-import { ChainId, getTxExplorer } from "../api/utils";
 import Navbar from "../common/Navbar";
+import { getTxExplorerTxLink } from "../api/utils";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -40,7 +40,7 @@ export default function ThankYou() {
 
   function TwitterButton(props: { roundName?: string }) {
     const shareText = `I just donated to the ${props.roundName?.trim()} on @gitcoin. Join me in making a difference by donating today!\n\nhttps://explorer.gitcoin.co/#/round/${chainId}/${roundId}`;
-    const shareUrl = `http://twitter.com/share?text=${encodeURIComponent(
+    const shareUrl = `https://twitter.com/share?text=${encodeURIComponent(
       shareText
     )}`;
 
@@ -63,7 +63,7 @@ export default function ThankYou() {
         type="button"
         $variant="outline"
         onClick={() =>
-          window.open(getTxExplorer(chainId as ChainId, txHash), "_blank")
+          window.open(getTxExplorerTxLink(Number(chainId), txHash), "_blank")
         }
         className="items-center justify-center shadow-sm text-sm rounded border-1 px-10 hover:shadow-md border"
         data-testid="view-tx-button"

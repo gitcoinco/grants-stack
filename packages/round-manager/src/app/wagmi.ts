@@ -17,7 +17,7 @@ import {
   Chain,
 } from "wagmi/chains";
 
-import { pgnTestnet } from "common/src/chains";
+import { pgn, pgnTestnet } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -27,6 +27,7 @@ const testnetChains = () => {
     goerli,
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
+    pgn,
   ];
 };
 
