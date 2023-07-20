@@ -20,7 +20,7 @@ describe("<CartProvider>", () => {
       render(
         <CartProvider>
           <TestingUseCartComponent />
-        </CartProvider>
+        </CartProvider>,
       );
 
       expect(screen.queryAllByTestId("cart-project")).toHaveLength(0);
@@ -36,7 +36,7 @@ describe("<CartProvider>", () => {
       render(
         <CartProvider>
           <TestingUseCartComponent />
-        </CartProvider>
+        </CartProvider>,
       );
       fireEvent.click(screen.getByTestId("add-project-to-cart"));
       expect(screen.getAllByTestId("cart-project")).toHaveLength(1);
@@ -49,7 +49,7 @@ describe("<CartProvider>", () => {
       render(
         <CartProvider>
           <TestingUseCartComponent />
-        </CartProvider>
+        </CartProvider>,
       );
 
       fireEvent.click(screen.getByTestId("remove-project-from-cart"));
@@ -66,7 +66,7 @@ describe("<CartProvider>", () => {
       render(
         <CartProvider>
           <TestingUseCartComponent />
-        </CartProvider>
+        </CartProvider>,
       );
       fireEvent.click(screen.getByTestId("add-project-to-cart"));
 
@@ -77,7 +77,7 @@ describe("<CartProvider>", () => {
       render(
         <CartProvider>
           <TestingUseCartComponent />
-        </CartProvider>
+        </CartProvider>,
       );
       fireEvent.click(screen.getByTestId("add-project-to-cart"));
       fireEvent.click(screen.getByTestId("add-project-to-cart"));
@@ -102,7 +102,7 @@ describe("<CartProvider>", () => {
           <CartProvider>
             <TestingUseCartComponent />
           </CartProvider>
-        </RoundContext.Provider>
+        </RoundContext.Provider>,
       );
 
       expect(screen.getAllByTestId("cart-project")).toHaveLength(cart.length);
@@ -121,7 +121,7 @@ describe("<CartProvider>", () => {
           <CartProvider>
             <TestingUseCartComponent />
           </CartProvider>
-        </RoundContext.Provider>
+        </RoundContext.Provider>,
       );
       fireEvent.click(screen.getByTestId("add-project-to-cart"));
 

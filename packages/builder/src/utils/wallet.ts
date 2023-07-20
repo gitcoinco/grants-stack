@@ -16,7 +16,7 @@ export function shortAddress(address: string): string {
   try {
     const formattedAddress = getAddress(address);
     return `${formattedAddress.substring(0, 6)}...${formattedAddress.substring(
-      38
+      38,
     )}`;
   } catch (e) {
     datadogRum.addError(e);

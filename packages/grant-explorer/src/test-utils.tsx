@@ -70,7 +70,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 
 export const makeApprovedProjectData = (
   overrides?: Partial<Project>,
-  projectMetadataOverrides?: Partial<ProjectMetadata>
+  projectMetadataOverrides?: Partial<ProjectMetadata>,
 ): Project => {
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
@@ -96,7 +96,7 @@ export const makeApprovedProjectData = (
 
 export const makeRoundOverviewData = (
   overrides?: Partial<RoundOverview>,
-  roundMetadataOverrides?: Partial<RoundMetadata>
+  roundMetadataOverrides?: Partial<RoundMetadata>,
 ): RoundOverview => {
   return {
     id: faker.finance.ethereumAddress(),
@@ -140,7 +140,7 @@ export const renderWithContext = (
   ui: JSX.Element,
   roundStateOverrides: Partial<RoundState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) =>
   render(
     <MemoryRouter>
@@ -152,7 +152,7 @@ export const renderWithContext = (
       >
         <CartProvider>{ui}</CartProvider>
       </RoundContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 
 export const renderWrapped = (ui: JSX.Element) => {
@@ -161,7 +161,7 @@ export const renderWrapped = (ui: JSX.Element) => {
       <ReduxRouter store={store} history={history}>
         {ui}
       </ReduxRouter>
-    </Provider>
+    </Provider>,
   );
 };
 

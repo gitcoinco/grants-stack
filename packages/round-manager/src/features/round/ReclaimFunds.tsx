@@ -100,7 +100,7 @@ function ReclaimFundsContent(props: {
         setErrorModalSubHeading(
           transactionReplaced
             ? "Transaction cancelled. Please try again."
-            : "There was an error during the funding process. Please try again."
+            : "There was an error during the funding process. Please try again.",
         );
         setOpenErrorModal(true);
       }, errorModalDelayMs);
@@ -126,7 +126,7 @@ function ReclaimFundsContent(props: {
         setTransactionReplaced(true);
       } else {
         datadogLogs.logger.error(
-          `error: handleSubmitFund - ${error}, id: ${props.roundId}`
+          `error: handleSubmitFund - ${error}, id: ${props.roundId}`,
         );
         console.error("handleSubmitFund - roundId", props.roundId, error);
       }
@@ -137,7 +137,8 @@ function ReclaimFundsContent(props: {
     props.round &&
     payoutTokens.filter(
       (t) =>
-        t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
+        t.address.toLocaleLowerCase() ==
+        props.round?.token?.toLocaleLowerCase(),
     )[0];
 
   const tokenDetail =
@@ -158,7 +159,7 @@ function ReclaimFundsContent(props: {
     props.round &&
     props.round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable;
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.redstoneTokenId
+    matchingFundPayoutToken?.redstoneTokenId,
   );
   const matchingFundsInUSD =
     matchingFunds && data && !loading && !error && matchingFunds * Number(data);

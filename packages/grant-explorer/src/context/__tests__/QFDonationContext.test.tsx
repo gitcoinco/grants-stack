@@ -50,7 +50,7 @@ describe("<QFDonationProvider />", () => {
       (approveTokenOnContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
       renderWithProvider(<TestUseQFDonationComponent />);
 
@@ -58,8 +58,8 @@ describe("<QFDonationProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `token-approval-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `token-approval-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -71,7 +71,7 @@ describe("<QFDonationProvider />", () => {
       (voteOnRoundContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseQFDonationComponent />);
@@ -80,8 +80,8 @@ describe("<QFDonationProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `token-approval-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `token-approval-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
 
@@ -93,7 +93,7 @@ describe("<QFDonationProvider />", () => {
       (voteOnRoundContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseQFDonationComponent />);
@@ -102,8 +102,8 @@ describe("<QFDonationProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `vote-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `vote-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -117,14 +117,16 @@ describe("<QFDonationProvider />", () => {
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
       renderWithProvider(<TestUseQFDonationComponent />);
 
       fireEvent.click(screen.getByTestId("submit-qf-donations"));
 
       expect(
-        await screen.findByTestId(`vote-status-is-${ProgressStatus.IS_SUCCESS}`)
+        await screen.findByTestId(
+          `vote-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
 
@@ -138,7 +140,7 @@ describe("<QFDonationProvider />", () => {
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
       renderWithProvider(<TestUseQFDonationComponent />);
 
@@ -146,8 +148,8 @@ describe("<QFDonationProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -166,8 +168,8 @@ describe("<QFDonationProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `indexing-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
 
@@ -188,7 +190,7 @@ describe("<QFDonationProvider />", () => {
 
       it("sets token approval status to error when token approval fails", async () => {
         (approveTokenOnContract as jest.Mock).mockRejectedValue(
-          new Error(":(")
+          new Error(":("),
         );
 
         renderWithProvider(<TestUseQFDonationComponent />);
@@ -197,8 +199,8 @@ describe("<QFDonationProvider />", () => {
 
         expect(
           await screen.findByTestId(
-            `token-approval-status-is-${ProgressStatus.IS_ERROR}`
-          )
+            `token-approval-status-is-${ProgressStatus.IS_ERROR}`,
+          ),
         ).toBeInTheDocument();
       });
 
@@ -213,7 +215,9 @@ describe("<QFDonationProvider />", () => {
         fireEvent.click(screen.getByTestId("submit-qf-donations"));
 
         expect(
-          await screen.findByTestId(`vote-status-is-${ProgressStatus.IS_ERROR}`)
+          await screen.findByTestId(
+            `vote-status-is-${ProgressStatus.IS_ERROR}`,
+          ),
         ).toBeInTheDocument();
       });
 
@@ -232,8 +236,8 @@ describe("<QFDonationProvider />", () => {
 
         expect(
           await screen.findByTestId(
-            `indexing-status-is-${ProgressStatus.IS_ERROR}`
-          )
+            `indexing-status-is-${ProgressStatus.IS_ERROR}`,
+          ),
         ).toBeInTheDocument();
       });
 
@@ -243,7 +247,7 @@ describe("<QFDonationProvider />", () => {
           .mockReturnValue(
             new Promise(() => {
               /* do nothing.*/
-            })
+            }),
           );
 
         renderWithProvider(<TestUseQFDonationComponent />);
@@ -251,14 +255,14 @@ describe("<QFDonationProvider />", () => {
 
         // retry bulk update operation
         await screen.findByTestId(
-          `token-approval-status-is-${ProgressStatus.IS_ERROR}`
+          `token-approval-status-is-${ProgressStatus.IS_ERROR}`,
         );
         fireEvent.click(screen.getByTestId("submit-qf-donations"));
 
         expect(
           screen.queryByTestId(
-            `token-approval-status-is-${ProgressStatus.IS_ERROR}`
-          )
+            `token-approval-status-is-${ProgressStatus.IS_ERROR}`,
+          ),
         ).not.toBeInTheDocument();
       });
 
@@ -271,7 +275,7 @@ describe("<QFDonationProvider />", () => {
           .mockReturnValue(
             new Promise(() => {
               /* do nothing.*/
-            })
+            }),
           );
 
         renderWithProvider(<TestUseQFDonationComponent />);
@@ -282,7 +286,7 @@ describe("<QFDonationProvider />", () => {
         fireEvent.click(screen.getByTestId("submit-qf-donations"));
 
         expect(
-          screen.queryByTestId(`vote-status-is-${ProgressStatus.IS_ERROR}`)
+          screen.queryByTestId(`vote-status-is-${ProgressStatus.IS_ERROR}`),
         ).not.toBeInTheDocument();
       });
 
@@ -298,7 +302,7 @@ describe("<QFDonationProvider />", () => {
           .mockReturnValue(
             new Promise(() => {
               /* do nothing.*/
-            })
+            }),
           );
 
         renderWithProvider(<TestUseQFDonationComponent />);
@@ -306,12 +310,12 @@ describe("<QFDonationProvider />", () => {
 
         // retry bulk update operation
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IS_ERROR}`
+          `indexing-status-is-${ProgressStatus.IS_ERROR}`,
         );
         fireEvent.click(screen.getByTestId("submit-qf-donations"));
 
         expect(
-          screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+          screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`),
         ).not.toBeInTheDocument();
       });
     });

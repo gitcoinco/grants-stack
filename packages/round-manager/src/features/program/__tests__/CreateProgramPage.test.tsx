@@ -43,7 +43,7 @@ describe("<CreateProgramPage />", () => {
     renderWithContext(<CreateProgramPage />);
 
     expect(
-      await screen.findByTestId("program-chain-tooltip")
+      await screen.findByTestId("program-chain-tooltip"),
     ).toBeInTheDocument();
   });
 
@@ -114,7 +114,7 @@ export const renderWithContext = (
   ui: JSX.Element,
   programStateOverrides: Partial<CreateProgramState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) =>
   render(
     <MemoryRouter>
@@ -126,5 +126,5 @@ export const renderWithContext = (
       >
         {ui}
       </CreateProgramContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );

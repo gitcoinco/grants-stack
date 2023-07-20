@@ -49,17 +49,17 @@ jest.mock("../../common/Auth", () => ({
 
 const useFetchMatchingDistributionFromContractMock = jest.spyOn(
   merklePayoutStrategy,
-  "useFetchMatchingDistributionFromContract"
+  "useFetchMatchingDistributionFromContract",
 );
 
 const useGroupProjectsByPaymentStatusMock = jest.spyOn(
   merklePayoutStrategy,
-  "useGroupProjectsByPaymentStatus"
+  "useGroupProjectsByPaymentStatus",
 );
 
 const fetchMatchingDistributionMock = jest.spyOn(
   roundTs,
-  "fetchMatchingDistribution"
+  "fetchMatchingDistribution",
 );
 
 describe("View Fund Grantees", () => {
@@ -114,7 +114,7 @@ describe("View Fund Grantees", () => {
       Promise.resolve({
         distributionMetaPtr: "some-meta-ptr",
         matchingDistribution: matchingStatsData,
-      })
+      }),
     );
 
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
@@ -155,16 +155,16 @@ describe("View Fund Grantees", () => {
               {
                 data: [],
                 fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }
+              },
             ),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     expect(screen.getByText("Round not finalized yet")).toBeInTheDocument();
@@ -188,16 +188,16 @@ describe("View Fund Grantees", () => {
                 {
                   data: undefined,
                   fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }
+                },
               ),
-              { programs: [] }
+              { programs: [] },
             ),
             {
               applications: [],
               isLoading: false,
-            }
-          )
-        )
+            },
+          ),
+        ),
       );
     });
 
@@ -220,16 +220,16 @@ describe("View Fund Grantees", () => {
                   {
                     data: undefined,
                     fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                  }
+                  },
                 ),
-                { programs: [] }
+                { programs: [] },
               ),
               {
                 applications: [],
                 isLoading: false,
-              }
-            )
-          )
+              },
+            ),
+          ),
         );
       });
     });
@@ -244,7 +244,9 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Unpaid Grantees")).toBeInTheDocument();
       expect(screen.getByText("Paid Grantees")).toBeInTheDocument();
       expect(
-        screen.getByText("Select which grantees you wish to allocate funds to.")
+        screen.getByText(
+          "Select which grantees you wish to allocate funds to.",
+        ),
       ).toBeInTheDocument();
       expect(screen.getByText("Project")).toBeInTheDocument();
       expect(screen.getByText("Wallet Address")).toBeInTheDocument();
@@ -260,10 +262,10 @@ describe("View Fund Grantees", () => {
       });
 
       expect(
-        screen.getByText(matchingStatsData[2].projectPayoutAddress)
+        screen.getByText(matchingStatsData[2].projectPayoutAddress),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(matchingStatsData[3].projectPayoutAddress)
+        screen.getByText(matchingStatsData[3].projectPayoutAddress),
       ).toBeInTheDocument();
     });
 
@@ -334,7 +336,7 @@ describe("View Fund Grantees", () => {
       });
 
       const warning = await screen.findByText(
-        "You don’t have enough funds in the contract to pay out the selected grantees. Please either add more funds to the contract or select fewer grantees."
+        "You don’t have enough funds in the contract to pay out the selected grantees. Please either add more funds to the contract or select fewer grantees.",
       );
 
       expect(warning).toBeInTheDocument();
@@ -356,16 +358,16 @@ describe("View Fund Grantees", () => {
                   {
                     data: undefined,
                     fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                  }
+                  },
                 ),
-                { programs: [] }
+                { programs: [] },
               ),
               {
                 applications: [],
                 isLoading: false,
-              }
-            )
-          )
+              },
+            ),
+          ),
         );
       });
     });
@@ -385,8 +387,8 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Transaction")).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Transaction history of grantees you have paid out funds to."
-        )
+          "Transaction history of grantees you have paid out funds to.",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -397,24 +399,24 @@ describe("View Fund Grantees", () => {
       });
 
       expect(
-        screen.getByText(matchingStatsData[0].projectName!)
+        screen.getByText(matchingStatsData[0].projectName!),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(matchingStatsData[1].projectName!)
-      ).toBeInTheDocument();
-
-      expect(
-        screen.getByText(matchingStatsData[0].projectPayoutAddress)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(matchingStatsData[1].projectPayoutAddress)
+        screen.getByText(matchingStatsData[1].projectName!),
       ).toBeInTheDocument();
 
       expect(
-        screen.getByText(matchingStatsData[0].matchPoolPercentage * 100 + "%")
+        screen.getByText(matchingStatsData[0].projectPayoutAddress),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(matchingStatsData[1].matchPoolPercentage * 100 + "%")
+        screen.getByText(matchingStatsData[1].projectPayoutAddress),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(matchingStatsData[0].matchPoolPercentage * 100 + "%"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[1].matchPoolPercentage * 100 + "%"),
       ).toBeInTheDocument();
 
       await act(async () => {

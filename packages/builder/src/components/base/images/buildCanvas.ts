@@ -3,7 +3,7 @@ import { PixelCrop } from "react-image-crop";
 export default function buildCanvas(
   image: HTMLImageElement,
   crop: PixelCrop,
-  dimensions: { width: number; height: number }
+  dimensions: { width: number; height: number },
 ) {
   const canvas = document.createElement("canvas");
 
@@ -30,7 +30,7 @@ export default function buildCanvas(
     0,
     0,
     canvas.width,
-    canvas.height
+    canvas.height,
   );
 
   return canvas;

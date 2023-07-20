@@ -89,7 +89,7 @@ export const FinalizeRoundProvider = ({
 }) => {
   const [state, dispatch] = useReducer(
     finalizeRoundReducer,
-    initialFinalizeRoundState
+    initialFinalizeRoundState,
   );
 
   const providerProps = {
@@ -132,7 +132,7 @@ const _finalizeRound = async ({
       payoutStrategy,
       merkleRoot,
       distributionMetaPtr,
-      signerOrProvider
+      signerOrProvider,
     );
     console.log("transactionBlockNumber: ", transactionBlockNumber);
   } catch (error) {
@@ -145,7 +145,7 @@ export const useFinalizeRound = () => {
   const context = useContext(FinalizeRoundContext);
   if (context === undefined) {
     throw new Error(
-      "useFinalizeRound must be used within a FinalizeRoundProvider"
+      "useFinalizeRound must be used within a FinalizeRoundProvider",
     );
   }
 
@@ -153,7 +153,7 @@ export const useFinalizeRound = () => {
 
   const finalizeRound = (
     payoutStrategy: string,
-    matchingJSON: MatchingStatsData[] | undefined
+    matchingJSON: MatchingStatsData[] | undefined,
   ) => {
     return _finalizeRound({
       dispatch: context.dispatch,
@@ -173,7 +173,7 @@ export const useFinalizeRound = () => {
 
 async function storeDocument(
   dispatch: (action: Action) => void,
-  matchingJSON: MatchingStatsData[]
+  matchingJSON: MatchingStatsData[],
 ) {
   datadogLogs.logger.info(`storeDocument: matchingDistribution`);
 
@@ -212,7 +212,7 @@ async function finalizeToContract(
   payoutStrategy: string,
   merkleRoot: string,
   distributionMetaPtr: { protocol: number; pointer: string },
-  signerOrProvider: Web3Instance["provider"]
+  signerOrProvider: Web3Instance["provider"],
 ) {
   try {
     dispatch({
@@ -222,7 +222,7 @@ async function finalizeToContract(
 
     const encodedDistribution = encodeDistributionParameters(
       merkleRoot,
-      distributionMetaPtr
+      distributionMetaPtr,
     );
 
     const { transactionBlockNumber } = await updateDistributionToContract({
@@ -252,10 +252,10 @@ async function finalizeToContract(
 
 function encodeDistributionParameters(
   merkleRoot: string,
-  distributionMetaPtr: MetadataPointer
+  distributionMetaPtr: MetadataPointer,
 ) {
   return ethers.utils.defaultAbiCoder.encode(
     ["bytes32", "tuple(uint256 protocol, string pointer)"],
-    [merkleRoot, distributionMetaPtr]
+    [merkleRoot, distributionMetaPtr],
   );
 }

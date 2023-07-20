@@ -9,7 +9,7 @@ describe("Toast", () => {
     render(
       <Toast onClose={closeMock} show>
         <p>Toast</p>
-      </Toast>
+      </Toast>,
     );
 
     expect(screen.queryByText("Toast")).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe("Toast", () => {
     render(
       <Toast onClose={closeMock} show={false}>
         <p>Toast</p>
-      </Toast>
+      </Toast>,
     );
 
     expect(screen.queryByText("Toast")).not.toBeInTheDocument();

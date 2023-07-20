@@ -24,12 +24,12 @@ export function AboutProject(props: {
 
   const { isValid: validTwitterCredential } = useValidateCredential(
     credentials?.twitter,
-    projectTwitter
+    projectTwitter,
   );
 
   const { isValid: validGithubCredential } = useValidateCredential(
     credentials?.github,
-    projectGithub
+    projectGithub,
   );
 
   const recipientQuestion = questions.find((item) => item.type === "recipient");
@@ -67,7 +67,7 @@ export function AboutProject(props: {
           <Calendar color={colors["secondary-text"]} />
           <DetailSummary
             text={`Created: ${new Date(
-              projectToRender.createdAt
+              projectToRender.createdAt,
             ).toLocaleDateString("en-US", {
               year: "numeric",
               month: "short",

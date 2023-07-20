@@ -43,17 +43,17 @@ interface SubmitFundParams {
 
 export const FundContractProvider = ({ children }: { children: ReactNode }) => {
   const [tokenApprovalStatus, setTokenApprovalStatus] = useState(
-    initialFundContractState.tokenApprovalStatus
+    initialFundContractState.tokenApprovalStatus,
   );
   const [fundStatus, setFundStatus] = useState(
-    initialFundContractState.fundStatus
+    initialFundContractState.fundStatus,
   );
   const [indexingStatus, setIndexingStatus] = useState(
-    initialFundContractState.indexingStatus
+    initialFundContractState.indexingStatus,
   );
   const [txHash, setTxHash] = useState(initialFundContractState.txHash);
   const [txBlockNumber, setTxBlockNumber] = useState(
-    initialFundContractState.txBlockNumber
+    initialFundContractState.txBlockNumber,
   );
 
   const providerProps: FundContractState = {
@@ -100,14 +100,14 @@ export const initialFundContractState: FundContractState = {
 };
 
 export const FundContractContext = createContext<FundContractState>(
-  initialFundContractState
+  initialFundContractState,
 );
 
 export const useFundContract = () => {
   const context = useContext<FundContractState>(FundContractContext);
   if (context === undefined) {
     throw new Error(
-      "useFundContract must be used within a FundContractProvider"
+      "useFundContract must be used within a FundContractProvider",
     );
   }
 
@@ -162,7 +162,7 @@ async function _fundContract({
       roundId,
       payoutToken,
       fundAmount,
-      context
+      context,
     );
 
     // Invoke fund
@@ -181,7 +181,7 @@ async function approveTokenForFunding(
   roundId: string,
   token: PayoutToken,
   amount: number,
-  context: FundContractState
+  context: FundContractState,
 ): Promise<void> {
   const { setTokenApprovalStatus } = context;
 
@@ -189,11 +189,11 @@ async function approveTokenForFunding(
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: approveTokenForFunding - ${error}. Data - ${amount} ${token.name}`
+      `error: approveTokenForFunding - ${error}. Data - ${amount} ${token.name}`,
     );
     console.error(
       `approveTokenForFunding - amount ${amount} ${token.name}`,
-      error
+      error,
     );
     setTokenApprovalStatus(ProgressStatus.IS_ERROR);
     throw error;
@@ -205,7 +205,7 @@ async function fund(
   roundId: string,
   token: PayoutToken,
   fundAmount: number,
-  context: FundContractState
+  context: FundContractState,
 ): Promise<void> {
   const { setFundStatus, setTxHash, setTxBlockNumber } = context;
 
@@ -214,14 +214,14 @@ async function fund(
 
     const amountInUnits = ethers.utils.parseUnits(
       fundAmount.toString(),
-      token.decimal
+      token.decimal,
     );
 
     const { txBlockNumber, txHash } = await fundRoundContract(
       roundId,
       signerOrProvider,
       token,
-      amountInUnits
+      amountInUnits,
     );
 
     setFundStatus(ProgressStatus.IS_SUCCESS);
@@ -229,11 +229,11 @@ async function fund(
     setTxBlockNumber(txBlockNumber);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: fundRoundContract - ${error}. Data - ${fund.toString()}`
+      `error: fundRoundContract - ${error}. Data - ${fund.toString()}`,
     );
     console.error(
       `fundRoundContract - roundId ${roundId}, token ${token.name}`,
-      error
+      error,
     );
     setFundStatus(ProgressStatus.IS_ERROR);
     throw error;
@@ -242,13 +242,13 @@ async function fund(
 
 async function waitForSubgraphToUpdate(
   signerOrProvider: Signer,
-  context: FundContractState
+  context: FundContractState,
 ) {
   const { setIndexingStatus, txBlockNumber } = context;
 
   try {
     datadogLogs.logger.error(
-      `waitForSubgraphToUpdate: txnBlockNumber - ${txBlockNumber}`
+      `waitForSubgraphToUpdate: txnBlockNumber - ${txBlockNumber}`,
     );
 
     setIndexingStatus(ProgressStatus.IN_PROGRESS);
@@ -260,12 +260,12 @@ async function waitForSubgraphToUpdate(
     setIndexingStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: waitForSubgraphToUpdate - ${error}. Data - ${txBlockNumber}`
+      `error: waitForSubgraphToUpdate - ${error}. Data - ${txBlockNumber}`,
     );
 
     console.error(
       `waitForSubgraphToUpdate. TxnBlockNumber - ${txBlockNumber}`,
-      error
+      error,
     );
 
     setIndexingStatus(ProgressStatus.IS_ERROR);

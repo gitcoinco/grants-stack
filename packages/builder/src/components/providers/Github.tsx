@@ -25,7 +25,7 @@ function generateUID(length: number) {
     .btoa(
       Array.from(window.crypto.getRandomValues(new Uint8Array(length * 2)))
         .map((b) => String.fromCharCode(b))
-        .join("")
+        .join(""),
     )
     .replace(/[+/]/g, "")
     .substring(0, length);
@@ -46,14 +46,14 @@ export default function Github({
       formMetadata: state.projectForm.metadata,
       verifiableCredential: state.projectForm?.credentials?.github,
     }),
-    shallowEqual
+    shallowEqual,
   );
   const { signer } = global;
   const dispatch = useDispatch();
 
   const { isValid: validCredential } = useValidateCredential(
     props.verifiableCredential,
-    props.formMetadata.projectGithub
+    props.formMetadata.projectGithub,
   );
 
   // console.log(
@@ -76,7 +76,7 @@ export default function Github({
         authUrl,
         "github_oauth_channel",
         "github",
-        ghID
+        ghID,
       );
 
       const verified: { credential: VerifiableCredential } =
@@ -92,13 +92,13 @@ export default function Github({
               code: result.code, // provided by GitHub as query params in the redirect
             },
           },
-          signer as { signMessage: (message: string) => Promise<string> }
+          signer as { signMessage: (message: string) => Promise<string> },
         );
 
       dispatch(
         credentialsSaved({
           github: verified.credential!,
-        })
+        }),
       );
 
       verificationError();

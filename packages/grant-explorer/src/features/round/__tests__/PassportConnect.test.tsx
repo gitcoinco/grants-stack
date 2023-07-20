@@ -98,7 +98,7 @@ describe("<PassportConnect/>", () => {
     it("shows back to browsing button on page load", async () => {
       await waitFor(() => {
         expect(
-          screen.getByTestId("back-to-browsing-button")
+          screen.getByTestId("back-to-browsing-button"),
         ).toBeInTheDocument();
       });
     });
@@ -158,7 +158,7 @@ describe("<PassportConnect/>", () => {
     it("Should show the Create Passport button", async () => {
       await waitFor(async () => {
         expect(
-          screen.getByTestId("create-passport-button")
+          screen.getByTestId("create-passport-button"),
         ).toBeInTheDocument();
       });
     });
@@ -166,7 +166,7 @@ describe("<PassportConnect/>", () => {
     it("Should show the Recalculate Score button", async () => {
       await waitFor(() => {
         expect(
-          screen.getByTestId("recalculate-score-button")
+          screen.getByTestId("recalculate-score-button"),
         ).toBeInTheDocument();
       });
     });
@@ -230,10 +230,10 @@ describe("<PassportConnect/>", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Passport Profile not detected.")
+          screen.getByText("Passport Profile not detected."),
         ).toBeInTheDocument();
         expect(
-          screen.getByText("Please open Passport to troubleshoot.")
+          screen.getByText("Please open Passport to troubleshoot."),
         ).toBeInTheDocument();
       });
     });
@@ -358,8 +358,8 @@ describe("<PassportConnect/>", () => {
         expect(screen.getByText("Ineligible for matching")).toBeInTheDocument();
         expect(
           screen.getByText(
-            "Please create a Gitcoin Passport in order to continue."
-          )
+            "Please create a Gitcoin Passport in order to continue.",
+          ),
         ).toBeInTheDocument();
       });
     });

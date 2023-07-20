@@ -45,7 +45,7 @@ describe("<TextInputAddress />", () => {
 
       const addressInputContainer = screen.getByTestId("address-input-wrapper");
       const addressInputEl = addressInputContainer.querySelector(
-        "input"
+        "input",
       ) as Element;
 
       fireEvent.change(addressInputEl, {

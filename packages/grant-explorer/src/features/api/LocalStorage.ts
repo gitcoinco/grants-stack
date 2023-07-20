@@ -14,7 +14,7 @@ export function loadCartFromLocalStorage(roundId: string): Project[] {
 
 export function reloadPageOnLocalStorageEvent(
   roundId: string,
-  event: StorageEvent
+  event: StorageEvent,
 ): void {
   // Check if the event is related to localStorage changes
   if (event.storageArea === window.localStorage) {

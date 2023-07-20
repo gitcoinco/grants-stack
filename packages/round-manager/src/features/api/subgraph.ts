@@ -1,7 +1,7 @@
 import { graphql_fetch } from "common";
 
 export async function getCurrentSubgraphBlockNumber(
-  chainId: number
+  chainId: number,
 ): Promise<number> {
   const res = await graphql_fetch(
     `
@@ -14,7 +14,7 @@ export async function getCurrentSubgraphBlockNumber(
         }
       }
     `,
-    chainId
+    chainId,
   );
   return res.data._meta.block.number;
 }
@@ -22,7 +22,7 @@ export async function getCurrentSubgraphBlockNumber(
 export async function waitForSubgraphSyncTo(
   chainId: number,
   blockNumber: number,
-  pollIntervalInMs = 1000
+  pollIntervalInMs = 1000,
 ): Promise<number> {
   let currentBlockNumber = await getCurrentSubgraphBlockNumber(chainId);
   while (currentBlockNumber < blockNumber) {

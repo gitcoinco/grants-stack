@@ -188,7 +188,7 @@ function ShowRound() {
   const [roundApplicationModal, setToggleRoundApplicationModal] =
     useLocalStorage(
       "toggleRoundApplicationModal",
-      ApplicationModalStatus.Undefined
+      ApplicationModalStatus.Undefined,
     );
 
   const isOnRoundChain = props.web3ChainId === props.roundChainId;
@@ -209,7 +209,7 @@ function ShowRound() {
     if (roundId !== undefined) {
       dispatch(unloadRounds());
       dispatch(
-        loadRound(roundId, Number(props.roundChainId || props.web3ChainId))
+        loadRound(roundId, Number(props.roundChainId || props.web3ChainId)),
       );
     }
   }, [dispatch, roundId]);
@@ -348,7 +348,7 @@ function ShowRound() {
                     {`${index + 1}. ${r.requirement}`}
                     <br />
                   </>
-                )
+                ),
               )}
             </span>
           </div>

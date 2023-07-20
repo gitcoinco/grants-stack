@@ -58,7 +58,7 @@ export default function ImageInput({
   };
 
   const saveImage = (
-    e: React.DragEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement>
+    e: React.DragEvent<HTMLButtonElement> | React.ChangeEvent<HTMLInputElement>,
   ) => {
     e.preventDefault();
     e.stopPropagation();

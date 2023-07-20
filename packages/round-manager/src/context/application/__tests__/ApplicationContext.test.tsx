@@ -39,11 +39,11 @@ describe("<ApplicationProvider />", () => {
           <TestingUseApplicationByIdComponent
             expectedApplicationId={expectedApplicationId}
           />
-        </ApplicationProvider>
+        </ApplicationProvider>,
       );
 
       expect(
-        await screen.findByText(expectedApplicationId)
+        await screen.findByText(expectedApplicationId),
       ).toBeInTheDocument();
     });
 
@@ -53,7 +53,7 @@ describe("<ApplicationProvider />", () => {
       (getApplicationById as any).mockReturnValue(
         new Promise<GrantApplication>(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       render(
@@ -61,11 +61,11 @@ describe("<ApplicationProvider />", () => {
           <TestingUseApplicationByIdComponent
             expectedApplicationId={expectedApplicationId}
           />
-        </ApplicationProvider>
+        </ApplicationProvider>,
       );
 
       expect(
-        await screen.findByTestId("is-loading-application-by-id")
+        await screen.findByTestId("is-loading-application-by-id"),
       ).toBeInTheDocument();
     });
 
@@ -79,12 +79,12 @@ describe("<ApplicationProvider />", () => {
           <TestingUseApplicationByIdComponent
             expectedApplicationId={expectedApplicationId}
           />
-        </ApplicationProvider>
+        </ApplicationProvider>,
       );
 
       await waitFor(() => {
         expect(
-          screen.queryByTestId("is-loading-application-by-id")
+          screen.queryByTestId("is-loading-application-by-id"),
         ).not.toBeInTheDocument();
       });
     });
@@ -99,12 +99,12 @@ describe("<ApplicationProvider />", () => {
           <TestingUseApplicationByIdComponent
             expectedApplicationId={expectedApplicationId}
           />
-        </ApplicationProvider>
+        </ApplicationProvider>,
       );
 
       await waitFor(() => {
         expect(
-          screen.queryByTestId("is-loading-application-by-id")
+          screen.queryByTestId("is-loading-application-by-id"),
         ).not.toBeInTheDocument();
       });
 
@@ -126,7 +126,7 @@ describe("<ApplicationProvider />", () => {
           <TestingUseApplicationByRoundIdComponent
             expectedRoundId={expectedRoundId}
           />
-        </ApplicationProvider>
+        </ApplicationProvider>,
       );
 
       expect(await screen.findByText(expectedRoundId)).toBeInTheDocument();
@@ -139,7 +139,7 @@ describe("<ApplicationProvider />", () => {
       (getApplicationsByRoundId as any).mockReturnValue(
         new Promise<GrantApplication>(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       render(
@@ -147,11 +147,11 @@ describe("<ApplicationProvider />", () => {
           <TestingUseApplicationByRoundIdComponent
             expectedRoundId={expectedRoundId}
           />
-        </ApplicationProvider>
+        </ApplicationProvider>,
       );
 
       expect(
-        await screen.findByTestId("is-loading-application-by-round-id")
+        await screen.findByTestId("is-loading-application-by-round-id"),
       ).toBeInTheDocument();
     });
 
@@ -168,12 +168,12 @@ describe("<ApplicationProvider />", () => {
           <TestingUseApplicationByRoundIdComponent
             expectedRoundId={expectedRoundId}
           />
-        </ApplicationProvider>
+        </ApplicationProvider>,
       );
 
       await waitFor(() => {
         expect(
-          screen.queryByTestId("is-loading-application-by-round-id")
+          screen.queryByTestId("is-loading-application-by-round-id"),
         ).not.toBeInTheDocument();
       });
     });
@@ -189,12 +189,12 @@ describe("<ApplicationProvider />", () => {
           <TestingUseApplicationByRoundIdComponent
             expectedRoundId={expectedRoundId}
           />
-        </ApplicationProvider>
+        </ApplicationProvider>,
       );
 
       await waitFor(() => {
         expect(
-          screen.queryByTestId("is-loading-application-by-round-id")
+          screen.queryByTestId("is-loading-application-by-round-id"),
         ).not.toBeInTheDocument();
       });
 

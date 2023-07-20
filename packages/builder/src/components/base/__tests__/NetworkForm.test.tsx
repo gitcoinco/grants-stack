@@ -47,8 +47,8 @@ describe("NetworkForm", () => {
     renderWrapped(<NetworkForm setVerifying={setVerifying} />, store);
     expect(
       screen.queryByText(
-        "Which network would you like to create this project on?"
-      )
+        "Which network would you like to create this project on?",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -104,7 +104,7 @@ describe("NetworkForm", () => {
     });
 
     expect(
-      screen.queryByText("Switch Networks to Continue")
+      screen.queryByText("Switch Networks to Continue"),
     ).toBeInTheDocument();
   });
 });

@@ -43,7 +43,7 @@ describe("<Github />", () => {
       store.dispatch(
         credentialsSaved({
           github: vc,
-        })
+        }),
       );
 
       const verifyCredentialMock = jest.fn();
@@ -53,7 +53,7 @@ describe("<Github />", () => {
       await act(async () => {
         renderWrapped(
           <Github org={handle} verificationError={() => {}} canVerify />,
-          store
+          store,
         );
       });
 
@@ -77,7 +77,7 @@ describe("<Github />", () => {
       store.dispatch(
         credentialsSaved({
           github: vc,
-        })
+        }),
       );
 
       const verifyCredentialMock = jest.fn();
@@ -87,7 +87,7 @@ describe("<Github />", () => {
       await act(async () => {
         renderWrapped(
           <Github org={handle} verificationError={() => {}} canVerify />,
-          store
+          store,
         );
       });
 
@@ -111,7 +111,7 @@ describe("<Github />", () => {
       store.dispatch(
         credentialsSaved({
           github: vc,
-        })
+        }),
       );
 
       const verifyCredentialMock = jest.fn();
@@ -121,7 +121,7 @@ describe("<Github />", () => {
       await act(async () => {
         renderWrapped(
           <Github org={handle} verificationError={() => {}} canVerify />,
-          store
+          store,
         );
       });
 
@@ -143,13 +143,13 @@ describe("<Github />", () => {
       store.dispatch(
         credentialsSaved({
           github: vc,
-        })
+        }),
       );
 
       await act(async () => {
         renderWrapped(
           <Github org={handle} verificationError={() => {}} canVerify />,
-          store
+          store,
         );
       });
 

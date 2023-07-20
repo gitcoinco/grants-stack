@@ -42,12 +42,12 @@ export default function About({
 
   const { isValid: validTwitterCredential } = useValidateCredential(
     project?.credentials?.twitter,
-    project?.projectTwitter
+    project?.projectTwitter,
   );
 
   const { isValid: validGithubCredential } = useValidateCredential(
     project?.credentials?.github,
-    project?.projectGithub
+    project?.projectGithub,
   );
 
   const renderApplications = () => (
@@ -173,7 +173,7 @@ export default function About({
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
                   __html: renderToHTML(
-                    project.description.replace(/\n/g, "\n\n")
+                    project.description.replace(/\n/g, "\n\n"),
                   ),
                 }}
               />

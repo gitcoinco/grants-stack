@@ -29,7 +29,7 @@ function EditProject() {
 
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
-    ProjectFormStatus.Metadata
+    ProjectFormStatus.Metadata,
   );
 
   const props = useSelector((state: RootState) => {
@@ -82,7 +82,7 @@ function EditProject() {
       dispatch(
         metadataSaved({
           ...props.projectMetadata,
-        })
+        }),
       );
 
       if (props.projectMetadata.credentials !== undefined) {

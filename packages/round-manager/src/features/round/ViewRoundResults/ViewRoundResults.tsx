@@ -54,7 +54,7 @@ function horizontalTabStyles(selected: boolean) {
     "py-2 px-4 text-sm leading-5",
     "hover:text-gray-700 focus:outline-none focus:ring-inset focus:ring-indigo-500",
     selected && "text-violet-400 border-violet-400",
-    selected ? "border-b-2" : "border-transparent"
+    selected ? "border-b-2" : "border-transparent",
   );
 }
 
@@ -70,12 +70,12 @@ type FinalizedMatches = {
 
 async function fetchFinalizedMatches(
   roundId: string,
-  signer: Signer
+  signer: Signer,
 ): Promise<FinalizedMatches | undefined> {
   const roundImplementation = new ethers.Contract(
     roundId,
     roundImplementationContract.abi,
-    signer
+    signer,
   );
 
   const filter =
@@ -95,7 +95,7 @@ async function fetchFinalizedMatches(
     const payoutStrategy = new ethers.Contract(
       payoutStrategyAddress,
       merklePayoutStrategyImplementationContract.abi,
-      signer
+      signer,
     );
 
     const distributionMetaPtr = await payoutStrategy.distributionMetaPtr();
@@ -134,13 +134,13 @@ function useRevisedMatchingFunds(
   roundId: string,
   signer: Signer | undefined,
   ignoreSaturation: boolean,
-  overridesFile?: File
+  overridesFile?: File,
 ) {
   const originalMatches = useRoundMatchingFunds(roundId);
   const revisedMatches = useRoundMatchingFunds(
     roundId,
     ignoreSaturation,
-    overridesFile
+    overridesFile,
   );
   const [finalizedMatchesLoading, setFinalizedMatchesLoading] =
     useState<boolean>(false);
@@ -288,7 +288,7 @@ export default function ViewRoundResults() {
     roundId,
     signer as Signer | undefined,
     distributionOption === "scale",
-    overridesFile
+    overridesFile,
   );
 
   const shouldShowRevisedTable =
@@ -296,16 +296,16 @@ export default function ViewRoundResults() {
 
   const { data: round, isLoading: isLoadingRound } = useRound(roundId);
   const { round: oldRoundFromGraph } = useRoundById(
-    (id as string).toLowerCase()
+    (id as string).toLowerCase(),
   );
 
   const isReadyForPayout = Boolean(
-    oldRoundFromGraph?.payoutStrategy.isReadyForPayout
+    oldRoundFromGraph?.payoutStrategy.isReadyForPayout,
   );
   const matchToken =
     round &&
     payoutTokens.find(
-      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+      (t) => t.address.toLowerCase() == round.token.toLowerCase(),
     );
 
   const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
@@ -313,7 +313,7 @@ export default function ViewRoundResults() {
 
   function formatUnits(value: bigint) {
     return `${Number(utils.formatUnits(value, matchToken?.decimal)).toFixed(
-      4
+      4,
     )} ${matchToken?.name}`;
   }
 
@@ -323,7 +323,7 @@ export default function ViewRoundResults() {
     return (
       matches?.reduce(
         (acc: bigint, match) => acc + (match.revisedMatch ?? BigInt(0)),
-        BigInt(0)
+        BigInt(0),
       ) ?? BigInt(0)
     );
   }, [matches]);
@@ -429,7 +429,7 @@ export default function ViewRoundResults() {
 
   const roundSaturation =
     Number(
-      ((sumOfMatches * BigInt(10_000)) / round.matchAmount) * BigInt(10_000)
+      ((sumOfMatches * BigInt(10_000)) / round.matchAmount) * BigInt(10_000),
     ) / 1_000_000;
 
   const disableRoundSaturationControls = Math.round(roundSaturation) >= 100;
@@ -562,7 +562,7 @@ export default function ViewRoundResults() {
                                 const percentage =
                                   Number(
                                     (BigInt(1000000) * match.revisedMatch) /
-                                      round.matchAmount
+                                      round.matchAmount,
                                   ) / 10000;
 
                                 return (
@@ -580,8 +580,8 @@ export default function ViewRoundResults() {
                                       {Number(
                                         utils.formatUnits(
                                           match.matched,
-                                          matchToken?.decimal
-                                        )
+                                          matchToken?.decimal,
+                                        ),
                                       ).toFixed(4)}{" "}
                                       {matchToken?.name}
                                     </td>
@@ -590,8 +590,8 @@ export default function ViewRoundResults() {
                                         {Number(
                                           utils.formatUnits(
                                             match.revisedMatch,
-                                            matchToken?.decimal
-                                          )
+                                            matchToken?.decimal,
+                                          ),
                                         ).toFixed(4)}{" "}
                                         {matchToken?.name}
                                       </td>
@@ -633,7 +633,7 @@ export default function ViewRoundResults() {
                 </span>
                 <span className="text-sm leading-5 font-normal text-left">
                   {`${formatUnits(sumOfMatches)} out of the ${formatUnits(
-                    round.matchAmount
+                    round.matchAmount,
                   )} matching fund will be distributed to grantees.`}
                 </span>
               </div>
@@ -656,7 +656,7 @@ export default function ViewRoundResults() {
                             classNames(
                               "cursor-pointer flex items-center",
                               disableRoundSaturationControls &&
-                                "opacity-50 cursor-not-allowed"
+                                "opacity-50 cursor-not-allowed",
                             )
                           }
                         >
@@ -671,7 +671,7 @@ export default function ViewRoundResults() {
                               <span
                                 className={classNames(
                                   "ml-2 font-medium text-gray-900",
-                                  checked && "text-indigo-900"
+                                  checked && "text-indigo-900",
                                 )}
                               >
                                 {option.label}
@@ -818,7 +818,7 @@ export default function ViewRoundResults() {
                       (await exportAndDownloadApplicationsCSV(
                         round.id,
                         chain.id,
-                        chain.name
+                        chain.name,
                       ));
                   } finally {
                     setIsExportingApplicationsCSV(false);
@@ -885,7 +885,7 @@ export function FileUploader(props: {
         return;
       }
     },
-    [onSelectFile]
+    [onSelectFile],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -953,7 +953,7 @@ function NoInformationContent() {
 async function exportAndDownloadApplicationsCSV(
   roundId: string,
   chainId: number,
-  chainName: string
+  chainName: string,
 ) {
   const csv = await roundApplicationsToCSV(roundId, chainId, chainName, true);
   // create a download link and click it

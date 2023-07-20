@@ -42,7 +42,7 @@ export const RoundValidationSchema = yup.object().shape({
         .required("You must select a support type.")
         .notOneOf(
           ["Select what type of input."],
-          "You must select a support type."
+          "You must select a support type.",
         ),
       info: yup
         .string()
@@ -61,7 +61,7 @@ export const RoundValidationSchema = yup.object().shape({
             /*Matches www.example.com, example.com, http and https prefixes, but not www.invalid */
             .matches(
               /^(http:\/\/|https:\/\/|ipfs:\/\/)?\S+\.\S+$|^(ipfs:\/\/)\S+$/,
-              "Must be a valid URL"
+              "Must be a valid URL",
             )
             .required("You must provide a valid URL."),
         }),
@@ -72,44 +72,44 @@ export const RoundValidationSchema = yup.object().shape({
     .required("This field is required.")
     .min(
       yup.ref("applicationsStartTime"),
-      "You must enter a date and time in the future."
+      "You must enter a date and time in the future.",
     )
     .max(
       yup.ref("roundStartTime"),
-      "Applications start date must be before the round start date."
+      "Applications start date must be before the round start date.",
     )
     .max(
       yup.ref("roundEndTime"),
-      "Applications start date must be before the round end date."
+      "Applications start date must be before the round end date.",
     ),
   applicationsEndTime: yup
     .date()
     .required("This field is required.")
     .min(
       yup.ref("applicationsStartTime"),
-      "Applications end date must be later than applications start date."
+      "Applications end date must be later than applications start date.",
     )
     .max(
       yup.ref("roundEndTime"),
-      "Applications end date must be before the round end date."
+      "Applications end date must be before the round end date.",
     ),
   roundStartTime: yup
     .date()
     .required("This field is required.")
     .min(
       yup.ref("applicationsStartTime"),
-      "Round start date must be later than the applications start date."
+      "Round start date must be later than the applications start date.",
     )
     .max(
       yup.ref("roundEndTime"),
-      "Round start date must be earlier than the round end date."
+      "Round start date must be earlier than the round end date.",
     ),
   roundEndTime: yup
     .date()
     .required("This field is required.")
     .min(
       yup.ref("roundStartTime"),
-      "Round end date must be later than the round start date."
+      "Round end date must be later than the round start date.",
     ),
 });
 
@@ -518,7 +518,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               setApplicationEndDate(moment(date));
                               setValue(
                                 "applicationsEndTime",
-                                moment(date).toDate()
+                                moment(date).toDate(),
                               );
                             }
                           }}
@@ -766,7 +766,7 @@ function SupportTypeDropdown(props: {
               <SupportTypeButton
                 errors={props.errors}
                 supportType={props.supportTypes.find(
-                  (supportType) => supportType.name === field.value
+                  (supportType) => supportType.name === field.value,
                 )}
               />
               <Transition
@@ -787,7 +787,7 @@ function SupportTypeDropdown(props: {
                               active
                                 ? "text-white bg-indigo-600"
                                 : "text-gray-900",
-                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                              "relative cursor-default select-none py-2 pl-3 pr-9",
                             )
                           }
                           value={type.name}
@@ -799,7 +799,7 @@ function SupportTypeDropdown(props: {
                                 <span
                                   className={classNames(
                                     selected ? "font-semibold" : "font-normal",
-                                    "ml-3 block truncate"
+                                    "ml-3 block truncate",
                                   )}
                                 >
                                   {type.name}
@@ -810,7 +810,7 @@ function SupportTypeDropdown(props: {
                                 <span
                                   className={classNames(
                                     active ? "text-white" : "text-indigo-600",
-                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                    "absolute inset-y-0 right-0 flex items-center pr-4",
                                   )}
                                 >
                                   <CheckIcon
@@ -822,7 +822,7 @@ function SupportTypeDropdown(props: {
                             </>
                           )}
                         </Listbox.Option>
-                      )
+                      ),
                   )}
                 </Listbox.Options>
               </Transition>
@@ -957,7 +957,7 @@ function RoundType(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
                   >
@@ -986,7 +986,7 @@ function RoundType(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
                   >

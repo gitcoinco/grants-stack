@@ -16,10 +16,10 @@ function NetworkForm({
     (state: RootState) => ({
       currentChain: state.web3.chainID,
     }),
-    shallowEqual
+    shallowEqual,
   );
   const [switchTo, setSwitchTo] = useState<number | undefined>(
-    props.currentChain
+    props.currentChain,
   );
   const [showModal, setShowModal] = useState<boolean>(false);
   const { chains } = useSwitchNetwork();

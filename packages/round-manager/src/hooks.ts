@@ -21,7 +21,7 @@ export function useAlloIndexerClient(): Client {
     return new Client(
       fetch.bind(window),
       process.env.REACT_APP_ALLO_API_URL ?? "",
-      chain.id
+      chain.id,
     );
   }, [chain.id]);
 }
@@ -29,14 +29,14 @@ export function useAlloIndexerClient(): Client {
 export function useRoundMatchingFunds(
   roundId: string,
   ignoreSaturation?: boolean,
-  overrides?: Blob
+  overrides?: Blob,
 ) {
   const client = useAlloIndexerClient();
   return useSWR(
     [roundId, "/matches", overrides, ignoreSaturation],
     ([roundId]) => {
       return client.getRoundMatchingFunds(roundId, overrides, ignoreSaturation);
-    }
+    },
   );
 }
 

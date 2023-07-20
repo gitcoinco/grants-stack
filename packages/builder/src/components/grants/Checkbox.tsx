@@ -60,7 +60,7 @@ export default function Checkbox({
                   checked={values.includes(choice)}
                   onChange={(e) => {
                     const newValues = values.filter(
-                      (v) => v !== e.target.value
+                      (v) => v !== e.target.value,
                     );
 
                     if (e.target.checked) {
@@ -71,7 +71,7 @@ export default function Checkbox({
                   }}
                   type="checkbox"
                   className={classNames(
-                    "focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
+                    "focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none",
                   )}
                 />
                 <label htmlFor={choiceId} className="ml-3 mb-0">

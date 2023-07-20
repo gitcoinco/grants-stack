@@ -32,7 +32,7 @@ describe("<RoundProvider />", () => {
       expectedProgramId: string;
     }) => {
       const { data, fetchRoundStatus, error } = useRounds(
-        props.expectedProgramId
+        props.expectedProgramId,
       );
       return (
         <>
@@ -57,20 +57,20 @@ describe("<RoundProvider />", () => {
       (listRounds as jest.Mock).mockReturnValue(
         new Promise<Round>(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       render(
         <RoundProvider>
           {/*// @ts-expect-error test file*/}
           <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       expect(
         await screen.findByTestId(
-          `fetch-round-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `fetch-round-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -88,17 +88,17 @@ describe("<RoundProvider />", () => {
       render(
         <RoundProvider>
           <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       expect(
         await screen.findByTestId(
-          `fetch-round-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `fetch-round-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       ).toBeInTheDocument();
 
       expect(screen.queryAllByTestId("round")).toHaveLength(
-        expectedRoundList.length
+        expectedRoundList.length,
       );
       expectedRoundList.forEach((expectedRound) => {
         expect(screen.getByText(expectedRound.id!)).toBeInTheDocument();
@@ -113,17 +113,17 @@ describe("<RoundProvider />", () => {
       render(
         <RoundProvider>
           <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       expect(
         await screen.findByTestId(
-          `fetch-round-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `fetch-round-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
 
       expect(
-        await screen.findByTestId("use-round-error-msg")
+        await screen.findByTestId("use-round-error-msg"),
       ).toBeInTheDocument();
     });
   });
@@ -135,20 +135,20 @@ describe("<RoundProvider />", () => {
       (getRoundById as any).mockReturnValue(
         new Promise<Round>(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       render(
         <RoundProvider>
           {/*// @ts-expect-error test file*/}
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       expect(
         await screen.findByTestId(
-          `fetch-round-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `fetch-round-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -161,13 +161,13 @@ describe("<RoundProvider />", () => {
         <RoundProvider>
           {/*// @ts-expect-error test file*/}
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       expect(
         await screen.findByTestId(
-          `fetch-round-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `fetch-round-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       ).toBeInTheDocument();
 
       expect(await screen.findByText(expectedRoundId!)).toBeInTheDocument();
@@ -182,17 +182,17 @@ describe("<RoundProvider />", () => {
         <RoundProvider>
           {/*// @ts-expect-error test file*/}
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       expect(
         await screen.findByTestId(
-          `fetch-round-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `fetch-round-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
 
       expect(
-        await screen.findByTestId("round-by-id-error-msg")
+        await screen.findByTestId("round-by-id-error-msg"),
       ).toBeInTheDocument();
     });
   });
@@ -200,7 +200,7 @@ describe("<RoundProvider />", () => {
 
 const TestingUseRoundByIdComponent = (props: { expectedRoundId: string }) => {
   const { round, fetchRoundStatus, error } = useRoundById(
-    props.expectedRoundId
+    props.expectedRoundId,
   );
   return (
     <>

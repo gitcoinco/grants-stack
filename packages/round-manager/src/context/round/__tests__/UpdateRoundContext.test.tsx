@@ -90,21 +90,21 @@ describe("<UpdateRoundProvider />", () => {
       (saveToIPFS as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(
         <TestUseUpdateRoundComponent
           mockEditedGroups={mockEditedGroups}
           mockRoundData={mockRoundData}
-        />
+        />,
       );
       callUpdateRound();
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `storing-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -115,14 +115,14 @@ describe("<UpdateRoundProvider />", () => {
         <TestUseUpdateRoundComponent
           mockEditedGroups={mockEditedGroups}
           mockRoundData={mockRoundData}
-        />
+        />,
       );
       callUpdateRound();
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `storing-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -145,14 +145,14 @@ describe("<UpdateRoundProvider />", () => {
         <TestUseUpdateRoundComponent
           mockEditedGroups={mockEditedGroups}
           mockRoundData={mockRoundData}
-        />
+        />,
       );
       callUpdateRound();
 
       expect(
         await screen.findByTestId(
-          `update-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `update-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -164,14 +164,14 @@ describe("<UpdateRoundProvider />", () => {
         <TestUseUpdateRoundComponent
           mockEditedGroups={mockEditedGroups}
           mockRoundData={mockRoundData}
-        />
+        />,
       );
       callUpdateRound();
 
       expect(
         await screen.findByTestId(
-          `update-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `update-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -193,21 +193,21 @@ describe("<UpdateRoundProvider />", () => {
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(
         <TestUseUpdateRoundComponent
           mockEditedGroups={mockEditedGroups}
           mockRoundData={mockRoundData}
-        />
+        />,
       );
       callUpdateRound();
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -219,14 +219,14 @@ describe("<UpdateRoundProvider />", () => {
         <TestUseUpdateRoundComponent
           mockEditedGroups={mockEditedGroups}
           mockRoundData={mockRoundData}
-        />
+        />,
       );
       callUpdateRound();
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `indexing-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });

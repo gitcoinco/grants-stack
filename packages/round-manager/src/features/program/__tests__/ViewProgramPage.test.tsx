@@ -45,7 +45,7 @@ describe("<ViewProgram />", () => {
       wrapWithReadProgramContext(wrapWithRoundContext(<ViewProgram />), {
         programs: [],
         fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-      })
+      }),
     );
 
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
@@ -67,8 +67,8 @@ describe("<ViewProgram />", () => {
         {
           programs: [stubProgram],
           fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-        }
-      )
+        },
+      ),
     );
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   });
@@ -83,8 +83,8 @@ describe("<ViewProgram />", () => {
         {
           programs: [stubProgram],
           fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-        }
-      )
+        },
+      ),
     );
 
     await screen.findByText(stubProgram.metadata.name);
@@ -113,8 +113,8 @@ describe("<ViewProgram />", () => {
         {
           programs: [stubProgram],
           fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-        }
-      )
+        },
+      ),
     );
 
     const wallets = await screen.findAllByTestId("program-operator-wallet");
@@ -128,8 +128,8 @@ describe("<ViewProgram />", () => {
           data: [],
           fetchRoundStatus: ProgressStatus.NOT_STARTED,
         }),
-        { fetchProgramsStatus: ProgressStatus.IN_PROGRESS }
-      )
+        { fetchProgramsStatus: ProgressStatus.IN_PROGRESS },
+      ),
     );
 
     screen.getByTestId("loading-spinner");
@@ -146,8 +146,8 @@ describe("<ViewProgram />", () => {
           {
             programs: [stubProgram],
             fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-          }
-        )
+          },
+        ),
       );
 
       await screen.findAllByTestId("program-details-intro");
@@ -167,12 +167,12 @@ describe("<ViewProgram />", () => {
           {
             programs: [stubProgram],
             fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-          }
-        )
+          },
+        ),
       );
 
       expect(
-        screen.getByText(stubRound.roundMetadata.name)
+        screen.getByText(stubRound.roundMetadata.name),
       ).toBeInTheDocument();
     });
 
@@ -188,29 +188,29 @@ describe("<ViewProgram />", () => {
           {
             programs: [stubProgram],
             fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-          }
-        )
+          },
+        ),
       );
 
       const applicationStartTimePeriod = await screen.findByTestId(
-        "application-start-time-period"
+        "application-start-time-period",
       );
       const applicationEndTimePeriod = await screen.findByTestId(
-        "application-end-time-period"
+        "application-end-time-period",
       );
 
       const utcApplicationStartTime = formatUTCDateAsISOString(
-        stubRound!.applicationsStartTime
+        stubRound!.applicationsStartTime,
       );
       const utcApplicationEndTime = formatUTCDateAsISOString(
-        stubRound!.applicationsEndTime
+        stubRound!.applicationsEndTime,
       );
 
       expect(applicationStartTimePeriod.textContent).toEqual(
-        utcApplicationStartTime
+        utcApplicationStartTime,
       );
       expect(applicationEndTimePeriod.textContent).toEqual(
-        utcApplicationEndTime
+        utcApplicationEndTime,
       );
     });
 
@@ -225,24 +225,24 @@ describe("<ViewProgram />", () => {
           {
             programs: [stubProgram],
             fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-          }
-        )
+          },
+        ),
       );
 
       const roundStartTimePeriodElement = await screen.findByTestId(
-        "round-start-time-period"
+        "round-start-time-period",
       );
       const roundEndTimePeriodElement = await screen.findByTestId(
-        "round-end-time-period"
+        "round-end-time-period",
       );
 
       const utcRoundStartTime = formatUTCDateAsISOString(
-        stubRound!.roundStartTime
+        stubRound!.roundStartTime,
       );
       const utcRoundEndTime = formatUTCDateAsISOString(stubRound!.roundEndTime);
 
       expect(roundStartTimePeriodElement.textContent).toEqual(
-        utcRoundStartTime
+        utcRoundStartTime,
       );
       expect(roundEndTimePeriodElement.textContent).toEqual(utcRoundEndTime);
     });
@@ -258,8 +258,8 @@ describe("<ViewProgram />", () => {
           {
             programs: [stubProgram],
             fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-          }
-        )
+          },
+        ),
       );
 
       await screen.findByTestId("create-round-small-link");

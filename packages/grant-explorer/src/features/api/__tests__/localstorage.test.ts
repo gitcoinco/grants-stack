@@ -23,10 +23,10 @@ describe("Local Storage", () => {
 
       expect(localStorage.setItem).toHaveBeenLastCalledWith(
         `cart-round-${roundId1}`,
-        JSON.stringify(cart)
+        JSON.stringify(cart),
       );
       expect(localStorage.__STORE__[`cart-round-${roundId1}`]).toBe(
-        JSON.stringify(cart)
+        JSON.stringify(cart),
       );
       expect(Object.keys(localStorage.__STORE__).length).toBe(1);
     });

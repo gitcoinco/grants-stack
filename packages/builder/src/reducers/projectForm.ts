@@ -19,7 +19,7 @@ export const initialState: ProjectFormState = {
 
 export const projectFormReducer = (
   state: ProjectFormState = initialState,
-  action: ProjectFormActions
+  action: ProjectFormActions,
 ) => {
   switch (action.type) {
     case METADATA_SAVED: {

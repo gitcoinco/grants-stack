@@ -79,7 +79,7 @@ jest.mock("wagmi");
 
 const verifyCredentialMock = jest.spyOn(
   PassportVerifier.prototype,
-  "verifyCredential"
+  "verifyCredential",
 );
 
 describe("ViewApplicationPage", () => {
@@ -91,7 +91,7 @@ describe("ViewApplicationPage", () => {
 
   it("should display 404 when there no application is found", () => {
     (getApplicationsByRoundId as jest.Mock).mockRejectedValue(
-      "No application :("
+      "No application :(",
     );
 
     renderWithContext(<ViewApplicationPage />, {
@@ -142,7 +142,7 @@ describe("ViewApplicationPage", () => {
     });
 
     (getApplicationsByRoundId as any).mockResolvedValue(
-      grantApplicationWithApplicationAnswers
+      grantApplicationWithApplicationAnswers,
     );
 
     renderWithContext(<ViewApplicationPage />, {
@@ -150,7 +150,7 @@ describe("ViewApplicationPage", () => {
     });
 
     expect(
-      await screen.findByText(expectedAnswers[0].answer)
+      await screen.findByText(expectedAnswers[0].answer),
     ).toBeInTheDocument();
   });
 
@@ -187,7 +187,7 @@ describe("ViewApplicationPage", () => {
     it("should start the bulk update process to persist approve decision when confirm is selected", async () => {
       const transactionBlockNumber = 10;
       (updateApplicationStatuses as jest.Mock).mockResolvedValue(
-        transactionBlockNumber
+        transactionBlockNumber,
       );
 
       renderWithContext(<ViewApplicationPage />, {
@@ -246,7 +246,7 @@ describe("ViewApplicationPage", () => {
         },
         {
           contractUpdatingStatus: ProgressStatus.IS_ERROR,
-        }
+        },
       );
 
       fireEvent.click(screen.getByText(/Approve/));
@@ -270,7 +270,7 @@ describe("ViewApplicationPage", () => {
         },
         {
           contractUpdatingStatus: ProgressStatus.IS_ERROR,
-        }
+        },
       );
 
       fireEvent.click(screen.getByText(/Approve/));
@@ -308,7 +308,7 @@ describe("ViewApplicationPage verification badges", () => {
 
     grantApplicationWithNoVc.project!.credentials = {};
     (getApplicationsByRoundId as any).mockResolvedValue(
-      grantApplicationWithNoVc
+      grantApplicationWithNoVc,
     );
 
     renderWithContext(<ViewApplicationPage />, {
@@ -317,10 +317,10 @@ describe("ViewApplicationPage verification badges", () => {
 
     expect(await screen.findByText(expectedTwitterHandle)).toBeInTheDocument();
     expect(
-      screen.queryByTestId(`${provider}-verifiable-credential`)
+      screen.queryByTestId(`${provider}-verifiable-credential`),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId(`${provider}-verifiable-credential-unverified`)
+      screen.queryByTestId(`${provider}-verifiable-credential-unverified`),
     ).not.toBeInTheDocument();
   });
 
@@ -334,7 +334,7 @@ describe("ViewApplicationPage verification badges", () => {
     });
     grantApplicationWithNoVc.project!.credentials = {};
     (getApplicationsByRoundId as any).mockResolvedValue(
-      grantApplicationWithNoVc
+      grantApplicationWithNoVc,
     );
 
     renderWithContext(<ViewApplicationPage />, {
@@ -342,13 +342,13 @@ describe("ViewApplicationPage verification badges", () => {
     });
 
     expect(
-      await screen.findByText(expectedGithubOrganizationName)
+      await screen.findByText(expectedGithubOrganizationName),
     ).toBeInTheDocument();
     expect(
-      screen.queryByTestId(`${provider}-verifiable-credential`)
+      screen.queryByTestId(`${provider}-verifiable-credential`),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId(`${provider}-verifiable-credential-unverified`)
+      screen.queryByTestId(`${provider}-verifiable-credential-unverified`),
     ).not.toBeInTheDocument();
   });
 
@@ -364,7 +364,7 @@ describe("ViewApplicationPage verification badges", () => {
         ...overrides,
       });
       (getApplicationsByRoundId as any).mockResolvedValue(
-        grantApplicationWithValidVc
+        grantApplicationWithValidVc,
       );
 
       renderWithContext(<ViewApplicationPage />, {
@@ -372,9 +372,9 @@ describe("ViewApplicationPage verification badges", () => {
       });
 
       expect(
-        await screen.findByTestId(`${provider}-verifiable-credential`)
+        await screen.findByTestId(`${provider}-verifiable-credential`),
       ).toBeInTheDocument();
-    }
+    },
   );
 
   it("shows verified twitter badge when project twitter handle matches vc regardless of casing", async () => {
@@ -394,11 +394,11 @@ describe("ViewApplicationPage verification badges", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId(`${provider}-verifiable-credential`)
+        screen.getByTestId(`${provider}-verifiable-credential`),
       ).toBeInTheDocument();
     });
     expect(
-      screen.queryByTestId(`${provider}-verifiable-credential-unverified`)
+      screen.queryByTestId(`${provider}-verifiable-credential-unverified`),
     ).not.toBeInTheDocument();
   });
 
@@ -419,11 +419,11 @@ describe("ViewApplicationPage verification badges", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId(`${provider}-verifiable-credential`)
+        screen.getByTestId(`${provider}-verifiable-credential`),
       ).toBeInTheDocument();
     });
     expect(
-      screen.queryByTestId(`${provider}-verifiable-credential-unverified`)
+      screen.queryByTestId(`${provider}-verifiable-credential-unverified`),
     ).not.toBeInTheDocument();
   });
 
@@ -447,13 +447,13 @@ describe("ViewApplicationPage verification badges", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId(`${provider}-verifiable-credential-unverified`)
+          screen.getByTestId(`${provider}-verifiable-credential-unverified`),
         ).toBeInTheDocument();
       });
       expect(
-        screen.queryByTestId(`${provider}-verifiable-credential`)
+        screen.queryByTestId(`${provider}-verifiable-credential`),
       ).not.toBeInTheDocument();
-    }
+    },
   );
 
   it.each(["github", "twitter"])(
@@ -466,15 +466,15 @@ describe("ViewApplicationPage verification badges", () => {
         isLoading: false,
       };
       (getApplicationsByRoundId as any).mockResolvedValue(
-        noGithubVerification.application
+        noGithubVerification.application,
       );
 
       renderWithContext(<ViewApplicationPage />, noGithubVerification);
 
       expect(
-        screen.queryByTestId(`${provider}-verifiable-credential`)
+        screen.queryByTestId(`${provider}-verifiable-credential`),
       ).not.toBeInTheDocument();
-    }
+    },
   );
 
   it("shows invalid badge when verifiable credential was not issued by correct IAM server", async () => {
@@ -494,11 +494,11 @@ describe("ViewApplicationPage verification badges", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId(`github-verifiable-credential-unverified`)
+        screen.getByTestId(`github-verifiable-credential-unverified`),
       ).toBeInTheDocument();
     });
     expect(
-      screen.queryByTestId(`github-verifiable-credential`)
+      screen.queryByTestId(`github-verifiable-credential`),
     ).not.toBeInTheDocument();
   });
 
@@ -519,11 +519,11 @@ describe("ViewApplicationPage verification badges", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId(`${provider}-verifiable-credential-unverified`)
+        screen.getByTestId(`${provider}-verifiable-credential-unverified`),
       ).toBeInTheDocument();
     });
     expect(
-      screen.queryByTestId(`${provider}-verifiable-credential`)
+      screen.queryByTestId(`${provider}-verifiable-credential`),
     ).not.toBeInTheDocument();
   });
 
@@ -544,11 +544,11 @@ describe("ViewApplicationPage verification badges", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId(`${provider}-verifiable-credential-unverified`)
+        screen.getByTestId(`${provider}-verifiable-credential-unverified`),
       ).toBeInTheDocument();
     });
     expect(
-      screen.queryByTestId(`${provider}-verifiable-credential`)
+      screen.queryByTestId(`${provider}-verifiable-credential`),
     ).not.toBeInTheDocument();
   });
 
@@ -574,9 +574,9 @@ describe("ViewApplicationPage verification badges", () => {
 
       await screen.findByTestId(`${provider}-verifiable-credential-unverified`);
       expect(
-        screen.queryByTestId(`${provider}-verifiable-credential`)
+        screen.queryByTestId(`${provider}-verifiable-credential`),
       ).not.toBeInTheDocument();
-    }
+    },
   );
 });
 
@@ -584,7 +584,7 @@ export const renderWithContext = (
   ui: JSX.Element,
   applicationStateOverrides: Partial<ApplicationState> = {},
   bulkUpdateGrantApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) =>
   render(
     <MemoryRouter>
@@ -621,5 +621,5 @@ export const renderWithContext = (
           </ApplicationContext.Provider>
         </RoundContext.Provider>
       </BulkUpdateGrantApplicationContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );

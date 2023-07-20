@@ -20,7 +20,7 @@ export default class RoundApplicationBuilder {
     project: Project,
     ram: RoundApplicationMetadata,
     roundAddress: string,
-    chainName: string
+    chainName: string,
   ) {
     this.enableEncryption = enableEncryption;
     this.project = project;
@@ -69,7 +69,7 @@ export default class RoundApplicationBuilder {
 
   async build(
     roundAddress: string,
-    formInputs: RoundApplicationAnswers
+    formInputs: RoundApplicationAnswers,
   ): Promise<RoundApplication> {
     const answers = [];
     let recipient: string;
@@ -95,7 +95,7 @@ export default class RoundApplicationBuilder {
           if (question.encrypted) {
             // eslint-disable-next-line
             encryptedAnswer = await this.encryptAnswer(
-              (formInputs[question.id] as string) ?? ""
+              (formInputs[question.id] as string) ?? "",
             );
           } else {
             answer = formInputs[question.id];

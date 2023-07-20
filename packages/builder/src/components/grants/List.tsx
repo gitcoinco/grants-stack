@@ -26,7 +26,7 @@ function ProjectsList() {
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
-    ApplicationModalStatus.Undefined
+    ApplicationModalStatus.Undefined,
   );
 
   const [roundToApply] = useLocalStorage("roundToApply", null);
@@ -103,8 +103,8 @@ function ProjectsList() {
           checkRoundApplications(
             Number(chainID),
             roundAddress,
-            props.projectIDs
-          )
+            props.projectIDs,
+          ),
         );
       }
     }

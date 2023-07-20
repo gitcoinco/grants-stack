@@ -93,7 +93,7 @@ export class Lit {
 
     // Encrypting Content and generating symmetric key
     const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(
-      content
+      content,
     );
 
     // Saving the Encrypted Content to the Lit Nodes
@@ -108,7 +108,7 @@ export class Lit {
       encryptedString,
       encryptedSymmetricKey: LitJsSdk.uint8arrayToString(
         encryptedSymmetricKey,
-        "base16"
+        "base16",
       ),
     };
   }
@@ -122,7 +122,7 @@ export class Lit {
    */
   async decryptString(
     encryptedStr: string | Blob,
-    encryptedSymmetricKey: string
+    encryptedSymmetricKey: string,
   ) {
     const client = await getClient();
 
@@ -143,7 +143,7 @@ export class Lit {
       // Obtaining the Decrypted Data
       const decryptedString = await LitJsSdk.decryptString(
         encryptedStr,
-        symmetricKey
+        symmetricKey,
       );
 
       return decryptedString;

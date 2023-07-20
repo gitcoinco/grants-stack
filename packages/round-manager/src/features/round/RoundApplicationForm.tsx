@@ -206,7 +206,7 @@ export function RoundApplicationForm(props: {
         lastUpdatedOn: Date.now(),
         applicationSchema: generateApplicationSchema(
           fields,
-          projectRequirements
+          projectRequirements,
         ),
         version: VERSION,
       };
@@ -224,7 +224,7 @@ export function RoundApplicationForm(props: {
       });
     } catch (error) {
       datadogLogs.logger.error(
-        `error: RoundApplcationForm next - ${error}, programId - ${programId}`
+        `error: RoundApplcationForm next - ${error}, programId - ${programId}`,
       );
       console.error("RoundApplcationForm", error);
     }
@@ -279,8 +279,8 @@ export function RoundApplicationForm(props: {
     data: [
       keyof ProjectRequirements,
       keyof ProjectRequirements[keyof ProjectRequirements],
-      boolean
-    ][]
+      boolean,
+    ][],
   ) => {
     let tmpRequirements = { ...projectRequirements };
 
@@ -489,8 +489,8 @@ const ProjectSocials = ({
     data: [
       keyof ProjectRequirements,
       keyof ProjectRequirements[keyof ProjectRequirements],
-      boolean
-    ][]
+      boolean,
+    ][],
   ) => void;
   requirements: ProjectRequirements;
 }) => (
@@ -670,7 +670,7 @@ const Box = ({
 function redirectToProgramDetails(
   navigate: NavigateFunction,
   waitSeconds: number,
-  programId: string
+  programId: string,
 ) {
   setTimeout(() => {
     navigate(`/program/${programId}`);

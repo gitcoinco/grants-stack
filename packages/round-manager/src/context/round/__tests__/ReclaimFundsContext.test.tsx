@@ -31,7 +31,7 @@ describe("<ReclaimFundsProvider />", () => {
     (reclaimFundsFromContract as jest.Mock).mockReturnValue(
       new Promise(() => {
         /* do nothing.*/
-      })
+      }),
     );
   });
 
@@ -47,7 +47,7 @@ describe("<ReclaimFundsProvider />", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId(`reclaim-status-is-${ProgressStatus.IN_PROGRESS}`)
+        screen.getByTestId(`reclaim-status-is-${ProgressStatus.IN_PROGRESS}`),
       ).toBeInTheDocument();
     });
   });
@@ -74,7 +74,7 @@ describe("useReclaimFunds Errors", () => {
     fireEvent.click(screen.getByTestId("reclaim-funds"));
 
     expect(
-      await screen.findByTestId(`reclaim-status-is-${ProgressStatus.IS_ERROR}`)
+      await screen.findByTestId(`reclaim-status-is-${ProgressStatus.IS_ERROR}`),
     ).toBeInTheDocument();
   });
 
@@ -84,7 +84,7 @@ describe("useReclaimFunds Errors", () => {
       .mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
     renderWithProvider(<TestUseReclaimFundsComponent {...testParams} />);
@@ -94,7 +94,7 @@ describe("useReclaimFunds Errors", () => {
     fireEvent.click(screen.getByTestId("reclaim-funds"));
 
     expect(
-      screen.queryByTestId(`reclaim-status-is-${ProgressStatus.IS_ERROR}`)
+      screen.queryByTestId(`reclaim-status-is-${ProgressStatus.IS_ERROR}`),
     ).not.toBeInTheDocument();
   });
 });

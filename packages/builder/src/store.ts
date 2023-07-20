@@ -19,7 +19,7 @@ const setupStore = (preloadedState?: PreloadedState<RootState>) =>
   createStore(
     createRootReducer(),
     preloadedState,
-    composeEnhancers(applyMiddleware(...middlewares))
+    composeEnhancers(applyMiddleware(...middlewares)),
   );
 
 export default setupStore;

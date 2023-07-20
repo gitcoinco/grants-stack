@@ -39,7 +39,7 @@ describe("AddQuestionModal", () => {
           /**/
         }}
         question={editQuestion}
-      />
+      />,
     );
     const modalDiv = await screen.queryByTestId("add-question-modal");
     expect(modalDiv).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe("AddQuestionModal", () => {
           /**/
         }}
         question={editQuestion}
-      />
+      />,
     );
     const modalDiv = screen.queryByTestId("add-question-modal");
     expect(modalDiv).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe("AddQuestionModal", () => {
           /**/
         }}
         question={editQuestion}
-      />
+      />,
     );
     const modalDiv = screen.queryByTestId("add-question-modal");
     expect(modalDiv).toBeInTheDocument();
@@ -99,7 +99,7 @@ describe("AddQuestionModal", () => {
           /**/
         }}
         question={editQuestion}
-      />
+      />,
     );
     const modalDiv = screen.queryByTestId("add-question-modal");
     expect(modalDiv).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe("AddQuestionModal", () => {
 
 export const renderWithContext = (
   ui: JSX.Element,
-  createRoundStateOverrides: Partial<CreateRoundState> = {}
+  createRoundStateOverrides: Partial<CreateRoundState> = {},
 ) =>
   render(
     <MemoryRouter>
@@ -122,5 +122,5 @@ export const renderWithContext = (
       >
         {ui}
       </CreateRoundContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );

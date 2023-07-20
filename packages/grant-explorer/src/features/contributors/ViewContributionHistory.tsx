@@ -11,7 +11,7 @@ import { PayoutToken } from "../api/types";
 import { CHAINS, getChainIds, getTxExplorer } from "../api/utils";
 import Navbar from "../common/Navbar";
 const DonationHistoryBanner = lazy(
-  () => import("../../assets/DonationHistoryBanner")
+  () => import("../../assets/DonationHistoryBanner"),
 );
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -49,7 +49,7 @@ function ViewContributionHistoryFetcher(props: {
 }) {
   const contributionHistory = useContributionHistory(
     props.chainIds,
-    props.address
+    props.address,
   );
 
   const breadCrumbs = [
@@ -68,7 +68,7 @@ function ViewContributionHistoryFetcher(props: {
   }, [props.address]);
 
   const tokens = Object.fromEntries(
-    payoutTokens.map((token) => [token.address, token])
+    payoutTokens.map((token) => [token.address, token]),
   );
 
   if (contributionHistory.type === "loading") {
@@ -376,7 +376,7 @@ function DonationsTable(props: {
               if (token) {
                 formattedAmount = `${ethers.utils.formatUnits(
                   contribution.amount,
-                  token.decimal
+                  token.decimal,
                 )} ${token.name}`;
               }
 

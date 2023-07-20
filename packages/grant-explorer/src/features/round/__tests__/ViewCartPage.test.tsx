@@ -175,7 +175,7 @@ describe("View Cart Page", () => {
           target: {
             value: "10",
           },
-        }
+        },
       );
 
       expect(screen.getByTestId("totalDonation")).toHaveTextContent("20");
@@ -198,7 +198,7 @@ describe("View Cart Page", () => {
 
       const options = getPayoutTokenOptions(chainId.toString());
       expect(screen.getByTestId("summaryPayoutToken")).toHaveTextContent(
-        options[0].name
+        options[0].name,
       );
     });
   });
@@ -218,10 +218,10 @@ describe("View Cart Page", () => {
       fireEvent.click(confirmButton);
 
       expect(
-        await screen.queryByTestId("confirm-modal")
+        await screen.queryByTestId("confirm-modal"),
       ).not.toBeInTheDocument();
       expect(
-        await screen.queryByTestId("insufficientBalance")
+        await screen.queryByTestId("insufficientBalance"),
       ).not.toBeInTheDocument();
       expect(await screen.queryByTestId("emptyInput")).toBeInTheDocument();
     });
@@ -246,11 +246,11 @@ describe("View Cart Page", () => {
       fireEvent.click(confirmButton);
 
       expect(
-        await screen.queryByTestId("insufficientBalance")
+        await screen.queryByTestId("insufficientBalance"),
       ).toBeInTheDocument();
       expect(await screen.queryByTestId("emptyInput")).not.toBeInTheDocument();
       expect(
-        await screen.queryByTestId("confirm-modal")
+        await screen.queryByTestId("confirm-modal"),
       ).not.toBeInTheDocument();
     });
 
@@ -274,7 +274,7 @@ describe("View Cart Page", () => {
       fireEvent.click(confirmButton);
 
       expect(
-        await screen.queryByTestId("insufficientBalance")
+        await screen.queryByTestId("insufficientBalance"),
       ).not.toBeInTheDocument();
       expect(await screen.queryByTestId("emptyInput")).not.toBeInTheDocument();
       expect(await screen.queryByTestId("confirm-modal")).toBeInTheDocument();
@@ -334,13 +334,13 @@ describe("View Cart Page", () => {
       "spinbutton",
       {
         name: `Donation amount for project ${cart[0].projectMetadata.title}`,
-      }
+      },
     );
     const projectDonationInput2 = screen.getByRole<HTMLInputElement>(
       "spinbutton",
       {
         name: `Donation amount for project ${cart[1].projectMetadata.title}`,
-      }
+      },
     );
 
     expect(projectDonationInput1.value).toBe("100");
@@ -392,6 +392,6 @@ function renderWrapped(cart: Project[] = [], setCart = () => {}) {
           <ViewCart />
         </CartContext.Provider>
       </RoundProvider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }

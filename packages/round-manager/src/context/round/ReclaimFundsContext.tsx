@@ -36,7 +36,7 @@ export const initialReclaimFundsState: ReclaimFundsState = {
 };
 
 export const ReclaimFundsContext = createContext<ReclaimFundsState>(
-  initialReclaimFundsState
+  initialReclaimFundsState,
 );
 
 export const ReclaimFundsProvider = ({
@@ -45,7 +45,7 @@ export const ReclaimFundsProvider = ({
   children: React.ReactNode;
 }) => {
   const [reclaimStatus, setReclaimStatus] = useState(
-    initialReclaimFundsState.reclaimStatus
+    initialReclaimFundsState.reclaimStatus,
   );
 
   const providerProps: ReclaimFundsState = {
@@ -64,7 +64,7 @@ export const useReclaimFunds = () => {
   const context = useContext<ReclaimFundsState>(ReclaimFundsContext);
   if (context === undefined) {
     throw new Error(
-      "useReclaimFunds must be used within a ReclaimFundsProvider"
+      "useReclaimFunds must be used within a ReclaimFundsProvider",
     );
   }
 
@@ -93,7 +93,7 @@ const _reclaimFunds = async ({
     const { transactionBlockNumber } = await reclaimFundsFromContract(
       payoutStrategy,
       signer,
-      recipientAddress
+      recipientAddress,
     );
     setReclaimStatus(ProgressStatus.IS_SUCCESS);
     return transactionBlockNumber;

@@ -61,7 +61,7 @@ const roundApplicationInitialState = {
 
 export const roundApplicationReducer = (
   state: RoundApplicationState = initialState,
-  action: RoundApplicationActions
+  action: RoundApplicationActions,
 ): RoundApplicationState => {
   switch (action.type) {
     case ROUND_APPLICATION_LOADING: {

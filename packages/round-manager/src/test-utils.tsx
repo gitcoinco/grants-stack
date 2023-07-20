@@ -173,7 +173,7 @@ export const makeQFDistribution = (): QFDistribution => {
 
 export const makeApprovedProjectData = (
   overrides?: Partial<ApprovedProject>,
-  projectMetadataOverrides?: Partial<ProjectMetadata>
+  projectMetadataOverrides?: Partial<ProjectMetadata>,
 ): ApprovedProject => {
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
@@ -209,7 +209,7 @@ export interface MakeGrantApplicationDataParams {
 }
 
 export const makeGrantApplicationData = (
-  overrides?: MakeGrantApplicationDataParams
+  overrides?: MakeGrantApplicationDataParams,
 ): GrantApplication => {
   const {
     ownerAddress,
@@ -281,7 +281,7 @@ export const makeGrantApplicationData = (
 
 export const makeProjectCredentials = (
   credentialTypesToGenerate: ApplicationCredentialData[],
-  credentialSubjectAddress: string = faker.finance.ethereumAddress()
+  credentialSubjectAddress: string = faker.finance.ethereumAddress(),
 ): ProjectCredentials => {
   return credentialTypesToGenerate.reduce(
     (aggregator: ProjectCredentials, it: ApplicationCredentialData) => {
@@ -307,7 +307,7 @@ export const makeProjectCredentials = (
       };
       return aggregator;
     },
-    {}
+    {},
   );
 };
 
@@ -317,7 +317,7 @@ export const renderWrapped = (ui: JSX.Element) => {
       <ReduxRouter store={store} history={history}>
         {ui}
       </ReduxRouter>
-    </Provider>
+    </Provider>,
   );
 };
 
@@ -326,7 +326,7 @@ export const renderWithProgramContext = (
   ui: JSX.Element,
   programStateOverrides: Partial<ReadProgramState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) =>
   render(
     <MemoryRouter>
@@ -338,14 +338,14 @@ export const renderWithProgramContext = (
       >
         {ui}
       </ReadProgramContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 
 export const renderWithApplicationContext = (
   ui: JSX.Element,
   grantApplicationStateOverrides: Partial<ApplicationState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) =>
   render(
     <MemoryRouter>
@@ -360,14 +360,14 @@ export const renderWithApplicationContext = (
       >
         {ui}
       </ApplicationContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 
 export const wrapWithApplicationContext = (
   ui: JSX.Element,
   grantApplicationStateOverrides: Partial<ApplicationState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) => (
   <ApplicationContext.Provider
     value={{
@@ -386,7 +386,7 @@ export const wrapWithFinalizeRoundContext = (
   ui: JSX.Element,
   finalizeRoundStateOverrides: Partial<FinalizeRoundState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) => {
   return (
     <FinalizeRoundContext.Provider
@@ -404,7 +404,7 @@ export const wrapWithReadProgramContext = (
   ui: JSX.Element,
   programStateOverrides: Partial<ReadProgramState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) => (
   <MemoryRouter>
     <ReadProgramContext.Provider
@@ -422,7 +422,7 @@ export const wrapWithRoundContext = (
   ui: JSX.Element,
   roundStateOverrides: Partial<RoundState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) => (
   <RoundContext.Provider
     value={{
@@ -436,7 +436,7 @@ export const wrapWithRoundContext = (
 
 export const wrapWithBulkUpdateGrantApplicationContext = (
   ui: JSX.Element,
-  bulkUpdateOverrides: Partial<BulkUpdateGrantApplicationState> = {}
+  bulkUpdateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => (
   <BulkUpdateGrantApplicationContext.Provider
@@ -462,7 +462,7 @@ type ContextMock<T> = {
  */
 export function wrapInContexts<T>(
   element: React.ReactNode,
-  contexts: ContextMock<T>[]
+  contexts: ContextMock<T>[],
 ) {
   return (
     <>

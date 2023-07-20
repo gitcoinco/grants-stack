@@ -8,17 +8,17 @@ import {
 const generateUniqueRoundApplicationID = (
   projectChainId: ChainId,
   projectNumber: string,
-  projectRegistryAddress: string
+  projectRegistryAddress: string,
 ) =>
   ethers.utils.solidityKeccak256(
     ["uint256", "address", "uint256"],
-    [projectChainId, projectRegistryAddress, projectNumber]
+    [projectChainId, projectRegistryAddress, projectNumber],
   );
 
 export default generateUniqueRoundApplicationID;
 
 export const parseRoundApplicationMetadata = (
-  object: any
+  object: any,
 ): RoundApplicationMetadata => {
   const metadata: RoundApplicationMetadata = {
     version: object.version,
@@ -42,7 +42,7 @@ export const parseRoundApplicationMetadata = (
         required: q.required,
         encrypted: q.encrypted,
         hidden: false,
-      })
+      }),
     );
 
     metadata.applicationSchema = {
@@ -72,7 +72,7 @@ export const parseRoundApplicationMetadata = (
         required: q.required,
         encrypted: q.encrypted,
         hidden: q.hidden,
-      })
+      }),
     );
 
   metadata.applicationSchema.questions = [

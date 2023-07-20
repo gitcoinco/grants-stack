@@ -32,7 +32,7 @@ export default function RoundListItem({
     const generatedProjectId = generateUniqueRoundApplicationID(
       projectChainId,
       id,
-      registryAddress
+      registryAddress,
     );
 
     return {
@@ -145,7 +145,7 @@ export default function RoundListItem({
   const applicationLink = roundApplicationPathForProject(
     props.roundChain!,
     props.roundAddress!,
-    projectId
+    projectId,
   );
 
   // add check for application status

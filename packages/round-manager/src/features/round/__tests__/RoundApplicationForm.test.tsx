@@ -86,7 +86,7 @@ describe("<RoundApplicationForm />", () => {
           }}
           stepper={FormStepper}
         />,
-        { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
+        { IPFSCurrentStatus: ProgressStatus.IS_ERROR },
       );
       await startProgressModal();
 
@@ -104,7 +104,7 @@ describe("<RoundApplicationForm />", () => {
           }}
           stepper={FormStepper}
         />,
-        { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
+        { IPFSCurrentStatus: ProgressStatus.IS_ERROR },
       );
       await startProgressModal();
 
@@ -125,7 +125,7 @@ describe("<RoundApplicationForm />", () => {
           }}
           stepper={FormStepper}
         />,
-        { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
+        { IPFSCurrentStatus: ProgressStatus.IS_ERROR },
       );
       await startProgressModal();
 
@@ -139,7 +139,7 @@ describe("<RoundApplicationForm />", () => {
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
       await waitFor(() => {
         expect((saveToIPFS as jest.Mock).mock.calls.length).toEqual(
-          saveToIpfsCalls + 2
+          saveToIpfsCalls + 2,
         );
       });
     });
@@ -167,7 +167,7 @@ describe("<RoundApplicationForm />", () => {
           }}
           stepper={FormStepper}
         />,
-        createRoundStateOverride
+        createRoundStateOverride,
       );
       await startProgressModal();
 
@@ -202,7 +202,7 @@ describe("Application Form Builder", () => {
           },
         }}
         stepper={FormStepper}
-      />
+      />,
     );
 
     expect(screen.getByText("Payout Wallet Address")).toBeInTheDocument();
@@ -246,7 +246,7 @@ describe("Application Form Builder", () => {
           }}
           stepper={FormStepper}
         />
-      </FormContext.Provider>
+      </FormContext.Provider>,
     );
 
     expect(screen.getByText(expectedQuestions[0].title)).toBeInTheDocument();
@@ -265,11 +265,11 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       expect(screen.getAllByTestId("edit-question")).toHaveLength(
-        editableQuestions.length
+        editableQuestions.length,
       );
     });
 
@@ -286,13 +286,13 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
       const editIcons = screen.getAllByTestId("edit-question");
       fireEvent.click(editIcons[questionIndex]);
 
       expect(
-        screen.getByDisplayValue(editableQuestions[questionIndex].title)
+        screen.getByDisplayValue(editableQuestions[questionIndex].title),
       ).toBeInTheDocument();
     });
 
@@ -309,13 +309,13 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
       // edit question and save
       const editIcons = screen.getAllByTestId("edit-question");
       fireEvent.click(editIcons[questionIndex]);
       const questionTitleInput = await screen.findByTestId(
-        "question-title-input"
+        "question-title-input",
       );
       fireEvent.input(questionTitleInput, {
         target: { value: newTitle },
@@ -325,7 +325,7 @@ describe("Application Form Builder", () => {
 
       expect(await screen.findByText(newTitle)).toBeInTheDocument();
       expect(
-        screen.queryByTestId("question-title-input")
+        screen.queryByTestId("question-title-input"),
       ).not.toBeInTheDocument();
       expect(screen.queryByTestId("save-title")).not.toBeInTheDocument();
     });
@@ -344,11 +344,11 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       expect(screen.getAllByText("Not Encrypted")).toHaveLength(
-        editableQuestions.length
+        editableQuestions.length,
       );
     });
 
@@ -362,7 +362,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       for (let i = 0; i < initialQuestions.length; i++) {
@@ -394,12 +394,12 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       // +4: it also shows *Required for Project Name, Project Website, Project Description and Wallet address
       expect(screen.getAllByText("*Required")).toHaveLength(
-        editableQuestions.length + 4
+        editableQuestions.length + 4,
       );
     });
 
@@ -413,7 +413,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       // Before:
@@ -470,11 +470,11 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       expect(screen.getAllByTestId("remove-question")).toHaveLength(
-        editableQuestions.length
+        editableQuestions.length,
       );
     });
 
@@ -492,18 +492,18 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       const removeIcons = screen.getAllByTestId("remove-question");
       fireEvent.click(removeIcons[indexToBeRemoved]);
 
       expect(screen.getAllByTestId("remove-question")).toHaveLength(
-        editableQuestions.length - 1
+        editableQuestions.length - 1,
       );
 
       expect(
-        screen.queryByText(editableQuestions[indexToBeRemoved].title)
+        screen.queryByText(editableQuestions[indexToBeRemoved].title),
       ).not.toBeInTheDocument();
     });
   });
@@ -519,13 +519,13 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       expect(
         screen.getByRole("button", {
           name: /Add question/i,
-        })
+        }),
       ).toBeInTheDocument();
     });
 
@@ -542,12 +542,12 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       // +1: Wallet Address
       expect(screen.getAllByTestId("application-question")).toHaveLength(
-        editableQuestions.length + 1
+        editableQuestions.length + 1,
       );
 
       const addAQuestion = screen.getByRole("button", {
@@ -599,7 +599,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       expect(screen.getByText("Project Twitter")).toBeInTheDocument();
@@ -616,7 +616,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       // 1. Project Name Required
@@ -644,7 +644,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       const switches = getAllByTestId("test-switch-id");
@@ -671,7 +671,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       const switches = getAllByTestId("test-switch-id");
@@ -699,7 +699,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       const switches = getAllByTestId("test-switch-id");
@@ -731,7 +731,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       const switches = getAllByTestId("test-switch-id");
@@ -773,7 +773,7 @@ describe("Application Form Builder", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
       );
 
       const switches = getAllByTestId("test-switch-id");
@@ -825,7 +825,7 @@ describe("Application Form Builder", () => {
 
 export const renderWithContext = (
   ui: JSX.Element,
-  createRoundStateOverrides: Partial<CreateRoundState> = {}
+  createRoundStateOverrides: Partial<CreateRoundState> = {},
 ) =>
   render(
     <MemoryRouter>
@@ -834,5 +834,5 @@ export const renderWithContext = (
       >
         {ui}
       </CreateRoundContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );

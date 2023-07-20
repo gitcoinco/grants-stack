@@ -59,7 +59,7 @@ describe("PassportBanner", () => {
       } as unknown as Response;
 
       (fetchPassport as jest.Mock).mockResolvedValueOnce(
-        mockFetchPassportPromise
+        mockFetchPassportPromise,
       );
 
       render(<PassportBanner chainId="5" round={mockRound} />, {
@@ -90,7 +90,7 @@ describe("PassportBanner", () => {
       } as unknown as Response;
 
       (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
+        mockFetchPassportPromise,
       );
 
       render(<PassportBanner chainId="5" round={mockRound} />, {
@@ -121,7 +121,7 @@ describe("PassportBanner", () => {
       } as unknown as Response;
 
       (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
+        mockFetchPassportPromise,
       );
 
       render(<PassportBanner chainId="5" round={mockRound} />, {
@@ -149,7 +149,7 @@ describe("PassportBanner", () => {
       } as unknown as Response;
 
       (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
+        mockFetchPassportPromise,
       );
 
       render(<PassportBanner chainId="5" round={mockRound} />, {
@@ -173,7 +173,7 @@ describe("PassportBanner", () => {
       } as unknown as Response;
 
       (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
+        mockFetchPassportPromise,
       );
 
       render(<PassportBanner chainId="5" round={mockRound} />, {
@@ -182,7 +182,7 @@ describe("PassportBanner", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId("error-loading-passport")
+          screen.getByTestId("error-loading-passport"),
         ).toBeInTheDocument();
       });
     });
@@ -206,7 +206,7 @@ describe("PassportBanner", () => {
       } as unknown as Response;
 
       (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
+        mockFetchPassportPromise,
       );
 
       render(<PassportBanner chainId="5" round={mockRound} />, {
@@ -215,7 +215,7 @@ describe("PassportBanner", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByTestId("error-loading-passport")
+          screen.getByTestId("error-loading-passport"),
         ).toBeInTheDocument();
       });
     });

@@ -23,7 +23,7 @@ describe("<Stats />", () => {
       });
 
       expect(
-        screen.getByText("No stats available yet for this project.")
+        screen.getByText("No stats available yet for this project."),
       ).toBeInTheDocument();
     });
     test("should not render the loading spinner", async () => {

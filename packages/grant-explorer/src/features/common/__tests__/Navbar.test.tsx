@@ -58,7 +58,7 @@ describe("<Navbar>", () => {
         customBackground=""
         roundUrlPath={"/random"}
         isBeforeRoundEndDate={true}
-      />
+      />,
     );
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
   });
@@ -69,7 +69,7 @@ describe("<Navbar>", () => {
         customBackground=""
         roundUrlPath={"/random"}
         isBeforeRoundEndDate={false}
-      />
+      />,
     );
     expect(screen.queryByTestId("navbar-cart")).not.toBeInTheDocument();
   });

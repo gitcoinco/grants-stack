@@ -45,8 +45,8 @@ describe("<Show />", () => {
         buildProjectMetadata({
           id: `1:${addressFrom(1)}:1`,
           credentials: {},
-        })
-      )
+        }),
+      ),
     );
     store.dispatch(web3ChainIDLoaded(5));
     store.dispatch(web3AccountLoaded("0x123"));

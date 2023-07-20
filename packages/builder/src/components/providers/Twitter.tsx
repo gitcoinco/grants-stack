@@ -42,7 +42,7 @@ export default function Twitter({
 
   const { isValid: validCredential } = useValidateCredential(
     props.verifiableCredential,
-    props.formMetadata.projectTwitter
+    props.formMetadata.projectTwitter,
   );
 
   // console.log(
@@ -62,13 +62,13 @@ export default function Twitter({
     try {
       const authUrl = await fetchAuthUrl(
         `${process.env.REACT_APP_PASSPORT_PROCEDURE_URL}/twitter/generateAuthUrl`,
-        process.env.REACT_APP_PUBLIC_PASSPORT_TWITTER_CALLBACK!
+        process.env.REACT_APP_PUBLIC_PASSPORT_TWITTER_CALLBACK!,
       );
 
       const result = await openOauthWindow(
         authUrl,
         "twitter_oauth_channel",
-        "twitter"
+        "twitter",
       );
 
       const verified: { credential: VerifiableCredential } =
@@ -83,7 +83,7 @@ export default function Twitter({
               sessionKey: result.state,
             },
           },
-          signer as { signMessage: (message: string) => Promise<string> }
+          signer as { signMessage: (message: string) => Promise<string> },
         );
 
       const { provider } = verified.credential.credentialSubject;
@@ -95,14 +95,14 @@ export default function Twitter({
         dispatch(
           credentialsSaved({
             twitter: verified.credential!,
-          })
+          }),
         );
         verificationError();
       } else {
         throw new VerificationError(
           `${handle} does not match ${parseHandle(
-            provider ?? ""
-          )}, the account you authenticated with.`
+            provider ?? "",
+          )}, the account you authenticated with.`,
         );
       }
     } catch (error) {
@@ -111,7 +111,7 @@ export default function Twitter({
       } else {
         console.error(error);
         verificationError(
-          "Couldn't connect to Twitter. Please try verifying again"
+          "Couldn't connect to Twitter. Please try verifying again",
         );
         datadogLogs.logger.error("Twitter verification failed");
         datadogRum.addError(error, { provider: CredentialProvider.Twitter });

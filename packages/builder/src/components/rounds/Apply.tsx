@@ -42,7 +42,7 @@ function Apply() {
   const [roundApplicationModal, setToggleRoundApplicationModal] =
     useLocalStorage(
       "toggleRoundApplicationModal",
-      ApplicationModalStatus.Undefined
+      ApplicationModalStatus.Undefined,
     );
 
   const { roundId, chainId } = params;
@@ -123,14 +123,14 @@ function Apply() {
     if (props.applicationState?.status === ApplicationStatus.Sent) {
       timer = setTimeout(() => {
         dispatch(
-          addAlert("success", applicationSuccessTitle, applicationSuccessBody)
+          addAlert("success", applicationSuccessTitle, applicationSuccessBody),
         );
         const {
           chainId: projectChainId,
           registryAddress,
           id,
         } = getProjectURIComponents(
-          props.applicationState.projectsIDs[0].toString()
+          props.applicationState.projectsIDs[0].toString(),
         );
         navigate(projectPath(projectChainId, registryAddress, id));
       }, 1500);

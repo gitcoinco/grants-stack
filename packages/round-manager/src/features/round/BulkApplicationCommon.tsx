@@ -16,7 +16,7 @@ export function NumberOfStatus(props: {
       <span className="text-grey-500 font-semibold">
         {
           props.grantApplications?.filter(
-            (application) => application.status === props.status
+            (application) => application.status === props.status,
           ).length
         }
       </span>
@@ -217,7 +217,7 @@ export function Continue(props: {
           You have selected{" "}
           {
             props.grantApplications?.filter(
-              (application) => application.status === props.status
+              (application) => application.status === props.status,
             ).length
           }{" "}
           Grant Applications

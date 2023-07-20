@@ -20,7 +20,7 @@ const RoundCard = (props: RoundCardProps) => {
 
   const matchingFundPayoutTokenName = payoutTokens.filter(
     (t) =>
-      t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
+      t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase(),
   )[0]?.name;
 
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
@@ -45,9 +45,9 @@ const RoundCard = (props: RoundCardProps) => {
           <CardDescription data-testid="round-description" className="h-[90px]">
             {truncateDescription(
               renderToPlainText(
-                props.round.roundMetadata?.eligibility.description ?? ""
+                props.round.roundMetadata?.eligibility.description ?? "",
               ),
-              240
+              240,
             )}
           </CardDescription>
           <p className="mt-4 text-xs" data-testid="days-left">

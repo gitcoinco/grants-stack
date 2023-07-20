@@ -28,7 +28,7 @@ function Layout(ownProps: Props) {
       chainID: state.web3.chainID,
       alerts: state.ui.alerts,
     }),
-    shallowEqual
+    shallowEqual,
   );
 
   useEffect(() => {

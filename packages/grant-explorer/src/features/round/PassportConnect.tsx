@@ -23,7 +23,7 @@ import { formatUTCDateAsISOString, getUTCTime } from "common";
 
 export default function PassportConnect() {
   datadogLogs.logger.info(
-    "====> Route: /round/:chainId/:roundId/passport/connect"
+    "====> Route: /round/:chainId/:roundId/passport/connect",
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
@@ -41,7 +41,7 @@ export default function PassportConnect() {
   const { address, isConnected } = useAccount();
 
   const [passportState, setPassportState] = useState<PassportState>(
-    PassportState.LOADING
+    PassportState.LOADING,
   );
 
   const [expanded, setExpanded] = useState(true);
@@ -84,7 +84,7 @@ export default function PassportConnect() {
       ) {
         datadogLogs.logger.error(
           `error: callFetchPassport - invalid score response`,
-          scoreResponse
+          scoreResponse,
         );
         setPassportState(PassportState.INVALID_RESPONSE);
         return;
@@ -95,13 +95,13 @@ export default function PassportConnect() {
         Number(scoreResponse.evidence.rawScore) >=
           Number(scoreResponse.evidence.threshold)
           ? PassportState.MATCH_ELIGIBLE
-          : PassportState.MATCH_INELIGIBLE
+          : PassportState.MATCH_INELIGIBLE,
       );
     } else {
       setError(res);
       datadogLogs.logger.error(
         `error: callFetchPassport - passport NOT OK`,
-        res
+        res,
       );
       switch (res.status) {
         case 400: // unregistered/nonexistent passport address

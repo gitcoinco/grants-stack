@@ -26,7 +26,7 @@ describe("<ApplicationEligibilityForm>", () => {
     render(<ApplicationEligibilityForm stepper={FormStepper} />);
 
     expect(
-      screen.getByTestId("round-eligibility-helper-copy")
+      screen.getByTestId("round-eligibility-helper-copy"),
     ).toBeInTheDocument();
   });
 
@@ -42,7 +42,7 @@ describe("<ApplicationEligibilityForm>", () => {
         }}
       >
         <ApplicationEligibilityForm stepper={FormStepper} />
-      </FormContext.Provider>
+      </FormContext.Provider>,
     );
 
     const nextButton = screen.getByRole("button", {
@@ -71,14 +71,14 @@ describe("<ApplicationEligibilityForm>", () => {
       expect(
         screen.getByRole("button", {
           name: /Add a Requirement/i,
-        })
+        }),
       ).toBeInTheDocument();
     });
 
     it("selecting Add a Requirement adds an additional requirement input field", async () => {
       render(<ApplicationEligibilityForm stepper={FormStepper} />);
       const initialRequirementInputFields = await screen.findAllByTestId(
-        "requirement-input"
+        "requirement-input",
       );
 
       const addARequirement = screen.getByRole("button", {
@@ -87,17 +87,17 @@ describe("<ApplicationEligibilityForm>", () => {
       fireEvent.click(addARequirement);
 
       const requirementInputFields = await screen.findAllByTestId(
-        "requirement-input"
+        "requirement-input",
       );
       expect(requirementInputFields).toHaveLength(
-        initialRequirementInputFields.length + 1
+        initialRequirementInputFields.length + 1,
       );
     });
 
     it("selecting X removes a requirement input field", async () => {
       render(<ApplicationEligibilityForm stepper={FormStepper} />);
       const initialRequirementInputFields = await screen.findAllByTestId(
-        "requirement-input"
+        "requirement-input",
       );
 
       const addARequirement = screen.getByRole("button", {
@@ -106,26 +106,26 @@ describe("<ApplicationEligibilityForm>", () => {
       fireEvent.click(addARequirement);
 
       const requirementInputFields = await screen.findAllByTestId(
-        "requirement-input"
+        "requirement-input",
       );
       expect(requirementInputFields).toHaveLength(
-        initialRequirementInputFields.length + 1
+        initialRequirementInputFields.length + 1,
       );
 
       const removeRequirementButtons = await screen.findAllByTestId(
-        "remove-requirement-button"
+        "remove-requirement-button",
       );
       expect(requirementInputFields).toHaveLength(
-        initialRequirementInputFields.length + 1
+        initialRequirementInputFields.length + 1,
       );
 
       fireEvent.click(removeRequirementButtons[0]);
 
       const updatedRequirementInputFields = await screen.findAllByTestId(
-        "requirement-input"
+        "requirement-input",
       );
       expect(updatedRequirementInputFields).toHaveLength(
-        initialRequirementInputFields.length
+        initialRequirementInputFields.length,
       );
     });
   });
@@ -157,7 +157,7 @@ describe("form submission", () => {
     render(
       <FormContext.Provider value={formContext}>
         <ApplicationEligibilityForm stepper={FormStepper} />
-      </FormContext.Provider>
+      </FormContext.Provider>,
     );
     fireEvent.input(screen.getByLabelText("Round Description"), {
       target: { value: expectedDescription },
@@ -194,7 +194,7 @@ describe("form submission", () => {
     render(
       <FormContext.Provider value={formContext}>
         <ApplicationEligibilityForm stepper={FormStepper} />
-      </FormContext.Provider>
+      </FormContext.Provider>,
     );
     fireEvent.input(screen.getByLabelText("Round Description"), {
       target: { value: expectedDescription },
@@ -223,7 +223,7 @@ describe("form submission", () => {
     render(
       <FormContext.Provider value={formContext}>
         <ApplicationEligibilityForm stepper={FormStepper} />
-      </FormContext.Provider>
+      </FormContext.Provider>,
     );
 
     const submit = screen.getByRole("button", {

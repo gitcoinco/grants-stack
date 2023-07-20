@@ -25,7 +25,7 @@ export default function FormValidationErrorList({ errors }: any) {
   function convertToTitleCase(input: string): string {
     const words = input.replace(/([a-z])([A-Z])/g, "$1 $2").split(/(?=[A-Z])/);
     const capitalizedWords = words.map(
-      (word) => word.charAt(0).toUpperCase() + word.slice(1)
+      (word) => word.charAt(0).toUpperCase() + word.slice(1),
     );
     return capitalizedWords.join(" ");
   }

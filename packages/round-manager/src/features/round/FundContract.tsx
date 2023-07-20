@@ -54,7 +54,7 @@ export default function FundContract(props: {
         setErrorModalSubHeading(
           transactionReplaced
             ? "Transaction cancelled. Please try again."
-            : "There was an error during the funding process. Please try again."
+            : "There was an error during the funding process. Please try again.",
         );
         setOpenErrorModal(true);
       }, errorModalDelayMs);
@@ -91,7 +91,8 @@ export default function FundContract(props: {
     props.round &&
     payoutTokens.filter(
       (t) =>
-        t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
+        t.address.toLocaleLowerCase() ==
+        props.round?.token?.toLocaleLowerCase(),
     )[0];
 
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
@@ -119,7 +120,7 @@ export default function FundContract(props: {
   } = useBalance(tokenDetail);
 
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.redstoneTokenId
+    matchingFundPayoutToken?.redstoneTokenId,
   );
 
   const matchingFunds =
@@ -143,7 +144,7 @@ export default function FundContract(props: {
   const combinedFees =
     ((roundFeePercentage + protocolFeePercentage) * matchingFunds) / 100;
   const contractBalance = ethers.utils.formatEther(
-    balanceData?.value.toString() ?? "0"
+    balanceData?.value.toString() ?? "0",
   );
   const totalAmountLeftToFund = (
     combinedFees +
@@ -174,7 +175,7 @@ export default function FundContract(props: {
     const accountBalance = matchingFundPayoutTokenBalance?.value;
     const tokenBalance = ethers.utils.parseUnits(
       amountToFund,
-      matchingFundPayoutToken?.decimal
+      matchingFundPayoutToken?.decimal,
     );
 
     if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
@@ -385,7 +386,7 @@ export default function FundContract(props: {
                     fundContractDisabled
                       ? "cursor-not-allowed"
                       : "cursor-pointer"
-                  }`
+                  }`,
                 )}
                 data-testid="fund-contract-btn"
                 onClick={() => handleFundContract()}
@@ -398,7 +399,7 @@ export default function FundContract(props: {
                 onClick={() =>
                   window.open(
                     getTxExplorerForContract(chainId, props.roundId as string),
-                    "_blank"
+                    "_blank",
                   )
                 }
               >
@@ -430,7 +431,7 @@ export default function FundContract(props: {
               className={classNames(
                 `${
                   fundContractDisabled ? "bg-violet-400" : "bg-violet-200"
-                } text-white py-2 px-4 rounded`
+                } text-white py-2 px-4 rounded`,
               )}
               data-testid="fund-contract-btn"
               onClick={() => handleFundContract()}
@@ -488,7 +489,7 @@ export default function FundContract(props: {
   function ConfirmationModalBody() {
     const amountInUSD =
       Number(
-        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal),
       ) * Number(data);
     return (
       <div>
@@ -528,7 +529,7 @@ export default function FundContract(props: {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         roundId: props.roundId!,
         fundAmount: Number(
-          parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+          parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal),
         ),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         payoutToken: matchingFundPayoutToken!,
@@ -538,7 +539,7 @@ export default function FundContract(props: {
         setTransactionReplaced(true);
       } else {
         datadogLogs.logger.error(
-          `error: handleSubmitFund - ${error}, id: ${props.roundId}`
+          `error: handleSubmitFund - ${error}, id: ${props.roundId}`,
         );
         console.error("handleSubmitFund - roundId", props.roundId, error);
       }

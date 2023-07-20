@@ -40,7 +40,7 @@ export default function ApplicationsApproved() {
   const approvedApplications =
     applications?.filter(
       (a: GrantApplication) =>
-        a.status === ApplicationStatus.APPROVED.toString()
+        a.status === ApplicationStatus.APPROVED.toString(),
     ) || [];
 
   const [bulkSelectApproved, setBulkSelectApproved] = useState(false);
@@ -105,7 +105,7 @@ export default function ApplicationsApproved() {
             applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
           };
-        })
+        }),
       );
     }
   }, [applications, isLoading, bulkSelectApproved]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -143,7 +143,7 @@ export default function ApplicationsApproved() {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         applications: applications!,
         selectedApplications: selected.filter(
-          (application) => application.status === "REJECTED"
+          (application) => application.status === "REJECTED",
         ),
       });
       setBulkSelectApproved(false);

@@ -73,7 +73,7 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
             {sortRoundsByTime(props.roundOverview, order).map(
               (round, index) => {
                 return <RoundCard key={index} round={round} />;
-              }
+              },
             )}
           </div>
         ) : !props.isLoading ? (

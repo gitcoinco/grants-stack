@@ -24,7 +24,7 @@ export default function VerificationForm({
     (state: RootState) => ({
       formMetaData: state.projectForm.metadata,
     }),
-    shallowEqual
+    shallowEqual,
   );
 
   const [failed, setFailed] = useState<string | undefined>();
@@ -44,7 +44,7 @@ export default function VerificationForm({
       metadataSaved({
         ...props.formMetaData,
         [e.target.name]: value,
-      })
+      }),
     );
   };
 
@@ -64,7 +64,7 @@ export default function VerificationForm({
         title: err.path || "",
         type: "error",
         message: err.message,
-      }))
+      })),
     );
   };
 

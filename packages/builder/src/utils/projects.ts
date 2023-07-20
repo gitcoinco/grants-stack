@@ -11,7 +11,7 @@ export const fetchProjectOwners = (chainID: ChainId, projectID: string) => {
   const projectRegistry = new ethers.Contract(
     addresses.projectRegistry!,
     ProjectRegistryABI,
-    appProvider
+    appProvider,
   );
 
   return projectRegistry.getProjectOwners(projectID);

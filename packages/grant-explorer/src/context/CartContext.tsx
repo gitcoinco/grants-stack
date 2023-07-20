@@ -62,7 +62,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 type UseCart = [
   cart: CartContextState["cart"],
   handleAddProjectsToCart: (projects: Project[], roundId: string) => void,
-  handleRemoveProjectsFromCart: (projects: Project[], roundId: string) => void
+  handleRemoveProjectsFromCart: (projects: Project[], roundId: string) => void,
 ];
 
 export const useCart = (): UseCart => {
@@ -75,7 +75,7 @@ export const useCart = (): UseCart => {
 
   const handleAddProjectsToCart = (
     projectsToAdd: Project[],
-    roundId: string
+    roundId: string,
   ): void => {
     const currentCart = loadCartFromLocalStorage(roundId) ?? [];
 
@@ -83,7 +83,7 @@ export const useCart = (): UseCart => {
     const newCart = projectsToAdd.reduce((acc, projectToAdd) => {
       const isProjectAlreadyInCart = acc.find(
         (project) =>
-          project.projectRegistryId === projectToAdd.projectRegistryId
+          project.projectRegistryId === projectToAdd.projectRegistryId,
       );
       return isProjectAlreadyInCart ? acc : acc.concat(projectToAdd);
     }, currentCart);
@@ -94,7 +94,7 @@ export const useCart = (): UseCart => {
 
   const handleRemoveProjectsFromCart = (
     projectsToRemove: Project[],
-    roundId: string
+    roundId: string,
   ): void => {
     const currentCart = loadCartFromLocalStorage(roundId) ?? [];
 
@@ -103,8 +103,8 @@ export const useCart = (): UseCart => {
       (project) =>
         !projectsToRemove.find(
           (projectToRemove) =>
-            projectToRemove.projectRegistryId === project.projectRegistryId
-        )
+            projectToRemove.projectRegistryId === project.projectRegistryId,
+        ),
     );
 
     setCart(newCart);

@@ -35,7 +35,7 @@ export type RoundOverview = {
 async function fetchRoundsByTimestamp(
   query: string,
   chainId: string,
-  debugModeEnabled: boolean
+  debugModeEnabled: boolean,
 ): Promise<RoundOverview[]> {
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
@@ -44,7 +44,7 @@ async function fetchRoundsByTimestamp(
     const res: GetRoundOverviewResult = await graphql_fetch(
       query,
       chainIdEnumValue,
-      { currentTimestamp }
+      { currentTimestamp },
     );
 
     if (!res.data || !res.data.rounds) {
@@ -56,7 +56,7 @@ async function fetchRoundsByTimestamp(
 
     for (const round of rounds) {
       const roundMetadata: RoundMetadata = await fetchFromIPFS(
-        round.roundMetaPtr.pointer
+        round.roundMetaPtr.pointer,
       );
       round.roundMetadata = roundMetadata;
       round.chainId = chainId;
@@ -111,7 +111,7 @@ function getActiveChainIds() {
 }
 
 export async function getRoundsInApplicationPhase(
-  debugModeEnabled: boolean
+  debugModeEnabled: boolean,
 ): Promise<{
   isLoading: boolean;
   error: unknown;
@@ -153,7 +153,7 @@ export async function getRoundsInApplicationPhase(
       const roundsForChainId = await fetchRoundsByTimestamp(
         query,
         chainIds[i],
-        debugModeEnabled
+        debugModeEnabled,
       );
       rounds.push(...roundsForChainId);
     }
@@ -214,7 +214,7 @@ export async function getActiveRounds(debugModeEnabled: boolean): Promise<{
       const roundsForChainId = await fetchRoundsByTimestamp(
         query,
         chainIds[i],
-        debugModeEnabled
+        debugModeEnabled,
       );
       rounds.push(...roundsForChainId);
     }

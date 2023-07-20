@@ -79,7 +79,7 @@ function setupInBulkSelectionMode() {
 describe("<ApplicationsReceived />", () => {
   beforeEach(() => {
     (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
-      grantApplications
+      grantApplications,
     );
   });
 
@@ -101,13 +101,13 @@ describe("<ApplicationsReceived />", () => {
 
       expect(
         screen.queryByText(
-          "Save in gas fees by approving/rejecting multiple applications at once."
-        )
+          "Save in gas fees by approving/rejecting multiple applications at once.",
+        ),
       ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", {
           name: /Select/i,
-        })
+        }),
       ).not.toBeInTheDocument();
     });
   });
@@ -121,13 +121,13 @@ describe("<ApplicationsReceived />", () => {
 
       expect(
         screen.getByText(
-          "Save in gas fees by approving/rejecting multiple applications at once."
-        )
+          "Save in gas fees by approving/rejecting multiple applications at once.",
+        ),
       ).toBeInTheDocument();
       expect(
         screen.getByRole("button", {
           name: /Select/i,
-        })
+        }),
       ).toBeInTheDocument();
     });
 
@@ -136,12 +136,12 @@ describe("<ApplicationsReceived />", () => {
       expect(
         screen.getByRole("button", {
           name: /Cancel/i,
-        })
+        }),
       ).toBeInTheDocument();
       expect(
         screen.queryByRole("button", {
           name: /Select/i,
-        })
+        }),
       ).not.toBeInTheDocument();
     });
 
@@ -156,12 +156,12 @@ describe("<ApplicationsReceived />", () => {
       expect(
         screen.queryByRole("button", {
           name: /Cancel/i,
-        })
+        }),
       ).not.toBeInTheDocument();
       expect(
         screen.getByRole("button", {
           name: /Select/i,
-        })
+        }),
       ).toBeInTheDocument();
     });
   });
@@ -195,7 +195,7 @@ describe("<ApplicationsReceived />", () => {
       setupInBulkSelectionMode();
 
       expect(
-        screen.queryAllByTestId("bulk-approve-reject-buttons")
+        screen.queryAllByTestId("bulk-approve-reject-buttons"),
       ).toHaveLength(grantApplications.length);
     });
 
@@ -293,7 +293,7 @@ describe("<ApplicationsReceived />", () => {
         });
         expect(continueButton).toBeInTheDocument();
         expect(
-          screen.getByText(/You have selected 1 Grant Applications/i)
+          screen.getByText(/You have selected 1 Grant Applications/i),
         ).toBeInTheDocument();
 
         const approveButton2 = screen.queryAllByTestId("approve-button")[1];
@@ -301,7 +301,7 @@ describe("<ApplicationsReceived />", () => {
 
         expect(continueButton).toBeInTheDocument();
         expect(
-          screen.getByText(/You have selected 2 Grant Applications/i)
+          screen.getByText(/You have selected 2 Grant Applications/i),
         ).toBeInTheDocument();
       });
 
@@ -332,10 +332,10 @@ describe("<ApplicationsReceived />", () => {
         fireEvent.click(continueButton);
 
         const approvedApplicationsCount = screen.getByTestId(
-          "approved-applications-count"
+          "approved-applications-count",
         );
         const rejectedApplicationsCount = screen.getByTestId(
-          "rejected-applications-count"
+          "rejected-applications-count",
         );
 
         within(approvedApplicationsCount).getByText(/2/);
@@ -401,7 +401,7 @@ describe("<ApplicationsReceived />", () => {
     it("does not render approve and reject options on each card", () => {
       renderWithContext(<ApplicationsReceived />);
       expect(
-        screen.queryAllByTestId("bulk-approve-reject-buttons")
+        screen.queryAllByTestId("bulk-approve-reject-buttons"),
       ).toHaveLength(0);
     });
   });
@@ -420,7 +420,7 @@ describe("<ApplicationsReceived />", () => {
         },
         {
           contractUpdatingStatus: ProgressStatus.IS_ERROR,
-        }
+        },
       );
 
       // select button
@@ -466,7 +466,7 @@ export const renderWithContext = (
   grantApplicationStateOverrides: Partial<ApplicationState> = {},
   bulkUpdateGrantApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) =>
   render(
     <MemoryRouter>
@@ -488,5 +488,5 @@ export const renderWithContext = (
           {ui}
         </ApplicationContext.Provider>
       </BulkUpdateGrantApplicationContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );

@@ -83,14 +83,14 @@ describe("View Round", () => {
               data: [],
               fetchRoundStatus: ProgressStatus.IS_ERROR,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
@@ -105,13 +105,13 @@ describe("View Round", () => {
               data: [{ ...mockRoundData, operatorWallets: [] }],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   });
@@ -125,10 +125,10 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
-          )
-        )
-      )
+            { programs: [] },
+          ),
+        ),
+      ),
     );
     expect(screen.getByText("Round Application")).toBeInTheDocument();
   });
@@ -142,14 +142,14 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
     expect(screen.getByText("No Applications")).toBeInTheDocument();
   });
@@ -163,14 +163,14 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     expect(screen.getByTestId("side-nav-bar")).toBeInTheDocument();
@@ -204,24 +204,24 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: mockApplicationData,
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     expect(
-      parseInt(screen.getByTestId("received-application-counter").textContent!)
+      parseInt(screen.getByTestId("received-application-counter").textContent!),
     ).toBe(2);
     expect(
-      parseInt(screen.getByTestId("rejected-application-counter").textContent!)
+      parseInt(screen.getByTestId("rejected-application-counter").textContent!),
     ).toBe(1);
     expect(
-      parseInt(screen.getByTestId("approved-application-counter").textContent!)
+      parseInt(screen.getByTestId("approved-application-counter").textContent!),
     ).toBe(1);
   });
 
@@ -234,14 +234,14 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IN_PROGRESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: true,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     screen.logTestingPlaygroundURL();
@@ -255,9 +255,9 @@ describe("View Round", () => {
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [mockRoundData],
             fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
     const roundExplorer = screen.getByTestId("round-explorer");
 

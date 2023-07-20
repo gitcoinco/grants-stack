@@ -38,7 +38,7 @@ const fetchRounds = async (
   dispatch: Dispatch,
   address: string,
   walletProvider: Web3Provider,
-  programId: string
+  programId: string,
 ) => {
   datadogLogs.logger.info(`fetchRounds: program - ${programId}`);
 
@@ -69,7 +69,7 @@ const fetchRounds = async (
 const fetchRoundById = async (
   dispatch: Dispatch,
   walletProvider: Web3Provider,
-  roundId: string
+  roundId: string,
 ) => {
   datadogLogs.logger.info(`fetchRoundById: round - ${roundId}`);
 
@@ -160,7 +160,7 @@ export const useRoundById = (roundId?: string) => {
     if (roundId) {
       const existingRound = context.state.data.find(
         (round) =>
-          round.id === roundId && round.chainId === provider.network.chainId
+          round.id === roundId && round.chainId === provider.network.chainId,
       );
 
       if (!existingRound?.token) {

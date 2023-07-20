@@ -23,7 +23,7 @@ export type FormContextType = {
 };
 
 export const FormContext = createContext<FormContextType>(
-  {} as unknown as FormContextType
+  {} as unknown as FormContextType,
 );
 
 export function FormWizard({

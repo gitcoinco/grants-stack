@@ -71,8 +71,8 @@ export default function Preview({
           addAlert(
             "success",
             "Your project has been saved successfully!",
-            undefined
-          )
+            undefined,
+          ),
         );
       }, 1500);
     }

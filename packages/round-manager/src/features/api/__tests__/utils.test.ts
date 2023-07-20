@@ -28,7 +28,7 @@ describe("fetchFromIPFS", () => {
     const res = await fetchFromIPFS(cid);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`,
     );
     expect(res).toEqual({ name: "My First Metadata" });
   });
@@ -43,7 +43,7 @@ describe("fetchFromIPFS", () => {
     await expect(fetchFromIPFS(cid)).rejects.toHaveProperty("status", 404);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`,
     );
   });
 });
@@ -61,7 +61,7 @@ describe("pinToIPFS", () => {
         IpfsHash: cid,
         PinSize: 1024,
         TimeStamp: new Date().toISOString(),
-      })
+      }),
     );
 
     const ipfsObject = {
@@ -92,7 +92,7 @@ describe("pinToIPFS", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://api.pinata.cloud/pinning/pinJSONToIPFS",
-      params
+      params,
     );
     expect(res.IpfsHash).toEqual(cid);
   });
@@ -105,7 +105,7 @@ describe("pinToIPFS", () => {
         IpfsHash: cid,
         PinSize: 1024,
         TimeStamp: new Date().toISOString(),
-      })
+      }),
     );
 
     const ipfsObject = {
@@ -123,7 +123,7 @@ describe("pinToIPFS", () => {
       "pinataOptions",
       JSON.stringify({
         cidVersion: 1,
-      })
+      }),
     );
     fd.append("pinataMetadata", JSON.stringify(ipfsObject.metadata));
 
@@ -137,7 +137,7 @@ describe("pinToIPFS", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://api.pinata.cloud/pinning/pinFileToIPFS",
-      params
+      params,
     );
     expect(res.IpfsHash).toEqual(cid);
   });
@@ -162,7 +162,7 @@ describe("pinToIPFS", () => {
       "pinataOptions",
       JSON.stringify({
         cidVersion: 1,
-      })
+      }),
     );
     fd.append("pinataMetadata", JSON.stringify(ipfsObject.metadata));
 
@@ -176,7 +176,7 @@ describe("pinToIPFS", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://api.pinata.cloud/pinning/pinFileToIPFS",
-      params
+      params,
     );
   });
 
@@ -192,7 +192,7 @@ describe("pinToIPFS", () => {
         IpfsHash: cid,
         PinSize: 1024,
         TimeStamp: new Date().toISOString(),
-      })
+      }),
     );
 
     const ipfsObject = {
@@ -223,7 +223,7 @@ describe("pinToIPFS", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://api.pinata.cloud/pinning/pinJSONToIPFS",
-      params
+      params,
     );
   });
 });
@@ -240,7 +240,7 @@ describe("checkGrantApplicationStatus", () => {
           id: "1",
           status: "FRAUD",
         },
-      ])
+      ]),
     );
 
     const metadataPointer: MetadataPointer = {
@@ -251,7 +251,7 @@ describe("checkGrantApplicationStatus", () => {
     const res = await checkGrantApplicationStatus("1", metadataPointer);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${metadataPointer.pointer}`
+      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${metadataPointer.pointer}`,
     );
     expect(res).toEqual("FRAUD");
   });
@@ -271,7 +271,7 @@ describe("graphql_fetch", () => {
             { id: "0x123456789567fe81379e2951623f008d200e1d20" },
           ],
         },
-      })
+      }),
     );
 
     const query = `
@@ -295,7 +295,7 @@ describe("graphql_fetch", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
-      params
+      params,
     );
     expect(res.data.programs[0]).toEqual({
       id: "0x123456789544fe81379e2951623f008d200e1d18",
@@ -313,7 +313,7 @@ describe("graphql_fetch", () => {
     `;
 
     await expect(
-      graphql_fetch(query, ChainId.GOERLI_CHAIN_ID)
+      graphql_fetch(query, ChainId.GOERLI_CHAIN_ID),
     ).rejects.toHaveProperty("status", 400);
 
     const params = {
@@ -329,7 +329,7 @@ describe("graphql_fetch", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
-      params
+      params,
     );
   });
 
@@ -337,14 +337,14 @@ describe("graphql_fetch", () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({
         data: {},
-      })
+      }),
     );
 
     await graphql_fetch(`programs { id }`, ChainId.OPTIMISM_MAINNET_CHAIN_ID);
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
-      expect.anything()
+      expect.anything(),
     );
   });
 });
@@ -375,7 +375,7 @@ describe("generateApplicationSchema", () => {
 
     const schema = generateApplicationSchema(
       initialQuestions,
-      initialRequirements
+      initialRequirements,
     );
 
     expect(Array.isArray(schema.questions)).toBe(true);

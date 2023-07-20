@@ -40,7 +40,7 @@ export const initialState: NewGrantState = {
 
 export const newGrantReducer = (
   state: NewGrantState = initialState,
-  action: NewGrantActions | GrantError
+  action: NewGrantActions | GrantError,
 ): NewGrantState => {
   switch (action.type) {
     case NEW_GRANT_CREATED: {

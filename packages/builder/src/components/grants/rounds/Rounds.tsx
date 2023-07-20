@@ -85,7 +85,7 @@ export default function Rounds() {
   const renderStatGroup = (
     displayType: RoundDisplayType,
     isLoading: boolean,
-    applications: Application[]
+    applications: Application[],
   ) => (
     <div>
       <span className="text-gitcoin-grey-500 text-[12px] font-normal">
@@ -128,8 +128,8 @@ export default function Rounds() {
               // when props.applications is undefined, we are still loading, when it's not undefined, we check if any of the rounds are still loading
               props.applications?.some((a) => a.isLoading) ?? true,
               props.applications?.flatMap(({ app, category }) =>
-                category === displayType ? [app] : []
-              ) ?? []
+                category === displayType ? [app] : [],
+              ) ?? [],
             )}
           </div>
         ))}

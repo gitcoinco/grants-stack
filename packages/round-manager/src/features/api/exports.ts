@@ -30,7 +30,7 @@ export async function roundApplicationsToCSV(
   roundId: string,
   chainId: number,
   chainName: string,
-  approvedOnly?: boolean
+  approvedOnly?: boolean,
 ) {
   const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.json`;
 
@@ -45,7 +45,7 @@ export async function roundApplicationsToCSV(
 
   if (approvedOnly) {
     applications = applications.filter(
-      (application) => application.status === "APPROVED"
+      (application) => application.status === "APPROVED",
     );
   }
 
@@ -73,7 +73,7 @@ export async function roundApplicationsToCSV(
               window
                 .atob(encryptedValue.ciphertext)
                 .split("")
-                .map((x) => x.charCodeAt(0))
+                .map((x) => x.charCodeAt(0)),
             ),
           ]);
 

@@ -44,7 +44,7 @@ const roundInitialState = {
 
 export const roundsReducer = (
   state: RoundsState = initialState,
-  action: RoundsActions
+  action: RoundsActions,
 ): RoundsState => {
   switch (action.type) {
     case ROUNDS_LOADING_ROUND: {

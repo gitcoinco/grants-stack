@@ -129,7 +129,7 @@ export const publishGrant =
     const projectRegistry = new ethers.Contract(
       addresses.projectRegistry!,
       ProjectRegistryABI,
-      signer
+      signer,
     );
 
     dispatch(grantStatus(Status.WaitingForSignature));

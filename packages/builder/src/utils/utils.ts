@@ -7,7 +7,7 @@ import { AddressType, Metadata, Project } from "../types";
 import gnosisABI from "../contracts/abis/gnosis.json";
 
 export const parseRoundToApply = (
-  s?: string
+  s?: string,
 ): { chainID?: string; roundAddress?: string } => {
   let chainID;
   let roundAddress;
@@ -21,7 +21,7 @@ export const parseRoundToApply = (
 
 export const metadataToProject = (
   m: Metadata,
-  lastUpdated: number
+  lastUpdated: number,
 ): Project => {
   const p: Project = {
     lastUpdated,
@@ -65,7 +65,7 @@ export const getProviderByChainId = (chainId: ChainId) => {
   const chainConfig = web3Provider?.chains?.find(
     // Yes, parameter type for chainId is number, but sometimes we pass it as a string
     // so adding a cast to Number just in case
-    (i) => i.id === Number(chainId)
+    (i) => i.id === Number(chainId),
   );
 
   if (!chainConfig) {
@@ -91,7 +91,7 @@ export const getAddressType = async (address: string): Promise<AddressType> => {
         const safeContract = new ethers.Contract(
           address,
           gnosisABI,
-          web3Provider
+          web3Provider,
         );
 
         const nonce: BigNumberish = await safeContract.nonce();

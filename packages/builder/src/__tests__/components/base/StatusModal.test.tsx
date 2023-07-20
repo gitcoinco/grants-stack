@@ -165,7 +165,7 @@ describe("<StatusModal /> with applicationSteps", () => {
                 : undefined
             }
           />,
-          setupStore()
+          setupStore(),
         );
       });
 
@@ -175,7 +175,7 @@ describe("<StatusModal /> with applicationSteps", () => {
           const iconElement = stepElement.querySelector(".step-icon")!;
           const expectedIcon = scenario.icons[index];
           expect(
-            iconElement.classList.contains(`step-icon-${expectedIcon}`)
+            iconElement.classList.contains(`step-icon-${expectedIcon}`),
           ).toEqual(true);
         });
       });
@@ -250,7 +250,7 @@ describe("<StatusModal /> with grantSteps", () => {
                 : undefined
             }
           />,
-          setupStore()
+          setupStore(),
         );
       });
 
@@ -260,7 +260,7 @@ describe("<StatusModal /> with grantSteps", () => {
           const iconElement = stepElement.querySelector(".step-icon")!;
           const expectedIcon = scenario.icons[index];
           expect(
-            iconElement.classList.contains(`step-icon-${expectedIcon}`)
+            iconElement.classList.contains(`step-icon-${expectedIcon}`),
           ).toEqual(true);
         });
       });

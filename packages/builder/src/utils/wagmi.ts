@@ -112,7 +112,7 @@ if (process.env.REACT_APP_ENV === "production") {
     fantomTestnet,
     fantomMainnet,
     chain.mainnet,
-    pgnTestnet
+    pgnTestnet,
   );
 }
 

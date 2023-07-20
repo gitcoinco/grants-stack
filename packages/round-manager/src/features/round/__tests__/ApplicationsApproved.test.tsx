@@ -77,7 +77,7 @@ describe("<ApplicationsApproved />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
-      grantApplications
+      grantApplications,
     );
   });
 
@@ -98,13 +98,13 @@ describe("<ApplicationsApproved />", () => {
       });
       expect(
         screen.getByText(
-          "Save in gas fees by approving/rejecting multiple applications at once."
-        )
+          "Save in gas fees by approving/rejecting multiple applications at once.",
+        ),
       ).toBeInTheDocument();
       expect(
         screen.getByRole("button", {
           name: /Select/i,
-        })
+        }),
       ).toBeInTheDocument();
     });
 
@@ -113,12 +113,12 @@ describe("<ApplicationsApproved />", () => {
       expect(
         screen.getByRole("button", {
           name: /Cancel/i,
-        })
+        }),
       ).toBeInTheDocument();
       expect(
         screen.queryByRole("button", {
           name: /Select/i,
-        })
+        }),
       ).not.toBeInTheDocument();
     });
 
@@ -133,12 +133,12 @@ describe("<ApplicationsApproved />", () => {
       expect(
         screen.queryByRole("button", {
           name: /Cancel/i,
-        })
+        }),
       ).not.toBeInTheDocument();
       expect(
         screen.getByRole("button", {
           name: /Select/i,
-        })
+        }),
       ).toBeInTheDocument();
     });
   });
@@ -152,13 +152,13 @@ describe("<ApplicationsApproved />", () => {
 
       expect(
         screen.queryByText(
-          "Save in gas fees by approving/rejecting multiple applications at once."
-        )
+          "Save in gas fees by approving/rejecting multiple applications at once.",
+        ),
       ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", {
           name: /Select/i,
-        })
+        }),
       ).not.toBeInTheDocument();
     });
   });
@@ -167,7 +167,7 @@ describe("<ApplicationsApproved />", () => {
     it("renders reject option on each project card", () => {
       setupInBulkSelectionMode();
       expect(screen.queryAllByTestId("reject-button")).toHaveLength(
-        grantApplications.length
+        grantApplications.length,
       );
     });
 
@@ -204,7 +204,7 @@ describe("<ApplicationsApproved />", () => {
         isLoading: false,
       });
       expect(
-        screen.queryAllByTestId("bulk-approve-reject-buttons")
+        screen.queryAllByTestId("bulk-approve-reject-buttons"),
       ).toHaveLength(0);
     });
   });
@@ -226,7 +226,7 @@ describe("<ApplicationsApproved />", () => {
       });
       expect(continueButton).toBeInTheDocument();
       expect(
-        screen.getByText(/You have selected 1 Grant Applications/i)
+        screen.getByText(/You have selected 1 Grant Applications/i),
       ).toBeInTheDocument();
 
       const rejectButton2 = screen.queryAllByTestId("reject-button")[1];
@@ -234,7 +234,7 @@ describe("<ApplicationsApproved />", () => {
 
       expect(continueButton).toBeInTheDocument();
       expect(
-        screen.getByText(/You have selected 2 Grant Applications/i)
+        screen.getByText(/You have selected 2 Grant Applications/i),
       ).toBeInTheDocument();
     });
 
@@ -251,7 +251,7 @@ describe("<ApplicationsApproved />", () => {
 
       expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
       expect(
-        screen.getByTestId("rejected-applications-count")
+        screen.getByTestId("rejected-applications-count"),
       ).toBeInTheDocument();
     });
 
@@ -259,7 +259,7 @@ describe("<ApplicationsApproved />", () => {
       (updateApplicationStatuses as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing */
-        })
+        }),
       );
 
       renderWithContext(<ApplicationsApproved />, {
@@ -269,13 +269,13 @@ describe("<ApplicationsApproved />", () => {
       fireEvent.click(
         screen.getByRole("button", {
           name: /Select/i,
-        })
+        }),
       );
       fireEvent.click(screen.queryAllByTestId("reject-button")[0]);
       fireEvent.click(
         screen.getByRole("button", {
           name: /Continue/i,
-        })!
+        })!,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /Confirm/i })!);
@@ -381,7 +381,7 @@ describe("<ApplicationsApproved />", () => {
         },
         {
           contractUpdatingStatus: ProgressStatus.IS_ERROR,
-        }
+        },
       );
 
       // select button
@@ -439,7 +439,7 @@ export const renderWithContext = (
   grantApplicationStateOverrides: Partial<ApplicationState> = {},
   bulkUpdateApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
 ) =>
   render(
     <MemoryRouter>
@@ -461,5 +461,5 @@ export const renderWithContext = (
           {ui}
         </ApplicationContext.Provider>
       </BulkUpdateGrantApplicationContext.Provider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );

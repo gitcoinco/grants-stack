@@ -503,7 +503,7 @@ export function ProjectSelect({
           {
             "bg-transparent": !disabled,
           },
-          borderClass
+          borderClass,
         )}
         onChange={(e) => changeHandler(e)}
         defaultValue={defaultValue}

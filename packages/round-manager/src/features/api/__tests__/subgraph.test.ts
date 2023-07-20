@@ -29,7 +29,7 @@ describe("getCurrentSubgraphBlockNumber", () => {
     });
 
     const actualCurrentBlockNumber = await getCurrentSubgraphBlockNumber(
-      chainId
+      chainId,
     );
 
     expect(actualCurrentBlockNumber).toEqual(expectedCurrentBlockNumber);

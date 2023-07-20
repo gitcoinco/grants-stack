@@ -96,7 +96,7 @@ export type RoundApplicationActions =
 const applicationError = (
   roundAddress: string,
   error: string,
-  step: Status
+  step: Status,
 ): RoundApplicationActions => ({
   type: ROUND_APPLICATION_ERROR,
   roundAddress,
@@ -119,7 +119,7 @@ const dispatchAndLogApplicationError = (
   dispatch: Dispatch,
   roundAddress: string,
   error: string,
-  step: Status
+  step: Status,
 ) => {
   datadogRum.addError(new Error(error), {
     roundAddress,
@@ -147,7 +147,7 @@ export const submitApplication =
         dispatch,
         roundAddress,
         "cannot load round data",
-        Status.BuildingApplication
+        Status.BuildingApplication,
       );
       return;
     }
@@ -158,14 +158,14 @@ export const submitApplication =
         dispatch,
         roundAddress,
         "cannot load round application metadata",
-        Status.BuildingApplication
+        Status.BuildingApplication,
       );
       return;
     }
 
     const projectQuestion =
       roundApplicationMetadata.applicationSchema.questions.find(
-        (q) => q.type === "project"
+        (q) => q.type === "project",
       );
 
     if (!projectQuestion) {
@@ -173,7 +173,7 @@ export const submitApplication =
         dispatch,
         roundAddress,
         "cannot find project question id",
-        Status.BuildingApplication
+        Status.BuildingApplication,
       );
       return;
     }
@@ -192,7 +192,7 @@ export const submitApplication =
         dispatch,
         roundAddress,
         "cannot find selected project metadata",
-        Status.BuildingApplication
+        Status.BuildingApplication,
       );
       return;
     }
@@ -206,7 +206,7 @@ export const submitApplication =
         dispatch,
         roundAddress,
         "cannot find chain id",
-        Status.BuildingApplication
+        Status.BuildingApplication,
       );
       return;
     }
@@ -226,7 +226,7 @@ export const submitApplication =
         project,
         roundApplicationMetadata,
         roundAddress,
-        chainName === "mainnet" ? "ethereum" : chainName // lit wants "ethereum" for mainnet
+        chainName === "mainnet" ? "ethereum" : chainName, // lit wants "ethereum" for mainnet
       );
 
       application = await builder.build(roundAddress, formInputs);
@@ -237,7 +237,7 @@ export const submitApplication =
         dispatch,
         roundAddress,
         "error building round application",
-        Status.LitAuthentication
+        Status.LitAuthentication,
       );
       return;
     }
@@ -246,7 +246,7 @@ export const submitApplication =
 
     const hash = ethers.utils.solidityKeccak256(
       ["string"],
-      [deterministicApplication]
+      [deterministicApplication],
     );
 
     dispatch({
@@ -263,7 +263,7 @@ export const submitApplication =
         dispatch,
         roundAddress,
         "error signing round application",
-        Status.SigningApplication
+        Status.SigningApplication,
       );
       return;
     }
@@ -288,7 +288,7 @@ export const submitApplication =
         dispatch,
         roundAddress,
         "error uploading round application metadata",
-        Status.UploadingMetadata
+        Status.UploadingMetadata,
       );
       return;
     }
@@ -307,7 +307,7 @@ export const submitApplication =
     const projectUniqueID = generateUniqueRoundApplicationID(
       Number(projectChainId),
       projectNumber,
-      projectRegistryAddress
+      projectRegistryAddress,
     );
 
     try {
@@ -320,14 +320,14 @@ export const submitApplication =
         projectId: projectID,
       });
       dispatch<any>(
-        fetchProjectApplications(projectID, Number(projectChainId))
+        fetchProjectApplications(projectID, Number(projectChainId)),
       );
     } catch (e: any) {
       dispatchAndLogApplicationError(
         dispatch,
         roundAddress,
         "error calling applyToRound",
-        Status.SendingTx
+        Status.SendingTx,
       );
     }
   };
@@ -348,15 +348,15 @@ export const checkRoundApplications =
           generateUniqueRoundApplicationID(
             Number(projectChainId),
             id,
-            registryAddress
+            registryAddress,
           ),
           id,
         ];
-      })
+      }),
     );
 
     const applicationFilter = contract.filters.NewProjectApplication(
-      Object.keys(uniqueIDsToIDs)
+      Object.keys(uniqueIDsToIDs),
     );
 
     let applicationEvents = [];

@@ -23,10 +23,10 @@ export default function ApplicationCard({
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
 
     const applicationChainName = networkPrettyName(
-      Number(applicationData.chainId)
+      Number(applicationData.chainId),
     );
     const applicationChainIconUri = getNetworkIcon(
-      Number(applicationData.chainId)
+      Number(applicationData.chainId),
     );
 
     return {
@@ -154,7 +154,7 @@ export default function ApplicationCard({
             to={roundApplicationViewPath(
               applicationData.chainId,
               applicationData.roundID,
-              applicationData.application.metaPtr.pointer
+              applicationData.application.metaPtr.pointer,
             )}
           >
             <Button

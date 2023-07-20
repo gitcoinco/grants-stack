@@ -49,14 +49,14 @@ describe("Fetch Credentials", () => {
     }));
     const { challenge: actualChallenge } = await fetchChallengeCredential(
       IAM_URL,
-      payload
+      payload,
     );
 
     // check that called the axios.post fn
     expect(axios.post).toHaveBeenCalled();
     expect(axios.post).toHaveBeenCalledWith(
       IAM_CHALLENGE_ENDPOINT,
-      expectedChallengeRequestBody
+      expectedChallengeRequestBody,
     );
     expect(actualChallenge).toEqual(MOCK_CHALLENGE_CREDENTIAL);
   });
@@ -88,7 +88,7 @@ describe("Fetch Credentials", () => {
     expect(axios.post).toHaveBeenNthCalledWith(
       1,
       IAM_CHALLENGE_ENDPOINT,
-      expectedChallengeRequestBody
+      expectedChallengeRequestBody,
     );
 
     expect(MOCK_SIGNER.signMessage).toHaveBeenCalled();
@@ -112,13 +112,13 @@ describe("Fetch Credentials", () => {
     });
 
     await expect(
-      fetchVerifiableCredential(IAM_URL, payload, MOCK_SIGNER)
+      fetchVerifiableCredential(IAM_URL, payload, MOCK_SIGNER),
     ).rejects.toThrow("Unable to sign message");
 
     expect(axios.post).toHaveBeenNthCalledWith(
       1,
       IAM_CHALLENGE_ENDPOINT,
-      expectedChallengeRequestBody
+      expectedChallengeRequestBody,
     );
     // NOTE: the signMessage function was never called
     expect(MOCK_SIGNER.signMessage).not.toBeCalled();

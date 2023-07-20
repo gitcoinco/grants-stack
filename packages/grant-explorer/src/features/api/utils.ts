@@ -297,7 +297,7 @@ export const graphql_fetch = async (
   chainId: ChainId,
   // eslint-disable-next-line @typescript-eslint/ban-types
   variables: object = {},
-  fromProjectRegistry = false
+  fromProjectRegistry = false,
 ) => {
   let endpoint = await getGraphQLEndpoint(chainId);
 
@@ -327,7 +327,7 @@ export const graphql_fetch = async (
  */
 export const fetchFromIPFS = (cid: string) => {
   return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`,
   ).then((resp) => {
     if (resp.ok) {
       return resp.json();

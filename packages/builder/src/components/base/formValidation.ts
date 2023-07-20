@@ -28,10 +28,10 @@ export async function validateProjectForm(inputs: FormInputs) {
 function createValidationSchema(field: string) {
   return string()
     .test("has-no-at", `${field} should not include an @ symbol`, (value) =>
-      value ? !value.includes("@") : true
+      value ? !value.includes("@") : true,
     )
     .test("is-not-url", `${field} should not be a URL`, (value) =>
-      value ? !urlRegex.test(value) : true
+      value ? !urlRegex.test(value) : true,
     );
 }
 
@@ -49,7 +49,7 @@ export async function validateVerificationForm(inputs: FormInputs) {
 
 export async function validateApplication(
   questions: RoundApplicationQuestion[],
-  answers: RoundApplicationAnswers
+  answers: RoundApplicationAnswers,
 ) {
   const schema = questions.reduce((acc, input) => {
     let validation;
@@ -60,7 +60,7 @@ export async function validateApplication(
 
     if (input.type === "email") {
       validation = string().email(
-        `${input.title} must be a valid email address`
+        `${input.title} must be a valid email address`,
       );
 
       if (input.required) {
@@ -79,7 +79,7 @@ export async function validateApplication(
       return {
         ...acc,
         isSafe: string().required(
-          "You must select an answer to whether your payout wallet is a Gnosis Safe or multisig"
+          "You must select an answer to whether your payout wallet is a Gnosis Safe or multisig",
         ),
         [input.id]: string()
           .matches(/^0x[a-fA-F0-9]{40}$/g, {
@@ -94,12 +94,12 @@ export async function validateApplication(
       if (input.required) {
         validation = validation.min(
           1,
-          `You must select at least one value for ${input.title}`
+          `You must select at least one value for ${input.title}`,
         );
       }
     } else if (input.type === "link") {
       validation = string().url(
-        `${input.title} must be a valid url. e.g. https://gitcoin.co/`
+        `${input.title} must be a valid url. e.g. https://gitcoin.co/`,
       );
 
       if (input.required) {

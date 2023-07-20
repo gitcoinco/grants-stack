@@ -60,7 +60,7 @@ export const metadataSaved = ({
 
 export const metadataImageSaved = (
   image: Blob | string | undefined,
-  fieldName: string
+  fieldName: string,
 ) => ({
   type: METADATA_IMAGE_SAVED,
   image,
@@ -68,7 +68,7 @@ export const metadataImageSaved = (
 });
 
 export const credentialsSaved = (
-  vc: ProjectCredentials
+  vc: ProjectCredentials,
 ): ProjectFormActions => ({
   type: CREDENTIALS_SAVED,
   credentials: {

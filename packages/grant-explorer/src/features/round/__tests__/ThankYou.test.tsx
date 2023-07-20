@@ -39,7 +39,7 @@ describe("<ThankYou/>", () => {
     render(
       <RoundProvider>
         <ThankYou />
-      </RoundProvider>
+      </RoundProvider>,
     );
 
     expect(await screen.queryByTestId("view-tx-button")).toBeInTheDocument();

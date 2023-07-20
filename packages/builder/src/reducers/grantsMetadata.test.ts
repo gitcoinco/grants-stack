@@ -13,7 +13,7 @@ describe("grantsMetaData reducer", () => {
   let store: Store;
   beforeEach(() => {
     store = createStore(
-      combineReducers({ grantsMetaData: grantsMetadataReducer })
+      combineReducers({ grantsMetaData: grantsMetadataReducer }),
     );
   });
 
@@ -41,7 +41,7 @@ describe("grantsMetaData reducer", () => {
         protocol: grantMetadata.protocol,
         pointer: grantMetadata.pointer,
         id: grantId,
-      })
+      }),
     );
 
     expect(store.getState().grantsMetaData["1:1:1"]).toEqual({

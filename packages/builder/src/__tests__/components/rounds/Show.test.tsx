@@ -113,7 +113,7 @@ describe("<Show />", () => {
         expect(screen.getByText("Apply")).toBeInTheDocument();
         expect(screen.getByTestId("switch-networks-modal")).toBeInTheDocument();
         expect(
-          screen.getByTestId("switch-networks-modal-title")
+          screen.getByTestId("switch-networks-modal-title"),
         ).toHaveTextContent("Switch Network");
       });
 
@@ -125,7 +125,7 @@ describe("<Show />", () => {
 
         renderWrapped(<Show />, store);
         expect(
-          screen.queryByTestId("switch-network-modal")
+          screen.queryByTestId("switch-network-modal"),
         ).not.toBeInTheDocument();
       });
     });
@@ -265,7 +265,7 @@ describe("<Show />", () => {
       renderWrapped(<Show />, store);
 
       expect(
-        screen.getByText("The application period for this round will start on")
+        screen.getByText("The application period for this round will start on"),
       ).toBeInTheDocument();
       expect(screen.getByText("Apply")).toBeDisabled();
     });

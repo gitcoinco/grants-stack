@@ -66,7 +66,7 @@ export const grantsMetadataAllUnloaded = (): GrantMetadataActions => ({
 
 export const grantMetadataFetchingError = (
   id: string,
-  error: string
+  error: string,
 ): GrantMetadataActions => ({
   type: GRANT_METADATA_FETCHING_ERROR,
   id,
@@ -76,12 +76,12 @@ export const grantMetadataFetchingError = (
 const getProjectById = async (
   projectId: string,
   addresses: any,
-  signerOrProvider: any
+  signerOrProvider: any,
 ) => {
   const projectRegistry = new ethers.Contract(
     addresses.projectRegistry,
     ProjectRegistryABI,
-    signerOrProvider
+    signerOrProvider,
   );
 
   const { id } = getProjectURIComponents(projectId);
@@ -96,7 +96,7 @@ const ensureMetadataTimestamps = async (
   metadata: Metadata,
   appProvider: ethers.providers.BaseProvider,
   createdAtBlock?: number,
-  updatedAtBlock?: number
+  updatedAtBlock?: number,
 ) => {
   let ret = metadata;
 
@@ -119,7 +119,7 @@ const getMetadata = async (
   cacheKey: string,
   appProvider: ethers.providers.BaseProvider,
   createdAtBlock?: number,
-  updatedAtBlock?: number
+  updatedAtBlock?: number,
 ) => {
   const storage = new LocalStorage();
   let metadata: Metadata;
@@ -139,7 +139,7 @@ const getMetadata = async (
           },
           appProvider,
           createdAtBlock,
-          updatedAtBlock
+          updatedAtBlock,
         );
 
         storage.add(cacheKey, JSON.stringify(ret));
@@ -170,7 +170,7 @@ const getMetadata = async (
       JSON.parse(content),
       appProvider,
       createdAtBlock,
-      updatedAtBlock
+      updatedAtBlock,
     );
   } catch (e) {
     // FIXME: dispatch JSON error
@@ -229,7 +229,7 @@ export const fetchGrantData =
         cacheKey,
         appProvider,
         createdAtBlock,
-        updatedAtBlock
+        updatedAtBlock,
       );
 
       if (item === null) {

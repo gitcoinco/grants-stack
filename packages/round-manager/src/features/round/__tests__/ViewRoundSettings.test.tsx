@@ -84,14 +84,14 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
     act(async () => {
       const roundSettingsTab = await screen.findByTestId("round-settings");
@@ -103,7 +103,7 @@ describe("View Round", () => {
       const cancelButton = await screen.findByTestId("cancel-button");
       expect(cancelButton).toBeInTheDocument();
       const updateRoundButton = await screen.findByTestId(
-        "update-round-button"
+        "update-round-button",
       );
       expect(updateRoundButton).toBeInTheDocument();
     });
@@ -118,14 +118,14 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     act(async () => {
@@ -138,7 +138,7 @@ describe("View Round", () => {
       const cancelButton = await screen.findByTestId("cancel-button");
       expect(cancelButton).toBeInTheDocument();
       const updateRoundButton = await screen.findByTestId(
-        "update-round-button"
+        "update-round-button",
       );
       expect(updateRoundButton).toBeInTheDocument();
       fireEvent.click(cancelButton);
@@ -156,14 +156,14 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     act(async () => {
@@ -176,7 +176,7 @@ describe("View Round", () => {
       const cancelButton = await screen.findByTestId("cancel-button");
       expect(cancelButton).toBeInTheDocument();
       const updateRoundButton = await screen.findByTestId(
-        "update-round-button"
+        "update-round-button",
       );
       expect(updateRoundButton).toBeInTheDocument();
 
@@ -205,14 +205,14 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     act(async () => {
@@ -234,14 +234,14 @@ describe("View Round", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     act(async () => {

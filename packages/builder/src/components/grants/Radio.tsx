@@ -59,7 +59,7 @@ export default function Radio({
                   onChange={changeHandler}
                   type="radio"
                   className={classNames(
-                    "checked:text-violet-400 focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
+                    "checked:text-violet-400 focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none",
                   )}
                 />
                 <label htmlFor={choiceId} className="ml-3 mb-0">

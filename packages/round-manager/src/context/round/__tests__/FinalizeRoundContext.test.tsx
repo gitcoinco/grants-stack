@@ -38,7 +38,7 @@ describe("<FinalizeRoundProvider />", () => {
       (saveToIPFS as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseFinalizeRoundComponent />);
@@ -48,8 +48,8 @@ describe("<FinalizeRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `storing-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -58,7 +58,7 @@ describe("<FinalizeRoundProvider />", () => {
       (updateDistributionToContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseFinalizeRoundComponent />);
@@ -68,8 +68,8 @@ describe("<FinalizeRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `storing-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -84,8 +84,8 @@ describe("<FinalizeRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `deploying-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `deploying-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -112,15 +112,15 @@ describe("<FinalizeRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `storing-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
     it("sets contract deployment status to error when deployment fails", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
       (updateDistributionToContract as jest.Mock).mockRejectedValue(
-        new Error("Failed to deploy :(")
+        new Error("Failed to deploy :("),
       );
 
       renderWithProvider(<TestUseFinalizeRoundComponent />);
@@ -129,8 +129,8 @@ describe("<FinalizeRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `deploying-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `deploying-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -140,7 +140,7 @@ describe("<FinalizeRoundProvider />", () => {
         .mockReturnValue(
           new Promise(() => {
             /* do nothing.*/
-          })
+          }),
         );
 
       renderWithProvider(<TestUseFinalizeRoundComponent />);
@@ -152,7 +152,7 @@ describe("<FinalizeRoundProvider />", () => {
       fireEvent.click(screen.getByTestId("finalize-round"));
 
       expect(
-        screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`)
+        screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`),
       ).not.toBeInTheDocument();
     });
   });

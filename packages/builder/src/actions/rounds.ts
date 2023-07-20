@@ -100,7 +100,7 @@ export const loadRound =
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
-        `contract: error loading application start time ${contract.address}`
+        `contract: error loading application start time ${contract.address}`,
       );
       dispatch(loadingError(address, "error loading application start time"));
       console.error(e);
@@ -120,7 +120,7 @@ export const loadRound =
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
-        `contract: error loading application end time ${contract.address}`
+        `contract: error loading application end time ${contract.address}`,
       );
       dispatch(loadingError(address, "error loading application end time"));
       console.error(e);
@@ -140,7 +140,7 @@ export const loadRound =
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
-        `contract: error loading round start time ${contract.address}`
+        `contract: error loading round start time ${contract.address}`,
       );
       dispatch(loadingError(address, "error loading round start time"));
       console.error(e);
@@ -160,7 +160,7 @@ export const loadRound =
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
-        `contract: error loading round end time ${contract.address}`
+        `contract: error loading round end time ${contract.address}`,
       );
       dispatch(loadingError(address, "error loading round end time"));
       console.error(e);
@@ -179,7 +179,7 @@ export const loadRound =
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
-        `contract: error loading round token ${contract.address}`
+        `contract: error loading round token ${contract.address}`,
       );
       dispatch(loadingError(address, "error loading round token"));
       console.error(e);
@@ -198,7 +198,7 @@ export const loadRound =
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
-        `contract: error loading round metaPtr ${contract.address}`
+        `contract: error loading round metaPtr ${contract.address}`,
       );
       dispatch(loadingError(address, "error loading round metaPtr"));
       console.error(e);
@@ -218,7 +218,7 @@ export const loadRound =
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
-        `contract: error loading round metadata ${contract.address}`
+        `contract: error loading round metadata ${contract.address}`,
       );
       dispatch(loadingError(address, "error loading round metadata"));
       console.error(e);
@@ -237,7 +237,7 @@ export const loadRound =
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
-        `contract: error loading application metaPtr ${contract.address}`
+        `contract: error loading application metaPtr ${contract.address}`,
       );
       dispatch(loadingError(address, "error loading application metaPtr"));
       console.error(e);
@@ -268,7 +268,7 @@ export const loadRound =
       const programContract = new ethers.Contract(
         roundMetadata.programContractAddress,
         ProgramABI,
-        appProvider
+        appProvider,
       );
 
       dispatch({
@@ -283,7 +283,7 @@ export const loadRound =
       } catch (e) {
         datadogRum.addError(e);
         datadogLogs.logger.error(
-          `contract: error loading program metaPtr ${programContract.address}`
+          `contract: error loading program metaPtr ${programContract.address}`,
         );
         dispatch(loadingError(address, "error loading program metaPtr"));
         console.error(e);

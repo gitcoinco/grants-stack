@@ -29,7 +29,7 @@ import initTagmanager from "./tagmanager";
 
 const store = setupStore();
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 const gtcLightTheme = lightTheme();
@@ -120,7 +120,7 @@ root.render(
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>
-  </ErrorBoundary>
+  </ErrorBoundary>,
 );
 
 // If you want to start measuring performance in your app, pass a function

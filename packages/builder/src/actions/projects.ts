@@ -112,7 +112,7 @@ export const projectsLoading = (chainID: ChainId): ProjectsLoadingAction => ({
 
 export const projectsLoaded = (
   chainID: ChainId,
-  events: ProjectEventsMap
+  events: ProjectEventsMap,
 ): ProjectsLoadedAction => ({
   type: PROJECTS_LOADED,
   payload: {
@@ -127,7 +127,7 @@ const projectsUnload = () => ({
 
 const fetchProjectCreatedUpdatedEvents = async (
   chainID: ChainId,
-  account: string
+  account: string,
 ) => {
   const addresses = addressesByChainID(chainID!);
 
@@ -161,7 +161,7 @@ const fetchProjectCreatedUpdatedEvents = async (
 
   // FIXME: remove when the fantom RPC bug has been fixed
   createdEvents = createdEvents.filter(
-    (e) => e.address === addresses.projectRegistry
+    (e) => e.address === addresses.projectRegistry,
   );
 
   if (createdEvents.length === 0) {
@@ -177,7 +177,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   const ids = createdEvents.map((event) => parseInt(event.topics[1], 16));
 
   const fullIds = ids.map(
-    (id) => `${chainID}:${addresses.projectRegistry}:${id}`
+    (id) => `${chainID}:${addresses.projectRegistry}:${id}`,
   );
 
   // FIXME: use this line when the fantom RPC bug has been fixed
@@ -192,7 +192,7 @@ const fetchProjectCreatedUpdatedEvents = async (
 
   // FIXME: remove when fantom bug is fixed
   const updatedEventSig = ethers.utils.id(
-    "MetadataUpdated(uint256,(uint256,string))"
+    "MetadataUpdated(uint256,(uint256,string))",
   );
   const updatedFilter = {
     address: addresses.projectRegistry,
@@ -210,7 +210,7 @@ const fetchProjectCreatedUpdatedEvents = async (
 
   // FIXME: remove when the fantom RPC bug has been fixed
   updatedEvents = updatedEvents.filter(
-    (e) => e.address === addresses.projectRegistry
+    (e) => e.address === addresses.projectRegistry,
   );
 
   return {
@@ -223,7 +223,7 @@ const fetchProjectCreatedUpdatedEvents = async (
 export const extractProjectEvents = (
   createdEvents: ethers.providers.Log[],
   updatedEvents: ethers.providers.Log[],
-  chainId: ChainId
+  chainId: ChainId,
 ) => {
   const chainAddresses = addressesByChainID(chainId);
   const eventList: { [key: string]: ProjectEvents } = {};
@@ -234,7 +234,7 @@ export const extractProjectEvents = (
     // const id = createEvent.args!.projectID!;
     const id = `${chainId}:${chainAddresses.projectRegistry}:${parseInt(
       createEvent.topics[1],
-      16
+      16,
     )}`;
 
     // eslint-disable-next-line no-param-reassign
@@ -253,7 +253,7 @@ export const extractProjectEvents = (
     // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
     const id = `${chainId}:${chainAddresses.projectRegistry}:${parseInt(
       updateEvent.topics[1],
-      16
+      16,
     )}`;
     if (eventList[id] !== undefined) {
       // eslint-disable-next-line no-param-reassign
@@ -302,7 +302,7 @@ export const loadProjects =
       const projectEventsMap = extractProjectEvents(
         project.createdEvents,
         project.updatedEvents,
-        chainID
+        chainID,
       );
 
       if (withMetaData) {
@@ -325,8 +325,8 @@ export const loadProjects =
         addAlert(
           "error",
           `Failed to load projects from ${chainName}`,
-          "Please try refreshing the page."
-        )
+          "Please try refreshing the page.",
+        ),
       );
 
       dispatch(projectsLoaded(chainID, {}));
@@ -345,7 +345,7 @@ export const loadAllChainsProjects =
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
   roundID: string,
-  roundChainId: ChainId
+  roundChainId: ChainId,
 ): Promise<any> => {
   const splitApplicationId = applicationId.split(":");
   const projectChainId = Number(splitApplicationId[0]);
@@ -355,7 +355,7 @@ export const fetchProjectApplicationInRound = async (
   const projectApplicationID = generateUniqueRoundApplicationID(
     projectChainId,
     projectNumber,
-    projectRegistryAddress
+    projectRegistryAddress,
   ).toLowerCase();
 
   const Id = roundID.toLowerCase();
@@ -377,7 +377,7 @@ export const fetchProjectApplicationInRound = async (
       {
         projectApplicationID,
         Id,
-      }
+      },
     );
 
     if (response.errors) {
@@ -420,7 +420,7 @@ export const fetchProjectApplications =
           const projectApplicationID = generateUniqueRoundApplicationID(
             projectChainId,
             projectID,
-            addresses.projectRegistry!
+            addresses.projectRegistry!,
           );
 
           const response: any = await graphqlFetch(
@@ -440,7 +440,7 @@ export const fetchProjectApplications =
             chain.id,
             {
               projectApplicationID,
-            }
+            },
           );
 
           if (response.errors) {
@@ -453,7 +453,7 @@ export const fetchProjectApplications =
               roundID: application.round.id,
               chainId: chain.id,
               metaPtr: application.metaPtr,
-            })
+            }),
           );
 
           if (applications.length === 0) {
@@ -474,13 +474,13 @@ export const fetchProjectApplications =
             projectID,
             "in Chain Id",
             chain.id,
-            error
+            error,
           );
           datadogRum.addError(error, { projectID });
 
           return [];
         }
-      })
+      }),
     );
 
     dispatch({
@@ -495,13 +495,13 @@ export const loadProjectStats =
     projectID: string,
     projectRegistryAddress: string,
     projectChainId: string,
-    rounds: Array<{ roundId: string; chainId: ChainId }>
+    rounds: Array<{ roundId: string; chainId: ChainId }>,
   ) =>
   async (dispatch: Dispatch) => {
     const uniqueProjectID = generateUniqueRoundApplicationID(
       Number(projectChainId),
       projectID,
-      projectRegistryAddress
+      projectRegistryAddress,
     );
 
     dispatch({
@@ -530,7 +530,7 @@ export const loadProjectStats =
           totalContributions: -1,
           success: false,
         },
-        roundId
+        roundId,
       );
     };
 
@@ -539,15 +539,15 @@ export const loadProjectStats =
       const client = new AlloClient(
         boundFetch,
         process.env.REACT_APP_ALLO_API_URL ?? "",
-        round.chainId
+        round.chainId,
       );
 
       const applications = await client.getRoundApplications(
-        utils.getAddress(round.roundId.toLowerCase())
+        utils.getAddress(round.roundId.toLowerCase()),
       );
 
       const project = applications.find(
-        (app) => app.projectId === uniqueProjectID && app.status === "APPROVED"
+        (app) => app.projectId === uniqueProjectID && app.status === "APPROVED",
       );
 
       if (project) {
@@ -562,7 +562,7 @@ export const loadProjectStats =
             totalContributions: project.votes,
             success: true,
           },
-          round.roundId
+          round.roundId,
         );
       } else {
         await loadingErrorUpdate(round.roundId);

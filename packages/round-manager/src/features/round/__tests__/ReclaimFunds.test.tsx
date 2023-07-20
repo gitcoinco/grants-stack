@@ -61,16 +61,20 @@ describe("ReclaimFunds", () => {
     const daysLeftInRound = Number(daysLeft / (1000 * 60 * 60 * 24)).toFixed(0);
 
     render(
-      <ReclaimFunds round={mockRoundData} chainId={chainId} roundId={roundId} />
+      <ReclaimFunds
+        round={mockRoundData}
+        chainId={chainId}
+        roundId={roundId}
+      />,
     );
 
     expect(
-      screen.getByText(`${daysLeftInRound} days until you can reclaim funds`)
+      screen.getByText(`${daysLeftInRound} days until you can reclaim funds`),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "If there is a balance left over, you will be able to reclaim funds here."
-      )
+        "If there is a balance left over, you will be able to reclaim funds here.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -87,7 +91,7 @@ describe("ReclaimFunds", () => {
 
       const currentTime = new Date();
       const roundEndTime = new Date(
-        currentTime.getTime() - 1000 * 60 * 60 * 24
+        currentTime.getTime() - 1000 * 60 * 60 * 24,
       );
       mockRoundData.roundEndTime = roundEndTime;
     });
@@ -119,14 +123,14 @@ describe("ReclaimFunds", () => {
                 data: [mockRoundData],
                 fetchRoundStatus: ProgressStatus.IS_SUCCESS,
               }),
-              { programs: [] }
+              { programs: [] },
             ),
             {
               applications: [],
               isLoading: false,
-            }
-          )
-        )
+            },
+          ),
+        ),
       );
       const fundContractTab = screen.getByTestId("reclaim-funds");
       fireEvent.click(fundContractTab);
@@ -136,7 +140,7 @@ describe("ReclaimFunds", () => {
       expect(screen.getByText("Payout token:")).toBeInTheDocument();
       expect(screen.getByText("Matching pool size:")).toBeInTheDocument();
       expect(
-        screen.getByText("Amount in payout contract:")
+        screen.getByText("Amount in payout contract:"),
       ).toBeInTheDocument();
       expect(screen.getByText("Wallet address:")).toBeInTheDocument();
       expect(screen.getByTestId("reclaim-fund-btn")).toBeInTheDocument();

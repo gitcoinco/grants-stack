@@ -40,16 +40,16 @@ describe("getRoundById", () => {
             roundMetaPtr: expectedRoundData.store!,
             applicationMetaPtr: expectedRoundData.applicationStore!,
             applicationsStartTime: convertDateToSecondsString(
-              expectedRoundData.applicationsStartTime
+              expectedRoundData.applicationsStartTime,
             ),
             applicationsEndTime: convertDateToSecondsString(
-              expectedRoundData.applicationsEndTime
+              expectedRoundData.applicationsEndTime,
             ),
             roundStartTime: convertDateToSecondsString(
-              expectedRoundData.roundStartTime
+              expectedRoundData.roundStartTime,
             ),
             roundEndTime: convertDateToSecondsString(
-              expectedRoundData.roundEndTime
+              expectedRoundData.roundEndTime,
             ),
             token: expectedRoundData.token,
             votingStrategy: expectedRoundData.votingStrategy,
@@ -76,7 +76,7 @@ describe("getRoundById", () => {
     expect(graphql_fetch as jest.Mock).toBeCalledTimes(1);
     expect(fetchFromIPFS as jest.Mock).toBeCalledTimes(1);
     expect(fetchFromIPFS as jest.Mock).toBeCalledWith(
-      expectedRoundData.store?.pointer
+      expectedRoundData.store?.pointer,
     );
   });
 
@@ -143,7 +143,7 @@ describe("getRoundById", () => {
 
       const projectOwners =
         expectedApprovedApplication.projectMetadata.owners.map(
-          (it) => it.address
+          (it) => it.address,
         );
 
       (getProjectOwners as jest.Mock).mockResolvedValue(projectOwners);
@@ -176,7 +176,7 @@ describe("getRoundById", () => {
 
       const actualRound = await getRoundById(
         expectedRoundData.id!,
-        "someChain"
+        "someChain",
       );
 
       expect(actualRound).toMatchObject(expectedRound);

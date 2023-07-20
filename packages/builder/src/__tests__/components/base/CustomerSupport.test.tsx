@@ -10,12 +10,12 @@ describe("<CustomerSupport />", () => {
       render(<CustomerSupport />);
       const customerSupport = screen.getByTestId("customer-support");
       const customerSupportButton = customerSupport.querySelector(
-        "button"
+        "button",
       ) as Element;
 
       act(() => {
         customerSupportButton.dispatchEvent(
-          new MouseEvent("click", { bubbles: true })
+          new MouseEvent("click", { bubbles: true }),
         );
       });
     });

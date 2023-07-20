@@ -43,7 +43,7 @@ describe("<FundContractProvider />", () => {
     (fundRoundContract as jest.Mock).mockReturnValue(
       new Promise(() => {
         /* do nothing.*/
-      })
+      }),
     );
   });
 
@@ -60,14 +60,14 @@ describe("<FundContractProvider />", () => {
     await waitFor(() => {
       expect(
         screen.getByTestId(
-          `token-approval-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `token-approval-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       ).toBeInTheDocument();
       expect(
-        screen.getByTestId(`fund-status-is-${ProgressStatus.NOT_STARTED}`)
+        screen.getByTestId(`fund-status-is-${ProgressStatus.NOT_STARTED}`),
       ).toBeInTheDocument();
       expect(
-        screen.getByTestId(`indexing-status-is-${ProgressStatus.NOT_STARTED}`)
+        screen.getByTestId(`indexing-status-is-${ProgressStatus.NOT_STARTED}`),
       ).toBeInTheDocument();
     });
   });
@@ -94,7 +94,7 @@ describe("useFundContract Errors", () => {
     fireEvent.click(screen.getByTestId("fund-contract"));
 
     expect(
-      await screen.findByTestId(`fund-status-is-${ProgressStatus.IS_ERROR}`)
+      await screen.findByTestId(`fund-status-is-${ProgressStatus.IS_ERROR}`),
     ).toBeInTheDocument();
   });
 
@@ -112,7 +112,9 @@ describe("useFundContract Errors", () => {
     fireEvent.click(screen.getByTestId("fund-contract"));
 
     expect(
-      await screen.findByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+      await screen.findByTestId(
+        `indexing-status-is-${ProgressStatus.IS_ERROR}`,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -125,7 +127,7 @@ describe("useFundContract Errors", () => {
       .mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
     renderWithProvider(<TestUseFundContractComponent {...testParams} />);
@@ -136,7 +138,7 @@ describe("useFundContract Errors", () => {
     fireEvent.click(screen.getByTestId("fund-contract"));
 
     expect(
-      screen.queryByTestId(`fund-status-is-${ProgressStatus.IS_ERROR}`)
+      screen.queryByTestId(`fund-status-is-${ProgressStatus.IS_ERROR}`),
     ).not.toBeInTheDocument();
   });
 
@@ -152,7 +154,7 @@ describe("useFundContract Errors", () => {
       .mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
     renderWithProvider(<TestUseFundContractComponent {...testParams} />);
@@ -163,7 +165,7 @@ describe("useFundContract Errors", () => {
     fireEvent.click(screen.getByTestId("fund-contract"));
 
     expect(
-      screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+      screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`),
     ).not.toBeInTheDocument();
   });
 });

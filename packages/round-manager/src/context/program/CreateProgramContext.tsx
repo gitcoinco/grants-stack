@@ -97,7 +97,7 @@ export const CreateProgramProvider = ({
 }) => {
   const [state, dispatch] = useReducer(
     createProgramReducer,
-    initialCreateProgramState
+    initialCreateProgramState,
   );
 
   const providerProps = {
@@ -132,13 +132,13 @@ const _createProgram = async ({
       dispatch,
       metadata,
       operatorWallets,
-      signerOrProvider
+      signerOrProvider,
     );
 
     await waitForSubgraphToUpdate(
       dispatch,
       signerOrProvider,
-      transactionBlockNumber
+      transactionBlockNumber,
     );
   } catch (error) {
     datadogLogs.logger.error(`error: _createProgram - ${error}`);
@@ -173,7 +173,7 @@ export const useCreateProgram = () => {
 
 async function storeDocument(
   dispatch: (action: Action) => void,
-  programName: string
+  programName: string,
 ) {
   datadogLogs.logger.info(`storeDocument: programName - ${programName}`);
 
@@ -211,7 +211,7 @@ async function deployContract(
   dispatch: (action: Action) => void,
   metadata: { protocol: number; pointer: string },
   operatorWallets: string[],
-  signerOrProvider: Web3Instance["provider"]
+  signerOrProvider: Web3Instance["provider"],
 ) {
   try {
     dispatch({
@@ -246,11 +246,11 @@ async function deployContract(
 async function waitForSubgraphToUpdate(
   dispatch: (action: Action) => void,
   signerOrProvider: Web3Instance["provider"],
-  transactionBlockNumber: number
+  transactionBlockNumber: number,
 ) {
   try {
     datadogLogs.logger.error(
-      `waitForSubgraphToUpdate: txnBlockNumber - ${transactionBlockNumber}`
+      `waitForSubgraphToUpdate: txnBlockNumber - ${transactionBlockNumber}`,
     );
 
     dispatch({
@@ -269,7 +269,7 @@ async function waitForSubgraphToUpdate(
     });
   } catch (error) {
     datadogLogs.logger.error(
-      `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`
+      `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`,
     );
     console.error(`waitForSubgraphToUpdate`, error);
     dispatch({

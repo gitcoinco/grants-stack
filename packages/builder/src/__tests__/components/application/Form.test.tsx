@@ -141,11 +141,11 @@ describe("<Form />", () => {
           onSubmit={jest.fn()}
           showErrorModal={false}
         />,
-        store
+        store,
       );
 
       const selectProject = screen.getByLabelText(
-        "Select a project you would like to apply for funding:"
+        "Select a project you would like to apply for funding:",
       );
       await act(async () => {
         fireEvent.change(selectProject, {
@@ -155,10 +155,10 @@ describe("<Form />", () => {
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
-        'input[value="Yes"]'
+        'input[value="Yes"]',
       ) as Element;
       const addressInput = addressInputWrapper.querySelector(
-        "input"
+        "input",
       ) as Element;
 
       await act(async () => {
@@ -173,8 +173,8 @@ describe("<Form />", () => {
         expect(
           screen
             .getByTestId("address-input-wrapper")
-            .querySelector("input.border")
-        ).toBeNull()
+            .querySelector("input.border"),
+        ).toBeNull(),
       );
     });
 
@@ -197,11 +197,11 @@ describe("<Form />", () => {
           onSubmit={jest.fn()}
           showErrorModal={false}
         />,
-        store
+        store,
       );
 
       const selectProject = screen.getByLabelText(
-        "Select a project you would like to apply for funding:"
+        "Select a project you would like to apply for funding:",
       );
       await act(async () => {
         fireEvent.change(selectProject, {
@@ -211,10 +211,10 @@ describe("<Form />", () => {
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
-        'input[value="No"]'
+        'input[value="No"]',
       ) as Element;
       const addressInput = addressInputWrapper.querySelector(
-        "input"
+        "input",
       ) as Element;
 
       await act(async () => {
@@ -228,9 +228,9 @@ describe("<Form />", () => {
         expect(
           screen.getByText(
             // eslint-disable-next-line max-len
-            "It looks like the payout wallet address you have provided is a multi-sig. Please update your selection to indicate your payout wallet address will be a multi-sig, or update your payout wallet address."
-          )
-        ).toBeInTheDocument()
+            "It looks like the payout wallet address you have provided is a multi-sig. Please update your selection to indicate your payout wallet address will be a multi-sig, or update your payout wallet address.",
+          ),
+        ).toBeInTheDocument(),
       );
     });
 
@@ -253,11 +253,11 @@ describe("<Form />", () => {
           onSubmit={jest.fn()}
           showErrorModal={false}
         />,
-        store
+        store,
       );
 
       const selectProject = screen.getByLabelText(
-        "Select a project you would like to apply for funding:"
+        "Select a project you would like to apply for funding:",
       );
       await act(async () => {
         fireEvent.change(selectProject, {
@@ -267,10 +267,10 @@ describe("<Form />", () => {
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
-        'input[value="Yes"]'
+        'input[value="Yes"]',
       ) as Element;
       const addressInput = addressInputWrapper.querySelector(
-        "input"
+        "input",
       ) as Element;
 
       await act(async () => {
@@ -284,9 +284,9 @@ describe("<Form />", () => {
         expect(
           screen.getByText(
             // eslint-disable-next-line max-len
-            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the Goerli network. Please update your payout wallet address before proceeding."
-          )
-        ).toBeInTheDocument()
+            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the Goerli network. Please update your payout wallet address before proceeding.",
+          ),
+        ).toBeInTheDocument(),
       );
     });
 
@@ -309,11 +309,11 @@ describe("<Form />", () => {
           onSubmit={jest.fn()}
           showErrorModal={false}
         />,
-        store
+        store,
       );
 
       const selectProject = screen.getByLabelText(
-        "Select a project you would like to apply for funding:"
+        "Select a project you would like to apply for funding:",
       );
       await act(async () => {
         fireEvent.change(selectProject, {
@@ -323,10 +323,10 @@ describe("<Form />", () => {
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
-        'input[value="No"]'
+        'input[value="No"]',
       ) as Element;
       const addressInput = addressInputWrapper.querySelector(
-        "input"
+        "input",
       ) as Element;
 
       await act(async () => {
@@ -340,8 +340,8 @@ describe("<Form />", () => {
         expect(
           screen
             .getByTestId("address-input-wrapper")
-            .querySelector("input.border")
-        ).toBeNull()
+            .querySelector("input.border"),
+        ).toBeNull(),
       );
 
       // await waitFor(() =>
@@ -362,11 +362,11 @@ describe("<Form />", () => {
         onSubmit={jest.fn()}
         showErrorModal={false}
       />,
-      store
+      store,
     );
 
     const selectProject = screen.getByLabelText(
-      "Select a project you would like to apply for funding:"
+      "Select a project you would like to apply for funding:",
     );
     await act(async () => {
       fireEvent.change(selectProject, {
@@ -431,11 +431,11 @@ describe("<Form/>", () => {
         onSubmit={jest.fn()}
         showErrorModal={false}
       />,
-      store
+      store,
     );
 
     const selectProject = screen.getByLabelText(
-      "Select a project you would like to apply for funding:"
+      "Select a project you would like to apply for funding:",
     );
     await act(async () => {
       fireEvent.change(selectProject, {
@@ -444,11 +444,11 @@ describe("<Form/>", () => {
     });
 
     expect(
-      screen.getByText("Project Twitter is required.")
+      screen.getByText("Project Twitter is required."),
     ).toBeInTheDocument();
 
     expect(
-      screen.queryByText("Project Github is required.")
+      screen.queryByText("Project Github is required."),
     ).not.toBeInTheDocument();
   });
 });
@@ -512,11 +512,11 @@ describe("Form questions", () => {
         onChange={onChange}
         showErrorModal={false}
       />,
-      store
+      store,
     );
 
     const selectProject = screen.getByLabelText(
-      "Select a project you would like to apply for funding:"
+      "Select a project you would like to apply for funding:",
     );
     await act(async () => {
       fireEvent.change(selectProject, {
@@ -575,11 +575,11 @@ describe("Form questions", () => {
         onChange={onChange}
         showErrorModal={false}
       />,
-      store
+      store,
     );
 
     const selectProject = screen.getByLabelText(
-      "Select a project you would like to apply for funding:"
+      "Select a project you would like to apply for funding:",
     );
     await act(async () => {
       fireEvent.change(selectProject, {
@@ -638,11 +638,11 @@ describe("Form questions", () => {
         onChange={onChange}
         showErrorModal={false}
       />,
-      store
+      store,
     );
 
     const selectProject = screen.getByLabelText(
-      "Select a project you would like to apply for funding:"
+      "Select a project you would like to apply for funding:",
     );
     await act(async () => {
       fireEvent.change(selectProject, {

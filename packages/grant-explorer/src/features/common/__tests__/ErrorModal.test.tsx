@@ -17,7 +17,7 @@ describe("<ErrorModal />", () => {
         setIsOpen={() => {
           /**/
         }}
-      />
+      />,
     );
     expect(await screen.findByTestId("error-heading")).toBeInTheDocument();
     expect(await screen.findByTestId("error-message")).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe("<ErrorModal />", () => {
         setIsOpen={() => {
           /**/
         }}
-      />
+      />,
     );
     expect(screen.queryByTestId("error-heading")).not.toBeInTheDocument();
     expect(screen.queryByTestId("error-message")).not.toBeInTheDocument();
@@ -49,7 +49,7 @@ describe("<ErrorModal />", () => {
         isOpen={true}
         setIsOpen={setIsOpenFn}
         tryAgainFn={tryAgainFn}
-      />
+      />,
     );
     fireEvent.click(screen.getByTestId("tryAgain"));
 
@@ -69,7 +69,7 @@ describe("<ErrorModal />", () => {
         isOpen={true}
         setIsOpen={setIsOpenFn}
         doneFn={doneFn}
-      />
+      />,
     );
     fireEvent.click(screen.getByTestId("done"));
 

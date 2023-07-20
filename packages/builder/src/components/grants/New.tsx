@@ -16,14 +16,14 @@ function NewProject() {
 
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
-    ProjectFormStatus.Network
+    ProjectFormStatus.Network,
   );
 
   useEffect(
     () => () => {
       dispatch(formReset());
     },
-    []
+    [],
   );
 
   const currentSubText = (status: ProjectFormStatus) => {

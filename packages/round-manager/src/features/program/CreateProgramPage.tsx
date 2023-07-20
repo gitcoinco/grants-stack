@@ -91,7 +91,7 @@ export default function CreateProgram() {
       setOpenProgressModal(true);
       await createProgram(
         data.name,
-        data.operators.map((op) => op.wallet)
+        data.operators.map((op) => op.wallet),
       );
     } catch (error) {
       console.error("CreateProgram", error);

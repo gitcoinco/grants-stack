@@ -69,7 +69,7 @@ function CustomerSupport() {
   const toggleMenu = () => setOpen(!open);
 
   useEffect(
-    listenForOutsideClicks({ listening, setListening, menuRef, setOpen })
+    listenForOutsideClicks({ listening, setListening, menuRef, setOpen }),
   );
 
   return (

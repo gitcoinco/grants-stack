@@ -53,7 +53,7 @@ function Card({ projectId }: { projectId: string }) {
   }
 
   const projectDescription = renderToPlainText(
-    props.currentProject?.description || ""
+    props.currentProject?.description || "",
   ).slice(0, 100);
 
   return (

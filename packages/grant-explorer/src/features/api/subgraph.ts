@@ -2,7 +2,7 @@ import { graphql_fetch } from "./utils";
 
 export async function getCurrentSubgraphBlockNumber(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: any,
 ): Promise<number> {
   const res = await graphql_fetch(
     `
@@ -15,7 +15,7 @@ export async function getCurrentSubgraphBlockNumber(
         }
       }
     `,
-    chainId
+    chainId,
   );
   return res.data._meta.block.number;
 }
@@ -23,7 +23,7 @@ export async function getCurrentSubgraphBlockNumber(
 export async function waitForSubgraphSyncTo(
   chainId: number,
   blockNumber: number,
-  pollIntervalInMs = 1000
+  pollIntervalInMs = 1000,
 ): Promise<number> {
   let currentBlockNumber = await getCurrentSubgraphBlockNumber(chainId);
   while (currentBlockNumber < blockNumber) {

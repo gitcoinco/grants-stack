@@ -15,7 +15,7 @@ export type TransactionResult =
 
 // This function is used to handle replaced transactions
 export const handleTransaction = async (
-  tx: TransactionResponse
+  tx: TransactionResponse,
 ): Promise<TransactionResult> => {
   try {
     // Wait for the transaction to be mined

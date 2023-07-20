@@ -1,0 +1,34 @@
+name: Global Checks
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "**"
+jobs:
+  build-and-deploy:
+    concurrency: ci-round-manager-${{ github.head_ref || github.run_id }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: |
+          pnpm install
+
+      - name: Check formatting
+        run: |
+          pnpm format:check

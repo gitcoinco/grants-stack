@@ -43,8 +43,8 @@ describe("<ReadProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `program-fetching-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `program-fetching-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -57,8 +57,8 @@ describe("<ReadProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `program-fetching-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `program-fetching-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -69,8 +69,8 @@ describe("<ReadProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `program-fetching-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `program-fetching-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
 
       screen.getByTestId("error-msg");
@@ -78,7 +78,7 @@ describe("<ReadProgramProvider />", () => {
 
     it("propagates error state when failing to list programs", async () => {
       (listPrograms as jest.Mock).mockRejectedValue(
-        Error("some error message text")
+        Error("some error message text"),
       );
 
       renderWithProvider(<TestingUseProgramsComponent />);
@@ -94,7 +94,9 @@ describe("<ReadProgramProvider />", () => {
       (getProgramById as jest.Mock).mockResolvedValue(expectedProgram);
 
       renderWithProvider(
-        <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+        <TestingUseProgramByIdComponent
+          expectedProgramId={expectedProgramId}
+        />,
       );
 
       expect(await screen.findByText(expectedProgramId!)).toBeInTheDocument();
@@ -106,17 +108,19 @@ describe("<ReadProgramProvider />", () => {
       (getProgramById as jest.Mock).mockReturnValue(
         new Promise<Program>(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(
-        <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+        <TestingUseProgramByIdComponent
+          expectedProgramId={expectedProgramId}
+        />,
       );
 
       expect(
         await screen.findByTestId(
-          `fetch-programs-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `fetch-programs-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -126,15 +130,17 @@ describe("<ReadProgramProvider />", () => {
       (getProgramById as jest.Mock).mockResolvedValue(expectedProgram);
 
       renderWithProvider(
-        <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+        <TestingUseProgramByIdComponent
+          expectedProgramId={expectedProgramId}
+        />,
       );
 
       expect(await screen.findByText(expectedProgramId!)).toBeInTheDocument();
 
       expect(
         await screen.findByTestId(
-          `fetch-programs-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `fetch-programs-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -144,13 +150,15 @@ describe("<ReadProgramProvider />", () => {
       (getProgramById as jest.Mock).mockRejectedValue(new Error(":("));
 
       renderWithProvider(
-        <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+        <TestingUseProgramByIdComponent
+          expectedProgramId={expectedProgramId}
+        />,
       );
 
       expect(
         await screen.findByTestId(
-          `fetch-programs-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `fetch-programs-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
 
       screen.getByTestId("program-by-id-error-msg");
@@ -182,7 +190,7 @@ const TestingUseProgramByIdComponent = (props: {
   expectedProgramId?: string;
 }) => {
   const { program, fetchProgramsStatus, getProgramByIdError } = useProgramById(
-    props.expectedProgramId
+    props.expectedProgramId,
   );
   return (
     <>

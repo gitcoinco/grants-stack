@@ -45,7 +45,7 @@ export const ReadProgramContext = createContext<ProgramContextType>(undefined);
 const fetchProgramsByAddress = async (
   dispatch: Dispatch,
   address: string,
-  walletProvider: Web3Instance["provider"]
+  walletProvider: Web3Instance["provider"],
 ) => {
   datadogLogs.logger.info(`fetchProgramsByAddress: address - ${address}`);
 
@@ -75,7 +75,7 @@ const fetchProgramsByAddress = async (
 const fetchProgramsById = async (
   dispatch: Dispatch,
   programId: string,
-  walletProvider: Web3Provider
+  walletProvider: Web3Provider,
 ) => {
   datadogLogs.logger.info(`fetchProgramsById: programId - ${programId}`);
 
@@ -158,7 +158,7 @@ export const usePrograms = (): ReadProgramState & { dispatch: Dispatch } => {
 };
 
 export const useProgramById = (
-  id?: string
+  id?: string,
 ): {
   program: Program | undefined;
   fetchProgramsStatus: ProgressStatus;
@@ -173,7 +173,7 @@ export const useProgramById = (
   useEffect(() => {
     if (id) {
       const existingProgram = context.state.programs.find(
-        (program) => program.id === id
+        (program) => program.id === id,
       );
 
       if (!existingProgram) {

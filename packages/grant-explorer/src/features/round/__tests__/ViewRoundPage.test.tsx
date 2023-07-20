@@ -115,7 +115,7 @@ describe("<ViewRound /> in case of during the application period", () => {
     expect(screen.getByTestId("round-period")).toBeInTheDocument();
     expect(screen.getByTestId("matching-funds")).toBeInTheDocument();
     expect(
-      screen.getByText(stubRound.roundMetadata!.eligibility!.description)
+      screen.getByText(stubRound.roundMetadata!.eligibility!.description),
     ).toBeInTheDocument();
     expect(screen.getByTestId("round-eligibility")).toBeInTheDocument();
   });
@@ -158,7 +158,7 @@ describe("<ViewRound /> in case of post application end date & before round star
     renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
 
     const AppSubmissionButton = screen.getByTestId(
-      "applications-closed-button"
+      "applications-closed-button",
     );
     expect(AppSubmissionButton).toBeInTheDocument();
     expect(AppSubmissionButton).toBeDisabled();
@@ -241,7 +241,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       {},
       {
         bannerImg: generateIpfsCid(),
-      }
+      },
     );
     const expectedBannerImg = expectedApprovedProject.projectMetadata.bannerImg;
     const token = payoutTokens[0].address;
@@ -292,7 +292,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
     expect(projectCards.length).toEqual(approvedProjects.length);
     approvedProjects.forEach((project) => {
       expect(
-        screen.getByText(project.projectMetadata.title)
+        screen.getByText(project.projectMetadata.title),
       ).toBeInTheDocument();
     });
   });
@@ -320,12 +320,12 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
 
     const projectLinks = screen.getAllByTestId(
-      "project-detail-link"
+      "project-detail-link",
     ) as HTMLAnchorElement[];
     expect(projectLinks.length).toEqual(approvedProjects.length);
 
     const expectedProjectLinks = approvedProjects.map(
-      (project) => `/round/${chainId}/${roundId}/${project.grantApplicationId}`
+      (project) => `/round/${chainId}/${roundId}/${project.grantApplicationId}`,
     );
     projectLinks.forEach((projectLink) => {
       const actualProjectLinkPathName = projectLink.pathname;
@@ -435,7 +435,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         fireEvent.click(removeFromCart);
         expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
         expect(
-          screen.queryByTestId("remove-from-cart")
+          screen.queryByTestId("remove-from-cart"),
         ).not.toBeInTheDocument();
       }, 3000);
     });

@@ -37,7 +37,7 @@ describe("Form Validation", () => {
       const error = e as ValidationError;
       const innerError = error.inner[1] as ValidationError;
       expect(innerError.message).toBe(
-        "Project Website must be a valid url. e.g. https://gitcoin.co/"
+        "Project Website must be a valid url. e.g. https://gitcoin.co/",
       );
       expect(error.name).toBe("ValidationError");
     }
@@ -84,7 +84,7 @@ describe("Form Validation", () => {
     try {
       await validateApplication(defaultInputs, formInputs);
       throw new Error(
-        "expected to catch a validation error but there was no error"
+        "expected to catch a validation error but there was no error",
       );
     } catch (e) {
       const error = e as ValidationError;

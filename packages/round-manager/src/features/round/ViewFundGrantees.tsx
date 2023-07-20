@@ -100,11 +100,11 @@ function FinalizedRoundContent(props: { round: Round }) {
 
   const matchingFundPayoutToken: PayoutToken = payoutTokens.filter(
     (t) =>
-      t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
+      t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase(),
   )[0];
 
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.redstoneTokenId
+    matchingFundPayoutToken?.redstoneTokenId,
   );
 
   useEffect(() => {
@@ -197,7 +197,7 @@ export function PayProjectsTable(props: {
   const [checked, setChecked] = useState<boolean>(false);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
   const [selectedProjects, setSelectedProjects] = useState<MatchingStatsData[]>(
-    []
+    [],
   );
   const [showConfirmationModal, setShowConfirmationModal] =
     useState<boolean>(false);
@@ -295,7 +295,7 @@ export function PayProjectsTable(props: {
         props.round?.payoutStrategy.id,
         props.allProjects,
         selectedProjects.map((p) => p.projectId),
-        signer
+        signer,
       );
 
       if (tx && tx.error) {
@@ -315,7 +315,7 @@ export function PayProjectsTable(props: {
   const handlePayOutFunds = async () => {
     const totalPayout: BigNumber = selectedProjects.reduce(
       (acc: BigNumber, cur) => acc.add(cur.matchAmountInToken),
-      BigNumber.from(0)
+      BigNumber.from(0),
     );
 
     if (totalPayout.gt(tokenBalance.data?.value || BigNumber.from(0))) {
@@ -405,8 +405,8 @@ export function PayProjectsTable(props: {
                                 : selectedProjects.filter(
                                     (p) =>
                                       p.projectPayoutAddress !==
-                                      project.projectPayoutAddress
-                                  )
+                                      project.projectPayoutAddress,
+                                  ),
                             );
                           }}
                         />
@@ -416,7 +416,7 @@ export function PayProjectsTable(props: {
                           "whitespace-nowrap py-4 pr-3 text-sm font-medium",
                           selectedProjects.includes(project)
                             ? "text-indigo-600"
-                            : "text-gray-900"
+                            : "text-gray-900",
                         )}
                       >
                         {project.projectName}
@@ -430,7 +430,7 @@ export function PayProjectsTable(props: {
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         {formatCurrency(
                           project.matchAmountInToken,
-                          props.token.decimal
+                          props.token.decimal,
                         )}
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) &&
@@ -440,7 +440,7 @@ export function PayProjectsTable(props: {
                                 .mul(Math.trunc(props.price * 10000))
                                 .div(10000),
                               props.token.decimal,
-                              2
+                              2,
                             ) +
                             " USD) "}
                       </td>
@@ -475,9 +475,9 @@ export function PayProjectsTable(props: {
             amount={formatCurrency(
               selectedProjects.reduce(
                 (acc: BigNumber, cur) => acc.add(cur.matchAmountInToken),
-                BigNumber.from(0)
+                BigNumber.from(0),
               ),
-              props.token.decimal
+              props.token.decimal,
             )}
             symbol={props.token.name.toUpperCase()}
           />
@@ -606,7 +606,7 @@ export function PaidProjectsTable(props: {
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         {ethers.utils.formatEther(
-                          project.matchAmountInToken.toString()
+                          project.matchAmountInToken.toString(),
                         )}
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) &&
@@ -616,7 +616,7 @@ export function PaidProjectsTable(props: {
                                 .mul(Math.trunc(props.price * 10000))
                                 .div(10000),
                               props.token.decimal,
-                              2
+                              2,
                             ) +
                             " USD) "}
                       </td>

@@ -29,7 +29,7 @@ export default function PassportBanner(props: {
   const { address, isConnected } = useAccount();
 
   const [passportState, setPassportState] = useState<PassportState>(
-    PassportState.LOADING
+    PassportState.LOADING,
   );
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function PassportBanner(props: {
             Number(scoreResponse.evidence.rawScore) >=
               Number(scoreResponse.evidence.threshold)
               ? PassportState.MATCH_ELIGIBLE
-              : PassportState.MATCH_INELIGIBLE
+              : PassportState.MATCH_INELIGIBLE,
           );
         } else {
           setError(res);
@@ -178,7 +178,7 @@ export default function PassportBanner(props: {
       color: "bg-violet-100",
       testId: "wallet-not-connected",
       body: `Want to make sure your donations get matched? Verify your Gitcoin Passport by ${getUTCDateTime(
-        props.round.roundEndTime
+        props.round.roundEndTime,
       )}`,
       button: <ConnectWalletButton />,
     },
@@ -196,7 +196,7 @@ export default function PassportBanner(props: {
       color: "bg-yelllow-100",
       testId: "match-ineligible",
       body: `Your Gitcoin Passport is not currently eligible for donation matching. Please update by ${getUTCDateTime(
-        props.round.roundEndTime
+        props.round.roundEndTime,
       )}.`,
       button: <UpdateScoreButton />,
     },
@@ -212,7 +212,7 @@ export default function PassportBanner(props: {
       color: "bg-yellow-100",
       testId: "invalid-passport",
       body: `You don't have a Gitcoin Passport. Please create one by ${getUTCDateTime(
-        props.round.roundEndTime
+        props.round.roundEndTime,
       )}.`,
       button: <CreatePassportButton />,
     },

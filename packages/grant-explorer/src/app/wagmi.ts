@@ -46,7 +46,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
   [
     infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID as string }),
     publicProvider(),
-  ]
+  ],
 );
 
 /* TODO: remove hardcoded value once we have environment variables validation */

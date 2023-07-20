@@ -26,7 +26,7 @@ export default function ViewRoundStats() {
   const matchToken =
     round &&
     payoutTokens.find(
-      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+      (t) => t.address.toLowerCase() == round.token.toLowerCase(),
     );
 
   return (
@@ -47,9 +47,10 @@ export default function ViewRoundStats() {
         <StatsCard
           text={
             round &&
-            `${utils.formatUnits(round.matchAmount, matchToken?.decimal)} ${
-              matchToken?.name
-            }`
+            `${utils.formatUnits(
+              round.matchAmount,
+              matchToken?.decimal,
+            )} ${matchToken?.name}`
           }
           title={"Matching Funds Available"}
         />
@@ -98,7 +99,7 @@ export default function ViewRoundStats() {
                 matches.map((match: Match) => {
                   const percentage =
                     Number(
-                      (BigInt(1000000) * match.matched) / round.matchAmount
+                      (BigInt(1000000) * match.matched) / round.matchAmount,
                     ) / 10000;
 
                   return (

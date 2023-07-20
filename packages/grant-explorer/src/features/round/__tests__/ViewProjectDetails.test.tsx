@@ -64,10 +64,10 @@ const server = setupServer(
             amountUSD: 12345,
             uniqueContributors: 42,
           },
-        ])
+        ]),
       );
-    }
-  )
+    },
+  ),
 );
 
 beforeAll(() => server.listen());
@@ -114,7 +114,7 @@ describe("<ViewProjectDetails/>", () => {
 
     it("shows project website", async () => {
       expect(
-        await screen.findByText(expectedProjectWebsite)
+        await screen.findByText(expectedProjectWebsite),
       ).toBeInTheDocument();
     });
 
@@ -149,7 +149,7 @@ describe("<ViewProjectDetails/>", () => {
       <SWRConfig value={{ dedupingInterval: 0 }}>
         <ViewProjectDetails />
       </SWRConfig>,
-      { rounds: [roundWithProjects], isLoading: false }
+      { rounds: [roundWithProjects], isLoading: false },
     );
     /* Initially shows - when loading */
     expect(screen.getAllByText("$-")[0]).toBeInTheDocument();
@@ -170,7 +170,7 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     expect(
-      await screen.findByText(expectedProjectDescription)
+      await screen.findByText(expectedProjectDescription),
     ).toBeInTheDocument();
   });
 
@@ -178,7 +178,7 @@ describe("<ViewProjectDetails/>", () => {
     const expectedProjectBannerImg = "bannersrc";
     const expectedProject = makeApprovedProjectData(
       { grantApplicationId },
-      { bannerImg: expectedProjectBannerImg }
+      { bannerImg: expectedProjectBannerImg },
     );
 
     const roundWithProjects = makeRoundData({
@@ -201,7 +201,7 @@ describe("<ViewProjectDetails/>", () => {
     const expectedProjectLogoImg = "logosrc";
     const expectedProject = makeApprovedProjectData(
       { grantApplicationId },
-      { logoImg: expectedProjectLogoImg }
+      { logoImg: expectedProjectLogoImg },
     );
 
     const roundWithProjects = makeRoundData({
@@ -261,7 +261,7 @@ describe("<ViewProjectDetails/>", () => {
     expect(screen.getByText("baby don't hurt me")).toBeInTheDocument();
 
     expect(
-      screen.queryByText("this is a hidden question")
+      screen.queryByText("this is a hidden question"),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("this will not show up")).not.toBeInTheDocument();
 
@@ -293,11 +293,11 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     expect(
-      screen.queryByText("Additional Information")
+      screen.queryByText("Additional Information"),
     ).not.toBeInTheDocument();
 
     expect(
-      screen.queryByText("this is a hidden question")
+      screen.queryByText("this is a hidden question"),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("this will not show up")).not.toBeInTheDocument();
   });
@@ -329,11 +329,11 @@ describe("voting cart", () => {
       await waitFor(
         () => {
           expect(
-            screen.queryAllByTestId("remove-from-cart")[0]
+            screen.queryAllByTestId("remove-from-cart")[0],
           ).toBeInTheDocument();
           expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
 
@@ -345,10 +345,10 @@ describe("voting cart", () => {
         () => {
           expect(screen.queryAllByTestId("add-to-cart")[0]).toBeInTheDocument();
           expect(
-            screen.queryByTestId("remove-from-cart")
+            screen.queryByTestId("remove-from-cart"),
           ).not.toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
   });
@@ -386,11 +386,11 @@ describe("voting cart", () => {
       await waitFor(
         () => {
           expect(
-            screen.queryAllByTestId("remove-from-cart")[1]
+            screen.queryAllByTestId("remove-from-cart")[1],
           ).toBeInTheDocument();
           expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
 
@@ -402,10 +402,10 @@ describe("voting cart", () => {
         () => {
           expect(screen.queryAllByTestId("add-to-cart")[1]).toBeInTheDocument();
           expect(
-            screen.queryByTestId("remove-from-cart")
+            screen.queryByTestId("remove-from-cart"),
           ).not.toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 3000 },
       );
     });
   });

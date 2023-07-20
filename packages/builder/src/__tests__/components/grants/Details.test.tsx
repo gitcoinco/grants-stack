@@ -55,7 +55,7 @@ _italic text_
             showApplications={false}
             showTabs
           />,
-          store
+          store,
         );
       });
 
@@ -66,8 +66,8 @@ _italic text_
       expect(screen.getByText("italic text").tagName).toBe("EM");
       expect(
         screen.getByText(
-          `<script>alert("this should be rendered as text")</script>`
-        ).tagName
+          `<script>alert("this should be rendered as text")</script>`,
+        ).tagName,
       ).toBe("P");
     });
   });
@@ -107,7 +107,7 @@ _italic text_
             showApplications={false}
             showTabs
           />,
-          store
+          store,
         );
       });
 
@@ -144,7 +144,7 @@ _italic text_
             showApplications={false}
             showTabs
           />,
-          store
+          store,
         );
       });
 
@@ -185,7 +185,7 @@ _italic text_
             showApplications={false}
             showTabs
           />,
-          store
+          store,
         );
       });
 
@@ -222,7 +222,7 @@ _italic text_
             showApplications={false}
             showTabs
           />,
-          store
+          store,
         );
       });
 
@@ -261,7 +261,7 @@ _italic text_
           showApplications={false}
           showTabs={false}
         />,
-        store
+        store,
       );
     });
 

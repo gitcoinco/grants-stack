@@ -20,13 +20,13 @@ export const newGrantPath = () => slugs.newGrant;
 export const projectPath = (
   chainId: string,
   registryAddress: string,
-  projectId: string
+  projectId: string,
 ) => `/chains/${chainId}/registry/${registryAddress}/projects/${projectId}`;
 
 export const editPath = (
   chainId: string,
   registryAddress: string,
-  projectId: string
+  projectId: string,
 ) =>
   `/chains/${chainId}/registry/${registryAddress}/projects/${projectId}/edit`;
 
@@ -39,13 +39,13 @@ export const roundApplicationPath = (chainId: string, roundId: string) =>
 export const roundApplicationPathForProject = (
   chainId: string,
   roundId: string,
-  projectId: string
+  projectId: string,
 ) => `/round/${chainId}/${roundId}/${projectId}`;
 
 export const roundApplicationViewPath = (
   chainId: string,
   roundId: string,
-  ipfsHash: string
+  ipfsHash: string,
 ) => `/chains/${chainId}/rounds/${roundId}/view/${ipfsHash}`;
 
 export const projectPathByID = (projectID: string) => {

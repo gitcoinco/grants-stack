@@ -39,7 +39,7 @@ export const buildRound = (round: any): Round => ({
 
 export const buildVerifiableCredential = (
   type: string,
-  handle: string
+  handle: string,
 ): VerifiableCredential => ({
   "@context": ["https://www.w3.org/2018/credentials/v1"],
   type: ["VerifiableCredential"],
@@ -107,7 +107,7 @@ export const buildProjectApplication = (application: any): any => ({
 
 export const renderWrapped = (
   ui: React.ReactElement,
-  store = setupStore()
+  store = setupStore(),
 ): any => {
   const wrapped = (
     <ChakraProvider>

@@ -4,11 +4,11 @@ import { FormWizard } from "../FormWizard";
 import { randomInt } from "crypto";
 
 const generateSteps = (
-  numberOfSteps?: number
+  numberOfSteps?: number,
 ): Array<(props: any) => JSX.Element> =>
   Array.from(
     { length: numberOfSteps || randomInt(1, 20) },
-    (_, index) => () => <div data-testid={`${index + 1}-step`} /> // 1-indexed to match initialCurrentStep convention
+    (_, index) => () => <div data-testid={`${index + 1}-step`} />, // 1-indexed to match initialCurrentStep convention
   );
 
 describe("<FormWizard />", () => {

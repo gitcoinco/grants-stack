@@ -31,7 +31,7 @@ const LandingPage = () => {
     if (searchQuery) {
       const timeOutId = setTimeout(
         () => filterProjectsByTitle(searchQuery),
-        300
+        300,
       );
       return () => clearTimeout(timeOutId);
     } else {
@@ -52,7 +52,7 @@ const LandingPage = () => {
     const exactMatches = activeRounds?.filter(
       (round) =>
         round.roundMetadata?.name?.toLocaleLowerCase() ===
-        query.toLocaleLowerCase()
+        query.toLocaleLowerCase(),
     );
 
     const nonExactMatches = activeRounds?.filter(
@@ -61,7 +61,7 @@ const LandingPage = () => {
           ?.toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         round.roundMetadata?.name?.toLocaleLowerCase() !==
-          query.toLocaleLowerCase()
+          query.toLocaleLowerCase(),
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -74,7 +74,7 @@ const LandingPage = () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { isLoading, error, rounds } = await getActiveRounds(
-          debugModeEnabled
+          debugModeEnabled,
         );
         setActiveRounds(rounds);
         setAllActiveRounds(rounds);
@@ -93,7 +93,7 @@ const LandingPage = () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { isLoading, error, rounds } = await getRoundsInApplicationPhase(
-          debugModeEnabled
+          debugModeEnabled,
         );
         setRoundsInApplicationPhase(rounds);
         setApplyRoundsLoading(isLoading);

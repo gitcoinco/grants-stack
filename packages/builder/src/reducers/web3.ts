@@ -27,7 +27,7 @@ const initialState: Web3State = {
 
 export const web3Reducer = (
   state: Web3State = initialState,
-  action: Web3Actions
+  action: Web3Actions,
 ): Web3State => {
   switch (action.type) {
     case WEB3_INITIALIZING: {

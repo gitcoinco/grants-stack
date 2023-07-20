@@ -41,7 +41,7 @@ describe("<CreateRoundProvider />", () => {
       (saveToIPFS as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
@@ -49,8 +49,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `storing-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -62,8 +62,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `storing-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -73,7 +73,7 @@ describe("<CreateRoundProvider />", () => {
       const ipfsHash = "bafabcdef";
       (saveToIPFS as jest.Mock).mockResolvedValue(ipfsHash);
       (deployRoundContract as jest.Mock).mockReturnValue(
-        new Promise(() => ({ transactionBlockNumber: 0 }))
+        new Promise(() => ({ transactionBlockNumber: 0 })),
       );
     });
 
@@ -83,8 +83,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `voting-deploying-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `voting-deploying-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -97,8 +97,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `voting-deploying-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `voting-deploying-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -108,7 +108,7 @@ describe("<CreateRoundProvider />", () => {
       const ipfsHash = "bafabcdef";
       (saveToIPFS as jest.Mock).mockResolvedValue(ipfsHash);
       (deployRoundContract as jest.Mock).mockReturnValue(
-        new Promise(() => ({ transactionBlockNumber: 0 }))
+        new Promise(() => ({ transactionBlockNumber: 0 })),
       );
     });
 
@@ -118,8 +118,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `payout-deploying-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `payout-deploying-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -132,8 +132,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `payout-deploying-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `payout-deploying-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -148,7 +148,7 @@ describe("<CreateRoundProvider />", () => {
       (deployRoundContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
@@ -156,8 +156,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `round-deploying-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `round-deploying-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
       const firstCall = (deployRoundContract as jest.Mock).mock.calls[0];
       const roundParameter = firstCall[0];
@@ -181,8 +181,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `round-deploying-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `round-deploying-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -200,7 +200,7 @@ describe("<CreateRoundProvider />", () => {
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
@@ -208,14 +208,14 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
     it("sets indexing status to completed when subgraph is finished indexing", async () => {
       (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(
-        transactionBlockNumber
+        transactionBlockNumber,
       );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
@@ -223,8 +223,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `indexing-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -257,14 +257,14 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `storing-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
     it("sets voting contract deployment status to error when voting deployment fails", async () => {
       (deployRoundContract as jest.Mock).mockRejectedValue(
-        new Error("Failed to deploy :(")
+        new Error("Failed to deploy :("),
       );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
@@ -272,14 +272,14 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `voting-deploying-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `voting-deploying-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
     it("sets round contract deployment status to error when round deployment fails", async () => {
       (deployRoundContract as jest.Mock).mockRejectedValue(
-        new Error("Failed to deploy :(")
+        new Error("Failed to deploy :("),
       );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
@@ -287,8 +287,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `round-deploying-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `round-deploying-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -300,8 +300,8 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `indexing-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -311,7 +311,7 @@ describe("<CreateRoundProvider />", () => {
         .mockReturnValue(
           new Promise(() => {
             /* do nothing.*/
-          })
+          }),
         );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
@@ -323,7 +323,7 @@ describe("<CreateRoundProvider />", () => {
       invokeCreateRound();
 
       expect(
-        screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`)
+        screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`),
       ).not.toBeInTheDocument();
     });
 
@@ -333,22 +333,22 @@ describe("<CreateRoundProvider />", () => {
         .mockReturnValue(
           new Promise(() => {
             /* do nothing.*/
-          })
+          }),
         );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
       invokeCreateRound();
 
       await screen.findByTestId(
-        `voting-deploying-status-is-${ProgressStatus.IS_ERROR}`
+        `voting-deploying-status-is-${ProgressStatus.IS_ERROR}`,
       );
 
       invokeCreateRound();
 
       expect(
         screen.queryByTestId(
-          `voting-deploying-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `voting-deploying-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).not.toBeInTheDocument();
     });
 
@@ -358,22 +358,22 @@ describe("<CreateRoundProvider />", () => {
         .mockReturnValue(
           new Promise(() => {
             /* do nothing.*/
-          })
+          }),
         );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
       invokeCreateRound();
 
       await screen.findByTestId(
-        `round-deploying-status-is-${ProgressStatus.IS_ERROR}`
+        `round-deploying-status-is-${ProgressStatus.IS_ERROR}`,
       );
 
       invokeCreateRound();
 
       expect(
         screen.queryByTestId(
-          `round-deploying-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `round-deploying-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).not.toBeInTheDocument();
     });
 
@@ -383,20 +383,20 @@ describe("<CreateRoundProvider />", () => {
         .mockReturnValue(
           new Promise(() => {
             /* do nothing.*/
-          })
+          }),
         );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
       invokeCreateRound();
 
       await screen.findByTestId(
-        `indexing-status-is-${ProgressStatus.IS_ERROR}`
+        `indexing-status-is-${ProgressStatus.IS_ERROR}`,
       );
 
       invokeCreateRound();
 
       expect(
-        screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+        screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`),
       ).not.toBeInTheDocument();
     });
   });

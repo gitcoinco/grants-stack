@@ -14,7 +14,7 @@ export const VERSION = "v0.0.0";
 // Fetch a verifiable challenge credential
 export const fetchChallengeCredential = async (
   iamUrl: string,
-  payload: RequestPayload
+  payload: RequestPayload,
 ): Promise<IssuedChallenge> => {
   // fetch challenge as a credential from API that fits the version, address and type (this credential has a short ttl)
   const response = await axios.post(
@@ -24,7 +24,7 @@ export const fetchChallengeCredential = async (
         address: payload.address,
         type: payload.type,
       },
-    }
+    },
   );
 
   return {
@@ -52,7 +52,7 @@ export class VerificationError extends Error {
 export const fetchVerifiableCredential = async (
   iamUrl: string,
   payload: GHOrgRequestPayload,
-  signer: { signMessage: (message: string) => Promise<string> }
+  signer: { signMessage: (message: string) => Promise<string> },
 ): Promise<VerifiableCredentialRecord> => {
   // first pull a challenge that can be signed by the user
   const { challenge } = await fetchChallengeCredential(iamUrl, payload);
@@ -79,7 +79,7 @@ export const fetchVerifiableCredential = async (
     {
       payload,
       challenge,
-    }
+    },
   );
 
   // return everything that was used to create the credential (along with the credential)
@@ -93,7 +93,7 @@ export const fetchVerifiableCredential = async (
 
 export async function fetchAuthUrl(
   url: string,
-  callbackUrl: string
+  callbackUrl: string,
 ): Promise<string> {
   const res = await fetch(url, {
     method: "POST",
@@ -119,7 +119,7 @@ export function openOauthWindow(
   url: string,
   broadcastChannelName: string,
   target: string,
-  state?: string
+  state?: string,
 ): Promise<OAuthResult> {
   const width = 600;
   const height = 800;
@@ -132,7 +132,7 @@ export function openOauthWindow(
     url,
     "_blank",
     // eslint-disable-next-line max-len
-    `toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
+    `toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`,
   );
 
   if (!authWindow) {
@@ -143,9 +143,12 @@ export function openOauthWindow(
     const channel = new BroadcastChannel(broadcastChannelName);
 
     // timeout after 5 minutes
-    const timeout = setTimeout(() => {
-      reject(new VerificationError("Authorization timed out"));
-    }, 1000 * 60 * 5);
+    const timeout = setTimeout(
+      () => {
+        reject(new VerificationError("Authorization timed out"));
+      },
+      1000 * 60 * 5,
+    );
 
     channel.addEventListener("message", (event: any) => {
       const eventData = event.data as {

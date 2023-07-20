@@ -62,7 +62,7 @@ export type BulkUpdateGrantApplicationParams = {
 
 export const BulkUpdateGrantApplicationContext =
   createContext<BulkUpdateGrantApplicationState>(
-    initialBulkUpdateGrantApplicationState
+    initialBulkUpdateGrantApplicationState,
   );
 
 export const BulkUpdateGrantApplicationProvider = ({
@@ -71,20 +71,20 @@ export const BulkUpdateGrantApplicationProvider = ({
   children: ReactNode;
 }) => {
   const [roundId, setRoundId] = useState(
-    initialBulkUpdateGrantApplicationState.roundId
+    initialBulkUpdateGrantApplicationState.roundId,
   );
   const [applications, setApplications] = useState(
-    initialBulkUpdateGrantApplicationState.applications
+    initialBulkUpdateGrantApplicationState.applications,
   );
   const [selectedApplications, setSelectedApplications] = useState(
-    initialBulkUpdateGrantApplicationState.selectedApplications
+    initialBulkUpdateGrantApplicationState.selectedApplications,
   );
   const [contractUpdatingStatus, setContractUpdatingStatus] = useState(
-    initialBulkUpdateGrantApplicationState.contractUpdatingStatus
+    initialBulkUpdateGrantApplicationState.contractUpdatingStatus,
   );
 
   const [indexingStatus, setIndexingStatus] = useState(
-    initialBulkUpdateGrantApplicationState.indexingStatus
+    initialBulkUpdateGrantApplicationState.indexingStatus,
   );
 
   const providerProps: BulkUpdateGrantApplicationState = {
@@ -119,7 +119,7 @@ function resetToInitialState(context: BulkUpdateGrantApplicationState) {
   const { setContractUpdatingStatus, setIndexingStatus } = context;
 
   setContractUpdatingStatus(
-    initialBulkUpdateGrantApplicationState.contractUpdatingStatus
+    initialBulkUpdateGrantApplicationState.contractUpdatingStatus,
   );
   setIndexingStatus(initialBulkUpdateGrantApplicationState.indexingStatus);
 }
@@ -147,7 +147,7 @@ function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
   for (let columnIndex = 0; columnIndex < 128; columnIndex++) {
     const applicationIndex = startApplicationIndex + columnIndex;
     const application = applications.find(
-      (app) => app.applicationIndex === applicationIndex
+      (app) => app.applicationIndex === applicationIndex,
     );
 
     if (application !== undefined) {
@@ -194,7 +194,7 @@ async function _bulkUpdateGrantApplication({
 
       const selectedApplication = selectedApplications.find(
         (selectedApplication) =>
-          selectedApplication.applicationIndex === application.applicationIndex
+          selectedApplication.applicationIndex === application.applicationIndex,
       );
 
       if (selectedApplication) {
@@ -209,8 +209,8 @@ async function _bulkUpdateGrantApplication({
         selectedApplications.map((application) => {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           return Math.floor(application.applicationIndex! / 128);
-        })
-      )
+        }),
+      ),
     );
 
     const statusRows: AppStatus[] = [];
@@ -239,18 +239,18 @@ async function _bulkUpdateGrantApplication({
 
 export const useBulkUpdateGrantApplications = () => {
   const context = useContext<BulkUpdateGrantApplicationState>(
-    BulkUpdateGrantApplicationContext
+    BulkUpdateGrantApplicationContext,
   );
   if (context === undefined) {
     throw new Error(
-      "useBulkUpdateGrantApplication must be used within a BulkUpdateGrantApplicationProvider"
+      "useBulkUpdateGrantApplication must be used within a BulkUpdateGrantApplicationProvider",
     );
   }
 
   const { signer } = useWallet();
 
   const handleBulkUpdateGrantApplications = async (
-    params: BulkUpdateGrantApplicationParams
+    params: BulkUpdateGrantApplicationParams,
   ) => {
     return _bulkUpdateGrantApplication({
       ...params,
@@ -287,7 +287,7 @@ const updateContract = async ({
     const { transactionBlockNumber } = await updateApplicationStatuses(
       roundId,
       signer,
-      statusRows
+      statusRows,
     );
 
     setContractUpdatingStatus(ProgressStatus.IS_SUCCESS);
@@ -304,13 +304,13 @@ const updateContract = async ({
 async function waitForSubgraphToUpdate(
   signerOrProvider: Signer,
   transactionBlockNumber: number,
-  context: BulkUpdateGrantApplicationState
+  context: BulkUpdateGrantApplicationState,
 ) {
   const { setIndexingStatus } = context;
 
   try {
     datadogLogs.logger.error(
-      `waitForSubgraphToUpdate: txnBlockNumber - ${transactionBlockNumber}`
+      `waitForSubgraphToUpdate: txnBlockNumber - ${transactionBlockNumber}`,
     );
 
     setIndexingStatus(ProgressStatus.IN_PROGRESS);
@@ -322,7 +322,7 @@ async function waitForSubgraphToUpdate(
     setIndexingStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`
+      `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`,
     );
     console.error("waitForSubgraphToUpdate", error);
     setIndexingStatus(ProgressStatus.IS_ERROR);

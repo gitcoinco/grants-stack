@@ -97,14 +97,14 @@ describe("LandingPage", () => {
       // Check if the fetched active rounds are displayed
       activeRounds.forEach((round) => {
         expect(
-          screen.getByText(round.roundMetadata?.name ?? "")
+          screen.getByText(round.roundMetadata?.name ?? ""),
         ).toBeInTheDocument();
       });
 
       // Check if the fetched rounds in application phase are displayed
       roundsInApplicationPhase.forEach((round) => {
         expect(
-          screen.getByText(round.roundMetadata?.name ?? "")
+          screen.getByText(round.roundMetadata?.name ?? ""),
         ).toBeInTheDocument();
       });
     });
@@ -149,7 +149,7 @@ describe("LandingPage", () => {
       // Make sure all active rounds are displayed initially
       activeRounds.forEach((round) => {
         expect(
-          screen.getByText(round.roundMetadata?.name ?? "")
+          screen.getByText(round.roundMetadata?.name ?? ""),
         ).toBeInTheDocument();
       });
     });

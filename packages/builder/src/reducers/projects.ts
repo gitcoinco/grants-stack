@@ -74,7 +74,7 @@ export type ProjectStats = {
 
 export const projectsReducer = (
   state: ProjectsState = initialState,
-  action: ProjectsActions
+  action: ProjectsActions,
 ): ProjectsState => {
   switch (action.type) {
     case PROJECTS_LOADING: {
@@ -152,7 +152,7 @@ export const projectsReducer = (
     case PROJECT_APPLICATION_UPDATED: {
       const projectApplications = state.applications[action.projectID] || [];
       const index = projectApplications.findIndex(
-        (app: Application) => app.roundID === action.roundID
+        (app: Application) => app.roundID === action.roundID,
       );
 
       if (index < 0) {

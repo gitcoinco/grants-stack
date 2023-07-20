@@ -25,7 +25,7 @@ describe("<ListRoundProvider />", () => {
       render(
         <RoundProvider>
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       expect(await screen.findByText(expectedRoundId)).toBeInTheDocument();
@@ -39,11 +39,11 @@ describe("<ListRoundProvider />", () => {
       render(
         <RoundProvider>
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       expect(
-        await screen.findByTestId("is-loading-round-by-id")
+        await screen.findByTestId("is-loading-round-by-id"),
       ).toBeInTheDocument();
     });
 
@@ -55,12 +55,12 @@ describe("<ListRoundProvider />", () => {
       render(
         <RoundProvider>
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       await waitFor(() => {
         expect(
-          screen.queryByTestId("is-loading-round-by-id")
+          screen.queryByTestId("is-loading-round-by-id"),
         ).not.toBeInTheDocument();
       });
     });
@@ -73,12 +73,12 @@ describe("<ListRoundProvider />", () => {
       render(
         <RoundProvider>
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        </RoundProvider>,
       );
 
       await waitFor(() => {
         expect(
-          screen.queryByTestId("is-loading-round-by-id")
+          screen.queryByTestId("is-loading-round-by-id"),
         ).not.toBeInTheDocument();
       });
 
@@ -90,7 +90,7 @@ describe("<ListRoundProvider />", () => {
 const TestingUseRoundByIdComponent = (props: { expectedRoundId: string }) => {
   const { round, isLoading, getRoundByIdError } = useRoundById(
     "chainID",
-    props.expectedRoundId
+    props.expectedRoundId,
   );
   return (
     <>

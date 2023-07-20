@@ -13,7 +13,7 @@ describe("<InfoModal />", () => {
         isOpen
         setIsOpen={jest.fn()}
         continueButtonAction={jest.fn()}
-      />
+      />,
     );
 
     expect(screen.getByTestId("info-modal")).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe("<InfoModal />", () => {
         isOpen={false}
         setIsOpen={jest.fn()}
         continueButtonAction={jest.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("info-modal")).not.toBeInTheDocument();
@@ -38,7 +38,7 @@ describe("<InfoModal />", () => {
         isOpen
         setIsOpen={setIsOpen}
         continueButtonAction={jest.fn()}
-      />
+      />,
     );
 
     const cancelButton = screen.getByRole("button", { name: /Cancel/i });
@@ -56,7 +56,7 @@ describe("<InfoModal />", () => {
         setIsOpen={jest.fn()}
         continueButtonAction={jest.fn()}
         cancelButtonAction={cancelButtonAction}
-      />
+      />,
     );
 
     const cancelButton = screen.getByRole("button", { name: /Cancel/i });
@@ -72,7 +72,7 @@ describe("<InfoModal />", () => {
         isOpen
         setIsOpen={jest.fn()}
         continueButtonAction={continueButtonAction}
-      />
+      />,
     );
 
     const continueButton = screen.getByRole("button", { name: /Continue/i });
@@ -90,7 +90,7 @@ describe("<InfoModal />", () => {
         setIsOpen={jest.fn()}
         continueButtonAction={continueButtonAction}
         continueButtonText={continueButtonText}
-      />
+      />,
     );
 
     const continueButton = screen.getByRole("button", {
@@ -109,7 +109,7 @@ describe("<InfoModal />", () => {
         setIsOpen={jest.fn()}
         continueButtonAction={jest.fn()}
         title={modalTitle}
-      />
+      />,
     );
 
     expect(screen.getByText(modalTitle)).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe("<InfoModal />", () => {
         setIsOpen={jest.fn()}
         continueButtonAction={jest.fn()}
         body={body}
-      />
+      />,
     );
 
     expect(screen.getByTestId(testId)).toBeInTheDocument();
@@ -141,7 +141,7 @@ describe("<InfoModal />", () => {
         body={<div />}
       >
         {child}
-      </InfoModal>
+      </InfoModal>,
     );
 
     expect(screen.getByTestId(expectedTestId)).toBeInTheDocument();

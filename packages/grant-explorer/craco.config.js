@@ -24,7 +24,7 @@ if (process.env.REACT_APP_ENV === "production") {
 
       // Optionally uncomment the line below to override automatic release name detection
       // release: process.env.RELEASE,
-    })
+    }),
   );
 }
 

@@ -69,7 +69,7 @@ describe("<RoundDetailForm />", () => {
     const error = input.parentElement?.querySelector("p");
     expect(error).toBeInTheDocument();
     expect(error).toHaveTextContent(
-      "Round name must be at least 8 characters."
+      "Round name must be at least 8 characters.",
     );
   });
 
@@ -149,7 +149,7 @@ describe("<RoundDetailForm />", () => {
     const error = infoInput.parentElement?.querySelector("p");
     expect(error).toBeInTheDocument();
     expect(error).toHaveTextContent(
-      "roundMetadata.support.info must be a valid email"
+      "roundMetadata.support.info must be a valid email",
     );
   });
 
@@ -207,7 +207,7 @@ describe("<RoundDetailForm />", () => {
     });
 
     const errors = screen.getByText(
-      "Applications end date must be later than applications start date."
+      "Applications end date must be later than applications start date.",
     );
     expect(errors).toBeInTheDocument();
   });
@@ -240,7 +240,7 @@ describe("<RoundDetailForm />", () => {
     });
 
     const errors = screen.getByText(
-      "Round end date must be later than the round start date."
+      "Round end date must be later than the round start date.",
     );
     expect(errors).toBeInTheDocument();
   });
@@ -263,7 +263,7 @@ describe("<RoundDetailForm />", () => {
         }}
       >
         <RoundDetailForm stepper={FormStepper} />
-      </FormContext.Provider>
+      </FormContext.Provider>,
     );
     const startDateInputs = screen.getAllByLabelText("Start Date");
     const endDateInputs = screen.getAllByLabelText("End Date");
@@ -325,16 +325,16 @@ describe("<RoundDetailForm />", () => {
     });
 
     expect(
-      screen.queryByTestId("application-start-date-error")
+      screen.queryByTestId("application-start-date-error"),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId("application-end-date-error")
+      screen.queryByTestId("application-end-date-error"),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId("round-start-date-error")
+      screen.queryByTestId("round-start-date-error"),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByTestId("round-end-date-error")
+      screen.queryByTestId("round-end-date-error"),
     ).not.toBeInTheDocument();
 
     await waitFor(() => {
@@ -352,7 +352,7 @@ describe("<RoundDetailForm />", () => {
     });
 
     renderWrapped(
-      <RoundDetailForm stepper={FormStepper} initialData={{ program }} />
+      <RoundDetailForm stepper={FormStepper} initialData={{ program }} />,
     );
 
     expect(screen.getByText(chain.name!)).toBeInTheDocument();

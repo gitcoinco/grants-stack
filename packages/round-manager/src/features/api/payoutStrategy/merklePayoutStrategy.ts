@@ -30,11 +30,11 @@ export async function updateDistributionToContract({
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider
+      signerOrProvider,
     );
 
     const tx = await merklePayoutStrategyImplementation.updateDistribution(
-      encodedDistribution
+      encodedDistribution,
     );
     const receipt = await tx.wait();
 
@@ -50,7 +50,7 @@ export async function updateDistributionToContract({
 }
 
 export const useFetchMatchingDistributionFromContract = (
-  roundId: string | undefined
+  roundId: string | undefined,
 ): {
   distributionMetaPtr: string;
   matchingDistributionContract: MatchingStatsData[];
@@ -68,7 +68,7 @@ export const useFetchMatchingDistributionFromContract = (
       try {
         const matchingDataRes = await fetchMatchingDistribution(
           roundId,
-          walletProvider
+          walletProvider,
         );
         setMatchingData(matchingDataRes);
         setIsLoading(false);
@@ -102,7 +102,7 @@ interface GroupedProjects {
  */
 export const useGroupProjectsByPaymentStatus = (
   chainId: ChainId,
-  roundId: string
+  roundId: string,
 ): GroupedProjects => {
   const [groupedProjects, setGroupedProjects] = useState<GroupedProjects>({
     paid: [],
@@ -113,7 +113,7 @@ export const useGroupProjectsByPaymentStatus = (
 
   const allProjects =
     useFetchMatchingDistributionFromContract(
-      roundId
+      roundId,
     ).matchingDistributionContract;
 
   useEffect(() => {
@@ -167,13 +167,13 @@ export const batchDistributeFunds = async (
   payoutStrategy: string,
   allProjects: MatchingStatsData[],
   projectIdsToBePaid: string[],
-  signerOrProvider: Signer
+  signerOrProvider: Signer,
 ) => {
   try {
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider
+      signerOrProvider,
     );
 
     // Generate merkle tree
@@ -181,7 +181,7 @@ export const batchDistributeFunds = async (
 
     // Filter projects to be paid from matching results
     const projectsToBePaid = matchingResults.filter((project) =>
-      projectIdsToBePaid.includes(project.projectId)
+      projectIdsToBePaid.includes(project.projectId),
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -241,17 +241,17 @@ export const batchDistributeFunds = async (
 export async function reclaimFundsFromContract(
   payoutStrategy: string,
   signerOrProvider: Signer,
-  recipient: string
+  recipient: string,
 ) {
   try {
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider
+      signerOrProvider,
     );
 
     const tx = await merklePayoutStrategyImplementation.withdrawFunds(
-      recipient
+      recipient,
     );
 
     const receipt = await tx.wait();

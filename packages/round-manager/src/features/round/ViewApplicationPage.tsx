@@ -151,7 +151,7 @@ export default function ViewApplicationPage() {
               verifiableCredential,
               verifier,
               provider,
-              application
+              application,
             );
           }
         }
@@ -183,7 +183,7 @@ export default function ViewApplicationPage() {
       });
     } catch (error) {
       datadogLogs.logger.error(
-        `error: handleReview - ${error}, roundId - ${roundId}`
+        `error: handleReview - ${error}, roundId - ${roundId}`,
       );
       console.error("handleReview", error);
     }
@@ -269,7 +269,7 @@ export default function ViewApplicationPage() {
 
               const decryptedString = await lit.decryptString(
                 encryptedString,
-                encryptedAnswer.encryptedSymmetricKey
+                encryptedAnswer.encryptedSymmetricKey,
               );
 
               _answerBlock = {
@@ -465,7 +465,7 @@ export default function ViewApplicationPage() {
                         Created on:{" "}
                         {application?.project?.createdAt
                           ? formatDateWithOrdinal(
-                              new Date(Number(application?.project?.createdAt))
+                              new Date(Number(application?.project?.createdAt)),
                             )
                           : "-"}
                       </span>
@@ -481,8 +481,8 @@ export default function ViewApplicationPage() {
                       __html: renderToHTML(
                         application?.project?.description.replace(
                           /\n/g,
-                          "\n\n"
-                        ) ?? ""
+                          "\n\n",
+                        ) ?? "",
                       ),
                     }}
                     className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
@@ -503,7 +503,7 @@ export default function ViewApplicationPage() {
                             <p
                               dangerouslySetInnerHTML={{
                                 __html: renderToHTML(
-                                  answerText.replace(/\n/g, "\n\n")
+                                  answerText.replace(/\n/g, "\n\n"),
                                 ),
                               }}
                               className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
@@ -531,7 +531,7 @@ export default function ViewApplicationPage() {
 function vcProviderMatchesProject(
   provider: string,
   verifiableCredential: VerifiableCredential,
-  application: GrantApplication | undefined
+  application: GrantApplication | undefined,
 ) {
   let vcProviderMatchesProject = false;
   if (provider === "twitter") {
@@ -558,14 +558,14 @@ async function isVerified(
   verifiableCredential: VerifiableCredential,
   verifier: PassportVerifier,
   provider: string,
-  application: GrantApplication | undefined
+  application: GrantApplication | undefined,
 ) {
   const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(
     provider,
     verifiableCredential,
-    application
+    application,
   );
   const vcIssuedToAtLeastOneProjectOwner = (
     application?.project?.owners ?? []
@@ -582,7 +582,7 @@ async function isVerified(
 function redirectToViewRoundPage(
   navigate: NavigateFunction,
   waitSeconds: number,
-  id: string
+  id: string,
 ) {
   setTimeout(() => {
     navigate(`/round/${id}`);
@@ -593,7 +593,7 @@ function redirectToViewApplicationPage(
   navigate: NavigateFunction,
   waitSeconds: number,
   id: string,
-  applicationId: string
+  applicationId: string,
 ) {
   setTimeout(() => {
     navigate(`/round/${id}/application/${applicationId}`);

@@ -13,7 +13,7 @@ const verifier = new PassportVerifier();
 
 export async function validateCredential(
   credential: VerifiableCredential | undefined,
-  handle: string | undefined
+  handle: string | undefined,
 ): Promise<boolean> {
   if (!credential || !handle) {
     return false;
@@ -39,7 +39,7 @@ export async function validateCredential(
 
 export default function useValidateCredential(
   vc: VerifiableCredential | undefined,
-  handle: string | undefined
+  handle: string | undefined,
 ): { isValid: boolean; isLoading: boolean; error: any | null } {
   const [isValid, setIsValid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

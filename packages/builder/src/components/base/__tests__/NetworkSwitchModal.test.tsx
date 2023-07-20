@@ -25,7 +25,7 @@ describe("NetworkSwitchModal", () => {
     switchNetworkAsync = jest
       .fn()
       .mockImplementation((chainId_?: number | undefined) =>
-        chains.find((i) => chainId_ === i.id)
+        chains.find((i) => chainId_ === i.id),
       );
     onSwitch = jest.fn();
 
@@ -54,13 +54,13 @@ describe("NetworkSwitchModal", () => {
         toggleModal={toggleModal}
         onSwitch={onSwitch}
       />,
-      store
+      store,
     );
   });
 
   it("should show modal", () => {
     expect(
-      screen.queryByText("Switch Networks to Continue")
+      screen.queryByText("Switch Networks to Continue"),
     ).toBeInTheDocument();
   });
 

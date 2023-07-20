@@ -104,14 +104,14 @@ describe("fund contract tab", () => {
               data: [mockRoundData],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
-            { programs: [] }
+            { programs: [] },
           ),
           {
             applications: [],
             isLoading: false,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
     const fundContractTab = screen.getByTestId("fund-contract");
     fireEvent.click(fundContractTab);

@@ -339,15 +339,15 @@ function GrantApplications(props: {
 }) {
   const pendingApplications =
     props.applications?.filter(
-      (a) => a.status === ApplicationStatus.PENDING.toString()
+      (a) => a.status === ApplicationStatus.PENDING.toString(),
     ) || [];
   const approvedApplications =
     props.applications?.filter(
-      (a) => a.status === ApplicationStatus.APPROVED.toString()
+      (a) => a.status === ApplicationStatus.APPROVED.toString(),
     ) || [];
   const rejectedApplications =
     props.applications?.filter(
-      (a) => a.status === ApplicationStatus.REJECTED.toString()
+      (a) => a.status === ApplicationStatus.REJECTED.toString(),
     ) || [];
 
   const TabApplicationCounter = tw.div`

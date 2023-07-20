@@ -55,7 +55,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
       priority: 1,
     }),
     publicProvider({ priority: 2 }),
-  ]
+  ],
 );
 
 // Custom wallet connectors: more can be added by going here:

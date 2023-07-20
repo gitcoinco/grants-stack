@@ -207,7 +207,7 @@ function AddQuestionModal({
             }}
             options={[questionOptions]}
           />
-        </div>
+        </div>,
       );
     }
 
@@ -318,7 +318,7 @@ function AddQuestionModal({
     }
     if (questionOptions.encrypted && !questionOptions.hidden) {
       errors.push(
-        "Questions cannot be marked as encrypted and shown in explorer. Please select one."
+        "Questions cannot be marked as encrypted and shown in explorer. Please select one.",
       );
     }
 
@@ -402,7 +402,7 @@ function AddQuestionModal({
                       addOptions()
                     ) : (
                       <></>
-                    )
+                    ),
                   )}
               </div>
             </div>

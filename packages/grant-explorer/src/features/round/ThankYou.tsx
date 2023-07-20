@@ -13,7 +13,7 @@ import Navbar from "../common/Navbar";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
-    "====> Route: /round/:chainId/:roundId/:txHash/thankyou"
+    "====> Route: /round/:chainId/:roundId/:txHash/thankyou",
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
@@ -41,7 +41,7 @@ export default function ThankYou() {
   function TwitterButton(props: { roundName?: string }) {
     const shareText = `I just donated to the ${props.roundName?.trim()} on @gitcoin. Join me in making a difference by donating today!\n\nhttps://explorer.gitcoin.co/#/round/${chainId}/${roundId}`;
     const shareUrl = `http://twitter.com/share?text=${encodeURIComponent(
-      shareText
+      shareText,
     )}`;
 
     return (

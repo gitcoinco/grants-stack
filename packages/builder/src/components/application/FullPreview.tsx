@@ -100,7 +100,7 @@ export function FullPreview(props: {
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{
                 __html: renderToHTML(
-                  project.description.replace(/\n/g, "\n\n")
+                  project.description.replace(/\n/g, "\n\n"),
                 ),
               }}
               className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
@@ -131,7 +131,7 @@ export function FullPreview(props: {
                               // eslint-disable-next-line react/no-danger
                               dangerouslySetInnerHTML={{
                                 __html: renderToHTML(
-                                  answerText.toString().replace(/\n/g, "\n\n")
+                                  answerText.toString().replace(/\n/g, "\n\n"),
                                 ),
                               }}
                               className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"

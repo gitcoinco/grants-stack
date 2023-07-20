@@ -58,12 +58,12 @@ type UsePassportHook = {
 
 export function usePassport(
   address: string,
-  communityId: string
+  communityId: string,
 ): UsePassportHook {
   const { data, error, mutate } = useSWR<PassportResponse>(
     [address, communityId],
     ([address, communityId]: [address: string, communityId: string]) =>
-      fetchPassport(address, communityId).then((res) => res.json())
+      fetchPassport(address, communityId).then((res) => res.json()),
   );
 
   return {
@@ -86,7 +86,7 @@ export function usePassport(
  */
 export const fetchPassport = (
   address: string,
-  communityId: string
+  communityId: string,
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`;
   return fetch(url, {
@@ -107,7 +107,7 @@ export const fetchPassport = (
  */
 export const submitPassport = (
   address: string,
-  communityId: string
+  communityId: string,
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/submit-passport`;
 
@@ -178,7 +178,7 @@ export const graphql_fetch = async (
   chainId: ChainId,
   // eslint-disable-next-line @typescript-eslint/ban-types
   variables: object = {},
-  fromProjectRegistry = false
+  fromProjectRegistry = false,
 ) => {
   let endpoint = await getGraphQLEndpoint(chainId);
 
@@ -209,7 +209,7 @@ export const graphql_fetch = async (
  */
 export function fetchProjectPaidInARound(
   roundId: string,
-  chainId: ChainId
+  chainId: ChainId,
 ): Promise<Payout[]> {
   const { data, error, mutate } = useSWR(
     [roundId, chainId],
@@ -238,9 +238,9 @@ export function fetchProjectPaidInARound(
         }
       `,
         chainId,
-        { roundId }
+        { roundId },
       );
-    }
+    },
   );
 
   const payouts = data?.data?.payoutStrategies[0]?.payouts || [];
@@ -260,7 +260,7 @@ export function useRoundId() {
   /* Check if the ID is an Ethereum address */
   if (!isAddress(roundId ?? "")) {
     console.warn(
-      "id extracted from url in useRoundId hook isn't a valid address. Check usage."
+      "id extracted from url in useRoundId hook isn't a valid address. Check usage.",
     );
   }
   return roundId as string;
@@ -290,7 +290,7 @@ export function formatDateWithOrdinal(date: Date) {
 
   return `${formattedDate.replace(
     dayOfMonth.toString(),
-    `${dayOfMonth}${suffix}`
+    `${dayOfMonth}${suffix}`,
   )}`;
 }
 
@@ -308,7 +308,7 @@ enum ApplicationStatus {
 }
 
 export const convertStatusToText = (
-  applicationStatus: string | number
+  applicationStatus: string | number,
 ): string => {
   // Ensure the applicationStatus is a string
   applicationStatus = applicationStatus.toString();

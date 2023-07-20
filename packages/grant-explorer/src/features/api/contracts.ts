@@ -12,7 +12,7 @@ import { ChainId } from "./utils";
 
 /* GrantHub's ProjectRegistry */
 export const projectRegistryContract = (
-  chainId: ChainId | undefined
+  chainId: ChainId | undefined,
 ): Contract => {
   let address;
 
@@ -62,7 +62,7 @@ export const ERC20Contract: Contract = {
 
 /* ProgramFactory  */
 export const programFactoryContract = (
-  chainId: ChainId | undefined
+  chainId: ChainId | undefined,
 ): Contract => {
   let address;
 
@@ -111,7 +111,7 @@ export const programImplementationContract: Contract = {
 
 /* RoundFactory  */
 export const roundFactoryContract = (
-  chainId: ChainId | undefined
+  chainId: ChainId | undefined,
 ): Contract => {
   let address;
 
@@ -160,7 +160,7 @@ export const roundImplementationContract: Contract = {
 
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (
-  chainId: ChainId | undefined
+  chainId: ChainId | undefined,
 ): Contract => {
   let address;
 
@@ -204,7 +204,7 @@ export const qfVotingStrategyFactoryContract = (
 
 /* MerklePayoutStrategyFactory */
 export const merklePayoutStrategyFactoryContract = (
-  chainId: ChainId | undefined
+  chainId: ChainId | undefined,
 ): Contract => {
   let address;
 

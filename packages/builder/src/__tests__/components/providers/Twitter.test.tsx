@@ -34,7 +34,7 @@ describe("<Twitter />", () => {
       store.dispatch(
         credentialsSaved({
           twitter: vc,
-        })
+        }),
       );
 
       const verifyCredentialMock = jest.fn();
@@ -44,7 +44,7 @@ describe("<Twitter />", () => {
       await act(async () => {
         renderWrapped(
           <Twitter handle={handle} verificationError={() => {}} canVerify />,
-          store
+          store,
         );
       });
 
@@ -67,7 +67,7 @@ describe("<Twitter />", () => {
       store.dispatch(
         credentialsSaved({
           twitter: vc,
-        })
+        }),
       );
 
       const verifyCredentialMock = jest.fn();
@@ -77,7 +77,7 @@ describe("<Twitter />", () => {
       await act(async () => {
         renderWrapped(
           <Twitter handle={handle} verificationError={() => {}} canVerify />,
-          store
+          store,
         );
       });
 
@@ -101,7 +101,7 @@ describe("<Twitter />", () => {
       store.dispatch(
         credentialsSaved({
           twitter: vc,
-        })
+        }),
       );
 
       const verifyCredentialMock = jest.fn();
@@ -111,7 +111,7 @@ describe("<Twitter />", () => {
       await act(async () => {
         renderWrapped(
           <Twitter handle={handle} verificationError={() => {}} canVerify />,
-          store
+          store,
         );
       });
 
@@ -133,13 +133,13 @@ describe("<Twitter />", () => {
       store.dispatch(
         credentialsSaved({
           twitter: vc,
-        })
+        }),
       );
 
       await act(async () => {
         renderWrapped(
           <Twitter handle={handle} verificationError={() => {}} canVerify />,
-          store
+          store,
         );
       });
 

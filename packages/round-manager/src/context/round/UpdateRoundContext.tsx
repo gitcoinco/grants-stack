@@ -40,7 +40,7 @@ export const initialUpdateRoundState: UpdateRoundState = {
 };
 
 export const UpdateRoundContext = createContext<UpdateRoundState>(
-  initialUpdateRoundState
+  initialUpdateRoundState,
 );
 
 export const UpdateRoundProvider = ({
@@ -54,7 +54,7 @@ export const UpdateRoundProvider = ({
     React.useState<ProgressStatus>(initialUpdateRoundState.roundUpdateStatus);
 
   const [indexingStatus, setIndexingStatus] = React.useState<ProgressStatus>(
-    initialUpdateRoundState.indexingStatus
+    initialUpdateRoundState.indexingStatus,
   );
 
   const providerProps: UpdateRoundState = {
@@ -134,12 +134,12 @@ const _updateRound = async ({
     if (editedGroups.MatchAmount) {
       console.log("updating match amount");
       const decimals = getPayoutTokenOptions(chainId).find(
-        (token) => token.address === round.token
+        (token) => token.address === round.token,
       )?.decimal;
       // use ethers to convert amount using decimals
       const arg = ethers.utils.parseUnits(
         round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString(),
-        decimals
+        decimals,
       );
       transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [arg]);
       console.log(arg.toString());

@@ -43,7 +43,7 @@ export default function ViewRound() {
 
   const { round, isLoading } = useRoundById(
     chainId as string,
-    roundId as string
+    roundId as string,
   );
 
   const currentTime = new Date();
@@ -174,7 +174,7 @@ function AfterRoundStart(props: {
     if (searchQuery) {
       const timeOutId = setTimeout(
         () => filterProjectsByTitle(searchQuery),
-        300
+        300,
       );
       return () => clearTimeout(timeOutId);
     } else {
@@ -194,7 +194,7 @@ function AfterRoundStart(props: {
     const exactMatches = projects?.filter(
       (project) =>
         project.projectMetadata.title.toLocaleLowerCase() ===
-        query.toLocaleLowerCase()
+        query.toLocaleLowerCase(),
     );
     const nonExactMatches = projects?.filter(
       (project) =>
@@ -202,7 +202,7 @@ function AfterRoundStart(props: {
           .toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         project.projectMetadata.title.toLocaleLowerCase() !==
-          query.toLocaleLowerCase()
+          query.toLocaleLowerCase(),
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setProjects([...exactMatches!, ...nonExactMatches!]);
@@ -211,7 +211,7 @@ function AfterRoundStart(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase(),
     )[0].name;
 
   const breadCrumbs = [
@@ -361,7 +361,7 @@ function ProjectCard(props: {
 
   const isAlreadyInCart = cart.some(
     (cartProject) =>
-      cartProject.grantApplicationId === project.grantApplicationId
+      cartProject.grantApplicationId === project.grantApplicationId,
   );
 
   return (
@@ -392,7 +392,7 @@ function ProjectCard(props: {
           >
             {truncateDescription(
               renderToPlainText(project.projectMetadata.description),
-              180
+              180,
             )}
           </CardDescription>
         </CardContent>
@@ -490,7 +490,7 @@ function PreRoundPage(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase(),
     )[0]?.name;
 
   return (

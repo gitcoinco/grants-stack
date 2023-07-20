@@ -9,7 +9,7 @@ describe("<ProjectBanner>", () => {
       {},
       {
         bannerImg,
-      }
+      },
     );
 
     render(<ProjectBanner projectMetadata={project.projectMetadata} />);
@@ -27,7 +27,7 @@ describe("<ProjectBanner>", () => {
     render(
       <ProjectBanner
         projectMetadata={projectWithoutBannerImage.projectMetadata}
-      />
+      />,
     );
     const img = screen.getByRole("img", {
       name: /project banner/i,

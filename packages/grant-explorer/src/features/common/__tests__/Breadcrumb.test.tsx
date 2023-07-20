@@ -13,7 +13,7 @@ describe("Breadcrumb component", () => {
     const { getAllByRole } = render(
       <MemoryRouter>
         <Breadcrumb items={items} />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     const links = getAllByRole("link");

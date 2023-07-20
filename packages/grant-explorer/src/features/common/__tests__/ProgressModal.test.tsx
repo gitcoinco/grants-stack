@@ -40,9 +40,9 @@ describe("<ProgressModal />", () => {
         renderWrapped(<ProgressModal isOpen steps={steps} />);
 
         expect(
-          screen.queryByTestId(`${nonMatchingStep.name}-error-icon`)
+          screen.queryByTestId(`${nonMatchingStep.name}-error-icon`),
         ).not.toBeInTheDocument();
-      }
+      },
     );
   });
 
@@ -66,9 +66,9 @@ describe("<ProgressModal />", () => {
         renderWrapped(<ProgressModal isOpen steps={steps} />);
 
         expect(
-          screen.queryByTestId(`${nonMatchingStep.name}-current-icon`)
+          screen.queryByTestId(`${nonMatchingStep.name}-current-icon`),
         ).not.toBeInTheDocument();
-      }
+      },
     );
   });
 
@@ -92,9 +92,9 @@ describe("<ProgressModal />", () => {
         renderWrapped(<ProgressModal isOpen steps={steps} />);
 
         expect(
-          screen.queryByTestId(`${nonMatchingStep.name}-upcoming-icon`)
+          screen.queryByTestId(`${nonMatchingStep.name}-upcoming-icon`),
         ).not.toBeInTheDocument();
-      }
+      },
     );
   });
 
@@ -118,9 +118,9 @@ describe("<ProgressModal />", () => {
         renderWrapped(<ProgressModal isOpen steps={steps} />);
 
         expect(
-          screen.queryByTestId(`${nonMatchingStep.name}-complete-icon`)
+          screen.queryByTestId(`${nonMatchingStep.name}-complete-icon`),
         ).not.toBeInTheDocument();
-      }
+      },
     );
   });
 
@@ -130,7 +130,7 @@ describe("<ProgressModal />", () => {
     renderWrapped(
       <ProgressModal isOpen steps={steps}>
         {child}
-      </ProgressModal>
+      </ProgressModal>,
     );
 
     expect(screen.getByTestId(expectedTestId)).toBeInTheDocument();

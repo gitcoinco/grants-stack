@@ -50,7 +50,7 @@ export const FundingValidationSchema = yup.object().shape({
             .moreThan(0, "Matching cap amount must be more than zero.")
             .max(
               100,
-              "Matching cap amount must be less than or equal to 100%."
+              "Matching cap amount must be less than or equal to 100%.",
             ),
         }),
       minDonationThreshold: yup
@@ -64,7 +64,7 @@ export const FundingValidationSchema = yup.object().shape({
           then: yup
             .number()
             .required(
-              "You must provide an amount for the minimum donation threshold."
+              "You must provide an amount for the minimum donation threshold.",
             )
             .moreThan(0, "Minimum donation threshold must be more than zero."),
         }),
@@ -78,7 +78,7 @@ export const FundingValidationSchema = yup.object().shape({
     .required("You must select a payout token for your round.")
     .notOneOf(
       ["Choose Payout Token"],
-      "You must select a payout token for your round."
+      "You must select a payout token for your round.",
     ),
 });
 
@@ -159,7 +159,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                     "roundMetadata.quadraticFundingConfig.matchingFundsAvailable",
                     {
                       valueAsNumber: true,
-                    }
+                    },
                   )}
                   token={watch("token")}
                   payoutTokenOptions={payoutTokenOptions}
@@ -177,7 +177,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                     "roundMetadata.quadraticFundingConfig.matchingCapAmount",
                     {
                       valueAsNumber: true,
-                    }
+                    },
                   )}
                   control={control}
                   token={watch("token")}
@@ -198,7 +198,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                     "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount",
                     {
                       valueAsNumber: true,
-                    }
+                    },
                   )}
                   control={control}
                 />
@@ -248,7 +248,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                 <SybilDefense
                   errors={errors}
                   registerMatchingCapAmount={register(
-                    "roundMetadata.quadraticFundingConfig.sybilDefense"
+                    "roundMetadata.quadraticFundingConfig.sybilDefense",
                   )}
                   control={control}
                 />
@@ -379,7 +379,7 @@ function PayoutTokenDropdown(props: {
               <PayoutTokenButton
                 errors={props.errors}
                 token={props.payoutTokenOptions.find(
-                  (t) => t.address === field.value
+                  (t) => t.address === field.value,
                 )}
               />
               <Transition
@@ -400,7 +400,7 @@ function PayoutTokenDropdown(props: {
                               active
                                 ? "text-white bg-indigo-600"
                                 : "text-gray-900",
-                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                              "relative cursor-default select-none py-2 pl-3 pr-9",
                             )
                           }
                           value={token.address}
@@ -419,7 +419,7 @@ function PayoutTokenDropdown(props: {
                                 <span
                                   className={classNames(
                                     selected ? "font-semibold" : "font-normal",
-                                    "ml-3 block truncate"
+                                    "ml-3 block truncate",
                                   )}
                                 >
                                   {token.name}
@@ -430,7 +430,7 @@ function PayoutTokenDropdown(props: {
                                 <span
                                   className={classNames(
                                     active ? "text-white" : "text-indigo-600",
-                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                    "absolute inset-y-0 right-0 flex items-center pr-4",
                                   )}
                                 >
                                   <CheckIcon
@@ -442,7 +442,7 @@ function PayoutTokenDropdown(props: {
                             </>
                           )}
                         </Listbox.Option>
-                      )
+                      ),
                   )}
                 </Listbox.Options>
               </Transition>
@@ -498,7 +498,7 @@ function MatchingFundsAvailable(props: {
           <span className="text-gray-400 sm:text-sm">
             {
               props.payoutTokenOptions.find(
-                (token) => token.address === props.token
+                (token) => token.address === props.token,
               )?.name
             }
           </span>
@@ -596,7 +596,7 @@ function MatchingCap(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
                   >
@@ -621,7 +621,7 @@ function MatchingCap(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
                   >
@@ -701,7 +701,7 @@ function MatchingCap(props: {
         {matchingValue}{" "}
         {
           props.payoutTokenOptions.find(
-            (token) => token.address === props.token
+            (token) => token.address === props.token,
           )?.name
         }
         )
@@ -777,7 +777,7 @@ function MinDonationThreshold(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
                   >
@@ -802,7 +802,7 @@ function MinDonationThreshold(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
                   >
@@ -910,7 +910,7 @@ function SybilDefense(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
                   >
@@ -939,7 +939,7 @@ function SybilDefense(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 rounded-full border flex items-center justify-center",
                     )}
                     aria-hidden="true"
                   >

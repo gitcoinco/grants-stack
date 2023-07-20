@@ -58,7 +58,7 @@ export default function ViewCart() {
   ];
 
   const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
-    payoutTokenOptions[0]
+    payoutTokenOptions[0],
   );
   const [donations, setDonations] = useState<DonationInput[]>([]);
 
@@ -67,8 +67,8 @@ export default function ViewCart() {
       return acc.add(
         ethers.utils.parseUnits(
           donation.amount === "" ? "0" : donation.amount,
-          selectedPayoutToken.decimal
-        )
+          selectedPayoutToken.decimal,
+        ),
       );
     }, BigNumber.from(0));
   }, [donations, selectedPayoutToken.decimal]);
@@ -111,7 +111,7 @@ export default function ViewCart() {
   const navigate = useNavigate();
 
   const { data, error, loading } = useTokenPrice(
-    selectedPayoutToken.redstoneTokenId
+    selectedPayoutToken.redstoneTokenId,
   );
 
   const payoutTokenPrice = !loading && !error ? Number(data) : undefined;
@@ -169,7 +169,7 @@ export default function ViewCart() {
   const [, setError] = useState<Response | undefined>();
 
   const [passportState, setPassportState] = useState<PassportState>(
-    PassportState.LOADING
+    PassportState.LOADING,
   );
   useEffect(() => {
     setPassportState(PassportState.LOADING);
@@ -200,7 +200,7 @@ export default function ViewCart() {
           setPassportState(
             json.score >= PASSPORT_THRESHOLD
               ? PassportState.MATCH_ELIGIBLE
-              : PassportState.MATCH_INELIGIBLE
+              : PassportState.MATCH_INELIGIBLE,
           );
         } else {
           setError(res);
@@ -485,7 +485,7 @@ export default function ViewCart() {
       index: number;
       roundRoutePath: string;
       last?: boolean;
-    }
+    },
   ) {
     const { project, roundRoutePath } = props;
 
@@ -530,7 +530,7 @@ export default function ViewCart() {
               </Link>
               <p className="text-sm text-ellipsis line-clamp-3">
                 {renderToPlainText(
-                  props.project.projectMetadata.description
+                  props.project.projectMetadata.description,
                 ).substring(0, 130)}
               </p>
             </div>
@@ -551,7 +551,7 @@ export default function ViewCart() {
                 donations.find(
                   (donation) =>
                     donation.projectRegistryId ===
-                    props.project.projectRegistryId
+                    props.project.projectRegistryId,
                 )?.amount
               }
               type="number"
@@ -560,7 +560,7 @@ export default function ViewCart() {
                   props.project.projectRegistryId,
                   e.target.value,
                   props.project.recipient,
-                  props.project.applicationIndex
+                  props.project.applicationIndex,
                 );
               }}
               className="w-48"
@@ -575,8 +575,8 @@ export default function ViewCart() {
                       donations.find(
                         (donation) =>
                           donation.projectRegistryId ===
-                          props.project.projectRegistryId
-                      )?.amount || 0
+                          props.project.projectRegistryId,
+                      )?.amount || 0,
                     ) * payoutTokenPrice
                   ).toFixed(2)}
                 </span>
@@ -591,7 +591,7 @@ export default function ViewCart() {
                   props.project.projectRegistryId,
                   "",
                   props.project.recipient,
-                  props.project.applicationIndex
+                  props.project.applicationIndex,
                 );
               }}
               className="w-5 h-5 m-auto cursor-pointer mb-4"
@@ -645,7 +645,7 @@ export default function ViewCart() {
     const totalDonationInUSD =
       payoutTokenPrice &&
       Number(
-        ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)
+        ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal),
       ) * Number(payoutTokenPrice.toFixed(2));
 
     return (
@@ -657,7 +657,7 @@ export default function ViewCart() {
             <span data-testid={"totalDonation"} className="mr-2">
               {ethers.utils.formatUnits(
                 totalDonation,
-                selectedPayoutToken.decimal
+                selectedPayoutToken.decimal,
               )}
             </span>
             <span data-testid={"summaryPayoutToken"}>
@@ -695,7 +695,7 @@ export default function ViewCart() {
           <span className="mr-1">
             {ethers.utils.formatUnits(
               totalDonation,
-              selectedPayoutToken.decimal
+              selectedPayoutToken.decimal,
             )}
           </span>
           <span className="mr-1">{selectedPayoutToken.name}</span>
@@ -709,10 +709,10 @@ export default function ViewCart() {
     projectRegistryId: string,
     amount: string,
     projectAddress: recipient,
-    applicationIndex: number
+    applicationIndex: number,
   ) {
     const projectIndex = donations.findIndex(
-      (donation) => donation.projectRegistryId === projectRegistryId
+      (donation) => donation.projectRegistryId === projectRegistryId,
     );
 
     const newState = [...donations];
@@ -753,7 +753,7 @@ export default function ViewCart() {
               <div className="mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 <PayoutTokenButton
                   token={props.payoutTokenOptions.find(
-                    (t) => t.address === selectedPayoutToken?.address
+                    (t) => t.address === selectedPayoutToken?.address,
                   )}
                 />
                 <Transition
@@ -774,7 +774,7 @@ export default function ViewCart() {
                                 active
                                   ? "text-white bg-indigo-600"
                                   : "text-gray-900",
-                                "relative cursor-default select-none py-2 pl-3 pr-9"
+                                "relative cursor-default select-none py-2 pl-3 pr-9",
                               )
                             }
                             value={token}
@@ -795,7 +795,7 @@ export default function ViewCart() {
                                       selected
                                         ? "font-semibold"
                                         : "font-normal",
-                                      "ml-3 block truncate"
+                                      "ml-3 block truncate",
                                     )}
                                   >
                                     {token.name}
@@ -806,7 +806,7 @@ export default function ViewCart() {
                                   <span
                                     className={classNames(
                                       active ? "text-white" : "text-indigo-600",
-                                      "absolute inset-y-0 right-0 flex items-center pr-4"
+                                      "absolute inset-y-0 right-0 flex items-center pr-4",
                                     )}
                                   >
                                     <CheckIcon
@@ -818,7 +818,7 @@ export default function ViewCart() {
                               </>
                             )}
                           </Listbox.Option>
-                        )
+                        ),
                     )}
                   </Listbox.Options>
                 </Transition>
@@ -876,7 +876,7 @@ export default function ViewCart() {
 
     // check to ensure all projects have donation amount
     const emptyDonations = donations.filter(
-      (donation) => !donation.amount || Number(donation.amount) === 0
+      (donation) => !donation.amount || Number(donation.amount) === 0,
     );
 
     if (donations.length === 0 || emptyDonations.length > 0) {
@@ -1022,7 +1022,7 @@ export default function ViewCart() {
           ...donation,
           amount: ethers.utils.parseUnits(
             donation.amount,
-            selectedPayoutToken.decimal
+            selectedPayoutToken.decimal,
           ),
         } as CartDonation;
       });
@@ -1039,7 +1039,7 @@ export default function ViewCart() {
         setTransactionReplaced(true);
       } else {
         datadogLogs.logger.error(
-          `error: handleSubmitDonation - ${error}, id: ${roundId}`
+          `error: handleSubmitDonation - ${error}, id: ${roundId}`,
         );
         console.error("handleSubmitDonation - roundId", roundId, error);
       }

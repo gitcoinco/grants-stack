@@ -93,7 +93,7 @@ describe("<Rounds />", () => {
 
       expect(
         screen.queryAllByText("Loading your information, please stand by...")
-          .length
+          .length,
       ).toBeGreaterThan(0);
     });
   });
@@ -120,11 +120,17 @@ describe("<Rounds />", () => {
       });
       const applications = [];
       applications.push(
-        buildProjectApplication({ roundID: addressFrom(1), status: "APPROVED" })
+        buildProjectApplication({
+          roundID: addressFrom(1),
+          status: "APPROVED",
+        }),
         // set the status directly here, saves some pain
       );
       applications.push(
-        buildProjectApplication({ roundID: addressFrom(2), status: "REJECTED" })
+        buildProjectApplication({
+          roundID: addressFrom(2),
+          status: "REJECTED",
+        }),
       );
       store.dispatch({
         type: "PROJECT_APPLICATIONS_LOADED",
@@ -163,11 +169,17 @@ describe("<Rounds />", () => {
       });
       const applications = [];
       applications.push(
-        buildProjectApplication({ roundID: addressFrom(1), status: "APPROVED" })
+        buildProjectApplication({
+          roundID: addressFrom(1),
+          status: "APPROVED",
+        }),
         // set the status directly here, saves some pain
       );
       applications.push(
-        buildProjectApplication({ roundID: addressFrom(2), status: "REJECTED" })
+        buildProjectApplication({
+          roundID: addressFrom(2),
+          status: "REJECTED",
+        }),
       );
       store.dispatch({
         type: "PROJECT_APPLICATIONS_LOADED",
@@ -205,11 +217,17 @@ describe("<Rounds />", () => {
       });
       const applications = [];
       applications.push(
-        buildProjectApplication({ roundID: addressFrom(1), status: "APPROVED" })
+        buildProjectApplication({
+          roundID: addressFrom(1),
+          status: "APPROVED",
+        }),
         // set the status directly here, saves some pain
       );
       applications.push(
-        buildProjectApplication({ roundID: addressFrom(2), status: "REJECTED" })
+        buildProjectApplication({
+          roundID: addressFrom(2),
+          status: "REJECTED",
+        }),
       );
       store.dispatch({
         type: "PROJECT_APPLICATIONS_LOADED",

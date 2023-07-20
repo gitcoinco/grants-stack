@@ -167,11 +167,11 @@ describe("View Round Results before distribution data is finalized to contract",
                 wrapWithRoundContext(<ViewRoundPage />, {
                   data: [mockRoundData],
                   fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                })
-              )
-            )
-          )
-        )
+                }),
+              ),
+            ),
+          ),
+        ),
       );
       const roundResultsTab = screen.getByTestId("round-results");
       fireEvent.click(roundResultsTab);
@@ -230,15 +230,15 @@ describe("View Round Results before distribution data is finalized to contract",
                   data: [mockRoundData],
                   fetchRoundStatus: ProgressStatus.IS_SUCCESS,
                 }),
-                { programs: [] }
+                { programs: [] },
               ),
               {
                 applications: [],
                 isLoading: false,
-              }
-            )
-          )
-        )
+              },
+            ),
+          ),
+        ),
       );
     });
     it("displays the finalize button", async () => {
@@ -279,7 +279,7 @@ describe("View Round Results after distribution data is finalized to contract", 
         ],
         isLoading: false,
         isError: null,
-      })
+      }),
     );
 
     const roundEndTime = faker.date.recent();
@@ -331,11 +331,11 @@ describe("View Round Results after distribution data is finalized to contract", 
               wrapWithRoundContext(<ViewRoundPage />, {
                 data: [mockRoundData],
                 fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              })
-            )
-          )
-        )
-      )
+              }),
+            ),
+          ),
+        ),
+      ),
     );
     const roundResultsTab = screen.getByTestId("round-results");
     fireEvent.click(roundResultsTab);

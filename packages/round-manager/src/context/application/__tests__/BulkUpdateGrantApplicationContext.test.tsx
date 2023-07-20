@@ -44,24 +44,24 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
       (updateApplicationStatuses as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
 
       await act(async () =>
-        fireEvent.click(screen.getByTestId("update-grant-application"))
+        fireEvent.click(screen.getByTestId("update-grant-application")),
       );
 
       await waitFor(
         () => {
           expect(
             screen.findByTestId(
-              `contract-updating-status-is-${ProgressStatus.IN_PROGRESS}`
-            )
+              `contract-updating-status-is-${ProgressStatus.IN_PROGRESS}`,
+            ),
           );
         },
-        { timeout: 30000 }
+        { timeout: 30000 },
       );
     });
 
@@ -72,18 +72,18 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
       renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
 
       await act(async () =>
-        fireEvent.click(screen.getByTestId("update-grant-application"))
+        fireEvent.click(screen.getByTestId("update-grant-application")),
       );
 
       await waitFor(
         () => {
           expect(
             screen.findByTestId(
-              `contract-updating-status-is-${ProgressStatus.IS_SUCCESS}`
-            )
+              `contract-updating-status-is-${ProgressStatus.IS_SUCCESS}`,
+            ),
           );
         },
-        { timeout: 30000 }
+        { timeout: 30000 },
       );
     });
 
@@ -95,7 +95,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
@@ -107,11 +107,11 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         () => {
           expect(
             screen.findByTestId(
-              `indexing-status-is-${ProgressStatus.IN_PROGRESS}`
-            )
+              `indexing-status-is-${ProgressStatus.IN_PROGRESS}`,
+            ),
           );
         },
-        { timeout: 30000 }
+        { timeout: 30000 },
       );
     });
 
@@ -131,11 +131,11 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         () => {
           expect(
             screen.findByTestId(
-              `indexing-status-is-${ProgressStatus.IS_SUCCESS}`
-            )
+              `indexing-status-is-${ProgressStatus.IS_SUCCESS}`,
+            ),
           );
         },
-        { timeout: 30000 }
+        { timeout: 30000 },
       );
     });
 
@@ -283,7 +283,7 @@ function renderWithProvider(ui: JSX.Element) {
   render(
     <BulkUpdateGrantApplicationProvider>
       {ui}
-    </BulkUpdateGrantApplicationProvider>
+    </BulkUpdateGrantApplicationProvider>,
   );
 }
 

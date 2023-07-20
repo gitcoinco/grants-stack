@@ -117,12 +117,12 @@ export default function Form({
 
   const twitterCredentialValidation = useValidateCredential(
     selectedProjectMetadata?.credentials?.twitter,
-    selectedProjectMetadata?.projectTwitter
+    selectedProjectMetadata?.projectTwitter,
   );
 
   const githubCredentialValidation = useValidateCredential(
     selectedProjectMetadata?.credentials?.github,
-    selectedProjectMetadata?.projectGithub
+    selectedProjectMetadata?.projectGithub,
   );
 
   const chainInfo = chains.find((i) => i.id === props.chainID);
@@ -139,7 +139,7 @@ export default function Form({
     });
 
     const recipientQuestion = schema.questions.find(
-      (q) => q.type === "recipient"
+      (q) => q.type === "recipient",
     );
 
     if (recipientQuestion) {
@@ -232,7 +232,7 @@ export default function Form({
       round.address,
       // assume the chainID is set and we are on the same chain
       // as the round we are applying for
-      props.chainID!
+      props.chainID!,
     );
     setHasExistingApplication(hasProjectAppliedToRound);
     setIsLoading(false);
@@ -301,7 +301,7 @@ export default function Form({
     !twitterCredentialValidation.isValid
   ) {
     projectRequirementsResult.push(
-      "Verification of project Twitter is required."
+      "Verification of project Twitter is required.",
     );
   }
 
@@ -318,7 +318,7 @@ export default function Form({
     !githubCredentialValidation.isValid
   ) {
     projectRequirementsResult.push(
-      "Verification of project Github is required."
+      "Verification of project Github is required.",
     );
   }
 
@@ -395,7 +395,7 @@ export default function Form({
                       required
                       feedback={
                         feedback.find(
-                          (fb) => fb.title === input.id.toString()
+                          (fb) => fb.title === input.id.toString(),
                         ) ?? {
                           type: "none",
                           message: "",
@@ -443,7 +443,7 @@ export default function Form({
                               disabled={preview}
                               feedback={
                                 feedback.find(
-                                  (fb) => fb.title === "isSafe"
+                                  (fb) => fb.title === "isSafe",
                                 ) ?? {
                                   type: "none",
                                   message: "",
@@ -481,7 +481,7 @@ export default function Form({
                         }
                         feedback={
                           feedback.find(
-                            (fb) => fb.title === input.id.toString()
+                            (fb) => fb.title === input.id.toString(),
                           ) ?? {
                             type: "none",
                             message: "",

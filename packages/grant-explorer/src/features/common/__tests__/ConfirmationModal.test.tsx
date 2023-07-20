@@ -13,7 +13,7 @@ describe("<ConfirmationModal />", () => {
         isOpen
         setIsOpen={jest.fn()}
         confirmButtonAction={jest.fn()}
-      />
+      />,
     );
 
     expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe("<ConfirmationModal />", () => {
         isOpen={false}
         setIsOpen={jest.fn()}
         confirmButtonAction={jest.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
@@ -38,7 +38,7 @@ describe("<ConfirmationModal />", () => {
         isOpen
         setIsOpen={setIsOpen}
         confirmButtonAction={jest.fn()}
-      />
+      />,
     );
 
     const cancelButton = screen.getByRole("button", { name: /Cancel/i });
@@ -56,7 +56,7 @@ describe("<ConfirmationModal />", () => {
         setIsOpen={jest.fn()}
         confirmButtonAction={jest.fn()}
         cancelButtonAction={cancelButtonAction}
-      />
+      />,
     );
 
     const cancelButton = screen.getByRole("button", { name: /Cancel/i });
@@ -72,7 +72,7 @@ describe("<ConfirmationModal />", () => {
         isOpen
         setIsOpen={jest.fn()}
         confirmButtonAction={confirmButtonAction}
-      />
+      />,
     );
 
     const confirmButton = screen.getByRole("button", { name: /Confirm/i });
@@ -90,7 +90,7 @@ describe("<ConfirmationModal />", () => {
         setIsOpen={jest.fn()}
         confirmButtonAction={confirmButtonAction}
         confirmButtonText={confirmButtonText}
-      />
+      />,
     );
 
     const confirmButton = screen.getByRole("button", {
@@ -109,7 +109,7 @@ describe("<ConfirmationModal />", () => {
         setIsOpen={jest.fn()}
         confirmButtonAction={jest.fn()}
         title={modalTitle}
-      />
+      />,
     );
 
     expect(screen.getByText(modalTitle)).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe("<ConfirmationModal />", () => {
         setIsOpen={jest.fn()}
         confirmButtonAction={jest.fn()}
         body={body}
-      />
+      />,
     );
 
     expect(screen.getByTestId(testId)).toBeInTheDocument();

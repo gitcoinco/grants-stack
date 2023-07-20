@@ -139,7 +139,7 @@ function ViewApplication() {
               navigate(path);
             } else {
               console.error(
-                `cannot build project path from id: ${props.projectID}`
+                `cannot build project path from id: ${props.projectID}`,
               );
             }
           }}

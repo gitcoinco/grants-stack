@@ -44,7 +44,7 @@ import { roundApplicationsToCSV } from "../api/exports";
 async function exportAndDownloadCSV(
   roundId: string,
   chainId: number,
-  chainName: string
+  chainName: string,
 ) {
   const csv = await roundApplicationsToCSV(roundId, chainId, chainName);
 
@@ -75,7 +75,7 @@ export default function ApplicationsReceived() {
   const { applications, isLoading } = useApplicationByRoundId(id!);
   const pendingApplications =
     applications?.filter(
-      (a) => a.status == ApplicationStatus.PENDING.toString()
+      (a) => a.status == ApplicationStatus.PENDING.toString(),
     ) || [];
 
   const [bulkSelect, setBulkSelect] = useState(false);
@@ -128,7 +128,7 @@ export default function ApplicationsReceived() {
             applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
           };
-        })
+        }),
       );
     }
   }, [applications, isLoading, bulkSelect]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -178,7 +178,7 @@ export default function ApplicationsReceived() {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         applications: applications!,
         selectedApplications: selected.filter(
-          (application) => application.status !== "PENDING"
+          (application) => application.status !== "PENDING",
         ),
       });
       setBulkSelect(false);
@@ -192,14 +192,14 @@ export default function ApplicationsReceived() {
   async function handleExportCsvClick(
     roundId: string,
     chainId: number,
-    chainName: string
+    chainName: string,
   ) {
     try {
       setIsCsvExportLoading(true);
       await exportAndDownloadCSV(roundId, chainId, chainName);
     } catch (e) {
       datadogLogs.logger.error(
-        `error: exportApplicationCsv - ${e}, id: ${roundId}`
+        `error: exportApplicationCsv - ${e}, id: ${roundId}`,
       );
       console.error("exportApplicationCsv", e);
     } finally {

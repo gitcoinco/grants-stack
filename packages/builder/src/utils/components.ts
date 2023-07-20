@@ -15,7 +15,7 @@ const defaultImgs = {
 export const getProjectImage = (
   loading: boolean,
   imgType: ImgTypes,
-  project?: Project | Metadata
+  project?: Project | Metadata,
 ) => {
   const img = project && project[imgType];
 

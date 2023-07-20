@@ -33,7 +33,7 @@ function ProjectForm({
       error: state.newGrant.error,
       formMetaData: state.projectForm.metadata,
     }),
-    shallowEqual
+    shallowEqual,
   );
 
   const [formValidation, setFormValidation] = useState(validation);
@@ -53,7 +53,7 @@ function ProjectForm({
       metadataSaved({
         ...props.formMetaData,
         [e.target.name]: value,
-      })
+      }),
     );
   };
 

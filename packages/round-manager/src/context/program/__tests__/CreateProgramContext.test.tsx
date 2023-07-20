@@ -39,7 +39,7 @@ describe("<CreateProgramProvider />", () => {
       (saveToIPFS as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -49,8 +49,8 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `storing-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -59,7 +59,7 @@ describe("<CreateProgramProvider />", () => {
       (deployProgramContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -69,8 +69,8 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `storing-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -80,7 +80,7 @@ describe("<CreateProgramProvider />", () => {
       (deployProgramContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -90,8 +90,8 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `deploying-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `deploying-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
       const firstCall = (deployProgramContract as jest.Mock).mock.calls[0];
       const actualMetadataPointer = firstCall[0].program.store;
@@ -112,8 +112,8 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `deploying-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `deploying-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
 
@@ -126,7 +126,7 @@ describe("<CreateProgramProvider />", () => {
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
-        })
+        }),
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -136,8 +136,8 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`
-        )
+          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`,
+        ),
       );
     });
 
@@ -148,7 +148,7 @@ describe("<CreateProgramProvider />", () => {
         transactionBlockNumber,
       });
       (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(
-        transactionBlockNumber
+        transactionBlockNumber,
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -158,8 +158,8 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
+          `indexing-status-is-${ProgressStatus.IS_SUCCESS}`,
+        ),
       );
     });
   });
@@ -186,15 +186,15 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `storing-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `storing-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
     it("sets contract deployment status to error when deployment fails", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
       (deployProgramContract as jest.Mock).mockRejectedValue(
-        new Error("Failed to deploy :(")
+        new Error("Failed to deploy :("),
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -203,8 +203,8 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `deploying-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `deploying-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -221,8 +221,8 @@ describe("<CreateProgramProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `indexing-status-is-${ProgressStatus.IS_ERROR}`
-        )
+          `indexing-status-is-${ProgressStatus.IS_ERROR}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -232,7 +232,7 @@ describe("<CreateProgramProvider />", () => {
         .mockReturnValue(
           new Promise(() => {
             /* do nothing.*/
-          })
+          }),
         );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -244,7 +244,7 @@ describe("<CreateProgramProvider />", () => {
       fireEvent.click(screen.getByTestId("create-program"));
 
       expect(
-        screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`)
+        screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`),
       ).not.toBeInTheDocument();
     });
 
@@ -258,21 +258,21 @@ describe("<CreateProgramProvider />", () => {
         .mockReturnValue(
           new Promise(() => {
             /* do nothing.*/
-          })
+          }),
         );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
       fireEvent.click(screen.getByTestId("create-program"));
 
       await screen.findByTestId(
-        `indexing-status-is-${ProgressStatus.IS_ERROR}`
+        `indexing-status-is-${ProgressStatus.IS_ERROR}`,
       );
 
       // retry create-program operation
       fireEvent.click(screen.getByTestId("create-program"));
 
       expect(
-        screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+        screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`),
       ).not.toBeInTheDocument();
     });
 
@@ -283,21 +283,21 @@ describe("<CreateProgramProvider />", () => {
         .mockReturnValue(
           new Promise(() => {
             /* do nothing.*/
-          })
+          }),
         );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
       fireEvent.click(screen.getByTestId("create-program"));
 
       await screen.findByTestId(
-        `deploying-status-is-${ProgressStatus.IS_ERROR}`
+        `deploying-status-is-${ProgressStatus.IS_ERROR}`,
       );
 
       // retry create-program operation
       fireEvent.click(screen.getByTestId("create-program"));
 
       expect(
-        screen.queryByTestId(`deploying-status-is-${ProgressStatus.IS_ERROR}`)
+        screen.queryByTestId(`deploying-status-is-${ProgressStatus.IS_ERROR}`),
       ).not.toBeInTheDocument();
     });
   });

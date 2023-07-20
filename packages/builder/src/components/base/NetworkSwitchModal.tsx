@@ -21,7 +21,7 @@ export default function NetworkSwitchModal({
 
   const networkName = useMemo(
     () => chains.find((i) => i.id === networkId)?.name as string,
-    [networkId, chains]
+    [networkId, chains],
   );
 
   const handleNetworkSwitch = async () => {

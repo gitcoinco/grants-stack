@@ -40,7 +40,7 @@ describe("TransactionBuilder", () => {
 
   it("should throw an error when round ID is undefined", () => {
     expect(
-      () => new TransactionBuilder({ ...round, id: undefined }, signer)
+      () => new TransactionBuilder({ ...round, id: undefined }, signer),
     ).toThrowError("Round ID is undefined");
   });
 
@@ -83,7 +83,7 @@ describe("TransactionBuilder", () => {
 
   it("should throw an error when there are no transactions to execute", async () => {
     await expect(transactionBuilder.execute()).rejects.toThrowError(
-      "No transactions to execute"
+      "No transactions to execute",
     );
   });
 

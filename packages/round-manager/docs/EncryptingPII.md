@@ -45,7 +45,7 @@ lit.encryptString("Hello World").then(async (res) => {
   // Decrypt
   const decryptedString = await lit.decryptString(
     encryptedString,
-    encryptedSymmetricKey
+    encryptedSymmetricKey,
   );
 
   console.log(decryptedString);

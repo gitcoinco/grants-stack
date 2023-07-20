@@ -75,7 +75,7 @@ export const initialCreateRoundState: CreateRoundState = {
 };
 
 export const CreateRoundContext = createContext<CreateRoundState>(
-  initialCreateRoundState
+  initialCreateRoundState,
 );
 
 export const CreateRoundProvider = ({
@@ -84,7 +84,7 @@ export const CreateRoundProvider = ({
   children: React.ReactNode;
 }) => {
   const [IPFSCurrentStatus, setIPFSCurrentStatus] = useState(
-    initialCreateRoundState.IPFSCurrentStatus
+    initialCreateRoundState.IPFSCurrentStatus,
   );
   const [votingContractDeploymentStatus, setVotingContractDeploymentStatus] =
     useState(initialCreateRoundState.votingContractDeploymentStatus);
@@ -93,7 +93,7 @@ export const CreateRoundProvider = ({
   const [roundContractDeploymentStatus, setRoundContractDeploymentStatus] =
     useState(initialCreateRoundState.roundContractDeploymentStatus);
   const [indexingStatus, setIndexingStatus] = useState(
-    initialCreateRoundState.indexingStatus
+    initialCreateRoundState.indexingStatus,
   );
 
   const providerProps: CreateRoundState = {
@@ -149,7 +149,7 @@ const _createRound = async ({
       roundMetadataWithProgramContractAddress.eligibility.requirements =
         roundMetadataWithProgramContractAddress.eligibility?.requirements.filter(
           // Loose comparison might be intentional here, leave as is
-          (obj) => obj.requirement != ""
+          (obj) => obj.requirement != "",
         );
     }
 
@@ -157,7 +157,7 @@ const _createRound = async ({
       await storeDocuments(
         setIPFSCurrentStatus,
         roundMetadataWithProgramContractAddress,
-        applicationQuestions
+        applicationQuestions,
       );
 
     const roundContractInputsWithPointers = {
@@ -194,17 +194,17 @@ const _createRound = async ({
         setRoundContractDeploymentStatus,
       ],
       roundContractInputsWithContracts,
-      signerOrProvider
+      signerOrProvider,
     );
 
     await waitForSubgraphToUpdate(
       setIndexingStatus,
       signerOrProvider,
-      transactionBlockNumber
+      transactionBlockNumber,
     );
   } catch (error) {
     datadogLogs.logger.error(
-      `error: _createRound ${error}. Data : ${createRoundData}`
+      `error: _createRound ${error}. Data : ${createRoundData}`,
     );
 
     console.error("_createRound", error);
@@ -232,7 +232,7 @@ export const useCreateRound = () => {
       setVotingContractDeploymentStatus,
       setPayoutContractDeploymentStatus,
       setRoundContractDeploymentStatus,
-      setIndexingStatus
+      setIndexingStatus,
     );
 
     return _createRound({
@@ -257,14 +257,14 @@ function resetToInitialState(
   setVotingDeployingStatus: SetStatusFn,
   setPayoutDeployingStatus: SetStatusFn,
   setDeployingStatus: SetStatusFn,
-  setIndexingStatus: SetStatusFn
+  setIndexingStatus: SetStatusFn,
 ): void {
   setStoringStatus(initialCreateRoundState.IPFSCurrentStatus);
   setVotingDeployingStatus(
-    initialCreateRoundState.votingContractDeploymentStatus
+    initialCreateRoundState.votingContractDeploymentStatus,
   );
   setPayoutDeployingStatus(
-    initialCreateRoundState.payoutContractDeploymentStatus
+    initialCreateRoundState.payoutContractDeploymentStatus,
   );
   setDeployingStatus(initialCreateRoundState.roundContractDeploymentStatus);
   setIndexingStatus(initialCreateRoundState.indexingStatus);
@@ -273,7 +273,7 @@ function resetToInitialState(
 async function storeDocuments(
   setStoringStatus: SetStatusFn,
   roundMetadataWithProgramContractAddress: CreateRoundData["roundMetadataWithProgramContractAddress"],
-  applicationQuestions: CreateRoundData["applicationQuestions"]
+  applicationQuestions: CreateRoundData["applicationQuestions"],
 ) {
   try {
     setStoringStatus(ProgressStatus.IN_PROGRESS);
@@ -311,13 +311,13 @@ async function storeDocuments(
 async function handleDeployUnifiedRoundContract(
   setDeploymentStatusFns: SetStatusFn[],
   round: Round,
-  signerOrProvider: Signer
+  signerOrProvider: Signer,
 ): Promise<number> {
   try {
     setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IN_PROGRESS));
     const { transactionBlockNumber } = await deployRoundContract(
       round,
-      signerOrProvider
+      signerOrProvider,
     );
 
     setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IS_SUCCESS));
@@ -333,7 +333,7 @@ async function handleDeployUnifiedRoundContract(
 async function waitForSubgraphToUpdate(
   setIndexingStatus: SetStatusFn,
   signerOrProvider: Signer,
-  transactionBlockNumber: number
+  transactionBlockNumber: number,
 ) {
   try {
     setIndexingStatus(ProgressStatus.IN_PROGRESS);

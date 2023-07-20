@@ -22,7 +22,7 @@ export default function NavbarCart(props: {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
-    listenForOutsideClicks({ listening, setListening, menuRef, setOpen })
+    listenForOutsideClicks({ listening, setListening, menuRef, setOpen }),
   );
 
   return (
@@ -171,7 +171,7 @@ function ProjectQuickView(props: { roundUrlPath: string; project: Project }) {
         </Link>
         <p className="text-xs text-ellipsis line-clamp-3">
           {renderToPlainText(
-            props.project.projectMetadata.description
+            props.project.projectMetadata.description,
           ).substring(0, 20)}
         </p>
       </div>

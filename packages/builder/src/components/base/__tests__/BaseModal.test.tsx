@@ -11,7 +11,7 @@ describe("Base Modal", () => {
     render(
       <BaseModal isOpen onClose={closeMock}>
         <div>Test Modal</div>
-      </BaseModal>
+      </BaseModal>,
     );
     expect(screen.queryByText("Test Modal")).toBeInTheDocument();
   });
@@ -20,7 +20,7 @@ describe("Base Modal", () => {
     render(
       <BaseModal isOpen={false} onClose={closeMock}>
         <div>Test Modal</div>
-      </BaseModal>
+      </BaseModal>,
     );
     expect(screen.queryByText("Test Modal")).not.toBeInTheDocument();
   });

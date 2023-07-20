@@ -49,7 +49,7 @@ const ApplyNowPage = () => {
     if (searchQuery) {
       const timeOutId = setTimeout(
         () => filterProjectsByTitle(searchQuery),
-        300
+        300,
       );
       return () => clearTimeout(timeOutId);
     } else {
@@ -70,7 +70,7 @@ const ApplyNowPage = () => {
     const exactMatches = roundsInApplicationPhase?.filter(
       (round) =>
         round.roundMetadata?.name?.toLocaleLowerCase() ===
-        query.toLocaleLowerCase()
+        query.toLocaleLowerCase(),
     );
 
     const nonExactMatches = roundsInApplicationPhase?.filter(
@@ -79,7 +79,7 @@ const ApplyNowPage = () => {
           ?.toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         round.roundMetadata?.name?.toLocaleLowerCase() !==
-          query.toLocaleLowerCase()
+          query.toLocaleLowerCase(),
     );
 
     setFilteredRoundsInApplicationPhase([
@@ -96,7 +96,7 @@ const ApplyNowPage = () => {
   useEffect(() => {
     const fetchRoundsInApplicationPhase = async () => {
       const { isLoading, error, rounds } = await getRoundsInApplicationPhase(
-        debugModeEnabled
+        debugModeEnabled,
       );
       setRoundsInApplicationPhase(rounds);
       setFilteredRoundsInApplicationPhase(rounds);
@@ -168,7 +168,7 @@ const ApplyNowPage = () => {
             {sortRoundsByTime(filteredRoundsInApplicationPhase, order).map(
               (round, index) => {
                 return <RoundCard key={index} round={round} />;
-              }
+              },
             )}
           </div>
         ) : (

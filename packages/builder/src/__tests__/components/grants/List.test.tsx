@@ -237,8 +237,8 @@ describe("<List />", () => {
 
         expect(
           screen.getByText(
-            "It looks like you haven't created any projects yet."
-          )
+            "It looks like you haven't created any projects yet.",
+          ),
         ).toBeInTheDocument();
       });
 
@@ -296,7 +296,7 @@ describe("<List />", () => {
           when(useLocalStorage as jest.Mock)
             .calledWith(
               "toggleRoundApplicationModal",
-              ApplicationModalStatus.Undefined
+              ApplicationModalStatus.Undefined,
             )
             .mockReturnValue([ApplicationModalStatus.Undefined]);
         });
@@ -319,7 +319,7 @@ describe("<List />", () => {
           when(useLocalStorage as jest.Mock)
             .calledWith(
               "toggleRoundApplicationModal",
-              ApplicationModalStatus.Undefined
+              ApplicationModalStatus.Undefined,
             )
             .mockReturnValue([ApplicationModalStatus.Undefined]);
         });
@@ -410,7 +410,7 @@ describe("<List />", () => {
           when(useLocalStorage as jest.Mock)
             .calledWith(
               "toggleRoundApplicationModal",
-              ApplicationModalStatus.Undefined
+              ApplicationModalStatus.Undefined,
             )
             .mockReturnValue([ApplicationModalStatus.NotApplied]);
 
@@ -418,7 +418,7 @@ describe("<List />", () => {
 
           expect(screen.getByText("Apply to Grant Round")).toBeInTheDocument();
           expect(
-            screen.getByText("Time to get your project funded!")
+            screen.getByText("Time to get your project funded!"),
           ).toBeInTheDocument();
         });
 
@@ -432,7 +432,7 @@ describe("<List />", () => {
           when(useLocalStorage as jest.Mock)
             .calledWith(
               "toggleRoundApplicationModal",
-              ApplicationModalStatus.Undefined
+              ApplicationModalStatus.Undefined,
             )
             .mockReturnValue([ApplicationModalStatus.NotApplied]);
 
@@ -440,7 +440,7 @@ describe("<List />", () => {
 
           expect(screen.queryByText("Apply to Grant Round")).toBeNull();
           expect(
-            screen.queryByText("Time to get your project funded!")
+            screen.queryByText("Time to get your project funded!"),
           ).toBeNull();
         });
       });

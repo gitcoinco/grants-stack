@@ -30,7 +30,7 @@ const ValidationSchema = yup.object().shape({
 });
 
 export default function ApplicationEligibilityForm(
-  props: ApplicationEligibilityFormProps
+  props: ApplicationEligibilityFormProps,
 ) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
@@ -170,7 +170,7 @@ function DynamicRequirementsForm(props: {
   register: UseFormRegister<Round>;
   append: (
     newRequirement: { requirement: string },
-    options?: FieldArrayMethodProps
+    options?: FieldArrayMethodProps,
   ) => void;
   remove: (index?: number | number[]) => void;
   replace: (
@@ -180,7 +180,7 @@ function DynamicRequirementsForm(props: {
         }
       | {
           requirement: string;
-        }[]
+        }[],
   ) => void;
 }) {
   const { fields, register, append, remove, replace } = props;
@@ -204,7 +204,7 @@ function DynamicRequirementsForm(props: {
             <div className="flex flex-row items-center">
               <Input
                 {...register(
-                  `roundMetadata.eligibility.requirements.${index}.requirement`
+                  `roundMetadata.eligibility.requirements.${index}.requirement`,
                 )}
                 type="text"
                 placeholder="Enter an eligibility requirement."

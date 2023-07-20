@@ -114,19 +114,19 @@ describe("round application builder", () => {
       project,
       roundApplicationMetadata,
       "0x000000000000000000000000000000000000bEAF",
-      "testnet"
+      "testnet",
     );
     const application = await builder.build("0x1234", formInputs);
 
     expect(application.project).toEqual(project);
     expect(application.round).toEqual("0x1234");
     expect(application.recipient).toEqual(
-      "0x000000000000000000000000000000000000bEAF"
+      "0x000000000000000000000000000000000000bEAF",
     );
 
     // PROJECT and RECIPIENT are not included in the answers
     expect(application.answers.length).toEqual(
-      roundApplicationMetadata.applicationSchema.questions.length - 2
+      roundApplicationMetadata.applicationSchema.questions.length - 2,
     );
 
     const emailAnswer = application.answers[0]!;
@@ -134,7 +134,7 @@ describe("round application builder", () => {
     expect(emailAnswer.encryptedAnswer).not.toBeUndefined();
     expect(emailAnswer.encryptedAnswer!.ciphertext).not.toBeUndefined();
     expect(
-      emailAnswer.encryptedAnswer!.encryptedSymmetricKey
+      emailAnswer.encryptedAnswer!.encryptedSymmetricKey,
     ).not.toBeUndefined();
   });
 });

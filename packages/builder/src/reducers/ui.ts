@@ -11,7 +11,7 @@ const initialState: UIState = {
 
 export const uiReducer = (
   state: UIState = initialState,
-  action: UIActions
+  action: UIActions,
 ): UIState => {
   switch (action.type) {
     case UI_ALERT_ADDED: {

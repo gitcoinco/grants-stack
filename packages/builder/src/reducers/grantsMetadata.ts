@@ -27,7 +27,7 @@ export const initialState: GrantsMetadataState = {};
 
 export const grantsMetadataReducer = (
   state: GrantsMetadataState = initialState,
-  action: GrantMetadataActions
+  action: GrantMetadataActions,
 ): GrantsMetadataState => {
   switch (action.type) {
     case GRANT_METADATA_LOADING_URI: {

@@ -40,7 +40,7 @@ describe("<VerificationForm />", () => {
     expect(gitHubIcon).toBeInTheDocument();
 
     expect(
-      screen.getByLabelText("Project Twitter Account")
+      screen.getByLabelText("Project Twitter Account"),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Your GitHub Username")).toBeInTheDocument();
     expect(screen.getByLabelText("GitHub Organization")).toBeInTheDocument();
@@ -71,16 +71,16 @@ describe("<VerificationForm />", () => {
 
     await waitFor(() => {
       const errorCountMessage = screen.getByText(
-        "There were 3 errors with your form submission"
+        "There were 3 errors with your form submission",
       );
       const twitterUserErrors = screen.getAllByText(
-        "Project Twitter should not include an @ symbol"
+        "Project Twitter should not include an @ symbol",
       );
       const githubUserErrors = screen.getAllByText(
-        "Your GitHub Username should not be a URL"
+        "Your GitHub Username should not be a URL",
       );
       const githubProjectErrors = screen.getAllByText(
-        "GitHub Organization should not be a URL"
+        "GitHub Organization should not be a URL",
       );
 
       expect(errorCountMessage).toBeInTheDocument();

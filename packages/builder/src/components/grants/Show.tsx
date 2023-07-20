@@ -40,12 +40,12 @@ function Project() {
     const bannerImg = getProjectImage(
       loading,
       ImgTypes.bannerImg,
-      grantMetadata?.metadata
+      grantMetadata?.metadata,
     );
     const logoImg = getProjectImage(
       loading,
       ImgTypes.logoImg,
-      grantMetadata?.metadata
+      grantMetadata?.metadata,
     );
 
     return {

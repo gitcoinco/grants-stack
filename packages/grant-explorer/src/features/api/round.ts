@@ -76,7 +76,7 @@ export type ContributionHistoryState =
 export async function getRoundById(
   roundId: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: any,
 ): Promise<Round> {
   try {
     // get the subgraph for round by $roundId
@@ -126,13 +126,13 @@ export async function getRoundById(
         }
       `,
       chainId,
-      { roundId }
+      { roundId },
     );
 
     const round: RoundResult = res.data.rounds[0];
 
     const roundMetadata: RoundMetadata = await fetchFromIPFS(
-      round.roundMetaPtr.pointer
+      round.roundMetaPtr.pointer,
     );
 
     round.projects = round.projects.map((project) => {
@@ -144,14 +144,14 @@ export async function getRoundById(
 
     const approvedProjectsWithMetadata = await loadApprovedProjectsMetadata(
       round,
-      chainId
+      chainId,
     );
 
     return {
       id: roundId,
       roundMetadata,
       applicationsStartTime: new Date(
-        parseInt(round.applicationsStartTime) * 1000
+        parseInt(round.applicationsStartTime) * 1000,
       ),
       applicationsEndTime: new Date(parseInt(round.applicationsEndTime) * 1000),
       roundStartTime: new Date(parseInt(round.roundStartTime) * 1000),
@@ -185,7 +185,7 @@ export function convertStatus(status: string | number) {
 async function loadApprovedProjectsMetadata(
   round: RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: any,
 ): Promise<Project[]> {
   if (round.projects.length === 0) {
     return [];
@@ -195,7 +195,7 @@ async function loadApprovedProjectsMetadata(
 
   const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map(
     (project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId)
+      fetchMetadataAndMapProject(project, chainId),
   );
 
   return Promise.all(fetchApprovedProjectMetadata);
@@ -204,7 +204,7 @@ async function loadApprovedProjectsMetadata(
 async function fetchMetadataAndMapProject(
   project: RoundProjectResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: any,
 ): Promise<Project> {
   const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
   // NB: applicationData can be in two formats:
@@ -232,7 +232,7 @@ async function fetchMetadataAndMapProject(
 export async function getProjectOwners(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
-  projectRegistryId: string
+  projectRegistryId: string,
 ) {
   try {
     // get the subgraph for project owners by $projectRegistryId
@@ -253,13 +253,13 @@ export async function getProjectOwners(
       `,
       chainId,
       { projectRegistryId },
-      true
+      true,
     );
 
     return (
       res.data?.projects[0]?.accounts.map(
         (account: { account: { address: string } }) =>
-          ethers.utils.getAddress(account.account.address)
+          ethers.utils.getAddress(account.account.address),
       ) || []
     );
   } catch (error) {
@@ -270,7 +270,7 @@ export async function getProjectOwners(
 
 export const useContributionHistory = (
   chainIds: number[],
-  rawAddress: string
+  rawAddress: string,
 ) => {
   const [state, setState] = useState<ContributionHistoryState>({
     type: "loading",
@@ -294,7 +294,7 @@ export const useContributionHistory = (
         const client = new AlloIndexerClient(
           fetch.bind(window),
           process.env.REACT_APP_ALLO_API_URL,
-          chainId
+          chainId,
         );
 
         let address = "";
@@ -317,7 +317,7 @@ export const useContributionHistory = (
           .catch((error) => {
             console.log(
               `Error fetching contribution history for chain ${chainId}:`,
-              error
+              error,
             );
             return { chainId, error: error.toString() as string, data: [] };
           });

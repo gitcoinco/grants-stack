@@ -77,7 +77,7 @@ describe("<NavbarCart/>", () => {
     });
 
     expect(screen.queryAllByTestId("project-quick-view").length).toEqual(
-      cart.length
+      cart.length,
     );
   });
 });

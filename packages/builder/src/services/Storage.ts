@@ -49,7 +49,7 @@ export class LocalStorage {
         new StorageItem({
           key: key,
           value: value,
-        })
+        }),
       );
     }
 

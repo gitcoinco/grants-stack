@@ -18,7 +18,7 @@ export type UIActions = UIAlertAddedAction | UIAlertRemovedAction;
 export const addAlert = (
   type: AlertTypes,
   title: string | undefined,
-  body: string | undefined
+  body: string | undefined,
 ): UIActions => ({
   type: UI_ALERT_ADDED,
   payload: newAlert(type, title!, body!),

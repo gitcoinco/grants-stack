@@ -12,6 +12,7 @@
     "compile": "pnpm --filter contracts run compile ",
     "test": "pnpm run test",
     "typecheck": "turbo run typecheck",
+    "format:check": "pnpm -r --filter=\\!eslint-config-gitcoin exec prettier --check .",
     "// round manager script": "====== packages/round-manager specific ======",
     "rm-build": "pnpm --filter round-manager run build",
     "rm-test": "pnpm --filter round-manager run test",

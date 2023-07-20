@@ -63,7 +63,7 @@ export const ApplicationContext = createContext<
 
 const applicationReducer = (
   state: ApplicationState,
-  action: Action
+  action: Action,
 ): ApplicationState => {
   switch (action.type) {
     case ActionType.SET_APPLICATION:
@@ -111,7 +111,7 @@ export const ApplicationProvider = ({
 }) => {
   const [state, dispatch] = useReducer(
     applicationReducer,
-    initialApplicationState
+    initialApplicationState,
   );
 
   const providerProps = {
@@ -129,7 +129,7 @@ export const ApplicationProvider = ({
 function fetchApplicationById(
   dispatch: Dispatch,
   id: string,
-  walletProvider: Web3Provider
+  walletProvider: Web3Provider,
 ) {
   datadogLogs.logger.info(`fetchApplicationById: id - ${id}`);
 
@@ -149,7 +149,7 @@ function fetchApplicationById(
 const fetchApplicationsByRoundId = async (
   dispatch: Dispatch,
   roundId: string,
-  walletProvider: Web3Provider
+  walletProvider: Web3Provider,
 ) => {
   datadogLogs.logger.info(`fetchApplicationsByRoundId: roundId - ${roundId}`);
 
@@ -159,11 +159,11 @@ const fetchApplicationsByRoundId = async (
       dispatch({
         type: ActionType.SET_ROUND_APPLICATIONS,
         payload: applications,
-      })
+      }),
     )
     .catch((error) => {
       datadogLogs.logger.error(
-        `error: fetchApplicationsByRoundId - ${error} roundId - ${roundId}`
+        `error: fetchApplicationsByRoundId - ${error} roundId - ${roundId}`,
       );
       console.error(`fetchApplicationByRoundId roundId - ${roundId}`, error);
       dispatch({
@@ -175,7 +175,7 @@ const fetchApplicationsByRoundId = async (
 };
 
 export const useApplicationById = (
-  id: string
+  id: string,
 ): {
   application: GrantApplication | undefined;
   isLoading: boolean;
@@ -185,7 +185,7 @@ export const useApplicationById = (
 
   if (context === undefined) {
     throw new Error(
-      "useApplicationById must be used within a ApplicationProvider"
+      "useApplicationById must be used within a ApplicationProvider",
     );
   }
 
@@ -200,7 +200,7 @@ export const useApplicationById = (
 
   return {
     application: context.state.applications.find(
-      (application) => application.id === id
+      (application) => application.id === id,
     ),
     isLoading: context.state.isLoading,
     getApplicationByIdError: context.state.getApplicationByIdError,
@@ -208,7 +208,7 @@ export const useApplicationById = (
 };
 
 export const useApplicationByRoundId = (
-  roundId: string
+  roundId: string,
 ): {
   applications: GrantApplication[] | undefined;
   isLoading: boolean;
@@ -218,7 +218,7 @@ export const useApplicationByRoundId = (
 
   if (context === undefined) {
     throw new Error(
-      "useApplicationByRoundId must be used within a ApplicationProvider"
+      "useApplicationByRoundId must be used within a ApplicationProvider",
     );
   }
 
@@ -228,7 +228,7 @@ export const useApplicationByRoundId = (
     fetchApplicationsByRoundId(
       context.dispatch,
       roundId?.toLowerCase(),
-      walletProvider
+      walletProvider,
     );
   }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 

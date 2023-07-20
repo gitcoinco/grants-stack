@@ -54,8 +54,8 @@ export default function RoundStats() {
           params.id!,
           params.registryAddress!,
           params.chainId!,
-          rounds
-        )
+          rounds,
+        ),
       );
     } else {
       setNoStats(true);
@@ -103,7 +103,7 @@ export default function RoundStats() {
     description: any,
     container: any,
     pt: boolean,
-    key: string
+    key: string,
   ) => (
     <div
       key={key}
@@ -144,7 +144,7 @@ export default function RoundStats() {
           />
         </>,
         false,
-        "render-round-stats"
+        "render-round-stats",
       )}
 
       {details.map((detail: any, index: any) =>
@@ -192,8 +192,8 @@ export default function RoundStats() {
             />
           </>,
           true,
-          `details-${index}`
-        )
+          `details-${index}`,
+        ),
       )}
     </>
   );

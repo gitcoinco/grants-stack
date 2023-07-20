@@ -75,17 +75,17 @@ interface SubmitDonationParams {
 
 export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
   const [tokenApprovalStatus, setTokenApprovalStatus] = useState(
-    initialQFDonationState.tokenApprovalStatus
+    initialQFDonationState.tokenApprovalStatus,
   );
   const [voteStatus, setVoteStatus] = useState(
-    initialQFDonationState.voteStatus
+    initialQFDonationState.voteStatus,
   );
   const [indexingStatus, setIndexingStatus] = useState(
-    initialQFDonationState.indexingStatus
+    initialQFDonationState.indexingStatus,
   );
   const [txHash, setTxHash] = useState(initialQFDonationState.txHash);
   const [txBlockNumber, setTxBlockNumber] = useState(
-    initialQFDonationState.txBlockNumber
+    initialQFDonationState.txBlockNumber,
   );
 
   const providerProps: QFDonationState = {
@@ -109,7 +109,7 @@ export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const QFDonationContext = createContext<QFDonationState>(
-  initialQFDonationState
+  initialQFDonationState,
 );
 
 function resetToInitialState(context: QFDonationState) {
@@ -146,7 +146,7 @@ async function _submitDonations({
       donationToken,
       totalDonation,
       votingStrategy,
-      context
+      context,
     );
 
     // Invoke Vote
@@ -156,7 +156,7 @@ async function _submitDonations({
       donationToken,
       donations,
       totalDonation,
-      context
+      context,
     );
 
     // Wait for indexing on subgraph
@@ -198,7 +198,7 @@ async function approveTokenForDonation(
   token: PayoutToken,
   amount: BigNumber,
   votingStrategy: string,
-  context: QFDonationState
+  context: QFDonationState,
 ): Promise<void> {
   const { setTokenApprovalStatus } = context;
 
@@ -215,17 +215,17 @@ async function approveTokenForDonation(
       signerOrProvider,
       votingStrategy,
       token.address,
-      amount
+      amount,
     );
 
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: approveTokenForDonation - ${error}. Data - ${amount} ${token.name}`
+      `error: approveTokenForDonation - ${error}. Data - ${amount} ${token.name}`,
     );
     console.error(
       `approveTokenForDonation - amount ${amount} ${token.name}`,
-      error
+      error,
     );
     setTokenApprovalStatus(ProgressStatus.IS_ERROR);
     throw error;
@@ -238,7 +238,7 @@ async function vote(
   token: PayoutToken,
   donations: CartDonation[],
   totalDonation: BigNumber,
-  context: QFDonationState
+  context: QFDonationState,
 ): Promise<void> {
   const { setVoteStatus, setTxHash, setTxBlockNumber } = context;
 
@@ -251,7 +251,7 @@ async function vote(
       roundId,
       signerOrProvider,
       encodedVotes,
-      totalDonation
+      totalDonation,
     );
 
     setVoteStatus(ProgressStatus.IS_SUCCESS);
@@ -259,11 +259,11 @@ async function vote(
     setTxBlockNumber(txBlockNumber);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: approveTokenForDonation - ${error}. Data - ${vote.toString()}`
+      `error: approveTokenForDonation - ${error}. Data - ${vote.toString()}`,
     );
     console.error(
       `approveTokenForDonation - roundId ${roundId}, token ${token.name}`,
-      error
+      error,
     );
     setVoteStatus(ProgressStatus.IS_ERROR);
     throw error;
@@ -272,13 +272,13 @@ async function vote(
 
 async function waitForSubgraphToUpdate(
   signerOrProvider: Signer,
-  context: QFDonationState
+  context: QFDonationState,
 ) {
   const { setIndexingStatus, txBlockNumber } = context;
 
   try {
     datadogLogs.logger.error(
-      `waitForSubgraphToUpdate: txnBlockNumber - ${txBlockNumber}`
+      `waitForSubgraphToUpdate: txnBlockNumber - ${txBlockNumber}`,
     );
 
     setIndexingStatus(ProgressStatus.IN_PROGRESS);
@@ -290,12 +290,12 @@ async function waitForSubgraphToUpdate(
     setIndexingStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: waitForSubgraphToUpdate - ${error}. Data - ${txBlockNumber}`
+      `error: waitForSubgraphToUpdate - ${error}. Data - ${txBlockNumber}`,
     );
 
     console.error(
       `waitForSubgraphToUpdate. TxnBlockNumber - ${txBlockNumber}`,
-      error
+      error,
     );
 
     setIndexingStatus(ProgressStatus.IS_ERROR);
@@ -305,7 +305,7 @@ async function waitForSubgraphToUpdate(
 
 function encodeQFVotes(
   donationToken: PayoutToken,
-  donations: CartDonation[]
+  donations: CartDonation[],
 ): BytesLike[] {
   const encodedVotes: BytesLike[] = [];
 
@@ -323,8 +323,8 @@ function encodeQFVotes(
     encodedVotes.push(
       ethers.utils.defaultAbiCoder.encode(
         ["address", "uint256", "address", "bytes32", "uint256"],
-        vote
-      )
+        vote,
+      ),
     );
   });
 

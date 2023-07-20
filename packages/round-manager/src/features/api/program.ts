@@ -14,7 +14,7 @@ import { graphql_fetch } from "common";
  */
 export async function listPrograms(
   address: string,
-  signerOrProvider: Web3Instance["provider"]
+  signerOrProvider: Web3Instance["provider"],
 ): Promise<Program[]> {
   try {
     // fetch chain id
@@ -45,7 +45,7 @@ export async function listPrograms(
               }
             `,
       chainId,
-      { address: address.toLowerCase() }
+      { address: address.toLowerCase() },
     );
 
     const programs: Program[] = [];
@@ -57,7 +57,7 @@ export async function listPrograms(
         id: program.id,
         metadata,
         operatorWallets: program.roles[0].accounts.map(
-          (account: { address: string }) => account.address
+          (account: { address: string }) => account.address,
         ),
         chain: {
           id: chainId,
@@ -78,7 +78,7 @@ export async function listPrograms(
 // TODO(shavinac) change params to expect chainId instead of signerOrProvider
 export async function getProgramById(
   programId: string,
-  signerOrProvider: Web3Instance["provider"]
+  signerOrProvider: Web3Instance["provider"],
 ): Promise<Program> {
   try {
     // fetch chain id
@@ -107,7 +107,7 @@ export async function getProgramById(
         }
       `,
       chainId,
-      { programId }
+      { programId },
     );
 
     const programDataFromGraph = res.data.programs[0];
@@ -117,7 +117,7 @@ export async function getProgramById(
       id: programDataFromGraph.id,
       metadata,
       operatorWallets: programDataFromGraph.roles[0].accounts.map(
-        (account: { address: string }) => account.address
+        (account: { address: string }) => account.address,
       ),
       chain: {
         id: chainId,
@@ -151,7 +151,7 @@ export async function deployProgramContract({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       _programFactoryContract.address!,
       _programFactoryContract.abi,
-      signerOrProvider
+      signerOrProvider,
     );
 
     operatorWallets = operatorWallets.filter((e) => e !== "");
@@ -165,7 +165,7 @@ export async function deployProgramContract({
 
     if (receipt.events) {
       const event = receipt.events.find(
-        (e: { event: string }) => e.event === "ProgramCreated"
+        (e: { event: string }) => e.event === "ProgramCreated",
       );
       if (event && event.args) {
         programAddress = event.args.programContractAddress; // program contract address from the event
@@ -187,10 +187,10 @@ export async function deployProgramContract({
 
 function encodeInputParameters(
   metadata: MetadataPointer,
-  operatorWallets: string[]
+  operatorWallets: string[],
 ) {
   return ethers.utils.defaultAbiCoder.encode(
     ["tuple(uint256 protocol, string pointer)", "address[]", "address[]"],
-    [metadata, operatorWallets.slice(0, 1), operatorWallets]
+    [metadata, operatorWallets.slice(0, 1), operatorWallets],
   );
 }

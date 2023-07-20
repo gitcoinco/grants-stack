@@ -90,14 +90,14 @@ function fetchRoundsById(dispatch: Dispatch, chainId: string, roundId: string) {
   getRoundById(roundId, chainId)
     .then((round) => dispatch({ type: ActionType.ADD_ROUND, payload: round }))
     .catch((error) =>
-      dispatch({ type: ActionType.SET_ERROR_GET_ROUND, payload: error })
+      dispatch({ type: ActionType.SET_ERROR_GET_ROUND, payload: error }),
     )
     .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
 }
 
 export const useRoundById = (
   chainId: string,
-  roundId: string
+  roundId: string,
 ): {
   round?: Round;
   isLoading: boolean;
@@ -112,7 +112,7 @@ export const useRoundById = (
     context.dispatch({ type: ActionType.SET_ROUND_ID, payload: roundId });
     if (roundId) {
       const existingRound = context.state.rounds.find(
-        (round) => round.id === roundId
+        (round) => round.id === roundId,
       );
 
       if (!existingRound?.token) {

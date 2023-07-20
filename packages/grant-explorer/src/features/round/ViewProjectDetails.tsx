@@ -68,7 +68,7 @@ const verifier = new PassportVerifier();
 
 export default function ViewProjectDetails() {
   datadogLogs.logger.info(
-    "====> Route: /round/:chainId/:roundId/:applicationId"
+    "====> Route: /round/:chainId/:roundId/:applicationId",
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const { chainId, roundId, applicationId } = useParams();
@@ -77,7 +77,7 @@ export default function ViewProjectDetails() {
   const { round, isLoading } = useRoundById(chainId!, roundId!);
 
   const projectToRender = round?.approvedProjects?.find(
-    (project) => project.grantApplicationId === applicationId
+    (project) => project.grantApplicationId === applicationId,
   );
 
   const currentTime = new Date();
@@ -87,7 +87,7 @@ export default function ViewProjectDetails() {
     useCart();
 
   const isAlreadyInCart = cart.some(
-    (project) => project.grantApplicationId === applicationId
+    (project) => project.grantApplicationId === applicationId,
   );
 
   const breadCrumbs = [
@@ -263,7 +263,7 @@ function AboutProject(props: { projectToRender: Project }) {
               verifiableCredential,
               verifier,
               provider,
-              projectToRender
+              projectToRender,
             );
           }
         }
@@ -503,22 +503,22 @@ function Sidebar(props: {
 export function useRoundApprovedApplication(
   chainId: number,
   roundId: string,
-  projectId: string
+  projectId: string,
 ) {
   // use chain id and project id from url params
   const client = new Client(
     boundFetch,
     process.env.REACT_APP_ALLO_API_URL ?? "",
-    chainId
+    chainId,
   );
 
   return useSWR([roundId, "/projects"], async ([roundId]) => {
     const applications = await client.getRoundApplications(
-      utils.getAddress(roundId.toLowerCase())
+      utils.getAddress(roundId.toLowerCase()),
     );
 
     return applications.find(
-      (app) => app.projectId === projectId && app.status === "APPROVED"
+      (app) => app.projectId === projectId && app.status === "APPROVED",
     );
   });
 }
@@ -529,13 +529,13 @@ export function ProjectStats() {
   const { round } = useRoundById(chainId!, roundId!);
 
   const projectToRender = round?.approvedProjects?.find(
-    (project) => project.grantApplicationId === applicationId
+    (project) => project.grantApplicationId === applicationId,
   );
 
   const { data: application } = useRoundApprovedApplication(
     Number(chainId),
     roundId as string,
-    projectToRender?.projectRegistryId as string
+    projectToRender?.projectRegistryId as string,
   );
 
   const timeRemaining = round?.roundEndTime
@@ -612,7 +612,7 @@ function CartButtonToggle(props: {
 function vcProviderMatchesProject(
   provider: string,
   verifiableCredential: VerifiableCredential,
-  project: Project | undefined
+  project: Project | undefined,
 ) {
   let vcProviderMatchesProject = false;
   if (provider === "twitter") {
@@ -641,14 +641,14 @@ async function isVerified(
   verifiableCredential: VerifiableCredential,
   verifier: PassportVerifier,
   provider: string,
-  project: Project | undefined
+  project: Project | undefined,
 ) {
   const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(
     provider,
     verifiableCredential,
-    project
+    project,
   );
   const vcIssuedToAtLeastOneProjectOwner = (
     project?.projectMetadata?.owners ?? []
