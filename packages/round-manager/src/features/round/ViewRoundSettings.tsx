@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Listbox, RadioGroup, Tab, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -58,7 +56,7 @@ const compareRounds = (
   newRoundData: Round
 ): EditedGroups => {
   // create deterministic copies of the data
-  const dOldRound: Round = _.cloneDeep(oldRoundData)!;
+  const dOldRound: Round = _.cloneDeep(oldRoundData);
   const dNewRound: Round = _.cloneDeep(newRoundData);
 
   return {
@@ -167,7 +165,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
             `Must be greater than previous value of ${round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}.`
           ),
         matchingCapAmount: yup.number().when("matchingCap", {
-          is: (val: any) => val === "yes",
+          is: (val: string) => val === "yes",
           then: yup
             .number()
             .typeError("Invalid value.")
@@ -179,7 +177,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
           otherwise: yup.number().notRequired(),
         }),
         minDonationThresholdAmount: yup.number().when("minDonationThreshold", {
-          is: (val: any) => val === "yes",
+          is: (val: string) => val === "yes",
           then: yup
             .number()
             .typeError("Invalid value.")
@@ -209,9 +207,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   useEffect(() => {
     setHasChanged(
-      Object.values(compareRounds(round!, editedRound!)).some(
-        (value) => value === true
-      )
+      Object.values(compareRounds(round!, editedRound!)).some((value) => value)
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
@@ -512,10 +508,10 @@ function DetailsPage(props: {
   editMode: EditMode;
   editedRound: Round;
   setEditedRound: (round: Round) => void;
-  control: Control<Round, any>;
+  control: Control<Round, unknown>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
-  onAddRequirement: (e: any) => void;
+  onAddRequirement: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const { chain } = useNetwork();
 
@@ -1073,7 +1069,7 @@ function SupportTypeDropdown(props: {
       <Listbox
         disabled={props.disabled}
         {...props.field}
-        onChange={(e: any) => {
+        onChange={(e) => {
           props.field.onChange(e);
           props.setEditedRound({
             ...props.editedRound,
@@ -1165,14 +1161,13 @@ function RoundApplicationPeriod(props: {
   editMode: EditMode;
   editedRound: Round;
   setEditedRound: (round: Round) => void;
-  control: Control<Round, any>;
+  control: Control<Round, unknown>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
 }) {
   const { editedRound } = props;
 
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
-  const [applicationEndDate, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
 
   const yesterday = moment().subtract(1, "day");
@@ -1183,10 +1178,6 @@ function RoundApplicationPeriod(props: {
 
   const disableBeforeApplicationStartDate = (current: moment.Moment) => {
     return current.isAfter(applicationStartDate);
-  };
-
-  const disableBeforeApplicationEndDate = (current: moment.Moment) => {
-    return current.isAfter(applicationEndDate);
   };
 
   const disableBeforeRoundStartDate = (current: moment.Moment) => {
@@ -1357,7 +1348,6 @@ function RoundApplicationPeriod(props: {
                         {...props.register("applicationsEndTime")}
                         closeOnSelect
                         onChange={(date) => {
-                          setApplicationEndDate(moment(date));
                           field.onChange(moment(date).toDate());
                           props.setEditedRound({
                             ...props.editedRound,
@@ -1665,10 +1655,10 @@ function Funding(props: {
   editMode: EditMode;
   editedRound: Round;
   setEditedRound: (round: Round) => void;
-  control: Control<Round, any>;
+  control: Control<Round, unknown>;
   register: UseFormRegister<Round>;
   resetField: UseFormResetField<Round>;
-  errors: any;
+  errors: FieldErrors<Round>;
 }) {
   const { editedRound } = props;
 
@@ -1843,7 +1833,7 @@ function Funding(props: {
                     !props.editMode.canEdit &&
                     !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap !== false
+                      ?.matchingCap
                   }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
