@@ -36,6 +36,7 @@ import {
 } from "../common/styles";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import CartNotification from "../common/CartNotification";
+import { C } from "msw/lib/glossary-dc3fd077";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -354,7 +355,7 @@ const ProjectList = (props: {
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
-  chainId: string;
+  chainId: ChainId;
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
@@ -385,7 +386,7 @@ function ProjectCard(props: {
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
-  chainId: string;
+  chainId: ChainId;
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
