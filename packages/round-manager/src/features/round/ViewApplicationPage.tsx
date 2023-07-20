@@ -70,6 +70,7 @@ import {
   getPayoutRoundDescription,
 } from "../common/Utils";
 import moment from "moment";
+import ApplicationDirectPayout from "./ApplicationDirectPayout";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -419,6 +420,21 @@ export default function ViewApplicationPage() {
     return "done";
   };
 
+  const showReviewButton = () =>
+    application?.payoutStrategy?.strategyName === ROUND_PAYOUT_DIRECT &&
+    application?.status === "PENDING" &&
+    application?.inReview === false;
+
+  const showApproveReject = () => {
+    if (application?.payoutStrategy?.strategyName !== ROUND_PAYOUT_DIRECT)
+      return true;
+
+    if (application?.status === "PENDING" && !application?.inReview) {
+      return false;
+    }
+    return true;
+  };
+
   return isLoading ? (
     <Spinner text="We're fetching the round application." />
   ) : (
@@ -439,7 +455,7 @@ export default function ViewApplicationPage() {
               </Link>
               <ChevronRightIcon className="h-6 w-6" />
               <Link to={`/round/${id}`}>
-                @<span>{"Round Details"}</span>
+                <span>{"Round Details"}</span>
               </Link>
               {round && <RoundBadgeStatus round={round} />}
             </div>
@@ -566,76 +582,81 @@ export default function ViewApplicationPage() {
                     </div>
                     <div className="mt-16 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                       <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
-                        {application &&
-                          application.payoutStrategy?.strategyName ==
-                            ROUND_PAYOUT_DIRECT && (
-                            <Button
-                              type="button"
-                              $variant={
-                                application?.inReview ? "solid" : "outline"
-                              }
-                              className="inline-flex justify-center px-4 py-2 text-sm m-auto"
-                              disabled={isLoading || isUpdateLoading}
-                              onClick={() =>
-                                confirmReviewDecision(
-                                  ApplicationStatus.IN_REVIEW
-                                )
-                              }
-                            >
-                              <CheckIcon
-                                className="h-5 w-5 mr-1"
-                                aria-hidden="true"
-                              />
-                              {application?.inReview
-                                ? "Reviewing"
-                                : "In Review"}
-                            </Button>
-                          )}
+                        {/* IN REVIEW */}
+                        {showReviewButton() && (
+                          <Button
+                            type="button"
+                            $variant={
+                              application?.inReview ? "solid" : "outline"
+                            }
+                            className="inline-flex justify-center px-4 py-2 text-sm m-auto"
+                            disabled={isLoading || isUpdateLoading}
+                            onClick={() =>
+                              confirmReviewDecision(ApplicationStatus.IN_REVIEW)
+                            }
+                          >
+                            <CheckIcon
+                              className="h-5 w-5 mr-1"
+                              aria-hidden="true"
+                            />
+                            {application?.inReview ? "Reviewing" : "In Review"}
+                          </Button>
+                        )}
 
-                        <Button
-                          type="button"
-                          $variant={
-                            application?.status === "APPROVED"
-                              ? "solid"
-                              : "outline"
-                          }
-                          className="inline-flex justify-center px-4 py-2 text-sm m-auto"
-                          disabled={isLoading || isUpdateLoading}
-                          onClick={() =>
-                            confirmReviewDecision(ApplicationStatus.APPROVED)
-                          }
-                        >
-                          <CheckIcon
-                            className="h-5 w-5 mr-1"
-                            aria-hidden="true"
-                          />
-                          {application?.status === "APPROVED"
-                            ? "Approved"
-                            : "Approve"}
-                        </Button>
-                        <Button
-                          type="button"
-                          $variant={
-                            application?.status === "REJECTED"
-                              ? "solid"
-                              : "outline"
-                          }
-                          className={
-                            "inline-flex justify-center px-4 py-2 text-sm m-auto" +
-                            (application?.status === "REJECTED"
-                              ? ""
-                              : "text-grey-500")
-                          }
-                          disabled={isLoading || isUpdateLoading}
-                          onClick={() =>
-                            confirmReviewDecision(ApplicationStatus.REJECTED)
-                          }
-                        >
-                          <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                          {application?.status === "REJECTED"
-                            ? "Rejected"
-                            : "Reject"}
-                        </Button>
+                        {/* APPROVE */}
+                        {showApproveReject() && (
+                          <Button
+                            type="button"
+                            $variant={
+                              application?.status === "APPROVED"
+                                ? "solid"
+                                : "outline"
+                            }
+                            className="inline-flex justify-center px-4 py-2 text-sm m-auto"
+                            disabled={isLoading || isUpdateLoading}
+                            onClick={() =>
+                              confirmReviewDecision(ApplicationStatus.APPROVED)
+                            }
+                          >
+                            <CheckIcon
+                              className="h-5 w-5 mr-1"
+                              aria-hidden="true"
+                            />
+                            {application?.status === "APPROVED"
+                              ? "Approved"
+                              : "Approve"}
+                          </Button>
+                        )}
+
+                        {/* REJECT */}
+                        {showApproveReject() && (
+                          <Button
+                            type="button"
+                            $variant={
+                              application?.status === "REJECTED"
+                                ? "solid"
+                                : "outline"
+                            }
+                            className={
+                              "inline-flex justify-center px-4 py-2 text-sm m-auto" +
+                              (application?.status === "REJECTED"
+                                ? ""
+                                : "text-grey-500")
+                            }
+                            disabled={isLoading || isUpdateLoading}
+                            onClick={() =>
+                              confirmReviewDecision(ApplicationStatus.REJECTED)
+                            }
+                          >
+                            <XIcon
+                              className="h-5 w-5 mr-1"
+                              aria-hidden="true"
+                            />
+                            {application?.status === "REJECTED"
+                              ? "Rejected"
+                              : "Reject"}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -739,6 +760,18 @@ export default function ViewApplicationPage() {
                       </div>
                     );
                   })}
+
+                {round !== undefined &&
+                  round.payoutStrategy.strategyName == ROUND_PAYOUT_DIRECT &&
+                  application?.status === "APPROVED" &&
+                  answerBlocks !== undefined &&
+                  answerBlocks.length > 0 && (
+                    <ApplicationDirectPayout
+                      round={round}
+                      application={application}
+                      answerBlocks={answerBlocks}
+                    />
+                  )}
               </div>
               {/* Modals */}
               <ConfirmationModal
