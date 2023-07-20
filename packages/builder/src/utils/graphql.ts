@@ -1,10 +1,6 @@
 import { ChainId } from "common";
 
-export type GraphQLEndpoints = {
-  [key in ChainId]: string;
-};
-
-const graphQlEndpoints: GraphQLEndpoints = {
+const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_URL_MAINNET!,
   [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_URL_GOERLI!,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
@@ -14,6 +10,7 @@ const graphQlEndpoints: GraphQLEndpoints = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]:
     process.env.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET!,
   [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_URL_PGN_TESTNET!,
+  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_URL_PGN!,
 };
 
 /**
@@ -25,6 +22,7 @@ const graphQlEndpoints: GraphQLEndpoints = {
 const getGraphQLEndpoint = (chainId: ChainId): string =>
   graphQlEndpoints[chainId];
 
+// eslint-disable-next-line import/prefer-default-export
 export const graphqlFetch = async (
   query: string,
   chainId: ChainId,

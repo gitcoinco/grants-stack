@@ -15,7 +15,7 @@
         "src/**/*.tsx",
         "src/**/*.ts"
       ],
-      "outputMode": "new-only"
+      "outputMode": "errors-only"
     },
     "lint:ci": {
       "outputMode": "errors-only"

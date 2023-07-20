@@ -196,7 +196,7 @@ describe("View Cart Page", () => {
 
       renderWrapped();
 
-      const options = getPayoutTokenOptions(chainId.toString());
+      const options = getPayoutTokenOptions(chainId);
       expect(screen.getByTestId("summaryPayoutToken")).toHaveTextContent(
         options[0].name
       );
@@ -369,7 +369,7 @@ describe("View Cart Page", () => {
 
     renderWrapped();
 
-    const options = getPayoutTokenOptions(chainId.toString());
+    const options = getPayoutTokenOptions(chainId);
 
     const payoutTokenSelection = screen.getByTestId("payout-token-select");
     fireEvent.click(payoutTokenSelection);

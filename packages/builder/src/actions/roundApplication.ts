@@ -200,7 +200,6 @@ export const submitApplication =
     const project: Project = metadataToProject(projectMetadata, 0);
 
     const { chainID } = state.web3;
-    const chainName = chains[chainID!];
     if (chainID === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
@@ -210,6 +209,7 @@ export const submitApplication =
       );
       return;
     }
+    const chainName = chains[chainID];
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,

@@ -1,4 +1,4 @@
-/* TODO(refactoring): is this still needed? what does this fix? */
+/* Needed for WalletConnect to work */
 import { Buffer } from "buffer";
 import process from "process";
 window.Buffer = Buffer;

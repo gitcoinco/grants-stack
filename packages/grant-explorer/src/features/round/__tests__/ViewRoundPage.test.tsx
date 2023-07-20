@@ -18,7 +18,7 @@ import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
 import { payoutTokens } from "../../api/utils";
 
-const chainId = faker.datatype.number();
+const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
 const useParamsFn = () => ({ chainId: chainId, roundId: roundId });
 const userAddress = faker.finance.ethereumAddress();

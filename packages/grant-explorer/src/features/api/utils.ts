@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types";
-import { RedstoneTokenIds } from "common";
+import { ChainId, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 
 export function useDebugMode(): boolean {
@@ -13,17 +14,15 @@ export function useDebugMode(): boolean {
   );
 }
 
-export enum ChainId {
-  MAINNET = "1",
-  GOERLI_CHAIN_ID = "5",
-  OPTIMISM_MAINNET_CHAIN_ID = "10",
-  FANTOM_MAINNET_CHAIN_ID = "250",
-  FANTOM_TESTNET_CHAIN_ID = "4002",
-  PGN_TESTNET_CHAIN_ID = "58008",
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const CHAINS: Record<number, any> = {
+export const CHAINS: Record<
+  ChainId,
+  { id: ChainId; name: string; logo: string }
+> = {
+  [ChainId.PGN]: {
+    id: ChainId.PGN,
+    name: "PGN",
+    logo: "./logos/pgn-logo.svg",
+  },
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
     name: "Mainnet",
@@ -49,8 +48,8 @@ export const CHAINS: Record<number, any> = {
     name: "Fantom Testnet",
     logo: "./logos/fantom-logo.svg",
   },
-  [ChainId.PGN_TESTNET_CHAIN_ID]: {
-    id: ChainId.PGN_TESTNET_CHAIN_ID,
+  [ChainId.PGN_TESTNET]: {
+    id: ChainId.PGN_TESTNET,
     name: "PGN Testnet",
     logo: "./logos/pgn-logo.svg",
   },
@@ -178,12 +177,31 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
 
 const PGN_TESTNET_TOKENS: PayoutToken[] = [
   {
-    name: "DAI",
-    chainId: ChainId.PGN_TESTNET_CHAIN_ID,
+    name: "TEST",
+    chainId: ChainId.PGN_TESTNET,
     address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.PGN_TESTNET,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+];
+
+const PGN_MAINNET_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
 
@@ -194,59 +212,54 @@ export const payoutTokens = [
   ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
+  ...PGN_MAINNET_TOKENS,
 ];
 
-export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      return MAINNET_TOKENS;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      return OPTIMISM_MAINNET_TOKENS;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      return FANTOM_MAINNET_TOKENS;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      return FANTOM_TESTNET_TOKENS;
-    }
-    case ChainId.PGN_TESTNET_CHAIN_ID: {
-      return PGN_TESTNET_TOKENS;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      return GOERLI_TESTNET_TOKENS;
-    }
-  }
+type PayoutTokensMap = Record<ChainId, PayoutToken[]>;
+const payoutTokensMap: PayoutTokensMap = {
+  [ChainId.GOERLI_CHAIN_ID]: GOERLI_TESTNET_TOKENS,
+  [ChainId.MAINNET]: MAINNET_TOKENS,
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: FANTOM_MAINNET_TOKENS,
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: FANTOM_TESTNET_TOKENS,
+  [ChainId.PGN]: PGN_MAINNET_TOKENS,
+  [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
+};
+
+export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
+  payoutTokensMap[chainId];
+
+const graphQlEndpoints: Record<ChainId, string> = {
+  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
+  [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_GOERLI_API!,
+  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
+  [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_MAINNET_API!,
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API!,
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API!,
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
 };
 
 /**
  * Fetch subgraph network for provided web3 network
+ * The backticks are here to work around a failure of a test that tetsts graphql_fetch,
+ * and fails if the endpoint is undefined, so we convert the undefined to a string here in order not to fail the test.
  *
- * @param chainId - The chain ID of the blockchain2
+ * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
  */
-const getGraphQLEndpoint = async (chainId: ChainId) => {
-  switch (chainId) {
-    case ChainId.MAINNET:
-      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
+const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
 
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
-
-    case ChainId.FANTOM_MAINNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API}`;
-
-    case ChainId.FANTOM_TESTNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
-
-    case ChainId.PGN_TESTNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API}`;
-
-    case ChainId.GOERLI_CHAIN_ID:
-    default:
-      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
-  }
+export const txExplorerLinks: Record<ChainId, string> = {
+  [ChainId.MAINNET]: "https://etherscan.io/tx/",
+  [ChainId.GOERLI_CHAIN_ID]: "https://goerli.etherscan.io/tx/",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "https://optimistic.etherscan.io/tx/",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "https://ftmscan.com/tx/",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",
+  [ChainId.PGN_TESTNET]: "https://explorer.sepolia.publicgoods.network/tx/",
+  [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
 };
 
 /**
@@ -256,31 +269,8 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
  * @param txHash - The transaction hash
  * @returns the transaction explorer URL for the provided transaction hash and network
  */
-export const getTxExplorer = (chainId?: ChainId | number, txHash?: string) => {
-  switch (chainId) {
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
-    case 10:
-      return `https://optimistic.etherscan.io/tx/${txHash}`;
-
-    case ChainId.FANTOM_MAINNET_CHAIN_ID:
-    case 250:
-      return `https://ftmscan.com/tx/${txHash}`;
-
-    case ChainId.FANTOM_TESTNET_CHAIN_ID:
-    case 4002:
-      return `https://testnet.ftmscan.com/tx/${txHash}`;
-
-    case ChainId.MAINNET:
-    case 1:
-      return `https://etherscan.io/tx/${txHash}`;
-
-    case ChainId.PGN_TESTNET_CHAIN_ID:
-    case 58008:
-      return `https://explorer.sepolia.publicgoods.network/tx/${txHash}`;
-
-    default:
-      return `https://goerli.etherscan.io/tx/${txHash}`;
-  }
+export const getTxExplorerTxLink = (chainId: ChainId, txHash: string) => {
+  return txExplorerLinks[chainId] + txHash;
 };
 
 /**
@@ -299,7 +289,7 @@ export const graphql_fetch = async (
   variables: object = {},
   fromProjectRegistry = false
 ) => {
-  let endpoint = await getGraphQLEndpoint(chainId);
+  let endpoint = getGraphQLEndpoint(chainId);
 
   if (fromProjectRegistry) {
     endpoint = endpoint.replace("grants-round", "grants-hub");
@@ -394,12 +384,6 @@ export const pinToIPFS = (obj: IPFSObject) => {
     });
   }
 };
-
-export const abbreviateAddress = (address: string) =>
-  `${address.slice(0, 8)}...${address.slice(-4)}`;
-
-export const prefixZero = (i: number): string =>
-  i < 10 ? "0" + i : i.toString();
 
 export const getDaysLeft = (epochTime: number) => {
   const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds

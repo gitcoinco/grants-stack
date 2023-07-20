@@ -1,6 +1,7 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { ChainId } from "common";
 import { BigNumber } from "ethers";
 
 export type Network = "goerli" | "optimism" | "Fantom";
@@ -220,7 +221,7 @@ export enum ProgressStatus {
 
 export type PayoutToken = {
   name: string;
-  chainId: string;
+  chainId: ChainId;
   address: string;
   decimal: number;
   logo?: string;

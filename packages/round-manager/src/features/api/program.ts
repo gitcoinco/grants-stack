@@ -4,7 +4,7 @@ import { programFactoryContract } from "./contracts";
 import { ethers } from "ethers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
-import { graphql_fetch } from "common";
+import { ChainId, graphql_fetch } from "common";
 
 /**
  * Fetch a list of programs
@@ -18,7 +18,9 @@ export async function listPrograms(
 ): Promise<Program[]> {
   try {
     // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork();
+    const { chainId } = (await signerOrProvider.getNetwork()) as {
+      chainId: ChainId;
+    };
 
     // get the subgraph for all programs owned by the given address
     const res = await graphql_fetch(
@@ -82,7 +84,9 @@ export async function getProgramById(
 ): Promise<Program> {
   try {
     // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork();
+    const { chainId } = (await signerOrProvider.getNetwork()) as {
+      chainId: ChainId;
+    };
 
     // get the subgraph for program by $programId
     const res = await graphql_fetch(

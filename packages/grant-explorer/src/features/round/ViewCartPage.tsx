@@ -54,7 +54,7 @@ export default function ViewCart() {
 
   const payoutTokenOptions: PayoutToken[] = [
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    ...getPayoutTokenOptions(chainId!),
+    ...getPayoutTokenOptions(Number(chainId)),
   ];
 
   const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
@@ -273,7 +273,7 @@ export default function ViewCart() {
         isBeforeRoundEndDate={isBeforeRoundEndDate}
       />
       {isBeforeRoundEndDate && (
-        <PassportBanner chainId={chainId as string} round={round} />
+        <PassportBanner chainId={Number(chainId)} round={round} />
       )}
       {isAfterRoundEndDate && (
         <div>

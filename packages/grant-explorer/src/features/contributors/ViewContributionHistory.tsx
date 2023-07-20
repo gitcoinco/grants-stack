@@ -8,7 +8,7 @@ import { lazy, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ethers } from "ethers";
 import { PayoutToken } from "../api/types";
-import { CHAINS, getChainIds, getTxExplorer } from "../api/utils";
+import { CHAINS, getChainIds, getTxExplorerTxLink } from "../api/utils";
 import Navbar from "../common/Navbar";
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")
@@ -23,6 +23,7 @@ import ReactTooltip from "react-tooltip";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { useContributionHistory } from "../api/round";
 import { StatCard } from "../common/StatCard";
+import { ChainId } from "common";
 
 export default function () {
   const params = useParams();
@@ -326,7 +327,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
 }
 
 function DonationsTable(props: {
-  contributions: { chainId: number; data: Contribution[] }[];
+  contributions: { chainId: ChainId; data: Contribution[] }[];
   tokens: Record<string, PayoutToken>;
   activeRound: boolean;
 }) {
@@ -452,7 +453,7 @@ export function TransactionButton(props: { chainId: number; txHash: string }) {
       type="button"
       $variant="external-link"
       onClick={() =>
-        window.open(getTxExplorer(props.chainId, props.txHash), "_blank")
+        window.open(getTxExplorerTxLink(props.chainId, props.txHash), "_blank")
       }
       className="flex flex-row text-gitcoin-violet-500 px-0"
     >
