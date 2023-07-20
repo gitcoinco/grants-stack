@@ -51,6 +51,11 @@ export default function ViewProgram() {
 
   const [programExists, setProgramExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
+  const [grantType, setGrantType] = useState<
+    "quadraticFunding" | "directGrant" | undefined
+  >(
+    process.env.REACT_APP_DIRECT_GRANT_ENABLED ? undefined : "quadraticFunding"
+  );
   const debugModeEnabled = useDebugMode();
 
   useEffect(() => {
@@ -169,13 +174,6 @@ export default function ViewProgram() {
         );
       })
     : [];
-
-  const isDirectGrantEnabled = Boolean(
-    process.env.REACT_APP_DIRECT_GRANT_ENABLED
-  );
-  const [grantType, setGrantType] = useState<
-    "quadraticFunding" | "directGrant" | undefined
-  >(isDirectGrantEnabled ? "quadraticFunding" : undefined);
 
   const operatorWallets = (
     <div className="flex flex-row flex-wrap">
