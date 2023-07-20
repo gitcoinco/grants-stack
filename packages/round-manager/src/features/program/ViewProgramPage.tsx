@@ -170,9 +170,12 @@ export default function ViewProgram() {
       })
     : [];
 
+  const isDirectGrantEnabled = Boolean(
+    process.env.REACT_APP_DIRECT_GRANT_ENABLED
+  );
   const [grantType, setGrantType] = useState<
     "quadraticFunding" | "directGrant" | undefined
-  >();
+  >(isDirectGrantEnabled ? "quadraticFunding" : undefined);
 
   const operatorWallets = (
     <div className="flex flex-row flex-wrap">
@@ -253,48 +256,50 @@ export default function ViewProgram() {
                 className="object-cover pl-6 pr-4"
               />
             </button>
-            <button
-              onClick={() => setGrantType("directGrant")}
-              className={`flex w-full rounded border  ${
-                grantType === "directGrant"
-                  ? "border-violet-400"
-                  : "border-grey-100"
-              } bg-white p-6 cursor-pointer`}
-              style={{
-                boxShadow:
+            {process.env.REACT_APP_DIRECT_GRANT_ENABLED && (
+              <button
+                onClick={() => setGrantType("directGrant")}
+                className={`flex w-full rounded border  ${
                   grantType === "directGrant"
-                    ? " 0px 10px 15px -3px #0000001A"
-                    : "none",
-              }}
-            >
-              <div className="flex pr-6 m-auto">
-                <div
-                  className={`rounded-full border ${
+                    ? "border-violet-400"
+                    : "border-grey-100"
+                } bg-white p-6 cursor-pointer`}
+                style={{
+                  boxShadow:
                     grantType === "directGrant"
-                      ? "border-violet-400"
-                      : "border-grey-100"
-                  } h-[24px] w-[24px]`}
-                  style={{
-                    borderWidth: grantType === "directGrant" ? "6px" : "2px",
-                  }}
-                ></div>
-              </div>
-              <div className="pr-6 flex-grow text-left mt-auto mb-auto">
-                <h3 className="text-xl mb-2">Direct Grants</h3>
-                <p
-                  className="text-grey-400 text-sm pr-4"
-                  data-testid="program-details-intro"
-                >
-                  Choose this type of round to directly allocate funds to
-                  selected projects yourself.
-                </p>
-              </div>
-              <img
-                src={DirectGrants}
-                alt="Direct Grants"
-                className="object-cover pl-6 pr-4"
-              />
-            </button>
+                      ? " 0px 10px 15px -3px #0000001A"
+                      : "none",
+                }}
+              >
+                <div className="flex pr-6 m-auto">
+                  <div
+                    className={`rounded-full border ${
+                      grantType === "directGrant"
+                        ? "border-violet-400"
+                        : "border-grey-100"
+                    } h-[24px] w-[24px]`}
+                    style={{
+                      borderWidth: grantType === "directGrant" ? "6px" : "2px",
+                    }}
+                  ></div>
+                </div>
+                <div className="pr-6 flex-grow text-left mt-auto mb-auto">
+                  <h3 className="text-xl mb-2">Direct Grants</h3>
+                  <p
+                    className="text-grey-400 text-sm pr-4"
+                    data-testid="program-details-intro"
+                  >
+                    Choose this type of round to directly allocate funds to
+                    selected projects yourself.
+                  </p>
+                </div>
+                <img
+                  src={DirectGrants}
+                  alt="Direct Grants"
+                  className="object-cover pl-6 pr-4"
+                />
+              </button>
+            )}
           </div>
           <div className="w-full px-12">
             <div className="border-t border-grey-100 h-[1px] mt-6 mb-6" />
