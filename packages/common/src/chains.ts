@@ -41,7 +41,7 @@ export const pgnTestnet: Chain = {
 export const pgn: Chain = {
   id: 424,
   name: "PGN",
-  network: "pgn",
+  network: "publicGoodsNetwork",
   iconUrl: PublicGoodsNetworkIcon,
   nativeCurrency: {
     decimals: 18,
