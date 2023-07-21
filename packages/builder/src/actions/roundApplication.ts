@@ -226,7 +226,11 @@ export const submitApplication =
         project,
         roundApplicationMetadata,
         roundAddress,
-        chainName === "mainnet" ? "ethereum" : chainName // lit wants "ethereum" for mainnet
+        chainName === "mainnet"
+          ? "ethereum"
+          : chainName === "pgn"
+          ? "publicGoodsNetwork"
+          : chainName
       );
 
       application = await builder.build(roundAddress, formInputs);
