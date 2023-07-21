@@ -263,7 +263,10 @@ export default function ViewApplicationPage() {
               const encryptedString: Blob = await response.blob();
 
               const lit = new Lit({
-                chain: chain.name.toLowerCase(),
+                chain:
+                  chain.name.toLowerCase() === "pgn"
+                    ? "publicGoodsNetwork"
+                    : chain.name.toLowerCase(),
                 contract: utils.getAddress(roundId),
               });
 
