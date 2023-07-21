@@ -50,7 +50,10 @@ export async function roundApplicationsToCSV(
   }
 
   const lit = new Lit({
-    chain: chainName.toLowerCase(),
+    chain:
+      chainName.toLowerCase() === "pgn"
+        ? "publicGoodsNetwork"
+        : chainName.toLowerCase(),
     contract: roundId,
   });
 
