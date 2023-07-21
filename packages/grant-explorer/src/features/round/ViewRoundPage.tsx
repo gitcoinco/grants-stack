@@ -36,7 +36,6 @@ import {
 } from "../common/styles";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import CartNotification from "../common/CartNotification";
-import { C } from "msw/lib/glossary-dc3fd077";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
