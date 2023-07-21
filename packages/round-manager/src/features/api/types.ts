@@ -7,7 +7,7 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
 
-export type Network = "goerli" | "optimism" | "Fantom" | "publicGoodsNetwork";
+export type Network = "goerli" | "optimism" | "fantom" | "pgn";
 
 export interface Web3Instance {
   /**

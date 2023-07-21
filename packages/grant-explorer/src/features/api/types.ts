@@ -4,7 +4,7 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
 import { BigNumber } from "ethers";
 
-export type Network = "goerli" | "optimism" | "Fantom";
+export type Network = "goerli" | "optimism" | "fantom";
 
 export interface Web3Instance {
   /**
