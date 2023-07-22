@@ -4,7 +4,7 @@ import { Provider } from "@wagmi/core";
 import { isJestRunning } from "common";
 import { global } from "../global";
 
-const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
+const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 // @ts-ignore
 window.Buffer = Buffer;
 
