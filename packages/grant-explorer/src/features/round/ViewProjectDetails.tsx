@@ -21,6 +21,7 @@ import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import {
+  CartProject,
   GrantApplicationFormAnswer,
   Project,
   ProjectCredentials,
@@ -90,6 +91,12 @@ export default function ViewProjectDetails() {
     (project) => project.grantApplicationId === applicationId
   );
 
+  const cartProject = projectToRender as CartProject;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  cartProject.roundId = roundId!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  cartProject.chainId = Number(chainId!);
+
   const breadCrumbs = [
     {
       name: "Explorer Home",
@@ -135,11 +142,11 @@ export default function ViewProjectDetails() {
                   isBeforeRoundEndDate={isBeforeRoundEndDate}
                   removeFromCart={() => {
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    handleRemoveProjectsFromCart([projectToRender], roundId!);
+                    handleRemoveProjectsFromCart([cartProject]);
                   }}
                   addToCart={() => {
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    handleAddProjectsToCart([projectToRender], roundId!);
+                    handleAddProjectsToCart([cartProject]);
                   }}
                 />
               </div>
@@ -168,11 +175,11 @@ export default function ViewProjectDetails() {
                     isBeforeRoundEndDate={isBeforeRoundEndDate}
                     removeFromCart={() => {
                       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      handleRemoveProjectsFromCart([projectToRender], roundId!);
+                      handleRemoveProjectsFromCart([cartProject]);
                     }}
                     addToCart={() => {
                       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      handleAddProjectsToCart([projectToRender], roundId!);
+                      handleAddProjectsToCart([cartProject]);
                     }}
                   />
                 </div>

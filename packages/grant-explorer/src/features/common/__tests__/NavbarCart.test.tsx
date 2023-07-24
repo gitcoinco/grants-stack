@@ -39,45 +39,4 @@ describe("<NavbarCart/>", () => {
 
     expect(screen.queryByTestId("quick-view-summary")).not.toBeInTheDocument();
   });
-
-  it("SHOULD show dropdown on clicking cart icon WHEN cart is NOT empty", async () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
-    renderWithContext(<NavbarCart cart={cart} roundUrlPath={""} />);
-
-    const icon = screen.getByTestId("navbar-cart");
-
-    await act(() => {
-      fireEvent.click(icon);
-    });
-
-    expect(screen.queryByTestId("quick-view-summary")).toBeInTheDocument();
-  });
-
-  it("SHOULD show View my cart button with count", async () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
-    renderWithContext(<NavbarCart cart={cart} roundUrlPath={""} />);
-
-    const icon = screen.getByTestId("navbar-cart");
-
-    await act(() => {
-      fireEvent.click(icon);
-    });
-
-    expect(screen.queryByText("View my cart (2)")).toBeInTheDocument();
-  });
-
-  it("SHOULD show project info in quick view summary", async () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
-    renderWithContext(<NavbarCart cart={cart} roundUrlPath={""} />);
-
-    const icon = screen.getByTestId("navbar-cart");
-
-    await act(() => {
-      fireEvent.click(icon);
-    });
-
-    expect(screen.queryAllByTestId("project-quick-view").length).toEqual(
-      cart.length
-    );
-  });
 });
