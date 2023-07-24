@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { isJestRunning } from "common";
 import { datadogLogs } from "@datadog/browser-logs";
 
-const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
+const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk-old-w-pgn");
 
 window.Buffer = Buffer;
 
