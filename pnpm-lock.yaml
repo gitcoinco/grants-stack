@@ -506,12 +506,12 @@ importers:
       deepmerge: ^4.3.1
       eslint-config-gitcoin: workspace:*
       ethers: ^5.6.5
-      gitcoin-lit-js-sdk: ^1.2.2
       history: ^5.3.0
       html-react-parser: ^3.0.7
       https-browserify: ^1.0.0
       husky: ^8.0.1
       jest-fetch-mock: ^3.0.3
+      lit-js-sdk-old-w-pgn: ^1.1.251
       lodash: ^4.17.21
       moment: ^2.29.3
       os-browserify: ^0.3.0
@@ -580,11 +580,11 @@ importers:
       deepmerge: 4.3.1
       eslint-config-gitcoin: link:../eslint-config-gitcoin
       ethers: 5.6.5
-      gitcoin-lit-js-sdk: 1.2.2
       history: 5.3.0
       html-react-parser: 3.0.8_react@18.2.0
       https-browserify: 1.0.0
       jest-fetch-mock: 3.0.3
+      lit-js-sdk-old-w-pgn: 1.1.251
       lodash: 4.17.21
       moment: 2.29.4
       os-browserify: 0.3.0
@@ -7517,6 +7517,25 @@ packages:
       tslib: 1.14.1
     dev: false
 
+  /@walletconnect/ethereum-provider/1.7.8_3cxu5zja4e2r5wmvge7mdcljwq:
+    resolution: {integrity: sha512-dnl560zFMdK/LD4MD2XwHbWj7RXOaeXWPc9jzDaosLQLAXfA5mKe4XbCFFUPbVMYuyBdRI9NZv3Ci/qDb5wncQ==}
+    deprecated: 'WalletConnect''s v1 SDKs are now deprecated. Please upgrade to a v2 SDK. For details see: https://docs.walletconnect.com/'
+    dependencies:
+      '@walletconnect/client': 1.8.0_3cxu5zja4e2r5wmvge7mdcljwq
+      '@walletconnect/jsonrpc-http-connection': 1.0.7
+      '@walletconnect/jsonrpc-provider': 1.0.13
+      '@walletconnect/signer-connection': 1.8.0_3cxu5zja4e2r5wmvge7mdcljwq
+      '@walletconnect/types': 1.8.0
+      '@walletconnect/utils': 1.8.0
+      eip1193-provider: 1.0.1_3cxu5zja4e2r5wmvge7mdcljwq
+      eventemitter3: 4.0.7
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - encoding
+      - utf-8-validate
+    dev: false
+
   /@walletconnect/ethereum-provider/1.8.0:
     resolution: {integrity: sha512-Nq9m+oo5P0F+njsROHw9KMWdoc/8iGHYzQdkjJN/1C7DtsqFRg5k5a3hd9rzCLpbPsOC1q8Z5lRs6JQgDvPm6Q==}
     deprecated: 'WalletConnect''s v1 SDKs are now deprecated. Please upgrade to a v2 SDK. For details see: https://docs.walletconnect.com/'
@@ -11743,7 +11762,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
+      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
       debug: 3.2.7
       eslint: 8.32.0
       eslint-import-resolver-node: 0.3.7
@@ -11787,7 +11806,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
+      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
@@ -16157,6 +16176,12 @@ packages:
       micromodal: 0.4.10
     dev: false
 
+  /lit-connect-modal/0.1.11:
+    resolution: {integrity: sha512-EG6pcCqdxZQJt3MPDq3gJ5Sz4E5sJdydtAF7VFJu6z6GDHO1Ybp8WrTx8CUnHiF54/MQBRi6Nb7cbTvv+BKWvQ==}
+    dependencies:
+      micromodal: 0.4.10
+    dev: false
+
   /lit-element/3.3.2:
     resolution: {integrity: sha512-xXAeVWKGr4/njq0rGC9dethMnYCq5hpKYrgQZYTzawt9YQhMiXfD+T1RgrdY3NamOxwq2aXlb0vOI6e29CKgVQ==}
     dependencies:
@@ -16169,6 +16194,34 @@ packages:
     resolution: {integrity: sha512-YqUzpisJodwKIlbMFCtyrp58oLloKGnnPLMJ1t23cbfIJjg/H9pvLWK4XS69YeubK5HUs1UE4ys9w5dP1zg6IA==}
     dependencies:
       '@types/trusted-types': 2.0.2
+    dev: false
+
+  /lit-js-sdk-old-w-pgn/1.1.251:
+    resolution: {integrity: sha512-l7t5EG2VkXQQR92B7nsDx09FTjNyGlijvK9/X+dMtZSbb5ssQLRoim/+z853Ob5voZklB8O02WyRNkiPHdeBvg==}
+    dependencies:
+      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/contracts': 5.7.0
+      '@ethersproject/hash': 5.7.0
+      '@ethersproject/providers': 5.7.2_3cxu5zja4e2r5wmvge7mdcljwq
+      '@ethersproject/strings': 5.7.0
+      '@ethersproject/units': 5.7.0
+      '@ethersproject/wallet': 5.7.0
+      '@walletconnect/ethereum-provider': 1.7.8_3cxu5zja4e2r5wmvge7mdcljwq
+      buffer: 6.0.3
+      bufferutil: 4.0.7
+      cross-blob: 3.0.2
+      jszip: 3.10.1
+      lit-connect-modal: 0.1.11
+      lit-siwe: 1.1.8_vs2eitok36dr26fji5ujfsmafm
+      node-fetch: 3.3.1
+      pako: 2.1.0
+      tslib: 2.4.1
+      tweetnacl: 1.0.3
+      tweetnacl-util: 0.15.1
+      utf-8-validate: 5.0.10
+    transitivePeerDependencies:
+      - debug
+      - encoding
     dev: false
 
   /lit-siwe/1.1.8_vs2eitok36dr26fji5ujfsmafm:
