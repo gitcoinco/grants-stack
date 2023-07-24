@@ -21,10 +21,10 @@ describe("Local Storage", () => {
       saveCartToLocalStorage(cart);
 
       expect(localStorage.setItem).toHaveBeenLastCalledWith(
-        "cart",
+        "gitcoin-cart",
         JSON.stringify(cart)
       );
-      expect(localStorage.__STORE__["cart"]).toBe(JSON.stringify(cart));
+      expect(localStorage.__STORE__["gitcoin-cart"]).toBe(JSON.stringify(cart));
       expect(Object.keys(localStorage.__STORE__).length).toBe(1);
     });
 
@@ -39,8 +39,8 @@ describe("Local Storage", () => {
       ];
       const combinedCart = [...round1Cart, ...round2Cart];
 
-      localStorage.__STORE__["cart"] = JSON.stringify(round1Cart);
-      localStorage.__STORE__["cart"] = JSON.stringify(combinedCart);
+      localStorage.__STORE__["gitcoin-cart"] = JSON.stringify(round1Cart);
+      localStorage.__STORE__["gitcoin-cart"] = JSON.stringify(combinedCart);
 
       const list = loadCartFromLocalStorage();
 
