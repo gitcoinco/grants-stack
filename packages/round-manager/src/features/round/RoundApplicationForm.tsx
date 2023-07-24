@@ -84,6 +84,15 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
   },
   {
     id: 2,
+    title: "Application detail",
+    required: true,
+    encrypted: false,
+    hidden: false,
+    type: "paragraph",
+    fixed: true,
+  },
+  {
+    id: 3,
     title: "Amount requested",
     required: true,
     encrypted: false,
@@ -92,7 +101,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     fixed: true,
   },
   {
-    id: 3,
+    id: 4,
     title: "Payout token",
     required: true,
     encrypted: false,
@@ -102,7 +111,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     fixed: true,
   },
   {
-    id: 4,
+    id: 5,
     title: "Payout wallet address",
     required: true,
     encrypted: false,
@@ -111,7 +120,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     fixed: true,
   },
   {
-    id: 5,
+    id: 6,
     title: "Milestones",
     required: true,
     encrypted: false,
@@ -120,7 +129,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     fixed: true,
   },
   {
-    id: 6,
+    id: 7,
     title: "Funding Sources",
     required: true,
     encrypted: false,
@@ -128,7 +137,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     type: "short-answer",
   },
   {
-    id: 7,
+    id: 8,
     title: "Team Size",
     required: true,
     encrypted: false,
