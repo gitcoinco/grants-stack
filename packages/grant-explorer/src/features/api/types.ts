@@ -165,6 +165,12 @@ export type Project = {
   status: ApplicationStatus;
   applicationIndex: number;
 };
+
+export type CartProject = Project & {
+  roundId: string;
+  chainId: number;
+};
+
 export type GrantApplicationId = string;
 export type ProjectRegistryId = string;
 export type recipient = string;

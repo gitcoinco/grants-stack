@@ -71,6 +71,6 @@ describe("<Navbar>", () => {
         isBeforeRoundEndDate={false}
       />
     );
-    expect(screen.queryByTestId("navbar-cart")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("navbar-cart")).toBeInTheDocument();
   });
 });
