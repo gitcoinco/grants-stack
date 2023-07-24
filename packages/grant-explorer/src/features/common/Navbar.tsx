@@ -3,7 +3,6 @@ import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.sv
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { useCart } from "../../context/CartContext";
 import NavbarCart from "./NavbarCart";
-import { reloadPageOnLocalStorageEvent } from "../api/LocalStorage";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
@@ -16,15 +15,23 @@ export interface NavbarProps {
 }
 
 export default function Navbar(props: NavbarProps) {
-  const [cart] = useCart();
+  const [cart, setCart] = useCart();
   const showWalletInteraction = props.showWalletInteraction ?? true;
   const currentOrigin = window.location.origin;
 
   const { address: walletAddress } = useAccount();
 
   useEffect(() => {
-    const storageEventHandler = (event: StorageEvent) =>
-      reloadPageOnLocalStorageEvent(event);
+    const storageEventHandler = (event: StorageEvent) => {
+      // Check if the updated item is 'gitcoin-cart'
+      if (event.key === "gitcoin-cart") {
+        // Check if it's a different tab
+        if (document.visibilityState === "hidden") {
+          const updatedCart = JSON.parse(event.newValue ?? "[]");
+          setCart(updatedCart);
+        }
+      }
+    };
 
     window.addEventListener("storage", storageEventHandler);
 

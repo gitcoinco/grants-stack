@@ -11,7 +11,6 @@ import {
   loadCartFromLocalStorage,
   saveCartToLocalStorage,
 } from "../features/api/LocalStorage";
-import { RoundContext } from "./RoundContext";
 
 export interface CartContextState {
   cart: CartProject[];
@@ -19,7 +18,7 @@ export interface CartContextState {
 }
 
 export const initialCartState: CartContextState = {
-  cart: loadCartFromLocalStorage() ?? [],
+  cart: [],
   setCart: () => {
     /**/
   },
@@ -28,22 +27,11 @@ export const initialCartState: CartContextState = {
 export const CartContext = createContext<CartContextState>(initialCartState);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const roundContext = useContext(RoundContext);
-  const currentRoundId = roundContext?.state?.currentRoundId;
   const [cart, setCart] = useState(initialCartState.cart);
 
   useEffect((): void => {
-    if (currentRoundId) {
-      const storedCart = loadCartFromLocalStorage() ?? initialCartState.cart;
-      setCart(storedCart);
-    }
-  }, [currentRoundId]);
-
-  useEffect((): void => {
-    if (currentRoundId) {
-      saveCartToLocalStorage(cart);
-    }
-  }, [cart, currentRoundId]);
+    saveCartToLocalStorage(cart);
+  }, [cart]);
 
   const providerProps: CartContextState = {
     cart,
@@ -86,7 +74,6 @@ export const useCart = (): UseCart => {
 
     setCart(newCart);
     saveCartToLocalStorage(newCart);
-    console.log("newCart", newCart);
   };
 
   const handleRemoveProjectsFromCart = (
@@ -105,7 +92,6 @@ export const useCart = (): UseCart => {
 
     setCart(newCart);
     saveCartToLocalStorage(newCart);
-    console.log("newCart", newCart);
   };
 
   return [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart];
