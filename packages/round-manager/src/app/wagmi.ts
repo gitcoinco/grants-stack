@@ -27,12 +27,16 @@ const testnetChains = () => {
     goerli,
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
-    pgn,
   ];
 };
 
 const mainnetChains = () => {
-  return [mainnet, optimism, { ...fantom, iconUrl: "/logos/fantom-logo.svg" }];
+  return [
+    mainnet,
+    optimism,
+    pgn,
+    { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
+  ];
 };
 
 const allChains: Chain[] =
