@@ -9,7 +9,6 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
     "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
     "test": "craco test --watchAll=false --silent",
     "test:dev": "craco test --watchAll=true",
@@ -63,7 +62,7 @@
     "html-react-parser": "^3.0.7",
     "https-browserify": "^1.0.0",
     "jest-fetch-mock": "^3.0.3",
-    "lit-js-sdk": "^1.1.203",
+    "lit-js-sdk-old-w-pgn": "^1.1.251",
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
     "os-browserify": "^0.3.0",
