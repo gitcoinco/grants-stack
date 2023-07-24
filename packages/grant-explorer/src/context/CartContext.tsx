@@ -19,7 +19,7 @@ export interface CartContextState {
 }
 
 export const initialCartState: CartContextState = {
-  cart: [],
+  cart: loadCartFromLocalStorage() ?? [],
   setCart: () => {
     /**/
   },
