@@ -76,9 +76,7 @@ export default function Navbar(props: NavbarProps) {
                 </a>
               </div>
             )}
-            {props.isBeforeRoundEndDate && (
-              <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
-            )}
+            <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
           </div>
         </div>
       </div>
