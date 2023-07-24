@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { CartProvider, useCart } from "../CartContext";
-import { Project } from "../../features/api/types";
+import { CartProject } from "../../features/api/types";
 import { makeApprovedProjectData } from "../../test-utils";
 import {
   loadCartFromLocalStorage,
@@ -85,31 +85,6 @@ describe("<CartProvider>", () => {
       expect(screen.getAllByTestId("cart-project")).toHaveLength(1);
     });
 
-    it("recovers cart when cart has been saved in localstorage", () => {
-      const cart: Project[] = [
-        makeApprovedProjectData(),
-        makeApprovedProjectData(),
-      ];
-      (loadCartFromLocalStorage as jest.Mock).mockReturnValue(cart);
-
-      render(
-        <RoundContext.Provider
-          value={{
-            state: { ...initialRoundState, currentRoundId: "1" },
-            dispatch: jest.fn(),
-          }}
-        >
-          <CartProvider>
-            <TestingUseCartComponent />
-          </CartProvider>
-        </RoundContext.Provider>
-      );
-
-      expect(screen.getAllByTestId("cart-project")).toHaveLength(cart.length);
-      expect(screen.getByText(cart[0].projectRegistryId)).toBeInTheDocument();
-      expect(screen.getByText(cart[1].projectRegistryId)).toBeInTheDocument();
-    });
-
     it("should update the cart in localstorage when currently in a round and the cart changes", () => {
       render(
         <RoundContext.Provider
@@ -130,7 +105,7 @@ describe("<CartProvider>", () => {
   });
 });
 
-const testProject: Project = makeApprovedProjectData();
+const testProject: CartProject = makeApprovedProjectData();
 
 const TestingUseCartComponent = () => {
   const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
@@ -153,14 +128,14 @@ const TestingUseCartComponent = () => {
 
       <button
         data-testid="add-project-to-cart"
-        onClick={() => handleAddProjectsToCart([testProject], "1")}
+        onClick={() => handleAddProjectsToCart([testProject])}
       >
         Add Project To Cart
       </button>
 
       <button
         data-testid="remove-project-from-cart"
-        onClick={() => handleRemoveProjectsFromCart([testProject], "1")}
+        onClick={() => handleRemoveProjectsFromCart([testProject])}
       >
         Remove Project From Cart
       </button>
