@@ -25,10 +25,10 @@ import {
 import { renderToPlainText, useTokenPrice } from "common";
 import {
   CartDonation,
+  CartProject,
   DonationInput,
   PayoutToken,
   ProgressStatus,
-  Project,
   recipient,
 } from "../api/types";
 import { getPayoutTokenOptions } from "../api/utils";
@@ -424,7 +424,7 @@ export default function ViewCart() {
     );
   }
 
-  function CartWithProjects(cart: Project[]) {
+  function CartWithProjects(cart: CartProject[]) {
     return (
       <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
@@ -464,7 +464,7 @@ export default function ViewCart() {
           </div>
         </div>
         <div className="my-4">
-          {cart.map((project: Project, key: number) => (
+          {cart.map((project: CartProject, key: number) => (
             <div key={key}>
               <ProjectInCart
                 project={project}
@@ -481,7 +481,7 @@ export default function ViewCart() {
 
   function ProjectInCart(
     props: React.ComponentProps<"div"> & {
-      project: Project;
+      project: CartProject;
       index: number;
       roundRoutePath: string;
       last?: boolean;
@@ -585,8 +585,7 @@ export default function ViewCart() {
             <TrashIcon
               data-testid="remove-from-cart"
               onClick={() => {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                handleRemoveProjectsFromCart([props.project], roundId!);
+                handleRemoveProjectsFromCart([props.project]);
                 updateDonations(
                   props.project.projectRegistryId,
                   "",

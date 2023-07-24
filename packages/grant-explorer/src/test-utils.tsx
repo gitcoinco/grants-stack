@@ -15,6 +15,7 @@ import { RoundMetadata } from "./features/api/round";
 import { RoundOverview } from "./features/api/rounds";
 import {
   ApplicationStatus,
+  CartProject,
   Project,
   ProjectMetadata,
   Round,
@@ -69,9 +70,9 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 };
 
 export const makeApprovedProjectData = (
-  overrides?: Partial<Project>,
+  overrides?: Partial<CartProject>,
   projectMetadataOverrides?: Partial<ProjectMetadata>
-): Project => {
+): CartProject => {
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
     grantApplicationFormAnswers: [],
@@ -90,6 +91,8 @@ export const makeApprovedProjectData = (
     },
     status: ApplicationStatus.APPROVED,
     applicationIndex: faker.datatype.number(),
+    roundId: faker.finance.ethereumAddress(),
+    chainId: 1,
     ...overrides,
   };
 };
