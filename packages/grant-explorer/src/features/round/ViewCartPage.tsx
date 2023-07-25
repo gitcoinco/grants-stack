@@ -437,6 +437,7 @@ export default function ViewCart() {
                 aria-label={"Donation amount for all projects "}
                 id={"input-donationamount"}
                 min="0"
+                type="number"
                 value={fixedDonation ?? ""}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setFixedDonation(e.target.value);
