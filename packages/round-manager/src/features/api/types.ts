@@ -194,7 +194,9 @@ export interface Round {
    */
   payoutStrategy: {
     id: string;
-    isReadyForPayout: boolean;
+    isReadyForPayout?: boolean;
+    vaultAddress?: string;
+    strategyName?: string;
   };
   /**
    * Used in RoundCategory.Direct
@@ -272,7 +274,8 @@ export type ProjectStatus =
   | "REJECTED"
   | "CANCELLED"
   | "APPEAL"
-  | "FRAUD";
+  | "FRAUD"
+  | "IN_REVIEW";
 
 export type ProjectCredentials = {
   [key: string]: VerifiableCredential;
@@ -338,7 +341,20 @@ export interface GrantApplication {
   /**
    * Status of each grant application
    */
-  status?: ProjectStatus;
+  status?: ProjectStatus; // handle round status 0,1,2,3
+  inReview?: boolean; // handle payoutStatus for DirectStrategy
+
+  payoutStrategy?: {
+    strategyName: string;
+    id: string;
+  };
+
+  statusSnapshots?: {
+    status: number;
+    statusDescription: string;
+    timestamp: Date;
+  }[];
+
   /**
    * Index of a grant application
    */
@@ -373,11 +389,17 @@ export enum ApplicationStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
   CANCELLED = "CANCELLED",
+  IN_REVIEW = "IN_REVIEW",
 }
 
 export type Status = {
   index: number;
   status: number;
+};
+
+export type StatusForDirectPayout = {
+  index: number;
+  status: boolean;
 };
 
 export type AppStatus = {

@@ -1,12 +1,13 @@
 import { createContext, useState } from "react";
 
 import { FormStepper } from "./FormStepper";
+import { RoundCategory } from "../api/types";
 
 export interface FormWizardProps {
   initialCurrentStep?: number;
   // eslint-disable-next-line @typescript-eslint/ban-types
   initialData?: object;
-  configuration?: object;
+  configuration?: { roundCategory?: RoundCategory };
   steps: Array<
     // eslint-disable-next-line @typescript-eslint/ban-types
     (props: {

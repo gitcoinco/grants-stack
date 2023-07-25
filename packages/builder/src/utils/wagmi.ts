@@ -3,13 +3,12 @@ import {
   coinbaseWallet,
   injectedWallet,
   metaMaskWallet,
-  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import { pgnTestnet } from "common/src/chains";
+import PublicGoodsNetworkIcon from "common/src/icons/PublicGoodsNetwork.svg";
 import { FantomFTMLogo, FTMTestnet, OPIcon } from "../assets";
 
 const ftmTestnetIcon = FTMTestnet;
@@ -20,7 +19,27 @@ const alchemyId = process.env.REACT_APP_ALCHEMY_ID;
 const infuraId = process.env.REACT_APP_INFURA_ID;
 
 const chainsAvailable: Chain[] = [];
-
+export const pgnTestnet: Chain = {
+  id: 58008,
+  name: "PGN Testnet",
+  network: "pgn testnet",
+  iconUrl: PublicGoodsNetworkIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: "https://sepolia.publicgoods.network",
+  },
+  blockExplorers: {
+    default: {
+      name: "pgnscan",
+      url: "https://explorer.sepolia.publicgoods.network",
+    },
+  },
+  testnet: true,
+};
 // Adding custom chain setups for Fantom Mainnet and Testnet
 const fantomTestnet: Chain = {
   id: 4002,
@@ -110,7 +129,6 @@ const connectors = connectorsForWallets([
     groupName: "Recommended",
     wallets: [
       injectedWallet({ chains }),
-      walletConnectWallet({ chains }),
       coinbaseWallet({ appName: "Builder", chains }),
       metaMaskWallet({ chains }),
     ],

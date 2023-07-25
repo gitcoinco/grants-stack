@@ -1,3 +1,4 @@
+import { ChainId } from "common";
 import {
   ProjectsActions,
   PROJECTS_ERROR,
@@ -33,7 +34,7 @@ export type Application = {
   roundID: string;
   status: AppStatus;
   inReview: boolean;
-  chainId: number;
+  chainId: ChainId;
 };
 
 export type ProjectOwners = { [projectID: string]: string[] };

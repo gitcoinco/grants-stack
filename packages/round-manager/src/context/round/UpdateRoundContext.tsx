@@ -26,27 +26,35 @@ export interface UpdateRoundState {
 
 export const initialUpdateRoundState: UpdateRoundState = {
   IPFSCurrentStatus: ProgressStatus.NOT_STARTED,
-  setIPFSCurrentStatus: () => { /* empty */ },
+  setIPFSCurrentStatus: () => {
+    /* empty */
+  },
   roundUpdateStatus: ProgressStatus.NOT_STARTED,
-  setRoundUpdateStatus: () => { /* empty */ },
+  setRoundUpdateStatus: () => {
+    /* empty */
+  },
   indexingStatus: ProgressStatus.NOT_STARTED,
-  setIndexingStatus: () => { /* empty */ },
+  setIndexingStatus: () => {
+    /* empty */
+  },
 };
 
 export const UpdateRoundContext = createContext<UpdateRoundState>(
-  initialUpdateRoundState,
+  initialUpdateRoundState
 );
 
-export const UpdateRoundProvider = ({ children }: { children: React.ReactNode }) => {
-  const [IPFSCurrentStatus, setIPFSCurrentStatus] = React.useState<ProgressStatus>(
-    initialUpdateRoundState.IPFSCurrentStatus,
-  );
-  const [roundUpdateStatus, setRoundUpdateStatus] = React.useState<ProgressStatus>(
-    initialUpdateRoundState.roundUpdateStatus,
-  );
+export const UpdateRoundProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [IPFSCurrentStatus, setIPFSCurrentStatus] =
+    React.useState<ProgressStatus>(initialUpdateRoundState.IPFSCurrentStatus);
+  const [roundUpdateStatus, setRoundUpdateStatus] =
+    React.useState<ProgressStatus>(initialUpdateRoundState.roundUpdateStatus);
 
   const [indexingStatus, setIndexingStatus] = React.useState<ProgressStatus>(
-    initialUpdateRoundState.indexingStatus,
+    initialUpdateRoundState.indexingStatus
   );
 
   const providerProps: UpdateRoundState = {
@@ -59,13 +67,11 @@ export const UpdateRoundProvider = ({ children }: { children: React.ReactNode })
   };
 
   return (
-    <UpdateRoundContext.Provider
-      value={providerProps}
-    >
+    <UpdateRoundContext.Provider value={providerProps}>
       {children}
     </UpdateRoundContext.Provider>
   );
-}
+};
 
 interface _updateRoundParams {
   context: UpdateRoundState;
@@ -78,16 +84,10 @@ const _updateRound = async ({
   signerOrProvider,
   updateRoundData,
 }: _updateRoundParams) => {
-  const {
-    setIPFSCurrentStatus,
-    setRoundUpdateStatus,
-    setIndexingStatus
-  } = context;
+  const { setIPFSCurrentStatus, setRoundUpdateStatus, setIndexingStatus } =
+    context;
 
-  const {
-    round,
-    editedGroups,
-  } = updateRoundData;
+  const { round, editedGroups } = updateRoundData;
 
   const transactionBuilder = new TransactionBuilder(round, signerOrProvider);
   const chainId = await signerOrProvider.getChainId();
@@ -97,19 +97,30 @@ const _updateRound = async ({
 
     // ipfs/metapointer related updates
     try {
-      if (editedGroups.RoundMetaPointer || editedGroups.ApplicationMetaPointer) {
+      if (
+        editedGroups.RoundMetaPointer ||
+        editedGroups.ApplicationMetaPointer
+      ) {
         setIPFSCurrentStatus(ProgressStatus.IN_PROGRESS);
         if (editedGroups.RoundMetaPointer) {
-          console.log("updating round metadata")
-          const ipfsHash: string = await saveToIPFS({ content: round.roundMetadata })
-          transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [{ protocol: 1, pointer: ipfsHash }]);
+          console.log("updating round metadata");
+          const ipfsHash: string = await saveToIPFS({
+            content: round.roundMetadata,
+          });
+          transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [
+            { protocol: 1, pointer: ipfsHash },
+          ]);
         }
         if (editedGroups.ApplicationMetaPointer) {
-          console.log("updating application metadata")
+          console.log("updating application metadata");
           if (round.applicationMetadata === undefined)
             throw new Error("Application metadata is undefined");
-          const ipfsHash: string = await saveToIPFS({ content: round.applicationMetadata })
-          transactionBuilder.add(UpdateAction.UPDATE_APPLICATION_META_PTR, [{ protocol: 1, pointer: ipfsHash }]);
+          const ipfsHash: string = await saveToIPFS({
+            content: round.applicationMetadata,
+          });
+          transactionBuilder.add(UpdateAction.UPDATE_APPLICATION_META_PTR, [
+            { protocol: 1, pointer: ipfsHash },
+          ]);
         }
         setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
       }
@@ -121,11 +132,15 @@ const _updateRound = async ({
 
     // direct contract updates
     if (editedGroups.MatchAmount) {
-      console.log("updating match amount")
-      const decimals = getPayoutTokenOptions(chainId).find(token => token.address === round.token)?.decimal
+      console.log("updating match amount");
+      const decimals = getPayoutTokenOptions(chainId).find(
+        (token) => token.address === round.token
+      )?.decimal;
       // use ethers to convert amount using decimals
-      const arg = ethers.utils.parseUnits(round?.roundMetadata?.quadraticFundingConfig
-        ?.matchingFundsAvailable.toString(), decimals);
+      const arg = ethers.utils.parseUnits(
+        round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString(),
+        decimals
+      );
       transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [arg]);
       console.log(arg.toString());
     }
@@ -136,14 +151,14 @@ const _updateRound = async ({
     // }
 
     if (editedGroups.RoundFeePercentage) {
-      console.log("updating round fee percentage")
-      const arg = round.roundMetadata?.quadraticFundingConfig
-        ?.matchingFundsAvailable;
+      console.log("updating round fee percentage");
+      const arg =
+        round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable;
       transactionBuilder.add(UpdateAction.UPDATE_ROUND_FEE_PERCENTAGE, [arg]);
     }
 
     if (editedGroups.StartAndEndTimes) {
-      console.log("updating start and end times")
+      console.log("updating start and end times");
       transactionBuilder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
         Date.parse(round?.applicationsStartTime.toString()) / 1000,
         Date.parse(round?.applicationsEndTime.toString()) / 1000,
@@ -164,13 +179,11 @@ const _updateRound = async ({
     try {
       await waitForSubgraphSyncTo(chainId, blockNumber);
       setIndexingStatus(ProgressStatus.IS_SUCCESS);
-
     } catch (error) {
       datadogLogs.logger.error(`_updateRound: ${error}`);
       setIndexingStatus(ProgressStatus.IS_ERROR);
       throw error;
     }
-
   } catch (error) {
     datadogLogs.logger.error(`_updateRound: ${error}`);
     setRoundUpdateStatus(ProgressStatus.IS_ERROR);
@@ -182,16 +195,12 @@ export const useUpdateRound = () => {
   const context = useContext(UpdateRoundContext);
   if (!context) throw new Error("Missing UpdateRoundContext");
 
-  const {
-    setIPFSCurrentStatus,
-    setRoundUpdateStatus,
-    setIndexingStatus,
-  } = context;
+  const { setIPFSCurrentStatus, setRoundUpdateStatus, setIndexingStatus } =
+    context;
 
   const { signer: walletSigner } = useWallet();
 
   const updateRound = async (updateRoundData: UpdateRoundData) => {
-
     setIPFSCurrentStatus(initialUpdateRoundState.IPFSCurrentStatus);
     setRoundUpdateStatus(initialUpdateRoundState.roundUpdateStatus);
     setIndexingStatus(initialUpdateRoundState.indexingStatus);
@@ -208,5 +217,5 @@ export const useUpdateRound = () => {
     IPFSCurrentStatus: context.IPFSCurrentStatus,
     roundUpdateStatus: context.roundUpdateStatus,
     indexingStatus: context.indexingStatus,
-  }
+  };
 };

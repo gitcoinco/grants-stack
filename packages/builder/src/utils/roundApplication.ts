@@ -1,3 +1,4 @@
+import { ChainId } from "common";
 import { ethers } from "ethers";
 import {
   RoundApplicationMetadata,
@@ -5,7 +6,7 @@ import {
 } from "../types/roundApplication";
 
 const generateUniqueRoundApplicationID = (
-  projectChainId: number,
+  projectChainId: ChainId,
   projectNumber: string,
   projectRegistryAddress: string
 ) =>

@@ -9,10 +9,7 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
 import { ProgressStatus, Round } from "../api/types";
-import {
-  getTxExplorerForContract,
-  payoutTokens,
-} from "../api/utils";
+import { getTxExplorerForContract, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
@@ -104,13 +101,16 @@ export default function FundContract(props: {
       matchingFundPayoutToken?.address ===
       "0x0000000000000000000000000000000000000000"
         ? undefined
-        : matchingFundPayoutToken?.address,
+        : (matchingFundPayoutToken?.address as `0x{string}`),
   };
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero
       ? { addressOrName: address }
-      : { addressOrName: address, token: matchingFundPayoutToken?.address };
+      : {
+          addressOrName: address,
+          token: matchingFundPayoutToken?.address as `0x{string}`,
+        };
 
   const {
     data: balanceData,

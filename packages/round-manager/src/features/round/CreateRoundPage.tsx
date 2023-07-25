@@ -35,7 +35,7 @@ export default function CreateRound() {
   const programId = searchParams.get("programId");
   const roundCategoryParam = searchParams.get("roundCategory");
   const roundCategory =
-    roundCategoryParam == "direct"
+    roundCategoryParam === "direct"
       ? RoundCategory.Direct
       : RoundCategory.QuadraticFunding;
   const steps =
@@ -59,7 +59,10 @@ export default function CreateRound() {
         <div className="pb-10 container mx-auto px-4 pt-8">
           <header>
             <div className="flow-root">
-              <h1 className="float-left text-[32px] mb-7">Create a Round</h1>
+              <h1 className="float-left text-[32px] mb-7">
+                Create a {roundCategoryParam == "direct" && "Direct Grants"}
+                &nbsp;Round
+              </h1>
               <ExitCreateRound onClick={() => navigate("/")} />
             </div>
           </header>

@@ -1,6 +1,10 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
 
+/***********************/
+/* == Custom Chains == */
+/***********************/
+
 export const pgnTestnet: Chain = {
   id: 58008,
   name: "PGN Testnet",
@@ -12,7 +16,12 @@ export const pgnTestnet: Chain = {
     symbol: "ETH",
   },
   rpcUrls: {
-    default: "https://sepolia.publicgoods.network",
+    default: {
+      http: ["https://sepolia.publicgoods.network"],
+    },
+    public: {
+      http: ["https://sepolia.publicgoods.network"],
+    },
   },
   blockExplorers: {
     default: {

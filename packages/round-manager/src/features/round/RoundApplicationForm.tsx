@@ -31,7 +31,6 @@ import BaseSwitch from "../common/BaseSwitch";
 import ErrorModal from "../common/ErrorModal";
 import { FormStepper as FS } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
-import InfoModal from "../common/InfoModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
@@ -85,6 +84,15 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
   },
   {
     id: 2,
+    title: "Application detail",
+    required: true,
+    encrypted: false,
+    hidden: false,
+    type: "paragraph",
+    fixed: true,
+  },
+  {
+    id: 3,
     title: "Amount requested",
     required: true,
     encrypted: false,
@@ -93,7 +101,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     fixed: true,
   },
   {
-    id: 3,
+    id: 4,
     title: "Payout token",
     required: true,
     encrypted: false,
@@ -103,7 +111,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     fixed: true,
   },
   {
-    id: 4,
+    id: 5,
     title: "Payout wallet address",
     required: true,
     encrypted: false,
@@ -112,7 +120,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     fixed: true,
   },
   {
-    id: 5,
+    id: 6,
     title: "Milestones",
     required: true,
     encrypted: false,
@@ -121,7 +129,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     fixed: true,
   },
   {
-    id: 6,
+    id: 7,
     title: "Funding Sources",
     required: true,
     encrypted: false,
@@ -129,7 +137,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     type: "short-answer",
   },
   {
-    id: 7,
+    id: 8,
     title: "Team Size",
     required: true,
     encrypted: false,
@@ -167,7 +175,6 @@ export function RoundApplicationForm(props: {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
-  const [openHeadsUpModal, setOpenHeadsUpModal] = useState(false);
   const [toEdit, setToEdit] = useState<EditQuestion | undefined>();
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
@@ -182,13 +189,13 @@ export function RoundApplicationForm(props: {
   const navigate = useNavigate();
 
   const roundCategory =
-    props.configuration?.roundCategory || RoundCategory.QuadraticFunding;
+    props.configuration?.roundCategory ?? RoundCategory.QuadraticFunding;
 
   // @ts-expect-error TODO: either fix this or refactor the whole formstepper
   const questionsArg = formData?.applicationMetadata?.questions;
   const defaultQuestions: ApplicationMetadata["questions"] = questionsArg
     ? questionsArg
-    : roundCategory == RoundCategory.QuadraticFunding
+    : roundCategory === RoundCategory.QuadraticFunding
     ? initialQuestionsQF
     : initialQuestionsDirect;
 
@@ -270,10 +277,6 @@ export function RoundApplicationForm(props: {
   const prev = () => setCurrentStep(currentStep - 1);
 
   const next: SubmitHandler<Round> = async (values) => {
-    if (!openHeadsUpModal) {
-      setOpenHeadsUpModal(true);
-      return;
-    }
     try {
       setOpenProgressModal(true);
       const data: Partial<Round> = _.merge(formData, values);
@@ -380,32 +383,21 @@ export function RoundApplicationForm(props: {
   };
 
   const formSubmitModals = () => (
-    <InfoModal
-      title={"Heads up!"}
-      body={<InfoModalBody />}
-      isOpen={openHeadsUpModal}
-      setIsOpen={setOpenHeadsUpModal}
-      continueButtonAction={() => {
-        handleSubmit(next)();
-      }}
+    <ProgressModal
+      isOpen={openProgressModal}
+      subheading={"Please hold while we create your Grant Round."}
+      steps={progressStepsQF}
     >
-      <ProgressModal
-        isOpen={openProgressModal}
-        subheading={"Please hold while we create your Grant Round."}
-        steps={progressStepsQF}
-      >
-        <ErrorModal
-          isOpen={openErrorModal}
-          setIsOpen={setOpenErrorModal}
-          tryAgainFn={handleSubmit(next)}
-          doneFn={() => {
-            setOpenErrorModal(false);
-            setOpenProgressModal(false);
-            setOpenHeadsUpModal(false);
-          }}
-        />
-      </ProgressModal>
-    </InfoModal>
+      <ErrorModal
+        isOpen={openErrorModal}
+        setIsOpen={setOpenErrorModal}
+        tryAgainFn={handleSubmit(next)}
+        doneFn={() => {
+          setOpenErrorModal(false);
+          setOpenProgressModal(false);
+        }}
+      />
+    </ProgressModal>
   );
 
   const singleQuestion = (field: SchemaQuestion, key: number) => (
@@ -760,24 +752,6 @@ const Box = ({
     </div>
   </div>
 );
-
-function InfoModalBody() {
-  return (
-    <div className="text-sm text-grey-400 gap-16">
-      <p className="text-sm">
-        Each grant round on the protocol requires three smart contracts.
-      </p>
-      <p className="text-sm my-2">
-        You'll have to sign a transaction to deploy each of the following:
-      </p>
-      <ul className="list-disc list-inside pl-3">
-        <li>Voting contract</li>
-        <li>Payout contract</li>
-        <li>Round core contract</li>
-      </ul>
-    </div>
-  );
-}
 
 function redirectToProgramDetails(
   navigate: NavigateFunction,

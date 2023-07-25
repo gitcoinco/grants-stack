@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   ArrowNarrowLeftIcon,
   CheckIcon,
   ShieldCheckIcon,
   XCircleIcon,
   XIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/solid";
+
 import { useEffect, useState } from "react";
 import {
   Link,
@@ -18,6 +21,7 @@ import { useWallet } from "../common/Auth";
 import { Button } from "common/src/styles";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
+import CheckmarkWhite from "../../assets/checkmark-white.svg";
 import Footer from "common/src/components/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
@@ -25,6 +29,7 @@ import ProgressModal from "../common/ProgressModal";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   AnswerBlock,
+  ApplicationStatus,
   GrantApplication,
   ProgressStatus,
   ProgressStep,
@@ -41,16 +46,27 @@ import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
+import {
+  RoundName,
+  ViewGrantsExplorerButton,
+  ApplicationOpenDateRange,
+  RoundOpenDateRange,
+  RoundBadgeStatus,
+} from "./ViewRoundPage";
 
 import {
   CalendarIcon,
   formatDateWithOrdinal,
+  getUTCTime,
   VerifiedCredentialState,
 } from "common";
 import { renderToHTML } from "common";
 import { useDebugMode } from "../../hooks";
-
-type ApplicationStatus = "APPROVED" | "REJECTED";
+import {
+  ROUND_PAYOUT_DIRECT,
+  getPayoutRoundDescription,
+} from "../common/Utils";
+import moment from "moment";
 
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
@@ -173,12 +189,21 @@ export default function ViewApplicationPage() {
       setOpenProgressModal(true);
       setOpenModal(false);
 
-      application.status = reviewDecision;
+      if (reviewDecision == "IN_REVIEW") {
+        application.inReview = true;
+      } else {
+        application.status = reviewDecision;
+      }
 
       await bulkUpdateGrantApplications({
         roundId: roundId,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         applications: applications!,
+        payoutAddress:
+          reviewDecision == "IN_REVIEW"
+            ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              applications![0].payoutStrategy?.id
+            : undefined,
         selectedApplications: [application],
       });
     } catch (error) {
@@ -303,6 +328,74 @@ export default function ViewApplicationPage() {
   const registeredGithub =
     application?.project?.projectGithub ?? application?.project?.userGithub;
 
+  const StepStatus: React.FC<{
+    status?: "done" | "current" | undefined;
+    last?: boolean;
+  }> = ({ status, last }) => {
+    return (
+      <div className="relative">
+        <div
+          className={`flex items-center justify-center rounded-full w-[24px] h-[24px] border-[2px] z-10 relative bg-white
+        ${
+          status === "done"
+            ? "bg-teal-500 border-teal-500"
+            : status === "current"
+            ? "border-violet-500"
+            : ""
+        }
+        `}
+        >
+          {status === "done" && (
+            <img src={CheckmarkWhite} className="h-3 w-3" alt="" />
+          )}
+          {status === "current" && (
+            <div className="rounded-full w-[10px] h-[10px] bg-violet-500" />
+          )}
+        </div>
+        {!last && (
+          <div
+            className={`h-[100%] w-[2px] absolute z-5 left-1/2 top-0 ml-[-1px] ${
+              status === "done" ? "bg-teal-500" : "bg-grey-200"
+            }`}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const Step: React.FC<{
+    title: string;
+    icon: React.ReactNode;
+    text: string | React.ReactNode;
+    status?: "done" | "current" | undefined;
+    last?: boolean;
+  }> = ({ title, icon, last, text, status }) => {
+    return (
+      <div className={`flex gap-4`}>
+        <StepStatus last={last} status={status} />
+        <div
+          className={`flex gap-3 mt-[5px] pb-[35px] ${
+            !status ? "opacity-[0.6]" : ""
+          }`}
+        >
+          {icon}
+          <div className={`mt-[-3px]`}>
+            <p className="text-sm text-grey-400 font-bold">{title}:</p>
+            <div className="text-sm text-grey-400">{text}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const getStepStatus = (status: number, isLastStep: boolean) => {
+    // 0 = pending
+    // 4 = In review
+    if (isLastStep && [0, 4].includes(status)) return "current";
+
+    return "done";
+  };
+
   return isLoading ? (
     <Spinner text="We're fetching the round application." />
   ) : (
@@ -312,21 +405,109 @@ export default function ViewApplicationPage() {
       {applicationExists && hasAccess && (
         <>
           <Navbar />
-          <div className="container mx-auto h-screen px-4 py-7">
-            <header>
-              <div className="flex gap-2 mb-6">
-                <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
-                <Link className="text-sm gap-2" to={`/round/${round?.id}`}>
-                  <span>{round?.roundMetadata?.name || "..."}</span>
-                </Link>
+          <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
+            <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
+              <Link to={`/`}>
+                <span>{"My Programs"}</span>
+              </Link>
+              <ChevronRightIcon className="h-6 w-6" />
+              <Link to={`/program/${round?.ownedBy}`}>
+                <span>{"Program Details"}</span>
+              </Link>
+              <ChevronRightIcon className="h-6 w-6" />
+              <Link to={`/round/${id}`}>
+                @<span>{"Round Details"}</span>
+              </Link>
+              {round && <RoundBadgeStatus round={round} />}
+            </div>
+            {/* Round type */}
+            {getPayoutRoundDescription(
+              round?.payoutStrategy.strategyName || ""
+            ) && (
+              <div
+                className={`text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mt-4`}
+                style={{ borderRadius: "20px" }}
+              >
+                {getPayoutRoundDescription(
+                  round?.payoutStrategy.strategyName || ""
+                )}
               </div>
-              <div>
+            )}
+            {round && (
+              <div className="flex flex-row mb-1 items-center">
+                <RoundName round={round} />
+              </div>
+            )}
+            <div className="flex flex-row flex-wrap relative">
+              {round &&
+                round?.payoutStrategy.strategyName != ROUND_PAYOUT_DIRECT && (
+                  <ApplicationOpenDateRange round={round} />
+                )}
+              {round && <RoundOpenDateRange round={round} />}
+              <div className="absolute right-0">
+                <ViewGrantsExplorerButton
+                  iconStyle="h-4 w-4"
+                  chainId={`${chain.id}`}
+                  roundId={id}
+                />
+              </div>
+            </div>
+          </header>
+          <div className="container mx-auto h-screen px-4 pb-7">
+            <main className="flex flex-row">
+              {/* Sidebar */}
+              {(application?.statusSnapshots || []).length > 0 && (
+                <div className="w-24 basis-1/6 border-r pt-12">
+                  <div className="flex flex-col">
+                    {application
+                      .statusSnapshots!.sort((a, b) =>
+                        moment(a.timestamp).diff(moment(b.timestamp))
+                      )
+                      .map((s, index) => (
+                        <Step
+                          key={index}
+                          status={getStepStatus(
+                            s.status,
+                            index === application.statusSnapshots!.length - 1
+                          )}
+                          title={s.statusDescription}
+                          icon={
+                            <CalendarIcon className="text-grey-400 h-3 w-3" />
+                          }
+                          text={
+                            <>
+                              <div className="mb-[2px]">
+                                {moment(s.timestamp).format("MMMM Do YYYY")}
+                              </div>
+                              <div>{getUTCTime(s.timestamp)}</div>
+                            </>
+                          }
+                          last={
+                            index === application.statusSnapshots!.length - 1
+                          }
+                        />
+                      ))}
+                  </div>
+                  {/* Go back */}
+                  <Link
+                    className="text-sm text-grey-300 flex gap-2 items-center"
+                    to={`/round/${round?.id}`}
+                  >
+                    <ArrowNarrowLeftIcon className="text-grey-300 h-3 w-3" />
+                    Back to {round?.roundMetadata?.name || "..."}
+                  </Link>
+                </div>
+              )}
+              {/* Main contents */}
+              <div className="basis-5/6 pl-6 pt-12">
+                {/* Banner Image */}
                 {application && (
                   <ApplicationBanner
                     classNameOverride="h-32 w-full object-cover lg:h-80 rounded"
                     application={application}
                   />
                 )}
+                {/* Logo + Buttons */}
                 <div className="pl-4 sm:pl-6 lg:pl-8">
                   <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
                     <div className="flex">
@@ -339,6 +520,32 @@ export default function ViewApplicationPage() {
                     </div>
                     <div className="mt-16 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                       <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
+                        {application &&
+                          application.payoutStrategy?.strategyName ==
+                            ROUND_PAYOUT_DIRECT && (
+                            <Button
+                              type="button"
+                              $variant={
+                                application?.inReview ? "solid" : "outline"
+                              }
+                              className="inline-flex justify-center px-4 py-2 text-sm m-auto"
+                              disabled={isLoading || isUpdateLoading}
+                              onClick={() =>
+                                confirmReviewDecision(
+                                  ApplicationStatus.IN_REVIEW
+                                )
+                              }
+                            >
+                              <CheckIcon
+                                className="h-5 w-5 mr-1"
+                                aria-hidden="true"
+                              />
+                              {application?.inReview
+                                ? "Reviewing"
+                                : "In Review"}
+                            </Button>
+                          )}
+
                         <Button
                           type="button"
                           $variant={
@@ -348,7 +555,9 @@ export default function ViewApplicationPage() {
                           }
                           className="inline-flex justify-center px-4 py-2 text-sm m-auto"
                           disabled={isLoading || isUpdateLoading}
-                          onClick={() => confirmReviewDecision("APPROVED")}
+                          onClick={() =>
+                            confirmReviewDecision(ApplicationStatus.APPROVED)
+                          }
                         >
                           <CheckIcon
                             className="h-5 w-5 mr-1"
@@ -372,7 +581,9 @@ export default function ViewApplicationPage() {
                               : "text-grey-500")
                           }
                           disabled={isLoading || isUpdateLoading}
-                          onClick={() => confirmReviewDecision("REJECTED")}
+                          onClick={() =>
+                            confirmReviewDecision(ApplicationStatus.REJECTED)
+                          }
                         >
                           <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                           {application?.status === "REJECTED"
@@ -383,52 +594,19 @@ export default function ViewApplicationPage() {
                     </div>
                   </div>
                 </div>
-              </div>
-              <ConfirmationModal
-                confirmButtonText={
-                  isUpdateLoading ? "Confirming..." : "Confirm"
-                }
-                body={
-                  <p className="text-sm text-grey-400">
-                    {`You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network`}
-                  </p>
-                }
-                confirmButtonAction={handleReview}
-                cancelButtonAction={() => {
-                  setOpenModal(false);
-                  setTimeout(() => setReviewDecision(undefined), 500);
-                }}
-                isOpen={openModal}
-                setIsOpen={setOpenModal}
-              />
-
-              <ProgressModal
-                isOpen={openProgressModal}
-                subheading={
-                  "Please hold while we update the grant application."
-                }
-                steps={progressSteps}
-              />
-
-              <ErrorModal
-                isOpen={openErrorModal}
-                setIsOpen={setOpenErrorModal}
-                tryAgainFn={handleReview}
-              />
-            </header>
-
-            <main>
-              <h1 className="text-2xl mt-6">
-                {application?.project?.title || "..."}
-              </h1>
-              <div className="sm:flex sm:justify-between my-6">
-                <div className="sm:basis-3/4 sm:mr-3">
-                  <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
+                {/* Title */}
+                <h1 className="text-2xl mt-6 mb-4">
+                  {application?.project?.title || "..."}
+                </h1>
+                {/* Main info */}
+                <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
+                  {/* Twitter */}
+                  {application?.project?.projectTwitter && (
                     <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
+                      className="flex flex-row justify-start items-center"
                       data-testid="twitter-info"
                     >
-                      <TwitterIcon className="h-4 w-4 mr-2" />
+                      <TwitterIcon className="h-4 w-4 mr-2 text-grey-500" />
                       <a
                         href={`https://twitter.com/${application?.project?.projectTwitter}`}
                         target="_blank"
@@ -439,12 +617,14 @@ export default function ViewApplicationPage() {
                       </a>
                       {getVerifiableCredentialVerificationResultView("twitter")}
                     </span>
-
+                  )}
+                  {/* Github */}
+                  {registeredGithub && (
                     <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
+                      className="flex flex-row items-center"
                       data-testid="github-info"
                     >
-                      <GithubIcon className="h-4 w-4 mr-2" />
+                      <GithubIcon className="h-4 w-4 mr-2 text-grey-500" />
                       <a
                         href={`https://github.com/${registeredGithub}`}
                         target="_blank"
@@ -455,70 +635,97 @@ export default function ViewApplicationPage() {
                       </a>
                       {getVerifiableCredentialVerificationResultView("github")}
                     </span>
-
-                    <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
-                      data-testid="project-createdAt"
-                    >
-                      <CalendarIcon className="h-4 w-4 mr-2" />
-                      <span className="text-sm text-violet-400 mr-2">
-                        Created on:{" "}
-                        {application?.project?.createdAt
-                          ? formatDateWithOrdinal(
-                              new Date(Number(application?.project?.createdAt))
-                            )
-                          : "-"}
-                      </span>
+                  )}
+                  {/* Creation date */}
+                  <span
+                    className="flex flex-row items-center"
+                    data-testid="project-createdAt"
+                  >
+                    <CalendarIcon className="h-4 w-4 mr-2 text-grey-400" />
+                    <span className="text-sm text-grey-400">
+                      Created on:{" "}
+                      {application?.project?.createdAt
+                        ? formatDateWithOrdinal(
+                            new Date(Number(application?.project?.createdAt))
+                          )
+                        : "-"}
                     </span>
-                  </div>
-
-                  <hr className="my-6" />
-
-                  <h2 className="text-xs mb-2">Description</h2>
-
-                  <p
-                    dangerouslySetInnerHTML={{
-                      __html: renderToHTML(
-                        application?.project?.description.replace(
-                          /\n/g,
-                          "\n\n"
-                        ) ?? ""
-                      ),
-                    }}
-                    className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
-                  ></p>
-
-                  <hr className="my-6" />
-
-                  {answerBlocks &&
-                    answerBlocks?.map((block: AnswerBlock) => {
-                      const answerText = Array.isArray(block.answer)
-                        ? block.answer.join(", ")
-                        : block.answer ?? "";
-
-                      return (
-                        <div key={block.questionId} className="pb-5">
-                          <h2 className="text-xs mb-2">{block.question}</h2>
-                          {block.type === "paragraph" ? (
-                            <p
-                              dangerouslySetInnerHTML={{
-                                __html: renderToHTML(
-                                  answerText.replace(/\n/g, "\n\n")
-                                ),
-                              }}
-                              className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
-                            ></p>
-                          ) : (
-                            <p className="text-base text-black">
-                              {answerText.replace(/\n/g, "<br/>")}
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
+                  </span>
                 </div>
-                <div className="sm:basis-1/4 text-center sm:ml-3"></div>
+                <hr className="my-6" />
+                {/* Description */}
+                <h2 className="text-xs mb-2">Description</h2>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: renderToHTML(
+                      application?.project?.description.replace(
+                        /\n/g,
+                        "\n\n"
+                      ) ?? ""
+                    ),
+                  }}
+                  className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+                ></p>
+                <hr className="my-6" />
+                {answerBlocks &&
+                  answerBlocks?.map((block: AnswerBlock) => {
+                    const answerText = Array.isArray(block.answer)
+                      ? block.answer.join(", ")
+                      : block.answer ?? "";
+
+                    return (
+                      <div key={block.questionId} className="pb-5">
+                        <h2 className="text-xs mb-1">{block.question}</h2>
+                        {block.type === "paragraph" ? (
+                          <p
+                            dangerouslySetInnerHTML={{
+                              __html: renderToHTML(
+                                answerText.replace(/\n/g, "\n\n")
+                              ),
+                            }}
+                            className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+                          ></p>
+                        ) : (
+                          <p className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600">
+                            {answerText.replace(/\n/g, "<br/>")}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
+              {/* Modals */}
+              <ConfirmationModal
+                confirmButtonText={
+                  isUpdateLoading ? "Confirming..." : "Confirm"
+                }
+                body={
+                  <p className="text-sm text-grey-400">
+                    {reviewDecision == "IN_REVIEW"
+                      ? 'You have moved to "In Review" status a Grant Application. This will carry gas fees based on the selected network.'
+                      : `You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network.`}
+                  </p>
+                }
+                confirmButtonAction={handleReview}
+                cancelButtonAction={() => {
+                  setOpenModal(false);
+                  setTimeout(() => setReviewDecision(undefined), 500);
+                }}
+                isOpen={openModal}
+                setIsOpen={setOpenModal}
+              />
+              <ProgressModal
+                isOpen={openProgressModal}
+                subheading={
+                  "Please hold while we update the grant application."
+                }
+                steps={progressSteps}
+              />
+              <ErrorModal
+                isOpen={openErrorModal}
+                setIsOpen={setOpenErrorModal}
+                tryAgainFn={handleReview}
+              />
             </main>
             <Footer />
           </div>

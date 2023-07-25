@@ -1,19 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { fetchProjectPaidInARound, Payout } from "common";
+import { ChainId, fetchProjectPaidInARound, Payout } from "common";
 import { BigNumber, ethers, Signer } from "ethers";
 import { useEffect, useState } from "react";
-// import dist from "tailwind-styled-components";
 import { useWallet } from "../../common/Auth";
+import { fetchMatchingDistribution } from "../round";
+import { generateMerkleTree } from "../utils";
 import {
-  alloSettingsContract,
   directPayoutStrategyFactoryContract,
-  merklePayoutStrategyFactoryContract,
   merklePayoutStrategyImplementationContract,
 } from "../contracts";
-import { fetchMatchingDistribution } from "../round";
-import { MatchingStatsData, Round } from "../types";
-import { ChainId, generateMerkleTree } from "../utils";
-import { DirectPayoutStrategyFactory__factory } from "../../../types/generated/typechain";
+import { MatchingStatsData } from "../types";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -22,49 +17,6 @@ import { DirectPayoutStrategyFactory__factory } from "../../../types/generated/t
  * @param signerOrProvider
  * @returns
  */
-export const deployMerklePayoutStrategyContract = async (
-  signerOrProvider: Signer,
-): Promise<{ payoutContractAddress: string }> => {
-  try {
-    const chainId = await signerOrProvider.getChainId();
-
-    const _merklePayoutStrategyFactoryContract =
-      merklePayoutStrategyFactoryContract(chainId);
-
-    const payoutStrategyFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _merklePayoutStrategyFactoryContract.address!,
-      _merklePayoutStrategyFactoryContract.abi,
-      signerOrProvider,
-    );
-
-    // Deploy a new MerklePayoutStrategy contract
-    const tx = await payoutStrategyFactory.create();
-
-    const receipt = await tx.wait();
-
-    let payoutContractAddress;
-
-    if (receipt.events) {
-      const event = receipt.events.find(
-        (e: { event: string }) => e.event === "PayoutContractCreated",
-      );
-      if (event && event.args) {
-        payoutContractAddress = event.args.payoutContractAddress;
-      }
-    } else {
-      throw new Error("No PayoutContractCreated event");
-    }
-
-    console.log("✅ Merkle Payout Transaction hash: ", tx.hash);
-    console.log("✅ Merkle Payout Strategy address: ", payoutContractAddress);
-
-    return { payoutContractAddress };
-  } catch (error) {
-    console.error("deployMerklePayoutStrategyContract", error);
-    throw new Error("Unable to deploy merkle payout strategy contract");
-  }
-};
 
 /**
  * @param signerOrProvider
@@ -95,11 +47,11 @@ export async function updateDistributionToContract({
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
 
     const tx = await merklePayoutStrategyImplementation.updateDistribution(
-      encodedDistribution,
+      encodedDistribution
     );
     const receipt = await tx.wait();
 
@@ -133,7 +85,7 @@ export const useFetchMatchingDistributionFromContract = (
       try {
         const matchingDataRes = await fetchMatchingDistribution(
           roundId,
-          walletProvider,
+          walletProvider
         );
         setMatchingData(matchingDataRes);
         setIsLoading(false);
@@ -167,7 +119,7 @@ interface GroupedProjects {
  */
 export const useGroupProjectsByPaymentStatus = (
   chainId: ChainId,
-  roundId: string,
+  roundId: string
 ): GroupedProjects => {
   const [groupedProjects, setGroupedProjects] = useState<GroupedProjects>({
     paid: [],
@@ -232,13 +184,13 @@ export const batchDistributeFunds = async (
   payoutStrategy: string,
   allProjects: MatchingStatsData[],
   projectIdsToBePaid: string[],
-  signerOrProvider: Signer,
+  signerOrProvider: Signer
 ) => {
   try {
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
 
     // Generate merkle tree

@@ -151,7 +151,7 @@ interface RoundDetailFormProps {
 export function RoundDetailForm(props: RoundDetailFormProps) {
   const program = props.initialData?.program;
   const roundCategory =
-    props.configuration?.roundCategory || RoundCategory.QuadraticFunding;
+    props.configuration?.roundCategory ?? RoundCategory.QuadraticFunding;
 
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
@@ -245,7 +245,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
           >
             {/* Round inputs */}
             <div className="pt-7 sm:px-6 bg-white">
-              <div className="grid grid-cols-6 gap-6">
+              <div className="grid grid-cols-6 gap-6 mb-4">
                 <RoundName
                   register={register("roundMetadata.name")}
                   errors={errors}
@@ -253,11 +253,21 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 {program && <ProgramChain program={program} />}
               </div>
 
+              {/* vault Address */}
+              {roundCategory === RoundCategory.Direct && (
+                <VaultAddress
+                  register={register("vaultAddress")}
+                  errors={errors}
+                />
+              )}
+
               {/* support */}
-              <p className="mt-6 mb-2 text-sm text-grey-400">
-                Where can applicants reach you and/or your team if support is
-                needed?
-              </p>
+              <div className="mt-8 mb-3 text-sm text-grey-400">
+                <p>
+                  Where can applicants reach you and/or your team if support is
+                  needed?
+                </p>
+              </div>
               <div className="grid grid-cols-6 gap-6 mb-1">
                 <div className="col-span-6 sm:col-span-3">
                   <Support
@@ -274,17 +284,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 </div>
               </div>
 
-              {/* vault Address */}
-              {roundCategory == RoundCategory.Direct && (
-                <VaultAddress
-                  register={register("vaultAddress")}
-                  errors={errors}
-                />
-              )}
-
               {/* Dates explanation */}
-              <div className="mt-6 mb-4 text-sm text-grey-400">
-                {roundCategory == RoundCategory.QuadraticFunding ? (
+              <div className="mt-6 mb-3 text-sm text-grey-400">
+                {roundCategory === RoundCategory.QuadraticFunding ? (
                   <>
                     <p>
                       What are the dates for the Applications and Round voting
@@ -303,7 +305,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               </div>
 
               {/* Application dates */}
-              {roundCategory == RoundCategory.QuadraticFunding && (
+              {roundCategory === RoundCategory.QuadraticFunding && (
                 <>
                   <p className="text-sm mb-2">
                     <span>Applications</span>
@@ -556,15 +558,17 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                       </p>
                     )}
 
-                    {roundCategory == RoundCategory.Direct && (
+                    {/* Round end date */}
+                    {roundCategory === RoundCategory.Direct && (
                       <Controller
                         control={control}
                         name="roundEndTimeDisabled"
                         render={({ field }) => (
-                          <>
+                          <div className="flex items-center mt-2">
                             <input
+                              id="noEndDate"
                               type="checkbox"
-                              className="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                               checked={field.value}
                               onChange={(e) => {
                                 field.onChange(e.target.checked);
@@ -578,8 +582,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 }
                               }}
                             />
-                            <span>This round does not have an end date</span>
-                          </>
+                            <label
+                              htmlFor="noEndDate"
+                              className="ml-2 block text-sm text-grey-400"
+                            >
+                              This round does not have an end date
+                            </label>
+                          </div>
                         )}
                       />
                     )}
@@ -592,6 +601,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         errors.roundEndTime
                           ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                           : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                      } ${
+                        isRoundEndTimeDisabled
+                          ? "cursor-not-allowed bg-gray-100"
+                          : ""
                       }`}
                     >
                       <label
@@ -613,7 +626,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 placeholder: "",
                                 disabled: isRoundEndTimeDisabled,
                                 className:
-                                  "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                                  "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
                               }}
                               onChange={(date) => {
                                 field.onChange(moment(date));
@@ -1104,14 +1117,14 @@ function RoundType(props: {
           <div>
             <RadioGroup.Option value="public" className="mb-2">
               {({ checked, active }) => (
-                <span className="flex items-center text-sm">
+                <span className="flex items-start text-sm">
                   <span
                     className={classNames(
                       checked
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 mt-1 rounded-full border flex items-center justify-center"
                     )}
                     aria-hidden="true"
                   >
@@ -1133,14 +1146,14 @@ function RoundType(props: {
             </RadioGroup.Option>
             <RadioGroup.Option value="private">
               {({ checked, active }) => (
-                <span className="flex items-center text-sm">
+                <span className="flex items-start text-sm">
                   <span
                     className={classNames(
                       checked
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                      "h-4 w-4 mt-1 rounded-full border flex items-center justify-center"
                     )}
                     aria-hidden="true"
                   >

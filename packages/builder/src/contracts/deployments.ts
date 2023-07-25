@@ -12,6 +12,12 @@ export const chains = {
 
 export type ChainName = (typeof chains)[keyof typeof chains];
 
+export type DeploymentAddress = {
+  [key in ChainName]: {
+    projectRegistry: string | undefined;
+  };
+};
+
 type DeploymentAddresses = {
   projectRegistry: string | undefined;
 };

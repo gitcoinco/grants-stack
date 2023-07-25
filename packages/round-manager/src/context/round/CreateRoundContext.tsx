@@ -18,11 +18,12 @@ import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
-import { deployVotingContract } from "../../features/api/votingStrategy/votingStrategy";
 import {
-  getDirectPayoutFactoryAddress,
-  deployMerklePayoutStrategyContract,
-} from "../../features/api/payoutStrategy/payoutStrategy";
+  dgVotingStrategyDummyContract,
+  directPayoutStrategyFactoryContract,
+  merklePayoutStrategyFactoryContract,
+  qfVotingStrategyFactoryContract,
+} from "../../features/api/contracts";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
@@ -148,10 +149,15 @@ const _createRound = async ({
   try {
     datadogLogs.logger.info(`_createRound: ${round}`);
 
-    if (roundMetadataWithProgramContractAddress && roundMetadataWithProgramContractAddress.eligibility) {
-      roundMetadataWithProgramContractAddress.eligibility.requirements = roundMetadataWithProgramContractAddress.eligibility?.requirements.filter(
-        obj => obj.requirement != ""
-      );
+    if (
+      roundMetadataWithProgramContractAddress &&
+      roundMetadataWithProgramContractAddress.eligibility
+    ) {
+      roundMetadataWithProgramContractAddress.eligibility.requirements =
+        roundMetadataWithProgramContractAddress.eligibility?.requirements.filter(
+          // Loose comparison might be intentional here, leave as is
+          (obj) => obj.requirement != ""
+        );
     }
 
     const { roundMetadataIpfsHash, applicationSchemaIpfsHash } =
@@ -173,38 +179,30 @@ const _createRound = async ({
       },
     };
 
-    /**
-     * @note The new version of the contracts require to pass Voting and Payout factories
-     * instead of deploying the contracts directly and passing the addresses.
-     * As a temporal fix to make directRounds works we are tricking the UI stepper like so:
-     * Instead of deploying the factories we are passing the addresses of the factory as result.
-     * The new RoundFactory will use the address of the factory to create the contracts.
-     * @note For Direct rounds, the voting contract is not a factory buy a dummy-contract instead.
-     */
-
-    const votingContractAddress = await handleDeployVotingContract(
-      setVotingContractDeploymentStatus,
-      signerOrProvider,
-      isQF
-    );
-
-    const payoutContractAddress = await handleDeployPayoutContract(
-      setPayoutContractDeploymentStatus,
-      signerOrProvider,
-      isQF
-    );
+    /* On newer RoundImplementations, we create all the contracts during the round init process
+     * Therefore we pass in the factories for the voting and payout contracts instead of
+     * the implementations, and let the round deploy and init the strategies themselves */
+    const chainId = await signerOrProvider.getChainId();
 
     const roundContractInputsWithContracts = {
       ...roundContractInputsWithPointers,
-      votingStrategy: votingContractAddress,
+      votingStrategy: isQF
+        ? qfVotingStrategyFactoryContract(chainId).address
+        : dgVotingStrategyDummyContract(chainId),
       payoutStrategy: {
-        id: payoutContractAddress,
+        id: isQF
+          ? merklePayoutStrategyFactoryContract(chainId)
+          : directPayoutStrategyFactoryContract(chainId),
         isReadyForPayout: false,
       },
     };
 
-    const transactionBlockNumber = await handleDeployRoundContract(
-      setRoundContractDeploymentStatus,
+    const transactionBlockNumber = await handleDeployUnifiedRoundContract(
+      [
+        setVotingContractDeploymentStatus,
+        setPayoutContractDeploymentStatus,
+        setRoundContractDeploymentStatus,
+      ],
       roundContractInputsWithContracts,
       signerOrProvider,
       isQF
@@ -321,69 +319,26 @@ async function storeDocuments(
   }
 }
 
-async function handleDeployVotingContract(
-  setDeploymentStatus: SetStatusFn,
-  signerOrProvider: Signer,
-  isQF: boolean
-): Promise<string> {
-  try {
-    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
-
-    const { votingContractAddress } = await deployVotingContract(
-      signerOrProvider,
-      isQF
-    );
-
-    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
-    return votingContractAddress;
-  } catch (error) {
-    console.error("handleDeployVotingContract", error);
-    setDeploymentStatus(ProgressStatus.IS_ERROR);
-    throw error;
-  }
-}
-
-async function handleDeployPayoutContract(
-  setDeploymentStatus: SetStatusFn,
-  signerOrProvider: Signer,
-  isQF: boolean
-): Promise<string> {
-  try {
-    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
-
-    const { payoutContractAddress } = isQF
-      ? await deployMerklePayoutStrategyContract(signerOrProvider)
-      : await getDirectPayoutFactoryAddress(signerOrProvider);
-
-    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
-    return payoutContractAddress;
-  } catch (error) {
-    console.error("handleDeployPayoutContract", error);
-    setDeploymentStatus(ProgressStatus.IS_ERROR);
-    throw error;
-  }
-}
-
-async function handleDeployRoundContract(
-  setDeploymentStatus: SetStatusFn,
+async function handleDeployUnifiedRoundContract(
+  setDeploymentStatusFns: SetStatusFn[],
   round: Round,
   signerOrProvider: Signer,
   isQF: boolean
 ): Promise<number> {
   try {
-    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
+    setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IN_PROGRESS));
     const { transactionBlockNumber } = await deployRoundContract(
       round,
       signerOrProvider,
       isQF
     );
 
-    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
+    setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IS_SUCCESS));
 
     return transactionBlockNumber;
   } catch (error) {
     console.error("handleDeployRoundContract", error);
-    setDeploymentStatus(ProgressStatus.IS_ERROR);
+    setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IS_ERROR));
     throw error;
   }
 }

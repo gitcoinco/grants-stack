@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import CreateProgramPage from "../CreateProgramPage";
 import { useWallet } from "../../common/Auth";
 import { ProgressStatus } from "../../api/types";
@@ -9,6 +15,7 @@ import {
   initialCreateProgramState,
 } from "../../../context/program/CreateProgramContext";
 import { MemoryRouter } from "react-router-dom";
+import { errorModalDelayMs } from "../../../constants";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
@@ -58,7 +65,11 @@ describe("<CreateProgramPage />", () => {
       IPFSCurrentStatus: ProgressStatus.IS_ERROR,
     });
 
-    expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+    await waitFor(
+      async () =>
+        expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+      { timeout: errorModalDelayMs + 1000 }
+    );
   });
 
   it("choosing done closes the error modal", async () => {
@@ -105,7 +116,11 @@ describe("<CreateProgramPage />", () => {
       renderWithContext(<CreateProgramPage />, {
         contractDeploymentStatus: ProgressStatus.IS_ERROR,
       });
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
     });
   });
 });

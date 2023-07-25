@@ -4,7 +4,7 @@
 
 import abi from "./abi";
 import { Contract } from "./types";
-import { ChainId } from "./utils";
+import { ChainId } from "common";
 
 /************************/
 /* == External ABI == */
@@ -31,6 +31,10 @@ export const projectRegistryContract = (
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
       address = "0x984749e408FF0446d8ADaf20E293F2F299396631";
+      break;
+    }
+    case ChainId.PGN_TESTNET: {
+      address = "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
@@ -78,6 +82,10 @@ export const programFactoryContract = (
       address = "";
       break;
     }
+    case ChainId.PGN_TESTNET: {
+      address = "0x2Ff06F96Bb265698e47BfdED83f1aa0aC7c3a4Ce";
+      break;
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e";
@@ -121,6 +129,10 @@ export const roundFactoryContract = (chainId: ChainId | undefined): string => {
       address = "";
       break;
     }
+    case ChainId.PGN_TESTNET: {
+      address = "0x0479b9DA9f287539FEBd597350B1eBaEBF7479ac";
+      break;
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x24F9EBFAdf095e0afe3d98635ee83CD72e49B5B0";
@@ -143,7 +155,7 @@ export const roundImplementationContract: Contract = {
 /* QFVotingStrategyFactory */
 export const qfVotingStrategyFactoryContract = (
   chainId: ChainId | undefined
-): Contract => {
+): Contract & { address: string } => {
   let address;
 
   switch (chainId) {
@@ -163,6 +175,10 @@ export const qfVotingStrategyFactoryContract = (
       address = "";
       break;
     }
+    case ChainId.PGN_TESTNET: {
+      address = "0xE8027a807Bb85e57da4B7A5ecE65b0aBDf231ce8";
+      break;
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
@@ -172,7 +188,7 @@ export const qfVotingStrategyFactoryContract = (
   }
 
   return {
-    address: address,
+    address,
     abi: abi.qfVotingStrategyFactory,
   };
 };
@@ -200,6 +216,10 @@ export const dgVotingStrategyDummyContract = (
       address = "";
       break;
     }
+    case ChainId.PGN_TESTNET: {
+      address = "0xE42D1Da8d75Cf1d6f6C460DAa3f1b10a79D689B1";
+      break;
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
@@ -217,7 +237,7 @@ export const dgVotingStrategyDummyContract = (
 /* MerklePayoutStrategyFactory */
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId | undefined
-): Contract => {
+): string => {
   let address;
 
   switch (chainId) {
@@ -237,6 +257,7 @@ export const merklePayoutStrategyFactoryContract = (
       address = "";
       break;
     }
+
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe";
@@ -244,10 +265,7 @@ export const merklePayoutStrategyFactoryContract = (
     }
   }
 
-  return {
-    address: address,
-    abi: abi.merklePayoutStrategyFactory,
-  };
+  return address;
 };
 
 export const directPayoutStrategyFactoryContract = (

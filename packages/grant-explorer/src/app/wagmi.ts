@@ -1,74 +1,39 @@
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  connectorsForWallets,
+  getDefaultWallets,
+} from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   injectedWallet,
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { createClient, configureChains, chain } from "wagmi";
+import {
+  mainnet,
+  goerli,
+  fantom,
+  fantomTestnet,
+  optimism,
+  Chain,
+} from "wagmi/chains";
+import { createClient, configureChains } from "wagmi";
 
+import { pgnTestnet } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 
 const testnetChains = () => {
-  /***********************/
-  /* == Custom Chains == */
-  /***********************/
-
-  // Fantom Testnet
-  const fantomTestnet: Chain = {
-    id: 4002,
-    name: "Fantom Testnet",
-    network: "fantom testnet",
-    iconUrl:
-      "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
-    nativeCurrency: {
-      decimals: 18,
-      name: "Fantom",
-      symbol: "FTM",
-    },
-    rpcUrls: {
-      default: "https://rpc.testnet.fantom.network/",
-    },
-    blockExplorers: {
-      default: { name: "ftmscan", url: "https://testnet.ftmscan.com" },
-    },
-    testnet: true,
-  };
-
-  return [chain.goerli, fantomTestnet];
+  return [
+    goerli,
+    { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
+    pgnTestnet,
+  ];
 };
 
 const mainnetChains = () => {
-  /***********************/
-  /* == Custom Chains == */
-  /***********************/
-
-  // Fantom Mainnet
-  // const fantomMainnet: Chain = {
-  //   id: 250,
-  //   name: "Fantom",
-  //   network: "fantom mainnet",
-  //   iconUrl:
-  //     "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
-  //   nativeCurrency: {
-  //     decimals: 18,
-  //     name: "Fantom",
-  //     symbol: "FTM",
-  //   },
-  //   rpcUrls: {
-  //     default: "https://rpc.ankr.com/fantom/",
-  //   },
-  //   blockExplorers: {
-  //     default: { name: "ftmscan", url: "https://ftmscan.com" },
-  //   },
-  //   testnet: false,
-  // };
-
-  // return [chain.mainnet, chain.optimism, fantomMainnet];
-  return [chain.mainnet, chain.optimism];
+  return [mainnet, optimism, { ...fantom, iconUrl: "/logos/fantom-logo.svg" }];
 };
 
 const allChains: Chain[] =
@@ -79,21 +44,33 @@ const allChains: Chain[] =
 export const { chains, provider, webSocketProvider } = configureChains(
   allChains,
   [
-    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID }),
+    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID as string }),
     publicProvider(),
   ]
 );
+
+/* TODO: remove hardcoded value once we have environment variables validation */
+const projectId =
+  process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
+  "2685061cae0bcaf2b244446153eda9e1";
+
+const { wallets } = getDefaultWallets({
+  appName: "Grant Explorer",
+  projectId,
+  chains,
+});
 
 // Custom wallet connectors: more can be added by going here:
 // https://www.rainbowkit.com/docs/custom-wallet-list
 const connectors = connectorsForWallets([
   {
+    ...wallets,
     groupName: "Recommended",
     wallets: [
       injectedWallet({ chains }),
-      walletConnectWallet({ chains }),
+      walletConnectWallet({ chains, projectId }),
       coinbaseWallet({ appName: "Gitcoin Explorer", chains }),
-      metaMaskWallet({ chains }),
+      metaMaskWallet({ chains, projectId }),
     ],
   },
 ]);

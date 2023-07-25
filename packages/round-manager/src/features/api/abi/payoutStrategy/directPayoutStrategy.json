@@ -1,7 +1,4 @@
 [
-  { "inputs": [], "name": "DirectStrategy__isConfigured", "type": "error" },
-  { "inputs": [], "name": "DirectStrategy__notConfigured", "type": "error" },
-  { "inputs": [], "name": "DirectStrategy__notImplemented", "type": "error" },
   {
     "inputs": [],
     "name": "DirectStrategy__payout_ApplicationNotAccepted",
@@ -13,62 +10,22 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "DirectStrategy__payout_NotImplementedYet",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "DirectStrategy__setApplicationInReview_applicationInWrongStatus",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "DirectStrategy__vote_NotImplemented",
-    "type": "error"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "applicationIndex",
+        "name": "index",
         "type": "uint256"
       },
       {
         "indexed": true,
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      }
-    ],
-    "name": "ApplicationInReview",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "status",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "withdrawAddress",
-        "type": "address"
       }
     ],
-    "name": "FundsWithdrawn",
+    "name": "ApplicationInReviewUpdated",
     "type": "event"
   },
   {
@@ -103,6 +60,18 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "protocolFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "roundFee",
         "type": "uint256"
       },
       {
@@ -145,24 +114,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "roundFeeAddress",
+        "name": "vaultAddress",
         "type": "address"
       }
     ],
-    "name": "RoundFeeAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "roundFeePercentage",
-        "type": "uint32"
-      }
-    ],
-    "name": "RoundFeePercentageUpdated",
+    "name": "VaultAddressUpdated",
     "type": "event"
   },
   {
@@ -176,25 +132,6 @@
     "inputs": [],
     "name": "VERSION",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "alloSettings",
-    "outputs": [
-      { "internalType": "contract AlloSettings", "name": "", "type": "address" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "distributionMetaPtr",
-    "outputs": [
-      { "internalType": "uint256", "name": "protocol", "type": "uint256" },
-      { "internalType": "string", "name": "pointer", "type": "string" }
-    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -220,6 +157,13 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "inReviewApplicationsBitMap",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "init",
     "outputs": [],
@@ -227,20 +171,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "_alloSettings", "type": "address" },
-      { "internalType": "address", "name": "_vaultAddress", "type": "address" },
-      {
-        "internalType": "uint32",
-        "name": "_roundFeePercentage",
-        "type": "uint32"
-      },
-      {
-        "internalType": "address",
-        "name": "_roundFeeAddress",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -257,13 +188,6 @@
     "name": "isApplicationInReview",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "isDistributionSet",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -322,30 +246,18 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "roundFeeAddress",
-    "outputs": [
-      { "internalType": "address payable", "name": "", "type": "address" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "roundFeePercentage",
-    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_applicationIndex",
-        "type": "uint256"
+        "components": [
+          { "internalType": "uint256", "name": "index", "type": "uint256" },
+          { "internalType": "uint256", "name": "statusRow", "type": "uint256" }
+        ],
+        "internalType": "struct DirectPayoutStrategyImplementation.ApplicationStatus[]",
+        "name": "statuses",
+        "type": "tuple[]"
       }
     ],
-    "name": "setApplicationInReview",
+    "name": "setApplicationsInReview",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -365,34 +277,14 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
-    "name": "updateDistribution",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
-        "internalType": "address payable",
-        "name": "_newFeeAddress",
+        "internalType": "address",
+        "name": "_newVaultAddress",
         "type": "address"
       }
     ],
-    "name": "updateRoundFeeAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "_newFeePercentage",
-        "type": "uint32"
-      }
-    ],
-    "name": "updateRoundFeePercentage",
+    "name": "updateVaultAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -402,19 +294,6 @@
     "name": "vaultAddress",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "withdrawAddress",
-        "type": "address"
-      }
-    ],
-    "name": "withdrawFunds",
-    "outputs": [],
-    "stateMutability": "payable",
     "type": "function"
   },
   { "stateMutability": "payable", "type": "receive" }

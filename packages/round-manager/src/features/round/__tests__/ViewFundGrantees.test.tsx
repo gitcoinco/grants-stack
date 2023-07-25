@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
 import { useBalance, useDisconnect, useSwitchNetwork } from "wagmi";
@@ -63,6 +63,13 @@ const fetchMatchingDistributionMock = jest.spyOn(
 );
 
 describe("View Fund Grantees", () => {
+  // TODO: check default values in base.
+  // I've added them to avoid typescript errors.
+  const base = {
+    contributionsCount: 0,
+    applicationId: "0",
+    originalMatchAmountInToken: BigNumber.from(0),
+  };
   const matchingStatsData: MatchingStatsData[] = [
     {
       index: 0,
@@ -72,6 +79,7 @@ describe("View Fund Grantees", () => {
       projectId: "0x1",
       matchAmountInToken: ethers.utils.parseEther("1.11"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000001",
+      ...base,
     },
     {
       index: 1,
@@ -81,6 +89,7 @@ describe("View Fund Grantees", () => {
       projectId: "0x2",
       matchAmountInToken: ethers.utils.parseEther("2.22"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000002",
+      ...base,
     },
     {
       index: 2,
@@ -90,6 +99,7 @@ describe("View Fund Grantees", () => {
       projectId: "0x3",
       matchAmountInToken: ethers.utils.parseEther("3.33"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000003",
+      ...base,
     },
     {
       index: 3,
@@ -99,6 +109,7 @@ describe("View Fund Grantees", () => {
       projectId: "0x4",
       matchAmountInToken: ethers.utils.parseEther("4.44"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000004",
+      ...base,
     },
   ];
 
