@@ -410,15 +410,12 @@ export default function ViewCart() {
         <h1 className="text-3xl mt-5 font-thin border-b-2 pb-2">Cart</h1>
 
         <p className="mt-5">
-          Each cart is specific to a selected round (e.g., Web3 Open Source
-          Software round.) For the most efficient donation experience, check out
-          once you have selected all donations for a given round, and then
-          proceed to any other rounds that you'd like to donate to.
+          Donate to multiple projects on different rounds, with a single cart.
+          Submit one transaction per chain for a seamless donation experience.
         </p>
         <p className="mt-2 mb-5">
-          Complete one transaction per round to minimize gas costs. Note that
-          gas fees will likely increase based on the number of projects
-          selected.
+          Please note that gas fees, particularly on Ethereum, may increase
+          based on the number of projects selected.
         </p>
       </div>
     );
