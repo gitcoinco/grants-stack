@@ -8,6 +8,7 @@ import { RootState } from "../../../reducers";
 import { ProjectStats } from "../../../reducers/projects";
 import RoundDetailsCard from "./RoundDetailsCard";
 import StatCard from "./StatCard";
+import { ROUND_PAYOUT_DIRECT } from "../../../utils/utils";
 
 export default function RoundStats() {
   const NA = -1;
@@ -28,18 +29,23 @@ export default function RoundStats() {
     return {
       projectID: params.id!,
       stats,
-      projectApplications: state.projects.applications[params.id!],
+      projectApplications: state.projects?.applications[params.id!],
       rounds: state.rounds,
     };
   });
 
-  useEffect(() => {
-    if (props.projectApplications?.length > 0) {
-      const applications =
-        props.projectApplications?.filter((app) => app.status === "APPROVED") ||
-        [];
+  const isDirectRound = (roundId: string) =>
+    props.rounds[roundId]?.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
 
-      if (applications.length > 0) setNoStats(false);
+  useEffect(() => {
+    // TODO: Remove DIRECT ROUND filter condition after Stats view rework #11
+    const applications =
+      props.projectApplications?.filter(
+        (app) => app.status === "APPROVED" && !isDirectRound(app.roundID)
+      ) || [];
+
+    if (applications.length > 0) {
+      setNoStats(false);
 
       const rounds: Array<{ roundId: string; chainId: ChainId }> = [];
       applications.forEach((app) => {
