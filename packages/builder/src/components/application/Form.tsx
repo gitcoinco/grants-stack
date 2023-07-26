@@ -30,12 +30,7 @@ import {
   ROUND_PAYOUT_DIRECT,
   getProjectURIComponents,
 } from "../../utils/utils";
-import {
-  getNetworkIcon,
-  getPayoutIcon,
-  networkPrettyName,
-} from "../../utils/wallet";
-import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
+import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
 import ErrorModal from "../base/ErrorModal";
