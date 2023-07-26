@@ -54,7 +54,6 @@ export const voteUsingMRCContract = async (
     nonce: bigint;
   }
 ) => {
-  console.log("chainId in mrc vote", chainId);
   const mrcImplementation = getContract({
     address: MRC_CONTRACTS[(await walletClient.getChainId()) as ChainId],
     abi: mrcAbi,
@@ -66,19 +65,6 @@ export const voteUsingMRCContract = async (
 
   /* decide which function to use based on whether token is native, permit-compatible or DAI */
   if (token.address === zeroAddress) {
-    // const { request } = await publicClient.simulateContract({
-    //   account: walletClient.account,
-    //   address: mrcImplementation.address,
-    //   abi: mrcAbi,
-    //   functionName: "vote",
-    //   args: [
-    //     Object.values(groupedVotes),
-    //     Object.keys(groupedVotes) as Hex[],
-    //     Object.values(groupedAmounts),
-    //   ],
-    //   value: nativeTokenAmount,
-    // });
-
     tx = await mrcImplementation.write.vote(
       [
         Object.values(groupedVotes),
@@ -91,8 +77,6 @@ export const voteUsingMRCContract = async (
       }
     );
   } else if (permit) {
-    /* Is token DAI? */
-    /** DAI on optimism supports normal eip2612 permit, so we skip that*/
     if (selectPermitType(token) === "dai") {
       tx = await mrcImplementation.write.voteDAIPermit([
         Object.values(groupedVotes),
