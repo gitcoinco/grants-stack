@@ -167,7 +167,9 @@ export default function RoundListItem({
               Rejected
             </span>
           ) : null}
-          {applicationStatus === "PENDING" && !applicationInReview ? (
+          {applicationStatus === "PENDING" &&
+          isDirectRound &&
+          !applicationInReview ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Received
             </span>

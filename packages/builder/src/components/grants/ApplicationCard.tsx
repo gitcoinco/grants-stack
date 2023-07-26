@@ -161,7 +161,9 @@ export default function ApplicationCard({
         p={2}
         textTransform="inherit"
       >
-        {applicationStatus === "PENDING" && !applicationInReview ? (
+        {applicationStatus === "PENDING" &&
+        isDirectRound &&
+        !applicationInReview ? (
           <span className={`text-${colorScheme?.text} text-sm`}>Received</span>
         ) : null}
         {(applicationStatus === "PENDING" && !isDirectRound) ||
