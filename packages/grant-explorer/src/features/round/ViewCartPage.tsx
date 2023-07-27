@@ -22,7 +22,7 @@ import {
   PassportResponse,
   PassportState,
 } from "../api/passport";
-import { renderToPlainText, useTokenPrice } from "common";
+import { ChainId, renderToPlainText, useTokenPrice } from "common";
 import {
   CartDonation,
   CartProject,
@@ -31,7 +31,7 @@ import {
   ProgressStatus,
   recipient,
 } from "../api/types";
-import { getPayoutTokenOptions } from "../api/utils";
+import { CHAINS, getPayoutTokenOptions } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import Footer from "common/src/components/Footer";
@@ -422,11 +422,17 @@ export default function ViewCart() {
   }
 
   function CartWithProjects(cart: CartProject[]) {
+    const chain = CHAINS[Number(chainId) as ChainId];
     return (
       <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
-          <div className="basis-[28%]">
-            <h2 className="mt-2 text-xl">Projects</h2>
+          <div className="flex flex-row basis-[28%] gap-2">
+            <img
+              className="mt-2 inline-block h-9 w-9"
+              src={chain.logo}
+              alt={"Chain Logo"}
+            />
+            <h2 className="mt-3 text-xl font-semibold">{chain.name}</h2>
           </div>
           <div className="flex justify-end flex-row gap-2 basis-[72%]">
             <div className="flex gap-4">
