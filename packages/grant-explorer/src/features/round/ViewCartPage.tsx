@@ -423,8 +423,6 @@ export default function ViewCart() {
 
   function CartWithProjects(cart: CartProject[]) {
     const chain = CHAINS[Number(chainId) as ChainId];
-    const minDonationThresholdAmount =
-      round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount;
     return (
       <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
@@ -469,29 +467,55 @@ export default function ViewCart() {
             </div>
           </div>
         </div>
-        <div className="my-4 bg-grey-100 rounded-xl">
-          <div className="flex flex-row pt-4 px-2">
-            <p className="text-lg font-bold">{round?.roundMetadata?.name}</p>
-            <p className="text-lg font-bold ml-2">({cart.length})</p>
-          </div>
-          <div>
-            <p className="text-sm pt-2 pb-4 px-2">
-              Your donation to each project must be valued at{" "}
-              {minDonationThresholdAmount} USD or more to be eligible for
-              matching.
-            </p>
-          </div>
-          {cart.map((project: CartProject, key: number) => (
-            <div key={key}>
-              <ProjectInCart
-                project={project}
-                index={key}
-                roundRoutePath={`/round/${chainId}/${roundId}`}
-                last={key === cart.length - 1}
-              />
-            </div>
+        {cart
+          .reduce((acc: CartProject[][], project: CartProject) => {
+            const roundIndex = acc.findIndex(
+              (round) => round[0].roundId === project.roundId
+            );
+            if (roundIndex === -1) {
+              acc.push([project]);
+            } else {
+              acc[roundIndex].push(project);
+            }
+            return acc;
+          }, [])
+          .map((roundcart: CartProject[], key: number) => (
+            <RoundInCart key={key} roundcart={roundcart} />
           ))}
+      </div>
+    );
+  }
+
+  function RoundInCart(
+    props: React.ComponentProps<"div"> & {
+      roundcart: CartProject[];
+    }
+  ) {
+    const minDonationThresholdAmount =
+      round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount;
+    return (
+      <div className="my-4 bg-grey-100 rounded-xl">
+        <div className="flex flex-row pt-4 px-2">
+          <p className="text-lg font-bold">{round?.roundMetadata?.name}</p>
+          <p className="text-lg font-bold ml-2">({props.roundcart.length})</p>
         </div>
+        <div>
+          <p className="text-sm pt-2 pb-4 px-2">
+            Your donation to each project must be valued at{" "}
+            {minDonationThresholdAmount} USD or more to be eligible for
+            matching.
+          </p>
+        </div>
+        {props.roundcart.map((project: CartProject, key: number) => (
+          <div key={key}>
+            <ProjectInCart
+              project={project}
+              index={key}
+              roundRoutePath={`/round/${chainId}/${roundId}`}
+              last={key === cart.length - 1}
+            />
+          </div>
+        ))}
       </div>
     );
   }
