@@ -423,6 +423,8 @@ export default function ViewCart() {
 
   function CartWithProjects(cart: CartProject[]) {
     const chain = CHAINS[Number(chainId) as ChainId];
+    const minDonationThresholdAmount =
+      round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount;
     return (
       <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
@@ -467,7 +469,18 @@ export default function ViewCart() {
             </div>
           </div>
         </div>
-        <div className="my-4">
+        <div className="my-4 bg-grey-100 rounded-xl">
+          <div className="flex flex-row pt-4 px-2">
+            <p className="text-lg font-bold">{round?.roundMetadata?.name}</p>
+            <p className="text-lg font-bold ml-2">({cart.length})</p>
+          </div>
+          <div>
+            <p className="text-sm pt-2 pb-4 px-2">
+              Your donation to each project must be valued at{" "}
+              {minDonationThresholdAmount} USD or more to be eligible for
+              matching.
+            </p>
+          </div>
           {cart.map((project: CartProject, key: number) => (
             <div key={key}>
               <ProjectInCart
@@ -499,7 +512,7 @@ export default function ViewCart() {
     return (
       <div
         data-testid="cart-project"
-        className={props.last ? "" : `border-b-2 border-grey-100`}
+        className={props.last ? "" : `border-b-2 border-grey-200`}
       >
         <div className="mb-4 flex flex-col md:flex-row justify-between px-3 py-4 rounded-md">
           <div className="flex">
