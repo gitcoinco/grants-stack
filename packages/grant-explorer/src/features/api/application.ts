@@ -1,36 +1,29 @@
 import { BigNumber, BytesLike, ethers, Signer } from "ethers";
-import { ERC20Contract, roundImplementationContract } from "./contracts";
+import { ERC20Contract } from "./contracts";
 import { handleTransaction } from "common/src/transactions";
+import { multiRoundCheckoutContract } from "./contracts";
 
 export const voteOnRoundContract = async (
-  roundId: string,
   signer: Signer,
-  encodedVotes: BytesLike[],
+  token: string,
+  groupedVotes: Record<string, BytesLike[]>,
+  groupedAmounts: Record<string, BigNumber>,
   nativeTokenAmount: BigNumber
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
-  // checksum conversion
-  roundId = ethers.utils.getAddress(roundId);
-
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
+  const mrcImplementation = new ethers.Contract(
+    multiRoundCheckoutContract.address as string,
+    multiRoundCheckoutContract.abi,
     signer
   );
-
-  const decodedValues = ethers.utils.defaultAbiCoder.decode(
-    ["address", "uint256", "address", "bytes32", "uint256"],
-    encodedVotes[0]
+  debugger;
+  const tx = await mrcImplementation.vote(
+    Object.values(groupedVotes),
+    Object.keys(groupedVotes),
+    Object.values(groupedAmounts),
+    {
+      value: nativeTokenAmount,
+    }
   );
-
-  // only send native token amount as value to vote function
-  nativeTokenAmount =
-    decodedValues[0] === ethers.constants.AddressZero
-      ? nativeTokenAmount
-      : BigNumber.from(0);
-
-  const tx = await roundImplementation.vote(encodedVotes, {
-    value: nativeTokenAmount,
-  });
 
   const result = await handleTransaction(tx);
 

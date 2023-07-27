@@ -602,7 +602,8 @@ export default function ViewCart() {
                   props.project.projectRegistryId,
                   e.target.value,
                   props.project.recipient,
-                  props.project.applicationIndex
+                  props.project.applicationIndex,
+                  props.project.roundId
                 );
               }}
               className="w-48"
@@ -632,7 +633,8 @@ export default function ViewCart() {
                   props.project.projectRegistryId,
                   "",
                   props.project.recipient,
-                  props.project.applicationIndex
+                  props.project.applicationIndex,
+                  props.project.roundId
                 );
               }}
               className="w-5 h-5 m-auto cursor-pointer mb-4"
@@ -750,7 +752,8 @@ export default function ViewCart() {
     projectRegistryId: string,
     amount: string,
     projectAddress: recipient,
-    applicationIndex: number
+    applicationIndex: number,
+    roundId: string
   ) {
     const projectIndex = donations.findIndex(
       (donation) => donation.projectRegistryId === projectRegistryId
@@ -766,6 +769,7 @@ export default function ViewCart() {
         amount,
         projectAddress,
         applicationIndex,
+        roundId,
       });
     }
 
@@ -779,6 +783,7 @@ export default function ViewCart() {
         amount,
         projectAddress: project.recipient,
         applicationIndex: project.applicationIndex,
+        roundId: project.roundId,
       } as DonationInput;
     });
 
@@ -1069,7 +1074,6 @@ export default function ViewCart() {
       });
 
       await submitDonations({
-        roundId: roundId,
         donations: bigNumberDonation,
         donationToken: selectedPayoutToken,
         totalDonation: totalDonation,

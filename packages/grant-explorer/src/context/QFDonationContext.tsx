@@ -18,6 +18,7 @@ import {
   PayoutToken,
   ProgressStatus,
 } from "../features/api/types";
+import _ from "lodash";
 
 export interface QFDonationState {
   tokenApprovalStatus: ProgressStatus;
@@ -56,7 +57,6 @@ export const initialQFDonationState: QFDonationState = {
 };
 
 export type QFDonationParams = {
-  roundId: string;
   donations: CartDonation[];
   donationToken: PayoutToken;
   totalDonation: BigNumber;
@@ -66,7 +66,6 @@ export type QFDonationParams = {
 interface SubmitDonationParams {
   signer: Signer;
   context: QFDonationState;
-  roundId: string;
   donations: CartDonation[];
   donationToken: PayoutToken;
   totalDonation: BigNumber;
@@ -131,7 +130,6 @@ function resetToInitialState(context: QFDonationState) {
 async function _submitDonations({
   signer,
   context,
-  roundId,
   donations,
   donationToken,
   totalDonation,
@@ -150,14 +148,7 @@ async function _submitDonations({
     );
 
     // Invoke Vote
-    await vote(
-      signer,
-      roundId,
-      donationToken,
-      donations,
-      totalDonation,
-      context
-    );
+    await vote(signer, donationToken, donations, totalDonation, context);
 
     // Wait for indexing on subgraph
     await waitForSubgraphToUpdate(signer, context);
@@ -234,7 +225,6 @@ async function approveTokenForDonation(
 
 async function vote(
   signerOrProvider: Signer,
-  roundId: string,
   token: PayoutToken,
   donations: CartDonation[],
   totalDonation: BigNumber,
@@ -245,12 +235,32 @@ async function vote(
   try {
     setVoteStatus(ProgressStatus.IN_PROGRESS);
 
-    const encodedVotes = encodeQFVotes(token, donations);
+    /* Group donations by round */
+    const groupedDonations = _.groupBy(
+      donations.map((d) => ({
+        ...d,
+        roundId: ethers.utils.getAddress(d.roundId),
+      })),
+      "roundId"
+    );
+    const groupedEncodedVotes: Record<string, BytesLike[]> = {};
+    for (const roundId in groupedDonations) {
+      groupedEncodedVotes[roundId] = encodeQFVotes(token, donations);
+    }
+
+    const groupedAmounts: Record<string, BigNumber> = {};
+    for (const roundId in groupedDonations) {
+      groupedAmounts[roundId] = groupedDonations[roundId].reduce(
+        (acc, donation) => acc.add(donation.amount),
+        BigNumber.from(0)
+      );
+    }
 
     const { txBlockNumber, txHash } = await voteOnRoundContract(
-      roundId,
       signerOrProvider,
-      encodedVotes,
+      token.address,
+      groupedEncodedVotes,
+      groupedAmounts,
       totalDonation
     );
 
@@ -259,10 +269,12 @@ async function vote(
     setTxBlockNumber(txBlockNumber);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: approveTokenForDonation - ${error}. Data - ${vote.toString()}`
+      `error: vote - ${error}. Data - ${vote.toString()}`
     );
     console.error(
-      `approveTokenForDonation - roundId ${roundId}, token ${token.name}`,
+      `vote - roundIds ${Object.keys(donations.map((d) => d.roundId))}, token ${
+        token.name
+      }`,
       error
     );
     setVoteStatus(ProgressStatus.IS_ERROR);

@@ -7,6 +7,7 @@ import roundImplementation from "./roundImplementation";
 import qfVotingStrategyFactory from "./votingStrategy/qfVotingStrategyFactory";
 import merklePayoutStrategyFactory from "./payoutStrategy/merklePayoutStrategyFactory";
 import merklePayoutStrategyImplementation from "./payoutStrategy/merklePayoutStrategyImplementation";
+import multiRoundCheckout from "./multiRoundCheckout";
 
 const abi = {
   // External
@@ -27,6 +28,8 @@ const abi = {
   // PayoutStrategy
   merklePayoutStrategyFactory,
   merklePayoutStrategyImplementation,
+
+  multiRoundCheckout,
 };
 
 export default abi;

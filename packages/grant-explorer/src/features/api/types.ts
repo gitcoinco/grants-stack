@@ -60,7 +60,7 @@ export interface Contract {
   /**
    * Contract ABI in Human Readable ABI format
    */
-  abi: Array<string>;
+  abi: Array<string> | string;
   /**
    * Contract ABI in binary format
    */
@@ -176,6 +176,7 @@ export type ProjectRegistryId = string;
 export type recipient = string;
 
 export type DonationInput = {
+  roundId: string;
   projectRegistryId: ProjectRegistryId;
   amount: string;
   projectAddress: recipient;
@@ -183,6 +184,7 @@ export type DonationInput = {
 };
 
 export type CartDonation = {
+  roundId: string;
   projectRegistryId: ProjectRegistryId;
   amount: BigNumber;
   projectAddress: recipient;
