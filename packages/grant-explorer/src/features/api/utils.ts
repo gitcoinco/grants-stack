@@ -428,6 +428,7 @@ export function getChainIds(): number[] {
       Number(ChainId.MAINNET),
       Number(ChainId.OPTIMISM_MAINNET_CHAIN_ID),
       Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
+      Number(ChainId.PGN),
     ];
   } else {
     return Object.values(ChainId).map((chainId) => Number(chainId));
