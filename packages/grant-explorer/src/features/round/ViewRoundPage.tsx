@@ -235,6 +235,11 @@ function AfterRoundStart(props: {
 
   const applicationURL = `${builderURL}/#/chains/${chainId}/rounds/${roundId}`;
   const isDirectRound = round?.payoutStrategy && round?.payoutStrategy.strategyName === "DIRECT";
+  const getRoundType = (payoutStrategy: string) => {
+    return payoutStrategy === ROUND_PAYOUT_MERKLE
+      ? "Quadratic Funding"
+      : "Direct Grant"
+  }
 
   return (
     <>
@@ -259,12 +264,10 @@ function AfterRoundStart(props: {
           <p data-testid="round-title" className="text-3xl my-5">
             {round.roundMetadata?.name}
           </p>
-          <p data-testid="round-type" className="text-1xl mb-4">
-            {round.payoutStrategy.strategyName === ROUND_PAYOUT_MERKLE ? (
-              <span>Quadratic Funding Round</span>
-            ) : (
-              <span>Direct Grant Round</span>          
-            )}
+          <p data-testid="round-badge"
+            className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4"
+            style={{ borderRadius: "20px" }}>
+            {round.payoutStrategy.strategyName && getRoundType(round.payoutStrategy.strategyName)}
           </p>
           <div className="flex text-grey-400 mb-1">
             <p className="mr-4 text-sm">

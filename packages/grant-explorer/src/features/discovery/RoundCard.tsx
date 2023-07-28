@@ -10,6 +10,7 @@ import {
 } from "../common/styles";
 import RoundBanner from "./RoundBanner";
 import RoundCardStat from "./RoundCardStat";
+import { ROUND_PAYOUT_MERKLE } from "../../constants";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -26,6 +27,12 @@ const RoundCard = (props: RoundCardProps) => {
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
 
   const approvedApplicationsCount = props.round.projects?.length ?? 0;
+
+  const getRoundType = (payoutStrategy: string) => {
+    return payoutStrategy === ROUND_PAYOUT_MERKLE
+      ? "Quadratic Funding"
+      : "Direct Grant"
+  }
 
   return (
     <BasicCard className="w-full">
@@ -50,6 +57,12 @@ const RoundCard = (props: RoundCardProps) => {
               240
             )}
           </CardDescription>
+          <p data-testid="round-badge"
+            className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mt-4"
+            style={{ borderRadius: "20px" }}>
+            {props.round.payoutStrategy?.strategyName
+              && getRoundType(props.round.payoutStrategy.strategyName)}
+          </p>
           <p className="mt-4 text-xs" data-testid="days-left">
             {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
           </p>
