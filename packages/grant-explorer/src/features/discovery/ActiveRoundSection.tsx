@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dispatch, SetStateAction, useState } from "react";
 import { RoundOverview } from "../api/rounds";
-import SearchInput, { SortFilterDropdown } from "../common/SearchInput";
+import SearchInput, { GrantRoundTypeFilterDropdown, SortFilterDropdown } from "../common/SearchInput";
 import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
@@ -9,6 +9,7 @@ import RoundCard from "./RoundCard";
 type ActiveRounds = {
   isLoading: boolean;
   setSearchQuery: Dispatch<SetStateAction<string>>;
+  setRoundType: Dispatch<SetStateAction<string>>;
   roundOverview: RoundOverview[];
   searchQuery: string;
 };
@@ -47,7 +48,7 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
             Rounds that are ongoing
           </p>
         </div>
-        {!props.isLoading ? (
+        {!props.isLoading && (
           <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput
               searchQuery={props.searchQuery}
@@ -58,8 +59,14 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
                 setOrder(e.target.value)
               }
             />
+            <GrantRoundTypeFilterDropdown
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onChange={(e: { target: { value: any } }) => {
+                props.setRoundType(e.target.value)
+              }}              
+            />
           </div>
-        ) : null}
+        )}
       </div>
       <div>
         {props.isLoading && (
