@@ -15,7 +15,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import { Project, Requirement, Round } from "../api/types";
-import { CHAINS, payoutTokens } from "../api/utils";
+import { CHAINS, isInfiniteDate, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -36,7 +36,6 @@ import {
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { ROUND_PAYOUT_MERKLE } from "../../constants";
 
-const isInfiniteDate = (roundTime: Date) => roundTime.toString() === "Invalid Date";
 const builderURL = process.env.REACT_APP_BUILDER_URL;
 
 export default function ViewRound() {

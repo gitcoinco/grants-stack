@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types";
 import { RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
+import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "../../constants";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -449,5 +450,21 @@ export function getChainIds(): number[] {
     ];
   } else {
     return Object.values(ChainId).map((chainId) => Number(chainId));
+  }
+}
+
+export const isInfiniteDate = (roundTime: Date) => roundTime.toString() === "Invalid Date";
+
+export const getRoundType = (payoutStrategyName: string) => {
+  switch (payoutStrategyName) {
+    case ROUND_PAYOUT_MERKLE:
+      return "Quadratic Funding";
+      break;
+    case ROUND_PAYOUT_DIRECT:
+      return "Direct Grants";
+      break;
+    default:
+      return payoutStrategyName;
+      break;
   }
 }

@@ -1,6 +1,6 @@
 import { renderToPlainText, truncateDescription } from "common";
 import { RoundOverview } from "../api/rounds";
-import { ChainId, getDaysLeft, payoutTokens } from "../api/utils";
+import { ChainId, getDaysLeft, getRoundType, isInfiniteDate, payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -10,7 +10,6 @@ import {
 } from "../common/styles";
 import RoundBanner from "./RoundBanner";
 import RoundCardStat from "./RoundCardStat";
-import { ROUND_PAYOUT_MERKLE } from "../../constants";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -27,12 +26,6 @@ const RoundCard = (props: RoundCardProps) => {
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
 
   const approvedApplicationsCount = props.round.projects?.length ?? 0;
-
-  const getRoundType = (payoutStrategy: string) => {
-    return payoutStrategy === ROUND_PAYOUT_MERKLE
-      ? "Quadratic Funding"
-      : "Direct Grant"
-  }
 
   return (
     <BasicCard className="w-full">
@@ -64,7 +57,10 @@ const RoundCard = (props: RoundCardProps) => {
               && getRoundType(props.round.payoutStrategy.strategyName)}
           </p>
           <p className="mt-4 text-xs" data-testid="days-left">
-            {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
+            {!isInfiniteDate(new Date(props.round.roundEndTime)) 
+              ? (<span>{daysLeft} {daysLeft === 1 ? "day" : "days"} left in round</span>)
+              : (<span>No end time</span>)
+            }
           </p>
         </CardContent>
       </a>
