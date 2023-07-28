@@ -31,15 +31,18 @@ import {
   ProgressStatus,
   recipient,
 } from "../api/types";
-import { CHAINS, getPayoutTokenOptions } from "../api/utils";
+import {
+  CHAINS,
+  GroupedCartProjectsByRoundId,
+  getPayoutTokenOptions,
+  groupProjectsInCart,
+} from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import Footer from "common/src/components/Footer";
 import InfoModal from "../common/InfoModal";
 import Navbar from "../common/Navbar";
-import PassportBanner from "../common/PassportBanner";
 import ProgressModal from "../common/ProgressModal";
-import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Logger } from "ethers/lib.esm/utils";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { classNames } from "common";
@@ -48,9 +51,13 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 
 export default function ViewCart() {
   const { chainId, roundId } = useParams();
+  const [cart, , handleRemoveProjectsFromCart] = useCart();
+  const groupedCartProjects = groupProjectsInCart(cart);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(chainId!, roundId!);
+  const round = useRoundById(chainId!, roundId!).round;
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
   const payoutTokenOptions: PayoutToken[] = [
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -72,12 +79,6 @@ export default function ViewCart() {
       );
     }, BigNumber.from(0));
   }, [donations, selectedPayoutToken.decimal]);
-
-  const currentTime = new Date();
-  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
-  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
-
-  const [cart, , handleRemoveProjectsFromCart] = useCart();
 
   const [fixedDonation, setFixedDonation] = useState<string>("");
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
@@ -268,18 +269,7 @@ export default function ViewCart() {
 
   return (
     <>
-      <Navbar
-        roundUrlPath={`/round/${chainId}/${roundId}`}
-        isBeforeRoundEndDate={isBeforeRoundEndDate}
-      />
-      {isBeforeRoundEndDate && (
-        <PassportBanner chainId={Number(chainId)} round={round} />
-      )}
-      {isAfterRoundEndDate && (
-        <div>
-          <RoundEndedBanner />
-        </div>
-      )}
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       {}
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <div className="flex flex-col pb-4" data-testid="bread-crumbs">
@@ -288,8 +278,21 @@ export default function ViewCart() {
         <main>
           {Header()}
           <div className="flex flex-col md:flex-row gap-5">
-            {cart.length == 0 ? EmptyCart() : CartWithProjects(cart)}
-            {SummaryContainer()}
+            {cart.length == 0 ? (
+              EmptyCart()
+            ) : (
+              <div className="flex flex-col gap-5">
+                {Object.keys(groupedCartProjects).map((chainId) => (
+                  <div key={Number(chainId)}>
+                    {CartWithProjects(
+                      groupedCartProjects[Number(chainId)],
+                      chainId
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            <SummaryContainer />
           </div>
         </main>
         <div className="my-11">
@@ -354,7 +357,6 @@ export default function ViewCart() {
               /* If passport is fine, proceed straight to confirmation */
               handleConfirmation();
             }}
-            disabled={isAfterRoundEndDate}
             className="items-center shadow-sm text-sm rounded w-full"
           >
             Submit your donation!
@@ -421,8 +423,12 @@ export default function ViewCart() {
     );
   }
 
-  function CartWithProjects(cart: CartProject[]) {
+  function CartWithProjects(
+    cart: GroupedCartProjectsByRoundId,
+    chainId: string
+  ) {
     const chain = CHAINS[Number(chainId) as ChainId];
+    const cartByRound = Object.values(cart);
     return (
       <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
@@ -433,6 +439,9 @@ export default function ViewCart() {
               alt={"Chain Logo"}
             />
             <h2 className="mt-3 text-xl font-semibold">{chain.name}</h2>
+            <h2 className="mt-3 text-xl font-semibold">
+              ({cartByRound.length})
+            </h2>
           </div>
           <div className="flex justify-end flex-row gap-2 basis-[72%]">
             <div className="flex gap-4">
@@ -467,21 +476,9 @@ export default function ViewCart() {
             </div>
           </div>
         </div>
-        {cart
-          .reduce((acc: CartProject[][], project: CartProject) => {
-            const roundIndex = acc.findIndex(
-              (round) => round[0].roundId === project.roundId
-            );
-            if (roundIndex === -1) {
-              acc.push([project]);
-            } else {
-              acc[roundIndex].push(project);
-            }
-            return acc;
-          }, [])
-          .map((roundcart: CartProject[], key: number) => (
-            <RoundInCart key={key} roundcart={roundcart} />
-          ))}
+        {cartByRound.map((roundcart: CartProject[], key: number) => (
+          <RoundInCart key={key} roundcart={roundcart} />
+        ))}
       </div>
     );
   }
@@ -491,6 +488,10 @@ export default function ViewCart() {
       roundcart: CartProject[];
     }
   ) {
+    const round = useRoundById(
+      String(props.roundcart[0].chainId),
+      props.roundcart[0].roundId
+    ).round;
     const minDonationThresholdAmount =
       round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount;
     return (
