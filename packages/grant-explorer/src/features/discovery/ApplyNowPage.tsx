@@ -178,17 +178,17 @@ const ApplyNowPage = () => {
           </div>
           <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput searchQuery={searchQuery} onChange={setSearchQuery} />
-            <SortFilterDropdown
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: { target: { value: any } }) =>
-                setOrder(e.target.value)
-              }
-            />
             <GrantRoundTypeFilterDropdown
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e: { target: { value: any } }) => {
                 setType(e.target.value)
               }
+              }
+            />
+            <SortFilterDropdown
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onChange={(e: { target: { value: any } }) =>
+                setOrder(e.target.value)
               }
             />
           </div>
