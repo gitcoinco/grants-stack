@@ -8,10 +8,7 @@ import {
   useState,
 } from "react";
 import { useSigner } from "wagmi";
-import {
-  approveTokenOnContract,
-  voteOnRoundContract,
-} from "../features/api/application";
+import { signPermit, voteOnRoundContract } from "../features/api/voting";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
 import {
   CartDonation,
@@ -19,6 +16,13 @@ import {
   ProgressStatus,
 } from "../features/api/types";
 import _ from "lodash";
+
+type PermitSignature = {
+  v: number;
+  r: string;
+  s: string;
+  deadline: number;
+};
 
 export interface QFDonationState {
   tokenApprovalStatus: ProgressStatus;
@@ -31,6 +35,8 @@ export interface QFDonationState {
   setTxHash: React.Dispatch<SetStateAction<string>>;
   txBlockNumber: number;
   setTxBlockNumber: React.Dispatch<SetStateAction<number>>;
+  permit: PermitSignature | undefined;
+  setPermit: React.Dispatch<React.SetStateAction<PermitSignature | undefined>>;
 }
 
 export const initialQFDonationState: QFDonationState = {
@@ -54,23 +60,23 @@ export const initialQFDonationState: QFDonationState = {
   setTxBlockNumber: () => {
     /**/
   },
+  permit: undefined,
+  setPermit: () => {
+    /**/
+  },
 };
 
 export type QFDonationParams = {
   donations: CartDonation[];
   donationToken: PayoutToken;
   totalDonation: BigNumber;
-  votingStrategy: string;
+  roundEndTime: number;
 };
 
-interface SubmitDonationParams {
+type SubmitDonationParams = QFDonationParams & {
   signer: Signer;
   context: QFDonationState;
-  donations: CartDonation[];
-  donationToken: PayoutToken;
-  totalDonation: BigNumber;
-  votingStrategy: string;
-}
+};
 
 export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
   const [tokenApprovalStatus, setTokenApprovalStatus] = useState(
@@ -86,6 +92,7 @@ export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
   const [txBlockNumber, setTxBlockNumber] = useState(
     initialQFDonationState.txBlockNumber
   );
+  const [permit, setPermit] = useState<PermitSignature | undefined>();
 
   const providerProps: QFDonationState = {
     tokenApprovalStatus,
@@ -98,6 +105,8 @@ export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
     setTxHash,
     txBlockNumber,
     setTxBlockNumber,
+    permit,
+    setPermit,
   };
 
   return (
@@ -133,7 +142,7 @@ async function _submitDonations({
   donations,
   donationToken,
   totalDonation,
-  votingStrategy,
+  roundEndTime,
 }: SubmitDonationParams) {
   resetToInitialState(context);
 
@@ -143,8 +152,8 @@ async function _submitDonations({
       signer,
       donationToken,
       totalDonation,
-      votingStrategy,
-      context
+      context,
+      roundEndTime
     );
 
     // Invoke Vote
@@ -188,26 +197,28 @@ async function approveTokenForDonation(
   signerOrProvider: Signer,
   token: PayoutToken,
   amount: BigNumber,
-  votingStrategy: string,
-  context: QFDonationState
+  context: QFDonationState,
+  votingEndTimestamp: number
 ): Promise<void> {
-  const { setTokenApprovalStatus } = context;
+  const { setTokenApprovalStatus, setPermit } = context;
 
   try {
     setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
 
+    /* We don't need permit for native token */
     if (token.address == ethers.constants.AddressZero) {
-      // avoid calling approval for native token
       setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
       return;
     }
 
-    await approveTokenOnContract(
+    const res = await signPermit(
       signerOrProvider,
-      votingStrategy,
       token.address,
-      amount
+      amount.toNumber(),
+      votingEndTimestamp
     );
+
+    setPermit(res);
 
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
@@ -245,7 +256,10 @@ async function vote(
     );
     const groupedEncodedVotes: Record<string, BytesLike[]> = {};
     for (const roundId in groupedDonations) {
-      groupedEncodedVotes[roundId] = encodeQFVotes(token, donations);
+      groupedEncodedVotes[roundId] = encodeQFVotes(
+        token,
+        groupedDonations[roundId]
+      );
     }
 
     const groupedAmounts: Record<string, BigNumber> = {};
@@ -269,7 +283,7 @@ async function vote(
     setTxBlockNumber(txBlockNumber);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: vote - ${error}. Data - ${vote.toString()}`
+      `error: vote - ${error}. Data - ${donations.toString()}`
     );
     console.error(
       `vote - roundIds ${Object.keys(donations.map((d) => d.roundId))}, token ${
@@ -289,7 +303,7 @@ async function waitForSubgraphToUpdate(
   const { setIndexingStatus, txBlockNumber } = context;
 
   try {
-    datadogLogs.logger.error(
+    datadogLogs.logger.info(
       `waitForSubgraphToUpdate: txnBlockNumber - ${txBlockNumber}`
     );
 

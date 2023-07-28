@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ChainId } from "common";
 import { Dispatch, SetStateAction, useState } from "react";
 import { RoundOverview } from "../api/rounds";
 import SearchInput, { SortFilterDropdown } from "../common/SearchInput";
@@ -70,11 +71,12 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
         ) : null}
         {activeRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
-            {sortRoundsByTime(props.roundOverview, order).map(
-              (round, index) => {
+            {sortRoundsByTime(props.roundOverview, order)
+              .filter((round) => (round.projects?.length ?? 0) > 0)
+              .filter((round) => round.chainId == "GOERLI_CHAIN_ID")
+              .map((round, index) => {
                 return <RoundCard key={index} round={round} />;
-              }
-            )}
+              })}
           </div>
         ) : !props.isLoading ? (
           <NoRounds type={"active"} />

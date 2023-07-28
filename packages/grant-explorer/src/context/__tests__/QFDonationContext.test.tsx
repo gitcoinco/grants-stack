@@ -1,9 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
-import {
-  approveTokenOnContract,
-  voteOnRoundContract,
-} from "../../features/api/application";
+import { signPermit, voteOnRoundContract } from "../../features/api/voting";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { ProgressStatus } from "../../features/api/types";
 import { getPayoutTokenOptions } from "../../features/api/utils";
@@ -47,7 +44,7 @@ describe("<QFDonationProvider />", () => {
     });
 
     it("sets token approval status to in progress when user is signing token approval", async () => {
-      (approveTokenOnContract as jest.Mock).mockReturnValue(
+      (signPermit as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
         })
@@ -64,7 +61,7 @@ describe("<QFDonationProvider />", () => {
     });
 
     it("sets token approval status to completed when user has signed token approval", async () => {
-      (approveTokenOnContract as jest.Mock).mockResolvedValue({
+      (signPermit as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
 
@@ -86,7 +83,7 @@ describe("<QFDonationProvider />", () => {
     });
 
     it("sets vote to in progress when user is invoking vote", async () => {
-      (approveTokenOnContract as jest.Mock).mockResolvedValue({
+      (signPermit as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
 
@@ -108,7 +105,7 @@ describe("<QFDonationProvider />", () => {
     });
 
     it("sets vote to completed when user has signed vote transaction", async () => {
-      (approveTokenOnContract as jest.Mock).mockResolvedValue({
+      (signPermit as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
       (voteOnRoundContract as jest.Mock).mockResolvedValue({
@@ -129,7 +126,7 @@ describe("<QFDonationProvider />", () => {
     });
 
     it("sets indexing status to in progress when waiting for subgraph to index", async () => {
-      (approveTokenOnContract as jest.Mock).mockResolvedValue({
+      (signPermit as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
       (voteOnRoundContract as jest.Mock).mockResolvedValue({
@@ -152,7 +149,7 @@ describe("<QFDonationProvider />", () => {
     });
 
     it("sets indexing status to completed when for subgraph has finished indexing", async () => {
-      (approveTokenOnContract as jest.Mock).mockResolvedValue({
+      (signPermit as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
       (voteOnRoundContract as jest.Mock).mockResolvedValue({
@@ -187,9 +184,7 @@ describe("<QFDonationProvider />", () => {
       });
 
       it("sets token approval status to error when token approval fails", async () => {
-        (approveTokenOnContract as jest.Mock).mockRejectedValue(
-          new Error(":(")
-        );
+        (signPermit as jest.Mock).mockRejectedValue(new Error(":("));
 
         renderWithProvider(<TestUseQFDonationComponent />);
 
@@ -203,7 +198,7 @@ describe("<QFDonationProvider />", () => {
       });
 
       it("sets vote status to error when invoking vote fails", async () => {
-        (approveTokenOnContract as jest.Mock).mockResolvedValue({
+        (signPermit as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
         (voteOnRoundContract as jest.Mock).mockRejectedValue(new Error(":("));
@@ -218,7 +213,7 @@ describe("<QFDonationProvider />", () => {
       });
 
       it("sets indexing status to error when indexing fails", async () => {
-        (approveTokenOnContract as jest.Mock).mockResolvedValue({
+        (signPermit as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
         (voteOnRoundContract as jest.Mock).mockResolvedValue({
@@ -238,7 +233,7 @@ describe("<QFDonationProvider />", () => {
       });
 
       it("if token approval fails, resets token approval status when submit qf donation is retried", async () => {
-        (approveTokenOnContract as jest.Mock)
+        (signPermit as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
           .mockReturnValue(
             new Promise(() => {
@@ -263,7 +258,7 @@ describe("<QFDonationProvider />", () => {
       });
 
       it("if vote fails, resets vote status when submit qf donation is retried", async () => {
-        (approveTokenOnContract as jest.Mock).mockResolvedValue({
+        (signPermit as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
         (voteOnRoundContract as jest.Mock)
@@ -287,7 +282,7 @@ describe("<QFDonationProvider />", () => {
       });
 
       it("if indexing fails, resets indexing status when submit qf donation is retried", async () => {
-        (approveTokenOnContract as jest.Mock).mockResolvedValue({
+        (signPermit as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
         (voteOnRoundContract as jest.Mock).mockResolvedValue({

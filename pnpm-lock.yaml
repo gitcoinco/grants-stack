@@ -326,6 +326,7 @@ importers:
       date-fns: ^2.29.3
       eslint: '>=8.1.0 <9.0.0'
       eslint-config-gitcoin: workspace:*
+      eth-permit: ^0.2.3
       ethereum-blockies: ^0.1.1
       ethers: ^5.6.5
       history: ^5.3.0
@@ -363,6 +364,7 @@ importers:
       typescript: ^4.6.0
       url: ^0.11.0
       util: ^0.12.4
+      viem: ^1.4.2
       wagmi: 0.12.18
       web-vitals: ^2.1.0
       webpack: '>=2'
@@ -398,6 +400,7 @@ importers:
       crypto-browserify: 3.12.0
       date-fns: 2.29.3
       eslint: 8.32.0
+      eth-permit: 0.2.3
       ethereum-blockies: 0.1.1
       ethers: 5.6.5
       history: 5.3.0
@@ -430,6 +433,7 @@ importers:
       typescript: 4.9.4
       url: 0.11.0
       util: 0.12.5
+      viem: 1.4.2_typescript@4.9.4
       wagmi: 0.12.18_3af54echuxwpvkepzojjvluwei
       web-vitals: 2.1.4
       webpack: 5.75.0
@@ -639,6 +643,10 @@ packages:
 
   /@adobe/css-tools/4.0.1:
     resolution: {integrity: sha512-+u76oB43nOHrF4DDWRLWDCtci7f3QJoEBigemIdIeTi1ODqjx6Tad9NCVnPRwewWlKkVab5PlK8DCtPTyX7S8g==}
+    dev: false
+
+  /@adraffy/ens-normalize/1.9.0:
+    resolution: {integrity: sha512-iowxq3U30sghZotgl4s/oJRci6WPBfNO5YYgk2cIOMCHr3LeGPcsZjCEr+33Q4N+oV3OABDAtA+pyvWjbvBifQ==}
     dev: false
 
   /@ampproject/remapping/2.2.0:
@@ -5462,6 +5470,12 @@ packages:
     dependencies:
       eslint-scope: 5.1.1
 
+  /@noble/curves/1.0.0:
+    resolution: {integrity: sha512-2upgEu0iLiDVDZkNLeFV2+ht0BAVgQnEmCk6JsOch9Rp8xfkMCbvbAZlA2pBHQc73dbl+vFOXfqkf4uemdn0bw==}
+    dependencies:
+      '@noble/hashes': 1.3.0
+    dev: false
+
   /@noble/ed25519/1.7.1:
     resolution: {integrity: sha512-Rk4SkJFaXZiznFyC/t77Q0NKS4FL7TLJJsVG2V2oiEq3kJVeTdxysEe/yRWSpnWMe808XRDJ+VFh5pt/FN5plw==}
     dev: false
@@ -5821,10 +5835,25 @@ packages:
       '@scure/base': 1.1.1
     dev: false
 
+  /@scure/bip32/1.3.0:
+    resolution: {integrity: sha512-bcKpo1oj54hGholplGLpqPHRbIsnbixFtc06nwuNM5/dwSXOq/AAYoIBRsBmnZJSdfeNW5rnff7NTAz3ZCqR9Q==}
+    dependencies:
+      '@noble/curves': 1.0.0
+      '@noble/hashes': 1.3.0
+      '@scure/base': 1.1.1
+    dev: false
+
   /@scure/bip39/1.1.1:
     resolution: {integrity: sha512-t+wDck2rVkh65Hmv280fYdVdY25J9YeEUIgn2LG1WM6gxFkGzcksoDiUkWVpVp3Oex9xGC68JU2dSbUfwZ2jPg==}
     dependencies:
       '@noble/hashes': 1.2.0
+      '@scure/base': 1.1.1
+    dev: false
+
+  /@scure/bip39/1.2.0:
+    resolution: {integrity: sha512-SX/uKq52cuxm4YFXWFaVByaSHJh2w3BnokVSeUJVCv6K7WulT9u2BuNRBhuFl8vAuYnzx9bEu9WgpcNYTrYieg==}
+    dependencies:
+      '@noble/hashes': 1.3.0
       '@scure/base': 1.1.1
     dev: false
 
@@ -7191,6 +7220,17 @@ packages:
       typescript: 5.1.6
     dev: false
 
+  /@wagmi/chains/1.6.0_typescript@4.9.4:
+    resolution: {integrity: sha512-5FRlVxse5P4ZaHG3GTvxwVANSmYJas1eQrTBHhjxVtqXoorm0aLmCHbhmN8Xo1yu09PaWKlleEvfE98yH4AgIw==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 4.9.4
+    dev: false
+
   /@wagmi/connectors/0.3.22_rqpa3434augt6b2uur6arijw6q:
     resolution: {integrity: sha512-1SxkKNDMhhSdVWTDaTBdwUBnT5EO89AmTe6Uqa+xtgb2LeqoRLfwkvhZk3z1/e6+f+zA3MWPtRmtIRe/LXYAIQ==}
     peerDependencies:
@@ -8500,6 +8540,20 @@ packages:
         optional: true
     dependencies:
       typescript: 5.1.6
+    dev: false
+
+  /abitype/0.9.3_typescript@4.9.4:
+    resolution: {integrity: sha512-dz4qCQLurx97FQhnb/EIYTk/ldQ+oafEDUqC0VVIeQS1Q48/YWt/9YNfMmp9SLFqN41ktxny3c8aYxHjmFIB/w==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.19.1
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      typescript: 4.9.4
     dev: false
 
   /abortable-iterator/3.0.2:
@@ -12149,6 +12203,12 @@ packages:
       pify: 5.0.0
     dev: false
 
+  /eth-permit/0.2.3:
+    resolution: {integrity: sha512-d4tbiRQgbpdeJbdC9hdyT0SUJcJx28FIy3o2RxEAoeYI+zyYbNC0ZpdE6kxBK+7iY2payjHRE7rs7tr5EcOVLg==}
+    dependencies:
+      utf8: 3.0.0
+    dev: false
+
   /eth-query/2.1.2:
     resolution: {integrity: sha512-srES0ZcvwkR/wd5OQBRA1bIJMww1skfGS0s8wlwK3/oNP4+wnds60krvu5R1QbpRQjMmpG5OMIWro5s7gvDPsA==}
     dependencies:
@@ -14574,6 +14634,14 @@ packages:
       ws: '*'
     dependencies:
       ws: 7.5.9
+    dev: false
+
+  /isomorphic-ws/5.0.0_ws@8.12.0:
+    resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
+    peerDependencies:
+      ws: '*'
+    dependencies:
+      ws: 8.12.0
     dev: false
 
   /isstream/0.1.2:
@@ -22053,6 +22121,10 @@ packages:
     resolution: {integrity: sha512-4+wkEYLBbWxqTahEsWrhxepcoVOJ+1z5PGIjPZxRkytcdSUaNjIjBM7Xn8E+pdSuV7SzvWovBFA54FO0JSoqhA==}
     dev: false
 
+  /utf8/3.0.0:
+    resolution: {integrity: sha512-E8VjFIQ/TyQgp+TZfS6l8yp/xWppSAHzidGiRrqe4bK4XP9pTRyKFgGJpO3SN7zdX4DeomTrwaseCHovfpFcqQ==}
+    dev: false
+
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -22165,6 +22237,30 @@ packages:
       assert-plus: 1.0.0
       core-util-is: 1.0.2
       extsprintf: 1.3.0
+    dev: false
+
+  /viem/1.4.2_typescript@4.9.4:
+    resolution: {integrity: sha512-125E7HoOr5PrL+Iwt8853dQexwRoiPpLwPsrRvlDX94su2xoe7AYqrdfR6N9nmy6vd6mt8eQy8+LWiP3A+1dqw==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@adraffy/ens-normalize': 1.9.0
+      '@noble/curves': 1.0.0
+      '@noble/hashes': 1.3.0
+      '@scure/bip32': 1.3.0
+      '@scure/bip39': 1.2.0
+      '@wagmi/chains': 1.6.0_typescript@4.9.4
+      abitype: 0.9.3_typescript@4.9.4
+      isomorphic-ws: 5.0.0_ws@8.12.0
+      typescript: 4.9.4
+      ws: 8.12.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - zod
     dev: false
 
   /vm-browserify/1.1.2:
@@ -22916,6 +23012,19 @@ packages:
     dependencies:
       bufferutil: 4.0.7
       utf-8-validate: 5.0.10
+    dev: false
+
+  /ws/8.12.0:
+    resolution: {integrity: sha512-kU62emKIdKVeEIOIKVegvqpXMSTAMLJozpHZaJNDYqBjzlSYXQGviYwN1osDLJ9av68qHd4a2oSjd7yD4pacig==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
     dev: false
 
   /ws/8.13.0:
