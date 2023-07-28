@@ -34,6 +34,7 @@ import {
   CardsContainer,
 } from "../common/styles";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
+import { ROUND_PAYOUT_MERKLE } from "../../constants";
 
 const isInfiniteDate = (roundTime: Date) => roundTime.toString() === "Invalid Date";
 const builderURL = process.env.REACT_APP_BUILDER_URL;
@@ -257,6 +258,13 @@ function AfterRoundStart(props: {
         <main>
           <p data-testid="round-title" className="text-3xl my-5">
             {round.roundMetadata?.name}
+          </p>
+          <p data-testid="round-type" className="text-1xl mb-4">
+            {round.payoutStrategy.strategyName === ROUND_PAYOUT_MERKLE ? (
+              <span>Quadratic Funding Round</span>
+            ) : (
+              <span>Direct Grant Round</span>          
+            )}
           </p>
           <div className="flex text-grey-400 mb-1">
             <p className="mr-4 text-sm">

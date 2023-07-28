@@ -31,6 +31,10 @@ export type RoundOverview = {
   token: string;
   roundMetadata?: RoundMetadata;
   projects?: [];
+  payoutStrategy: {
+    id: string,
+    strategyName: string
+  }
 };
 
 async function fetchRoundsByTimestamp(

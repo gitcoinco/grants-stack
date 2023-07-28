@@ -132,6 +132,10 @@ export const makeRoundOverviewData = (
       programContractAddress: faker.finance.ethereumAddress(),
       ...roundMetadataOverrides,
     },
+    payoutStrategy: {
+      id: "someid",
+      strategyName: "MERKLE",
+    },
     ...overrides,
   };
 };
