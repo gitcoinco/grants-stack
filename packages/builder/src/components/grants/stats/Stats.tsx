@@ -9,6 +9,7 @@ import { ProjectStats } from "../../../reducers/projects";
 import RoundDetailsCard from "./RoundDetailsCard";
 import StatCard from "./StatCard";
 import { ROUND_PAYOUT_DIRECT } from "../../../utils/utils";
+import { graphqlFetch } from "../../../utils/graphql";
 
 export default function RoundStats() {
   const NA = -1;
@@ -34,14 +35,38 @@ export default function RoundStats() {
     };
   });
 
-  const isDirectRound = (roundId: string) =>
-    props.rounds[roundId]?.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
+  const isDirectRound = async (roundId: string, chainId: ChainId) => {
+    const response: any = await graphqlFetch(
+      `query applicationRound($roundId: String) {
+          rounds(
+            where: {
+              id: $roundId
+            }
+          ) {
+            payoutStrategy {
+              strategyName
+            }
+          }
+        }
+      `,
+      chainId,
+      {
+        roundId,
+      }
+    );
+
+    return (
+      response.data.rounds[0].payoutStrategy.strategyName ===
+      ROUND_PAYOUT_DIRECT
+    );
+  };
 
   useEffect(() => {
     // TODO: Remove DIRECT ROUND filter condition after Stats view rework #11
     const applications =
       props.projectApplications?.filter(
-        (app) => app.status === "APPROVED" && !isDirectRound(app.roundID)
+        (app) =>
+          app.status === "APPROVED" && !isDirectRound(app.roundID, app.chainId)
       ) || [];
 
     if (applications.length > 0) {
@@ -93,11 +118,12 @@ export default function RoundStats() {
           if (newStat.avgContribution === 0) newStat.avgContribution = NA;
         }
 
-        if (props.rounds[stat.roundId]?.round?.programName)
+        if (props.rounds[stat.roundId]?.round?.programName) {
           detailsTmp.push({
             round: props.rounds[stat.roundId].round,
             stats: { ...newStat },
           });
+        }
       });
     }
 
