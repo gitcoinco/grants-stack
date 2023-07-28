@@ -15,7 +15,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import { Project, Requirement, Round } from "../api/types";
-import { CHAINS, isInfiniteDate, payoutTokens } from "../api/utils";
+import { CHAINS, getRoundType, isDirectRound, isInfiniteDate, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -34,7 +34,6 @@ import {
   CardsContainer,
 } from "../common/styles";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import { ROUND_PAYOUT_MERKLE } from "../../constants";
 
 const builderURL = process.env.REACT_APP_BUILDER_URL;
 
@@ -233,12 +232,6 @@ function AfterRoundStart(props: {
   ] as BreadcrumbItem[];
 
   const applicationURL = `${builderURL}/#/chains/${chainId}/rounds/${roundId}`;
-  const isDirectRound = round?.payoutStrategy && round?.payoutStrategy.strategyName === "DIRECT";
-  const getRoundType = (payoutStrategy: string) => {
-    return payoutStrategy === ROUND_PAYOUT_MERKLE
-      ? "Quadratic Funding"
-      : "Direct Grant"
-  }
 
   return (
     <>
@@ -319,13 +312,13 @@ function AfterRoundStart(props: {
             {round.roundMetadata?.eligibility?.description}
           </p>
 
-          {isDirectRound && (
+          {isDirectRound(round) && (
               <ApplyButton applicationURL={applicationURL} />
           )}
           <hr className="mt-4 mb-4" />
           <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
             <p className="text-2xl mb-4">
-              {isDirectRound ? 'Approved Projects' : 'All Projects' } ({projects ? projects.length : 0})
+              {isDirectRound(round) ? 'Approved Projects' : 'All Projects' } ({projects ? projects.length : 0})
             </p>
             <div className="relative">
               <Search className="absolute h-4 w-4 mt-3 ml-3" />

@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { IPFSObject, PayoutToken } from "./types";
+import { IPFSObject, PayoutToken, Round } from "./types";
 import { RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "../../constants";
@@ -453,6 +453,7 @@ export function getChainIds(): number[] {
   }
 }
 
+export const isDirectRound = (round: Round) => round?.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
 export const isInfiniteDate = (roundTime: Date) => roundTime.toString() === "Invalid Date";
 
 export const getRoundType = (payoutStrategyName: string) => {
