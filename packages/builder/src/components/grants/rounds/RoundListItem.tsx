@@ -278,7 +278,7 @@ export default function RoundListItem({
                 displayType: RoundDisplayType.Active,
                 link:
                   `${explorerUrl}/#/round/${props.roundChain}/` +
-                  `${props.roundAddress}/${props.generatedProjectId}-${props.roundAddress}`,
+                  `${props.roundAddress}`,
                 text: "View on Explorer",
                 applicationStatus: applicationData?.status!,
               }}
