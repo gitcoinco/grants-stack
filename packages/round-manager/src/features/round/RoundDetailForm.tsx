@@ -28,7 +28,6 @@ import { Program, Round, RoundCategory } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
-import { utils } from "ethers";
 
 export const RoundValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
