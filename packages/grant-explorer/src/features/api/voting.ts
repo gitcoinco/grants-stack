@@ -19,6 +19,7 @@ export const voteUsingMRCContract = async (
     multiRoundCheckoutContract.abi,
     signer
   );
+  debugger;
 
   let tx;
 
@@ -46,6 +47,7 @@ export const voteUsingMRCContract = async (
         permitSignature?.s
       );
     } else {
+      debugger;
       tx = await mrcImplementation.voteERC20Permit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
