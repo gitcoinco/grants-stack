@@ -45,6 +45,7 @@ export const initialQuestionsQF: SchemaQuestion[] = [
     hidden: true,
     type: "address",
     fixed: true,
+    metadataExcluded: true,
   },
   {
     id: 1,
@@ -118,6 +119,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     hidden: true,
     type: "address",
     fixed: true,
+    metadataExcluded: true,
   },
   {
     id: 6,

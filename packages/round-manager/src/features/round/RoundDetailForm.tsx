@@ -131,15 +131,6 @@ export const RoundValidationSchema = yup.object().shape({
           "Round end date must be later than the round start date."
         ),
     }),
-  vaultAddress: yup.string().when("$roundCategory", {
-    is: RoundCategory.Direct,
-    then: yup
-      .string()
-      .required("Address required.")
-      .test("is-address", "Invalid address.", (value) =>
-        utils.isAddress(value?.toLowerCase() || "")
-      ),
-  }),
 });
 
 interface RoundDetailFormProps {
@@ -252,14 +243,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 />
                 {program && <ProgramChain program={program} />}
               </div>
-
-              {/* vault Address */}
-              {roundCategory === RoundCategory.Direct && (
-                <VaultAddress
-                  register={register("vaultAddress")}
-                  errors={errors}
-                />
-              )}
 
               {/* support */}
               <div className="mt-8 mb-3 text-sm text-grey-400">
@@ -765,37 +748,6 @@ function RoundName(props: {
       {props.errors.roundMetadata?.name && (
         <p className="text-xs text-pink-500">
           {props.errors.roundMetadata?.name?.message}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function VaultAddress(props: {
-  register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-}) {
-  return (
-    <div className="col-span-6 sm:col-span-3">
-      <div className="flex justify-between">
-        <label htmlFor="vaultAddress" className="text-sm">
-          Vault Address
-        </label>
-        <span className="text-right text-violet-400 float-right text-xs mt-1">
-          *Required
-        </span>
-      </div>
-      <Input
-        {...props.register}
-        placeholder="Address from where the grant will be paid"
-        className={"h-10"}
-        $hasError={props.errors.vaultAddress}
-        type="text"
-        id={"vaultAddress"}
-      />
-      {props.errors.vaultAddress && (
-        <p className="text-xs text-pink-500">
-          {props.errors.vaultAddress.message}
         </p>
       )}
     </div>
