@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { useSigner } from "wagmi";
-import { signPermit, voteOnRoundContract } from "../features/api/voting";
+import { signPermit, voteUsingMRCContract } from "../features/api/voting";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
 import {
   CartDonation,
@@ -17,7 +17,7 @@ import {
 } from "../features/api/types";
 import _ from "lodash";
 
-type PermitSignature = {
+export type PermitSignature = {
   v: number;
   r: string;
   s: string;
@@ -213,7 +213,7 @@ async function approveTokenForDonation(
 
     const res = await signPermit(
       signerOrProvider,
-      token.address,
+      token,
       amount.toNumber(),
       votingEndTimestamp
     );
@@ -270,7 +270,7 @@ async function vote(
       );
     }
 
-    const { txBlockNumber, txHash } = await voteOnRoundContract(
+    const { txBlockNumber, txHash } = await voteUsingMRCContract(
       signerOrProvider,
       token.address,
       groupedEncodedVotes,

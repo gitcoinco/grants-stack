@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { signPermit, voteOnRoundContract } from "../../features/api/voting";
+import { signPermit, voteUsingMRCContract } from "../../features/api/voting";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { ProgressStatus } from "../../features/api/types";
 import { getPayoutTokenOptions } from "../../features/api/utils";
@@ -65,7 +65,7 @@ describe("<QFDonationProvider />", () => {
         transactionBlockNumber: faker.random.numeric(),
       });
 
-      (voteOnRoundContract as jest.Mock).mockReturnValue(
+      (voteUsingMRCContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
         })
@@ -87,7 +87,7 @@ describe("<QFDonationProvider />", () => {
         transactionBlockNumber: faker.random.numeric(),
       });
 
-      (voteOnRoundContract as jest.Mock).mockReturnValue(
+      (voteUsingMRCContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
         })
@@ -108,7 +108,7 @@ describe("<QFDonationProvider />", () => {
       (signPermit as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
-      (voteOnRoundContract as jest.Mock).mockResolvedValue({
+      (voteUsingMRCContract as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
@@ -129,7 +129,7 @@ describe("<QFDonationProvider />", () => {
       (signPermit as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
-      (voteOnRoundContract as jest.Mock).mockResolvedValue({
+      (voteUsingMRCContract as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
@@ -152,7 +152,7 @@ describe("<QFDonationProvider />", () => {
       (signPermit as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
-      (voteOnRoundContract as jest.Mock).mockResolvedValue({
+      (voteUsingMRCContract as jest.Mock).mockResolvedValue({
         transactionBlockNumber: faker.random.numeric(),
       });
       (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue({});
@@ -201,7 +201,7 @@ describe("<QFDonationProvider />", () => {
         (signPermit as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
-        (voteOnRoundContract as jest.Mock).mockRejectedValue(new Error(":("));
+        (voteUsingMRCContract as jest.Mock).mockRejectedValue(new Error(":("));
 
         renderWithProvider(<TestUseQFDonationComponent />);
 
@@ -216,7 +216,7 @@ describe("<QFDonationProvider />", () => {
         (signPermit as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
-        (voteOnRoundContract as jest.Mock).mockResolvedValue({
+        (voteUsingMRCContract as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
         (waitForSubgraphSyncTo as jest.Mock).mockRejectedValue(new Error(":("));
@@ -261,7 +261,7 @@ describe("<QFDonationProvider />", () => {
         (signPermit as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
-        (voteOnRoundContract as jest.Mock)
+        (voteUsingMRCContract as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
           .mockReturnValue(
             new Promise(() => {
@@ -285,7 +285,7 @@ describe("<QFDonationProvider />", () => {
         (signPermit as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
-        (voteOnRoundContract as jest.Mock).mockResolvedValue({
+        (voteUsingMRCContract as jest.Mock).mockResolvedValue({
           transactionBlockNumber: faker.random.numeric(),
         });
         (waitForSubgraphSyncTo as jest.Mock)
