@@ -148,7 +148,7 @@ async function _submitDonations({
 
   try {
     // Token Approval
-    await approveTokenForDonation(
+    const permit = await approveTokenForDonation(
       signer,
       donationToken,
       totalDonation,
@@ -157,7 +157,14 @@ async function _submitDonations({
     );
 
     // Invoke Vote
-    await vote(signer, donationToken, donations, totalDonation, context);
+    await vote(
+      signer,
+      donationToken,
+      donations,
+      totalDonation,
+      context,
+      permit!
+    );
 
     // Wait for indexing on subgraph
     await waitForSubgraphToUpdate(signer, context);
@@ -199,7 +206,7 @@ async function approveTokenForDonation(
   amount: BigNumber,
   context: QFDonationState,
   votingEndTimestamp: number
-): Promise<void> {
+) {
   const { setTokenApprovalStatus, setPermit } = context;
 
   try {
@@ -214,13 +221,12 @@ async function approveTokenForDonation(
     const res = await signPermit(
       signerOrProvider,
       token,
-      amount.toNumber(),
+      amount,
       votingEndTimestamp
     );
-
-    setPermit(res);
-
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
+
+    return res;
   } catch (error) {
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${amount} ${token.name}`
@@ -239,7 +245,8 @@ async function vote(
   token: PayoutToken,
   donations: CartDonation[],
   totalDonation: BigNumber,
-  context: QFDonationState
+  context: QFDonationState,
+  permit: PermitSignature
 ): Promise<void> {
   const { setVoteStatus, setTxHash, setTxBlockNumber } = context;
 
@@ -272,10 +279,11 @@ async function vote(
 
     const { txBlockNumber, txHash } = await voteUsingMRCContract(
       signerOrProvider,
-      token.address,
+      token,
       groupedEncodedVotes,
       groupedAmounts,
-      totalDonation
+      totalDonation,
+      permit
     );
 
     setVoteStatus(ProgressStatus.IS_SUCCESS);

@@ -72,8 +72,8 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
         {activeRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
             {sortRoundsByTime(props.roundOverview, order)
-              .filter((round) => (round.projects?.length ?? 0) > 0)
-              .filter((round) => round.chainId == "GOERLI_CHAIN_ID")
+              // .filter((round) => (round.projects?.length ?? 0) > 0)
+              // .filter((round) => round.chainId === "PGN_TESTNET")
               .map((round, index) => {
                 return <RoundCard key={index} round={round} />;
               })}

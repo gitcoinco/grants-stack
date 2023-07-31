@@ -1,9 +1,8 @@
 import { BigNumber, BytesLike, ethers, Signer } from "ethers";
 import { handleTransaction } from "common/src/transactions";
 import { multiRoundCheckoutContract } from "./contracts";
-import { signERC2612Permit } from "eth-permit";
+import { signDaiPermit, signERC2612Permit } from "eth-permit";
 import { zeroAddress } from "viem";
-import { getPayoutTokenOptions } from "./utils";
 import { PayoutToken } from "./types";
 import { PermitSignature } from "../../context/QFDonationContext";
 
@@ -36,9 +35,7 @@ export const voteUsingMRCContract = async (
   } else if (permitSignature) {
     /* Is token DAI? */
     if (/DAI/i.test(token.name)) {
-      /*TODO: DAI Handling*/
-    } else {
-      tx = await mrcImplementation.voteERC20Permit(
+      tx = await mrcImplementation.voteDAIPermit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
         Object.values(groupedAmounts),
@@ -47,6 +44,18 @@ export const voteUsingMRCContract = async (
         permitSignature.v,
         permitSignature.r,
         permitSignature?.s
+      );
+    } else {
+      tx = await mrcImplementation.voteERC20Permit(
+        Object.values(groupedVotes),
+        Object.keys(groupedVotes),
+        Object.values(groupedAmounts),
+        Object.values(groupedAmounts).reduce((acc, b) => acc.add(b)),
+        token.address,
+        // permitSignature.deadline,
+        permitSignature.v,
+        permitSignature.r,
+        permitSignature.s
       );
     }
   } else {
@@ -60,6 +69,7 @@ export const voteUsingMRCContract = async (
 
   if (result.error) {
     // handle error case
+    debugger;
     throw new Error(result.error);
   } else {
     console.log("✅ Transaction hash: ", result.txHash);
@@ -76,7 +86,7 @@ export const voteUsingMRCContract = async (
 export async function signPermit(
   signer: Signer,
   token: PayoutToken,
-  amount: number,
+  amount: BigNumber,
   deadline: number
 ) {
   const address = await signer.getAddress();
@@ -98,7 +108,7 @@ export async function signPermit2612(
   erc20Name: string,
   owner: string,
   spender: string,
-  value: number,
+  value: BigNumber,
   deadline: number
 ) {
   const { v, r, s } = await signERC2612Permit(
@@ -106,13 +116,32 @@ export async function signPermit2612(
     token.address,
     owner,
     spender,
-    value,
+    value
+      .div(10 ** 8)
+      .div(10 ** 10)
+      .toString(),
     deadline
   );
 
   return { v, r, s, deadline };
 }
 
-export function signPermitDAI() {
-  /*TODO*/
+export async function signPermitDAI(
+  signer: Signer,
+  token: PayoutToken,
+  erc20Name: string,
+  owner: string,
+  spender: string,
+  value: BigNumber,
+  deadline: number
+) {
+  const { v, r, s } = await signDaiPermit(
+    signer,
+    token.address,
+    owner,
+    spender,
+    deadline
+  );
+
+  return { v, r, s, deadline };
 }

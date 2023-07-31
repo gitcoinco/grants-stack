@@ -1077,7 +1077,7 @@ export default function ViewCart() {
         donations: bigNumberDonation,
         donationToken: selectedPayoutToken,
         totalDonation: totalDonation,
-        votingStrategy: round.votingStrategy,
+        roundEndTime: round.roundEndTime.getTime(),
       });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {
