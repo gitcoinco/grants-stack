@@ -1,12 +1,7 @@
-import abi from "./abi";
-import { Contract } from "./types";
+import { ChainId } from "common";
 
-/* ERC20 */
-export const ERC20Contract: Contract = {
-  abi: abi.erc20,
-};
-
-/* RoundImplementation */
-export const roundImplementationContract: Contract = {
-  abi: abi.roundImplementation,
+// @ts-expect-error TODO: add addys from other chains
+export const MRC_CONTRACTS: Record<ChainId, string> = {
+  [ChainId.PGN_TESTNET]: "0x4268900E904aD87903De593AA5424406066d9ea2",
+  [ChainId.GOERLI_CHAIN_ID]: "0x69433D914c7Cd8b69710a3275bcF3df4CB3eDA94",
 };

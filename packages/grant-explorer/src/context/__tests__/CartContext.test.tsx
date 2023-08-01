@@ -2,10 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { CartProvider, useCart } from "../CartContext";
 import { CartProject } from "../../features/api/types";
 import { makeApprovedProjectData } from "../../test-utils";
-import {
-  loadCartFromLocalStorage,
-  saveCartToLocalStorage,
-} from "../../features/api/LocalStorage";
+import { saveCartToLocalStorage } from "../../features/api/LocalStorage";
 import { initialRoundState, RoundContext } from "../RoundContext";
 
 jest.mock("../../features/api/LocalStorage");
