@@ -1,10 +1,17 @@
 import { BigNumber, BytesLike, ethers, Signer } from "ethers";
 import { handleTransaction } from "common/src/transactions";
-import { multiRoundCheckoutContract } from "./contracts";
-import { signDaiPermit, signERC2612Permit } from "eth-permit";
-import { zeroAddress } from "viem";
+import { MRC_CONTRACTS } from "./contracts";
+import { Hex, hexToNumber, slice, zeroAddress } from "viem";
 import { PayoutToken } from "./types";
-import { PermitSignature } from "../../context/QFDonationContext";
+import mrcAbi from "./abi/multiRoundCheckout";
+import { ChainId } from "common";
+import { JsonRpcSigner } from "@ethersproject/providers";
+
+export type PermitSignature = {
+  v: number;
+  r: string;
+  s: string;
+};
 
 export const voteUsingMRCContract = async (
   signer: Signer,
@@ -12,14 +19,14 @@ export const voteUsingMRCContract = async (
   groupedVotes: Record<string, BytesLike[]>,
   groupedAmounts: Record<string, BigNumber>,
   nativeTokenAmount: BigNumber,
-  permitSignature?: PermitSignature
+  permitSignature?: PermitSignature,
+  deadline?: number
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   const mrcImplementation = new ethers.Contract(
-    multiRoundCheckoutContract.address as string,
-    multiRoundCheckoutContract.abi,
+    MRC_CONTRACTS[(await signer.getChainId()) as ChainId],
+    mrcAbi,
     signer
   );
-  debugger;
 
   let tx;
 
@@ -36,25 +43,27 @@ export const voteUsingMRCContract = async (
   } else if (permitSignature) {
     /* Is token DAI? */
     if (/DAI/i.test(token.name)) {
+      debugger;
       tx = await mrcImplementation.voteDAIPermit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
         Object.values(groupedAmounts),
         Object.values(groupedAmounts).reduce((acc, b) => acc.add(b)),
         token.address,
+        0,
+        0,
         permitSignature.v,
         permitSignature.r,
         permitSignature?.s
       );
     } else {
-      debugger;
       tx = await mrcImplementation.voteERC20Permit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
         Object.values(groupedAmounts),
         Object.values(groupedAmounts).reduce((acc, b) => acc.add(b)),
         token.address,
-        // permitSignature.deadline,
+        deadline,
         permitSignature.v,
         permitSignature.r,
         permitSignature.s
@@ -85,65 +94,60 @@ export const voteUsingMRCContract = async (
   }
 };
 
-export async function signPermit(
-  signer: Signer,
-  token: PayoutToken,
-  amount: BigNumber,
-  deadline: number
-) {
-  const address = await signer.getAddress();
-  return signPermit2612(
-    signer,
-    token,
-    "Test",
-    address,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    multiRoundCheckoutContract.address!,
-    amount,
-    deadline
-  );
-}
+type SignPermitProps = {
+  signer: JsonRpcSigner;
+  contractAddress: string;
+  erc20Name: string;
+  owner: string;
+  spender: string;
+  value: BigNumber;
+  deadline: number;
+  chainId: number;
+};
 
-export async function signPermit2612(
-  signer: Signer,
-  token: PayoutToken,
-  erc20Name: string,
-  owner: string,
-  spender: string,
-  value: BigNumber,
-  deadline: number
-) {
-  const { v, r, s } = await signERC2612Permit(
-    signer,
-    token.address,
+export const signPermit = async ({
+  signer,
+  contractAddress,
+  erc20Name,
+  owner,
+  spender,
+  value,
+  deadline,
+  chainId,
+}: SignPermitProps) => {
+  const types = {
+    Permit: [
+      { name: "owner", type: "address" },
+      { name: "spender", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "nonce", type: "uint256" },
+      { name: "deadline", type: "uint256" },
+    ],
+  };
+
+  const domainData = {
+    name: erc20Name,
+    version: "1",
+    chainId: chainId,
+    verifyingContract: contractAddress,
+  };
+
+  const message = {
     owner,
     spender,
-    value
-      .div(10 ** 8)
-      .div(10 ** 10)
-      .toString(),
-    deadline
-  );
+    value,
+    deadline,
+  };
 
-  return { v, r, s, deadline };
-}
-
-export async function signPermitDAI(
-  signer: Signer,
-  token: PayoutToken,
-  erc20Name: string,
-  owner: string,
-  spender: string,
-  value: BigNumber,
-  deadline: number
-) {
-  const { v, r, s } = await signDaiPermit(
-    signer,
-    token.address,
-    owner,
-    spender,
-    deadline
-  );
-
-  return { v, r, s, deadline };
-}
+  const signature = (await signer._signTypedData(
+    domainData,
+    types,
+    message
+  )) as Hex;
+  const [r, s, v] = [
+    slice(signature, 0, 32),
+    slice(signature, 32, 64),
+    slice(signature, 64, 65),
+  ];
+  return { r, s, v: hexToNumber(v) };
+};

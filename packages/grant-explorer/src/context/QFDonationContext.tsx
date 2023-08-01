@@ -8,7 +8,11 @@ import {
   useState,
 } from "react";
 import { useSigner } from "wagmi";
-import { signPermit, voteUsingMRCContract } from "../features/api/voting";
+import {
+  PermitSignature,
+  signPermit,
+  voteUsingMRCContract,
+} from "../features/api/voting";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
 import {
   CartDonation,
@@ -16,13 +20,9 @@ import {
   ProgressStatus,
 } from "../features/api/types";
 import _ from "lodash";
-
-export type PermitSignature = {
-  v: number;
-  r: string;
-  s: string;
-  deadline: number;
-};
+import { MRC_CONTRACTS } from "../features/api/contracts";
+import { ChainId } from "common";
+import { JsonRpcSigner } from "@ethersproject/providers";
 
 export interface QFDonationState {
   tokenApprovalStatus: ProgressStatus;
@@ -71,11 +71,6 @@ export type QFDonationParams = {
   donationToken: PayoutToken;
   totalDonation: BigNumber;
   roundEndTime: number;
-};
-
-type SubmitDonationParams = QFDonationParams & {
-  signer: Signer;
-  context: QFDonationState;
 };
 
 export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
@@ -136,35 +131,23 @@ function resetToInitialState(context: QFDonationState) {
   setTxBlockNumber(initialQFDonationState.txBlockNumber);
 }
 
+type SubmitDonationParams = QFDonationParams & {
+  signer: JsonRpcSigner;
+  context: QFDonationState;
+};
+
 async function _submitDonations({
   signer,
   context,
   donations,
   donationToken,
-  totalDonation,
   roundEndTime,
 }: SubmitDonationParams) {
   resetToInitialState(context);
 
   try {
-    // Token Approval
-    const permit = await approveTokenForDonation(
-      signer,
-      donationToken,
-      totalDonation,
-      context,
-      roundEndTime
-    );
-
     // Invoke Vote
-    await vote(
-      signer,
-      donationToken,
-      donations,
-      totalDonation,
-      context,
-      permit!
-    );
+    await vote(signer, donationToken, donations, context, roundEndTime);
 
     // Wait for indexing on subgraph
     await waitForSubgraphToUpdate(signer, context);
@@ -185,7 +168,7 @@ export const useQFDonation = () => {
   const handleSubmitDonations = async (params: QFDonationParams) => {
     return _submitDonations({
       ...params,
-      signer: signer as Signer,
+      signer: signer as JsonRpcSigner,
       context,
     });
   };
@@ -200,55 +183,48 @@ export const useQFDonation = () => {
   };
 };
 
-async function approveTokenForDonation(
-  signerOrProvider: Signer,
+async function vote(
+  signer: JsonRpcSigner,
   token: PayoutToken,
-  amount: BigNumber,
+  donations: CartDonation[],
   context: QFDonationState,
-  votingEndTimestamp: number
-) {
-  const { setTokenApprovalStatus, setPermit } = context;
+  deadline: number
+): Promise<void> {
+  const { setVoteStatus, setTxHash, setTxBlockNumber, setTokenApprovalStatus } =
+    context;
+
+  const totalDonation = donations
+    .map((donation) => donation.amount)
+    .reduce((acc, amount) => acc.add(amount));
+
+  let sig;
 
   try {
     setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
 
-    /* We don't need permit for native token */
-    if (token.address == ethers.constants.AddressZero) {
-      setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
-      return;
-    }
+    const chainId = (await signer.getChainId()) as ChainId;
+    const owner = await signer.getAddress();
+    sig = await signPermit({
+      signer,
+      value: totalDonation,
+      spender: MRC_CONTRACTS[chainId],
+      chainId,
+      deadline,
+      contractAddress: token.address,
+      erc20Name: token.name,
+      owner,
+    });
 
-    const res = await signPermit(
-      signerOrProvider,
-      token,
-      amount,
-      votingEndTimestamp
-    );
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
-
-    return res;
-  } catch (error) {
-    datadogLogs.logger.error(
-      `error: approveTokenForDonation - ${error}. Data - ${amount} ${token.name}`
-    );
-    console.error(
-      `approveTokenForDonation - amount ${amount} ${token.name}`,
-      error
-    );
+  } catch (e) {
+    console.error(e);
     setTokenApprovalStatus(ProgressStatus.IS_ERROR);
-    throw error;
   }
-}
 
-async function vote(
-  signerOrProvider: Signer,
-  token: PayoutToken,
-  donations: CartDonation[],
-  totalDonation: BigNumber,
-  context: QFDonationState,
-  permit: PermitSignature
-): Promise<void> {
-  const { setVoteStatus, setTxHash, setTxBlockNumber } = context;
+  if (!sig) {
+    setTokenApprovalStatus(ProgressStatus.IS_ERROR);
+    return;
+  }
 
   try {
     setVoteStatus(ProgressStatus.IN_PROGRESS);
@@ -261,6 +237,7 @@ async function vote(
       })),
       "roundId"
     );
+
     const groupedEncodedVotes: Record<string, BytesLike[]> = {};
     for (const roundId in groupedDonations) {
       groupedEncodedVotes[roundId] = encodeQFVotes(
@@ -278,12 +255,13 @@ async function vote(
     }
 
     const { txBlockNumber, txHash } = await voteUsingMRCContract(
-      signerOrProvider,
+      signer,
       token,
       groupedEncodedVotes,
       groupedAmounts,
       totalDonation,
-      permit
+      sig,
+      deadline
     );
 
     setVoteStatus(ProgressStatus.IS_SUCCESS);
@@ -347,7 +325,7 @@ function encodeQFVotes(
     const projectAddress = ethers.utils.getAddress(donation.projectAddress);
 
     const vote = [
-      donationToken.address,
+      "0xbaa146619512b97216991ba37ae74de213605f8e",
       donation.amount,
       projectAddress,
       donation.projectRegistryId,
