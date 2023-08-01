@@ -13,11 +13,13 @@ import { ChainId, useTokenPrice } from "common";
 import { useAccount, useBalance } from "wagmi";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
+import { SummaryContainer } from "./SummaryContainer";
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;
   chainId: ChainId;
 };
+
 export function CartWithProjects({ cart, chainId }: Props) {
   const chain = CHAINS[chainId];
   const cartByRound = Object.values(cart);
@@ -34,15 +36,6 @@ export function CartWithProjects({ cart, chainId }: Props) {
     payoutTokenOptions[0]
   );
 
-  const { address } = useAccount();
-  const tokenDetail =
-    selectedPayoutToken.address == ethers.constants.AddressZero
-      ? { address: address }
-      : { address: address, token: selectedPayoutToken.address };
-  // @ts-expect-error Temp until viem
-  const selectedPayoutTokenBalance = useBalance(tokenDetail);
-
-  const [transactionReplaced, setTransactionReplaced] = useState(false);
   const { data, error, loading } = useTokenPrice(
     selectedPayoutToken.redstoneTokenId
   );
@@ -98,13 +91,21 @@ export function CartWithProjects({ cart, chainId }: Props) {
         </div>
       </div>
       {cartByRound.map((roundcart: CartProject[], key: number) => (
-        <RoundInCart
-          key={key}
-          roundCart={roundcart}
-          handleRemoveProjectFromCart={store.remove}
-          selectedPayoutToken={selectedPayoutToken}
-          payoutTokenPrice={payoutTokenPrice ?? 0}
-        />
+        <div>
+          <RoundInCart
+            key={key}
+            roundCart={roundcart}
+            handleRemoveProjectFromCart={store.remove}
+            selectedPayoutToken={selectedPayoutToken}
+            payoutTokenPrice={payoutTokenPrice ?? 0}
+          />
+          <SummaryContainer
+            roundId={roundcart[0].roundId}
+            chainId={chainId}
+            payoutToken={selectedPayoutToken}
+            payoutTokenPrice={payoutTokenPrice}
+          />
+        </div>
       ))}
     </div>
   );
