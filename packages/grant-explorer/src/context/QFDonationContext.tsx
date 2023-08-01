@@ -325,7 +325,7 @@ function encodeQFVotes(
     const projectAddress = ethers.utils.getAddress(donation.projectAddress);
 
     const vote = [
-      "0xbaa146619512b97216991ba37ae74de213605f8e",
+      donationToken.address,
       donation.amount,
       projectAddress,
       donation.projectRegistryId,
