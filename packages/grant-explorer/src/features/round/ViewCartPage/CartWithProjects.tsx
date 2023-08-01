@@ -25,7 +25,6 @@ export function CartWithProjects({ cart, chainId }: Props) {
   const store = useCartStorage();
 
   const [fixedDonation, setFixedDonation] = useState("");
-
   /*---------------------------------------------------------------*/
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const payoutTokenOptions: PayoutToken[] = getPayoutTokenOptions(

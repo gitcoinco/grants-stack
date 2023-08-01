@@ -34,12 +34,10 @@ export const useCartStorage = create<CartState>()(
           });
         },
         updateDonationsForChain: (chainId: ChainId, amount: string) => {
-          const newState = get()
-            .projects.filter((project) => project.chainId === chainId)
-            .map((project) => ({
-              ...project,
-              amount,
-            }));
+          const newState = get().projects.map((project) => ({
+            ...project,
+            amount: project.chainId === chainId ? amount : project.amount,
+          }));
 
           set({
             projects: newState,
