@@ -9,104 +9,29 @@ import { useDebugMode } from "../api/utils";
 import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
-
+import useSWR from "swr";
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
-/* TODO: this is overdue for a rework
- *  - fetch only once and filter
- *  - don't use state for computed variables
- *  - SWR caching for everything that comes from the netwowrk */
+
+export function useActiveRounds() {
+  const debugModeEnabled = useDebugMode();
+  return useSWR(`activeRounds`, () => getActiveRounds(debugModeEnabled));
+}
+
+export function useRoundsInApplicationPhase() {
+  const debugModeEnabled = useDebugMode();
+  return useSWR(`applicationRounds`, () =>
+    getRoundsInApplicationPhase(debugModeEnabled)
+  );
+}
+
 const LandingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
-    RoundOverview[]
-  >([]);
-  const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]);
-  const [allActiveRounds, setAllActiveRounds] = useState<RoundOverview[]>([]);
 
-  const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
-  const [activeRoundsLoading, setActiveRoundsLoading] = useState<boolean>(true);
+  const { isLoading: activeRoundsLoading, data: activeRounds } =
+    useActiveRounds();
 
-  const debugModeEnabled = useDebugMode();
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (searchQuery) {
-      const timeOutId = setTimeout(
-        () => filterProjectsByTitle(searchQuery),
-        300
-      );
-      return () => clearTimeout(timeOutId);
-    } else {
-      setActiveRounds(allActiveRounds);
-    }
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const filterProjectsByTitle = (query: string) => {
-    // filter by exact title matches first
-    // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
-
-    if (!query || query === "") {
-      setActiveRounds(activeRounds);
-      return;
-    }
-
-    const exactMatches = activeRounds?.filter(
-      (round) =>
-        round.roundMetadata?.name?.toLocaleLowerCase() ===
-        query.toLocaleLowerCase()
-    );
-
-    const nonExactMatches = activeRounds?.filter(
-      (round) =>
-        round.roundMetadata?.name
-          ?.toLocaleLowerCase()
-          .includes(query.toLocaleLowerCase()) &&
-        round.roundMetadata?.name?.toLocaleLowerCase() !==
-          query.toLocaleLowerCase()
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    setActiveRounds([...exactMatches!, ...nonExactMatches!]);
-  };
-
-  // Fetch active rounds
-  useEffect(() => {
-    const fetchActiveRounds = async () => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { isLoading, error, rounds } = await getActiveRounds(
-          debugModeEnabled
-        );
-        setActiveRounds(rounds);
-        setAllActiveRounds(rounds);
-        setActiveRoundsLoading(isLoading);
-      } catch (error) {
-        setActiveRoundsLoading(false);
-      }
-    };
-    fetchActiveRounds();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Fetch rounds in application phase
-  useEffect(() => {
-    const fetchRoundsInApplicationPhase = async () => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { isLoading, error, rounds } = await getRoundsInApplicationPhase(
-          debugModeEnabled
-        );
-        setRoundsInApplicationPhase(rounds);
-        setApplyRoundsLoading(isLoading);
-      } catch (error) {
-        setApplyRoundsLoading(false);
-      }
-    };
-    fetchRoundsInApplicationPhase();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { isLoading: applyRoundsLoading, data: roundsInApplicationPhase } =
+    useRoundsInApplicationPhase();
 
   return (
     <>
@@ -118,7 +43,7 @@ const LandingPage = () => {
               <div
                 style={{
                   width: "100%",
-                  height: "560px",
+                  height: "582px",
                 }}
               />
             }
@@ -136,7 +61,10 @@ const LandingPage = () => {
             <ActiveRoundsSection
               isLoading={activeRoundsLoading}
               setSearchQuery={setSearchQuery}
-              roundOverview={activeRounds}
+              roundOverview={filterProjectsByTitle(
+                activeRounds ?? [],
+                searchQuery
+              )}
               searchQuery={searchQuery}
             />
           </div>
@@ -147,6 +75,32 @@ const LandingPage = () => {
       </div>
     </>
   );
+};
+
+const filterProjectsByTitle = (rounds: RoundOverview[], query: string) => {
+  // filter by exact title matches first
+  // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
+
+  if (!query || query === "") {
+    return rounds;
+  }
+
+  const exactMatches = rounds.filter(
+    (round) =>
+      round.roundMetadata?.name?.toLocaleLowerCase() ===
+      query.toLocaleLowerCase()
+  );
+
+  const nonExactMatches = rounds.filter(
+    (round) =>
+      round.roundMetadata?.name
+        ?.toLocaleLowerCase()
+        .includes(query.toLocaleLowerCase()) &&
+      round.roundMetadata?.name?.toLocaleLowerCase() !==
+        query.toLocaleLowerCase()
+  );
+
+  return [...exactMatches, ...nonExactMatches];
 };
 
 export default LandingPage;
