@@ -5,7 +5,6 @@ import { BigNumber, ethers } from "ethers";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { store } from "./app/store";
-import { CartProvider } from "./context/CartContext";
 import {
   RoundContext,
   RoundState,

@@ -6,8 +6,6 @@ import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
-import { deepEqual } from "@wagmi/core";
-import { useCart } from "../../context/CartContext";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -17,12 +15,8 @@ export interface NavbarProps {
 }
 
 export default function Navbar(props: NavbarProps) {
+  /* This part keeps the store in sync between tabs */
   const store = useCartStorage();
-  const showWalletInteraction = props.showWalletInteraction ?? true;
-  const currentOrigin = window.location.origin;
-
-  const { address: walletAddress } = useAccount();
-
   const updateStore = () => {
     useCartStorage.persist.rehydrate();
   };
@@ -35,6 +29,12 @@ export default function Navbar(props: NavbarProps) {
       window.removeEventListener("focus", updateStore);
     };
   }, []);
+  /* end of part that keeps the store in sync between tabs */
+
+  const showWalletInteraction = props.showWalletInteraction ?? true;
+  const currentOrigin = window.location.origin;
+
+  const { address: walletAddress } = useAccount();
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>

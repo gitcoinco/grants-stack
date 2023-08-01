@@ -20,7 +20,6 @@ import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 
 // Routes
-import { CartProvider } from "./context/CartContext";
 import { QFDonationProvider } from "./context/QFDonationContext";
 import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
@@ -53,65 +52,63 @@ root.render(
       <WagmiConfig client={WagmiClient}>
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
-            <CartProvider>
-              <ReduxRouter history={history} store={store}>
-                <Routes>
-                  {/* Protected Routes */}
-                  <Route element={<Auth />} />
+            <ReduxRouter history={history} store={store}>
+              <Routes>
+                {/* Protected Routes */}
+                <Route element={<Auth />} />
 
-                  {/* Default Route */}
-                  <Route path="/" element={<LandingPage />} />
+                {/* Default Route */}
+                <Route path="/" element={<LandingPage />} />
 
-                  {/* Apply Now Page */}
-                  <Route path="/apply-now" element={<ApplyNowPage />} />
+                {/* Apply Now Page */}
+                <Route path="/apply-now" element={<ApplyNowPage />} />
 
-                  {/* Round Routes */}
-                  <Route
-                    path="/round/:chainId/:roundId"
-                    element={<ViewRound />}
-                  />
-                  <Route
-                    path="/round/:chainId/:roundId/:applicationId"
-                    element={<ViewProjectDetails />}
-                  />
+                {/* Round Routes */}
+                <Route
+                  path="/round/:chainId/:roundId"
+                  element={<ViewRound />}
+                />
+                <Route
+                  path="/round/:chainId/:roundId/:applicationId"
+                  element={<ViewProjectDetails />}
+                />
 
-                  <Route
-                    path="/cart"
-                    element={
-                      <QFDonationProvider>
-                        <ViewCart />
-                      </QFDonationProvider>
-                    }
-                  />
+                <Route
+                  path="/cart"
+                  element={
+                    <QFDonationProvider>
+                      <ViewCart />
+                    </QFDonationProvider>
+                  }
+                />
 
-                  <Route
-                    path="/thankyou"
-                    element={
-                      <QFDonationProvider>
-                        <ThankYou />
-                      </QFDonationProvider>
-                    }
-                  />
+                <Route
+                  path="/thankyou"
+                  element={
+                    <QFDonationProvider>
+                      <ThankYou />
+                    </QFDonationProvider>
+                  }
+                />
 
-                  {/* Passport Connect */}
-                  <Route
-                    path="/round/:chainId/:roundId/passport/connect"
-                    element={<PassportConnect />}
-                  />
+                {/* Passport Connect */}
+                <Route
+                  path="/round/:chainId/:roundId/passport/connect"
+                  element={<PassportConnect />}
+                />
 
-                  <Route
-                    path="/contributors/:address"
-                    element={<ViewContributionHistory />}
-                  />
+                <Route
+                  path="/contributors/:address"
+                  element={<ViewContributionHistory />}
+                />
 
-                  {/* Access Denied */}
-                  <Route path="/access-denied" element={<AccessDenied />} />
+                {/* Access Denied */}
+                <Route path="/access-denied" element={<AccessDenied />} />
 
-                  {/* 404 */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </ReduxRouter>
-            </CartProvider>
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ReduxRouter>
           </RoundProvider>
         </RainbowKitProvider>
       </WagmiConfig>
