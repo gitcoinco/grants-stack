@@ -34,7 +34,7 @@ export function RoundInCart(
           <ProjectInCart
             projects={props.roundCart}
             selectedPayoutToken={props.selectedPayoutToken}
-            handleRemoveProjectsFromCart={props.handleRemoveProjectFromCart}
+            removeProjectFromCart={props.handleRemoveProjectFromCart}
             project={project}
             index={key}
             roundRoutePath={`/round/${props.roundCart[0].chainId}/${props.roundCart[0].roundId}`}

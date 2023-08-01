@@ -17,7 +17,7 @@ export function ProjectInCart(
     last?: boolean;
     selectedPayoutToken: PayoutToken;
     payoutTokenPrice: number;
-    handleRemoveProjectsFromCart: (projectsToRemove: string) => void;
+    removeProjectFromCart: (grantApplicationId: string) => void;
   }
 ) {
   const { project, roundRoutePath } = props;
@@ -73,53 +73,51 @@ export function ProjectInCart(
 
         <div className="mt-6 flex space-x-4 h-16 pl-4 pt-3">
           <div className="md:hidden w-12"></div>
-          <Input
-            aria-label={
-              "Donation amount for project " +
-              props.project.projectMetadata.title
-            }
-            id={inputID}
-            key={inputID}
-            {...(focusedElement === inputID ? { autoFocus: true } : {})}
-            min="0"
-            value={
-              props.projects.find(
-                (project) =>
-                  project.projectRegistryId === props.project.projectRegistryId
-              )?.amount
-            }
-            type="number"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              store.updateDonationAmount(
-                props.project.grantApplicationId,
-                e.target.value
-              );
-            }}
-            className="w-48"
-          />
-          <p className="m-auto">{props.selectedPayoutToken.name}</p>
-          {props.payoutTokenPrice && (
-            <div className="m-auto px-2 min-w-max">
-              <span className="text-[14px] text-grey-400 ">
-                ${" "}
-                {(
-                  Number(
-                    props.projects.find(
-                      (project) =>
-                        project.projectRegistryId ===
-                        props.project.projectRegistryId
-                    )?.amount || 0
-                  ) * props.payoutTokenPrice
-                ).toFixed(2)}
-              </span>
-            </div>
-          )}
+          {/*<Input*/}
+          {/*  aria-label={*/}
+          {/*    "Donation amount for project " +*/}
+          {/*    props.project.projectMetadata.title*/}
+          {/*  }*/}
+          {/*  id={inputID}*/}
+          {/*  key={inputID}*/}
+          {/*  {...(focusedElement === inputID ? { autoFocus: true } : {})}*/}
+          {/*  min="0"*/}
+          {/*  value={*/}
+          {/*    props.projects.find(*/}
+          {/*      (project) =>*/}
+          {/*        project.projectRegistryId === props.project.projectRegistryId*/}
+          {/*    )?.amount*/}
+          {/*  }*/}
+          {/*  type="number"*/}
+          {/*  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {*/}
+          {/*    store.updateDonationAmount(*/}
+          {/*      props.project.grantApplicationId,*/}
+          {/*      e.target.value*/}
+          {/*    );*/}
+          {/*  }}*/}
+          {/*  className="w-48"*/}
+          {/*/>*/}
+          {/*<p className="m-auto">{props.selectedPayoutToken.name}</p>*/}
+          {/*{props.payoutTokenPrice && (*/}
+          {/*  <div className="m-auto px-2 min-w-max">*/}
+          {/*    <span className="text-[14px] text-grey-400 ">*/}
+          {/*      ${" "}*/}
+          {/*      {(*/}
+          {/*        Number(*/}
+          {/*          props.projects.find(*/}
+          {/*            (project) =>*/}
+          {/*              project.projectRegistryId ===*/}
+          {/*              props.project.projectRegistryId*/}
+          {/*          )?.amount || 0*/}
+          {/*        ) * props.payoutTokenPrice*/}
+          {/*      ).toFixed(2)}*/}
+          {/*    </span>*/}
+          {/*  </div>*/}
+          {/*)}*/}
           <TrashIcon
             data-testid="remove-from-cart"
             onClick={() => {
-              props.handleRemoveProjectsFromCart(
-                props.project.grantApplicationId
-              );
+              props.removeProjectFromCart(props.project.grantApplicationId);
             }}
             className="w-5 h-5 m-auto cursor-pointer mb-4"
           />

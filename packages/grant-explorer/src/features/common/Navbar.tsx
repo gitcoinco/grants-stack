@@ -6,6 +6,8 @@ import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
+import { deepEqual } from "@wagmi/core";
+import { useCart } from "../../context/CartContext";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -21,26 +23,18 @@ export default function Navbar(props: NavbarProps) {
 
   const { address: walletAddress } = useAccount();
 
-  /* TODO: check if zustand does this automatically */
+  const updateStore = () => {
+    useCartStorage.persist.rehydrate();
+  };
+
   useEffect(() => {
-    const storageEventHandler = (event: StorageEvent) => {
-      // Check if the updated item is 'gitcoin-cart'
-      if (event.key === "gitcoin-cart") {
-        // Check if it's a different tab
-        if (document.visibilityState === "hidden") {
-          const updatedCart = JSON.parse(event.newValue ?? "[]");
-          // setCart(updatedCart);
-        }
-      }
-    };
-
-    window.addEventListener("storage", storageEventHandler);
-
-    // Clean up the event listener when the component unmounts
+    document.addEventListener("visibilitychange", updateStore);
+    window.addEventListener("focus", updateStore);
     return () => {
-      window.removeEventListener("storage", storageEventHandler);
+      document.removeEventListener("visibilitychange", updateStore);
+      window.removeEventListener("focus", updateStore);
     };
-  });
+  }, []);
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>

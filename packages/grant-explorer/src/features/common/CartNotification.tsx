@@ -57,7 +57,7 @@ export default function CartNotification(props: {
                     type="button"
                     $variant="solid"
                     className="px-3 bg-violet-400 text-white border-0 text-xs mb-2"
-                    onClick={() => navigate(`${props.roundUrlPath}/cart`)}
+                    onClick={() => navigate(`/cart`)}
                   >
                     View my cart
                   </Button>
