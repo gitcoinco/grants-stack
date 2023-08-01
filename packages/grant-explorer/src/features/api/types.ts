@@ -153,7 +153,7 @@ export type Project = {
 export type CartProject = Project & {
   roundId: string;
   chainId: number;
-  amount: BigNumber;
+  amount: string;
 };
 
 export enum ApplicationStatus {

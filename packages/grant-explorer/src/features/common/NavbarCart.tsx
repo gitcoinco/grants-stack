@@ -2,10 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Project } from "../api/types";
 import tw from "tailwind-styled-components";
 
-export default function NavbarCart(props: {
-  cart: Project[];
-  roundUrlPath: string;
-}) {
+export default function NavbarCart(props: { cart: Project[] }) {
   const projectCount = props.cart.length;
 
   const navigate = useNavigate();
@@ -14,7 +11,7 @@ export default function NavbarCart(props: {
     <div
       data-testid="navbar-cart"
       className="relative flex-row"
-      onClick={() => navigate(`${props.roundUrlPath}/cart`)}
+      onClick={() => navigate(`/cart`)}
     >
       <QuickViewIcon count={projectCount} />
     </div>

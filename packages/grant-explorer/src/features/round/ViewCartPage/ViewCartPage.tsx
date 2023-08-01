@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { modalDelayMs } from "../../../constants";
-import { useCart } from "../../../context/CartContext";
 import { useQFDonation } from "../../../context/QFDonationContext";
 import { useRoundById } from "../../../context/RoundContext";
 import {
@@ -16,14 +15,7 @@ import {
   PassportState,
 } from "../../api/passport";
 import { ChainId, useTokenPrice } from "common";
-import {
-  CartDonation,
-  CartProject,
-  DonationInput,
-  PayoutToken,
-  ProgressStatus,
-  recipient,
-} from "../../api/types";
+import { CartProject, PayoutToken, ProgressStatus } from "../../api/types";
 import {
   CHAINS,
   GroupedCartProjectsByRoundId,
@@ -46,39 +38,47 @@ import { RoundInCart } from "./RoundInCart";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { Summary } from "./Summary";
 import { InfoModalBody } from "./InfoModalBody";
+import { useCartStorage } from "../../../store";
 
 export default function ViewCart() {
-  const { chainId, roundId } = useParams();
-  const [cart, , handleRemoveProjectsFromCart] = useCart();
-  const groupedCartProjects = groupProjectsInCart(cart);
+  const { projects, remove, updateDonationsForChain } = useCartStorage();
+  const groupedCartProjects = groupProjectsInCart(projects);
 
+  /*---------------------------------------------------------------*/
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const round = useRoundById(chainId!, roundId!).round;
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-
-  const payoutTokenOptions: PayoutToken[] = [
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    ...getPayoutTokenOptions(Number(chainId)),
-  ];
-
+  const payoutTokenOptions: PayoutToken[] = getPayoutTokenOptions(
+    Number(chainId)
+  );
   const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
     payoutTokenOptions[0]
   );
-  const [donations, setDonations] = useState<DonationInput[]>([]);
 
   const totalDonation = useMemo(() => {
-    return donations.reduce((acc, donation) => {
+    return projects.reduce((acc, donation) => {
       return acc.add(
-        ethers.utils.parseUnits(
-          donation.amount === "" ? "0" : donation.amount,
-          selectedPayoutToken.decimal
-        )
+        ethers.utils.parseUnits(donation.amount, selectedPayoutToken.decimal)
       );
     }, BigNumber.from(0));
-  }, [donations, selectedPayoutToken.decimal]);
-
-  const [fixedDonation, setFixedDonation] = useState<string>("");
+  }, [projects, selectedPayoutToken.decimal]);
+  const { chain, chains } = useNetwork();
+  const { address, isConnected } = useAccount();
+  const tokenDetail =
+    selectedPayoutToken.address == ethers.constants.AddressZero
+      ? { address: address }
+      : { address: address, token: selectedPayoutToken.address };
+  // @ts-expect-error Temp until viem
+  const selectedPayoutTokenBalance = useBalance(tokenDetail);
+  const [transactionReplaced, setTransactionReplaced] = useState(false);
+  const [wrongChain, setWrongChain] = useState(false);
+  const { openConnectModal } = useConnectModal();
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [emptyInput, setEmptyInput] = useState(false);
+  const { data, error, loading } = useTokenPrice(
+    selectedPayoutToken.redstoneTokenId
+  );
+  const payoutTokenPrice = !loading && !error ? Number(data) : undefined;
+  /*---------------------------------------------------------------*/
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
@@ -87,34 +87,10 @@ export default function ViewCart() {
   const [errorModalSubHeading, setErrorModalSubHeading] = useState<
     string | undefined
   >();
-  const [transactionReplaced, setTransactionReplaced] = useState(false);
-
-  const { openConnectModal } = useConnectModal();
-  const { chain, chains } = useNetwork();
-  const { address, isConnected } = useAccount();
-
-  const tokenDetail =
-    selectedPayoutToken.address == ethers.constants.AddressZero
-      ? { address: address }
-      : { address: address, token: selectedPayoutToken.address };
-
-  // @ts-expect-error Temp until viem
-  const selectedPayoutTokenBalance = useBalance(tokenDetail);
-
-  const [wrongChain, setWrongChain] = useState(false);
-  const [insufficientBalance, setInsufficientBalance] = useState(false);
-  const [emptyInput, setEmptyInput] = useState(false);
-
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
   const navigate = useNavigate();
-
-  const { data, error, loading } = useTokenPrice(
-    selectedPayoutToken.redstoneTokenId
-  );
-
-  const payoutTokenPrice = !loading && !error ? Number(data) : undefined;
 
   const {
     submitDonations,
@@ -140,7 +116,7 @@ export default function ViewCart() {
 
     if (indexingStatus === ProgressStatus.IS_ERROR) {
       setTimeout(() => {
-        navigate(`/round/${chainId}/${roundId}`);
+        navigate(`/`);
       }, 5000);
     }
 
@@ -151,7 +127,7 @@ export default function ViewCart() {
     ) {
       setTimeout(() => {
         setOpenProgressModal(false);
-        navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
+        navigate(`/thankyou`);
       }, modalDelayMs);
     }
   }, [
@@ -159,8 +135,6 @@ export default function ViewCart() {
     tokenApprovalStatus,
     voteStatus,
     indexingStatus,
-    chainId,
-    roundId,
     txHash,
     transactionReplaced,
   ]);
@@ -258,18 +232,14 @@ export default function ViewCart() {
       path: "/",
     },
     {
-      name: round?.roundMetadata?.name,
-      path: `/round/${chainId}/${roundId}`,
-    },
-    {
       name: "Cart",
-      path: `/round/${chainId}/${roundId}/cart`,
+      path: `/cart`,
     },
   ] as BreadcrumbItem[];
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar roundUrlPath={"/"} />
       {}
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <div className="flex flex-col pb-4" data-testid="bread-crumbs">
@@ -278,7 +248,7 @@ export default function ViewCart() {
         <main>
           <Header />
           <div className="flex flex-col md:flex-row gap-5">
-            {cart.length === 0 ? (
+            {projects.length === 0 ? (
               <EmptyCart />
             ) : (
               <div className="flex flex-col gap-5">
@@ -286,7 +256,7 @@ export default function ViewCart() {
                   <div key={Number(chainId)}>
                     {CartWithProjects(
                       groupedCartProjects[Number(chainId)],
-                      chainId
+                      chainId as ChainId
                     )}
                   </div>
                 ))}
@@ -352,27 +322,13 @@ export default function ViewCart() {
               <span>You must enter donations for all the projects</span>
             </p>
           )}
-          {insufficientBalance && !wrongChain && (
+          {insufficientBalance && (
             <p
               data-testid="insufficientBalance"
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
             >
               <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
               <span>You do not have enough funds for these donations</span>
-            </p>
-          )}
-          {wrongChain && (
-            <p
-              data-testid="wrongChain"
-              className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-            >
-              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-              <span>
-                You are on the wrong chain ({chain?.name}) for this round.
-                Please switch to{" "}
-                {chains.filter((c) => c?.id == Number(chainId))[0]?.name}{" "}
-                network.
-              </span>
             </p>
           )}
         </div>
@@ -383,10 +339,13 @@ export default function ViewCart() {
 
   function CartWithProjects(
     cart: GroupedCartProjectsByRoundId,
-    chainId: string
+    chainId: ChainId
   ) {
-    const chain = CHAINS[Number(chainId) as ChainId];
+    const chain = CHAINS[chainId];
     const cartByRound = Object.values(cart);
+
+    const [fixedDonation, setFixedDonation] = useState("");
+
     return (
       <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
@@ -428,7 +387,7 @@ export default function ViewCart() {
                 type="button"
                 $variant="outline"
                 onClick={() => {
-                  updateAllDonations(fixedDonation);
+                  updateDonationsForChain(chainId, fixedDonation);
                 }}
                 className="float-right md:float-none text-xs px-1 py-2 text-purple-600 border-0"
               >
@@ -441,75 +400,23 @@ export default function ViewCart() {
         {cartByRound.map((roundcart: CartProject[], key: number) => (
           <RoundInCart
             key={key}
-            roundcart={roundcart}
-            donations={donations}
-            handleRemoveProjectsFromCart={handleRemoveProjectsFromCart}
+            roundCart={roundcart}
+            handleRemoveProjectFromCart={remove}
             selectedPayoutToken={selectedPayoutToken}
             payoutTokenPrice={payoutTokenPrice ?? 0}
-            updateDonations={updateDonations}
           />
         ))}
       </div>
     );
   }
 
-  function updateDonations(
-    projectRegistryId: string,
-    amount: string,
-    projectAddress: recipient,
-    applicationIndex: number,
-    roundId: string
-  ) {
-    const projectIndex = donations.findIndex(
-      (donation) => donation.projectRegistryId === projectRegistryId
-    );
-
-    const newState = [...donations];
-
-    if (projectIndex !== -1) {
-      newState[projectIndex].amount = amount;
-    } else {
-      newState.push({
-        projectRegistryId,
-        amount,
-        projectAddress,
-        applicationIndex,
-        roundId,
-      });
-    }
-
-    setDonations(newState);
-  }
-
-  function updateAllDonations(amount: string) {
-    const newDonations = cart.map((project) => {
-      return {
-        projectRegistryId: project.projectRegistryId,
-        amount,
-        projectAddress: project.recipient,
-        applicationIndex: project.applicationIndex,
-        roundId: project.roundId,
-      } as DonationInput;
-    });
-
-    setDonations(newDonations);
-  }
-
   function handleConfirmation() {
-    if (Number(chainId) != chain?.id) {
-      // check to ensure user is on right network
-      setWrongChain(true);
-      return;
-    } else {
-      setWrongChain(false);
-    }
-
     // check to ensure all projects have donation amount
-    const emptyDonations = donations.filter(
-      (donation) => !donation.amount || Number(donation.amount) === 0
+    const emptyDonations = projects.filter(
+      (project) => !project.amount || Number(project.amount) === 0
     );
 
-    if (donations.length === 0 || emptyDonations.length > 0) {
+    if (emptyDonations.length > 0) {
       setEmptyInput(true);
       return;
     } else {
@@ -547,7 +454,7 @@ export default function ViewCart() {
           }}
           body={
             <ConfirmationModalBody
-              projectsCount={cart.length}
+              projectsCount={projects.length}
               selectedPayoutToken={selectedPayoutToken}
               totalDonation={totalDonation}
             />
@@ -584,7 +491,7 @@ export default function ViewCart() {
           tryAgainText={"Go to Passport"}
           doneText={"Donate without matching"}
           tryAgainFn={() => {
-            navigate(`/round/${chainId}/${roundId}/passport/connect`);
+            navigate(`/round/passport/connect`);
           }}
           heading={`Don’t miss out on getting your donations matched!`}
           subheading={
@@ -607,7 +514,7 @@ export default function ViewCart() {
 
   async function handleSubmitDonation() {
     try {
-      if (!round || !roundId) {
+      if (!round) {
         throw new Error("round is null");
       }
 
@@ -616,14 +523,14 @@ export default function ViewCart() {
         setOpenInfoModal(false);
       }, modalDelayMs);
 
-      const bigNumberDonation = donations.map((donation) => {
+      const bigNumberDonation = projects.map((donation) => {
         return {
           ...donation,
           amount: ethers.utils.parseUnits(
             donation.amount,
             selectedPayoutToken.decimal
           ),
-        } as CartDonation;
+        };
       });
 
       await submitDonations({
@@ -637,9 +544,9 @@ export default function ViewCart() {
         setTransactionReplaced(true);
       } else {
         datadogLogs.logger.error(
-          `error: handleSubmitDonation - ${error}, id: ${roundId}`
+          `error: handleSubmitDonation - ${error}, id: `
         );
-        console.error("handleSubmitDonation - roundId", roundId, error);
+        console.error("handleSubmitDonation - roundId", error);
       }
     }
   }

@@ -84,10 +84,7 @@ export default function Navbar(props: NavbarProps) {
                 </a>
               </div>
             )}
-            <NavbarCart
-              cart={store.projects}
-              roundUrlPath={props.roundUrlPath}
-            />
+            <NavbarCart cart={store.projects} />
           </div>
         </div>
       </div>

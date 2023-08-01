@@ -32,7 +32,7 @@ import ThankYou from "./features/round/ThankYou";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewContributionHistory from "./features/contributors/ViewContributionHistory";
-import ViewCart from "./features/round/ViewCartPage/ConfirmationModalBody";
+import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 
 // Initialize sentry
 initSentry();
@@ -76,7 +76,7 @@ root.render(
                   />
 
                   <Route
-                    path="/round/:chainId/:roundId/cart"
+                    path="/cart"
                     element={
                       <QFDonationProvider>
                         <ViewCart />
@@ -85,7 +85,7 @@ root.render(
                   />
 
                   <Route
-                    path="/round/:chainId/:roundId/:txHash/thankyou"
+                    path="/thankyou"
                     element={
                       <QFDonationProvider>
                         <ThankYou />

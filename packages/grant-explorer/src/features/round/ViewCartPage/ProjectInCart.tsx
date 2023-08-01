@@ -1,40 +1,31 @@
 import React from "react";
-import {
-  CartDonation,
-  CartProject,
-  PayoutToken,
-  recipient,
-} from "../../api/types";
+import { CartProject, PayoutToken } from "../../api/types";
 import DefaultLogoImage from "../../../assets/default_logo.png";
 import { Link } from "react-router-dom";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { renderToPlainText } from "common";
 import { Input } from "common/src/styles";
+import { useCartStorage } from "../../../store";
 
 export function ProjectInCart(
   props: React.ComponentProps<"div"> & {
     project: CartProject;
     index: number;
+    projects: CartProject[];
     roundRoutePath: string;
     last?: boolean;
-    donations: CartDonation[];
-    updateDonations: (
-      projectRegistryId: string,
-      amount: string,
-      projectAddress: recipient,
-      applicationIndex: number,
-      roundId: string
-    ) => void;
     selectedPayoutToken: PayoutToken;
     payoutTokenPrice: number;
-    handleRemoveProjectsFromCart: (projectsToRemove: CartProject[]) => void;
+    handleRemoveProjectsFromCart: (projectsToRemove: string) => void;
   }
 ) {
   const { project, roundRoutePath } = props;
 
   const focusedElement = document?.activeElement?.id;
   const inputID = "input-" + props.index;
+
+  const store = useCartStorage();
 
   return (
     <div
@@ -91,20 +82,17 @@ export function ProjectInCart(
             key={inputID}
             {...(focusedElement === inputID ? { autoFocus: true } : {})}
             min="0"
-            value={props.donations
-              .find(
-                (donation) =>
-                  donation.projectRegistryId === props.project.projectRegistryId
-              )
-              ?.amount?.toNumber()}
+            value={
+              props.projects.find(
+                (project) =>
+                  project.projectRegistryId === props.project.projectRegistryId
+              )?.amount
+            }
             type="number"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              props.updateDonations(
-                props.project.projectRegistryId,
-                e.target.value,
-                props.project.recipient,
-                props.project.applicationIndex,
-                props.project.roundId
+              store.updateDonationAmount(
+                props.project.grantApplicationId,
+                e.target.value
               );
             }}
             className="w-48"
@@ -116,9 +104,9 @@ export function ProjectInCart(
                 ${" "}
                 {(
                   Number(
-                    props.donations.find(
-                      (donation) =>
-                        donation.projectRegistryId ===
+                    props.projects.find(
+                      (project) =>
+                        project.projectRegistryId ===
                         props.project.projectRegistryId
                     )?.amount || 0
                   ) * props.payoutTokenPrice
@@ -129,13 +117,8 @@ export function ProjectInCart(
           <TrashIcon
             data-testid="remove-from-cart"
             onClick={() => {
-              props.handleRemoveProjectsFromCart([props.project]);
-              props.updateDonations(
-                props.project.projectRegistryId,
-                "",
-                props.project.recipient,
-                props.project.applicationIndex,
-                props.project.roundId
+              props.handleRemoveProjectsFromCart(
+                props.project.grantApplicationId
               );
             }}
             className="w-5 h-5 m-auto cursor-pointer mb-4"
