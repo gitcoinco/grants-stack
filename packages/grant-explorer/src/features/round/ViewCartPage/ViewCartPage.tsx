@@ -1,43 +1,11 @@
-import { datadogLogs } from "@datadog/browser-logs";
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import { Button, Input } from "common/src/styles";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { BigNumber, ethers } from "ethers";
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAccount, useBalance, useNetwork } from "wagmi";
-import { modalDelayMs } from "../../../constants";
-import { useQFDonation } from "../../../context/QFDonationContext";
-import { useRoundById } from "../../../context/RoundContext";
-import {
-  fetchPassport,
-  PassportResponse,
-  PassportState,
-} from "../../api/passport";
-import { ChainId, useTokenPrice } from "common";
-import { CartProject, PayoutToken, ProgressStatus } from "../../api/types";
-import {
-  CHAINS,
-  GroupedCartProjectsByRoundId,
-  getPayoutTokenOptions,
-  groupProjectsInCart,
-} from "../../api/utils";
-import ConfirmationModal from "../../common/ConfirmationModal";
-import ErrorModal from "../../common/ErrorModal";
+import React from "react";
+import { ChainId } from "common";
+import { groupProjectsInCart } from "../../api/utils";
 import Footer from "common/src/components/Footer";
-import InfoModal from "../../common/InfoModal";
 import Navbar from "../../common/Navbar";
-import ProgressModal from "../../common/ProgressModal";
-import { Logger } from "ethers/lib.esm/utils";
 import Breadcrumb, { BreadcrumbItem } from "../../common/Breadcrumb";
-import { ConfirmationModalBody } from "./ConfirmationModalBody";
 import { EmptyCart } from "./EmptyCart";
 import { Header } from "./Header";
-import { ApplyTooltip } from "./ApplyTooltip";
-import { RoundInCart } from "./RoundInCart";
-import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
-import { Summary } from "./Summary";
-import { InfoModalBody } from "./InfoModalBody";
 import { useCartStorage } from "../../../store";
 import { CartWithProjects } from "./CartWithProjects";
 

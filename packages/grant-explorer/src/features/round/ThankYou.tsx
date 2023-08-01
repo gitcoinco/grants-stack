@@ -2,11 +2,10 @@ import { datadogLogs } from "@datadog/browser-logs";
 import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
 import { useQFDonation } from "../../context/QFDonationContext";
-import { useRoundById } from "../../context/RoundContext";
 import Navbar from "../common/Navbar";
 import { getTxExplorerTxLink } from "../api/utils";
 import { useCartStorage } from "../../store";
@@ -20,12 +19,6 @@ export default function ThankYou() {
   // scroll to top of window on load
   window.scrollTo(0, 0);
 
-  const { chainId, roundId } = useParams();
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(chainId!, roundId!);
-  const roundName = round?.roundMetadata?.name;
-
   const { txHash } = useQFDonation();
 
   const navigate = useNavigate();
@@ -33,10 +26,10 @@ export default function ThankYou() {
   const cart = useCartStorage();
   useEffect(() => {
     cart.clear();
-  }, [cart]);
+  }, []);
 
   function TwitterButton(props: { roundName?: string }) {
-    const shareText = `I just donated to the ${props.roundName?.trim()} on @gitcoin. Join me in making a difference by donating today!\n\nhttps://explorer.gitcoin.co/#/round/${chainId}/${roundId}`;
+    const shareText = `I just donated to the ${props.roundName?.trim()} on @gitcoin. Join me in making a difference by donating today!\n\nhttps://explorer.gitcoin.co/#/`;
     const shareUrl = `https://twitter.com/share?text=${encodeURIComponent(
       shareText
     )}`;
@@ -54,25 +47,25 @@ export default function ThankYou() {
     );
   }
 
-  function ViewTransactionButton() {
-    return (
-      <Button
-        type="button"
-        $variant="outline"
-        onClick={() =>
-          window.open(getTxExplorerTxLink(Number(chainId), txHash), "_blank")
-        }
-        className="items-center justify-center shadow-sm text-sm rounded border-1 px-10 hover:shadow-md border"
-        data-testid="view-tx-button"
-      >
-        See your transaction
-      </Button>
-    );
-  }
+  // function ViewTransactionButton() {
+  //   return (
+  //     <Button
+  //       type="button"
+  //       $variant="outline"
+  //       onClick={() =>
+  //         window.open(getTxExplorerTxLink(Number(chainId), txHash), "_blank")
+  //       }
+  //       className="items-center justify-center shadow-sm text-sm rounded border-1 px-10 hover:shadow-md border"
+  //       data-testid="view-tx-button"
+  //     >
+  //       See your transaction
+  //     </Button>
+  //   );
+  // }
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar roundUrlPath={"/"} />
       <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
         <main>
           <div className="text-center">
@@ -81,15 +74,15 @@ export default function ThankYou() {
             </h1>
 
             <div className="flex justify-center gap-6">
-              <TwitterButton roundName={roundName} />
+              {/*<TwitterButton roundName={roundName} />*/}
 
-              <ViewTransactionButton />
+              {/*<ViewTransactionButton />*/}
             </div>
 
             <Button
               type="button"
               $variant="outline"
-              onClick={() => navigate(`/round/${chainId}/${roundId}`)}
+              onClick={() => navigate("/")}
               className="my-8 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
               data-testid="home-button"
             >
