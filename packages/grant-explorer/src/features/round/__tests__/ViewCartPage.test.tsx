@@ -1,4 +1,4 @@
-import ViewCart from "../ViewCartPage";
+import ViewCart from "../ViewCartPage/ViewCartPage";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { CartContext } from "../../../context/CartContext";
 import { CartProject } from "../../api/types";

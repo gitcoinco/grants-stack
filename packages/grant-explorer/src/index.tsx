@@ -29,10 +29,10 @@ import ApplyNowPage from "./features/discovery/ApplyNowPage";
 import LandingPage from "./features/discovery/LandingPage";
 import PassportConnect from "./features/round/PassportConnect";
 import ThankYou from "./features/round/ThankYou";
-import ViewCart from "./features/round/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewContributionHistory from "./features/contributors/ViewContributionHistory";
+import ViewCart from "./features/round/ViewCartPage/ConfirmationModalBody";
 
 // Initialize sentry
 initSentry();
