@@ -1,7 +1,7 @@
 import ViewCart from "../ViewCartPage";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { CartContext } from "../../../context/CartContext";
-import { Project } from "../../api/types";
+import { CartProject } from "../../api/types";
 import {
   makeApprovedProjectData,
   mockBalance,
@@ -56,7 +56,7 @@ describe("View Cart Page", () => {
     });
 
     it("shows list of projects with project name", () => {
-      const cart: Project[] = [
+      const cart: CartProject[] = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
       ];
@@ -77,7 +77,7 @@ describe("View Cart Page", () => {
     });
 
     it("moves project from final donation to cart when clicking the send back button", async () => {
-      const cart: Project[] = [
+      const cart: CartProject[] = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
       ];
@@ -117,7 +117,7 @@ describe("View Cart Page", () => {
     });
 
     it("reflects a change in donation to one project in the final contribution", () => {
-      const cart: Project[] = [makeApprovedProjectData()];
+      const cart: CartProject[] = [makeApprovedProjectData()];
 
       renderWrapped(cart);
 
@@ -137,7 +137,7 @@ describe("View Cart Page", () => {
     });
 
     it("reflects a change in donation to two projects in the final contribution", () => {
-      const cart: Project[] = [
+      const cart: CartProject[] = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
       ];
@@ -209,7 +209,7 @@ describe("View Cart Page", () => {
     });
 
     it("shows error when clicking on submit with a donation field empty", async () => {
-      const cart: Project[] = [makeApprovedProjectData()];
+      const cart: CartProject[] = [makeApprovedProjectData()];
 
       renderWrapped(cart);
 
@@ -227,7 +227,7 @@ describe("View Cart Page", () => {
     });
 
     it("shows error when clicking on submit with user having lesser balance then total donation", async () => {
-      const cart: Project[] = [makeApprovedProjectData()];
+      const cart: CartProject[] = [makeApprovedProjectData()];
 
       renderWrapped(cart);
 
@@ -255,7 +255,7 @@ describe("View Cart Page", () => {
     });
 
     it("opens confirmation modal when user clicks on submit with sufficient balance and donation fields set", async () => {
-      const cart: Project[] = [makeApprovedProjectData()];
+      const cart: CartProject[] = [makeApprovedProjectData()];
 
       renderWrapped(cart);
 
@@ -306,7 +306,7 @@ describe("View Cart Page", () => {
   });
 
   it("applies the donation to all projects", function () {
-    const cart: Project[] = [
+    const cart: CartProject[] = [
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
@@ -315,7 +315,7 @@ describe("View Cart Page", () => {
 
     renderWrapped(cart, setCart);
 
-    const amountInputField = screen.getByRole("textbox", {
+    const amountInputField = screen.getByRole("spinbutton", {
       name: /donation amount for all projects/i,
     });
 
@@ -379,7 +379,7 @@ describe("View Cart Page", () => {
   });
 });
 
-function renderWrapped(cart: Project[] = [], setCart = () => {}) {
+function renderWrapped(cart: CartProject[] = [], setCart = () => {}) {
   render(
     <MemoryRouter>
       <RoundProvider>

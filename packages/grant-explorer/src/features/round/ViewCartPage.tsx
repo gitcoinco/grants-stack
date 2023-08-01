@@ -22,7 +22,7 @@ import {
   PassportResponse,
   PassportState,
 } from "../api/passport";
-import { renderToPlainText, useTokenPrice } from "common";
+import { ChainId, renderToPlainText, useTokenPrice } from "common";
 import {
   CartDonation,
   CartProject,
@@ -31,15 +31,18 @@ import {
   ProgressStatus,
   recipient,
 } from "../api/types";
-import { getPayoutTokenOptions } from "../api/utils";
+import {
+  CHAINS,
+  GroupedCartProjectsByRoundId,
+  getPayoutTokenOptions,
+  groupProjectsInCart,
+} from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import Footer from "common/src/components/Footer";
 import InfoModal from "../common/InfoModal";
 import Navbar from "../common/Navbar";
-import PassportBanner from "../common/PassportBanner";
 import ProgressModal from "../common/ProgressModal";
-import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Logger } from "ethers/lib.esm/utils";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { classNames } from "common";
@@ -48,9 +51,13 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 
 export default function ViewCart() {
   const { chainId, roundId } = useParams();
+  const [cart, , handleRemoveProjectsFromCart] = useCart();
+  const groupedCartProjects = groupProjectsInCart(cart);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(chainId!, roundId!);
+  const round = useRoundById(chainId!, roundId!).round;
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
   const payoutTokenOptions: PayoutToken[] = [
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -72,12 +79,6 @@ export default function ViewCart() {
       );
     }, BigNumber.from(0));
   }, [donations, selectedPayoutToken.decimal]);
-
-  const currentTime = new Date();
-  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
-  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
-
-  const [cart, , handleRemoveProjectsFromCart] = useCart();
 
   const [fixedDonation, setFixedDonation] = useState<string>("");
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
@@ -268,18 +269,7 @@ export default function ViewCart() {
 
   return (
     <>
-      <Navbar
-        roundUrlPath={`/round/${chainId}/${roundId}`}
-        isBeforeRoundEndDate={isBeforeRoundEndDate}
-      />
-      {isBeforeRoundEndDate && (
-        <PassportBanner chainId={Number(chainId)} round={round} />
-      )}
-      {isAfterRoundEndDate && (
-        <div>
-          <RoundEndedBanner />
-        </div>
-      )}
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       {}
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <div className="flex flex-col pb-4" data-testid="bread-crumbs">
@@ -288,8 +278,21 @@ export default function ViewCart() {
         <main>
           {Header()}
           <div className="flex flex-col md:flex-row gap-5">
-            {cart.length == 0 ? EmptyCart() : CartWithProjects(cart)}
-            {SummaryContainer()}
+            {cart.length == 0 ? (
+              EmptyCart()
+            ) : (
+              <div className="flex flex-col gap-5">
+                {Object.keys(groupedCartProjects).map((chainId) => (
+                  <div key={Number(chainId)}>
+                    {CartWithProjects(
+                      groupedCartProjects[Number(chainId)],
+                      chainId
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            <SummaryContainer />
           </div>
         </main>
         <div className="my-11">
@@ -354,7 +357,6 @@ export default function ViewCart() {
               /* If passport is fine, proceed straight to confirmation */
               handleConfirmation();
             }}
-            disabled={isAfterRoundEndDate}
             className="items-center shadow-sm text-sm rounded w-full"
           >
             Submit your donation!
@@ -410,26 +412,36 @@ export default function ViewCart() {
         <h1 className="text-3xl mt-5 font-thin border-b-2 pb-2">Cart</h1>
 
         <p className="mt-5">
-          Each cart is specific to a selected round (e.g., Web3 Open Source
-          Software round.) For the most efficient donation experience, check out
-          once you have selected all donations for a given round, and then
-          proceed to any other rounds that you'd like to donate to.
+          Donate to multiple projects on different rounds, with a single cart.
+          Submit one transaction per chain for a seamless donation experience.
         </p>
         <p className="mt-2 mb-5">
-          Complete one transaction per round to minimize gas costs. Note that
-          gas fees will likely increase based on the number of projects
-          selected.
+          Please note that gas fees, particularly on Ethereum, may increase
+          based on the number of projects selected.
         </p>
       </div>
     );
   }
 
-  function CartWithProjects(cart: CartProject[]) {
+  function CartWithProjects(
+    cart: GroupedCartProjectsByRoundId,
+    chainId: string
+  ) {
+    const chain = CHAINS[Number(chainId) as ChainId];
+    const cartByRound = Object.values(cart);
     return (
       <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
-          <div className="basis-[28%]">
-            <h2 className="mt-2 text-xl">Projects</h2>
+          <div className="flex flex-row basis-[28%] gap-2">
+            <img
+              className="mt-2 inline-block h-9 w-9"
+              src={chain.logo}
+              alt={"Chain Logo"}
+            />
+            <h2 className="mt-3 text-xl font-semibold">{chain.name}</h2>
+            <h2 className="mt-3 text-xl font-semibold">
+              ({cartByRound.length})
+            </h2>
           </div>
           <div className="flex justify-end flex-row gap-2 basis-[72%]">
             <div className="flex gap-4">
@@ -440,6 +452,7 @@ export default function ViewCart() {
                 aria-label={"Donation amount for all projects "}
                 id={"input-donationamount"}
                 min="0"
+                type="number"
                 value={fixedDonation ?? ""}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setFixedDonation(e.target.value);
@@ -463,18 +476,47 @@ export default function ViewCart() {
             </div>
           </div>
         </div>
-        <div className="my-4">
-          {cart.map((project: CartProject, key: number) => (
-            <div key={key}>
-              <ProjectInCart
-                project={project}
-                index={key}
-                roundRoutePath={`/round/${chainId}/${roundId}`}
-                last={key === cart.length - 1}
-              />
-            </div>
-          ))}
+        {cartByRound.map((roundcart: CartProject[], key: number) => (
+          <RoundInCart key={key} roundcart={roundcart} />
+        ))}
+      </div>
+    );
+  }
+
+  function RoundInCart(
+    props: React.ComponentProps<"div"> & {
+      roundcart: CartProject[];
+    }
+  ) {
+    const round = useRoundById(
+      String(props.roundcart[0].chainId),
+      props.roundcart[0].roundId
+    ).round;
+    const minDonationThresholdAmount =
+      round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount;
+    return (
+      <div className="my-4 bg-grey-100 rounded-xl">
+        <div className="flex flex-row pt-4 px-2">
+          <p className="text-lg font-bold">{round?.roundMetadata?.name}</p>
+          <p className="text-lg font-bold ml-2">({props.roundcart.length})</p>
         </div>
+        <div>
+          <p className="text-sm pt-2 pb-4 px-2">
+            Your donation to each project must be valued at{" "}
+            {minDonationThresholdAmount} USD or more to be eligible for
+            matching.
+          </p>
+        </div>
+        {props.roundcart.map((project: CartProject, key: number) => (
+          <div key={key}>
+            <ProjectInCart
+              project={project}
+              index={key}
+              roundRoutePath={`/round/${chainId}/${roundId}`}
+              last={key === cart.length - 1}
+            />
+          </div>
+        ))}
       </div>
     );
   }
@@ -495,7 +537,7 @@ export default function ViewCart() {
     return (
       <div
         data-testid="cart-project"
-        className={props.last ? "" : `border-b-2 border-grey-100`}
+        className={props.last ? "" : `border-b-2 border-grey-200`}
       >
         <div className="mb-4 flex flex-col md:flex-row justify-between px-3 py-4 rounded-md">
           <div className="flex">
