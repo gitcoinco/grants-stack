@@ -438,7 +438,7 @@ export default function Form({
                         >
                           <Stack>
                             <Radio
-                              label="Is your payout wallet a Gnosis Safe or multi-sig?"
+                              label="Is your Payout Wallet a Gnosis Safe or multi-sig?"
                               choices={["Yes", "No"]}
                               changeHandler={handleInput}
                               name="isSafe"

@@ -84,7 +84,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
   },
   {
     id: 2,
-    title: "Application detail",
+    title: "Application Detail",
     required: true,
     encrypted: false,
     hidden: false,
@@ -93,7 +93,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
   },
   {
     id: 3,
-    title: "Amount requested",
+    title: "Amount Requested",
     required: true,
     encrypted: false,
     hidden: true,
@@ -102,7 +102,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
   },
   {
     id: 4,
-    title: "Payout token",
+    title: "Payout Token",
     required: true,
     encrypted: false,
     hidden: true,
