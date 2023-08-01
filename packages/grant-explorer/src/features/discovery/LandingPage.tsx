@@ -11,7 +11,10 @@ import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
-
+/* TODO: this is overdue for a rework
+ *  - fetch only once and filter
+ *  - don't use state for computed variables
+ *  - SWR caching for everything that comes from the netwowrk */
 const LandingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

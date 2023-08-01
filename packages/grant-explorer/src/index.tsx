@@ -1,20 +1,15 @@
 import "./browserPatches";
 
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
 import { initSentry } from "./sentry";
 import { initTagmanager } from "./tagmanager";
-
-import { store } from "./app/store";
 import { chains, client as WagmiClient } from "./app/wagmi";
-import history from "./history";
 import reportWebVitals from "./reportWebVitals";
 
 import "./index.css";
@@ -32,6 +27,7 @@ import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewContributionHistory from "./features/contributors/ViewContributionHistory";
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
+import { Switch } from "@headlessui/react";
 
 // Initialize sentry
 initSentry();
@@ -48,71 +44,66 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <WagmiConfig client={WagmiClient}>
-        <RainbowKitProvider coolMode chains={chains}>
-          <RoundProvider>
-            <ReduxRouter history={history} store={store}>
-              <Routes>
-                {/* Protected Routes */}
-                <Route element={<Auth />} />
+    <WagmiConfig client={WagmiClient}>
+      <RainbowKitProvider coolMode chains={chains}>
+        <RoundProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Protected Routes */}
+              <Route element={<Auth />} />
 
-                {/* Default Route */}
-                <Route path="/" element={<LandingPage />} />
+              {/* Default Route */}
+              <Route path="/" element={<LandingPage />} />
 
-                {/* Apply Now Page */}
-                <Route path="/apply-now" element={<ApplyNowPage />} />
+              {/* Apply Now Page */}
+              <Route path="/apply-now" element={<ApplyNowPage />} />
 
-                {/* Round Routes */}
-                <Route
-                  path="/round/:chainId/:roundId"
-                  element={<ViewRound />}
-                />
-                <Route
-                  path="/round/:chainId/:roundId/:applicationId"
-                  element={<ViewProjectDetails />}
-                />
+              {/* Round Routes */}
+              <Route path="/round/:chainId/:roundId" element={<ViewRound />} />
+              <Route
+                path="/round/:chainId/:roundId/:applicationId"
+                element={<ViewProjectDetails />}
+              />
 
-                <Route
-                  path="/cart"
-                  element={
-                    <QFDonationProvider>
-                      <ViewCart />
-                    </QFDonationProvider>
-                  }
-                />
+              <Route
+                path="/cart"
+                element={
+                  <QFDonationProvider>
+                    <ViewCart />
+                  </QFDonationProvider>
+                }
+              />
 
-                <Route
-                  path="/thankyou"
-                  element={
-                    <QFDonationProvider>
-                      <ThankYou />
-                    </QFDonationProvider>
-                  }
-                />
+              <Route
+                path="/thankyou"
+                element={
+                  <QFDonationProvider>
+                    <ThankYou />
+                  </QFDonationProvider>
+                }
+              />
 
-                {/* Passport Connect */}
-                <Route
-                  path="/round/:chainId/:roundId/passport/connect"
-                  element={<PassportConnect />}
-                />
+              {/* Passport Connect */}
+              <Route
+                path="/round/:chainId/:roundId/passport/connect"
+                element={<PassportConnect />}
+              />
 
-                <Route
-                  path="/contributors/:address"
-                  element={<ViewContributionHistory />}
-                />
+              <Route
+                path="/contributors/:address"
+                element={<ViewContributionHistory />}
+              />
 
-                {/* Access Denied */}
-                <Route path="/access-denied" element={<AccessDenied />} />
+              {/* Access Denied */}
+              <Route path="/access-denied" element={<AccessDenied />} />
 
-                {/* 404 */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </ReduxRouter>
-          </RoundProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </Provider>
+              {/* 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </RoundProvider>
+      </RainbowKitProvider>
+    </WagmiConfig>
   </React.StrictMode>
 );
 
