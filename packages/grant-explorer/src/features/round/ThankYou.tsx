@@ -5,11 +5,11 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
-import { useCart } from "../../context/CartContext";
 import { useQFDonation } from "../../context/QFDonationContext";
 import { useRoundById } from "../../context/RoundContext";
 import Navbar from "../common/Navbar";
 import { getTxExplorerTxLink } from "../api/utils";
+import { useCartStorage } from "../../store";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -30,12 +30,10 @@ export default function ThankYou() {
 
   const navigate = useNavigate();
 
-  const [cart, , handleRemoveProjectsFromCart] = useCart();
-
+  const cart = useCartStorage();
   useEffect(() => {
-    handleRemoveProjectsFromCart(cart);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    cart.clear();
+  }, [cart]);
 
   function TwitterButton(props: { roundName?: string }) {
     const shareText = `I just donated to the ${props.roundName?.trim()} on @gitcoin. Join me in making a difference by donating today!\n\nhttps://explorer.gitcoin.co/#/round/${chainId}/${roundId}`;

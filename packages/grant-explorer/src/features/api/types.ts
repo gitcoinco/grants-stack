@@ -141,9 +141,9 @@ export type GrantApplicationFormAnswer = {
 };
 
 export type Project = {
-  grantApplicationId: GrantApplicationId;
-  projectRegistryId: ProjectRegistryId;
-  recipient: recipient;
+  grantApplicationId: string;
+  projectRegistryId: string;
+  recipient: string;
   projectMetadata: ProjectMetadata;
   grantApplicationFormAnswers: GrantApplicationFormAnswer[];
   status: ApplicationStatus;
@@ -153,26 +153,7 @@ export type Project = {
 export type CartProject = Project & {
   roundId: string;
   chainId: number;
-};
-
-export type GrantApplicationId = string;
-export type ProjectRegistryId = string;
-export type recipient = string;
-
-export type DonationInput = {
-  roundId: string;
-  projectRegistryId: ProjectRegistryId;
-  amount: string;
-  projectAddress: recipient;
-  applicationIndex: number;
-};
-
-export type CartDonation = {
-  roundId: string;
-  projectRegistryId: ProjectRegistryId;
   amount: BigNumber;
-  projectAddress: recipient;
-  applicationIndex: number;
 };
 
 export enum ApplicationStatus {

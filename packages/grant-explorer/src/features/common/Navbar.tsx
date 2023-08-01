@@ -1,11 +1,11 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { useCart } from "../../context/CartContext";
 import NavbarCart from "./NavbarCart";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
+import { useCartStorage } from "../../store";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -15,12 +15,13 @@ export interface NavbarProps {
 }
 
 export default function Navbar(props: NavbarProps) {
-  const [cart, setCart] = useCart();
+  const store = useCartStorage();
   const showWalletInteraction = props.showWalletInteraction ?? true;
   const currentOrigin = window.location.origin;
 
   const { address: walletAddress } = useAccount();
 
+  /* TODO: check if zustand does this automatically */
   useEffect(() => {
     const storageEventHandler = (event: StorageEvent) => {
       // Check if the updated item is 'gitcoin-cart'
@@ -28,7 +29,7 @@ export default function Navbar(props: NavbarProps) {
         // Check if it's a different tab
         if (document.visibilityState === "hidden") {
           const updatedCart = JSON.parse(event.newValue ?? "[]");
-          setCart(updatedCart);
+          // setCart(updatedCart);
         }
       }
     };
@@ -83,7 +84,10 @@ export default function Navbar(props: NavbarProps) {
                 </a>
               </div>
             )}
-            <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
+            <NavbarCart
+              cart={store.projects}
+              roundUrlPath={props.roundUrlPath}
+            />
           </div>
         </div>
       </div>

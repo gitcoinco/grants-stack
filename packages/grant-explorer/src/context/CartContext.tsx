@@ -28,6 +28,7 @@ export const CartContext = createContext<CartContextState>(initialCartState);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState(initialCartState.cart);
+
   useEffect(() => {
     const currentCart = loadCartFromLocalStorage() ?? [];
     setCart(currentCart);

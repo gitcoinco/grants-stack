@@ -79,6 +79,7 @@ export default function ViewCart() {
   }, [donations, selectedPayoutToken.decimal]);
 
   const [fixedDonation, setFixedDonation] = useState<string>("");
+
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
