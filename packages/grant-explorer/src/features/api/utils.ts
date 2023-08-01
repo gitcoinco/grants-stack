@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ethers } from "ethers";
-import { IPFSObject, PayoutToken } from "./types";
+import { CartProject, IPFSObject, PayoutToken } from "./types";
 import { ChainId, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 
@@ -434,3 +434,40 @@ export function getChainIds(): number[] {
     return Object.values(ChainId).map((chainId) => Number(chainId));
   }
 }
+
+type GroupedCartProjects = {
+  [chainId: number]: {
+    [roundId: string]: CartProject[];
+  };
+};
+
+export type GroupedCartProjectsByRoundId = {
+  [roundId: string]: CartProject[];
+};
+
+export const groupProjectsInCart = (
+  cartProjects: CartProject[]
+): GroupedCartProjects => {
+  // Initialize an empty object to store the grouped cart projects
+  const groupedCartProjects: GroupedCartProjects = {};
+
+  // Iterate over each cart project and group them by chainId and roundId
+  cartProjects.forEach((cartProject) => {
+    const { chainId, roundId } = cartProject;
+
+    // If the chainId doesn't exist in the groupedCartProjects object, create it
+    if (!groupedCartProjects[chainId]) {
+      groupedCartProjects[chainId] = {};
+    }
+
+    // If the roundId doesn't exist in the chainId group, create it
+    if (!groupedCartProjects[chainId][roundId]) {
+      groupedCartProjects[chainId][roundId] = [];
+    }
+
+    // Add the cartProject to the corresponding roundId group
+    groupedCartProjects[chainId][roundId].push(cartProject);
+  });
+
+  return groupedCartProjects;
+};
