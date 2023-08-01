@@ -28,15 +28,10 @@ export const CartContext = createContext<CartContextState>(initialCartState);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState(initialCartState.cart);
-
-  const currentCart = loadCartFromLocalStorage() ?? [];
-  useEffect(
-    () => {
-      setCart(currentCart);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  useEffect(() => {
+    const currentCart = loadCartFromLocalStorage() ?? [];
+    setCart(currentCart);
+  }, []);
 
   const providerProps: CartContextState = {
     cart,
@@ -64,7 +59,6 @@ export const useCart = (): UseCart => {
   }
 
   const { cart, setCart } = context;
-  console.log("context", context);
 
   const handleAddProjectsToCart = (projectsToAdd: CartProject[]): void => {
     const currentCart = loadCartFromLocalStorage() ?? [];
