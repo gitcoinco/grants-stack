@@ -24,6 +24,7 @@ import { Logger } from "ethers/lib.esm/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import { usePassport } from "../../api/passport";
 
 export function SummaryContainer(props: {
   roundId: string;
@@ -51,7 +52,7 @@ export function SummaryContainer(props: {
     return projects.reduce((acc, donation) => {
       return acc.add(
         ethers.utils.parseUnits(
-          donation.amount ?? "0",
+          donation.amount ? donation.amount : "0",
           props.payoutToken.decimal
         )
       );
@@ -244,6 +245,7 @@ export function SummaryContainer(props: {
       }, modalDelayMs);
 
       const bigNumberDonation = projects.map((donation) => {
+        console.log(donation);
         return {
           ...donation,
           amount: ethers.utils.parseUnits(
@@ -252,6 +254,8 @@ export function SummaryContainer(props: {
           ),
         };
       });
+
+      console.log(bigNumberDonation);
 
       await submitDonations({
         donations: bigNumberDonation,
@@ -271,67 +275,9 @@ export function SummaryContainer(props: {
     }
   }
 
-  /* TODO: extract this into a usepassport hook */
-  const [, setPassport] = useState<PassportResponse | undefined>();
-  const [, setError] = useState<Response | undefined>();
-
-  const [passportState, setPassportState] = useState<PassportState>(
-    PassportState.LOADING
-  );
-
-  useEffect(() => {
-    setPassportState(PassportState.LOADING);
-
-    const PASSPORT_COMMUNITY_ID =
-      process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
-    const PASSPORT_THRESHOLD = 0;
-
-    if (address && PASSPORT_COMMUNITY_ID) {
-      const callFetchPassport = async () => {
-        const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
-        if (res.ok) {
-          const json = await res.json();
-
-          if (json.status == "PROCESSING") {
-            console.log("processing, calling again in 3000 ms");
-            setTimeout(async () => {
-              await callFetchPassport();
-            }, 3000);
-            return;
-          } else if (json.status == "ERROR") {
-            // due to error at passport end
-            setPassportState(PassportState.ERROR);
-            return;
-          }
-
-          setPassport(json);
-          setPassportState(
-            json.score >= PASSPORT_THRESHOLD
-              ? PassportState.MATCH_ELIGIBLE
-              : PassportState.MATCH_INELIGIBLE
-          );
-        } else {
-          setError(res);
-          switch (res.status) {
-            case 400: // unregistered/nonexistent passport address
-              setPassportState(PassportState.INVALID_PASSPORT);
-              break;
-            case 401: // invalid API key
-              setPassportState(PassportState.ERROR);
-              console.error("invalid API key", res.json());
-              break;
-            default:
-              setPassportState(PassportState.ERROR);
-              console.error("Error fetching passport", res);
-          }
-        }
-      };
-
-      callFetchPassport();
-    } else {
-      setPassportState(PassportState.NOT_CONNECTED);
-    }
-  }, [address]);
+  const { passportState } = usePassport({
+    address: address ?? "",
+  });
 
   return (
     <div className="order-first md:order-last">
