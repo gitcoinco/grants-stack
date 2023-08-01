@@ -211,6 +211,7 @@ export async function getActiveRounds(debugModeEnabled: boolean): Promise<{
     `;
 
     for (let i = 0; i < chainIds.length; i++) {
+      console.log(chainIds);
       const roundsForChainId = await fetchRoundsByTimestamp(
         query,
         chainIds[i],
