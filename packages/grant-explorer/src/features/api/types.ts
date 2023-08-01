@@ -51,22 +51,6 @@ export interface IPFSObject {
   };
 }
 
-/** Base Contract interface */
-export interface Contract {
-  /**
-   * Contract address
-   */
-  address?: string;
-  /**
-   * Contract ABI in Human Readable ABI format
-   */
-  abi: Array<string> | string;
-  /**
-   * Contract ABI in binary format
-   */
-  bytecode?: string;
-}
-
 export interface Requirement {
   // Requirement for the round
   requirement?: string;

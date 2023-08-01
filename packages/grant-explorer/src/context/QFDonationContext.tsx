@@ -10,7 +10,7 @@ import {
 import { useSigner } from "wagmi";
 import {
   PermitSignature,
-  signPermit,
+  signPermit2612,
   voteUsingMRCContract,
 } from "../features/api/voting";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
@@ -204,7 +204,7 @@ async function vote(
 
     const chainId = (await signer.getChainId()) as ChainId;
     const owner = await signer.getAddress();
-    sig = await signPermit({
+    sig = await signPermit2612({
       signer,
       value: totalDonation,
       spender: MRC_CONTRACTS[chainId],

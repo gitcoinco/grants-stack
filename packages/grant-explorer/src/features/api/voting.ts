@@ -105,7 +105,8 @@ type SignPermitProps = {
   chainId: number;
 };
 
-export const signPermit = async ({
+/* Signs a permit for EIP-2612-compatible ERC-20 tokens */
+export const signPermit2612 = async ({
   signer,
   contractAddress,
   erc20Name,

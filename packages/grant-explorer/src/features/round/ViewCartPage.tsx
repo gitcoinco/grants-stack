@@ -172,6 +172,7 @@ export default function ViewCart() {
   const [passportState, setPassportState] = useState<PassportState>(
     PassportState.LOADING
   );
+
   useEffect(() => {
     setPassportState(PassportState.LOADING);
 
