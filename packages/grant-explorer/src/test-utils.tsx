@@ -16,7 +16,6 @@ import { RoundOverview } from "./features/api/rounds";
 import {
   ApplicationStatus,
   CartProject,
-  Project,
   ProjectMetadata,
   Round,
 } from "./features/api/types";
