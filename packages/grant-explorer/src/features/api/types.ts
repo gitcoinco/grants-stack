@@ -51,22 +51,6 @@ export interface IPFSObject {
   };
 }
 
-/** Base Contract interface */
-export interface Contract {
-  /**
-   * Contract address
-   */
-  address?: string;
-  /**
-   * Contract ABI in Human Readable ABI format
-   */
-  abi: Array<string>;
-  /**
-   * Contract ABI in binary format
-   */
-  bytecode?: string;
-}
-
 export interface Requirement {
   // Requirement for the round
   requirement?: string;
@@ -176,6 +160,7 @@ export type ProjectRegistryId = string;
 export type recipient = string;
 
 export type DonationInput = {
+  roundId: string;
   projectRegistryId: ProjectRegistryId;
   amount: string;
   projectAddress: recipient;
@@ -183,6 +168,7 @@ export type DonationInput = {
 };
 
 export type CartDonation = {
+  roundId: string;
   projectRegistryId: ProjectRegistryId;
   amount: BigNumber;
   projectAddress: recipient;
