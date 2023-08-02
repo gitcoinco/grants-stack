@@ -1,9 +1,4 @@
-import {
-  ChainId,
-  fetchPassport,
-  PassportResponse,
-  PassportState,
-} from "common";
+import { ChainId, PassportState } from "common";
 import { useCartStorage } from "../../../store";
 import React, { useEffect, useMemo, useState } from "react";
 import { BigNumber, ethers } from "ethers";
@@ -15,7 +10,7 @@ import { ConfirmationModalBody } from "./ConfirmationModalBody";
 import ErrorModal from "../../common/ErrorModal";
 import ConfirmationModal from "../../common/ConfirmationModal";
 import { useRoundById } from "../../../context/RoundContext";
-import { PayoutToken, ProgressStatus } from "../../api/types";
+import { CartProject, PayoutToken, ProgressStatus } from "../../api/types";
 import { useQFDonation } from "../../../context/QFDonationContext";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
@@ -25,9 +20,11 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { usePassport } from "../../api/passport";
+import useSWR from "swr";
+import { round } from "lodash";
+import { getRoundById } from "../../api/round";
 
 export function SummaryContainer(props: {
-  roundId: string;
   chainId: ChainId;
   payoutToken: PayoutToken;
   payoutTokenPrice?: number;
@@ -35,8 +32,6 @@ export function SummaryContainer(props: {
   const projects = useCartStorage((state) =>
     state.projects.filter((p) => p.chainId === props.chainId)
   );
-
-  const round = useRoundById(props.chainId.toString(), props.roundId);
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);

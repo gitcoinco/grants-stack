@@ -99,14 +99,9 @@ export function CartWithProjects({ cart, chainId }: Props) {
             selectedPayoutToken={selectedPayoutToken}
             payoutTokenPrice={payoutTokenPrice ?? 0}
           />
-          <SummaryContainer
-            roundId={roundcart[0].roundId}
-            chainId={chainId}
-            payoutToken={selectedPayoutToken}
-            payoutTokenPrice={payoutTokenPrice}
-          />
         </div>
       ))}
+      <SummaryContainer />
     </div>
   );
 }
