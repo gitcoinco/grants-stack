@@ -10,6 +10,7 @@ import { formatDateFromSecs, isInfinite } from "../../../utils/components";
 import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
 import {
   ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE,
   getProjectURIComponents,
 } from "../../../utils/utils";
 import LinkManager from "./LinkManager";
@@ -97,14 +98,14 @@ export default function RoundListItem({
           p={2}
           textTransform="inherit"
         >
-          {roundPayoutStrategy === "MERKLE" ? (
+          {roundPayoutStrategy === ROUND_PAYOUT_MERKLE ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
-              QuadraticFunding
+              Quadratic Funding
             </span>
           ) : null}
-          {roundPayoutStrategy === "DIRECT" ? (
+          {roundPayoutStrategy === ROUND_PAYOUT_DIRECT ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
-              DirectGrant
+              Direct Grant
             </span>
           ) : null}
         </Badge>

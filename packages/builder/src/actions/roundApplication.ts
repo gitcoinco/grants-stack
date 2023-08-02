@@ -16,6 +16,7 @@ import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
 import { fetchProjectApplications } from "./projects";
+import { graphqlFetch } from "../utils/graphql";
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
@@ -388,10 +389,56 @@ export const checkRoundApplications =
   };
 
 export const fetchApplicationData =
-  (ipfsHash: string, roundAddress: string) => async (dispatch: Dispatch) => {
+  (ipfsHash: string, roundAddress: string, chainId: string) =>
+  async (dispatch: Dispatch) => {
     const pinataClient = new PinataClient();
     try {
+      // FETCH roundApplication DATA
       const resp = await pinataClient.fetchJson(ipfsHash);
+
+      // FETCH roundApplication STATUS
+      const roundApplication = await graphqlFetch(
+        `
+          query GetRoundApplicationByIPFSHash(
+                $roundId: String,
+                $ipfsHash: String,
+              ) {
+            roundApplications(
+              where: {
+                round_: {
+                  id: $roundId
+                }, 
+                metaPtr_: {
+                  pointer: $ipfsHash
+                }
+              }
+            ) {
+              id
+              applicationIndex
+              inReview
+              project
+              status
+              statusDescription
+              statusSnapshots {
+                id
+                status
+                statusDescription
+                timestamp
+              }
+            }
+          }
+        `,
+        Number(chainId),
+        {
+          roundId: roundAddress,
+          ipfsHash,
+        }
+      );
+
+      // ASSIGNS roundApplication STATUS
+      resp.status =
+        roundApplication.data.roundApplications[0].statusDescription;
+
       dispatch({
         type: APPLICATION_DATA_LOADED,
         applicationData: resp,

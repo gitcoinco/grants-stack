@@ -484,7 +484,6 @@ export const fetchProjectApplications =
         }
       })
     );
-
     dispatch({
       type: PROJECT_APPLICATIONS_LOADED,
       projectID,
