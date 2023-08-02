@@ -18,7 +18,6 @@ import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
-import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import {
   CartProject,
@@ -33,6 +32,7 @@ import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
+import { useCartStorage } from "../../store";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -84,10 +84,9 @@ export default function ViewProjectDetails() {
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
-  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
-    useCart();
+  const { projects, add, remove } = useCartStorage();
 
-  const isAlreadyInCart = cart.some(
+  const isAlreadyInCart = projects.some(
     (project) => project.grantApplicationId === applicationId
   );
 
@@ -141,12 +140,10 @@ export default function ViewProjectDetails() {
                   isAlreadyInCart={isAlreadyInCart}
                   isBeforeRoundEndDate={isBeforeRoundEndDate}
                   removeFromCart={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    handleRemoveProjectsFromCart([cartProject]);
+                    remove(cartProject.grantApplicationId);
                   }}
                   addToCart={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    handleAddProjectsToCart([cartProject]);
+                    add(cartProject);
                   }}
                 />
               </div>
@@ -174,12 +171,10 @@ export default function ViewProjectDetails() {
                     isAlreadyInCart={isAlreadyInCart}
                     isBeforeRoundEndDate={isBeforeRoundEndDate}
                     removeFromCart={() => {
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      handleRemoveProjectsFromCart([cartProject]);
+                      remove(cartProject.grantApplicationId);
                     }}
                     addToCart={() => {
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      handleAddProjectsToCart([cartProject]);
+                      add(cartProject);
                     }}
                   />
                 </div>

@@ -12,7 +12,6 @@ import { Link, useParams } from "react-router-dom";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
-import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
 import { CHAINS, payoutTokens } from "../api/utils";
@@ -34,6 +33,7 @@ import {
 } from "../common/styles";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import CartNotification from "../common/CartNotification";
+import { useCartStorage } from "../../store";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -350,10 +350,9 @@ function ProjectCard(props: {
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
 
-  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
-    useCart();
+  const { projects, add, remove } = useCartStorage();
 
-  const isAlreadyInCart = cart.some(
+  const isAlreadyInCart = projects.some(
     (cartProject) =>
       cartProject.grantApplicationId === project.grantApplicationId
   );
@@ -402,10 +401,10 @@ function ProjectCard(props: {
               project={project}
               isAlreadyInCart={isAlreadyInCart}
               removeFromCart={() => {
-                handleRemoveProjectsFromCart([cartProject]);
+                remove(cartProject.grantApplicationId);
               }}
               addToCart={() => {
-                handleAddProjectsToCart([cartProject]);
+                add(cartProject);
               }}
               setCurrentProjectAddedToCart={props.setCurrentProjectAddedToCart}
               setShowCartNotification={props.setShowCartNotification}

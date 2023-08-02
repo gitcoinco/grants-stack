@@ -1,6 +1,5 @@
-import ViewCart from "../ViewCartPage";
+import ViewCart from "../ViewCartPage/ViewCartPage";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { CartContext } from "../../../context/CartContext";
 import { CartProject } from "../../api/types";
 import {
   makeApprovedProjectData,
@@ -383,14 +382,7 @@ function renderWrapped(cart: CartProject[] = [], setCart = () => {}) {
   render(
     <MemoryRouter>
       <RoundProvider>
-        <CartContext.Provider
-          value={{
-            cart: cart,
-            setCart: setCart,
-          }}
-        >
-          <ViewCart />
-        </CartContext.Provider>
+        <ViewCart />
       </RoundProvider>
     </MemoryRouter>
   );

@@ -1,11 +1,11 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { useCart } from "../../context/CartContext";
 import NavbarCart from "./NavbarCart";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
+import { useCartStorage } from "../../store";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -15,31 +15,26 @@ export interface NavbarProps {
 }
 
 export default function Navbar(props: NavbarProps) {
-  const [cart, setCart] = useCart();
+  /* This part keeps the store in sync between tabs */
+  const store = useCartStorage();
+  const updateStore = () => {
+    useCartStorage.persist.rehydrate();
+  };
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", updateStore);
+    window.addEventListener("focus", updateStore);
+    return () => {
+      document.removeEventListener("visibilitychange", updateStore);
+      window.removeEventListener("focus", updateStore);
+    };
+  }, []);
+  /* end of part that keeps the store in sync between tabs */
+
   const showWalletInteraction = props.showWalletInteraction ?? true;
   const currentOrigin = window.location.origin;
 
   const { address: walletAddress } = useAccount();
-
-  useEffect(() => {
-    const storageEventHandler = (event: StorageEvent) => {
-      // Check if the updated item is 'gitcoin-cart'
-      if (event.key === "gitcoin-cart") {
-        // Check if it's a different tab
-        if (document.visibilityState === "hidden") {
-          const updatedCart = JSON.parse(event.newValue ?? "[]");
-          setCart(updatedCart);
-        }
-      }
-    };
-
-    window.addEventListener("storage", storageEventHandler);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener("storage", storageEventHandler);
-    };
-  });
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
@@ -67,7 +62,7 @@ export default function Navbar(props: NavbarProps) {
                 >
                   <ConnectButton
                     showBalance={false}
-                    chainStatus={{ largeScreen: "icon", smallScreen: "icon" }}
+                    chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
                   />
                 </div>
               </div>
@@ -83,7 +78,7 @@ export default function Navbar(props: NavbarProps) {
                 </a>
               </div>
             )}
-            <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
+            <NavbarCart cart={store.projects} />
           </div>
         </div>
       </div>
