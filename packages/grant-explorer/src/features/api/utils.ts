@@ -216,7 +216,7 @@ export const payoutTokens = [
 ];
 
 type PayoutTokensMap = Record<ChainId, PayoutToken[]>;
-const payoutTokensMap: PayoutTokensMap = {
+export const payoutTokensMap: PayoutTokensMap = {
   [ChainId.GOERLI_CHAIN_ID]: GOERLI_TESTNET_TOKENS,
   [ChainId.MAINNET]: MAINNET_TOKENS,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,

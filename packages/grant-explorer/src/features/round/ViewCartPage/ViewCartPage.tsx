@@ -8,6 +8,7 @@ import { EmptyCart } from "./EmptyCart";
 import { Header } from "./Header";
 import { useCartStorage } from "../../../store";
 import { CartWithProjects } from "./CartWithProjects";
+import { SummaryContainer } from "./SummaryContainer";
 
 export default function ViewCart() {
   const { projects } = useCartStorage();
@@ -46,6 +47,7 @@ export default function ViewCart() {
                     />
                   </div>
                 ))}
+                <SummaryContainer />
               </div>
             )}
           </div>

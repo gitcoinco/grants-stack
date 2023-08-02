@@ -5,15 +5,12 @@ import {
 } from "../../api/utils";
 import React, { useState } from "react";
 import { CartProject, PayoutToken } from "../../api/types";
-import { ethers } from "ethers";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
 import { ChainId, useTokenPrice } from "common";
-import { useAccount, useBalance } from "wagmi";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
-import { SummaryContainer } from "./SummaryContainer";
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;
@@ -27,8 +24,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
   const store = useCartStorage();
 
   const [fixedDonation, setFixedDonation] = useState("");
-  /*---------------------------------------------------------------*/
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   const payoutTokenOptions: PayoutToken[] = getPayoutTokenOptions(
     Number(chainId)
   );
@@ -101,7 +97,6 @@ export function CartWithProjects({ cart, chainId }: Props) {
           />
         </div>
       ))}
-      <SummaryContainer />
     </div>
   );
 }

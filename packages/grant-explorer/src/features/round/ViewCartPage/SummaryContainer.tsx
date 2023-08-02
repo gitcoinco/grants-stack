@@ -9,29 +9,72 @@ import ProgressModal from "../../common/ProgressModal";
 import { ConfirmationModalBody } from "./ConfirmationModalBody";
 import ErrorModal from "../../common/ErrorModal";
 import ConfirmationModal from "../../common/ConfirmationModal";
-import { useRoundById } from "../../../context/RoundContext";
-import { CartProject, PayoutToken, ProgressStatus } from "../../api/types";
+import { CartProject, ProgressStatus } from "../../api/types";
 import { useQFDonation } from "../../../context/QFDonationContext";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount } from "wagmi";
 import { Logger } from "ethers/lib.esm/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { usePassport } from "../../api/passport";
 import useSWR from "swr";
-import { round } from "lodash";
+import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
 
-export function SummaryContainer(props: {
-  chainId: ChainId;
-  payoutToken: PayoutToken;
-  payoutTokenPrice?: number;
-}) {
-  const projects = useCartStorage((state) =>
-    state.projects.filter((p) => p.chainId === props.chainId)
+export function SummaryContainer() {
+  const projects = useCartStorage((state) => state.projects);
+  const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
+  const projectsByChain = _.groupBy(projects, "chainId") as {
+    [chain: number]: CartProject[];
+  };
+  const projectsByRound = _.groupBy(projects, "roundId");
+
+  const { data: rounds } = useSWR(projects, (projects) => {
+    const uniqueProjects = _.uniqBy(projects, "roundId");
+    return Promise.all(
+      uniqueProjects.map((proj) => getRoundById(proj.roundId, proj.chainId))
+    );
+  });
+
+  /** The id of the round to be checked out or currently being checked out */
+  const [chainIdBeingCheckedOut, setChainIdBeingCheckedOut] = useState<ChainId>(
+    projects[0]?.chainId
   );
+  const currentPayoutToken = payoutTokens[chainIdBeingCheckedOut];
+  /** We find the round that ends last, and take its end date as the permit deadline */
+  const currentPermitDeadline =
+    rounds
+      ?.sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())[0]
+      .roundEndTime.getTime() ?? 0;
+
+  const totalDdonationsPerChain = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(projectsByChain).map(([key, value]) => [
+        Number(key) as ChainId,
+        value
+          .map((project) => project.amount)
+          .reduce(
+            (acc, amount) =>
+              acc.add(
+                ethers.utils.parseUnits(
+                  amount ? amount : "0",
+                  payoutTokens[Number(key) as ChainId].decimal
+                )
+              ),
+            BigNumber.from(0)
+          ),
+      ])
+    );
+  }, []);
+
+  const navigate = useNavigate();
+  const { address } = useAccount();
+
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [transactionReplaced, setTransactionReplaced] = useState(false);
+  const [emptyInput, setEmptyInput] = useState(false);
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
@@ -42,31 +85,6 @@ export function SummaryContainer(props: {
   >();
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
-
-  const totalDonation = useMemo(() => {
-    return projects.reduce((acc, donation) => {
-      return acc.add(
-        ethers.utils.parseUnits(
-          donation.amount ? donation.amount : "0",
-          props.payoutToken.decimal
-        )
-      );
-    }, BigNumber.from(0));
-  }, [projects, props.payoutToken.decimal]);
-
-  const navigate = useNavigate();
-
-  const { address } = useAccount();
-  const tokenDetail =
-    props.payoutToken.address == ethers.constants.AddressZero
-      ? { address: address }
-      : { address: address, token: props.payoutToken.address };
-  // @ts-expect-error Temp until viem
-  const selectedPayoutTokenBalance = useBalance(tokenDetail);
-  const [insufficientBalance, setInsufficientBalance] = useState(false);
-  const [transactionReplaced, setTransactionReplaced] = useState(false);
-
-  const [emptyInput, setEmptyInput] = useState(false);
 
   const {
     submitDonations,
@@ -145,15 +163,13 @@ export function SummaryContainer(props: {
       return;
     }
 
-    // check if signer has enough token balance
-    const accountBalance = selectedPayoutTokenBalance.data?.value;
-
-    if (!accountBalance || totalDonation.gt(accountBalance)) {
-      setInsufficientBalance(true);
-      return;
-    } else {
-      setInsufficientBalance(false);
-    }
+    // TODO: check if signer has enough token balance for the current round
+    // const accountBalance = rounds.find();
+    //
+    // if (!accountBalance || totalDonation.gt(accountBalance)) {
+    //   setInsufficientBalance(true);
+    //   return;
+    // }
 
     setOpenConfirmationModal(true);
   }
@@ -171,8 +187,11 @@ export function SummaryContainer(props: {
           body={
             <ConfirmationModalBody
               projectsCount={projects.length}
-              selectedPayoutToken={props.payoutToken}
-              totalDonation={totalDonation}
+              selectedPayoutToken={payoutTokens[chainIdBeingCheckedOut]}
+              totalDonation={Object.values(totalDdonationsPerChain).reduce(
+                (acc, a) => acc.add(a),
+                BigNumber.from(0)
+              )}
             />
           }
           isOpen={openConfirmationModal}
@@ -239,24 +258,11 @@ export function SummaryContainer(props: {
         setOpenInfoModal(false);
       }, modalDelayMs);
 
-      const bigNumberDonation = projects.map((donation) => {
-        console.log(donation);
-        return {
-          ...donation,
-          amount: ethers.utils.parseUnits(
-            donation.amount,
-            props.payoutToken.decimal
-          ),
-        };
-      });
-
-      console.log(bigNumberDonation);
-
       await submitDonations({
-        donations: bigNumberDonation,
-        donationToken: props.payoutToken,
-        totalDonation: totalDonation,
-        roundEndTime: round?.round?.roundEndTime.getTime() ?? 0,
+        donations: projectsByChain[chainIdBeingCheckedOut],
+        donationToken: currentPayoutToken,
+        totalDonation: totalDdonationsPerChain[chainIdBeingCheckedOut],
+        roundEndTime: currentPermitDeadline,
       });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {
@@ -277,11 +283,12 @@ export function SummaryContainer(props: {
   return (
     <div className="order-first md:order-last">
       <div>
-        <Summary
-          payoutTokenPrice={props.payoutTokenPrice ?? 0}
-          selectedPayoutToken={props.payoutToken}
-          totalDonation={totalDonation}
-        />
+        {Object.keys(projectsByChain).map((chainId) => (
+          <Summary
+            selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
+            totalDonation={totalDdonationsPerChain[chainId]}
+          />
+        ))}
         <Button
           $variant="solid"
           data-testid="handle-confirmation"
@@ -304,17 +311,17 @@ export function SummaryContainer(props: {
         >
           Submit your donation!
         </Button>
-        {round.round?.roundMetadata?.quadraticFundingConfig
-          ?.minDonationThresholdAmount && (
-          <p className="flex justify-center my-4 text-sm italic">
-            Your donation to each project must be valued at{" "}
-            {
-              round.round?.roundMetadata?.quadraticFundingConfig
-                ?.minDonationThresholdAmount
-            }{" "}
-            USD or more to be eligible for matching.
-          </p>
-        )}
+        {/*{round.round?.roundMetadata?.quadraticFundingConfig*/}
+        {/*  ?.minDonationThresholdAmount && (*/}
+        {/*  <p className="flex justify-center my-4 text-sm italic">*/}
+        {/*    Your donation to each project must be valued at{" "}*/}
+        {/*    {*/}
+        {/*      round.round?.roundMetadata?.quadraticFundingConfig*/}
+        {/*        ?.minDonationThresholdAmount*/}
+        {/*    }{" "}*/}
+        {/*    USD or more to be eligible for matching.*/}
+        {/*  </p>*/}
+        {/*)}*/}
         {emptyInput && (
           <p
             data-testid="emptyInput"

@@ -1,7 +1,9 @@
 import { ChainId } from "common";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { CartProject } from "./features/api/types";
+import { CartProject, PayoutToken } from "./features/api/types";
+import { payoutTokensMap } from "./features/api/utils";
+import { ethers } from "ethers";
 
 interface CartState {
   projects: CartProject[];
@@ -10,7 +12,20 @@ interface CartState {
   remove: (grantApplicationId: string) => void;
   updateDonationsForChain: (chainId: ChainId, amount: string) => void;
   updateDonationAmount: (grantApplicationId: string, amount: string) => void;
+  chainToPayoutToken: Record<ChainId, PayoutToken>;
+  setPayoutTokenForChain: (chainId: ChainId, payoutToken: PayoutToken) => void;
 }
+
+const ethOnlyPayoutTokens = Object.fromEntries(
+  Object.entries(payoutTokensMap).map(
+    ([key, value]) =>
+      [
+        Number(key) as ChainId,
+        value.find((token) => token.address === ethers.constants.AddressZero) ??
+          value[0],
+      ] as [ChainId, PayoutToken]
+  )
+) as Record<ChainId, PayoutToken>;
 
 export const useCartStorage = create<CartState>()(
   devtools(
@@ -55,6 +70,18 @@ export const useCartStorage = create<CartState>()(
               projects: newState,
             });
           }
+        },
+        chainToPayoutToken: ethOnlyPayoutTokens,
+        setPayoutTokenForChain: (
+          chainId: ChainId,
+          payoutToken: PayoutToken
+        ) => {
+          set({
+            chainToPayoutToken: {
+              ...get().chainToPayoutToken,
+              [chainId]: payoutToken,
+            },
+          });
         },
       }),
       {

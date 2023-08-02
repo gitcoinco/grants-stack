@@ -330,7 +330,7 @@ function encodeQFVotes(
 
     const vote = [
       donationToken.address,
-      donation.amount,
+      ethers.utils.parseUnits(donation.amount, donationToken.decimal),
       projectAddress,
       donation.projectRegistryId,
       donation.applicationIndex,

@@ -1,23 +1,22 @@
+import { useTokenPrice } from "common";
 import { BigNumber, ethers } from "ethers";
 import React from "react";
 import { PayoutToken } from "../../api/types";
 
 type SummaryProps = {
-  payoutTokenPrice: number;
   totalDonation: BigNumber;
   selectedPayoutToken: PayoutToken;
 };
 
-export function Summary({
-  payoutTokenPrice,
-  selectedPayoutToken,
-  totalDonation,
-}: SummaryProps) {
+export function Summary({ selectedPayoutToken, totalDonation }: SummaryProps) {
+  const { data: payoutTokenPrice } = useTokenPrice(
+    selectedPayoutToken.redstoneTokenId
+  );
   const totalDonationInUSD =
     payoutTokenPrice &&
     Number(
       ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)
-    ) * Number(payoutTokenPrice.toFixed(2));
+    ) * Number(payoutTokenPrice);
 
   return (
     <div className="shrink mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
