@@ -3,7 +3,13 @@ import "./browserPatches";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  HashRouter,
+  Route,
+  Router,
+  Routes,
+} from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
@@ -49,7 +55,7 @@ root.render(
       <WagmiConfig client={WagmiClient}>
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
-            <BrowserRouter>
+            <HashRouter>
               <Routes>
                 {/* Protected Routes */}
                 <Route element={<Auth />} />
@@ -105,7 +111,7 @@ root.render(
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
+            </HashRouter>
           </RoundProvider>
         </RainbowKitProvider>
       </WagmiConfig>
