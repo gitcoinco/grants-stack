@@ -44,7 +44,6 @@ export const voteUsingMRCContract = async (
   } else if (permitSignature) {
     /* Is token DAI? */
     if (/DAI/i.test(token.name)) {
-      debugger;
       tx = await mrcImplementation.voteDAIPermit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
@@ -55,9 +54,10 @@ export const voteUsingMRCContract = async (
         nonce,
         permitSignature.v,
         permitSignature.r,
-        permitSignature?.s
+        permitSignature.s
       );
     } else {
+      debugger;
       tx = await mrcImplementation.voteERC20Permit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
@@ -106,9 +106,10 @@ type SignPermitProps = {
 
 type Eip2612Props = SignPermitProps & {
   value: BigNumber;
+  nonce: BigNumber;
 };
 
-type DaiPermitProps = SignPermitProps & {
+type DaiPermit = SignPermitProps & {
   nonce: BigNumber;
 };
 
@@ -121,6 +122,7 @@ export const signPermit2612 = async ({
   spender,
   value,
   deadline,
+  nonce,
   chainId,
 }: Eip2612Props) => {
   const types = {
@@ -135,7 +137,7 @@ export const signPermit2612 = async ({
 
   const domainData = {
     name: erc20Name,
-    version: "1",
+    version: "2",
     chainId: chainId,
     verifyingContract: contractAddress,
   };
@@ -144,6 +146,7 @@ export const signPermit2612 = async ({
     owner,
     spender,
     value,
+    nonce,
     deadline,
   };
 
@@ -152,6 +155,7 @@ export const signPermit2612 = async ({
     types,
     message
   )) as Hex;
+  debugger;
   const [r, s, v] = [
     slice(signature, 0, 32),
     slice(signature, 32, 64),
@@ -169,7 +173,7 @@ export const signPermitDai = async ({
   deadline,
   nonce,
   chainId,
-}: DaiPermitProps) => {
+}: DaiPermit) => {
   const types = {
     Permit: [
       { name: "holder", type: "address" },
