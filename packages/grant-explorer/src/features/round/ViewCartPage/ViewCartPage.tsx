@@ -38,8 +38,8 @@ export default function ViewCart() {
             {projects.length === 0 ? (
               <EmptyCart />
             ) : (
-              <div className={"grid grid-cols-3 gap-5 w-full"}>
-                <div className="flex flex-col gap-5 col-span-2">
+              <div className={"grid grid-cols-1 md:grid-cols-3 gap-5 w-full"}>
+                <div className="flex flex-col gap-5 md:col-span-2">
                   {Object.keys(groupedCartProjects).map((chainId) => (
                     <div key={Number(chainId)}>
                       <CartWithProjects
@@ -49,7 +49,9 @@ export default function ViewCart() {
                     </div>
                   ))}
                 </div>
-                <SummaryContainer />
+                <div className="md:col-span-1">
+                  <SummaryContainer />
+                </div>
               </div>
             )}
           </div>

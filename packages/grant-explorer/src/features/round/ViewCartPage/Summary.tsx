@@ -1,6 +1,6 @@
 import { ChainId, useTokenPrice } from "common";
 import { BigNumber, ethers } from "ethers";
-import React from "react";
+import React, { useState } from "react";
 import { PayoutToken } from "../../api/types";
 import { CHAINS } from "../../api/utils";
 
@@ -8,12 +8,16 @@ type SummaryProps = {
   totalDonation: BigNumber;
   selectedPayoutToken: PayoutToken;
   chainId: ChainId;
+  chainIdBeingCheckedOut: ChainId;
+  setChainIdBeingCheckedOut: React.Dispatch<React.SetStateAction<ChainId>>;
 };
 
 export function Summary({
   selectedPayoutToken,
   totalDonation,
   chainId,
+  chainIdBeingCheckedOut,
+  setChainIdBeingCheckedOut,
 }: SummaryProps) {
   const { data: payoutTokenPrice } = useTokenPrice(
     selectedPayoutToken.redstoneTokenId
@@ -23,18 +27,31 @@ export function Summary({
     Number(
       ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)
     ) * Number(payoutTokenPrice);
+  const [isChecked, setIsChecked] = useState(false);
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+    !isChecked && setChainIdBeingCheckedOut(chainId);
+    isChecked && setChainIdBeingCheckedOut(1);
+  };
   return (
-    <div className="shrink mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
-      <h2 className="text-xl border-b-2 pb-2">Summary</h2>
+    <div className="flex flex-col">
       <div className="flex justify-between mt-4">
-        <p>
-          Your Contribution on {CHAINS[chainId].name}
-          <img
-            className={"inline"}
-            alt={CHAINS[chainId].name}
-            src={CHAINS[chainId].logo}
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            className="mr-2 rounded-sm"
+            checked={isChecked && chainId === chainIdBeingCheckedOut}
+            onChange={handleCheckboxChange}
           />
-        </p>
+          <p>
+            Your Contribution on {CHAINS[chainId].name}
+            <img
+              className="inline-block w-6 h-6 ml-2"
+              alt={CHAINS[chainId].name}
+              src={CHAINS[chainId].logo}
+            />
+          </p>
+        </label>
         <p>
           <span data-testid={"totalDonation"} className="mr-2">
             {ethers.utils.formatUnits(
