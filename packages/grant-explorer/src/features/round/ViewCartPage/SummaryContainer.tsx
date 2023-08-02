@@ -24,7 +24,7 @@ import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
 
 export function SummaryContainer() {
-  const projects = useCartStorage((state) => state.projects);
+  const { projects } = useCartStorage();
   const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
   const projectsByChain = _.groupBy(projects, "chainId") as {
     [chain: number]: CartProject[];
@@ -43,6 +43,7 @@ export function SummaryContainer() {
     projects[0]?.chainId
   );
   const currentPayoutToken = payoutTokens[chainIdBeingCheckedOut];
+
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
     rounds
@@ -67,7 +68,7 @@ export function SummaryContainer() {
           ),
       ])
     );
-  }, []);
+  }, [projects]);
 
   const navigate = useNavigate();
   const { address } = useAccount();
@@ -279,9 +280,8 @@ export function SummaryContainer() {
   const { passportState } = usePassport({
     address: address ?? "",
   });
-
   return (
-    <div className="order-first md:order-last">
+    <div className="order-first md:order-last col-span-1">
       <div>
         {Object.keys(projectsByChain).map((chainId) => (
           <Summary

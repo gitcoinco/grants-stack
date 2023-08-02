@@ -195,7 +195,7 @@ async function vote(
     context;
 
   const totalDonation = donations
-    .map((donation) => donation.amount)
+    .map((donation) => ethers.utils.parseUnits(donation.amount, token.decimal))
     .reduce((acc, amount) => acc.add(amount), BigNumber.from(0));
 
   let sig;
@@ -253,7 +253,8 @@ async function vote(
     const groupedAmounts: Record<string, BigNumber> = {};
     for (const roundId in groupedDonations) {
       groupedAmounts[roundId] = groupedDonations[roundId].reduce(
-        (acc, donation) => acc.add(donation.amount),
+        (acc, donation) =>
+          acc.add(ethers.utils.parseUnits(donation.amount, token.decimal)),
         BigNumber.from(0)
       );
     }
