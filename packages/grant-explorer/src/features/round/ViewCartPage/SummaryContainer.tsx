@@ -285,6 +285,7 @@ export function SummaryContainer() {
       <div>
         {Object.keys(projectsByChain).map((chainId) => (
           <Summary
+            chainId={Number(chainId) as ChainId}
             selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
             totalDonation={totalDdonationsPerChain[chainId]}
           />

@@ -8,7 +8,7 @@ import { classNames } from "common";
 export function PayoutTokenDropdown(props: {
   payoutTokenOptions: PayoutToken[];
   selectedPayoutToken?: PayoutToken;
-  setSelectedPayoutToken: React.Dispatch<React.SetStateAction<PayoutToken>>;
+  setSelectedPayoutToken: (payoutToken: PayoutToken) => void;
 }) {
   return (
     <div className="mt-1 relative col-span-6 sm:col-span-3">

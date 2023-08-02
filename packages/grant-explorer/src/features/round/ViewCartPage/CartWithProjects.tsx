@@ -25,11 +25,10 @@ export function CartWithProjects({ cart, chainId }: Props) {
 
   const [fixedDonation, setFixedDonation] = useState("");
 
+  const { chainToPayoutToken, setPayoutTokenForChain } = useCartStorage();
+  const selectedPayoutToken = chainToPayoutToken[chainId];
   const payoutTokenOptions: PayoutToken[] = getPayoutTokenOptions(
     Number(chainId)
-  );
-  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
-    payoutTokenOptions[0]
   );
 
   const { data, error, loading } = useTokenPrice(
@@ -67,7 +66,9 @@ export function CartWithProjects({ cart, chainId }: Props) {
             />
             <PayoutTokenDropdown
               selectedPayoutToken={selectedPayoutToken}
-              setSelectedPayoutToken={setSelectedPayoutToken}
+              setSelectedPayoutToken={(token) =>
+                setPayoutTokenForChain(chainId, token)
+              }
               payoutTokenOptions={payoutTokenOptions}
             />
           </div>
