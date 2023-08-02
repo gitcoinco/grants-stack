@@ -22,6 +22,7 @@ import { usePassport } from "../../api/passport";
 import useSWR from "swr";
 import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
+import { set } from "date-fns";
 
 export function SummaryContainer() {
   const { projects } = useCartStorage();
@@ -298,6 +299,7 @@ export function SummaryContainer() {
             $variant="solid"
             data-testid="handle-confirmation"
             type="button"
+            disabled={chainIdBeingCheckedOut === 1}
             onClick={() => {
               /* Check if user hasn't connected passport yet, display the warning modal */
               if (

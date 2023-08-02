@@ -31,6 +31,7 @@ export function Summary({
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
     !isChecked && setChainIdBeingCheckedOut(chainId);
+    isChecked && setChainIdBeingCheckedOut(1);
   };
   return (
     <div className="flex flex-col">
