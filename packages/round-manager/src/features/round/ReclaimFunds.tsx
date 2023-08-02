@@ -15,6 +15,7 @@ import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
 import { useTokenPrice } from "common";
+import { assertAddress } from "common/src/address";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;
@@ -142,10 +143,10 @@ function ReclaimFundsContent(props: {
 
   const tokenDetail =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero
-      ? { addressOrName: payoutStrategy }
+      ? { address: assertAddress(payoutStrategy) }
       : {
-          addressOrName: payoutStrategy,
-          token: matchingFundPayoutToken?.address as `0x{string}`,
+          address: assertAddress(payoutStrategy),
+          token: assertAddress(matchingFundPayoutToken?.address),
         };
 
   const {

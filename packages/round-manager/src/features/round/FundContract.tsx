@@ -15,6 +15,7 @@ import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { classNames, useTokenPrice } from "common";
+import { assertAddress } from "common/src/address";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -96,20 +97,20 @@ export default function FundContract(props: {
 
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
   const tokenDetail = {
-    addressOrName: props.roundId,
+    address: assertAddress(props.roundId),
     token:
       matchingFundPayoutToken?.address ===
       "0x0000000000000000000000000000000000000000"
         ? undefined
-        : (matchingFundPayoutToken?.address as `0x{string}`),
+        : assertAddress(matchingFundPayoutToken?.address),
   };
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero
-      ? { addressOrName: address }
+      ? { address: assertAddress(address) }
       : {
-          addressOrName: address,
-          token: matchingFundPayoutToken?.address as `0x{string}`,
+          address: assertAddress(address),
+          token: assertAddress(matchingFundPayoutToken?.address),
         };
 
   const {
