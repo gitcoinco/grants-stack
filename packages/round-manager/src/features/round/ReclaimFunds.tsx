@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useBalance, Address } from "wagmi";
+import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useReclaimFunds } from "../../context/round/ReclaimFundsContext";
 import { ProgressStatus, Round } from "../api/types";

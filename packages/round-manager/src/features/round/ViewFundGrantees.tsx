@@ -6,7 +6,7 @@ import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { useBalance, Address } from "wagmi";
+import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import {
   batchDistributeFunds,
