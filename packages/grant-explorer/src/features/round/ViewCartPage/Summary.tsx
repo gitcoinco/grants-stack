@@ -26,14 +26,17 @@ export function Summary({
   return (
     <div className="flex flex-col">
       <div className="flex justify-between mt-4">
-        <p>
-          Your Contribution on {CHAINS[chainId].name}
-          <img
-            className={"inline"}
-            alt={CHAINS[chainId].name}
-            src={CHAINS[chainId].logo}
-          />
-        </p>
+        <label className="flex items-center">
+          <input type="checkbox" className="mr-2 rounded-sm" />
+          <p>
+            Your Contribution on {CHAINS[chainId].name}
+            <img
+              className="inline-block w-6 h-6 ml-2"
+              alt={CHAINS[chainId].name}
+              src={CHAINS[chainId].logo}
+            />
+          </p>
+        </label>
         <p>
           <span data-testid={"totalDonation"} className="mr-2">
             {ethers.utils.formatUnits(
