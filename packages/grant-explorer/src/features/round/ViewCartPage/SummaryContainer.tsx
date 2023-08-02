@@ -29,7 +29,6 @@ export function SummaryContainer() {
   const projectsByChain = _.groupBy(projects, "chainId") as {
     [chain: number]: CartProject[];
   };
-  const projectsByRound = _.groupBy(projects, "roundId");
 
   const { data: rounds } = useSWR(projects, (projects) => {
     const uniqueProjects = _.uniqBy(projects, "roundId");
@@ -40,7 +39,7 @@ export function SummaryContainer() {
 
   /** The id of the round to be checked out or currently being checked out */
   const [chainIdBeingCheckedOut, setChainIdBeingCheckedOut] = useState<ChainId>(
-    projects[0]?.chainId
+    Number(Object.keys(projectsByChain)[0]) as ChainId
   );
   const currentPayoutToken = payoutTokens[chainIdBeingCheckedOut];
 
@@ -258,6 +257,8 @@ export function SummaryContainer() {
         setOpenProgressModal(true);
         setOpenInfoModal(false);
       }, modalDelayMs);
+
+      console.log(currentPayoutToken);
 
       await submitDonations({
         donations: projectsByChain[chainIdBeingCheckedOut],

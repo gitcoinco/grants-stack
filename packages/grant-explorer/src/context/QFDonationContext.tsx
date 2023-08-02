@@ -7,10 +7,11 @@ import {
   useContext,
   useState,
 } from "react";
-import { useSigner } from "wagmi";
+import { erc20ABI, useSigner } from "wagmi";
 import {
   PermitSignature,
   signPermit2612,
+  signPermitDai,
   voteUsingMRCContract,
 } from "../features/api/voting";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
@@ -199,23 +200,48 @@ async function vote(
     .reduce((acc, amount) => acc.add(amount), BigNumber.from(0));
 
   let sig;
+  let nonce;
 
   if (token.address !== zeroAddress) {
     try {
       setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
-
       const chainId = (await signer.getChainId()) as ChainId;
       const owner = await signer.getAddress();
-      sig = await signPermit2612({
-        signer,
-        value: totalDonation,
-        spender: MRC_CONTRACTS[chainId],
-        chainId,
-        deadline,
-        contractAddress: token.address,
-        erc20Name: token.name,
-        owner,
-      });
+      if (/DAI/.test(token.name)) {
+        /* Get nonce from dai contract */
+        const daiContract = new ethers.Contract(
+          token.address,
+          [
+            "function nonces(address) public view returns (uint256)",
+            "function name() public view returns (string)",
+          ],
+          signer
+        );
+        nonce = (await daiContract.nonces(owner)) as BigNumber;
+        const name = (await daiContract.name()) as string;
+
+        sig = await signPermitDai({
+          signer,
+          spender: MRC_CONTRACTS[chainId],
+          chainId,
+          deadline,
+          contractAddress: token.address,
+          erc20Name: name,
+          owner,
+          nonce,
+        });
+      } else {
+        sig = await signPermit2612({
+          signer,
+          value: totalDonation,
+          spender: MRC_CONTRACTS[chainId],
+          chainId,
+          deadline,
+          contractAddress: token.address,
+          erc20Name: token.name,
+          owner,
+        });
+      }
 
       setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
     } catch (e) {
@@ -232,7 +258,6 @@ async function vote(
   try {
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
     setVoteStatus(ProgressStatus.IN_PROGRESS);
-    debugger;
     /* Group donations by round */
     const groupedDonations = _.groupBy(
       donations.map((d) => ({
@@ -266,7 +291,8 @@ async function vote(
       groupedAmounts,
       totalDonation,
       sig,
-      deadline
+      deadline,
+      nonce
     );
 
     setVoteStatus(ProgressStatus.IS_SUCCESS);
