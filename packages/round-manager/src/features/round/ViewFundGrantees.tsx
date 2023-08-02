@@ -6,7 +6,7 @@ import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { useBalance } from "wagmi";
+import { useBalance, Address } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import {
   batchDistributeFunds,
@@ -219,7 +219,10 @@ export function PayProjectsTable(props: {
           token: props.token.address as `0x{string}`,
         };
 
-  const tokenBalance = useBalance(tokenDetail);
+  const tokenBalance = useBalance({
+    address: tokenDetail.addressOrName as Address,
+    token: tokenDetail.token,
+  });
   const navigate = useNavigate();
 
   const distributionSteps: ProgressStep[] = [
