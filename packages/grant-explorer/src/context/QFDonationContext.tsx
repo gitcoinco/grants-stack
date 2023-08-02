@@ -15,7 +15,7 @@ import {
 } from "../features/api/voting";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
 import {
-  CartDonation,
+  CartProject,
   PayoutToken,
   ProgressStatus,
 } from "../features/api/types";
@@ -23,6 +23,7 @@ import _ from "lodash";
 import { MRC_CONTRACTS } from "../features/api/contracts";
 import { ChainId } from "common";
 import { JsonRpcSigner } from "@ethersproject/providers";
+import { zeroAddress } from "viem";
 
 export interface QFDonationState {
   tokenApprovalStatus: ProgressStatus;
@@ -67,7 +68,7 @@ export const initialQFDonationState: QFDonationState = {
 };
 
 export type QFDonationParams = {
-  donations: CartDonation[];
+  donations: CartProject[];
   donationToken: PayoutToken;
   totalDonation: BigNumber;
   roundEndTime: number;
@@ -186,7 +187,7 @@ export const useQFDonation = () => {
 async function vote(
   signer: JsonRpcSigner,
   token: PayoutToken,
-  donations: CartDonation[],
+  donations: CartProject[],
   context: QFDonationState,
   deadline: number
 ): Promise<void> {
@@ -194,41 +195,44 @@ async function vote(
     context;
 
   const totalDonation = donations
-    .map((donation) => donation.amount)
-    .reduce((acc, amount) => acc.add(amount));
+    .map((donation) => ethers.utils.parseUnits(donation.amount, token.decimal))
+    .reduce((acc, amount) => acc.add(amount), BigNumber.from(0));
 
   let sig;
 
+  if (token.address !== zeroAddress) {
+    try {
+      setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
+
+      const chainId = (await signer.getChainId()) as ChainId;
+      const owner = await signer.getAddress();
+      sig = await signPermit2612({
+        signer,
+        value: totalDonation,
+        spender: MRC_CONTRACTS[chainId],
+        chainId,
+        deadline,
+        contractAddress: token.address,
+        erc20Name: token.name,
+        owner,
+      });
+
+      setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
+    } catch (e) {
+      console.error(e);
+      setTokenApprovalStatus(ProgressStatus.IS_ERROR);
+    }
+
+    if (!sig) {
+      setTokenApprovalStatus(ProgressStatus.IS_ERROR);
+      return;
+    }
+  }
+
   try {
-    setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
-
-    const chainId = (await signer.getChainId()) as ChainId;
-    const owner = await signer.getAddress();
-    sig = await signPermit2612({
-      signer,
-      value: totalDonation,
-      spender: MRC_CONTRACTS[chainId],
-      chainId,
-      deadline,
-      contractAddress: token.address,
-      erc20Name: token.name,
-      owner,
-    });
-
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
-  } catch (e) {
-    console.error(e);
-    setTokenApprovalStatus(ProgressStatus.IS_ERROR);
-  }
-
-  if (!sig) {
-    setTokenApprovalStatus(ProgressStatus.IS_ERROR);
-    return;
-  }
-
-  try {
     setVoteStatus(ProgressStatus.IN_PROGRESS);
-
+    debugger;
     /* Group donations by round */
     const groupedDonations = _.groupBy(
       donations.map((d) => ({
@@ -249,7 +253,8 @@ async function vote(
     const groupedAmounts: Record<string, BigNumber> = {};
     for (const roundId in groupedDonations) {
       groupedAmounts[roundId] = groupedDonations[roundId].reduce(
-        (acc, donation) => acc.add(donation.amount),
+        (acc, donation) =>
+          acc.add(ethers.utils.parseUnits(donation.amount, token.decimal)),
         BigNumber.from(0)
       );
     }
@@ -317,16 +322,16 @@ async function waitForSubgraphToUpdate(
 
 function encodeQFVotes(
   donationToken: PayoutToken,
-  donations: CartDonation[]
+  donations: CartProject[]
 ): BytesLike[] {
   const encodedVotes: BytesLike[] = [];
 
   donations.map((donation) => {
-    const projectAddress = ethers.utils.getAddress(donation.projectAddress);
+    const projectAddress = ethers.utils.getAddress(donation.recipient);
 
     const vote = [
       donationToken.address,
-      donation.amount,
+      ethers.utils.parseUnits(donation.amount, donationToken.decimal),
       projectAddress,
       donation.projectRegistryId,
       donation.applicationIndex,
