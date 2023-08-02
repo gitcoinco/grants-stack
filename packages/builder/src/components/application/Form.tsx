@@ -332,10 +332,10 @@ export default function Form({
   // todo: ensure that the applications are made by a project owner
   const isValidProjectSelected =
     (isDirectRound || !hasExistingApplication) &&
-    selectedProjectID &&
+    !!selectedProjectID &&
     publishedApplication === undefined;
 
-  const needsProject = schema.questions.find((q) => q.type === "project");
+  const needsProject = !schema.questions.find((q) => q.type === "project");
   const now = new Date().getTime() / 1000;
 
   return (
@@ -731,7 +731,7 @@ export default function Form({
             return null;
           })}
 
-          {selectedProjectID && !isDirectRound && hasExistingApplication && (
+          {!!selectedProjectID && !isDirectRound && hasExistingApplication && (
             <div className="rounded-md bg-red-50 p-4 mt-5">
               <div className="flex">
                 <ExclamationCircleIcon className="h-5 w-5 text-red-400" />
@@ -744,7 +744,7 @@ export default function Form({
           )}
 
           {!hasExistingApplication &&
-            selectedProjectID &&
+            !!selectedProjectID &&
             selectedProjectID !== "0" &&
             !haveProjectRequirementsBeenMet && (
               <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
