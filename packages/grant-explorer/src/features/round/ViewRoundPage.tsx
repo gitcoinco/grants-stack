@@ -647,8 +647,6 @@ function PreRoundPage(props: {
                 testid="applications-closed-button"
               />
             )}
-
-            <ApplyButton applicationURL={applicationURL} />
           </div>
         </div>
         <div className="basis-1/2 right-0"></div>
