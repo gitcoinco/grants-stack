@@ -5,7 +5,7 @@ import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
-import { useAccount, useBalance, useNetwork } from "wagmi";
+import { useAccount, useBalance, useNetwork, Address } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
 import { ProgressStatus, Round } from "../api/types";
@@ -116,7 +116,10 @@ export default function FundContract(props: {
     data: balanceData,
     isError: isBalanceError,
     isLoading: isBalanceLoading,
-  } = useBalance(tokenDetail);
+  } = useBalance({
+    address: tokenDetail.addressOrName as Address,
+    token: tokenDetail.token,
+  });
 
   const { data, error, loading } = useTokenPrice(
     matchingFundPayoutToken?.redstoneTokenId
@@ -167,7 +170,10 @@ export default function FundContract(props: {
     data: matchingFundPayoutTokenBalance,
     // isError,
     // isFetched,
-  } = useBalance(tokenDetailUser);
+  } = useBalance({
+    address: tokenDetailUser.addressOrName,
+    token: tokenDetailUser.token,
+  });
 
   function handleFundContract() {
     // check if signer has enough token balance
