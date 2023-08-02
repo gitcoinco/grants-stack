@@ -18,7 +18,10 @@ import colors from "../../styles/colors";
 import { Round } from "../../types";
 import { RoundApplicationAnswers } from "../../types/roundApplication";
 import { applicationSteps } from "../../utils/steps";
-import { ROUND_PAYOUT_DIRECT, getProjectURIComponents } from "../../utils/utils";
+import {
+  ROUND_PAYOUT_DIRECT,
+  getProjectURIComponents,
+} from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
