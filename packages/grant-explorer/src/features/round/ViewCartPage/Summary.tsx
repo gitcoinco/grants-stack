@@ -1,6 +1,6 @@
 import { ChainId, useTokenPrice } from "common";
 import { BigNumber, ethers } from "ethers";
-import React from "react";
+import React, { useState } from "react";
 import { PayoutToken } from "../../api/types";
 import { CHAINS } from "../../api/utils";
 
@@ -8,12 +8,16 @@ type SummaryProps = {
   totalDonation: BigNumber;
   selectedPayoutToken: PayoutToken;
   chainId: ChainId;
+  chainIdBeingCheckedOut: ChainId;
+  setChainIdBeingCheckedOut: React.Dispatch<React.SetStateAction<ChainId>>;
 };
 
 export function Summary({
   selectedPayoutToken,
   totalDonation,
   chainId,
+  chainIdBeingCheckedOut,
+  setChainIdBeingCheckedOut,
 }: SummaryProps) {
   const { data: payoutTokenPrice } = useTokenPrice(
     selectedPayoutToken.redstoneTokenId
@@ -23,11 +27,21 @@ export function Summary({
     Number(
       ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)
     ) * Number(payoutTokenPrice);
+  const [isChecked, setIsChecked] = useState(false);
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+    !isChecked && setChainIdBeingCheckedOut(chainId);
+  };
   return (
     <div className="flex flex-col">
       <div className="flex justify-between mt-4">
         <label className="flex items-center">
-          <input type="checkbox" className="mr-2 rounded-sm" />
+          <input
+            type="checkbox"
+            className="mr-2 rounded-sm"
+            checked={isChecked && chainId === chainIdBeingCheckedOut}
+            onChange={handleCheckboxChange}
+          />
           <p>
             Your Contribution on {CHAINS[chainId].name}
             <img

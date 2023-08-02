@@ -39,9 +39,9 @@ export function SummaryContainer() {
   });
 
   /** The id of the round to be checked out or currently being checked out */
-  const [chainIdBeingCheckedOut, setChainIdBeingCheckedOut] = useState<ChainId>(
-    projects[0]?.chainId
-  );
+  const [chainIdBeingCheckedOut, setChainIdBeingCheckedOut] =
+    useState<ChainId>(1);
+  console.log("chainIdBeingCheckedOut", chainIdBeingCheckedOut);
   const currentPayoutToken = payoutTokens[chainIdBeingCheckedOut];
 
   /** We find the round that ends last, and take its end date as the permit deadline */
@@ -290,6 +290,8 @@ export function SummaryContainer() {
               chainId={Number(chainId) as ChainId}
               selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
               totalDonation={totalDdonationsPerChain[chainId]}
+              chainIdBeingCheckedOut={chainIdBeingCheckedOut}
+              setChainIdBeingCheckedOut={setChainIdBeingCheckedOut}
             />
           ))}
           <Button
