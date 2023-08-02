@@ -395,7 +395,10 @@ function NumberOfApplicationsSelectedMessage(props: {
   predicate: (obj: GrantApplication) => boolean;
 }) {
   return (
-    <span className="text-grey-400 text-sm mr-6">
+    <span
+      className="text-grey-400 text-sm mr-6"
+      data-testid="move-in-review-selected-applications-message"
+    >
       You have selected{" "}
       {props.grantApplications?.filter(props.predicate).length} Grant
       Applications

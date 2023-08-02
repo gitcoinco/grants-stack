@@ -168,7 +168,10 @@ export default function ApplicationDirectPayout({
 
   return (
     <>
-      <section className="payouts flex flex-col gap-6 mt-3">
+      <section
+        className="payouts flex flex-col gap-6 mt-3"
+        data-testid="application-direct-payout"
+      >
         {/* Header */}
         <div className="flex flex-col gap-2">
           <div className="flex pt-6 border-t border-gray-100">
@@ -181,7 +184,7 @@ export default function ApplicationDirectPayout({
           </div>
           {payouts.length === 0 && (
             <p className="text-sm leading-5 text-gray-300 text-left">
-              Payouts have not been made yet.{" "}
+              Payouts have not been made yet.
             </p>
           )}
         </div>

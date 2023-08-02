@@ -135,7 +135,7 @@ function MarkForInReview(props: {
           : "bg-grey-500 text-white"
       }`}
       onClick={props.onClick}
-      data-testid="approve-button"
+      data-testid="in-review-button"
     >
       <CheckIcon aria-hidden="true" />
     </Button>
@@ -159,18 +159,21 @@ export function ApplicationHeader(props: {
         >
           {props.inReviewOnClick && (
             <MarkForInReview
+              data-testid="in-review-button"
               applicationStatus={props.applicationStatus as boolean}
               onClick={props.inReviewOnClick}
             />
           )}
           {props.approveOnClick && (
             <MarkForApproval
+              data-testid="approve-button"
               applicationStatus={props.applicationStatus as ProjectStatus}
               onClick={props.approveOnClick}
             />
           )}
           {props.rejectOnClick && (
             <MarkForRejection
+              data-testid="reject-button"
               applicationStatus={props.applicationStatus as ProjectStatus}
               onClick={props.rejectOnClick}
             />

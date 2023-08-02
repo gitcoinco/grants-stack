@@ -10,6 +10,7 @@ import {
 import { faker } from "@faker-js/faker";
 import { Program, ProgressStatus } from "../../api/types";
 import { formatUTCDateAsISOString } from "common";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../common/Utils";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });
@@ -133,6 +134,127 @@ describe("<ViewProgram />", () => {
     );
 
     screen.getByTestId("loading-spinner");
+  });
+
+  it("displays Quadratic Funding badge when a round is of type Quadratic Funding", () => {
+    const stubRound = makeRoundData({
+      ownedBy: stubProgram.id,
+    });
+
+    stubRound.payoutStrategy.strategyName = ROUND_PAYOUT_MERKLE;
+
+    render(
+      wrapWithReadProgramContext(
+        wrapWithRoundContext(<ViewProgram />, {
+          data: [stubRound],
+          fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+        }),
+        {
+          programs: [stubProgram],
+          fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+        }
+      )
+    );
+
+    const badge = screen.getByTestId("round-payout-strategy-type");
+    expect(badge).toHaveTextContent("Quadratic Funding");
+  });
+
+  it('displays "Direct Grants" badge when a round is of type Direct grant', () => {
+    const stubRound = makeRoundData({
+      ownedBy: stubProgram.id,
+    });
+
+    stubRound.payoutStrategy.strategyName = ROUND_PAYOUT_DIRECT;
+
+    render(
+      wrapWithReadProgramContext(
+        wrapWithRoundContext(<ViewProgram />, {
+          data: [stubRound],
+          fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+        }),
+        {
+          programs: [stubProgram],
+          fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+        }
+      )
+    );
+
+    const badge = screen.getByTestId("round-payout-strategy-type");
+    expect(badge).toHaveTextContent("Direct Grant");
+  });
+
+  it("displays a badge indicating the status of the round", () => {
+    const stubRound = makeRoundData({
+      ownedBy: stubProgram.id,
+    });
+
+    render(
+      wrapWithReadProgramContext(
+        wrapWithRoundContext(<ViewProgram />, {
+          data: [stubRound],
+          fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+        }),
+        {
+          programs: [stubProgram],
+          fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+        }
+      )
+    );
+
+    expect(
+      screen.getByTestId("round-application-status-badge")
+    ).toBeInTheDocument();
+  });
+
+  it("displays application and round dates when a round is of type Quadratic Funding", () => {
+    const stubRound = makeRoundData({
+      ownedBy: stubProgram.id,
+    });
+
+    stubRound.payoutStrategy.strategyName = ROUND_PAYOUT_MERKLE;
+
+    render(
+      wrapWithReadProgramContext(
+        wrapWithRoundContext(<ViewProgram />, {
+          data: [stubRound],
+          fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+        }),
+        {
+          programs: [stubProgram],
+          fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+        }
+      )
+    );
+
+    expect(screen.getByTestId("round-application-dates")).toBeInTheDocument();
+    expect(screen.getByTestId("round-round-dates")).toBeInTheDocument();
+  });
+
+  it("displays round dates when a round is of type Direct grant", () => {
+    const stubRound = makeRoundData({
+      ownedBy: stubProgram.id,
+    });
+
+    stubRound.payoutStrategy.strategyName = ROUND_PAYOUT_DIRECT;
+
+    render(
+      wrapWithReadProgramContext(
+        wrapWithRoundContext(<ViewProgram />, {
+          data: [stubRound],
+          fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+        }),
+        {
+          programs: [stubProgram],
+          fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+        }
+      )
+    );
+
+    expect(
+      screen.queryByTestId("round-application-dates")
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("round-round-dates")).toBeInTheDocument();
   });
 
   describe("when there are no rounds in the program", () => {

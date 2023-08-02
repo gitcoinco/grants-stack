@@ -99,6 +99,7 @@ export default function ViewProgram() {
                   <div
                     className={`text-xs text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-3`}
                     style={{ borderRadius: "20px" }}
+                    data-testid="round-payout-strategy-type"
                   >
                     {getPayoutRoundDescription(
                       round.payoutStrategy.strategyName || ""
@@ -113,7 +114,10 @@ export default function ViewProgram() {
                 <div className="grid sm:grid-cols-2">
                   {/* Application */}
                   {!isDirectRound(round) && (
-                    <div className="text-xs flex gap-1">
+                    <div
+                      className="text-xs flex gap-1"
+                      data-testid="round-application-dates"
+                    >
                       <CalendarIcon className="h-5 w-5 text-grey-500" />
                       <span className="mt-[3px] text-grey-400">
                         Applications:
@@ -141,7 +145,10 @@ export default function ViewProgram() {
                     </div>
                   )}
                   {/* Round */}
-                  <div className="text-xs flex gap-1">
+                  <div
+                    className="text-xs flex gap-1"
+                    data-testid="round-round-dates"
+                  >
                     <ClockIcon className="h-5 w-5 text-grey-500" />
                     <span className="mt-[3px] text-grey-400">Round:</span>
                     <div
@@ -205,6 +212,7 @@ export default function ViewProgram() {
                 style={{
                   borderRadius: "20px",
                 }}
+                data-testid="round-application-status-badge"
               >
                 {getRoundDescriptionStatus(round)}
               </div>

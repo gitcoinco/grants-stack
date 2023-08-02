@@ -46,6 +46,13 @@ import {
 } from "./features/api/types";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
 import history from "./history";
+import moment from "moment";
+import {
+  ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE,
+} from "./features/common/Utils";
+
+export const mockedOperatorWallet = faker.finance.ethereumAddress();
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -57,7 +64,7 @@ export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   //   protocol: randomInt(1, 10),
   //   pointer: faker.random.alpha({ count: 59, casing: "lower" })
   // },
-  operatorWallets: [faker.finance.ethereumAddress()],
+  operatorWallets: [mockedOperatorWallet],
   ...overrides,
 });
 
@@ -101,11 +108,65 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     payoutStrategy: {
       id: faker.finance.ethereumAddress(),
       isReadyForPayout: false,
+      strategyName: ROUND_PAYOUT_MERKLE,
     },
     protocolFeePercentage,
     roundFeePercentage,
     ownedBy: faker.finance.ethereumAddress(),
-    operatorWallets: [faker.finance.ethereumAddress()],
+    operatorWallets: [mockedOperatorWallet],
+    finalized: false,
+    ...overrides,
+  };
+};
+
+export const makeDirectGrantRoundData = (
+  overrides: Partial<Round> = {}
+): Round => {
+  const applicationsStartTime = faker.date.soon();
+  const applicationsEndTime = faker.date.soon(10, applicationsStartTime);
+  const roundStartTime = faker.date.future(1, applicationsEndTime);
+  const roundEndTime = faker.date.soon(21, roundStartTime);
+  const roundFeePercentage = 10000;
+  const protocolFeePercentage = 10000;
+  return {
+    id: faker.finance.ethereumAddress(),
+    chainId: 1,
+    roundMetadata: {
+      name: faker.company.name(),
+      programContractAddress: faker.finance.ethereumAddress(),
+      roundType: "private",
+      eligibility: {
+        description: faker.lorem.sentence(),
+        requirements: [
+          {
+            requirement: "",
+          },
+        ],
+      },
+      quadraticFundingConfig: {
+        matchingCap: true,
+        matchingCapAmount: 100,
+        matchingFundsAvailable: 1000,
+        minDonationThreshold: true,
+        minDonationThresholdAmount: 1,
+        sybilDefense: false,
+      },
+    },
+    applicationsStartTime,
+    applicationsEndTime,
+    roundStartTime,
+    roundEndTime,
+    token: ethers.constants.AddressZero, // to match our token list
+    votingStrategy: faker.finance.ethereumAddress(),
+    payoutStrategy: {
+      id: faker.finance.ethereumAddress(),
+      isReadyForPayout: false,
+      strategyName: ROUND_PAYOUT_DIRECT,
+    },
+    protocolFeePercentage,
+    roundFeePercentage,
+    ownedBy: faker.finance.ethereumAddress(),
+    operatorWallets: [mockedOperatorWallet],
     finalized: false,
     ...overrides,
   };
@@ -206,6 +267,10 @@ export interface MakeGrantApplicationDataParams {
   projectGithubOverride?: string;
   projectTwitterOverride?: string;
   applicationAnswers?: GrantApplication["answers"];
+  payoutStrategy?: GrantApplication["payoutStrategy"];
+  statusSnapshots?: GrantApplication["statusSnapshots"];
+  inReview?: boolean;
+  status?: GrantApplication["status"];
 }
 
 export const makeGrantApplicationData = (
@@ -218,6 +283,10 @@ export const makeGrantApplicationData = (
     projectGithubOverride,
     projectTwitterOverride,
     applicationAnswers,
+    payoutStrategy,
+    statusSnapshots,
+    status,
+    inReview,
   } = {
     ownerAddress: faker.finance.ethereumAddress(),
     ...overrides,
@@ -243,7 +312,23 @@ export const makeGrantApplicationData = (
       faker.random.alpha({ count: 10, casing: "lower" }),
     round:
       roundIdOverride || faker.random.alpha({ count: 59, casing: "lower" }),
+
+    payoutStrategy: payoutStrategy ?? {
+      strategyName: ROUND_PAYOUT_MERKLE,
+      id: faker.random.alpha({ count: 59, casing: "lower" }),
+      payouts: [],
+    },
+
+    statusSnapshots: statusSnapshots ?? [
+      {
+        status: "PENDING",
+        statusDescription: "PENDING",
+        timestamp: moment().subtract(1, "days").toDate(),
+      },
+    ],
+
     recipient: faker.finance.ethereumAddress(),
+    inReview: inReview ?? false,
     project: {
       lastUpdated: 1659714564,
       createdAt: 1659714564,
@@ -271,9 +356,11 @@ export const makeGrantApplicationData = (
       protocol: randomInt(1, 10),
       pointer: faker.random.alpha({ count: 59, casing: "lower" }),
     },
-    status: ["PENDING", "APPROVED", "REJECTED", "CANCELLED", "APPEAL", "FRAUD"][
-      randomInt(0, 4)
-    ] as ProjectStatus,
+    status:
+      status ??
+      (["PENDING", "APPROVED", "REJECTED", "CANCELLED", "APPEAL", "FRAUD"][
+        randomInt(0, 4)
+      ] as ProjectStatus),
     applicationIndex: faker.datatype.number(),
     createdAt: faker.datatype.number().toString(),
   };

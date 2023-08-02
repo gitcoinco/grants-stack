@@ -354,14 +354,28 @@ export default function ViewApplicationPage() {
         `}
         >
           {status === "done" && (
-            <img src={CheckmarkWhite} className="h-3 w-3" alt="" />
+            <img
+              src={CheckmarkWhite}
+              className="h-3 w-3"
+              alt=""
+              data-testid="status-done"
+            />
           )}
           {status === "rejected" && (
-            <img src={Rejected} className="h-3 w-3" alt="" />
+            <img
+              src={Rejected}
+              className="h-3 w-3"
+              alt=""
+              data-testid="status-rejected"
+            />
           )}
           {status === "current" && (
-            <div className="rounded-full w-[10px] h-[10px] bg-violet-500" />
+            <div
+              className="rounded-full w-[10px] h-[10px] bg-violet-500"
+              data-testid="status-current"
+            />
           )}
+          {status === undefined && <div data-testid="status-none" />}
         </div>
         {/* Connector */}
         {index !== 0 && (
@@ -391,7 +405,7 @@ export default function ViewApplicationPage() {
     index?: number;
   }> = ({ title, icon, index, text, status }) => {
     return (
-      <div className={`flex gap-4`}>
+      <div className={`flex gap-4`} data-testid={`application-step-${title}`}>
         <StepStatus index={index} status={status} />
         <div
           className={`grid gap-3 mt-[5px] pb-[35px] ${
@@ -496,7 +510,10 @@ export default function ViewApplicationPage() {
             <main className="flex flex-row">
               {/* Sidebar */}
               {(application?.statusSnapshots || []).length > 0 && (
-                <div className="w-24 basis-1/6 border-r pt-12">
+                <div
+                  className="w-24 basis-1/6 border-r pt-12"
+                  data-testid="sidebar-steps-container"
+                >
                   <div className="flex flex-col">
                     {application
                       .statusSnapshots!.sort((a, b) =>
@@ -509,7 +526,7 @@ export default function ViewApplicationPage() {
                             s.status,
                             index === application.statusSnapshots!.length - 1
                           )}
-                          title={s.statusDescription.toLocaleLowerCase()}
+                          title={s.statusDescription.toLowerCase()}
                           icon={
                             <CalendarIcon className="text-grey-400 h-3 w-3" />
                           }
@@ -525,29 +542,33 @@ export default function ViewApplicationPage() {
                         />
                       ))}
                     {/* When is direct round and application is in review */}
-                    {round?.payoutStrategy.strategyName ==
+                    {application?.payoutStrategy?.strategyName ==
                       ROUND_PAYOUT_DIRECT &&
                       application.status === "PENDING" &&
                       !application.inReview && (
-                        <Step
-                          title="In review"
-                          icon={
-                            <CalendarIcon className="text-grey-400 h-3 w-3" />
-                          }
-                          text="Waiting"
-                        />
+                        <>
+                          <Step
+                            title="In review"
+                            icon={
+                              <CalendarIcon className="text-grey-400 h-3 w-3" />
+                            }
+                            text="Waiting"
+                          />
+                        </>
                       )}
                     {/* When application is not yet evaluated */}
                     {!["APPROVED", "REJECTED"].includes(
                       application.status as string
                     ) && (
-                      <Step
-                        title="Evaluation"
-                        icon={
-                          <ClipboardCheckIcon className="text-grey-400 h-5 w-5 mt-[-2px] ml-[-2px]" />
-                        }
-                        text="Waiting"
-                      />
+                      <>
+                        <Step
+                          title="Evaluation"
+                          icon={
+                            <ClipboardCheckIcon className="text-grey-400 h-5 w-5 mt-[-2px] ml-[-2px]" />
+                          }
+                          text="Waiting"
+                        />
+                      </>
                     )}
                   </div>
                   {/* Go back */}
@@ -762,7 +783,8 @@ export default function ViewApplicationPage() {
                   })}
 
                 {round !== undefined &&
-                  round.payoutStrategy.strategyName == ROUND_PAYOUT_DIRECT &&
+                  application?.payoutStrategy?.strategyName ==
+                    ROUND_PAYOUT_DIRECT &&
                   application?.status === "APPROVED" &&
                   answerBlocks !== undefined &&
                   answerBlocks.length > 0 && (
