@@ -9,6 +9,8 @@ import ProgressModal from "../../common/ProgressModal";
 import { ConfirmationModalBody } from "./ConfirmationModalBody";
 import ErrorModal from "../../common/ErrorModal";
 import ConfirmationModal from "../../common/ConfirmationModal";
+import ChainConfirmationModal from "../../common/ConfirmationModal";
+import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { CartProject, ProgressStatus } from "../../api/types";
 import { useQFDonation } from "../../../context/QFDonationContext";
 import { modalDelayMs } from "../../../constants";
@@ -22,7 +24,6 @@ import { usePassport } from "../../api/passport";
 import useSWR from "swr";
 import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
-import { set } from "date-fns";
 
 export function SummaryContainer() {
   const { projects } = useCartStorage();
@@ -78,6 +79,8 @@ export function SummaryContainer() {
   const [emptyInput, setEmptyInput] = useState(false);
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [openChainConfirmationModal, setOpenChainConfirmationModal] =
+    useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
@@ -172,12 +175,28 @@ export function SummaryContainer() {
     //   return;
     // }
 
-    setOpenConfirmationModal(true);
+    setOpenChainConfirmationModal(true);
   }
 
   function PayoutModals() {
     return (
       <>
+        <ChainConfirmationModal
+          title={"Checkout"}
+          confirmButtonText={"Checkout"}
+          confirmButtonAction={() => {
+            setOpenInfoModal(true);
+            setOpenChainConfirmationModal(false);
+          }}
+          body={
+            <ChainConfirmationModalBody
+              projectsByChain={projectsByChain}
+              totalDdonationsPerChain={totalDdonationsPerChain}
+            />
+          }
+          isOpen={openChainConfirmationModal}
+          setIsOpen={setOpenChainConfirmationModal}
+        />
         <ConfirmationModal
           title={"Confirm Decision"}
           confirmButtonText={"Confirm"}
