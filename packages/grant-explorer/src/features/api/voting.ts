@@ -138,7 +138,7 @@ export const signPermit2612 = async ({
   const domainData = {
     name: erc20Name,
     version: "2",
-    version: "1",
+
     chainId: chainId,
     verifyingContract: contractAddress,
   };
@@ -199,7 +199,7 @@ export const signPermitDai = async ({
     expiry: deadline,
     allowed: true,
   };
-
+  debugger;
   const signature = (await signer._signTypedData(
     domainData,
     types,
