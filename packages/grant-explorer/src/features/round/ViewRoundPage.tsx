@@ -232,6 +232,9 @@ function AfterRoundStart(props: {
   ] as BreadcrumbItem[];
 
   const applicationURL = `${builderURL}/#/chains/${chainId}/rounds/${roundId}`;
+  const currentTime = new Date();
+  const isBeforeApplicationEndDate = round && 
+    (!isInfiniteDate(round.applicationsEndTime) ? (round.applicationsEndTime >= currentTime) : true);
 
   return (
     <>
@@ -312,7 +315,7 @@ function AfterRoundStart(props: {
             {round.roundMetadata?.eligibility?.description}
           </p>
 
-          {isDirectRound(round) && (
+          {(isDirectRound(round) || isBeforeApplicationEndDate) && (
               <ApplyButton applicationURL={applicationURL} />
           )}
           <hr className="mt-4 mb-4" />
