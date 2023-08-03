@@ -58,6 +58,7 @@ export const CHAINS: Record<
 export const TokenNamesAndLogos: Record<string, string> = {
   FTM: "./logos/fantom-logo.svg",
   BUSD: "./logos/busd-logo.svg",
+  USDC: "./logos/usdc-logo.svg",
   DAI: "./logos/dai-logo.svg",
   ETH: "./logos/ethereum-eth-logo.svg",
   OP: "./logos/optimism-logo.svg",
@@ -139,12 +140,12 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
 
 const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
   {
-    name: "BUSD",
+    name: "USDC",
     chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
-    decimal: 18,
-    logo: TokenNamesAndLogos["BUSD"],
-    redstoneTokenId: RedstoneTokenIds["BUSD"],
+    address: "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
   },
   {
     name: "DAI",

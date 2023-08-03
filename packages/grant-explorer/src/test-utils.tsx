@@ -1,10 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { BigNumber, ethers } from "ethers";
-import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { store } from "./app/store";
 import {
   RoundContext,
   RoundState,
@@ -18,7 +15,6 @@ import {
   ProjectMetadata,
   Round,
 } from "./features/api/types";
-import history from "./history";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -72,6 +68,7 @@ export const makeApprovedProjectData = (
   projectMetadataOverrides?: Partial<ProjectMetadata>
 ): CartProject => {
   return {
+    amount: "",
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
     grantApplicationFormAnswers: [],
     projectRegistryId: faker.datatype.number().toString(),
@@ -150,21 +147,9 @@ export const renderWithContext = (
           state: { ...initialRoundState, ...roundStateOverrides },
           dispatch,
         }}
-      >
-        <CartProvider>{ui}</CartProvider>
-      </RoundContext.Provider>
+      ></RoundContext.Provider>
     </MemoryRouter>
   );
-
-export const renderWrapped = (ui: JSX.Element) => {
-  render(
-    <Provider store={store}>
-      <ReduxRouter store={store} history={history}>
-        {ui}
-      </ReduxRouter>
-    </Provider>
-  );
-};
 
 export const mockBalance = {
   data: {

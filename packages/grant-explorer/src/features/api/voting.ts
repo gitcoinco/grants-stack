@@ -20,7 +20,8 @@ export const voteUsingMRCContract = async (
   groupedAmounts: Record<string, BigNumber>,
   nativeTokenAmount: BigNumber,
   permitSignature?: PermitSignature,
-  deadline?: number
+  deadline?: number,
+  nonce?: BigNumber
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   const mrcImplementation = new ethers.Contract(
     MRC_CONTRACTS[(await signer.getChainId()) as ChainId],
@@ -43,20 +44,20 @@ export const voteUsingMRCContract = async (
   } else if (permitSignature) {
     /* Is token DAI? */
     if (/DAI/i.test(token.name)) {
-      debugger;
       tx = await mrcImplementation.voteDAIPermit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
         Object.values(groupedAmounts),
         Object.values(groupedAmounts).reduce((acc, b) => acc.add(b)),
         token.address,
-        0,
-        0,
+        deadline,
+        nonce,
         permitSignature.v,
         permitSignature.r,
-        permitSignature?.s
+        permitSignature.s
       );
     } else {
+      debugger;
       tx = await mrcImplementation.voteERC20Permit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
@@ -80,7 +81,6 @@ export const voteUsingMRCContract = async (
 
   if (result.error) {
     // handle error case
-    debugger;
     throw new Error(result.error);
   } else {
     console.log("✅ Transaction hash: ", result.txHash);
@@ -100,9 +100,17 @@ type SignPermitProps = {
   erc20Name: string;
   owner: string;
   spender: string;
-  value: BigNumber;
   deadline: number;
   chainId: number;
+};
+
+type Eip2612Props = SignPermitProps & {
+  value: BigNumber;
+  nonce: BigNumber;
+};
+
+type DaiPermit = SignPermitProps & {
+  nonce: BigNumber;
 };
 
 /* Signs a permit for EIP-2612-compatible ERC-20 tokens */
@@ -114,8 +122,9 @@ export const signPermit2612 = async ({
   spender,
   value,
   deadline,
+  nonce,
   chainId,
-}: SignPermitProps) => {
+}: Eip2612Props) => {
   const types = {
     Permit: [
       { name: "owner", type: "address" },
@@ -128,6 +137,7 @@ export const signPermit2612 = async ({
 
   const domainData = {
     name: erc20Name,
+    version: "2",
     version: "1",
     chainId: chainId,
     verifyingContract: contractAddress,
@@ -137,7 +147,57 @@ export const signPermit2612 = async ({
     owner,
     spender,
     value,
+    nonce,
     deadline,
+  };
+
+  const signature = (await signer._signTypedData(
+    domainData,
+    types,
+    message
+  )) as Hex;
+  debugger;
+  const [r, s, v] = [
+    slice(signature, 0, 32),
+    slice(signature, 32, 64),
+    slice(signature, 64, 65),
+  ];
+  return { r, s, v: hexToNumber(v) };
+};
+
+export const signPermitDai = async ({
+  signer,
+  contractAddress,
+  erc20Name,
+  owner,
+  spender,
+  deadline,
+  nonce,
+  chainId,
+}: DaiPermit) => {
+  const types = {
+    Permit: [
+      { name: "holder", type: "address" },
+      { name: "spender", type: "address" },
+      { name: "nonce", type: "uint256" },
+      { name: "expiry", type: "uint256" },
+      { name: "allowed", type: "bool" },
+    ],
+  };
+
+  const domainData = {
+    name: erc20Name,
+    version: "1",
+    chainId: chainId,
+    verifyingContract: contractAddress,
+  };
+
+  const message = {
+    holder: owner,
+    spender,
+    nonce,
+    expiry: deadline,
+    allowed: true,
   };
 
   const signature = (await signer._signTypedData(
