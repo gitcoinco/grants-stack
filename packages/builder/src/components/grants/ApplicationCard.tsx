@@ -99,12 +99,12 @@ export default function ApplicationCard({
         >
           {roundPayoutStrategy === "MERKLE" ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
-              QuadraticFunding
+              Quadratic Funding
             </span>
           ) : null}
           {roundPayoutStrategy === "DIRECT" ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
-              DirectGrant
+              Direct Grant
             </span>
           ) : null}
         </Badge>
