@@ -230,7 +230,6 @@ async function vote(
           nonce,
         });
       } else {
-        debugger;
         sig = await signPermit2612({
           signer,
           value: totalDonation,
