@@ -25,6 +25,7 @@ import useSWR from "swr";
 import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
+import { MRCProgressModalBody } from "./MRCProgressModalBody";
 
 export function SummaryContainer() {
   const { projects } = useCartStorage();
@@ -144,19 +145,6 @@ export function SummaryContainer() {
       description: "Finalize your contribution",
       status: voteStatus,
     },
-    {
-      name: "Indexing",
-      description: "The subgraph is indexing the data.",
-      status: indexingStatus,
-    },
-    {
-      name: "Redirecting",
-      description: "Just another moment while we finish things up.",
-      status:
-        indexingStatus === ProgressStatus.IS_SUCCESS
-          ? ProgressStatus.IN_PROGRESS
-          : ProgressStatus.NOT_STARTED,
-    },
   ];
 
   function handleConfirmation() {
@@ -203,7 +191,12 @@ export function SummaryContainer() {
         <MRCProgressModal
           isOpen={openMRCProgressModal}
           subheading={"Please hold while we submit your donation."}
-          steps={progressSteps}
+          body={
+            <MRCProgressModalBody
+              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
+              steps={progressSteps}
+            />
+          }
         />
         <ErrorModal
           isOpen={openErrorModal}
