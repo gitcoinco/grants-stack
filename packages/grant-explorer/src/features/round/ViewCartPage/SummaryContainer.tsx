@@ -200,6 +200,7 @@ export function SummaryContainer() {
           }
           isOpen={openChainConfirmationModal}
           setIsOpen={setOpenChainConfirmationModal}
+          disabled={chainIdsBeingCheckedOut.length === 0}
         />
         <ConfirmationModal
           title={"Confirm Decision"}
