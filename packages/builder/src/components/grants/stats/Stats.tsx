@@ -8,8 +8,7 @@ import { RootState } from "../../../reducers";
 import { ProjectStats } from "../../../reducers/projects";
 import RoundDetailsCard from "./RoundDetailsCard";
 import StatCard from "./StatCard";
-import { ROUND_PAYOUT_DIRECT } from "../../../utils/utils";
-import { graphqlFetch } from "../../../utils/graphql";
+import { ROUND_PAYOUT_MERKLE } from "../../../utils/utils";
 
 export default function RoundStats() {
   const NA = -1;
@@ -35,51 +34,30 @@ export default function RoundStats() {
     };
   });
 
-  const isDirectRound = async (roundId: string, chainId: ChainId) => {
-    const response: any = await graphqlFetch(
-      `query applicationRound($roundId: String) {
-          rounds(
-            where: {
-              id: $roundId
-            }
-          ) {
-            payoutStrategy {
-              strategyName
-            }
-          }
-        }
-      `,
-      chainId,
-      {
-        roundId,
-      }
-    );
-
-    return (
-      response.data.rounds[0].payoutStrategy.strategyName ===
-      ROUND_PAYOUT_DIRECT
-    );
-  };
-
   useEffect(() => {
     // TODO: Remove DIRECT ROUND filter condition after Stats view rework #11
-    const applications =
-      props.projectApplications?.filter(
-        (app) =>
-          app.status === "APPROVED" && !isDirectRound(app.roundID, app.chainId)
-      ) || [];
+    const applications = props.projectApplications?.filter(
+      (app) => app.status === "APPROVED"
+    );
 
-    if (applications.length > 0) {
+    if (applications?.length > 0) {
       setNoStats(false);
-
-      const rounds: Array<{ roundId: string; chainId: ChainId }> = [];
+      const rounds: Array<{
+        roundId: string;
+        chainId: ChainId;
+        roundType: string;
+      }> = [];
       applications.forEach((app) => {
-        rounds.push({
-          roundId: app.roundID,
-          chainId: app.chainId,
-        });
+        const roundType =
+          props.rounds[app.roundID]?.round?.payoutStrategy || "";
+        if (roundType !== "" && roundType === ROUND_PAYOUT_MERKLE) {
+          rounds.push({
+            roundId: app.roundID,
+            chainId: app.chainId,
+            roundType,
+          });
+        }
       });
-
       dispatch(
         loadProjectStats(
           params.id!,
@@ -91,7 +69,7 @@ export default function RoundStats() {
     } else {
       setNoStats(true);
     }
-  }, [props.projectApplications]);
+  }, [props.projectApplications, props.rounds]);
 
   useEffect(() => {
     const detailsTmp: any[] = [];
