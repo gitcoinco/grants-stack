@@ -170,7 +170,19 @@ function ViewApplication() {
           {isDirectRound && roundInReview && (
             <>
               <p className="font-semibold mt-4">Contact Information:</p>
-              <p>{props.round.roundMetadata.support?.info}</p>
+              <a
+                className="text-purple-500"
+                target="_blank"
+                href={`${
+                  props.round.roundMetadata.support?.type === "Email"
+                    ? "mailto:"
+                    : ""
+                }
+                ${props.round.roundMetadata.support?.info}`}
+                rel="noreferrer"
+              >
+                {props.round.roundMetadata.support?.info}
+              </a>
             </>
           )}
           {!isDirectRound && (

@@ -31,8 +31,11 @@ export default function ApplicationCard({
       Number(applicationData.chainId)
     );
 
+    const isDirectRound = round && round.payoutStrategy === ROUND_PAYOUT_DIRECT;
+
     return {
       round,
+      isDirectRound,
       support,
       applicationChainName,
       applicationChainIconUri,
@@ -210,19 +213,21 @@ export default function ApplicationCard({
       </div>
       {props.support && (
         <Box p={2} className="mt-4 text-sm">
-          <p>
-            Have any questions about your grant round application?{" "}
-            <a
-              className="text-purple-500"
-              target="_blank"
-              href={`${props.support.type === "Email" ? "mailto:" : ""}${
-                props.support.info
-              }`}
-              rel="noreferrer"
-            >
-              Contact the {props.round?.programName} support team.
-            </a>
-          </p>
+          {(!props.isDirectRound || applicationData?.application.inReview) && (
+            <p>
+              Have any questions about your grant round application?{" "}
+              <a
+                className="text-purple-500"
+                target="_blank"
+                href={`${props.support.type === "Email" ? "mailto:" : ""}${
+                  props.support.info
+                }`}
+                rel="noreferrer"
+              >
+                Contact the {props.round?.programName} support team.
+              </a>
+            </p>
+          )}
           <Link
             to={roundApplicationViewPath(
               applicationData.chainId,
