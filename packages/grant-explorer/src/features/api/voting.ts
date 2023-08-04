@@ -138,7 +138,6 @@ export const signPermit2612 = async ({
   const domainData = {
     name: erc20Name,
     version: "2",
-    version: "1",
     chainId: chainId,
     verifyingContract: contractAddress,
   };
