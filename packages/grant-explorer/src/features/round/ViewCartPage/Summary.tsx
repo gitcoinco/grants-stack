@@ -29,7 +29,7 @@ export function Summary({
         <p>
           Your Contribution on {CHAINS[chainId].name}
           <img
-            className={"inline"}
+            className={"inline max-w-[32px]"}
             alt={CHAINS[chainId].name}
             src={CHAINS[chainId].logo}
           />
