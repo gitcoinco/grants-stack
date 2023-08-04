@@ -23,12 +23,15 @@ export function RoundInCart(
         <p className="text-xl  font-semibold">{round?.roundMetadata?.name}</p>
         <p className="text-lg font-bold ml-2">({props.roundCart.length})</p>
       </div>
-      <div>
-        <p className="text-sm pt-2 pb-4 px-4">
-          Your donation to each project must be valued at{" "}
-          {minDonationThresholdAmount} USD or more to be eligible for matching.
-        </p>
-      </div>
+      {minDonationThresholdAmount && (
+        <div>
+          <p className="text-sm pt-2 pb-4 px-4">
+            Your donation to each project must be valued at{" "}
+            {minDonationThresholdAmount} USD or more to be eligible for
+            matching.
+          </p>
+        </div>
+      )}
       {props.roundCart.map((project: CartProject, key: number) => (
         <div key={key}>
           <ProjectInCart
