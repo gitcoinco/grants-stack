@@ -37,8 +37,8 @@ export function CartWithProjects({ cart, chainId }: Props) {
   const payoutTokenPrice = !loading && !error ? Number(data) : undefined;
 
   return (
-    <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
-      <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
+    <div className="grow block px-[16px] py-4 bg-white">
+      <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3 mb-6">
         <div className="flex flex-row basis-[28%] gap-2">
           <img
             className="mt-2 inline-block h-9 w-9"

@@ -432,7 +432,9 @@ export function getChainIds(): number[] {
       Number(ChainId.PGN),
     ];
   } else {
-    return Object.values(ChainId).map((chainId) => Number(chainId));
+    return Object.values(ChainId)
+      .map((chainId) => Number(chainId))
+      .filter((id) => !isNaN(id));
   }
 }
 
