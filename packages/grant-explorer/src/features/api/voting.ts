@@ -23,6 +23,9 @@ export const voteUsingMRCContract = async (
   deadline?: number,
   nonce?: BigNumber
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
+  const chainid = await signer.getChainId();
+  console.log("chain id while voting");
+  debugger;
   const mrcImplementation = new ethers.Contract(
     MRC_CONTRACTS[(await signer.getChainId()) as ChainId],
     mrcAbi,

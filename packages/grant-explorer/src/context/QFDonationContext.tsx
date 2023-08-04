@@ -7,7 +7,7 @@ import {
   useContext,
   useState,
 } from "react";
-import { erc20ABI, useSigner } from "wagmi";
+import { useChainId, useSigner } from "wagmi";
 import {
   PermitSignature,
   signPermit2612,
@@ -72,6 +72,7 @@ export type QFDonationParams = {
   donations: CartProject[];
   donationToken: PayoutToken;
   totalDonation: BigNumber;
+  signer: JsonRpcSigner;
   roundEndTime: number;
 };
 
@@ -159,24 +160,39 @@ async function _submitDonations({
   }
 }
 
+const poll = async function (fn: any, fnCondition: any, ms = 100) {
+  let result = await fn();
+  while (fnCondition(result)) {
+    await wait(ms);
+    result = await fn();
+  }
+  return result;
+};
+
+const wait = function (ms = 1000) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+};
+
 export const useQFDonation = () => {
   const context = useContext<QFDonationState>(QFDonationContext);
   if (context === undefined) {
     throw new Error("useQFDonation must be used within a QFDonationProvider");
   }
 
-  const { data: signer } = useSigner();
-
   const handleSubmitDonations = async (params: QFDonationParams) => {
     return _submitDonations({
       ...params,
-      signer: signer as JsonRpcSigner,
+      signer: params.signer,
       context,
     });
   };
 
   return {
     submitDonations: handleSubmitDonations,
+    setTokenApprovalStatus: context.setTokenApprovalStatus,
+    setVoteStatus: context.setVoteStatus,
     tokenApprovalStatus: context.tokenApprovalStatus,
     voteStatus: context.voteStatus,
     indexingStatus: context.indexingStatus,

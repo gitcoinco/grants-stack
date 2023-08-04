@@ -5,6 +5,7 @@ import { ChainId } from "common";
 import { CHAINS, payoutTokens } from "../../api/utils";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useNetwork } from "wagmi";
 
 export type Step = {
   name: string;
@@ -21,17 +22,18 @@ export function MRCProgressModalBody({
   chainIdsBeingCheckedOut,
   steps,
 }: MRCProgressModalBodyProps) {
+  const { chain } = useNetwork();
+  const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
   return (
     <>
       <div className="px-2 py-4 font-bold">
         <p>
           <img
             className="inline mr-2 w-5 h-5"
-            alt={CHAINS[chainIdsBeingCheckedOut[0] as ChainId].name}
-            src={CHAINS[chainIdsBeingCheckedOut[0] as ChainId].logo}
+            alt={CHAINS[chainId].name}
+            src={CHAINS[chainId].logo}
           />
-          Step1: Checkout {CHAINS[chainIdsBeingCheckedOut[0] as ChainId].name}{" "}
-          donations
+          Step1: Checkout {CHAINS[chainId].name} donations
         </p>
       </div>
       <nav aria-label="Progress" className="ml-4 mt-2 mb-6">
