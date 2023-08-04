@@ -71,7 +71,7 @@ export function SummaryContainer() {
           ),
       ])
     );
-  }, [projects]);
+  }, [payoutTokens, projectsByChain]);
 
   const navigate = useNavigate();
   const { address } = useAccount();

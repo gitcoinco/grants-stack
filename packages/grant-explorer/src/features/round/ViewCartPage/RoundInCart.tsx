@@ -18,13 +18,13 @@ export function RoundInCart(
   const minDonationThresholdAmount =
     round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount;
   return (
-    <div className="my-4 bg-grey-100 rounded-xl">
-      <div className="flex flex-row pt-4 px-2">
-        <p className="text-lg font-bold">{round?.roundMetadata?.name}</p>
+    <div className="my-4 bg-grey-50 rounded-xl">
+      <div className="flex flex-row pt-4 px-4">
+        <p className="text-xl  font-semibold">{round?.roundMetadata?.name}</p>
         <p className="text-lg font-bold ml-2">({props.roundCart.length})</p>
       </div>
       <div>
-        <p className="text-sm pt-2 pb-4 px-2">
+        <p className="text-sm pt-2 pb-4 px-4">
           Your donation to each project must be valued at{" "}
           {minDonationThresholdAmount} USD or more to be eligible for matching.
         </p>

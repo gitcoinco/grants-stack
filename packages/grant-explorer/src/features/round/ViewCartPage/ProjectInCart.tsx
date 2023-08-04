@@ -28,15 +28,12 @@ export function ProjectInCart(
   const store = useCartStorage();
 
   return (
-    <div
-      data-testid="cart-project"
-      className={props.last ? "" : `border-b-2 border-grey-200`}
-    >
-      <div className="mb-4 flex flex-col md:flex-row justify-between px-3 py-4 rounded-md">
+    <div data-testid="cart-project">
+      <div className="mb-4 flex flex-col md:flex-row justify-between px-6 py-4 rounded-md">
         <div className="flex">
           <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
             <img
-              className="inline-block"
+              className="inline-block rounded-full"
               src={
                 props.project.projectMetadata.logoImg
                   ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
@@ -44,22 +41,22 @@ export function ProjectInCart(
               }
               alt={"Project Logo"}
             />
-            <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
-              <Link to={`${roundRoutePath}/${project.grantApplicationId}`}>
+            <Link to={`${roundRoutePath}/${project.grantApplicationId}`}>
+              <div className="min-w-[64px] rounded-full w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
                 <EyeIcon
-                  className="fill-gray-200 w-6 h-6 cursor-pointer"
+                  className="fill-gray-200 w-6 h-6 cursor-pointer rounded-full"
                   data-testid={`${project.projectRegistryId}-project-link`}
                 />
-              </Link>
-            </div>
+              </div>
+            </Link>
           </div>
 
-          <div className="pl-4 mt-1">
+          <div className="pl-6 mt-1 flex flex-col">
             <Link
               to={`${roundRoutePath}/${project.grantApplicationId}`}
               data-testid={"cart-project-link"}
             >
-              <p className="font-semibold mb-2 text-ellipsis line-clamp-1">
+              <p className="font-semibold text-lg mb-2 text-ellipsis line-clamp-1">
                 {props.project.projectMetadata.title}
               </p>
             </Link>
@@ -82,11 +79,12 @@ export function ProjectInCart(
             key={inputID}
             {...(focusedElement === inputID ? { autoFocus: true } : {})}
             min="0"
+            defaultValue={"0"}
             value={
               props.projects.find(
                 (project) =>
                   project.projectRegistryId === props.project.projectRegistryId
-              )?.amount
+              )?.amount ?? "0"
             }
             type="number"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,7 +93,7 @@ export function ProjectInCart(
                 e.target.value
               );
             }}
-            className="w-48"
+            className="w-min"
           />
           <p className="m-auto">{props.selectedPayoutToken.name}</p>
           {props.payoutTokenPrice && (
@@ -123,6 +121,7 @@ export function ProjectInCart(
           />
         </div>
       </div>
+      <hr className={props.last ? "" : `border-b-[2px] border-grey-100 mx-4`} />
     </div>
   );
 }
