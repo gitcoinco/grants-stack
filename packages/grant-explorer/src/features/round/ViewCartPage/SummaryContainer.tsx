@@ -24,6 +24,7 @@ import { usePassport } from "../../api/passport";
 import useSWR from "swr";
 import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
+import MRCProgressModal from "../../common/MRCProgressModal";
 
 export function SummaryContainer() {
   const { projects } = useCartStorage();
@@ -84,7 +85,7 @@ export function SummaryContainer() {
   const [openChainConfirmationModal, setOpenChainConfirmationModal] =
     useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
-  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorModalSubHeading, setErrorModalSubHeading] = useState<
     string | undefined
@@ -106,7 +107,7 @@ export function SummaryContainer() {
       voteStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
-        setOpenProgressModal(false);
+        setOpenMRCProgressModal(false);
         // if (transactionReplaced) {
         //   setErrorModalSubHeading("Transaction cancelled. Please try again.");
         // }
@@ -126,7 +127,7 @@ export function SummaryContainer() {
       txHash !== ""
     ) {
       setTimeout(() => {
-        setOpenProgressModal(false);
+        setOpenMRCProgressModal(false);
         navigate(`/thankyou`);
       }, modalDelayMs);
     }
@@ -186,10 +187,7 @@ export function SummaryContainer() {
         <ChainConfirmationModal
           title={"Checkout"}
           confirmButtonText={"Checkout"}
-          confirmButtonAction={() => {
-            setOpenInfoModal(true);
-            setOpenChainConfirmationModal(false);
-          }}
+          confirmButtonAction={handleSubmitDonation}
           body={
             <ChainConfirmationModalBody
               projectsByChain={projectsByChain}
@@ -202,35 +200,8 @@ export function SummaryContainer() {
           setIsOpen={setOpenChainConfirmationModal}
           disabled={chainIdsBeingCheckedOut.length === 0}
         />
-        <ConfirmationModal
-          title={"Confirm Decision"}
-          confirmButtonText={"Confirm"}
-          confirmButtonAction={() => {
-            setOpenInfoModal(true);
-            setOpenConfirmationModal(false);
-          }}
-          body={
-            <ConfirmationModalBody
-              projectsCount={projects.length}
-              selectedPayoutToken={payoutTokens[chainIdsBeingCheckedOut[0]]}
-              totalDonation={Object.values(totalDdonationsPerChain).reduce(
-                (acc, a) => acc.add(a),
-                BigNumber.from(0)
-              )}
-            />
-          }
-          isOpen={openConfirmationModal}
-          setIsOpen={setOpenConfirmationModal}
-        />
-        <InfoModal
-          title={"Heads up!"}
-          body={<InfoModalBody />}
-          isOpen={openInfoModal}
-          setIsOpen={setOpenInfoModal}
-          continueButtonAction={handleSubmitDonation}
-        />
-        <ProgressModal
-          isOpen={openProgressModal}
+        <MRCProgressModal
+          isOpen={openMRCProgressModal}
           subheading={"Please hold while we submit your donation."}
           steps={progressSteps}
         />
@@ -279,8 +250,8 @@ export function SummaryContainer() {
       }
 
       setTimeout(() => {
-        setOpenProgressModal(true);
-        setOpenInfoModal(false);
+        setOpenMRCProgressModal(true);
+        setOpenChainConfirmationModal(false);
       }, modalDelayMs);
 
       console.log(currentPayoutToken);
