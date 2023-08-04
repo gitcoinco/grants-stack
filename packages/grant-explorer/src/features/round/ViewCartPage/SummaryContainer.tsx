@@ -9,6 +9,8 @@ import ProgressModal from "../../common/ProgressModal";
 import { ConfirmationModalBody } from "./ConfirmationModalBody";
 import ErrorModal from "../../common/ErrorModal";
 import ConfirmationModal from "../../common/ConfirmationModal";
+import ChainConfirmationModal from "../../common/ConfirmationModal";
+import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { CartProject, ProgressStatus } from "../../api/types";
 import { useQFDonation } from "../../../context/QFDonationContext";
 import { modalDelayMs } from "../../../constants";
@@ -22,7 +24,6 @@ import { usePassport } from "../../api/passport";
 import useSWR from "swr";
 import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
-import { set } from "date-fns";
 
 export function SummaryContainer() {
   const { projects } = useCartStorage();
@@ -39,10 +40,12 @@ export function SummaryContainer() {
   });
 
   /** The id of the round to be checked out or currently being checked out */
-  const [chainIdBeingCheckedOut, setChainIdBeingCheckedOut] = useState<ChainId>(
-    Number(Object.keys(projectsByChain)[0]) as ChainId
-  );
-  const currentPayoutToken = payoutTokens[chainIdBeingCheckedOut];
+  const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
+    ChainId[]
+  >([]);
+  console.log("chainIdsBeingCheckedOut", chainIdsBeingCheckedOut);
+
+  const currentPayoutToken = payoutTokens[chainIdsBeingCheckedOut[0]];
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
@@ -68,7 +71,7 @@ export function SummaryContainer() {
           ),
       ])
     );
-  }, [projects]);
+  }, [payoutTokens, projectsByChain]);
 
   const navigate = useNavigate();
   const { address } = useAccount();
@@ -78,6 +81,8 @@ export function SummaryContainer() {
   const [emptyInput, setEmptyInput] = useState(false);
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [openChainConfirmationModal, setOpenChainConfirmationModal] =
+    useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
@@ -172,12 +177,31 @@ export function SummaryContainer() {
     //   return;
     // }
 
-    setOpenConfirmationModal(true);
+    setOpenChainConfirmationModal(true);
   }
 
   function PayoutModals() {
     return (
       <>
+        <ChainConfirmationModal
+          title={"Checkout"}
+          confirmButtonText={"Checkout"}
+          confirmButtonAction={() => {
+            setOpenInfoModal(true);
+            setOpenChainConfirmationModal(false);
+          }}
+          body={
+            <ChainConfirmationModalBody
+              projectsByChain={projectsByChain}
+              totalDdonationsPerChain={totalDdonationsPerChain}
+              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
+              setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
+            />
+          }
+          isOpen={openChainConfirmationModal}
+          setIsOpen={setOpenChainConfirmationModal}
+          disabled={chainIdsBeingCheckedOut.length === 0}
+        />
         <ConfirmationModal
           title={"Confirm Decision"}
           confirmButtonText={"Confirm"}
@@ -188,7 +212,7 @@ export function SummaryContainer() {
           body={
             <ConfirmationModalBody
               projectsCount={projects.length}
-              selectedPayoutToken={payoutTokens[chainIdBeingCheckedOut]}
+              selectedPayoutToken={payoutTokens[chainIdsBeingCheckedOut[0]]}
               totalDonation={Object.values(totalDdonationsPerChain).reduce(
                 (acc, a) => acc.add(a),
                 BigNumber.from(0)
@@ -262,9 +286,9 @@ export function SummaryContainer() {
       console.log(currentPayoutToken);
 
       await submitDonations({
-        donations: projectsByChain[chainIdBeingCheckedOut],
+        donations: projectsByChain[chainIdsBeingCheckedOut[0]],
         donationToken: currentPayoutToken,
-        totalDonation: totalDdonationsPerChain[chainIdBeingCheckedOut],
+        totalDonation: totalDdonationsPerChain[chainIdsBeingCheckedOut[0]],
         roundEndTime: currentPermitDeadline,
       });
     } catch (error) {
@@ -283,68 +307,71 @@ export function SummaryContainer() {
     address: address ?? "",
   });
   return (
-    <div className="order-first md:order-last col-span-1">
-      <div>
-        {Object.keys(projectsByChain).map((chainId) => (
-          <Summary
-            chainId={Number(chainId) as ChainId}
-            selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
-            totalDonation={totalDdonationsPerChain[chainId]}
-          />
-        ))}
-        <Button
-          $variant="solid"
-          data-testid="handle-confirmation"
-          type="button"
-          onClick={() => {
-            /* Check if user hasn't connected passport yet, display the warning modal */
-            if (
-              passportState === PassportState.ERROR ||
-              passportState === PassportState.NOT_CONNECTED ||
-              passportState === PassportState.INVALID_PASSPORT
-            ) {
-              setDonateWarningModalOpen(true);
-              return;
-            }
+    <div className="col-span-1">
+      <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
+        <h2 className="text-xl border-b-2 pb-2">Summary</h2>
+        <div>
+          {Object.keys(projectsByChain).map((chainId) => (
+            <Summary
+              chainId={Number(chainId) as ChainId}
+              selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
+              totalDonation={totalDdonationsPerChain[chainId]}
+            />
+          ))}
+          <Button
+            $variant="solid"
+            data-testid="handle-confirmation"
+            type="button"
+            onClick={() => {
+              /* Check if user hasn't connected passport yet, display the warning modal */
+              if (
+                passportState === PassportState.ERROR ||
+                passportState === PassportState.NOT_CONNECTED ||
+                passportState === PassportState.INVALID_PASSPORT
+              ) {
+                setDonateWarningModalOpen(true);
+                return;
+              }
 
-            /* If passport is fine, proceed straight to confirmation */
-            handleConfirmation();
-          }}
-          className="items-center shadow-sm text-sm rounded w-full"
-        >
-          Submit your donation!
-        </Button>
-        {/*{round.round?.roundMetadata?.quadraticFundingConfig*/}
-        {/*  ?.minDonationThresholdAmount && (*/}
-        {/*  <p className="flex justify-center my-4 text-sm italic">*/}
-        {/*    Your donation to each project must be valued at{" "}*/}
-        {/*    {*/}
-        {/*      round.round?.roundMetadata?.quadraticFundingConfig*/}
-        {/*        ?.minDonationThresholdAmount*/}
-        {/*    }{" "}*/}
-        {/*    USD or more to be eligible for matching.*/}
-        {/*  </p>*/}
-        {/*)}*/}
-        {emptyInput && (
-          <p
-            data-testid="emptyInput"
-            className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+              /* If passport is fine, proceed straight to confirmation */
+              handleConfirmation();
+            }}
+            className="items-center shadow-sm text-sm rounded w-full mt-4"
           >
-            <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-            <span>You must enter donations for all the projects</span>
-          </p>
-        )}
-        {insufficientBalance && (
-          <p
-            data-testid="insufficientBalance"
-            className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-          >
-            <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-            <span>You do not have enough funds for these donations</span>
-          </p>
-        )}
+            Submit your donation!
+          </Button>
+          {/*{round.round?.roundMetadata?.quadraticFundingConfig*/}
+          {/*  ?.minDonationThresholdAmount && (*/}
+          {/*  <p className="flex justify-center my-4 text-sm italic">*/}
+          {/*    Your donation to each project must be valued at{" "}*/}
+          {/*    {*/}
+          {/*      round.round?.roundMetadata?.quadraticFundingConfig*/}
+          {/*        ?.minDonationThresholdAmount*/}
+          {/*    }{" "}*/}
+          {/*    USD or more to be eligible for matching.*/}
+          {/*  </p>*/}
+          {/*)}*/}
+          {emptyInput && (
+            <p
+              data-testid="emptyInput"
+              className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+            >
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <span>You must enter donations for all the projects</span>
+            </p>
+          )}
+          {insufficientBalance && (
+            <p
+              data-testid="insufficientBalance"
+              className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+            >
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <span>You do not have enough funds for these donations</span>
+            </p>
+          )}
+        </div>
+        <PayoutModals />
       </div>
-      <PayoutModals />
     </div>
   );
 }

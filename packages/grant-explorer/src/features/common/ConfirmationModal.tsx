@@ -12,6 +12,7 @@ interface ModalProps {
   cancelButtonAction?: () => void;
   children?: ReactNode;
   modalStyle?: "wide" | "normal";
+  disabled?: boolean;
 }
 
 export default function ConfirmationModal({
@@ -84,6 +85,7 @@ export default function ConfirmationModal({
                     }`}
                     onClick={props.confirmButtonAction}
                     data-testid={"confirm-continue"}
+                    disabled={props.disabled}
                   >
                     {confirmButtonText}
                   </Button>
