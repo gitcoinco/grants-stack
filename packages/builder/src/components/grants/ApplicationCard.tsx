@@ -183,6 +183,10 @@ export default function ApplicationCard({
     );
   };
 
+  const hasProperStatus =
+    applicationData?.application.inReview ||
+    applicationData?.application.status === "APPROVED";
+
   return (
     <Box
       p={2}
@@ -213,7 +217,7 @@ export default function ApplicationCard({
       </div>
       {props.support && (
         <Box p={2} className="mt-4 text-sm">
-          {(!props.isDirectRound || applicationData?.application.inReview) && (
+          {(!props.isDirectRound || hasProperStatus) && (
             <p>
               Have any questions about your grant round application?{" "}
               <a

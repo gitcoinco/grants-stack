@@ -122,6 +122,8 @@ function ViewApplication() {
   const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
 
   const roundInReview = props.roundApplicationStatus === "IN_REVIEW";
+  const roundApproved = props.roundApplicationStatus === "APPROVED";
+  const hasProperStatus = roundInReview || roundApproved;
 
   if (
     props.roundState === undefined ||
@@ -167,7 +169,7 @@ function ViewApplication() {
           <p className="font-semibold">Grant Round</p>
           <p>{props.round.programName}</p>
           <p>{props.round.roundMetadata.name}</p>
-          {isDirectRound && roundInReview && (
+          {isDirectRound && hasProperStatus && (
             <>
               <p className="font-semibold mt-4">Contact Information:</p>
               <a
