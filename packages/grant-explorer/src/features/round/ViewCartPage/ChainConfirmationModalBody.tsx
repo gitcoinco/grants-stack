@@ -7,12 +7,29 @@ import { CHAINS, payoutTokens } from "../../api/utils";
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
   totalDdonationsPerChain: { [chain: number]: BigNumber };
+  chainIdsBeingCheckedOut: number[];
+  setChainIdsBeingCheckedOut: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export function ChainConfirmationModalBody({
   projectsByChain,
   totalDdonationsPerChain,
+  chainIdsBeingCheckedOut,
+  setChainIdsBeingCheckedOut,
 }: ChainConfirmationModalBodyProps) {
+  const handleChainCheckboxChange = (chainId: number, checked: boolean) => {
+    if (checked) {
+      setChainIdsBeingCheckedOut((prevChainIds) =>
+        prevChainIds.includes(chainId)
+          ? prevChainIds
+          : [...prevChainIds, chainId]
+      );
+    } else {
+      setChainIdsBeingCheckedOut((prevChainIds) =>
+        prevChainIds.filter((id) => id !== chainId)
+      );
+    }
+  };
   return (
     <>
       <p className="text-sm text-grey-400">
@@ -25,6 +42,10 @@ export function ChainConfirmationModalBody({
             chainId={Number(chainId) as ChainId}
             selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
             totalDonation={totalDdonationsPerChain[Number(chainId)]}
+            checked={chainIdsBeingCheckedOut.includes(Number(chainId))}
+            onChange={(checked) =>
+              handleChainCheckboxChange(Number(chainId), checked)
+            }
             isLastItem={index === Object.keys(projectsByChain).length - 1}
           />
         ))}
@@ -37,6 +58,8 @@ type ChainSummaryProps = {
   totalDonation: BigNumber;
   selectedPayoutToken: PayoutToken;
   chainId: ChainId;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
   isLastItem: boolean;
 };
 
@@ -44,6 +67,8 @@ export function ChainSummary({
   selectedPayoutToken,
   totalDonation,
   chainId,
+  checked,
+  onChange,
   isLastItem,
 }: ChainSummaryProps) {
   return (
@@ -53,7 +78,12 @@ export function ChainSummary({
       } px-2 py-4`}
     >
       <p>
-        <input type="checkbox" className="mr-2 rounded-sm" />
+        <input
+          type="checkbox"
+          className="mr-2 rounded-sm"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+        />
         <img
           className="inline mr-2 w-5 h-5"
           alt={CHAINS[chainId].name}

@@ -40,10 +40,12 @@ export function SummaryContainer() {
   });
 
   /** The id of the round to be checked out or currently being checked out */
-  const [chainIdBeingCheckedOut, setChainIdBeingCheckedOut] = useState<ChainId>(
-    Number(Object.keys(projectsByChain)[0]) as ChainId
-  );
-  const currentPayoutToken = payoutTokens[chainIdBeingCheckedOut];
+  const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
+    ChainId[]
+  >([]);
+  console.log("chainIdsBeingCheckedOut", chainIdsBeingCheckedOut);
+
+  const currentPayoutToken = payoutTokens[chainIdsBeingCheckedOut[0]];
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
@@ -192,6 +194,8 @@ export function SummaryContainer() {
             <ChainConfirmationModalBody
               projectsByChain={projectsByChain}
               totalDdonationsPerChain={totalDdonationsPerChain}
+              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
+              setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
             />
           }
           isOpen={openChainConfirmationModal}
@@ -207,7 +211,7 @@ export function SummaryContainer() {
           body={
             <ConfirmationModalBody
               projectsCount={projects.length}
-              selectedPayoutToken={payoutTokens[chainIdBeingCheckedOut]}
+              selectedPayoutToken={payoutTokens[chainIdsBeingCheckedOut[0]]}
               totalDonation={Object.values(totalDdonationsPerChain).reduce(
                 (acc, a) => acc.add(a),
                 BigNumber.from(0)
@@ -281,9 +285,9 @@ export function SummaryContainer() {
       console.log(currentPayoutToken);
 
       await submitDonations({
-        donations: projectsByChain[chainIdBeingCheckedOut],
+        donations: projectsByChain[chainIdsBeingCheckedOut[0]],
         donationToken: currentPayoutToken,
-        totalDonation: totalDdonationsPerChain[chainIdBeingCheckedOut],
+        totalDonation: totalDdonationsPerChain[chainIdsBeingCheckedOut[0]],
         roundEndTime: currentPermitDeadline,
       });
     } catch (error) {
