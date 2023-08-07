@@ -33,7 +33,6 @@ export function ChainConfirmationModalBody({
   };
 
   const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
-
   return (
     <>
       <p className="text-sm text-grey-400">

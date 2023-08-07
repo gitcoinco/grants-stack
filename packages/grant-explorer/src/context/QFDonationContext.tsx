@@ -234,7 +234,7 @@ async function vote(
       );
       nonce = (await erc20Contract.nonces(owner)) as BigNumber;
       const tokenName = (await erc20Contract.name()) as string;
-      if (/DAI/.test(tokenName)) {
+      if (/DAI/i.test(tokenName)) {
         sig = await signPermitDai({
           signer,
           spender: MRC_CONTRACTS[chainId],
@@ -246,7 +246,6 @@ async function vote(
           nonce,
         });
       } else {
-        debugger;
         sig = await signPermit2612({
           signer,
           value: totalDonation,

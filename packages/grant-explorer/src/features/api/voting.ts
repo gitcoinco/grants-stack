@@ -60,7 +60,6 @@ export const voteUsingMRCContract = async (
         permitSignature.s
       );
     } else {
-      debugger;
       tx = await mrcImplementation.voteERC20Permit(
         Object.values(groupedVotes),
         Object.keys(groupedVotes),
@@ -158,7 +157,6 @@ export const signPermit2612 = async ({
     types,
     message
   )) as Hex;
-  debugger;
   const [r, s, v] = [
     slice(signature, 0, 32),
     slice(signature, 32, 64),
@@ -201,7 +199,7 @@ export const signPermitDai = async ({
     expiry: deadline,
     allowed: true,
   };
-
+  debugger;
   const signature = (await signer._signTypedData(
     domainData,
     types,
