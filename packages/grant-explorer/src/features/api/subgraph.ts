@@ -33,7 +33,7 @@ export async function waitForSubgraphSyncTo(
   return currentBlockNumber;
 }
 
-const wait = (ms = 1000) =>
+export const wait = (ms = 1000) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });

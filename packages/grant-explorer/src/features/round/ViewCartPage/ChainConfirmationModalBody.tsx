@@ -2,7 +2,8 @@ import React from "react";
 import { BigNumber, ethers } from "ethers";
 import { CartProject, PayoutToken } from "../../api/types";
 import { ChainId } from "common";
-import { CHAINS, payoutTokens } from "../../api/utils";
+import { CHAINS } from "../../api/utils";
+import { useCartStorage } from "../../../store";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
@@ -30,6 +31,8 @@ export function ChainConfirmationModalBody({
       );
     }
   };
+
+  const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
   return (
     <>
       <p className="text-sm text-grey-400">
