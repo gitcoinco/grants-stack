@@ -13,10 +13,6 @@ export type Step = {
   status: ProgressStatus;
 };
 
-export type ChainStep = {
-  status: ProgressStatus;
-};
-
 type MRCProgressModalBodyProps = {
   chainIdsBeingCheckedOut: number[];
   steps: Step[];
@@ -28,24 +24,83 @@ export function MRCProgressModalBody({
 }: MRCProgressModalBodyProps) {
   const { chain } = useNetwork();
   const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
+  const chainStatus = "IN_PROGRESS" as ProgressStatus;
   return (
     <>
-      <div className="px-2 py-4 font-bold">
-        <MRCChainStep
-          step={{ status: ProgressStatus.IS_SUCCESS }}
-          icon={
-            <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
-              <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
-            </span>
-          }
-          line={
-            <div
-              className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-grey-200"
-              aria-hidden="true"
-            />
-          }
-          isLastStep={false}
-        />
+      <div className="flex px-2 py-4 justify-between">
+        {chainIdsBeingCheckedOut.length > 1 &&
+          chainIdsBeingCheckedOut.map((chainId, idx) => (
+            <>
+              {chainStatus === ProgressStatus.IN_PROGRESS ? (
+                <MRCModalChainStep
+                  key={chainId}
+                  icon={
+                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
+                      <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
+                    </span>
+                  }
+                  line={
+                    <div
+                      className="flex-grow h-0.5 bg-grey-100"
+                      style={{ minWidth: "300px" }}
+                    ></div>
+                  }
+                  isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                />
+              ) : chainStatus === ProgressStatus.IS_SUCCESS ? (
+                <MRCModalChainStep
+                  key={chainId}
+                  icon={
+                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full">
+                      <CheckIcon
+                        className="w-5 h-5 text-white"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  }
+                  line={
+                    <div
+                      className="flex-grow h-0.5 bg-teal-500"
+                      style={{ minWidth: "300px" }}
+                    ></div>
+                  }
+                  isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                />
+              ) : chainStatus === ProgressStatus.IS_ERROR ? (
+                <MRCModalChainStep
+                  key={chainId}
+                  icon={
+                    <span className="relative z-10 w-8 h-8 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
+                      <XMarkIcon className="w-5 h-5 text-pink-500" />
+                    </span>
+                  }
+                  line={
+                    <div
+                      className="flex-grow h-0.5 bg-grey-100"
+                      style={{ minWidth: "300px" }}
+                    ></div>
+                  }
+                  isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                />
+              ) : chainStatus === ProgressStatus.NOT_STARTED ? (
+                <MRCModalChainStep
+                  key={chainId}
+                  icon={
+                    <span className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"></span>
+                  }
+                  line={
+                    <div
+                      className="flex-grow h-0.5 bg-grey-100"
+                      style={{ minWidth: "300px" }}
+                    ></div>
+                  }
+                  isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                />
+              ) : (
+                <></>
+              )}
+            </>
+          ))}
       </div>
       <div className="px-2 py-4 font-bold">
         <p>
@@ -166,34 +221,23 @@ function MRCModalStep(props: {
   );
 }
 
-function MRCChainStep(props: {
-  step: ChainStep;
+function MRCModalChainStep(props: {
   icon: JSX.Element;
   line: JSX.Element;
   isAriaHidden?: boolean;
   isAriaCurrent?: boolean;
   isLastStep?: boolean;
 }) {
+  console.log(props);
   return (
-    <>
-      <div className="relative group">
-        <div
-          className={`${
-            props.isLastStep ? "h-9" : "h-full"
-          } flex items-center group`}
-          aria-current={!!props.isAriaCurrent}
-        >
-          <span
-            className="h-9 flex items-center"
-            aria-hidden={!!props.isAriaHidden}
-          >
-            {props.icon}
-          </span>
-        </div>
-        {!props.isLastStep && (
-          <div className="absolute top-5 left-5 right-5 border-t border-gray-400"></div>
-        )}
-      </div>
-    </>
+    <div className="flex items-center">
+      <span
+        className="h-9 flex items-center"
+        aria-hidden={!!props.isAriaHidden}
+      >
+        {props.icon}
+      </span>
+      {!props.isLastStep && props.line}
+    </div>
   );
 }
