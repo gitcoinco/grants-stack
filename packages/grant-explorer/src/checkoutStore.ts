@@ -212,6 +212,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           const receipt = await voteUsingMRCContract(
             walletClient,
             publicClient,
+            chainId,
             token,
             groupedEncodedVotes,
             groupedAmounts,
@@ -246,7 +247,10 @@ export const useCheckoutStore = create<CheckoutState>()(
 /** This function handles switching to a chain
  * if the chain is not present in the wallet, it will add it, and then switch */
 async function switchToChain(chainId: ChainId, walletClient: WalletClient) {
-  const nextChainData = allChains[chainId];
+  const nextChainData = allChains.find((chain) => chain.id === chainId);
+  if (!nextChainData) {
+    throw "next chain not found";
+  }
   /* Try switching normally */
   try {
     await walletClient.switchChain({
@@ -278,7 +282,7 @@ function encodeQFVotes(
       getAddress(donationToken.address) as Hex,
       parseUnits(donation.amount, donationToken.decimal),
       getAddress(donation.recipient),
-      toHex(donation.projectRegistryId),
+      donation.projectRegistryId as Hex,
       BigInt(donation.applicationIndex),
     ] as const;
 

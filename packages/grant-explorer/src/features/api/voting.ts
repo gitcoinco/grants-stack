@@ -5,6 +5,7 @@ import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
 import { WalletClient } from "wagmi";
 import { getContract, PublicClient } from "@wagmi/core";
+import { allChains } from "../../app/wagmi";
 
 export type PermitSignature = {
   v: number;
@@ -15,6 +16,7 @@ export type PermitSignature = {
 export const voteUsingMRCContract = async (
   walletClient: WalletClient,
   publicClient: PublicClient,
+  chainId: ChainId,
   token: PayoutToken,
   groupedVotes: Record<string, Hex[]>,
   groupedAmounts: Record<string, bigint>,
@@ -23,30 +25,42 @@ export const voteUsingMRCContract = async (
   deadline?: number,
   nonce?: bigint
 ) => {
+  console.log("chainId during vote", chainId);
   const mrcImplementation = getContract({
     address: MRC_CONTRACTS[(await walletClient.getChainId()) as ChainId],
     abi: mrcAbi,
     walletClient: walletClient,
+    chainId,
   });
 
   let tx;
 
   /* decide which function to use based on whether token is native, permit-compatible or DAI */
   if (token.address === zeroAddress) {
-    const { request } = await publicClient.simulateContract({
-      account: walletClient.account,
-      address: mrcImplementation.address,
-      abi: mrcAbi,
-      functionName: "vote",
-      args: [
+    // const { request } = await publicClient.simulateContract({
+    //   account: walletClient.account,
+    //   address: mrcImplementation.address,
+    //   abi: mrcAbi,
+    //   functionName: "vote",
+    //   args: [
+    //     Object.values(groupedVotes),
+    //     Object.keys(groupedVotes) as Hex[],
+    //     Object.values(groupedAmounts),
+    //   ],
+    //   value: nativeTokenAmount,
+    // });
+
+    tx = await mrcImplementation.write.vote(
+      [
         Object.values(groupedVotes),
         Object.keys(groupedVotes) as Hex[],
         Object.values(groupedAmounts),
       ],
-      value: nativeTokenAmount,
-    });
-
-    tx = await walletClient.writeContract(request);
+      {
+        value: nativeTokenAmount,
+        chain: allChains.find((chain) => chain.id === chainId),
+      }
+    );
   } else if (permitSignature && nonce) {
     /* Is token DAI? */
     if (/DAI/i.test(token.name)) {
@@ -84,6 +98,7 @@ export const voteUsingMRCContract = async (
 
   return publicClient.waitForTransactionReceipt({
     hash: tx,
+    timeout: 20_000,
   });
 };
 
