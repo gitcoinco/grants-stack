@@ -75,7 +75,9 @@ export const useCheckoutStore = create<CheckoutState>()(
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
       const projectsToCheckOut = useCartStorage
         .getState()
-        .projects.filter((project) => project.chainId in chainIdsToCheckOut);
+        .projects.filter((project) =>
+          chainIdsToCheckOut.includes(project.chainId)
+        );
 
       const projectsByChain = _.groupBy(projectsToCheckOut, "chainId") as {
         [chain: number]: CartProject[];
