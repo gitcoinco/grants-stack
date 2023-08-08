@@ -27,9 +27,9 @@ export function MRCProgressModalBody({
   const chainStatus = "IN_PROGRESS" as ProgressStatus;
   return (
     <>
-      <div className="flex px-2 py-4 justify-between">
-        {chainIdsBeingCheckedOut.length > 1 &&
-          chainIdsBeingCheckedOut.map((chainId, idx) => (
+      {chainIdsBeingCheckedOut.length > 1 && (
+        <div className="flex px-2 py-4 justify-between">
+          {chainIdsBeingCheckedOut.map((chainId, idx) => (
             <>
               {chainStatus === ProgressStatus.IN_PROGRESS ? (
                 <MRCModalChainStep
@@ -101,7 +101,8 @@ export function MRCProgressModalBody({
               )}
             </>
           ))}
-      </div>
+        </div>
+      )}
       <div className="px-2 py-4 font-bold">
         <p>
           <img
