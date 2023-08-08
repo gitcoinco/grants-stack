@@ -1,6 +1,5 @@
-import { handleTransaction } from "common/src/transactions";
 import { MRC_CONTRACTS } from "./contracts";
-import { Hex, hexToNumber, slice, toHex, zeroAddress } from "viem";
+import { Hex, hexToNumber, slice, zeroAddress } from "viem";
 import { PayoutToken } from "./types";
 import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
@@ -23,7 +22,7 @@ export const voteUsingMRCContract = async (
   permitSignature?: PermitSignature,
   deadline?: number,
   nonce?: bigint
-): Promise<{ txBlockNumber: number; txHash: string }> => {
+) => {
   const mrcImplementation = getContract({
     address: MRC_CONTRACTS[(await walletClient.getChainId()) as ChainId],
     abi: mrcAbi,
@@ -83,30 +82,18 @@ export const voteUsingMRCContract = async (
     );
   }
 
-  const result = await publicClient.waitForTransactionReceipt({
+  return publicClient.waitForTransactionReceipt({
     hash: tx,
   });
-
-  if (result.status) {
-    // handle error case
-    throw new Error(result.error);
-  } else {
-    console.log("✅ Transaction hash: ", result.transactionHash);
-
-    return {
-      txBlockNumber: result.blockNumber,
-      txHash: result.transactionHash,
-    };
-  }
 };
 
 type SignPermitProps = {
   walletClient: WalletClient;
-  contractAddress: string;
+  contractAddress: Hex;
   erc20Name: string;
-  owner: string;
-  spender: string;
-  deadline: number;
+  owner: Hex;
+  spender: Hex;
+  deadline: bigint;
   chainId: number;
 };
 
@@ -156,11 +143,13 @@ export const signPermit2612 = async ({
     deadline,
   };
 
-  const signature = (await walletClient._signTypedData(
-    domainData,
+  const signature = await walletClient.signTypedData({
+    account: owner,
+    message,
+    domain: domainData,
+    primaryType: "Permit",
     types,
-    message
-  )) as Hex;
+  });
   const [r, s, v] = [
     slice(signature, 0, 32),
     slice(signature, 32, 64),
@@ -204,11 +193,13 @@ export const signPermitDai = async ({
     allowed: true,
   };
 
-  const signature = (await walletClient._signTypedData(
-    domainData,
+  const signature = await walletClient.signTypedData({
+    account: owner,
+    domain: domainData,
+    primaryType: "Permit",
     types,
-    message
-  )) as Hex;
+    message,
+  });
   const [r, s, v] = [
     slice(signature, 0, 32),
     slice(signature, 32, 64),
