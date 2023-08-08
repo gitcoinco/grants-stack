@@ -13,6 +13,10 @@ export type Step = {
   status: ProgressStatus;
 };
 
+export type ChainStep = {
+  status: ProgressStatus;
+};
+
 type MRCProgressModalBodyProps = {
   chainIdsBeingCheckedOut: number[];
   steps: Step[];
@@ -26,6 +30,23 @@ export function MRCProgressModalBody({
   const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
   return (
     <>
+      <div className="px-2 py-4 font-bold">
+        <MRCChainStep
+          step={{ status: ProgressStatus.IS_SUCCESS }}
+          icon={
+            <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
+              <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
+            </span>
+          }
+          line={
+            <div
+              className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-grey-200"
+              aria-hidden="true"
+            />
+          }
+          isLastStep={false}
+        />
+      </div>
       <div className="px-2 py-4 font-bold">
         <p>
           <img
@@ -41,14 +62,14 @@ export function MRCProgressModalBody({
           {steps.map((step, stepIdx) => (
             <li
               key={stepIdx}
-              className={`relative ${stepIdx !== steps.length - 1 && "pb-10"}`}
+              className={`relative ${stepIdx !== steps.length - 1 && "pb-4"}`}
             >
               {step.status === ProgressStatus.IS_SUCCESS ? (
                 <MRCModalStep
                   step={step}
                   icon={
                     <span
-                      className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full"
+                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-teal-500 rounded-full"
                       data-testid={`${step.name}-complete-icon`}
                     >
                       <CheckIcon
@@ -57,54 +78,33 @@ export function MRCProgressModalBody({
                       />
                     </span>
                   }
-                  line={
-                    <div
-                      className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-teal-500"
-                      aria-hidden="true"
-                    />
-                  }
                   nameColor={"text-grey-500"}
                   descriptionColor={"text-grey-500"}
-                  isLastStep={stepIdx === steps.length - 1}
                 />
               ) : step.status === ProgressStatus.IN_PROGRESS ? (
                 <MRCModalStep
                   step={step}
                   icon={
-                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
+                    <span className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
                       <span
-                        className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale"
+                        className="h-2.5 w-2.5 bg-violet-500 rounded-full"
                         data-testid={`${step.name}-current-icon`}
                       />
                     </span>
                   }
-                  line={
-                    <div
-                      className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-grey-200"
-                      aria-hidden="true"
-                    />
-                  }
                   nameColor="text-violet-500"
-                  isLastStep={stepIdx === steps.length - 1}
                 />
               ) : step.status === ProgressStatus.IS_ERROR ? (
                 <MRCModalStep
                   step={step}
                   icon={
-                    <span className="relative z-10 w-8 h-8 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
+                    <span className="relative z-10 w-6 h-6 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
                       <XMarkIcon
                         className="w-5 h-5 text-pink-500"
                         data-testid={`${step.name}-error-icon`}
                       />
                     </span>
                   }
-                  line={
-                    <div
-                      className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-grey-300"
-                      aria-hidden="true"
-                    />
-                  }
-                  isLastStep={stepIdx === steps.length - 1}
                   nameColor="text-grey-500"
                 />
               ) : step.status === ProgressStatus.NOT_STARTED ? (
@@ -112,17 +112,10 @@ export function MRCProgressModalBody({
                   step={step}
                   icon={
                     <span
-                      className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"
+                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"
                       data-testid={`${step.name}-upcoming-icon`}
                     ></span>
                   }
-                  line={
-                    <div
-                      className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-grey-300"
-                      aria-hidden="true"
-                    />
-                  }
-                  isLastStep={stepIdx === steps.length - 1}
                   nameColor="text-grey-400"
                 />
               ) : (
@@ -139,16 +132,13 @@ export function MRCProgressModalBody({
 function MRCModalStep(props: {
   step: Step;
   icon: JSX.Element;
-  line: JSX.Element;
   nameColor: string;
   descriptionColor?: string;
   isAriaHidden?: boolean;
   isAriaCurrent?: boolean;
-  isLastStep?: boolean;
 }) {
   return (
     <>
-      {!props.isLastStep ? props.line : null}
       <div
         className="relative flex items-start group"
         aria-current={!!props.isAriaCurrent}
@@ -171,6 +161,38 @@ function MRCModalStep(props: {
             {props.step.description}
           </span>
         </span>
+      </div>
+    </>
+  );
+}
+
+function MRCChainStep(props: {
+  step: ChainStep;
+  icon: JSX.Element;
+  line: JSX.Element;
+  isAriaHidden?: boolean;
+  isAriaCurrent?: boolean;
+  isLastStep?: boolean;
+}) {
+  return (
+    <>
+      <div className="relative group">
+        <div
+          className={`${
+            props.isLastStep ? "h-9" : "h-full"
+          } flex items-center group`}
+          aria-current={!!props.isAriaCurrent}
+        >
+          <span
+            className="h-9 flex items-center"
+            aria-hidden={!!props.isAriaHidden}
+          >
+            {props.icon}
+          </span>
+        </div>
+        {!props.isLastStep && (
+          <div className="absolute top-5 left-5 right-5 border-t border-gray-400"></div>
+        )}
       </div>
     </>
   );
