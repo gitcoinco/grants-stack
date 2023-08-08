@@ -7,7 +7,6 @@ import {
   useContext,
   useState,
 } from "react";
-import { useChainId, useSigner } from "wagmi";
 import {
   PermitSignature,
   signPermit2612,
@@ -201,134 +200,6 @@ export const useQFDonation = () => {
   };
 };
 
-async function vote(
-  signer: JsonRpcSigner,
-  token: PayoutToken,
-  donations: CartProject[],
-  context: QFDonationState,
-  deadline: number
-): Promise<void> {
-  const { setVoteStatus, setTxHash, setTxBlockNumber, setTokenApprovalStatus } =
-    context;
-
-  const totalDonation = donations
-    .map((donation) => ethers.utils.parseUnits(donation.amount, token.decimal))
-    .reduce((acc, amount) => acc.add(amount), BigNumber.from(0));
-
-  let sig;
-  let nonce;
-
-  if (token.address !== zeroAddress) {
-    try {
-      setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
-      const chainId = (await signer.getChainId()) as ChainId;
-      const owner = await signer.getAddress();
-      /* Get nonce and name from erc20 contract */
-      const erc20Contract = new ethers.Contract(
-        token.address,
-        [
-          "function nonces(address) public view returns (uint256)",
-          "function name() public view returns (string)",
-        ],
-        signer
-      );
-      nonce = (await erc20Contract.nonces(owner)) as BigNumber;
-      const tokenName = (await erc20Contract.name()) as string;
-      if (/DAI/i.test(tokenName)) {
-        sig = await signPermitDai({
-          signer,
-          spender: MRC_CONTRACTS[chainId],
-          chainId,
-          deadline,
-          contractAddress: token.address,
-          erc20Name: tokenName,
-          owner,
-          nonce,
-        });
-      } else {
-        sig = await signPermit2612({
-          signer,
-          value: totalDonation,
-          spender: MRC_CONTRACTS[chainId],
-          nonce,
-          chainId,
-          deadline,
-          contractAddress: token.address,
-          erc20Name: tokenName,
-          owner,
-        });
-      }
-
-      setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
-    } catch (e) {
-      console.error(e);
-      setTokenApprovalStatus(ProgressStatus.IS_ERROR);
-    }
-
-    if (!sig) {
-      setTokenApprovalStatus(ProgressStatus.IS_ERROR);
-      return;
-    }
-  }
-
-  try {
-    setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
-    setVoteStatus(ProgressStatus.IN_PROGRESS);
-    /* Group donations by round */
-    const groupedDonations = _.groupBy(
-      donations.map((d) => ({
-        ...d,
-        roundId: ethers.utils.getAddress(d.roundId),
-      })),
-      "roundId"
-    );
-
-    const groupedEncodedVotes: Record<string, BytesLike[]> = {};
-    for (const roundId in groupedDonations) {
-      groupedEncodedVotes[roundId] = encodeQFVotes(
-        token,
-        groupedDonations[roundId]
-      );
-    }
-
-    const groupedAmounts: Record<string, BigNumber> = {};
-    for (const roundId in groupedDonations) {
-      groupedAmounts[roundId] = groupedDonations[roundId].reduce(
-        (acc, donation) =>
-          acc.add(ethers.utils.parseUnits(donation.amount, token.decimal)),
-        BigNumber.from(0)
-      );
-    }
-
-    const { txBlockNumber, txHash } = await voteUsingMRCContract(
-      signer,
-      token,
-      groupedEncodedVotes,
-      groupedAmounts,
-      totalDonation,
-      sig,
-      deadline,
-      nonce
-    );
-
-    setVoteStatus(ProgressStatus.IS_SUCCESS);
-    setTxHash(txHash);
-    setTxBlockNumber(txBlockNumber);
-  } catch (error) {
-    datadogLogs.logger.error(
-      `error: vote - ${error}. Data - ${donations.toString()}`
-    );
-    console.error(
-      `vote - roundIds ${Object.keys(donations.map((d) => d.roundId))}, token ${
-        token.name
-      }`,
-      error
-    );
-    setVoteStatus(ProgressStatus.IS_ERROR);
-    throw error;
-  }
-}
-
 async function waitForSubgraphToUpdate(
   signerOrProvider: Signer,
   context: QFDonationState
@@ -360,32 +231,4 @@ async function waitForSubgraphToUpdate(
     setIndexingStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
-}
-
-function encodeQFVotes(
-  donationToken: PayoutToken,
-  donations: CartProject[]
-): BytesLike[] {
-  const encodedVotes: BytesLike[] = [];
-
-  donations.map((donation) => {
-    const projectAddress = ethers.utils.getAddress(donation.recipient);
-
-    const vote = [
-      donationToken.address,
-      ethers.utils.parseUnits(donation.amount, donationToken.decimal),
-      projectAddress,
-      donation.projectRegistryId,
-      donation.applicationIndex,
-    ];
-
-    encodedVotes.push(
-      ethers.utils.defaultAbiCoder.encode(
-        ["address", "uint256", "address", "bytes32", "uint256"],
-        vote
-      )
-    );
-  });
-
-  return encodedVotes;
 }

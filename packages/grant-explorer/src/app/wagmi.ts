@@ -18,11 +18,12 @@ import {
   optimism,
   Chain,
 } from "wagmi/chains";
-import { createClient, configureChains } from "wagmi";
+import { configureChains, createConfig } from "wagmi";
 
 import { pgnTestnet, pgn } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
+import { createPublicClient } from "viem";
 
 const testnetChains = () => {
   return [
@@ -41,12 +42,12 @@ const mainnetChains = () => {
   ];
 };
 
-const allChains: Chain[] =
+export const allChains: Chain[] =
   process.env.REACT_APP_ENV === "development"
     ? [...testnetChains(), ...mainnetChains()]
     : [...mainnetChains()];
 
-export const { chains, provider, webSocketProvider } = configureChains(
+export const { chains, publicClient, webSocketPublicClient } = configureChains(
   allChains,
   [
     infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID as string }),
@@ -80,9 +81,9 @@ const connectors = connectorsForWallets([
   },
 ]);
 
-export const client = createClient({
+export const client = createConfig({
   autoConnect: true,
   connectors: connectors,
-  provider,
-  webSocketProvider,
+  publicClient,
+  webSocketPublicClient,
 });

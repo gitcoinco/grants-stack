@@ -10,7 +10,12 @@ import { CartProject, ProgressStatus } from "../../api/types";
 import { useQFDonation } from "../../../context/QFDonationContext";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
+import {
+  useAccount,
+  useNetwork,
+  useWalletClient,
+  useSwitchNetwork,
+} from "wagmi";
 import { Logger } from "ethers/lib.esm/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Button } from "common/src/styles";
@@ -21,11 +26,13 @@ import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
-import { JsonRpcSigner } from "@ethersproject/providers";
+import { allChains } from "../../../app/wagmi";
+import { useCheckoutStore } from "../../../checkoutStore";
 
 export function SummaryContainer() {
   const { chain } = useNetwork();
   const { projects } = useCartStorage();
+  const { checkout } = useCheckoutStore();
   const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
   const projectsByChain = _.groupBy(projects, "chainId") as {
     [chain: number]: CartProject[];
@@ -47,7 +54,7 @@ export function SummaryContainer() {
 
   /** The ID of the current chain (from wallet) */
   const currentChainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
-  const { data: signer } = useSigner();
+  const { data: signer } = useWalletClient();
 
   const { switchNetworkAsync } = useSwitchNetwork({
     onSuccess: () => {
@@ -152,14 +159,22 @@ export function SummaryContainer() {
           setTimeout(() => {
             setOpenMRCProgressModal(false);
             // navigate(`/thankyou`);
-            console.log("SUCCESSSSSS");
+            alert("success");
           }, modalDelayMs);
           return;
         }
 
         /** Switch to the next chain */
         const nextChain = chainsLeft[0];
-        await switchNetworkAsync?.(nextChain);
+        const nextChainData = allChains.find((chain) => chain.id === nextChain);
+        if (!nextChainData) {
+          throw "couldn't find chain data to switch to";
+        }
+        try {
+          await switchNetworkAsync?.(nextChain);
+        } catch (e) {
+          /** Fix for CB wallet */
+        }
 
         setCheckedOutChainIds((checkedOutChains) => {
           return [...checkedOutChains, currentChainId];
@@ -173,13 +188,8 @@ export function SummaryContainer() {
           ((await signer?.getChainId()) as ChainId) ??
           chainIdsBeingCheckedOut[0];
         setChainSwitched(false);
-        await submitDonations({
-          donations: projectsByChain[chainId],
-          donationToken: payoutTokens[chainId],
-          totalDonation: totalDonationsPerChain[chainId],
-          roundEndTime: currentPermitDeadline,
-          signer: signer as JsonRpcSigner,
-        });
+        console.log(projectsByChain[chainId]);
+        await checkout([], signer);
       }
     }
 
@@ -299,6 +309,12 @@ export function SummaryContainer() {
         setOpenChainConfirmationModal(false);
       }, modalDelayMs);
 
+      if (!chainIdsBeingCheckedOut.includes(currentChainId)) {
+        /* Current chain is not a chain to be checked out, switch to the first chain to be checked out */
+        await switchNetworkAsync?.(chainIdsBeingCheckedOut[0]);
+      }
+
+      console.log("handlesubmitdonations", projectsByChain[currentChainId]);
       await submitDonations({
         donations: projectsByChain[currentChainId],
         donationToken: currentPayoutToken,
