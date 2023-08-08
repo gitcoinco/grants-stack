@@ -81,7 +81,7 @@ const connectors = connectorsForWallets([
   },
 ]);
 
-export const client = createConfig({
+export const config = createConfig({
   autoConnect: true,
   connectors: connectors,
   publicClient,

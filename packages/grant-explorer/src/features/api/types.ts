@@ -3,6 +3,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
 import { BigNumber } from "ethers";
+import { Hex } from "viem";
 
 export type Network = "goerli" | "optimism" | "fantom" | "pgn";
 
@@ -195,7 +196,7 @@ export enum ProgressStatus {
 export type PayoutToken = {
   name: string;
   chainId: ChainId;
-  address: string;
+  address: Hex;
   decimal: number;
   logo?: string;
   default?: boolean;

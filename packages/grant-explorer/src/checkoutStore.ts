@@ -24,8 +24,9 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { allChains } from "./app/wagmi";
 import { WalletClient } from "wagmi";
 import { getContract, PublicClient } from "@wagmi/core";
+import { Progress } from "@chakra-ui/react";
 
-type ChainMap<T> = Partial<Record<ChainId, T>>;
+type ChainMap<T> = Record<ChainId, T>;
 
 interface CheckoutState {
   permitStatus: ChainMap<ProgressStatus>;
@@ -43,17 +44,24 @@ interface CheckoutState {
     chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
     walletClient: WalletClient,
     publicClient: PublicClient
-  ) => void;
+  ) => Promise<void>;
 }
+
+const defaultProgressStatusForAllChains = Object.fromEntries(
+  Object.values(allChains).map((value) => [
+    value.id as ChainId,
+    ProgressStatus.NOT_STARTED,
+  ])
+) as ChainMap<ProgressStatus>;
 
 export const useCheckoutStore = create<CheckoutState>()(
   devtools((set, get) => ({
-    permitStatus: {},
+    permitStatus: defaultProgressStatusForAllChains,
     setPermitStatusForChain: (chain: ChainId, permitStatus: ProgressStatus) =>
       set({
         permitStatus: { ...get().permitStatus, [chain]: permitStatus },
       }),
-    voteStatus: {},
+    voteStatus: defaultProgressStatusForAllChains,
     setVoteStatusForChain: (chain: ChainId, voteStatus: ProgressStatus) =>
       set({
         voteStatus: { ...get().voteStatus, [chain]: voteStatus },
@@ -133,7 +141,7 @@ export const useCheckoutStore = create<CheckoutState>()(
                 walletClient: walletClient,
                 spender: MRC_CONTRACTS[chainId],
                 chainId,
-                deadline,
+                deadline: BigInt(deadline),
                 contractAddress: token.address,
                 erc20Name: tokenName,
                 owner,
@@ -146,7 +154,7 @@ export const useCheckoutStore = create<CheckoutState>()(
                 spender: MRC_CONTRACTS[chainId],
                 nonce,
                 chainId,
-                deadline,
+                deadline: BigInt(deadline),
                 contractAddress: token.address,
                 erc20Name: tokenName,
                 owner,

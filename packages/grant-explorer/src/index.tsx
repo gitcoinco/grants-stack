@@ -3,19 +3,13 @@ import "./browserPatches";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-  BrowserRouter,
-  HashRouter,
-  Route,
-  Router,
-  Routes,
-} from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
 import { initSentry } from "./sentry";
 import { initTagmanager } from "./tagmanager";
-import { chains, client as WagmiClient } from "./app/wagmi";
+import { chains, config } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
 
 import "./index.css";
@@ -33,7 +27,6 @@ import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewContributionHistory from "./features/contributors/ViewContributionHistory";
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
-import { Switch } from "@headlessui/react";
 import { ChakraProvider } from "@chakra-ui/react";
 
 // Initialize sentry
@@ -52,7 +45,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ChakraProvider>
-      <WagmiConfig client={WagmiClient}>
+      <WagmiConfig config={config}>
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
             <HashRouter>
