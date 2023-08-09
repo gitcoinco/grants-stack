@@ -8,14 +8,14 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 
 export interface NavbarProps {
-  roundUrlPath: string;
+  roundUrlPath?: string;
   customBackground?: string;
   isBeforeRoundEndDate?: boolean;
   showWalletInteraction?: boolean;
 }
 
 export default function Navbar(props: NavbarProps) {
-  /* This part keeps the store in sync between tabs */
+  /** This part keeps the store in sync between tabs */
   const store = useCartStorage();
   const updateStore = () => {
     useCartStorage.persist.rehydrate();
@@ -29,7 +29,7 @@ export default function Navbar(props: NavbarProps) {
       window.removeEventListener("focus", updateStore);
     };
   }, []);
-  /* end of part that keeps the store in sync between tabs */
+  /** end of part that keeps the store in sync between tabs */
 
   const showWalletInteraction = props.showWalletInteraction ?? true;
   const currentOrigin = window.location.origin;
@@ -42,7 +42,9 @@ export default function Navbar(props: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <a
-              href={`${currentOrigin}#${props.roundUrlPath}`}
+              href={`${currentOrigin}${
+                props.roundUrlPath ? `#${props.roundUrlPath}` : ""
+              }`}
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >

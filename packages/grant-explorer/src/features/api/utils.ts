@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ethers } from "ethers";
 import { CartProject, IPFSObject, PayoutToken } from "./types";
 import { ChainId, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
+import { zeroAddress } from "viem";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -77,7 +77,7 @@ const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.MAINNET,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -96,7 +96,7 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -115,7 +115,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "FTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
     redstoneTokenId: RedstoneTokenIds["FTM"],
@@ -146,6 +146,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
+    permitVersion: "2",
   },
   {
     name: "DAI",
@@ -158,7 +159,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.GOERLI_CHAIN_ID,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -188,7 +189,7 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.PGN_TESTNET,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -199,7 +200,7 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.PGN,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],

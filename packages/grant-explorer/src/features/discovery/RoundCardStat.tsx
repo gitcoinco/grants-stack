@@ -1,5 +1,4 @@
 import { ChainId } from "common";
-import { BigNumber } from "ethers";
 import { CHAINS } from "../api/utils";
 
 type RoundCardStatProps = {
@@ -10,8 +9,8 @@ type RoundCardStatProps = {
 };
 
 function RoundCardStat(props: RoundCardStatProps) {
-  const matchAmount = BigNumber.from(props.matchAmount);
-  const matchAmountNormalized = matchAmount.div("1000000000000000000");
+  const matchAmount = BigInt(props.matchAmount);
+  const matchAmountNormalized = matchAmount / 1000000000000000000n;
 
   return (
     <div className="flex justify-between mb-4">
