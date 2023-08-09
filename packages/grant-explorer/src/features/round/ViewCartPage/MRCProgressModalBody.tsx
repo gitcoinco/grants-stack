@@ -4,6 +4,7 @@ import { CHAINS } from "../../api/utils";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNetwork } from "wagmi";
+import { useCheckoutStore } from "../../../checkoutStore";
 
 export type Step = {
   name: string;
@@ -23,14 +24,16 @@ export function MRCProgressModalBody({
   const { chain } = useNetwork();
   const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
 
-  const chainStatus = "IN_PROGRESS" as ProgressStatus;
+  const checkoutStore = useCheckoutStore();
+
   return (
     <>
       {chainIdsBeingCheckedOut.length > 1 && (
         <div className="flex py-2 justify-between">
           {chainIdsBeingCheckedOut.map((chainId, idx) => (
             <>
-              {chainStatus === ProgressStatus.IN_PROGRESS ? (
+              {checkoutStore.voteStatus[chainId as ChainId] ===
+              ProgressStatus.IN_PROGRESS ? (
                 <MRCModalChainStep
                   key={chainId}
                   icon={
@@ -38,12 +41,12 @@ export function MRCProgressModalBody({
                       <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
                     </span>
                   }
-                  line={
-                    <div className="flex-grow h-0.5 bg-grey-100 sm:min-w-[300px] min-w-[270px]"></div>
-                  }
+                  line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
                   isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                  chainCount={chainIdsBeingCheckedOut.length}
                 />
-              ) : chainStatus === ProgressStatus.IS_SUCCESS ? (
+              ) : checkoutStore.voteStatus[chainId as ChainId] ===
+                ProgressStatus.IS_SUCCESS ? (
                 <MRCModalChainStep
                   key={chainId}
                   icon={
@@ -54,12 +57,12 @@ export function MRCProgressModalBody({
                       />
                     </span>
                   }
-                  line={
-                    <div className="flex-grow h-0.5 bg-teal-500 sm:min-w-[300px] min-w-[270px]"></div>
-                  }
+                  line={<div className="flex-grow h-0.5 bg-teal-500"></div>}
                   isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                  chainCount={chainIdsBeingCheckedOut.length}
                 />
-              ) : chainStatus === ProgressStatus.IS_ERROR ? (
+              ) : checkoutStore.voteStatus[chainId as ChainId] ===
+                ProgressStatus.IS_ERROR ? (
                 <MRCModalChainStep
                   key={chainId}
                   icon={
@@ -67,21 +70,20 @@ export function MRCProgressModalBody({
                       <XMarkIcon className="w-5 h-5 text-pink-500" />
                     </span>
                   }
-                  line={
-                    <div className="flex-grow h-0.5 bg-grey-100 sm:min-w-[300px] min-w-[270px]"></div>
-                  }
+                  line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
                   isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                  chainCount={chainIdsBeingCheckedOut.length}
                 />
-              ) : chainStatus === ProgressStatus.NOT_STARTED ? (
+              ) : checkoutStore.voteStatus[chainId as ChainId] ===
+                ProgressStatus.NOT_STARTED ? (
                 <MRCModalChainStep
                   key={chainId}
                   icon={
-                    <span className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"></span>
+                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"></span>
                   }
-                  line={
-                    <div className="flex-grow h-0.5 bg-grey-100 sm:min-w-[300px] min-w-[270px]"></div>
-                  }
+                  line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
                   isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                  chainCount={chainIdsBeingCheckedOut.length}
                 />
               ) : (
                 <></>
@@ -216,10 +218,27 @@ function MRCModalChainStep(props: {
   isAriaHidden?: boolean;
   isAriaCurrent?: boolean;
   isLastStep?: boolean;
+  chainCount?: number;
 }) {
-  console.log(props);
+  let widthClass = "";
+  if (props.chainCount) {
+    switch (props.chainCount) {
+      case 2:
+        widthClass = "w-full";
+        break;
+      case 3:
+        widthClass = "w-1/2";
+        break;
+      case 4:
+        widthClass = "w-1/3";
+        break;
+      default:
+        widthClass = "w-full";
+        break;
+    }
+  }
   return (
-    <div className="flex items-center">
+    <div className={`flex items-center ${props.isLastStep ? "" : widthClass}`}>
       <span
         className="h-9 flex items-center"
         aria-hidden={!!props.isAriaHidden}
