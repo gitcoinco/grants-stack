@@ -1,8 +1,8 @@
 import { ChainId, useTokenPrice } from "common";
 import React from "react";
 import { PayoutToken } from "../../api/types";
-import { CHAINS } from "../../api/utils";
 import { formatUnits } from "viem";
+import { getChainById } from "../../api/utils";
 
 type SummaryProps = {
   totalDonation: bigint;
@@ -29,10 +29,10 @@ export function Summary({
         <p>
           <img
             className={"inline max-w-[32px] mr-2"}
-            alt={CHAINS[chainId].name}
-            src={CHAINS[chainId].logo}
+            alt={getChainById(chainId).name}
+            src={getChainById(chainId).logo}
           />
-          {CHAINS[chainId].name}
+          {getChainById(chainId).name}
         </p>
       </div>
       <div className="flex flex-col">

@@ -14,7 +14,7 @@ import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
-import { CHAINS, payoutTokens } from "../api/utils";
+import { getChainById, payoutTokens } from "../api/utils";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
@@ -254,10 +254,10 @@ function AfterRoundStart(props: {
             <div className="flex">
               <img
                 className="w-4 h-4 mt-0.5 mr-1"
-                src={CHAINS[chainId].logo}
+                src={getChainById(chainId).logo}
                 alt="Round Chain Logo"
               />
-              <span>{CHAINS[chainId].name}</span>
+              <span>{getChainById(chainId).name}</span>
             </div>
           </p>
 

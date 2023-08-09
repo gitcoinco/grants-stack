@@ -4,7 +4,7 @@ import { makeProgramData, renderWrapped } from "../../../test-utils";
 
 import { faker } from "@faker-js/faker";
 import moment from "moment";
-import { CHAINS } from "../../api/utils";
+import { getChainById } from "../../api/utils";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
@@ -346,7 +346,7 @@ describe("<RoundDetailForm />", () => {
   });
 
   it("renders program chain name", async () => {
-    const chain = CHAINS[ChainId.OPTIMISM_MAINNET_CHAIN_ID]!;
+    const chain = getChainById(ChainId.OPTIMISM_MAINNET_CHAIN_ID);
     const program = makeProgramData({
       chain: { id: chain.id, name: chain.name, logo: chain.logo },
     });

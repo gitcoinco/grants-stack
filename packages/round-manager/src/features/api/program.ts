@@ -1,4 +1,4 @@
-import { CHAINS, fetchFromIPFS } from "./utils";
+import { fetchFromIPFS, getChainById } from "./utils";
 import { MetadataPointer, Program, Web3Instance } from "./types";
 import { programFactoryContract } from "./contracts";
 import { ethers } from "ethers";
@@ -63,8 +63,8 @@ export async function listPrograms(
         ),
         chain: {
           id: chainId,
-          name: CHAINS[chainId]?.name,
-          logo: CHAINS[chainId]?.logo,
+          name: getChainById(chainId).name,
+          logo: getChainById(chainId).logo,
         },
       });
     }
@@ -125,8 +125,8 @@ export async function getProgramById(
       ),
       chain: {
         id: chainId,
-        name: CHAINS[chainId]?.name,
-        logo: CHAINS[chainId]?.logo,
+        name: getChainById(chainId).name,
+        logo: getChainById(chainId).logo,
       },
     };
   } catch (error) {

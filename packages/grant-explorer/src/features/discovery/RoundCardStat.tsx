@@ -1,5 +1,5 @@
 import { ChainId } from "common";
-import { CHAINS } from "../api/utils";
+import { getChainById } from "../api/utils";
 
 type RoundCardStatProps = {
   chainId: ChainId;
@@ -28,7 +28,7 @@ function RoundCardStat(props: RoundCardStatProps) {
       <div>
         <img
           className="w-8"
-          src={CHAINS[props.chainId]?.logo}
+          src={getChainById(props.chainId).logo}
           alt="Round Chain Logo"
         />
       </div>

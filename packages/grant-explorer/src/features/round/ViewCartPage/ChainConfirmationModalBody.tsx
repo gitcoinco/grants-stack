@@ -1,7 +1,7 @@
 import React from "react";
 import { CartProject, PayoutToken } from "../../api/types";
 import { ChainId } from "common";
-import { CHAINS } from "../../api/utils";
+import { getChainById } from "../../api/utils";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
 
@@ -89,10 +89,10 @@ export function ChainSummary({
         />
         <img
           className="inline mr-2 w-5 h-5"
-          alt={CHAINS[chainId].name}
-          src={CHAINS[chainId].logo}
+          alt={getChainById(chainId).name}
+          src={getChainById(chainId).logo}
         />
-        Checkout {CHAINS[chainId].name} cart
+        Checkout {getChainById(chainId).name} cart
       </p>
       <p className="ml-7 mt-1">
         <span data-testid={"totalDonation"} className="mr-2">

@@ -1,5 +1,5 @@
 import {
-  CHAINS,
+  getChainById,
   getPayoutTokenOptions,
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
@@ -18,7 +18,7 @@ type Props = {
 };
 
 export function CartWithProjects({ cart, chainId }: Props) {
-  const chain = CHAINS[chainId];
+  const chain = getChainById(chainId);
   const cartByRound = Object.values(cart);
 
   const store = useCartStorage();

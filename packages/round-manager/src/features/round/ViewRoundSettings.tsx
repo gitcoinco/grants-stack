@@ -2,7 +2,7 @@
 import { Listbox, RadioGroup, Tab, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ChainId, classNames, getUTCDate, getUTCTime } from "common";
+import { classNames, getUTCDate, getUTCTime } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
 import moment from "moment";
@@ -32,7 +32,7 @@ import {
   ProgressStep,
   Round,
 } from "../api/types";
-import { CHAINS, SupportType, payoutTokens } from "../api/utils";
+import { SupportType, getChainById, payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import FormValidationErrorList from "../common/FormValidationErrorList";
@@ -611,9 +611,9 @@ function DetailsPage(props: {
             }`}
           >
             <span className="flex items-center">
-              {chain && CHAINS[chain.id as ChainId]?.logo && (
+              {chain && getChainById(chain.id).logo && (
                 <img
-                  src={CHAINS[chain.id as ChainId]?.logo}
+                  src={getChainById(chain.id).logo}
                   alt="chain logo"
                   data-testid="chain-logo"
                   className="h-5 w-5 flex-shrink-0 rounded-full"

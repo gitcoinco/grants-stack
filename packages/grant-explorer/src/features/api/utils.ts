@@ -14,10 +14,9 @@ export function useDebugMode(): boolean {
   );
 }
 
-export const CHAINS: Record<
-  ChainId,
-  { id: ChainId; name: string; logo: string }
-> = {
+type Chain = { id: ChainId; name: string; logo: string };
+
+const CHAINS: Record<ChainId, Chain> = {
   [ChainId.PGN]: {
     id: ChainId.PGN,
     name: "PGN",
@@ -474,4 +473,12 @@ export const groupProjectsInCart = (
   });
 
   return groupedCartProjects;
+};
+
+export const getChainById = (chainId: ChainId): Chain => {
+  if (!(chainId in CHAINS)) {
+    throw new Error(`Unknown chain id: ${chainId}`);
+  }
+
+  return CHAINS[chainId];
 };

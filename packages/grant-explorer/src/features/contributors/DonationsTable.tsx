@@ -5,7 +5,7 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
-import { CHAINS } from "../api/utils";
+import { getChainById } from "../api/utils";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
 import { ChainId } from "common";
@@ -74,7 +74,7 @@ export function DonationsTable(props: {
                         <div className="flex items-center">
                           <img
                             className="w-4 h-4 mr-2"
-                            src={CHAINS[chainId]?.logo}
+                            src={getChainById(chainId).logo}
                             alt="Round Chain Logo"
                           />
                           <Link

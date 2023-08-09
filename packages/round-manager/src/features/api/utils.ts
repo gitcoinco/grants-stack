@@ -10,7 +10,7 @@ import {
 import { ChainId, RedstoneTokenIds } from "common";
 
 // NB: number keys are coerced into strings for JS object keys
-export const CHAINS: Record<ChainId, Program["chain"]> = {
+const CHAINS: Record<ChainId, Program["chain"]> = {
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
     name: "Mainnet", // TODO get canonical network names
@@ -568,4 +568,20 @@ export const formatCurrency = (
   ).toLocaleString("en-US", {
     maximumFractionDigits: fraction || 3,
   });
+};
+
+export const isChainConfigured = (id: number): boolean => {
+  const chain = CHAINS[id as ChainId];
+  return chain !== undefined;
+};
+
+export const getChainById = (
+  id: number | ChainId
+): NonNullable<Program["chain"]> => {
+  const chain = CHAINS[id as ChainId];
+  if (chain === undefined) {
+    throw new Error(`Unknown chain id: ${id}`);
+  }
+
+  return chain;
 };

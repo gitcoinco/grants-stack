@@ -18,8 +18,7 @@ import { errorModalDelayMs } from "../../constants";
 import { ProgressStatus, ProgressStep } from "../api/types";
 import { useCreateProgram } from "../../context/program/CreateProgramContext";
 import ReactTooltip from "react-tooltip";
-import { CHAINS } from "../api/utils";
-import { ChainId } from "common/src/chains";
+import { getChainById, isChainConfigured } from "../api/utils";
 
 type FormData = {
   name: string;
@@ -223,10 +222,10 @@ export default function CreateProgram() {
                     </label>
 
                     <div className="opacity-50 flex mt-1 py-[6px] shadow-sm px-3 border rounded-md border-grey-100">
-                      {CHAINS[chain.id as ChainId] ? (
+                      {isChainConfigured(chain.id) ? (
                         <>
                           <img
-                            src={CHAINS[chain.id as ChainId]?.logo}
+                            src={getChainById(chain.id).logo}
                             alt="program-chain-logo"
                             className="h-4 w-4 ml-1 mr-2 mt-1"
                           />

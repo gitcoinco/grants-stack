@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ChainId } from "common";
-import { CHAINS } from "../../api/utils";
+import { getChainById } from "../../api/utils";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCheckoutStore } from "../../../checkoutStore";
@@ -150,16 +150,16 @@ export function MRCProgressModalBody({
         <p>
           <img
             className="inline mr-2 w-5 h-5"
-            alt={CHAINS[chainId].name}
-            src={CHAINS[chainId].logo}
+            alt={getChainById(chainId).name}
+            src={getChainById(chainId).logo}
           />
           {chainIdsBeingCheckedOut.length > 1 ? (
             <span>
               Step {chainIdsBeingCheckedOut.indexOf(Number(chainId)) + 1}:
-              Checkout {CHAINS[chainId].name} donations
+              Checkout {getChainById(chainId).name} donations
             </span>
           ) : (
-            <span>Checkout {CHAINS[chainId].name} donations</span>
+            <span>Checkout {getChainById(chainId).name} donations</span>
           )}
         </p>
       </div>
