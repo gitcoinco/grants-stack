@@ -20,10 +20,13 @@ import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 
 const schema = yup.object().shape({
-  amount: yup.number().required("Amount is required"),
+  amount: yup
+    .number()
+    .typeError("Payment amount must be a number")
+    .required("Payment amount is required"),
   address: yup
     .string()
-    .required("Address is required")
+    .required("Vault address is required")
     .matches(/^0x[a-fA-F0-9]{40}$/, "Must be a valid ethereum address"),
 });
 
@@ -80,6 +83,16 @@ export default function ApplicationDirectPayout({
       `Token info not found for chain id: ${chain.id} and token ${payoutTokenAnswer}!`
     );
   }
+  // find answer with question "Payout wallet address"
+  const payoutWalletAddress = answerBlocks?.find(
+    (a) => a.question == "Payout wallet address"
+  );
+  if (
+    payoutWalletAddress === undefined ||
+    payoutWalletAddress.answer === undefined
+  ) {
+    throw Error('"Payout wallet address" not found in answers!');
+  }
 
   const getAmountWithFee = () => {
     const amount = Number(allInputs.amount) || 0;
@@ -89,17 +102,6 @@ export default function ApplicationDirectPayout({
   };
 
   const onSubmit = async (data: FormData) => {
-    // find answer with question "Payout wallet address"
-    const payoutWalletAddress = answerBlocks?.find(
-      (a) => a.question == "Payout wallet address"
-    );
-    if (
-      payoutWalletAddress === undefined ||
-      payoutWalletAddress.answer === undefined
-    ) {
-      throw Error('"Payout token" not found in answers!');
-    }
-
     // check round exists
     if (
       round === undefined ||
@@ -121,11 +123,18 @@ export default function ApplicationDirectPayout({
       tokenInfo.decimal
     );
 
+    console.log(Erc20__factory);
     const erc20 = Erc20__factory.connect(tokenInfo.address, signer);
+    console.log(erc20);
     const allowance = await erc20.allowance(
       data.address,
       round.payoutStrategy.id
     );
+
+    console.log({
+      allowance: allowance.toString(),
+      amountWithFeeBN: amountWithFeeBN.toString(),
+    });
 
     if (
       allowance.lt(amountWithFeeBN) &&
@@ -149,7 +158,7 @@ export default function ApplicationDirectPayout({
         payoutStrategyAddress: round.payoutStrategy.id,
         payoutAmount: amountBN,
         payoutVault: data.address,
-        payoutWallet: payoutWalletAddress.answer,
+        payoutWallet: payoutWalletAddress!.answer!,
         allowance,
       });
 
@@ -309,6 +318,7 @@ export default function ApplicationDirectPayout({
                   aria-describedby="DAI-symbol"
                   $hasError={errors.amount !== undefined}
                   step="any"
+                  data-testid="payout-amount-input"
                 />
               </div>
               {errors.amount !== undefined && (
@@ -336,6 +346,7 @@ export default function ApplicationDirectPayout({
                   placeholder="Enter vault address"
                   aria-describedby="Vault-address"
                   $hasError={errors.amount !== undefined}
+                  data-testid="payout-amount-address"
                 />
               </div>
               {errors.address !== undefined && (
@@ -437,7 +448,11 @@ export default function ApplicationDirectPayout({
             </p>
           </div>
           <div className="px-6 align-middle py-3.5 bg-[#F3F3F5]">
-            <Button className="float-right" type="submit">
+            <Button
+              className="float-right"
+              type="submit"
+              data-testid="trigger-payment"
+            >
               Payout
             </Button>
           </div>

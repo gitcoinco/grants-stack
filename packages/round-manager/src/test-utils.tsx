@@ -358,6 +358,7 @@ export const makeGrantApplicationData = (
       protocol: randomInt(1, 10),
       pointer: faker.random.alpha({ count: 59, casing: "lower" }),
     },
+    projectId: "0x" + faker.random.alphaNumeric(40).toLowerCase(),
     status:
       status ??
       (["PENDING", "APPROVED", "REJECTED", "CANCELLED", "APPEAL", "FRAUD"][
