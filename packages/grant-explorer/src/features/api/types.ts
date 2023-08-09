@@ -1,8 +1,7 @@
-import { Signer } from "@ethersproject/abstract-signer";
-import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
-import { BigNumber } from "ethers";
+import { Hex } from "viem";
+import { WalletClient } from "wagmi";
 
 export type Network = "goerli" | "optimism" | "fantom" | "pgn";
 
@@ -19,8 +18,8 @@ export interface Web3Instance {
     name: string;
     network: Network;
   };
-  provider: Web3Provider;
-  signer?: Signer;
+  provider: WalletClient;
+  signer?: WalletClient;
 }
 
 export interface MetadataPointer {
@@ -195,9 +194,10 @@ export enum ProgressStatus {
 export type PayoutToken = {
   name: string;
   chainId: ChainId;
-  address: string;
+  address: Hex;
   decimal: number;
   logo?: string;
   default?: boolean;
   redstoneTokenId?: string;
+  permitVersion?: string;
 };

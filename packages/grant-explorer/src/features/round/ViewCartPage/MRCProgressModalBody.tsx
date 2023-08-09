@@ -1,8 +1,6 @@
 import React from "react";
-import { BigNumber, ethers } from "ethers";
-import { PayoutToken } from "../../api/types";
 import { ChainId } from "common";
-import { CHAINS, payoutTokens } from "../../api/utils";
+import { CHAINS } from "../../api/utils";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNetwork } from "wagmi";
@@ -24,6 +22,7 @@ export function MRCProgressModalBody({
 }: MRCProgressModalBodyProps) {
   const { chain } = useNetwork();
   const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
+
   const chainStatus = "IN_PROGRESS" as ProgressStatus;
   return (
     <>

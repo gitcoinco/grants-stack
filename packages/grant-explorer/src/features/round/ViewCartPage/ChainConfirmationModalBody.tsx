@@ -1,13 +1,13 @@
 import React from "react";
-import { BigNumber, ethers } from "ethers";
 import { CartProject, PayoutToken } from "../../api/types";
 import { ChainId } from "common";
 import { CHAINS } from "../../api/utils";
 import { useCartStorage } from "../../../store";
+import { formatUnits } from "viem";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
-  totalDdonationsPerChain: { [chain: number]: BigNumber };
+  totalDdonationsPerChain: { [chain: number]: bigint };
   chainIdsBeingCheckedOut: number[];
   setChainIdsBeingCheckedOut: React.Dispatch<React.SetStateAction<number[]>>;
 };
@@ -58,7 +58,7 @@ export function ChainConfirmationModalBody({
 }
 
 type ChainSummaryProps = {
-  totalDonation: BigNumber;
+  totalDonation: bigint;
   selectedPayoutToken: PayoutToken;
   chainId: ChainId;
   checked: boolean;
@@ -96,7 +96,7 @@ export function ChainSummary({
       </p>
       <p className="ml-7 mt-1">
         <span data-testid={"totalDonation"} className="mr-2">
-          {ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)}
+          {formatUnits(totalDonation, selectedPayoutToken.decimal)}
         </span>
         <span data-testid={"chainSummaryPayoutToken"}>
           {selectedPayoutToken.name} to be contributed

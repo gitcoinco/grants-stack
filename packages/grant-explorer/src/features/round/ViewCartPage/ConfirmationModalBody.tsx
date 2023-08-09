@@ -1,11 +1,11 @@
 import React from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
-import { BigNumber, ethers } from "ethers";
 import { PayoutToken } from "../../api/types";
+import { formatUnits } from "viem";
 
 type ConfirmationModalBodyProps = {
   projectsCount: number;
-  totalDonation: BigNumber;
+  totalDonation: bigint;
   selectedPayoutToken: PayoutToken;
 };
 
@@ -39,7 +39,7 @@ function AdditionalGasFeesNote() {
 }
 
 type ProjectsInCartCountProps = {
-  totalDonation: BigNumber;
+  totalDonation: bigint;
   selectedPayoutToken: PayoutToken;
 };
 export function ProjectsInCartCount({
@@ -54,7 +54,7 @@ export function ProjectsInCartCount({
       />
       <p className="font-bold">
         <span className="mr-1">
-          {ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)}
+          {formatUnits(totalDonation, selectedPayoutToken.decimal)}
         </span>
         <span className="mr-1">{selectedPayoutToken.name}</span>
         <span>Contributed</span>

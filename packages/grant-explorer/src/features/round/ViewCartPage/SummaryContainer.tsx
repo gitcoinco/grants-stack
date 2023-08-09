@@ -1,18 +1,19 @@
 import { ChainId, PassportState } from "common";
 import { useCartStorage } from "../../../store";
 import React, { useEffect, useMemo, useState } from "react";
-import { BigNumber, ethers } from "ethers";
 import { Summary } from "./Summary";
 import ErrorModal from "../../common/ErrorModal";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
 import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { CartProject, ProgressStatus } from "../../api/types";
-import { useQFDonation } from "../../../context/QFDonationContext";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
-import { Logger } from "ethers/lib.esm/utils";
-import { datadogLogs } from "@datadog/browser-logs";
+import {
+  useAccount,
+  useNetwork,
+  useWalletClient,
+  usePublicClient,
+} from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { usePassport } from "../../api/passport";
@@ -21,11 +22,12 @@ import _, { round } from "lodash";
 import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
-import { JsonRpcSigner } from "@ethersproject/providers";
+import { useCheckoutStore } from "../../../checkoutStore";
+import { parseUnits } from "viem";
 
 export function SummaryContainer() {
-  const { chain } = useNetwork();
   const { projects } = useCartStorage();
+  const publicClient = usePublicClient();
   const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
   const projectsByChain = _.groupBy(projects, "chainId") as {
     [chain: number]: CartProject[];
@@ -43,20 +45,8 @@ export function SummaryContainer() {
     ChainId[]
   >(Object.keys(projectsByChain).map(Number));
 
-  const [checkedOutChainIds, setCheckedOutChainIds] = useState<ChainId[]>([]);
-
   /** The ID of the current chain (from wallet) */
-  const currentChainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
-  const { data: signer } = useSigner();
-
-  const { switchNetworkAsync } = useSwitchNetwork({
-    onSuccess: () => {
-      setChainSwitched(true);
-    },
-  });
-
-  /** The current payout token  */
-  const currentPayoutToken = payoutTokens[currentChainId];
+  const { data: walletClient } = useWalletClient();
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
@@ -72,13 +62,12 @@ export function SummaryContainer() {
           .map((project) => project.amount)
           .reduce(
             (acc, amount) =>
-              acc.add(
-                ethers.utils.parseUnits(
-                  amount ? amount : "0",
-                  payoutTokens[Number(key) as ChainId].decimal
-                )
+              acc +
+              parseUnits(
+                amount ? amount : "0",
+                payoutTokens[Number(key) as ChainId].decimal
               ),
-            BigNumber.from(0)
+            0n
           ),
       ])
     );
@@ -87,115 +76,52 @@ export function SummaryContainer() {
   const navigate = useNavigate();
   const { address } = useAccount();
 
-  const [insufficientBalance, setInsufficientBalance] = useState(false);
-  const [transactionReplaced, setTransactionReplaced] = useState(false);
   const [emptyInput, setEmptyInput] = useState(false);
-
   const [openChainConfirmationModal, setOpenChainConfirmationModal] =
     useState(false);
+
   const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [errorModalSubHeading, setErrorModalSubHeading] = useState<
-    string | undefined
-  >();
+
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
-  const [chainSwitched, setChainSwitched] = useState(false);
+  const { checkout, voteStatus, permitStatus } = useCheckoutStore();
+  const { chain } = useNetwork();
+  const chainId = chain?.id as ChainId;
 
-  const {
-    submitDonations,
-    tokenApprovalStatus,
-    voteStatus,
-    indexingStatus,
-    txHash,
-    setTokenApprovalStatus,
-    setVoteStatus,
-  } = useQFDonation();
-
-  /** This useffect is the main "driver" of state of this component */
+  /** TODO: remove this once error handling is done in the progress modal */
   useEffect(() => {
-    async function run() {
-      if (
-        tokenApprovalStatus === ProgressStatus.IS_ERROR ||
-        voteStatus === ProgressStatus.IS_ERROR
-      ) {
-        setTimeout(() => {
-          setOpenMRCProgressModal(false);
-          // if (transactionReplaced) {
-          //   setErrorModalSubHeading("Transaction cancelled. Please try again.");
-          // }
-          setOpenErrorModal(true);
-        }, modalDelayMs);
-      }
-
-      if (indexingStatus === ProgressStatus.IS_ERROR) {
-        setTimeout(() => {
-          navigate(`/`);
-        }, 5000);
-      }
-
-      if (
-        tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
-        voteStatus === ProgressStatus.IS_SUCCESS &&
-        txHash !== "" &&
-        !chainSwitched
-      ) {
-        setChainSwitched(true);
-        /** Get chains left to check out */
-        const chainsLeft = chainIdsBeingCheckedOut
-          .filter((x) => !checkedOutChainIds.includes(x))
-          .filter((id) => id !== currentChainId);
-
-        /** If we have succesfully checked out the last chain, redirect to thankyou */
-        if (chainsLeft.length === 0) {
-          setTimeout(() => {
-            setOpenMRCProgressModal(false);
-            // navigate(`/thankyou`);
-            console.log("SUCCESSSSSS");
-          }, modalDelayMs);
-          return;
-        }
-
-        /** Switch to the next chain */
-        const nextChain = chainsLeft[0];
-        await switchNetworkAsync?.(nextChain);
-
-        setCheckedOutChainIds((checkedOutChains) => {
-          return [...checkedOutChains, currentChainId];
-        });
-      }
-
-      if (chainSwitched && signer !== undefined) {
-        console.log("Post chain switch");
-        /*Chain has switched, fire off voting*/
-        const chainId =
-          ((await signer?.getChainId()) as ChainId) ??
-          chainIdsBeingCheckedOut[0];
-        setChainSwitched(false);
-        await submitDonations({
-          donations: projectsByChain[chainId],
-          donationToken: payoutTokens[chainId],
-          totalDonation: totalDonationsPerChain[chainId],
-          roundEndTime: currentPermitDeadline,
-          signer: signer as JsonRpcSigner,
-        });
-      }
+    if (voteStatus[chainId] === ProgressStatus.IS_ERROR) {
+      setTimeout(() => {
+        setOpenMRCProgressModal(false);
+        setOpenErrorModal(true);
+      }, modalDelayMs);
     }
+  }, [chainId, voteStatus, walletClient]);
 
-    run();
-  }, [tokenApprovalStatus, voteStatus, txHash, signer]);
+  useEffect(() => {
+    /* Check if all chains that were meant to be checked out were succesful */
+    const success = chainIdsBeingCheckedOut
+      .map((chain) => voteStatus[chain])
+      .every((status) => status === ProgressStatus.IS_SUCCESS);
+
+    /* Redirect to thank you page */
+    if (success) {
+      navigate("/thankyou");
+    }
+  }, [chainIdsBeingCheckedOut, navigate, voteStatus]);
 
   const progressSteps = [
     {
-      name: "Approve",
-      description: "Approve the contract to access your wallet",
-      status: tokenApprovalStatus,
+      name: "Permit",
+      description: "Permit the Checkout contract to access the payout token",
+      status: permitStatus[chainId],
     },
     {
       name: "Submit",
       description: "Finalize your contribution",
-      status: voteStatus,
+      status: voteStatus[chainId],
     },
   ];
 
@@ -254,7 +180,6 @@ export function SummaryContainer() {
           isOpen={openErrorModal}
           setIsOpen={setOpenErrorModal}
           tryAgainFn={handleSubmitDonation}
-          subheading={errorModalSubHeading}
         />
         {/*Passport not connected warning modal*/}
         <ErrorModal
@@ -290,8 +215,8 @@ export function SummaryContainer() {
 
   async function handleSubmitDonation() {
     try {
-      if (!round) {
-        throw new Error("round is null");
+      if (!round || !walletClient) {
+        return;
       }
 
       setTimeout(() => {
@@ -299,28 +224,23 @@ export function SummaryContainer() {
         setOpenChainConfirmationModal(false);
       }, modalDelayMs);
 
-      await submitDonations({
-        donations: projectsByChain[currentChainId],
-        donationToken: currentPayoutToken,
-        totalDonation: totalDonationsPerChain[currentChainId],
-        roundEndTime: currentPermitDeadline,
-        signer: signer as JsonRpcSigner,
-      });
+      await checkout(
+        chainIdsBeingCheckedOut.map((chainId) => ({
+          chainId,
+          permitDeadline: currentPermitDeadline,
+        })),
+        walletClient,
+        publicClient
+      );
     } catch (error) {
-      if (error === Logger.errors.TRANSACTION_REPLACED) {
-        setTransactionReplaced(true);
-      } else {
-        datadogLogs.logger.error(
-          `error: handleSubmitDonation - ${error}, id: `
-        );
-        console.error("handleSubmitDonation - roundId", error);
-      }
+      console.error(error);
     }
   }
 
   const { passportState } = usePassport({
     address: address ?? "",
   });
+
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
