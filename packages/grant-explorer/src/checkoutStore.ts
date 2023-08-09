@@ -22,12 +22,7 @@ import _ from "lodash";
 import { datadogLogs } from "@datadog/browser-logs";
 import { allChains } from "./app/wagmi";
 import { WalletClient } from "wagmi";
-import {
-  getContract,
-  getPublicClient,
-  getWalletClient,
-  PublicClient,
-} from "@wagmi/core";
+import { getContract, getWalletClient, PublicClient } from "@wagmi/core";
 
 type ChainMap<T> = Record<ChainId, T>;
 
@@ -285,8 +280,6 @@ async function switchToChain(chainId: ChainId, walletClient: WalletClient) {
         blockExplorers: nextChainData.blockExplorers,
       },
     });
-
-    /* Some wallets switch automatically (CB), some don't (Metamask). If chain isn't switched in 1000 seconds, prompt to switch */
   }
 }
 

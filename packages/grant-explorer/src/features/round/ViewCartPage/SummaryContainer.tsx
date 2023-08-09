@@ -101,6 +101,18 @@ export function SummaryContainer() {
     }
   }, [chainId, voteStatus, walletClient]);
 
+  useEffect(() => {
+    /* Check if all chains that were meant to be checked out were succesful */
+    const success = chainIdsBeingCheckedOut
+      .map((chain) => voteStatus[chain])
+      .every((status) => status === ProgressStatus.IS_SUCCESS);
+
+    /* Redirect to thank you page */
+    if (success) {
+      navigate("/thankyou");
+    }
+  }, [chainIdsBeingCheckedOut, voteStatus]);
+
   const progressSteps = [
     {
       name: "Permit",
