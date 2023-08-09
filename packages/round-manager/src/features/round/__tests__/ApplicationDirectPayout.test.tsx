@@ -8,23 +8,13 @@ import { ROUND_PAYOUT_DIRECT } from "../../common/Utils";
 import { useWallet } from "../../common/Auth";
 import { useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { BigNumber, ethers } from "ethers";
+import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
 import { parseUnits } from "ethers/lib/utils.js";
 
+jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
-jest.mock("../../../types/generated/typechain", () => {
-  const { BigNumber } = require("ethers");
-
-  return {
-    ...jest.requireActual("../../../types/generated/typechain"),
-    Erc20__factory: {
-      connect: jest.fn().mockReturnValue({
-        allowance: jest.fn().mockResolvedValue(BigNumber.from(0)),
-      }),
-    },
-  };
-});
 
 const mockAddress = ethers.constants.AddressZero;
 const mockWallet = {
@@ -72,11 +62,18 @@ const correctAnswerBlocks = [
 ];
 
 describe("<ApplicationDirectPayout />", () => {
+  let mockAllowance: jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   beforeEach(() => {
+    mockAllowance = jest.fn().mockResolvedValue(BigNumber.from("0"));
+
+    (Erc20__factory.connect as jest.Mock).mockImplementation(() => ({
+      allowance: mockAllowance,
+    }));
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
     (useSwitchNetwork as any).mockReturnValue({ chains: [] });
     (useDisconnect as any).mockReturnValue({});
@@ -316,6 +313,10 @@ describe("<ApplicationDirectPayout />", () => {
 
     await waitFor(() => {
       expect(mockAllowance).toHaveBeenCalled();
+
+      const needsAllowance =
+        /In order to continue you need to allow the payout strategy contract with address .* to spend .* tokens\./;
+      expect(screen.getByText(needsAllowance)).toBeInTheDocument();
     });
   });
 });

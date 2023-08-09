@@ -11,7 +11,7 @@
     "start": "craco start",
     "build": "craco build",
     "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
-    "test": "craco test --watchAll=false ",
+    "test": "craco test --watchAll=false --silent",
     "test:dev": "craco test --watchAll=true",
     "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",

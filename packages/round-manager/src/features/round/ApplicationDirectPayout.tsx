@@ -123,19 +123,11 @@ export default function ApplicationDirectPayout({
       tokenInfo.decimal
     );
 
-    console.log(Erc20__factory);
     const erc20 = Erc20__factory.connect(tokenInfo.address, signer);
-    console.log(erc20);
     const allowance = await erc20.allowance(
       data.address,
       round.payoutStrategy.id
     );
-
-    console.log({
-      allowance: allowance.toString(),
-      amountWithFeeBN: amountWithFeeBN.toString(),
-    });
-
     if (
       allowance.lt(amountWithFeeBN) &&
       address.toLowerCase() !== data.address.toLowerCase()
