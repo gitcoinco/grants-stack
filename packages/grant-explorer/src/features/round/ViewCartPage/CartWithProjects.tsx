@@ -88,7 +88,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
         </div>
       </div>
       {cartByRound.map((roundcart: CartProject[], key: number) => (
-        <div>
+        <div key={key}>
           <RoundInCart
             key={key}
             roundCart={roundcart}

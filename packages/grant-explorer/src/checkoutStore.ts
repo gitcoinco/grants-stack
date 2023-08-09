@@ -10,7 +10,6 @@ import {
   parseAbi,
   parseAbiParameters,
   parseUnits,
-  toHex,
   zeroAddress,
 } from "viem";
 import {
@@ -23,8 +22,12 @@ import _ from "lodash";
 import { datadogLogs } from "@datadog/browser-logs";
 import { allChains } from "./app/wagmi";
 import { WalletClient } from "wagmi";
-import { getContract, PublicClient } from "@wagmi/core";
-import { Progress } from "@chakra-ui/react";
+import {
+  getContract,
+  getPublicClient,
+  getWalletClient,
+  PublicClient,
+} from "@wagmi/core";
 
 type ChainMap<T> = Record<ChainId, T>;
 
@@ -69,8 +72,7 @@ export const useCheckoutStore = create<CheckoutState>()(
     currentChainBeingCheckedOut: undefined,
     checkout: async (
       chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
-      walletClient: WalletClient,
-      publicClient: PublicClient
+      walletClient: WalletClient
     ) => {
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
       const projectsToCheckOut = useCartStorage
@@ -115,6 +117,9 @@ export const useCheckoutStore = create<CheckoutState>()(
         /* Switch to the current chain */
         await switchToChain(chainId, walletClient);
 
+        const wc = await getWalletClient({
+          chainId,
+        })!;
         const token = payoutTokens[chainId];
 
         let sig;
@@ -134,8 +139,10 @@ export const useCheckoutStore = create<CheckoutState>()(
                 "function name() public view returns (string)",
               ]),
               walletClient,
+              chainId,
             });
             nonce = await erc20Contract.read.nonces([owner]);
+            debugger;
             const tokenName = await erc20Contract.read.name();
             /*TODO: better dai test, extract into function, test*/
             if (/DAI/i.test(tokenName)) {
@@ -160,6 +167,7 @@ export const useCheckoutStore = create<CheckoutState>()(
                 contractAddress: token.address,
                 erc20Name: tokenName,
                 owner,
+                permitVersion: token.permitVersion ?? "1",
               });
             }
 
@@ -209,22 +217,31 @@ export const useCheckoutStore = create<CheckoutState>()(
             );
           }
 
+          console.log("chainid before voteusing mrc contract", chainId);
+
           const receipt = await voteUsingMRCContract(
-            walletClient,
-            publicClient,
+            wc!,
             chainId,
             token,
             groupedEncodedVotes,
             groupedAmounts,
             totalDonationPerChain[chainId],
-            sig,
-            deadline,
-            nonce
+            sig
+              ? {
+                  sig,
+                  deadline,
+                  nonce: nonce!,
+                }
+              : undefined
           );
 
-          console.log("vote receipt", receipt);
-
           get().setVoteStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
+          console.log(
+            "Voting succesful for chain",
+            chainId,
+            " receipt",
+            receipt
+          );
         } catch (error) {
           datadogLogs.logger.error(
             `error: vote - ${error}. Data - ${donations.toString()}`

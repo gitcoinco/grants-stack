@@ -4,7 +4,7 @@ import { PayoutToken } from "./types";
 import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
 import { WalletClient } from "wagmi";
-import { getContract, PublicClient } from "@wagmi/core";
+import { getContract, getPublicClient, PublicClient } from "@wagmi/core";
 import { allChains } from "../../app/wagmi";
 
 export type PermitSignature = {
@@ -15,21 +15,22 @@ export type PermitSignature = {
 
 export const voteUsingMRCContract = async (
   walletClient: WalletClient,
-  publicClient: PublicClient,
   chainId: ChainId,
   token: PayoutToken,
   groupedVotes: Record<string, Hex[]>,
   groupedAmounts: Record<string, bigint>,
   nativeTokenAmount: bigint,
-  permitSignature?: PermitSignature,
-  deadline?: number,
-  nonce?: bigint
+  permit?: {
+    sig: PermitSignature;
+    deadline: number;
+    nonce: bigint;
+  }
 ) => {
-  console.log("chainId during vote", chainId);
+  console.log("chainId in mrc vote", chainId);
   const mrcImplementation = getContract({
     address: MRC_CONTRACTS[(await walletClient.getChainId()) as ChainId],
     abi: mrcAbi,
-    walletClient: walletClient,
+    walletClient,
     chainId,
   });
 
@@ -61,7 +62,7 @@ export const voteUsingMRCContract = async (
         chain: allChains.find((chain) => chain.id === chainId),
       }
     );
-  } else if (permitSignature && nonce) {
+  } else if (permit) {
     /* Is token DAI? */
     if (/DAI/i.test(token.name)) {
       tx = await mrcImplementation.write.voteDAIPermit([
@@ -70,11 +71,11 @@ export const voteUsingMRCContract = async (
         Object.values(groupedAmounts),
         Object.values(groupedAmounts).reduce((acc, b) => acc + b),
         token.address as Hex,
-        BigInt(deadline ?? Number.MAX_SAFE_INTEGER),
-        nonce,
-        permitSignature.v,
-        permitSignature.r as Hex,
-        permitSignature.s as Hex,
+        BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+        permit.nonce,
+        permit.sig.v,
+        permit.sig.r as Hex,
+        permit.sig.s as Hex,
       ]);
     } else {
       tx = await mrcImplementation.write.voteERC20Permit([
@@ -83,22 +84,28 @@ export const voteUsingMRCContract = async (
         Object.values(groupedAmounts),
         Object.values(groupedAmounts).reduce((acc, b) => acc + b),
         token.address as Hex,
-        BigInt(deadline ?? Number.MAX_SAFE_INTEGER),
-        permitSignature.v,
-        permitSignature.r as Hex,
-        permitSignature.s as Hex,
+        BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+        permit.sig.v,
+        permit.sig.r as Hex,
+        permit.sig.s as Hex,
       ]);
     }
   } else {
+    debugger;
     /* Tried voting using erc-20 but no permit signature provided */
     throw new Error(
       "Tried voting using erc-20 but no permit signature provided"
     );
   }
 
-  return publicClient.waitForTransactionReceipt({
+  /* Check */
+  const pc = getPublicClient({
+    chainId,
+  });
+
+  return pc.waitForTransactionReceipt({
     hash: tx,
-    timeout: 20_000,
+    timeout: 20_000_000,
   });
 };
 
@@ -110,6 +117,7 @@ type SignPermitProps = {
   spender: Hex;
   deadline: bigint;
   chainId: number;
+  permitVersion?: string;
 };
 
 type Eip2612Props = SignPermitProps & {
@@ -132,6 +140,7 @@ export const signPermit2612 = async ({
   deadline,
   nonce,
   chainId,
+  permitVersion,
 }: Eip2612Props) => {
   const types = {
     Permit: [
@@ -145,7 +154,7 @@ export const signPermit2612 = async ({
 
   const domainData = {
     name: erc20Name,
-    version: "2",
+    version: permitVersion ?? "1",
     chainId: chainId,
     verifyingContract: contractAddress,
   };
@@ -182,6 +191,7 @@ export const signPermitDai = async ({
   deadline,
   nonce,
   chainId,
+  permitVersion,
 }: DaiPermit) => {
   const types = {
     Permit: [
@@ -195,7 +205,7 @@ export const signPermitDai = async ({
 
   const domainData = {
     name: erc20Name,
-    version: "1",
+    version: permitVersion ?? "1",
     chainId: chainId,
     verifyingContract: contractAddress,
   };

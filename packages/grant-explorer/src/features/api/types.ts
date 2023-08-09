@@ -201,4 +201,5 @@ export type PayoutToken = {
   logo?: string;
   default?: boolean;
   redstoneTokenId?: string;
+  permitVersion?: string;
 };

@@ -24,6 +24,7 @@ export function MRCProgressModalBody({
 }: MRCProgressModalBodyProps) {
   const { chain } = useNetwork();
   const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
+
   const chainStatus = "IN_PROGRESS" as ProgressStatus;
   return (
     <>

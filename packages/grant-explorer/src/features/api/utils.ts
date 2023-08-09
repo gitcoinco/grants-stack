@@ -146,6 +146,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
+    permitVersion: "2",
   },
   {
     name: "DAI",
