@@ -29,7 +29,7 @@ export function ProjectInCart(
 
   return (
     <div data-testid="cart-project">
-      <div className="mb-4 flex flex-col md:flex-row justify-between px-6 py-4 rounded-md">
+      <div className="mb-4 flex flex-col lg:flex-row justify-between sm:px-6 px-2 py-4 rounded-md">
         <div className="flex">
           <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
             <img
@@ -68,8 +68,8 @@ export function ProjectInCart(
           </div>
         </div>
 
-        <div className="mt-6 flex space-x-4 h-16 pl-4 pt-3">
-          <div className="md:hidden w-12"></div>
+        <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3">
+          <div className="md:hidden sm:w-12"></div>
           <Input
             aria-label={
               "Donation amount for project " +

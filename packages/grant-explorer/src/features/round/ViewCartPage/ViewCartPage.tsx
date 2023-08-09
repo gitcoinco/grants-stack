@@ -28,7 +28,7 @@ export default function ViewCart() {
   return (
     <>
       <Navbar roundUrlPath={"/"} />
-      <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
+      <div className="relative top-16 lg:mx-20 h-screen sm:px-4 px-2 py-7">
         <div className="flex flex-col pb-4" data-testid="bread-crumbs">
           <Breadcrumb items={breadCrumbs} />
         </div>
