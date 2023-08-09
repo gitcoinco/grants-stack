@@ -294,7 +294,8 @@ export function SummaryContainer() {
             <span>You must enter donations for all the projects</span>
           </p>
         )}
-        {insufficientBalance && (
+        {/*TODO: insufficient balance check*/}
+        {false && (
           <p
             data-testid="insufficientBalance"
             className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
