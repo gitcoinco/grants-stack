@@ -207,7 +207,7 @@ export default function ApplicationDirectPayout({
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody data-testid="direct-payout-payments-table">
                   {payouts
                     .filter(
                       (p) => p.applicationIndex === application.applicationIndex
@@ -252,7 +252,10 @@ export default function ApplicationDirectPayout({
             </div>
             {/* Totals */}
             <div className="flex px-4 pb-6">
-              <p className="text-sm text-gray-400 text-left flex gap-4 content-center">
+              <p
+                className="text-sm text-gray-400 text-left flex gap-4 content-center"
+                data-testid="direct-payout-payments-total"
+              >
                 <span>Total paid out:</span>
                 <span>
                   {ethers.utils.formatUnits(

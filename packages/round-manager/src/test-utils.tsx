@@ -271,6 +271,7 @@ export interface MakeGrantApplicationDataParams {
   statusSnapshots?: GrantApplication["statusSnapshots"];
   inReview?: boolean;
   status?: GrantApplication["status"];
+  applicationIndex?: GrantApplication["applicationIndex"];
 }
 
 export const makeGrantApplicationData = (
@@ -287,6 +288,7 @@ export const makeGrantApplicationData = (
     statusSnapshots,
     status,
     inReview,
+    applicationIndex,
   } = {
     ownerAddress: faker.finance.ethereumAddress(),
     ...overrides,
@@ -361,7 +363,7 @@ export const makeGrantApplicationData = (
       (["PENDING", "APPROVED", "REJECTED", "CANCELLED", "APPEAL", "FRAUD"][
         randomInt(0, 4)
       ] as ProjectStatus),
-    applicationIndex: faker.datatype.number(),
+    applicationIndex: applicationIndex ?? faker.datatype.number(),
     createdAt: faker.datatype.number().toString(),
   };
 };
