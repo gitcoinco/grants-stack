@@ -5,10 +5,11 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
-import { useQFDonation } from "../../context/QFDonationContext";
 import Navbar from "../common/Navbar";
-import { getTxExplorerTxLink } from "../api/utils";
 import { useCartStorage } from "../../store";
+import { useCheckoutStore } from "../../checkoutStore";
+import { ProgressStatus } from "../api/types";
+import { ChainId } from "common";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -19,14 +20,29 @@ export default function ThankYou() {
   // scroll to top of window on load
   window.scrollTo(0, 0);
 
-  const { txHash } = useQFDonation();
-
   const navigate = useNavigate();
 
   const cart = useCartStorage();
+  const checkoutStore = useCheckoutStore();
+
+  /** Remove checked out projects from cart, but keep the ones we didn't yet checkout succesfully. */
+  const checkedOutChains = Object.keys(checkoutStore.voteStatus)
+    .filter(
+      (key) =>
+        checkoutStore.voteStatus[Number(key) as ChainId] ===
+        ProgressStatus.IS_SUCCESS
+    )
+    .map(Number);
   useEffect(() => {
-    cart.clear();
-  }, []);
+    cart.projects
+      .filter((proj) => checkedOutChains.includes(proj.chainId))
+      .forEach((proj) => cart.remove(proj.grantApplicationId));
+  }, [cart, checkedOutChains]);
+
+  /** If there are projects left to check out, show a Back to cart button */
+  const showBackToCartButton =
+    cart.projects.filter((proj) => !checkedOutChains.includes(proj.chainId))
+      .length > 0;
 
   function TwitterButton(props: { roundName?: string }) {
     const shareText = `I just donated to the ${props.roundName?.trim()} on @gitcoin. Join me in making a difference by donating today!\n\nhttps://explorer.gitcoin.co/#/`;
@@ -77,6 +93,17 @@ export default function ThankYou() {
               {/*<TwitterButton roundName={roundName} />*/}
 
               {/*<ViewTransactionButton />*/}
+              {showBackToCartButton && (
+                <Button
+                  type="button"
+                  $variant="outline"
+                  onClick={() => navigate("/cart")}
+                  className="my-8 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
+                  data-testid="home-button"
+                >
+                  Back to Cart
+                </Button>
+              )}
             </div>
 
             <Button

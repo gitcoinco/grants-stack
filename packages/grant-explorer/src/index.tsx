@@ -3,25 +3,18 @@ import "./browserPatches";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-  BrowserRouter,
-  HashRouter,
-  Route,
-  Router,
-  Routes,
-} from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
 import { initSentry } from "./sentry";
 import { initTagmanager } from "./tagmanager";
-import { chains, client as WagmiClient } from "./app/wagmi";
+import { chains, config } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
 
 import "./index.css";
 
 // Routes
-import { QFDonationProvider } from "./context/QFDonationContext";
 import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
@@ -33,7 +26,6 @@ import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewContributionHistory from "./features/contributors/ViewContributionHistory";
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
-import { Switch } from "@headlessui/react";
 import { ChakraProvider } from "@chakra-ui/react";
 
 // Initialize sentry
@@ -52,7 +44,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ChakraProvider>
-      <WagmiConfig client={WagmiClient}>
+      <WagmiConfig config={config}>
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
             <HashRouter>
@@ -76,23 +68,9 @@ root.render(
                   element={<ViewProjectDetails />}
                 />
 
-                <Route
-                  path="/cart"
-                  element={
-                    <QFDonationProvider>
-                      <ViewCart />
-                    </QFDonationProvider>
-                  }
-                />
+                <Route path="/cart" element={<ViewCart />} />
 
-                <Route
-                  path="/thankyou"
-                  element={
-                    <QFDonationProvider>
-                      <ThankYou />
-                    </QFDonationProvider>
-                  }
-                />
+                <Route path="/thankyou" element={<ThankYou />} />
 
                 {/* Passport Connect */}
                 <Route
@@ -119,7 +97,4 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

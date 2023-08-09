@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import Stock1 from "../../assets/landing/stock1.jpg";
 import Stock10 from "../../assets/landing/stock10.jpg";
 import Stock11 from "../../assets/landing/stock11.jpg";
@@ -23,6 +22,7 @@ import Stock6 from "../../assets/landing/stock6.jpg";
 import Stock7 from "../../assets/landing/stock7.jpg";
 import Stock8 from "../../assets/landing/stock8.jpg";
 import Stock9 from "../../assets/landing/stock9.jpg";
+import { keccak256, toBytes } from "viem";
 const stockImages = [
   Stock1,
   Stock2,
@@ -51,7 +51,7 @@ const stockImages = [
 ];
 
 function generateRandomNumber(address: string) {
-  const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(address));
+  const hash = keccak256(toBytes(address));
   const randomByte = parseInt(hash.slice(2, 4), 16);
   const randomNumber = randomByte % 24;
   return randomNumber;

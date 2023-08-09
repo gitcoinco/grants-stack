@@ -1,11 +1,11 @@
 import { ChainId, useTokenPrice } from "common";
-import { BigNumber, ethers } from "ethers";
 import React from "react";
 import { PayoutToken } from "../../api/types";
 import { CHAINS } from "../../api/utils";
+import { formatUnits } from "viem";
 
 type SummaryProps = {
-  totalDonation: BigNumber;
+  totalDonation: bigint;
   selectedPayoutToken: PayoutToken;
   chainId: ChainId;
 };
@@ -20,9 +20,8 @@ export function Summary({
   );
   const totalDonationInUSD =
     payoutTokenPrice &&
-    Number(
-      ethers.utils.formatUnits(totalDonation, selectedPayoutToken.decimal)
-    ) * Number(payoutTokenPrice);
+    Number(formatUnits(totalDonation, selectedPayoutToken.decimal)) *
+      Number(payoutTokenPrice);
   return (
     <div className="flex flex-col">
       <div className="flex justify-between mt-4">
@@ -36,10 +35,7 @@ export function Summary({
         </p>
         <p>
           <span data-testid={"totalDonation"} className="mr-2">
-            {ethers.utils.formatUnits(
-              totalDonation,
-              selectedPayoutToken.decimal
-            )}
+            {formatUnits(totalDonation, selectedPayoutToken.decimal)}
           </span>
           <span data-testid={"summaryPayoutToken"}>
             {selectedPayoutToken.name}

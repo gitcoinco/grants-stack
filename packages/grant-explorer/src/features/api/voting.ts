@@ -1,11 +1,11 @@
-import { BigNumber, BytesLike, ethers, Signer } from "ethers";
-import { handleTransaction } from "common/src/transactions";
 import { MRC_CONTRACTS } from "./contracts";
 import { Hex, hexToNumber, slice, zeroAddress } from "viem";
 import { PayoutToken } from "./types";
 import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
-import { JsonRpcSigner } from "@ethersproject/providers";
+import { WalletClient } from "wagmi";
+import { getContract, getPublicClient, PublicClient } from "@wagmi/core";
+import { allChains } from "../../app/wagmi";
 
 export type PermitSignature = {
   v: number;
@@ -14,110 +14,124 @@ export type PermitSignature = {
 };
 
 export const voteUsingMRCContract = async (
-  signer: Signer,
+  walletClient: WalletClient,
+  chainId: ChainId,
   token: PayoutToken,
-  groupedVotes: Record<string, BytesLike[]>,
-  groupedAmounts: Record<string, BigNumber>,
-  nativeTokenAmount: BigNumber,
-  permitSignature?: PermitSignature,
-  deadline?: number,
-  nonce?: BigNumber
-): Promise<{ txBlockNumber: number; txHash: string }> => {
-  const chainid = await signer.getChainId();
-  console.log("chain id while voting");
-  debugger;
-  const mrcImplementation = new ethers.Contract(
-    MRC_CONTRACTS[(await signer.getChainId()) as ChainId],
-    mrcAbi,
-    signer
-  );
+  groupedVotes: Record<string, Hex[]>,
+  groupedAmounts: Record<string, bigint>,
+  nativeTokenAmount: bigint,
+  permit?: {
+    sig: PermitSignature;
+    deadline: number;
+    nonce: bigint;
+  }
+) => {
+  console.log("chainId in mrc vote", chainId);
+  const mrcImplementation = getContract({
+    address: MRC_CONTRACTS[(await walletClient.getChainId()) as ChainId],
+    abi: mrcAbi,
+    walletClient,
+    chainId,
+  });
 
   let tx;
 
   /* decide which function to use based on whether token is native, permit-compatible or DAI */
   if (token.address === zeroAddress) {
-    tx = await mrcImplementation.vote(
-      Object.values(groupedVotes),
-      Object.keys(groupedVotes),
-      Object.values(groupedAmounts),
+    // const { request } = await publicClient.simulateContract({
+    //   account: walletClient.account,
+    //   address: mrcImplementation.address,
+    //   abi: mrcAbi,
+    //   functionName: "vote",
+    //   args: [
+    //     Object.values(groupedVotes),
+    //     Object.keys(groupedVotes) as Hex[],
+    //     Object.values(groupedAmounts),
+    //   ],
+    //   value: nativeTokenAmount,
+    // });
+
+    tx = await mrcImplementation.write.vote(
+      [
+        Object.values(groupedVotes),
+        Object.keys(groupedVotes) as Hex[],
+        Object.values(groupedAmounts),
+      ],
       {
         value: nativeTokenAmount,
+        chain: allChains.find((chain) => chain.id === chainId),
       }
     );
-  } else if (permitSignature) {
+  } else if (permit) {
     /* Is token DAI? */
     if (/DAI/i.test(token.name)) {
-      tx = await mrcImplementation.voteDAIPermit(
+      tx = await mrcImplementation.write.voteDAIPermit([
         Object.values(groupedVotes),
-        Object.keys(groupedVotes),
+        Object.keys(groupedVotes) as Hex[],
         Object.values(groupedAmounts),
-        Object.values(groupedAmounts).reduce((acc, b) => acc.add(b)),
-        token.address,
-        deadline,
-        nonce,
-        permitSignature.v,
-        permitSignature.r,
-        permitSignature.s
-      );
+        Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+        token.address as Hex,
+        BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+        permit.nonce,
+        permit.sig.v,
+        permit.sig.r as Hex,
+        permit.sig.s as Hex,
+      ]);
     } else {
-      tx = await mrcImplementation.voteERC20Permit(
+      tx = await mrcImplementation.write.voteERC20Permit([
         Object.values(groupedVotes),
-        Object.keys(groupedVotes),
+        Object.keys(groupedVotes) as Hex[],
         Object.values(groupedAmounts),
-        Object.values(groupedAmounts).reduce((acc, b) => acc.add(b)),
-        token.address,
-        deadline,
-        permitSignature.v,
-        permitSignature.r,
-        permitSignature.s
-      );
+        Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+        token.address as Hex,
+        BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+        permit.sig.v,
+        permit.sig.r as Hex,
+        permit.sig.s as Hex,
+      ]);
     }
   } else {
+    debugger;
     /* Tried voting using erc-20 but no permit signature provided */
     throw new Error(
       "Tried voting using erc-20 but no permit signature provided"
     );
   }
 
-  const result = await handleTransaction(tx);
+  /* Check */
+  const pc = getPublicClient({
+    chainId,
+  });
 
-  if (result.error) {
-    // handle error case
-    throw new Error(result.error);
-  } else {
-    console.log("✅ Transaction hash: ", result.txHash);
-
-    return {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      txBlockNumber: result.txBlockNumber!,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      txHash: result.txHash!,
-    };
-  }
+  return pc.waitForTransactionReceipt({
+    hash: tx,
+    timeout: 20_000_000,
+  });
 };
 
 type SignPermitProps = {
-  signer: JsonRpcSigner;
-  contractAddress: string;
+  walletClient: WalletClient;
+  contractAddress: Hex;
   erc20Name: string;
-  owner: string;
-  spender: string;
-  deadline: number;
+  owner: Hex;
+  spender: Hex;
+  deadline: bigint;
   chainId: number;
+  permitVersion?: string;
 };
 
 type Eip2612Props = SignPermitProps & {
-  value: BigNumber;
-  nonce: BigNumber;
+  value: bigint;
+  nonce: bigint;
 };
 
 type DaiPermit = SignPermitProps & {
-  nonce: BigNumber;
+  nonce: bigint;
 };
 
 /* Signs a permit for EIP-2612-compatible ERC-20 tokens */
 export const signPermit2612 = async ({
-  signer,
+  walletClient,
   contractAddress,
   erc20Name,
   owner,
@@ -126,6 +140,7 @@ export const signPermit2612 = async ({
   deadline,
   nonce,
   chainId,
+  permitVersion,
 }: Eip2612Props) => {
   const types = {
     Permit: [
@@ -139,7 +154,7 @@ export const signPermit2612 = async ({
 
   const domainData = {
     name: erc20Name,
-    version: "2",
+    version: permitVersion ?? "1",
     chainId: chainId,
     verifyingContract: contractAddress,
   };
@@ -152,11 +167,13 @@ export const signPermit2612 = async ({
     deadline,
   };
 
-  const signature = (await signer._signTypedData(
-    domainData,
+  const signature = await walletClient.signTypedData({
+    account: owner,
+    message,
+    domain: domainData,
+    primaryType: "Permit",
     types,
-    message
-  )) as Hex;
+  });
   const [r, s, v] = [
     slice(signature, 0, 32),
     slice(signature, 32, 64),
@@ -166,7 +183,7 @@ export const signPermit2612 = async ({
 };
 
 export const signPermitDai = async ({
-  signer,
+  walletClient,
   contractAddress,
   erc20Name,
   owner,
@@ -174,6 +191,7 @@ export const signPermitDai = async ({
   deadline,
   nonce,
   chainId,
+  permitVersion,
 }: DaiPermit) => {
   const types = {
     Permit: [
@@ -187,7 +205,7 @@ export const signPermitDai = async ({
 
   const domainData = {
     name: erc20Name,
-    version: "1",
+    version: permitVersion ?? "1",
     chainId: chainId,
     verifyingContract: contractAddress,
   };
@@ -199,12 +217,14 @@ export const signPermitDai = async ({
     expiry: deadline,
     allowed: true,
   };
-  debugger;
-  const signature = (await signer._signTypedData(
-    domainData,
+
+  const signature = await walletClient.signTypedData({
+    account: owner,
+    domain: domainData,
+    primaryType: "Permit",
     types,
-    message
-  )) as Hex;
+    message,
+  });
   const [r, s, v] = [
     slice(signature, 0, 32),
     slice(signature, 32, 64),
