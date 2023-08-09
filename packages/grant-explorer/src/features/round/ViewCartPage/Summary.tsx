@@ -23,16 +23,19 @@ export function Summary({
     Number(formatUnits(totalDonation, selectedPayoutToken.decimal)) *
       Number(payoutTokenPrice);
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-between mt-4">
+    <div className="flex flex-row justify-between mt-2">
+      <div className="flex flex-col">
+        <p className="mb-2">Your Contribution on</p>
         <p>
-          Your Contribution on {CHAINS[chainId].name}
           <img
-            className={"inline max-w-[32px]"}
+            className={"inline max-w-[32px] mr-2"}
             alt={CHAINS[chainId].name}
             src={CHAINS[chainId].logo}
           />
+          {CHAINS[chainId].name}
         </p>
+      </div>
+      <div className="flex flex-col">
         <p>
           <span data-testid={"totalDonation"} className="mr-2">
             {formatUnits(totalDonation, selectedPayoutToken.decimal)}
@@ -41,14 +44,14 @@ export function Summary({
             {selectedPayoutToken.name}
           </span>
         </p>
+        {payoutTokenPrice && (
+          <div className="flex justify-end mt-2">
+            <p className="text-[14px] text-grey-400">
+              $ {totalDonationInUSD?.toFixed(2)}
+            </p>
+          </div>
+        )}
       </div>
-      {payoutTokenPrice && (
-        <div className="flex flex-row-reverse mt-2">
-          <p className="text-[14px] text-grey-400">
-            $ {totalDonationInUSD?.toFixed(2)}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

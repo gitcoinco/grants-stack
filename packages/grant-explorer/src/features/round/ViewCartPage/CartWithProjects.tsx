@@ -48,7 +48,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
           <h2 className="mt-3 text-xl font-semibold">{chain.name}</h2>
           <h2 className="mt-3 text-xl font-semibold">({cartByRound.length})</h2>
         </div>
-        <div className="flex justify-end flex-row gap-2 basis-[72%]">
+        <div className="flex sm:justify-end flex-row gap-2 basis-[72%]">
           <div className="flex gap-4">
             <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text">
               Amount
