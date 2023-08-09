@@ -1,7 +1,6 @@
 import { ChainId, PassportState } from "common";
 import { useCartStorage } from "../../../store";
 import React, { useEffect, useMemo, useState } from "react";
-import { BigNumber, ethers } from "ethers";
 import { Summary } from "./Summary";
 import ErrorModal from "../../common/ErrorModal";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
@@ -24,6 +23,7 @@ import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
+import { parseUnits } from "viem";
 
 export function SummaryContainer() {
   const { projects } = useCartStorage();
@@ -62,13 +62,12 @@ export function SummaryContainer() {
           .map((project) => project.amount)
           .reduce(
             (acc, amount) =>
-              acc.add(
-                ethers.utils.parseUnits(
-                  amount ? amount : "0",
-                  payoutTokens[Number(key) as ChainId].decimal
-                )
+              acc +
+              parseUnits(
+                amount ? amount : "0",
+                payoutTokens[Number(key) as ChainId].decimal
               ),
-            BigNumber.from(0)
+            0n
           ),
       ])
     );
@@ -111,7 +110,7 @@ export function SummaryContainer() {
     if (success) {
       navigate("/thankyou");
     }
-  }, [chainIdsBeingCheckedOut, voteStatus]);
+  }, [chainIdsBeingCheckedOut, navigate, voteStatus]);
 
   const progressSteps = [
     {

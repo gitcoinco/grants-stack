@@ -1,9 +1,7 @@
-import { Signer } from "@ethersproject/abstract-signer";
-import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
-import { BigNumber } from "ethers";
 import { Hex } from "viem";
+import { WalletClient } from "wagmi";
 
 export type Network = "goerli" | "optimism" | "fantom" | "pgn";
 
@@ -20,8 +18,8 @@ export interface Web3Instance {
     name: string;
     network: Network;
   };
-  provider: Web3Provider;
-  signer?: Signer;
+  provider: WalletClient;
+  signer?: WalletClient;
 }
 
 export interface MetadataPointer {

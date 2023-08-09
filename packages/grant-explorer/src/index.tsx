@@ -15,7 +15,6 @@ import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 
 // Routes
-import { QFDonationProvider } from "./context/QFDonationContext";
 import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
@@ -69,23 +68,9 @@ root.render(
                   element={<ViewProjectDetails />}
                 />
 
-                <Route
-                  path="/cart"
-                  element={
-                    <QFDonationProvider>
-                      <ViewCart />
-                    </QFDonationProvider>
-                  }
-                />
+                <Route path="/cart" element={<ViewCart />} />
 
-                <Route
-                  path="/thankyou"
-                  element={
-                    <QFDonationProvider>
-                      <ThankYou />
-                    </QFDonationProvider>
-                  }
-                />
+                <Route path="/thankyou" element={<ThankYou />} />
 
                 {/* Passport Connect */}
                 <Route

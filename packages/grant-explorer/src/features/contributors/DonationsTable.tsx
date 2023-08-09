@@ -5,11 +5,11 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
-import { ethers } from "ethers";
 import { CHAINS } from "../api/utils";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
 import { ChainId } from "common";
+import { formatUnits } from "viem";
 
 export function DonationsTable(props: {
   contributions: { chainId: ChainId; data: Contribution[] }[];
@@ -60,8 +60,8 @@ export function DonationsTable(props: {
               let formattedAmount = "N/A";
 
               if (token) {
-                formattedAmount = `${ethers.utils.formatUnits(
-                  contribution.amount,
+                formattedAmount = `${formatUnits(
+                  BigInt(contribution.amount),
                   token.decimal
                 )} ${token.name}`;
               }

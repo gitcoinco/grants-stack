@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { CartProject, PayoutToken } from "./features/api/types";
 import { payoutTokensMap } from "./features/api/utils";
-import { ethers } from "ethers";
+import { zeroAddress } from "viem";
 
 interface CartState {
   projects: CartProject[];
@@ -21,8 +21,7 @@ const ethOnlyPayoutTokens = Object.fromEntries(
     ([key, value]) =>
       [
         Number(key) as ChainId,
-        value.find((token) => token.address === ethers.constants.AddressZero) ??
-          value[0],
+        value.find((token) => token.address === zeroAddress) ?? value[0],
       ] as [ChainId, PayoutToken]
   )
 ) as Record<ChainId, PayoutToken>;

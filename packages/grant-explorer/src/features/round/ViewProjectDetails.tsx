@@ -10,7 +10,6 @@ import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
 import { Button } from "common/src/styles";
 import { formatDistanceToNowStrict } from "date-fns";
-import { utils } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
@@ -33,6 +32,7 @@ import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { useCartStorage } from "../../store";
+import { getAddress } from "viem";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -516,7 +516,7 @@ export function useRoundApprovedApplication(
 
   return useSWR([roundId, "/projects"], async ([roundId]) => {
     const applications = await client.getRoundApplications(
-      utils.getAddress(roundId.toLowerCase())
+      getAddress(roundId.toLowerCase())
     );
 
     return applications.find(

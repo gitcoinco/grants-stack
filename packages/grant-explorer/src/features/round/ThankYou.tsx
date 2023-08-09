@@ -2,12 +2,10 @@ import { datadogLogs } from "@datadog/browser-logs";
 import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
-import { useQFDonation } from "../../context/QFDonationContext";
 import Navbar from "../common/Navbar";
-import { getTxExplorerTxLink } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
 import { ProgressStatus } from "../api/types";
@@ -21,8 +19,6 @@ export default function ThankYou() {
 
   // scroll to top of window on load
   window.scrollTo(0, 0);
-
-  const { txHash } = useQFDonation();
 
   const navigate = useNavigate();
 

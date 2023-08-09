@@ -1,6 +1,5 @@
 import { faker } from "@faker-js/faker";
 import { render } from "@testing-library/react";
-import { BigNumber, ethers } from "ethers";
 import { MemoryRouter } from "react-router-dom";
 import {
   RoundContext,
@@ -15,6 +14,7 @@ import {
   ProjectMetadata,
   Round,
 } from "./features/api/types";
+import { parseUnits } from "viem";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -153,7 +153,7 @@ export const renderWithContext = (
 
 export const mockBalance = {
   data: {
-    value: BigNumber.from(ethers.utils.parseUnits("10", 18)),
+    value: parseUnits("10", 18),
   },
 };
 
