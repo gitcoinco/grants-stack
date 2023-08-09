@@ -40,10 +40,7 @@ export function MRCProgressModalBody({
                     </span>
                   }
                   line={
-                    <div
-                      className="flex-grow h-0.5 bg-grey-100"
-                      style={{ minWidth: "300px" }}
-                    ></div>
+                    <div className="flex-grow h-0.5 bg-grey-100 sm:min-w-[300px] min-w-[270px]"></div>
                   }
                   isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
                 />
@@ -59,10 +56,7 @@ export function MRCProgressModalBody({
                     </span>
                   }
                   line={
-                    <div
-                      className="flex-grow h-0.5 bg-teal-500"
-                      style={{ minWidth: "300px" }}
-                    ></div>
+                    <div className="flex-grow h-0.5 bg-teal-500 sm:min-w-[300px] min-w-[270px]"></div>
                   }
                   isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
                 />
@@ -75,10 +69,7 @@ export function MRCProgressModalBody({
                     </span>
                   }
                   line={
-                    <div
-                      className="flex-grow h-0.5 bg-grey-100"
-                      style={{ minWidth: "300px" }}
-                    ></div>
+                    <div className="flex-grow h-0.5 bg-grey-100 sm:min-w-[300px] min-w-[270px]"></div>
                   }
                   isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
                 />
@@ -89,10 +80,7 @@ export function MRCProgressModalBody({
                     <span className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"></span>
                   }
                   line={
-                    <div
-                      className="flex-grow h-0.5 bg-grey-100"
-                      style={{ minWidth: "300px" }}
-                    ></div>
+                    <div className="flex-grow h-0.5 bg-grey-100 sm:min-w-[300px] min-w-[270px]"></div>
                   }
                   isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
                 />
