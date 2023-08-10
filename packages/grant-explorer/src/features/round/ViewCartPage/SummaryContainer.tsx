@@ -81,7 +81,6 @@ export function SummaryContainer() {
     useState(false);
 
   const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
-  const [openErrorModal, setOpenErrorModal] = useState(false);
 
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
@@ -89,16 +88,6 @@ export function SummaryContainer() {
   const { checkout, voteStatus, permitStatus } = useCheckoutStore();
   const { chain } = useNetwork();
   const chainId = chain?.id as ChainId;
-
-  /** TODO: remove this once error handling is done in the progress modal */
-  useEffect(() => {
-    if (voteStatus[chainId] === ProgressStatus.IS_ERROR) {
-      setTimeout(() => {
-        setOpenMRCProgressModal(false);
-        setOpenErrorModal(true);
-      }, modalDelayMs);
-    }
-  }, [chainId, voteStatus, walletClient]);
 
   useEffect(() => {
     /* Check if all chains that were meant to be checked out were succesful */
@@ -173,13 +162,10 @@ export function SummaryContainer() {
             <MRCProgressModalBody
               chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
               steps={progressSteps}
+              tryAgainFn={handleSubmitDonation}
+              setIsOpen={setOpenMRCProgressModal}
             />
           }
-        />
-        <ErrorModal
-          isOpen={openErrorModal}
-          setIsOpen={setOpenErrorModal}
-          tryAgainFn={handleSubmitDonation}
         />
         {/*Passport not connected warning modal*/}
         <ErrorModal

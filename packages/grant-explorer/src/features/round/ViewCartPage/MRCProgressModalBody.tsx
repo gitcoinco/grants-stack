@@ -5,6 +5,7 @@ import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNetwork } from "wagmi";
 import { useCheckoutStore } from "../../../checkoutStore";
+import { Button } from "common/src/styles";
 
 export type Step = {
   name: string;
@@ -15,16 +16,22 @@ export type Step = {
 type MRCProgressModalBodyProps = {
   chainIdsBeingCheckedOut: number[];
   steps: Step[];
+  tryAgainFn: () => void;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function MRCProgressModalBody({
   chainIdsBeingCheckedOut,
   steps,
+  tryAgainFn,
+  setIsOpen,
 }: MRCProgressModalBodyProps) {
   const { chain } = useNetwork();
   const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
 
   const checkoutStore = useCheckoutStore();
+  const permitStatus = checkoutStore.permitStatus;
+  const voteStatus = checkoutStore.voteStatus;
 
   return (
     <>
@@ -66,8 +73,8 @@ export function MRCProgressModalBody({
                 <MRCModalChainStep
                   key={chainId}
                   icon={
-                    <span className="relative z-10 w-8 h-8 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
-                      <XMarkIcon className="w-5 h-5 text-pink-500" />
+                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
+                      <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
                     </span>
                   }
                   line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
@@ -171,6 +178,47 @@ export function MRCProgressModalBody({
           ))}
         </ol>
       </nav>
+      <div>
+        <div className="flex justify-start">
+          {permitStatus[chainId as ChainId] === ProgressStatus.IS_ERROR && (
+            <p className="text-xs text-grey-400 mt-2 ml-2">
+              Transaction rejected or signature denied. Please double check your
+              permissions and try again.
+            </p>
+          )}
+          {voteStatus[chainId as ChainId] === ProgressStatus.IS_ERROR && (
+            <p className="text-xs text-grey-400 mt-2 ml-2">
+              Transaction failed. Please double check your wallet and try again.
+              If the problem persists, please contact support for assistance.
+            </p>
+          )}
+        </div>
+        {(permitStatus[chainId as ChainId] === ProgressStatus.IS_ERROR ||
+          voteStatus[chainId as ChainId] === ProgressStatus.IS_ERROR) && (
+          <div className="flex justify-end mt-4 mr-2">
+            <Button
+              type="button"
+              $variant="outline"
+              onClick={() => {
+                setIsOpen(false);
+              }}
+              className="inline-flex justify-center px-4 py-2 text-sm"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              $variant="solid"
+              onClick={() => {
+                tryAgainFn();
+              }}
+              className="inline-flex justify-center px-4 py-2 text-sm ml-2"
+            >
+              Try Again
+            </Button>
+          </div>
+        )}
+      </div>
     </>
   );
 }
