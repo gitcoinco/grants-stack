@@ -140,6 +140,10 @@ export default function ApplicationDirectPayout({
 
     setOpenPayoutProgressModal(true);
 
+    if (payoutWalletAddress?.answer === undefined) {
+      throw Error("Payout wallet address not found in answers!");
+    }
+
     try {
       await triggerPayout({
         address,
@@ -150,7 +154,7 @@ export default function ApplicationDirectPayout({
         payoutStrategyAddress: round.payoutStrategy.id,
         payoutAmount: amountBN,
         payoutVault: data.address,
-        payoutWallet: payoutWalletAddress!.answer!,
+        payoutWallet: payoutWalletAddress.answer,
         allowance,
       });
 
