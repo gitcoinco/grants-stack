@@ -94,9 +94,8 @@ export function SummaryContainer() {
     const success = chainIdsBeingCheckedOut
       .map((chain) => voteStatus[chain])
       .every((status) => status === ProgressStatus.IS_SUCCESS);
-
     /* Redirect to thank you page */
-    if (success) {
+    if (success && chainIdsBeingCheckedOut.length > 0) {
       navigate("/thankyou");
     }
   }, [chainIdsBeingCheckedOut, navigate, voteStatus]);
