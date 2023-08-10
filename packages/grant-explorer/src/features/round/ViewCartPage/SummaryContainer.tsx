@@ -24,8 +24,10 @@ import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { parseUnits } from "viem";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export function SummaryContainer() {
+  const { openConnectModal } = useConnectModal();
   const { projects } = useCartStorage();
   const publicClient = usePublicClient();
   const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
@@ -86,7 +88,7 @@ export function SummaryContainer() {
   }, [payoutTokens, projectsByChain]);
 
   const navigate = useNavigate();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [emptyInput, setEmptyInput] = useState(false);
   const [openChainConfirmationModal, setOpenChainConfirmationModal] =
@@ -254,6 +256,12 @@ export function SummaryContainer() {
           data-testid="handle-confirmation"
           type="button"
           onClick={() => {
+            /* If wallet is not connected, display Rainbowkit modal */
+            if (!isConnected) {
+              openConnectModal?.();
+              return;
+            }
+
             /* Check if user hasn't connected passport yet, display the warning modal */
             if (
               passportState === PassportState.ERROR ||
@@ -269,7 +277,7 @@ export function SummaryContainer() {
           }}
           className="items-center shadow-sm text-sm rounded w-full mt-4"
         >
-          Submit your donation!
+          {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
         </Button>
         {/*{round.round?.roundMetadata?.quadraticFundingConfig*/}
         {/*  ?.minDonationThresholdAmount && (*/}
