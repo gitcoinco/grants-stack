@@ -44,6 +44,7 @@ export default function ThankYou() {
     cart.projects.filter((proj) => !checkedOutChains.includes(proj.chainId))
       .length > 0;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function TwitterButton(props: { roundName?: string }) {
     const shareText = `I just donated to the ${props.roundName?.trim()} on @gitcoin. Join me in making a difference by donating today!\n\nhttps://explorer.gitcoin.co/#/`;
     const shareUrl = `https://twitter.com/share?text=${encodeURIComponent(

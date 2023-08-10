@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { RoundOverview } from "../api/rounds";
-import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
 import { Skeleton } from "@chakra-ui/react";
@@ -33,19 +32,11 @@ const ApplyNowSection = (props: ApplyNow) => {
       </div>
       {props.isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
-          {Array(3)
-            .fill(undefined)
-            .map((_, index) => {
-              return (
-                <Skeleton
-                  key={index}
-                  my={3}
-                  rounded={"md"}
-                  w={"full"}
-                  h={"64"}
-                />
-              );
-            })}
+          {new Array(3).fill(undefined).map((_, index) => {
+            return (
+              <Skeleton key={index} my={3} rounded={"md"} w={"full"} h={"64"} />
+            );
+          })}
         </div>
       ) : applyNowRoundsCount > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">

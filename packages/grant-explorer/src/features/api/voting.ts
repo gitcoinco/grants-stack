@@ -4,7 +4,7 @@ import { PayoutToken } from "./types";
 import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
 import { WalletClient } from "wagmi";
-import { getContract, getPublicClient, PublicClient } from "@wagmi/core";
+import { getContract, getPublicClient } from "@wagmi/core";
 import { allChains } from "../../app/wagmi";
 
 export type PermitSignature = {
@@ -91,7 +91,6 @@ export const voteUsingMRCContract = async (
       ]);
     }
   } else {
-    debugger;
     /* Tried voting using erc-20 but no permit signature provided */
     throw new Error(
       "Tried voting using erc-20 but no permit signature provided"
@@ -113,8 +112,8 @@ type SignPermitProps = {
   walletClient: WalletClient;
   contractAddress: Hex;
   erc20Name: string;
-  owner: Hex;
-  spender: Hex;
+  ownerAddress: Hex;
+  spenderAddress: Hex;
   deadline: bigint;
   chainId: number;
   permitVersion?: string;
@@ -134,8 +133,8 @@ export const signPermit2612 = async ({
   walletClient,
   contractAddress,
   erc20Name,
-  owner,
-  spender,
+  ownerAddress,
+  spenderAddress,
   value,
   deadline,
   nonce,
@@ -160,15 +159,15 @@ export const signPermit2612 = async ({
   };
 
   const message = {
-    owner,
-    spender,
+    owner: ownerAddress,
+    spender: spenderAddress,
     value,
     nonce,
     deadline,
   };
 
   const signature = await walletClient.signTypedData({
-    account: owner,
+    account: ownerAddress,
     message,
     domain: domainData,
     primaryType: "Permit",
@@ -186,8 +185,8 @@ export const signPermitDai = async ({
   walletClient,
   contractAddress,
   erc20Name,
-  owner,
-  spender,
+  ownerAddress,
+  spenderAddress,
   deadline,
   nonce,
   chainId,
@@ -211,15 +210,15 @@ export const signPermitDai = async ({
   };
 
   const message = {
-    holder: owner,
-    spender,
+    holder: ownerAddress,
+    spender: spenderAddress,
     nonce,
     expiry: deadline,
     allowed: true,
   };
 
   const signature = await walletClient.signTypedData({
-    account: owner,
+    account: ownerAddress,
     domain: domainData,
     primaryType: "Permit",
     types,

@@ -1,5 +1,5 @@
 import Footer from "common/src/components/Footer";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import {
   getActiveRounds,
   getRoundsInApplicationPhase,
@@ -81,7 +81,7 @@ const filterProjectsByTitle = (rounds: RoundOverview[], query: string) => {
   // filter by exact title matches first
   // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
 
-  if (!query || query === "") {
+  if (query.trim() === "") {
     return rounds;
   }
 

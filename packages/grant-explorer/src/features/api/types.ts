@@ -151,7 +151,7 @@ export type Project = {
 
 export type CartProject = Project & {
   roundId: string;
-  chainId: number;
+  chainId: ChainId;
   amount: string;
 };
 

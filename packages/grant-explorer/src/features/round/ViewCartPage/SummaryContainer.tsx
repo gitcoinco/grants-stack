@@ -5,7 +5,7 @@ import { Summary } from "./Summary";
 import ErrorModal from "../../common/ErrorModal";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
 import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
-import { CartProject, ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
 import {
@@ -18,27 +18,25 @@ import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { usePassport } from "../../api/passport";
 import useSWR from "swr";
-import _, { round } from "lodash";
+import { round, groupBy, uniqBy } from "lodash-es";
 import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { parseUnits } from "viem";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export function SummaryContainer() {
-  const { projects } = useCartStorage();
+  const { openConnectModal } = useConnectModal();
+  const { projects, chainToPayoutToken: payoutTokens } = useCartStorage();
   const publicClient = usePublicClient();
-  const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
   const projectsByChain = useMemo(
-    () =>
-      _.groupBy(projects, "chainId") as {
-        [chain: number]: CartProject[];
-      },
+    () => groupBy(projects, "chainId"),
     [projects]
   );
 
   const { data: rounds } = useSWR(projects, (projects) => {
-    const uniqueProjects = _.uniqBy(projects, "roundId");
+    const uniqueProjects = uniqBy(projects, "roundId");
     return Promise.all(
       uniqueProjects.map((proj) => getRoundById(proj.roundId, proj.chainId))
     );
@@ -62,8 +60,8 @@ export function SummaryContainer() {
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
-    rounds
-      ?.sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())[0]
+    [...(rounds ?? [])]
+      .sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())[0]
       .roundEndTime.getTime() ?? 0;
 
   const totalDonationsPerChain = useMemo(() => {
@@ -86,7 +84,7 @@ export function SummaryContainer() {
   }, [payoutTokens, projectsByChain]);
 
   const navigate = useNavigate();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [emptyInput, setEmptyInput] = useState(false);
   const [openChainConfirmationModal, setOpenChainConfirmationModal] =
@@ -157,7 +155,7 @@ export function SummaryContainer() {
           body={
             <ChainConfirmationModalBody
               projectsByChain={projectsByChain}
-              totalDdonationsPerChain={totalDonationsPerChain}
+              totalDonationsPerChain={totalDonationsPerChain}
               chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
               setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
             />
@@ -182,13 +180,13 @@ export function SummaryContainer() {
         <ErrorModal
           isOpen={donateWarningModalOpen}
           setIsOpen={setDonateWarningModalOpen}
-          doneFn={() => {
+          onDone={() => {
             setDonateWarningModalOpen(false);
             handleConfirmation();
           }}
           tryAgainText={"Go to Passport"}
           doneText={"Donate without matching"}
-          tryAgainFn={() => {
+          onTryAgain={() => {
             navigate(`/round/passport/connect`);
           }}
           heading={`Don’t miss out on getting your donations matched!`}
@@ -254,6 +252,12 @@ export function SummaryContainer() {
           data-testid="handle-confirmation"
           type="button"
           onClick={() => {
+            /* If wallet is not connected, display Rainbowkit modal */
+            if (!isConnected) {
+              openConnectModal?.();
+              return;
+            }
+
             /* Check if user hasn't connected passport yet, display the warning modal */
             if (
               passportState === PassportState.ERROR ||
@@ -269,7 +273,7 @@ export function SummaryContainer() {
           }}
           className="items-center shadow-sm text-sm rounded w-full mt-4"
         >
-          Submit your donation!
+          {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
         </Button>
         {/*{round.round?.roundMetadata?.quadraticFundingConfig*/}
         {/*  ?.minDonationThresholdAmount && (*/}

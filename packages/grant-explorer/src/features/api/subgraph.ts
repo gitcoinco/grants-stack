@@ -1,6 +1,6 @@
 import { ChainId } from "common/src/chains";
 import { graphql_fetch } from "./utils";
-
+import sleep from "sleep-promise";
 export async function getCurrentSubgraphBlockNumber(
   chainId: ChainId
 ): Promise<number> {
@@ -27,13 +27,8 @@ export async function waitForSubgraphSyncTo(
 ): Promise<number> {
   let currentBlockNumber = await getCurrentSubgraphBlockNumber(chainId);
   while (currentBlockNumber < blockNumber) {
-    await wait(pollIntervalInMs);
+    await sleep(pollIntervalInMs);
     currentBlockNumber = await getCurrentSubgraphBlockNumber(chainId);
   }
   return currentBlockNumber;
 }
-
-export const wait = (ms = 1000) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });

@@ -193,7 +193,7 @@ function AfterRoundStart(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+      (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
     )[0].name;
 
   const breadCrumbs = [
@@ -500,7 +500,7 @@ function PreRoundPage(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+      (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
     )[0]?.name;
 
   return (

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { CartProject, PayoutToken, ProgressStatus } from "./features/api/types";
@@ -7,9 +8,12 @@ import {
   encodeAbiParameters,
   getAddress,
   Hex,
+  InternalRpcError,
   parseAbi,
   parseAbiParameters,
   parseUnits,
+  SwitchChainError,
+  UserRejectedRequestError,
   zeroAddress,
 } from "viem";
 import {
@@ -18,7 +22,7 @@ import {
   voteUsingMRCContract,
 } from "./features/api/voting";
 import { MRC_CONTRACTS } from "./features/api/contracts";
-import _ from "lodash";
+import { groupBy } from "lodash-es";
 import { datadogLogs } from "@datadog/browser-logs";
 import { allChains } from "./app/wagmi";
 import { WalletClient } from "wagmi";
@@ -34,6 +38,11 @@ interface CheckoutState {
   ) => void;
   voteStatus: ChainMap<ProgressStatus>;
   setVoteStatusForChain: (chain: ChainId, voteStatus: ProgressStatus) => void;
+  chainSwitchStatus: ChainMap<ProgressStatus>;
+  setChainSwitchStatusForChain: (
+    chain: ChainId,
+    voteStatus: ProgressStatus
+  ) => void;
   currentChainBeingCheckedOut?: ChainId;
   /** Checkout the given chains
    * this has the side effect of adding the chains to the wallet if they are not yet present
@@ -64,6 +73,17 @@ export const useCheckoutStore = create<CheckoutState>()(
       set({
         voteStatus: { ...get().voteStatus, [chain]: voteStatus },
       }),
+    chainSwitchStatus: defaultProgressStatusForAllChains,
+    setChainSwitchStatusForChain: (
+      chain: ChainId,
+      chainSwitchStatus: ProgressStatus
+    ) =>
+      set({
+        chainSwitchStatus: {
+          ...get().chainSwitchStatus,
+          [chain]: chainSwitchStatus,
+        },
+      }),
     currentChainBeingCheckedOut: undefined,
     checkout: async (
       chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
@@ -76,7 +96,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           chainIdsToCheckOut.includes(project.chainId)
         );
 
-      const projectsByChain = _.groupBy(projectsToCheckOut, "chainId") as {
+      const projectsByChain = groupBy(projectsToCheckOut, "chainId") as {
         [chain: number]: CartProject[];
       };
 
@@ -110,7 +130,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         });
 
         /* Switch to the current chain */
-        await switchToChain(chainId, walletClient);
+        await switchToChain(chainId, walletClient, get);
 
         const wc = await getWalletClient({
           chainId,
@@ -137,31 +157,30 @@ export const useCheckoutStore = create<CheckoutState>()(
               chainId,
             });
             nonce = await erc20Contract.read.nonces([owner]);
-            debugger;
             const tokenName = await erc20Contract.read.name();
             /*TODO: better dai test, extract into function, test*/
             if (/DAI/i.test(tokenName)) {
               sig = await signPermitDai({
                 walletClient: walletClient,
-                spender: MRC_CONTRACTS[chainId],
+                spenderAddress: MRC_CONTRACTS[chainId],
                 chainId,
                 deadline: BigInt(deadline),
                 contractAddress: token.address,
                 erc20Name: tokenName,
-                owner,
+                ownerAddress: owner,
                 nonce,
               });
             } else {
               sig = await signPermit2612({
                 walletClient: walletClient,
                 value: totalDonationPerChain[chainId],
-                spender: MRC_CONTRACTS[chainId],
+                spenderAddress: MRC_CONTRACTS[chainId],
                 nonce,
                 chainId,
                 deadline: BigInt(deadline),
                 contractAddress: token.address,
                 erc20Name: tokenName,
-                owner,
+                ownerAddress: owner,
                 permitVersion: token.permitVersion ?? "1",
               });
             }
@@ -187,7 +206,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           get().setVoteStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
 
           /* Group donations by round */
-          const groupedDonations = _.groupBy(
+          const groupedDonations = groupBy(
             donations.map((d) => ({
               ...d,
               roundId: getAddress(d.roundId),
@@ -258,29 +277,51 @@ export const useCheckoutStore = create<CheckoutState>()(
 
 /** This function handles switching to a chain
  * if the chain is not present in the wallet, it will add it, and then switch */
-async function switchToChain(chainId: ChainId, walletClient: WalletClient) {
+async function switchToChain(
+  chainId: ChainId,
+  walletClient: WalletClient,
+  get: () => CheckoutState
+) {
+  get().setChainSwitchStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
   const nextChainData = allChains.find((chain) => chain.id === chainId);
   if (!nextChainData) {
+    get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
     throw "next chain not found";
   }
-  /* Try switching normally */
   try {
+    /* Try switching normally */
     await walletClient.switchChain({
       id: chainId,
     });
   } catch (e) {
-    /** Chain might not be added in wallet yet. Request to add it to the wallet */
-    await walletClient.addChain({
-      chain: {
-        id: nextChainData.id,
-        name: nextChainData.name,
-        network: nextChainData.network,
-        nativeCurrency: nextChainData.nativeCurrency,
-        rpcUrls: nextChainData.rpcUrls,
-        blockExplorers: nextChainData.blockExplorers,
-      },
-    });
+    if (e instanceof UserRejectedRequestError) {
+      console.log("Rejected!");
+      get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
+    } else if (e instanceof SwitchChainError || e instanceof InternalRpcError) {
+      console.log("Chain not added yet, adding", { e });
+      /** Chain might not be added in wallet yet. Request to add it to the wallet */
+      try {
+        await walletClient.addChain({
+          chain: {
+            id: nextChainData.id,
+            name: nextChainData.name,
+            network: nextChainData.network,
+            nativeCurrency: nextChainData.nativeCurrency,
+            rpcUrls: nextChainData.rpcUrls,
+            blockExplorers: nextChainData.blockExplorers,
+          },
+        });
+      } catch (e) {
+        get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
+        return;
+      }
+    } else {
+      console.log("unhandled error when switching chains", { e });
+      get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
+      return;
+    }
   }
+  get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
 }
 
 function encodeQFVotes(

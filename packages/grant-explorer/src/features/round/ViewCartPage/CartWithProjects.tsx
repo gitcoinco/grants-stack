@@ -4,7 +4,7 @@ import {
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
 import React, { useState } from "react";
-import { CartProject, PayoutToken } from "../../api/types";
+import { PayoutToken } from "../../api/types";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
@@ -34,7 +34,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
   const { data, error, loading } = useTokenPrice(
     selectedPayoutToken.redstoneTokenId
   );
-  const payoutTokenPrice = !loading && !error ? Number(data) : undefined;
+  const payoutTokenPrice = !loading && !error ? Number(data) : null;
 
   return (
     <div className="grow block px-[16px] py-4 bg-white">
@@ -66,9 +66,9 @@ export function CartWithProjects({ cart, chainId }: Props) {
             />
             <PayoutTokenDropdown
               selectedPayoutToken={selectedPayoutToken}
-              setSelectedPayoutToken={(token) =>
-                setPayoutTokenForChain(chainId, token)
-              }
+              setSelectedPayoutToken={(token) => {
+                setPayoutTokenForChain(chainId, token);
+              }}
               payoutTokenOptions={payoutTokenOptions}
             />
           </div>
@@ -87,7 +87,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
           </div>
         </div>
       </div>
-      {cartByRound.map((roundcart: CartProject[], key: number) => (
+      {cartByRound.map((roundcart, key) => (
         <div key={key}>
           <RoundInCart
             key={key}

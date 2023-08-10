@@ -1,8 +1,5 @@
 import { Fragment, ReactNode } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { useCheckoutStore } from "../../checkoutStore";
-import { ChainId } from "common";
 
 interface MRCProgressModalProps {
   isOpen: boolean;
@@ -20,9 +17,6 @@ export default function MRCProgressModal({
   children,
   ...props
 }: MRCProgressModalProps) {
-  const chainId = ChainId.FANTOM_MAINNET_CHAIN_ID;
-  const status = useCheckoutStore((state) => state.voteStatus[chainId]);
-
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog

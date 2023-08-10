@@ -90,6 +90,7 @@ export default function ViewProjectDetails() {
     (project) => project.grantApplicationId === applicationId
   );
 
+  /*TODO: projectToRender can be undefined, casting will hide that condition.*/
   const cartProject = projectToRender as CartProject;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   cartProject.roundId = roundId!;

@@ -22,6 +22,9 @@ export function usePassport({ address }: { address: string }) {
 
     const PASSPORT_COMMUNITY_ID =
       process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
+    if (PASSPORT_COMMUNITY_ID === undefined) {
+      throw new Error("passport community id not set");
+    }
     const PASSPORT_THRESHOLD = 0;
 
     if (address && PASSPORT_COMMUNITY_ID) {
@@ -30,13 +33,13 @@ export function usePassport({ address }: { address: string }) {
         if (res.ok) {
           const json = await res.json();
 
-          if (json.status == "PROCESSING") {
+          if (json.status === "PROCESSING") {
             console.log("processing, calling again in 3000 ms");
             setTimeout(async () => {
               await callFetchPassport();
             }, 3000);
             return;
-          } else if (json.status == "ERROR") {
+          } else if (json.status === "ERROR") {
             // due to error at passport end
             setPassportState(PassportState.ERROR);
             return;

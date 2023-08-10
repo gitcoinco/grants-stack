@@ -17,6 +17,7 @@ export interface NavbarProps {
 export default function Navbar(props: NavbarProps) {
   /** This part keeps the store in sync between tabs */
   const store = useCartStorage();
+
   const updateStore = () => {
     useCartStorage.persist.rehydrate();
   };

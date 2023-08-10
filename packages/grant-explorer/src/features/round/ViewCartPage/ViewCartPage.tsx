@@ -14,7 +14,7 @@ export default function ViewCart() {
   const { projects } = useCartStorage();
   const groupedCartProjects = groupProjectsInCart(projects);
 
-  const breadCrumbs = [
+  const breadCrumbs: BreadcrumbItem[] = [
     {
       name: "Explorer Home",
       path: "/",
@@ -23,7 +23,7 @@ export default function ViewCart() {
       name: "Cart",
       path: `/cart`,
     },
-  ] as BreadcrumbItem[];
+  ];
 
   return (
     <>
