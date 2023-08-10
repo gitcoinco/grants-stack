@@ -51,8 +51,11 @@ export function SummaryContainer() {
 
   /** Keep the chains to be checked out in sync with the projects in the cart */
   useEffect(() => {
-    setChainIdsBeingCheckedOut(Object.keys(projectsByChain).map(Number));
-  }, [projectsByChain]);
+    const chainIdsFromProjects = Object.keys(projectsByChain).map(Number);
+    if (chainIdsFromProjects.length < chainIdsBeingCheckedOut.length) {
+      setChainIdsBeingCheckedOut(chainIdsFromProjects);
+    }
+  }, [chainIdsBeingCheckedOut, projectsByChain]);
 
   /** The ID of the current chain (from wallet) */
   const { data: walletClient } = useWalletClient();
