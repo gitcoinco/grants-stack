@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { CartProject, PayoutToken, ProgressStatus } from "./features/api/types";

@@ -5,7 +5,7 @@ import { Summary } from "./Summary";
 import ErrorModal from "../../common/ErrorModal";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
 import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
-import { CartProject, ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
 import {

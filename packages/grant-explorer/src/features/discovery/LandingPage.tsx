@@ -1,5 +1,5 @@
 import Footer from "common/src/components/Footer";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import {
   getActiveRounds,
   getRoundsInApplicationPhase,

@@ -60,7 +60,9 @@ describe.skip("View Cart Page", () => {
         makeApprovedProjectData(),
       ];
 
-      renderWrapped(cart, () => {});
+      renderWrapped(cart, () => {
+        /**/
+      });
 
       const projects = screen.getAllByTestId("cart-project");
       expect(projects.length).toEqual(cart.length);
@@ -378,7 +380,7 @@ describe.skip("View Cart Page", () => {
   });
 });
 
-function renderWrapped(cart: CartProject[] = [], setCart = () => {}) {
+function renderWrapped() {
   render(
     <MemoryRouter>
       <RoundProvider>

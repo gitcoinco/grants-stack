@@ -9,7 +9,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 
 describe.skip("<ErrorModal />", () => {
   it("shows error modal heading and error message", async () => {
-    renderWrapped(
+    renderWithContext(
       <ErrorModal
         heading="error title"
         subheading="this is an error message"
@@ -24,7 +24,7 @@ describe.skip("<ErrorModal />", () => {
   });
 
   it("does not show error modal heading or message when modal is not open", async () => {
-    renderWrapped(
+    renderWithContext(
       <ErrorModal
         heading="error title"
         subheading="this is an error message"
@@ -42,7 +42,7 @@ describe.skip("<ErrorModal />", () => {
     const tryAgainFn = jest.fn();
     const setIsOpenFn = jest.fn();
 
-    renderWrapped(
+    renderWithContext(
       <ErrorModal
         heading="error title"
         subheading="this is an error message"
@@ -62,7 +62,7 @@ describe.skip("<ErrorModal />", () => {
     const doneFn = jest.fn();
     const setIsOpenFn = jest.fn();
 
-    renderWrapped(
+    renderWithContext(
       <ErrorModal
         heading="error title"
         subheading="this is an error message"

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChainId } from "common";
 import { Dispatch, SetStateAction, useState } from "react";
 import { RoundOverview } from "../api/rounds";
 import SearchInput, { SortFilterDropdown } from "../common/SearchInput";

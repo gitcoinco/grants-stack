@@ -4,7 +4,7 @@ import {
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
 import React, { useState } from "react";
-import { CartProject, PayoutToken } from "../../api/types";
+import { PayoutToken } from "../../api/types";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";

@@ -4,7 +4,7 @@ import { PayoutToken } from "./types";
 import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
 import { WalletClient } from "wagmi";
-import { getContract, getPublicClient, PublicClient } from "@wagmi/core";
+import { getContract, getPublicClient } from "@wagmi/core";
 import { allChains } from "../../app/wagmi";
 
 export type PermitSignature = {
