@@ -7,9 +7,12 @@ import {
   encodeAbiParameters,
   getAddress,
   Hex,
+  InternalRpcError,
   parseAbi,
   parseAbiParameters,
   parseUnits,
+  SwitchChainError,
+  UserRejectedRequestError,
   zeroAddress,
 } from "viem";
 import {
@@ -34,6 +37,11 @@ interface CheckoutState {
   ) => void;
   voteStatus: ChainMap<ProgressStatus>;
   setVoteStatusForChain: (chain: ChainId, voteStatus: ProgressStatus) => void;
+  chainSwitchStatus: ChainMap<ProgressStatus>;
+  setChainSwitchStatusForChain: (
+    chain: ChainId,
+    voteStatus: ProgressStatus
+  ) => void;
   currentChainBeingCheckedOut?: ChainId;
   /** Checkout the given chains
    * this has the side effect of adding the chains to the wallet if they are not yet present
@@ -63,6 +71,17 @@ export const useCheckoutStore = create<CheckoutState>()(
     setVoteStatusForChain: (chain: ChainId, voteStatus: ProgressStatus) =>
       set({
         voteStatus: { ...get().voteStatus, [chain]: voteStatus },
+      }),
+    chainSwitchStatus: defaultProgressStatusForAllChains,
+    setChainSwitchStatusForChain: (
+      chain: ChainId,
+      chainSwitchStatus: ProgressStatus
+    ) =>
+      set({
+        chainSwitchStatus: {
+          ...get().chainSwitchStatus,
+          [chain]: chainSwitchStatus,
+        },
       }),
     currentChainBeingCheckedOut: undefined,
     checkout: async (
@@ -110,7 +129,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         });
 
         /* Switch to the current chain */
-        await switchToChain(chainId, walletClient);
+        await switchToChain(chainId, walletClient, get);
 
         const wc = await getWalletClient({
           chainId,
@@ -258,29 +277,51 @@ export const useCheckoutStore = create<CheckoutState>()(
 
 /** This function handles switching to a chain
  * if the chain is not present in the wallet, it will add it, and then switch */
-async function switchToChain(chainId: ChainId, walletClient: WalletClient) {
+async function switchToChain(
+  chainId: ChainId,
+  walletClient: WalletClient,
+  get: () => CheckoutState
+) {
+  get().setChainSwitchStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
   const nextChainData = allChains.find((chain) => chain.id === chainId);
   if (!nextChainData) {
+    get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
     throw "next chain not found";
   }
-  /* Try switching normally */
   try {
+    /* Try switching normally */
     await walletClient.switchChain({
       id: chainId,
     });
   } catch (e) {
-    /** Chain might not be added in wallet yet. Request to add it to the wallet */
-    await walletClient.addChain({
-      chain: {
-        id: nextChainData.id,
-        name: nextChainData.name,
-        network: nextChainData.network,
-        nativeCurrency: nextChainData.nativeCurrency,
-        rpcUrls: nextChainData.rpcUrls,
-        blockExplorers: nextChainData.blockExplorers,
-      },
-    });
+    if (e instanceof UserRejectedRequestError) {
+      console.log("Rejected!");
+      get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
+    } else if (e instanceof SwitchChainError || e instanceof InternalRpcError) {
+      console.log("Chain not added yet, adding", { e });
+      /** Chain might not be added in wallet yet. Request to add it to the wallet */
+      try {
+        await walletClient.addChain({
+          chain: {
+            id: nextChainData.id,
+            name: nextChainData.name,
+            network: nextChainData.network,
+            nativeCurrency: nextChainData.nativeCurrency,
+            rpcUrls: nextChainData.rpcUrls,
+            blockExplorers: nextChainData.blockExplorers,
+          },
+        });
+      } catch (e) {
+        get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
+        return;
+      }
+    } else {
+      console.log("unhandled error when switching chains", { e });
+      get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
+      return;
+    }
   }
+  get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
 }
 
 function encodeQFVotes(
