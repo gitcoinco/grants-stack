@@ -480,6 +480,11 @@ describe("ViewApplicationPage", () => {
             question: "Payout token",
             answer: "DAI",
           },
+          {
+            questionId: 2,
+            question: "Payout wallet address",
+            answer: "0x444",
+          },
         ],
         status: "APPROVED",
         inReview: false,
