@@ -27,7 +27,15 @@ export function MRCProgressModalBody({
   setIsOpen,
 }: MRCProgressModalBodyProps) {
   const { chain } = useNetwork();
-  const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
+  const currentChainId = chain?.id ?? chainIdsBeingCheckedOut[0];
+  /* If the first chain to be checked out is not our current chain,
+  which means we are in the process of switching networks,
+  display the first chain to be checked out */
+  const chainId = (
+    chainIdsBeingCheckedOut[0] !== currentChainId
+      ? chainIdsBeingCheckedOut[0]
+      : currentChainId
+  ) as ChainId;
 
   const checkoutStore = useCheckoutStore();
   const permitStatus = checkoutStore.permitStatus;

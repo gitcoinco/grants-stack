@@ -29,9 +29,13 @@ export function SummaryContainer() {
   const { projects } = useCartStorage();
   const publicClient = usePublicClient();
   const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
-  const projectsByChain = _.groupBy(projects, "chainId") as {
-    [chain: number]: CartProject[];
-  };
+  const projectsByChain = useMemo(
+    () =>
+      _.groupBy(projects, "chainId") as {
+        [chain: number]: CartProject[];
+      },
+    [projects]
+  );
 
   const { data: rounds } = useSWR(projects, (projects) => {
     const uniqueProjects = _.uniqBy(projects, "roundId");
@@ -44,6 +48,11 @@ export function SummaryContainer() {
   const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
     ChainId[]
   >(Object.keys(projectsByChain).map(Number));
+
+  /** Keep the chains to be checked out in sync with the projects in the cart */
+  useEffect(() => {
+    setChainIdsBeingCheckedOut(Object.keys(projectsByChain).map(Number));
+  }, [projectsByChain]);
 
   /** The ID of the current chain (from wallet) */
   const { data: walletClient } = useWalletClient();
