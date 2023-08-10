@@ -147,7 +147,9 @@ export const renderWithContext = (
           state: { ...initialRoundState, ...roundStateOverrides },
           dispatch,
         }}
-      ></RoundContext.Provider>
+      >
+        {ui}
+      </RoundContext.Provider>
     </MemoryRouter>
   );
 

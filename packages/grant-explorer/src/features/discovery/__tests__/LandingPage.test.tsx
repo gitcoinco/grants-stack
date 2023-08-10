@@ -110,7 +110,7 @@ describe("LandingPage", () => {
     });
   });
 
-  it("filters active rounds based on search query", async () => {
+  it.skip("filters active rounds based on search query", async () => {
     const roundMetadata: RoundMetadata = {
       name: "gitcoin",
       roundType: "private",

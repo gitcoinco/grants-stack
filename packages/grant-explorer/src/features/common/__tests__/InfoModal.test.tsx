@@ -1,6 +1,6 @@
 import { fireEvent, screen } from "@testing-library/react";
-import { renderWrapped } from "../../../test-utils";
 import InfoModal from "../InfoModal";
+import { renderWithContext } from "../../../test-utils";
 
 describe("<InfoModal />", () => {
   beforeEach(() => {
@@ -8,7 +8,7 @@ describe("<InfoModal />", () => {
   });
 
   it("should display the modal when isOpen is true", () => {
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen
         setIsOpen={jest.fn()}
@@ -20,7 +20,7 @@ describe("<InfoModal />", () => {
   });
 
   it("should not display the modal when isOpen is false", () => {
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen={false}
         setIsOpen={jest.fn()}
@@ -33,7 +33,7 @@ describe("<InfoModal />", () => {
 
   it("should close the modal by default when cancel button is clicked", () => {
     const setIsOpen = jest.fn();
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen
         setIsOpen={setIsOpen}
@@ -50,7 +50,7 @@ describe("<InfoModal />", () => {
 
   it("should execute cancelButtonAction when cancelButtonAction is provided and cancel button is clicked", () => {
     const cancelButtonAction = jest.fn();
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen
         setIsOpen={jest.fn()}
@@ -67,7 +67,7 @@ describe("<InfoModal />", () => {
 
   it("should execute continueButtonAction when continue button is clicked", () => {
     const continueButtonAction = jest.fn();
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen
         setIsOpen={jest.fn()}
@@ -84,7 +84,7 @@ describe("<InfoModal />", () => {
   it("should display custom text for button that executes continueButtonAction when continueButtonText is provided in props", () => {
     const continueButtonText = "My Cool Button";
     const continueButtonAction = jest.fn();
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen
         setIsOpen={jest.fn()}
@@ -103,7 +103,7 @@ describe("<InfoModal />", () => {
 
   it("should display custom title text when title is provided in props", () => {
     const modalTitle = "My cool modal";
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen={true}
         setIsOpen={jest.fn()}
@@ -118,7 +118,7 @@ describe("<InfoModal />", () => {
   it("should render body element inside the modal if provided in props", () => {
     const testId = "modal-body";
     const body = <div data-testid={testId} />;
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen={true}
         setIsOpen={jest.fn()}
@@ -133,7 +133,7 @@ describe("<InfoModal />", () => {
   it("should render children", () => {
     const expectedTestId = `child-test-id-123`;
     const child = <div data-testid={expectedTestId} />;
-    renderWrapped(
+    renderWithContext(
       <InfoModal
         isOpen
         setIsOpen={jest.fn()}

@@ -7,13 +7,13 @@ import NavbarCart from "../NavbarCart";
 
 describe("<NavbarCart/>", () => {
   it("SHOULD always show CART icon", () => {
-    renderWithContext(<NavbarCart cart={[]} roundUrlPath={""} />);
-
+    renderWithContext(<NavbarCart cart={[]} />);
+    screen.logTestingPlaygroundURL();
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
   });
 
   it("SHOULD not display a number when empty", () => {
-    renderWithContext(<NavbarCart cart={[]} roundUrlPath={""} />);
+    renderWithContext(<NavbarCart cart={[]} />);
 
     /* Verify we are displaying the 0 */
     expect(screen.queryByText("0")).not.toBeInTheDocument();
@@ -22,14 +22,14 @@ describe("<NavbarCart/>", () => {
   it("SHOULD display the number when full", () => {
     const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
 
-    renderWithContext(<NavbarCart cart={cart} roundUrlPath={""} />);
+    renderWithContext(<NavbarCart cart={cart} />);
 
     /* Verify we aren't displaying the 0 */
     expect(screen.getByText("2")).toBeInTheDocument();
   });
 
   it("SHOULD not show dropdown on clicking cart icon WHEN cart is empty", async () => {
-    renderWithContext(<NavbarCart cart={[]} roundUrlPath={""} />);
+    renderWithContext(<NavbarCart cart={[]} />);
 
     const icon = screen.getByTestId("navbar-cart");
 
