@@ -17,10 +17,13 @@ import { BigNumber, ethers } from "ethers";
 import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
 import { parseUnits } from "ethers/lib/utils.js";
+import { usePayout } from "../../../context/application/usePayout";
+// import * as usePayout from "../../../context/application/usePayout";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
+jest.mock("../../../context/application/usePayout");
 
 const mockAddress = ethers.constants.AddressZero;
 const mockWallet = {
@@ -69,6 +72,7 @@ const correctAnswerBlocks = [
 
 describe("<ApplicationDirectPayout />", () => {
   let mockAllowance: jest.Mock;
+  let mockTriggerPayout: jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -80,10 +84,23 @@ describe("<ApplicationDirectPayout />", () => {
     (Erc20__factory.connect as jest.Mock).mockImplementation(() => ({
       allowance: mockAllowance,
     }));
+
+    mockTriggerPayout = jest.fn().mockResolvedValue(new Promise(() => {}));
+
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
     (useSwitchNetwork as any).mockReturnValue({ chains: [] });
     (useDisconnect as any).mockReturnValue({});
     (useNetwork as jest.Mock).mockReturnValue(mockNetwork);
+    (usePayout as jest.Mock).mockImplementation(() => {
+      const originalModule = jest.requireActual(
+        "../../../context/application/usePayout"
+      );
+
+      return {
+        ...originalModule.usePayout(),
+        triggerPayout: mockTriggerPayout,
+      };
+    });
   });
 
   it('should trigger if "Payout token" answer is not present', () => {
@@ -314,6 +331,7 @@ describe("<ApplicationDirectPayout />", () => {
     const inputAddress = screen.getByTestId("payout-amount-address");
     fireEvent.change(inputAmount, { target: { value: "100" } });
     fireEvent.change(inputAddress, {
+      // set vault address with a different address than the connected wallet
       target: { value: "0x1111111111111111111111111111111111111111" },
     });
 
@@ -326,6 +344,40 @@ describe("<ApplicationDirectPayout />", () => {
       const needsAllowance =
         /In order to continue you need to allow the payout strategy contract with address .* to spend .* tokens\./;
       expect(screen.getByText(needsAllowance)).toBeInTheDocument();
+    });
+  });
+
+  it("should trigger allowance when the vault address has not allowed the payout strategy", async () => {
+    const mockProps = {
+      round: makeRoundData({
+        operatorWallets: [mockAddress],
+      }),
+      application: makeGrantApplicationData({
+        applicationIndex: 1,
+        payoutStrategy: {
+          id: "1",
+          strategyName: ROUND_PAYOUT_DIRECT,
+          payouts: [],
+        },
+      }),
+      answerBlocks: correctAnswerBlocks,
+    };
+
+    render(<ApplicationDirectPayout {...mockProps} />);
+
+    const inputAmount = screen.getByTestId("payout-amount-input");
+    const inputAddress = screen.getByTestId("payout-amount-address");
+    fireEvent.change(inputAmount, { target: { value: "100" } });
+    fireEvent.change(inputAddress, {
+      // set vault address with the same address as the connected wallet
+      target: { value: mockAddress },
+    });
+
+    const button = screen.getByTestId("trigger-payment");
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(mockTriggerPayout).toHaveBeenCalled();
     });
   });
 });
