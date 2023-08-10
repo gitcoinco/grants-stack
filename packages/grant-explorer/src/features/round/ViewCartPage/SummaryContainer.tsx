@@ -29,9 +29,13 @@ export function SummaryContainer() {
   const { projects } = useCartStorage();
   const publicClient = usePublicClient();
   const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
-  const projectsByChain = _.groupBy(projects, "chainId") as {
-    [chain: number]: CartProject[];
-  };
+  const projectsByChain = useMemo(
+    () =>
+      _.groupBy(projects, "chainId") as {
+        [chain: number]: CartProject[];
+      },
+    [projects]
+  );
 
   const { data: rounds } = useSWR(projects, (projects) => {
     const uniqueProjects = _.uniqBy(projects, "roundId");
@@ -44,6 +48,14 @@ export function SummaryContainer() {
   const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
     ChainId[]
   >(Object.keys(projectsByChain).map(Number));
+
+  /** Keep the chains to be checked out in sync with the projects in the cart */
+  useEffect(() => {
+    const chainIdsFromProjects = Object.keys(projectsByChain).map(Number);
+    if (chainIdsFromProjects.length < chainIdsBeingCheckedOut.length) {
+      setChainIdsBeingCheckedOut(chainIdsFromProjects);
+    }
+  }, [chainIdsBeingCheckedOut, projectsByChain]);
 
   /** The ID of the current chain (from wallet) */
   const { data: walletClient } = useWalletClient();
@@ -94,9 +106,8 @@ export function SummaryContainer() {
     const success = chainIdsBeingCheckedOut
       .map((chain) => voteStatus[chain])
       .every((status) => status === ProgressStatus.IS_SUCCESS);
-
     /* Redirect to thank you page */
-    if (success) {
+    if (success && chainIdsBeingCheckedOut.length > 0) {
       navigate("/thankyou");
     }
   }, [chainIdsBeingCheckedOut, navigate, voteStatus]);

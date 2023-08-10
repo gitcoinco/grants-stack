@@ -3,7 +3,6 @@ import { ChainId } from "common";
 import { CHAINS } from "../../api/utils";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useNetwork } from "wagmi";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { Button } from "common/src/styles";
 
@@ -26,12 +25,11 @@ export function MRCProgressModalBody({
   tryAgainFn,
   setIsOpen,
 }: MRCProgressModalBodyProps) {
-  const { chain } = useNetwork();
-  const chainId = (chain?.id ?? chainIdsBeingCheckedOut[0]) as ChainId;
-
   const checkoutStore = useCheckoutStore();
   const permitStatus = checkoutStore.permitStatus;
   const voteStatus = checkoutStore.voteStatus;
+  const chainId = (checkoutStore.currentChainBeingCheckedOut ??
+    chainIdsBeingCheckedOut[0]) as ChainId;
 
   return (
     <>

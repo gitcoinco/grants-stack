@@ -1,8 +1,14 @@
 import { ChainId } from "common";
 import { Hex } from "viem";
 
-// @ts-expect-error TODO: add addys from other chains
 export const MRC_CONTRACTS: Record<ChainId, Hex> = {
-  [ChainId.PGN_TESTNET]: "0x4268900E904aD87903De593AA5424406066d9ea2",
+  [ChainId.MAINNET]: "0x3bA9DF642f5e895DC76d3Aa9e4CE8291108E65b1",
   [ChainId.GOERLI_CHAIN_ID]: "0x69433D914c7Cd8b69710a3275bcF3df4CB3eDA94",
+  [ChainId.PGN]: "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
+  [ChainId.PGN_TESTNET]: "0x4268900E904aD87903De593AA5424406066d9ea2",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
+    "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    "0x15fa08599EB017F89c1712d0Fe76138899FdB9db",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "0x" /*TODO: add ftm testnet*/,
 };
