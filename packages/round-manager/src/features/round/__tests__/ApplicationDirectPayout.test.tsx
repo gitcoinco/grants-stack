@@ -178,6 +178,9 @@ describe("<ApplicationDirectPayout />", () => {
 
     try {
       render(<ApplicationDirectPayout {...mockProps} />);
+      expect(
+        screen.findByTestId("application-direct-payout")
+      ).not.toBeInTheDocument();
     } catch (error: any) {
       expect(error.message).toBe(
         '"Payout wallet address" not found in answers!'
