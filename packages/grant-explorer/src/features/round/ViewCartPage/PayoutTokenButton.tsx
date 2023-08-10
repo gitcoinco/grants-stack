@@ -11,22 +11,20 @@ export function PayoutTokenButton(props: { token?: PayoutToken }) {
       data-testid="payout-token-select"
     >
       <span className="flex items-center">
-        {token?.logo ? (
+        {token?.logo && (
           <img
             src={token?.logo}
             alt="Token Logo"
             className="h-4 w-4 md:h-6 md:w-6 flex-shrink-0 rounded-full"
           />
-        ) : null}
-        {token?.default ? (
-          <span className="ml-3 block truncate text-gray-500 text-sm md:text-md">
-            {token?.name}
-          </span>
-        ) : (
-          <span className="ml-3 block truncate text-sm md:text-md">
-            {token?.name}
-          </span>
         )}
+        <span
+          className={`ml-3 block truncate text-sm md:text-md ${
+            token?.default ? "text-gray-500" : ""
+          }`}
+        >
+          {token?.name}
+        </span>
       </span>
       <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
         <ChevronUpDownIcon

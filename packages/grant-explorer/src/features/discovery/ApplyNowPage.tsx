@@ -62,7 +62,7 @@ const ApplyNowPage = () => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
 
-    if (!query || query === "") {
+    if (query.trim() === "") {
       setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
       return;
     }

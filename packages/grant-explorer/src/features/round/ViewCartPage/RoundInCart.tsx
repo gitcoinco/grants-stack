@@ -32,7 +32,7 @@ export function RoundInCart(
           </p>
         </div>
       )}
-      {props.roundCart.map((project: CartProject, key: number) => (
+      {props.roundCart.map((project, key) => (
         <div key={key}>
           <ProjectInCart
             projects={props.roundCart}

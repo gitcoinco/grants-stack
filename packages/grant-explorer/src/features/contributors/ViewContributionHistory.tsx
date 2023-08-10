@@ -276,7 +276,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
         <div className="text-2xl">Donation History</div>
         <div className="flex justify-center">
           <div className="w-3/4 my-6 text-center mx-auto">
-            {props.address == walletAddress ? (
+            {props.address === walletAddress ? (
               <>
                 <p className="text-md">
                   This is your donation history page, where you can keep track

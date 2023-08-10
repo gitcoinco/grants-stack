@@ -7,14 +7,14 @@ import { formatUnits } from "viem";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
-  totalDdonationsPerChain: { [chain: number]: bigint };
+  totalDonationsPerChain: { [chain: number]: bigint };
   chainIdsBeingCheckedOut: number[];
   setChainIdsBeingCheckedOut: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export function ChainConfirmationModalBody({
   projectsByChain,
-  totalDdonationsPerChain,
+  totalDonationsPerChain,
   chainIdsBeingCheckedOut,
   setChainIdsBeingCheckedOut,
 }: ChainConfirmationModalBodyProps) {
@@ -44,7 +44,7 @@ export function ChainConfirmationModalBody({
           <ChainSummary
             chainId={Number(chainId) as ChainId}
             selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
-            totalDonation={totalDdonationsPerChain[Number(chainId)]}
+            totalDonation={totalDonationsPerChain[Number(chainId)]}
             checked={chainIdsBeingCheckedOut.includes(Number(chainId))}
             onChange={(checked) =>
               handleChainCheckboxChange(Number(chainId), checked)

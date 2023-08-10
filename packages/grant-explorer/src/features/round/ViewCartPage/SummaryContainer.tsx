@@ -18,7 +18,7 @@ import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { usePassport } from "../../api/passport";
 import useSWR from "swr";
-import _, { round } from "lodash";
+import { round, groupBy, uniqBy } from "lodash-es";
 import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
@@ -28,19 +28,15 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export function SummaryContainer() {
   const { openConnectModal } = useConnectModal();
-  const { projects } = useCartStorage();
+  const { projects, chainToPayoutToken: payoutTokens } = useCartStorage();
   const publicClient = usePublicClient();
-  const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
   const projectsByChain = useMemo(
-    () =>
-      _.groupBy(projects, "chainId") as {
-        [chain: number]: CartProject[];
-      },
+    () => groupBy(projects, "chainId"),
     [projects]
   );
 
   const { data: rounds } = useSWR(projects, (projects) => {
-    const uniqueProjects = _.uniqBy(projects, "roundId");
+    const uniqueProjects = uniqBy(projects, "roundId");
     return Promise.all(
       uniqueProjects.map((proj) => getRoundById(proj.roundId, proj.chainId))
     );
@@ -64,8 +60,8 @@ export function SummaryContainer() {
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
-    rounds
-      ?.sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())[0]
+    [...(rounds ?? [])]
+      .sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())[0]
       .roundEndTime.getTime() ?? 0;
 
   const totalDonationsPerChain = useMemo(() => {
@@ -159,7 +155,7 @@ export function SummaryContainer() {
           body={
             <ChainConfirmationModalBody
               projectsByChain={projectsByChain}
-              totalDdonationsPerChain={totalDonationsPerChain}
+              totalDonationsPerChain={totalDonationsPerChain}
               chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
               setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
             />
@@ -184,13 +180,13 @@ export function SummaryContainer() {
         <ErrorModal
           isOpen={donateWarningModalOpen}
           setIsOpen={setDonateWarningModalOpen}
-          doneFn={() => {
+          onDone={() => {
             setDonateWarningModalOpen(false);
             handleConfirmation();
           }}
           tryAgainText={"Go to Passport"}
           doneText={"Donate without matching"}
-          tryAgainFn={() => {
+          onTryAgain={() => {
             navigate(`/round/passport/connect`);
           }}
           heading={`Don’t miss out on getting your donations matched!`}

@@ -69,7 +69,7 @@ export default function PassportConnect() {
     if (res.ok) {
       const scoreResponse: PassportResponse = await res.json();
 
-      if (scoreResponse.status == "PROCESSING") {
+      if (scoreResponse.status === "PROCESSING") {
         console.log("processing, calling again in 3000 ms");
         setTimeout(async () => {
           await callFetchPassport();
@@ -80,7 +80,7 @@ export default function PassportConnect() {
       if (
         !scoreResponse.score ||
         !scoreResponse.evidence ||
-        scoreResponse.status == "ERROR"
+        scoreResponse.status === "ERROR"
       ) {
         datadogLogs.logger.error(
           `error: callFetchPassport - invalid score response`,

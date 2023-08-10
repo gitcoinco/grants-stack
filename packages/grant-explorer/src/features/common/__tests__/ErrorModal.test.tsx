@@ -48,7 +48,7 @@ describe.skip("<ErrorModal />", () => {
         subheading="this is an error message"
         isOpen={true}
         setIsOpen={setIsOpenFn}
-        tryAgainFn={tryAgainFn}
+        onTryAgain={tryAgainFn}
       />
     );
     fireEvent.click(screen.getByTestId("tryAgain"));
@@ -68,7 +68,7 @@ describe.skip("<ErrorModal />", () => {
         subheading="this is an error message"
         isOpen={true}
         setIsOpen={setIsOpenFn}
-        doneFn={doneFn}
+        onDone={doneFn}
       />
     );
     fireEvent.click(screen.getByTestId("done"));

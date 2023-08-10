@@ -121,7 +121,7 @@ export function DonationsTable(props: {
             });
           })}
       </table>
-      {props.contributions.length == 0 && (
+      {props.contributions.length === 0 && (
         <div className="text-md mt-2 mb-12">
           {props.activeRound
             ? "Donations made during active rounds will appear here."

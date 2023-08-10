@@ -21,7 +21,7 @@ import {
   voteUsingMRCContract,
 } from "./features/api/voting";
 import { MRC_CONTRACTS } from "./features/api/contracts";
-import _ from "lodash";
+import { groupBy } from "lodash-es";
 import { datadogLogs } from "@datadog/browser-logs";
 import { allChains } from "./app/wagmi";
 import { WalletClient } from "wagmi";
@@ -95,7 +95,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           chainIdsToCheckOut.includes(project.chainId)
         );
 
-      const projectsByChain = _.groupBy(projectsToCheckOut, "chainId") as {
+      const projectsByChain = groupBy(projectsToCheckOut, "chainId") as {
         [chain: number]: CartProject[];
       };
 
@@ -156,31 +156,30 @@ export const useCheckoutStore = create<CheckoutState>()(
               chainId,
             });
             nonce = await erc20Contract.read.nonces([owner]);
-            debugger;
             const tokenName = await erc20Contract.read.name();
             /*TODO: better dai test, extract into function, test*/
             if (/DAI/i.test(tokenName)) {
               sig = await signPermitDai({
                 walletClient: walletClient,
-                spender: MRC_CONTRACTS[chainId],
+                spenderAddress: MRC_CONTRACTS[chainId],
                 chainId,
                 deadline: BigInt(deadline),
                 contractAddress: token.address,
                 erc20Name: tokenName,
-                owner,
+                ownerAddress: owner,
                 nonce,
               });
             } else {
               sig = await signPermit2612({
                 walletClient: walletClient,
                 value: totalDonationPerChain[chainId],
-                spender: MRC_CONTRACTS[chainId],
+                spenderAddress: MRC_CONTRACTS[chainId],
                 nonce,
                 chainId,
                 deadline: BigInt(deadline),
                 contractAddress: token.address,
                 erc20Name: tokenName,
-                owner,
+                ownerAddress: owner,
                 permitVersion: token.permitVersion ?? "1",
               });
             }
@@ -206,7 +205,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           get().setVoteStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
 
           /* Group donations by round */
-          const groupedDonations = _.groupBy(
+          const groupedDonations = groupBy(
             donations.map((d) => ({
               ...d,
               roundId: getAddress(d.roundId),
