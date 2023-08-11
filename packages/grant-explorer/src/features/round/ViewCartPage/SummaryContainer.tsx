@@ -8,12 +8,7 @@ import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import {
-  useAccount,
-  useNetwork,
-  useWalletClient,
-  usePublicClient,
-} from "wagmi";
+import { useAccount, useWalletClient, usePublicClient } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { usePassport } from "../../api/passport";

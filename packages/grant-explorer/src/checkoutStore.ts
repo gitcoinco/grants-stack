@@ -22,7 +22,7 @@ import {
   voteUsingMRCContract,
 } from "./features/api/voting";
 import { MRC_CONTRACTS } from "./features/api/contracts";
-import { groupBy, uniq, uniqBy } from "lodash-es";
+import { groupBy, uniq } from "lodash-es";
 import { datadogLogs } from "@datadog/browser-logs";
 import { allChains } from "./app/wagmi";
 import { WalletClient } from "wagmi";
