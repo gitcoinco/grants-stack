@@ -60,9 +60,13 @@ export function SummaryContainer() {
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
-    [...(rounds ?? [])]
-      .sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())[0]
-      .roundEndTime.getTime() ?? 0;
+    rounds && rounds.length > 0
+      ? [...rounds]
+          .sort(
+            (a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime()
+          )[0]
+          .roundEndTime.getTime()
+      : 0;
 
   const totalDonationsPerChain = useMemo(() => {
     return Object.fromEntries(
