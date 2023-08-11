@@ -259,7 +259,7 @@ export function SummaryContainer() {
   });
 
   const [totalDonationAcrossChainsInUSD, setTotalDonationAcrossChainsInUSD] =
-    useState<number>(0);
+    useState<number | undefined>();
 
   const { data: totalDonationAcrossChainsInUSDData } = useSWR(
     totalDonationsPerChain,
@@ -303,16 +303,17 @@ export function SummaryContainer() {
             totalDonation={totalDonationsPerChain[chainId]}
           />
         ))}
-        <div className="flex flex-row justify-between mt-4 border-t-2">
-          <div className="flex flex-col mt-4">
-            <p className="mb-2">Your total contribution</p>
-          </div>
-          <div className="flex justify-end mt-4">
-            <p className="text-[14px] text-grey-400">
-              $ {totalDonationAcrossChainsInUSD?.toFixed(2)}
-            </p>
-          </div>
-        </div>
+        {totalDonationAcrossChainsInUSD &&
+          totalDonationAcrossChainsInUSD > 0 && (
+            <div className="flex flex-row justify-between mt-4 border-t-2">
+              <div className="flex flex-col mt-4">
+                <p className="mb-2">Your total contribution</p>
+              </div>
+              <div className="flex justify-end mt-4">
+                <p>$ {totalDonationAcrossChainsInUSD?.toFixed(2)}</p>
+              </div>
+            </div>
+          )}
         <Button
           $variant="solid"
           data-testid="handle-confirmation"
