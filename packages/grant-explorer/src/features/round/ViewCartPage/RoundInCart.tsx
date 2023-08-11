@@ -16,7 +16,8 @@ export function RoundInCart(
     props.roundCart[0].roundId
   ).round;
   const minDonationThresholdAmount =
-    round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount;
+    round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount ??
+    1;
   return (
     <div className="my-4 bg-grey-50 rounded-xl">
       <div className="flex flex-row pt-4 sm:px-4 px-2">

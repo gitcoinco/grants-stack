@@ -10,6 +10,7 @@ import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
 import { ProgressStatus } from "../api/types";
 import { ChainId } from "common";
+import { useAccount } from "wagmi";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -24,6 +25,7 @@ export default function ThankYou() {
 
   const cart = useCartStorage();
   const checkoutStore = useCheckoutStore();
+  const { address } = useAccount();
 
   /** Remove checked out projects from cart, but keep the ones we didn't yet checkout succesfully. */
   const checkedOutChains = Object.keys(checkoutStore.voteStatus)
@@ -90,31 +92,36 @@ export default function ThankYou() {
               Thank you for supporting our community.
             </h1>
 
-            <div className="flex justify-center gap-6">
-              {/*<TwitterButton roundName={roundName} />*/}
-
-              {/*<ViewTransactionButton />*/}
-              {showBackToCartButton && (
-                <Button
-                  type="button"
-                  $variant="outline"
-                  onClick={() => navigate("/cart")}
-                  className="my-8 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
-                  data-testid="home-button"
-                >
-                  Back to Cart
-                </Button>
-              )}
-            </div>
+            {showBackToCartButton ? (
+              <Button
+                type="button"
+                $variant="outline"
+                onClick={() => navigate("/cart")}
+                className="mt-4 mr-4 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
+                data-testid="home-button"
+              >
+                Back to Cart
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                $variant="outline"
+                onClick={() => navigate("/")}
+                className="mt-4 mr-4 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
+                data-testid="home-button"
+              >
+                Go back home
+              </Button>
+            )}
 
             <Button
               type="button"
               $variant="outline"
-              onClick={() => navigate("/")}
-              className="my-8 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
-              data-testid="home-button"
+              onClick={() => navigate(`/contributors/${address}`)}
+              className="mt-4 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
+              data-testid="donation-history-button"
             >
-              Go back home
+              View Donation History
             </Button>
 
             <div className="mt-11">

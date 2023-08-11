@@ -36,6 +36,9 @@ export function CartWithProjects({ cart, chainId }: Props) {
   );
   const payoutTokenPrice = !loading && !error ? Number(data) : null;
 
+  // get number of projects in cartByRound
+  const projectCount = cartByRound.reduce((acc, curr) => acc + curr.length, 0);
+
   return (
     <div className="grow block px-[16px] py-4 bg-white">
       <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3 mb-6">
@@ -46,7 +49,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
             alt={"Chain Logo"}
           />
           <h2 className="mt-3 text-xl font-semibold">{chain.name}</h2>
-          <h2 className="mt-3 text-xl font-semibold">({cartByRound.length})</h2>
+          <h2 className="mt-3 text-xl font-semibold">({projectCount})</h2>
         </div>
         <div className="flex sm:justify-end flex-row gap-2 basis-[72%]">
           <div className="flex gap-4">

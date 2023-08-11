@@ -56,11 +56,11 @@ export function ProjectInCart(
               to={`${roundRoutePath}/${project.grantApplicationId}`}
               data-testid={"cart-project-link"}
             >
-              <p className="font-semibold text-lg mb-2 text-ellipsis line-clamp-1">
+              <p className="font-semibold text-lg mb-2 text-ellipsis line-clamp-1 max-w-[250px] 2xl:max-w-none">
                 {props.project.projectMetadata.title}
               </p>
             </Link>
-            <p className="text-sm text-ellipsis line-clamp-3">
+            <p className="text-sm text-ellipsis line-clamp-3 max-w-[250px] 2xl:max-w-none">
               {renderToPlainText(
                 props.project.projectMetadata.description
               ).substring(0, 130)}

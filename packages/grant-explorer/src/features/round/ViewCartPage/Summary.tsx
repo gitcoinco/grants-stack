@@ -25,7 +25,7 @@ export function Summary({
   return (
     <div className="flex flex-row justify-between mt-2">
       <div className="flex flex-col">
-        <p className="mb-2">Your Contribution on</p>
+        <p className="mb-2">Your contribution on</p>
         <p>
           <img
             className={"inline max-w-[32px] mr-2"}
