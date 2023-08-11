@@ -1,4 +1,4 @@
-import { ChainId, PassportState } from "common";
+import { ChainId, PassportState, getTokenPrice } from "common";
 import { useCartStorage } from "../../../store";
 import React, { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -23,7 +23,7 @@ import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export function SummaryContainer() {
@@ -41,6 +41,13 @@ export function SummaryContainer() {
       uniqueProjects.map((proj) => getRoundById(proj.roundId, proj.chainId))
     );
   });
+
+  const [clickedSubmit, setClickedSubmit] = useState(false);
+
+  useEffect(() => {
+    clickedSubmit && checkEmptyDonations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projects, clickedSubmit]);
 
   /** The ids of the chains that will be checked out */
   const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
@@ -127,14 +134,25 @@ export function SummaryContainer() {
     },
   ];
 
-  function handleConfirmation() {
-    // check to ensure all projects have donation amount
+  function checkEmptyDonations() {
     const emptyDonations = projects.filter(
       (project) => !project.amount || Number(project.amount) === 0
     );
 
     if (emptyDonations.length > 0) {
       setEmptyInput(true);
+      return true;
+    } else {
+      setEmptyInput(false);
+      return false;
+    }
+  }
+
+  function handleConfirmation() {
+    const emptyDonations = checkEmptyDonations();
+    setClickedSubmit(true);
+
+    if (emptyDonations) {
       return;
     }
 
@@ -240,6 +258,40 @@ export function SummaryContainer() {
     address: address ?? "",
   });
 
+  const [totalDonationAcrossChainsInUSD, setTotalDonationAcrossChainsInUSD] =
+    useState<number>(0);
+
+  const { data: totalDonationAcrossChainsInUSDData } = useSWR(
+    totalDonationsPerChain,
+    (totalDonationsPerChain) => {
+      return Promise.all(
+        Object.keys(totalDonationsPerChain).map((chainId) =>
+          getTokenPrice(
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            payoutTokens[Number(chainId) as ChainId].redstoneTokenId!
+          ).then((price) => {
+            return (
+              Number(
+                formatUnits(
+                  totalDonationsPerChain[chainId],
+                  payoutTokens[Number(chainId) as ChainId].decimal
+                )
+              ) * Number(price)
+            );
+          })
+        )
+      );
+    }
+  );
+
+  useEffect(() => {
+    if (totalDonationAcrossChainsInUSDData) {
+      setTotalDonationAcrossChainsInUSD(
+        totalDonationAcrossChainsInUSDData.reduce((acc, curr) => acc + curr, 0)
+      );
+    }
+  }, [totalDonationAcrossChainsInUSDData]);
+
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
@@ -251,6 +303,16 @@ export function SummaryContainer() {
             totalDonation={totalDonationsPerChain[chainId]}
           />
         ))}
+        <div className="flex flex-row justify-between mt-4 border-t-2">
+          <div className="flex flex-col mt-4">
+            <p className="mb-2">Your total contribution</p>
+          </div>
+          <div className="flex justify-end mt-4">
+            <p className="text-[14px] text-grey-400">
+              $ {totalDonationAcrossChainsInUSD?.toFixed(2)}
+            </p>
+          </div>
+        </div>
         <Button
           $variant="solid"
           data-testid="handle-confirmation"
