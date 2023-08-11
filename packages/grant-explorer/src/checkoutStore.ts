@@ -22,7 +22,7 @@ import {
   voteUsingMRCContract,
 } from "./features/api/voting";
 import { MRC_CONTRACTS } from "./features/api/contracts";
-import { groupBy } from "lodash-es";
+import { groupBy, uniq, uniqBy } from "lodash-es";
 import { datadogLogs } from "@datadog/browser-logs";
 import { allChains } from "./app/wagmi";
 import { WalletClient } from "wagmi";
@@ -44,6 +44,8 @@ interface CheckoutState {
     voteStatus: ProgressStatus
   ) => void;
   currentChainBeingCheckedOut?: ChainId;
+  chainsToCheckout: ChainId[];
+  setChainsToCheckout: (chains: ChainId[]) => void;
   /** Checkout the given chains
    * this has the side effect of adding the chains to the wallet if they are not yet present
    * We get the data necessary to construct the votes from the cart store */
@@ -85,11 +87,20 @@ export const useCheckoutStore = create<CheckoutState>()(
         },
       }),
     currentChainBeingCheckedOut: undefined,
+    chainsToCheckout: [],
+    setChainsToCheckout: (chains: ChainId[]) => {
+      set({
+        chainsToCheckout: chains,
+      });
+    },
     checkout: async (
       chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
       walletClient: WalletClient
     ) => {
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
+      get().setChainsToCheckout(
+        uniq([...get().chainsToCheckout, ...chainIdsToCheckOut])
+      );
       const projectsToCheckOut = useCartStorage
         .getState()
         .projects.filter((project) =>
@@ -124,7 +135,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         const chainId = currentChain.chainId;
         const deadline = currentChain.permitDeadline;
         const donations = projectsByChain[chainId];
-
+        debugger;
         set({
           currentChainBeingCheckedOut: chainId,
         });
@@ -256,6 +267,10 @@ export const useCheckoutStore = create<CheckoutState>()(
             " receipt",
             receipt
           );
+          /* Remove checked out projects from cart */
+          donations.forEach((donation) => {
+            useCartStorage.getState().remove(donation.grantApplicationId);
+          });
         } catch (error) {
           datadogLogs.logger.error(
             `error: vote - ${error}. Data - ${donations.toString()}`
@@ -297,6 +312,7 @@ async function switchToChain(
     if (e instanceof UserRejectedRequestError) {
       console.log("Rejected!");
       get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
+      return;
     } else if (e instanceof SwitchChainError || e instanceof InternalRpcError) {
       console.log("Chain not added yet, adding", { e });
       /** Chain might not be added in wallet yet. Request to add it to the wallet */
