@@ -41,6 +41,10 @@ export default function ThankYou() {
       .forEach((proj) => cart.remove(proj.grantApplicationId));
   }, [cart, checkedOutChains]);
 
+  useEffect(() => {
+    checkoutStore.setChainsToCheckout([]);
+  }, []);
+
   /** If there are projects left to check out, show a Back to cart button */
   const showBackToCartButton =
     cart.projects.filter((proj) => !checkedOutChains.includes(proj.chainId))
