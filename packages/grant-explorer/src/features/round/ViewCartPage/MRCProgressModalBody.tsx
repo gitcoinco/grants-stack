@@ -232,7 +232,7 @@ export function MRCProgressModalBody({
         </ol>
       </nav>
       <div>
-        <div className="flex justify-start">
+        <div className="flex justify-start flex-col">
           {permitStatus[chainId as ChainId] === ProgressStatus.IS_ERROR && (
             <p className="text-xs text-grey-400 mt-2 ml-2">
               Transaction rejected or signature denied. Please double check your
