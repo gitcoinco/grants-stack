@@ -8,12 +8,7 @@ import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import {
-  useAccount,
-  useNetwork,
-  useWalletClient,
-  usePublicClient,
-} from "wagmi";
+import { useAccount, useWalletClient, usePublicClient } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { usePassport } from "../../api/passport";
@@ -106,18 +101,28 @@ export function SummaryContainer() {
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
-  const { checkout, voteStatus } = useCheckoutStore();
+  const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
 
   useEffect(() => {
     /* Check if all chains that were meant to be checked out were succesful */
-    const success = chainIdsBeingCheckedOut
+    const success = chainsToCheckout
       .map((chain) => voteStatus[chain])
-      .every((status) => status === ProgressStatus.IS_SUCCESS);
+      .some((status) => status === ProgressStatus.IS_SUCCESS);
     /* Redirect to thank you page */
-    if (success && chainIdsBeingCheckedOut.length > 0) {
+    if (
+      success &&
+      chainIdsBeingCheckedOut.length > 0 &&
+      !openMRCProgressModal
+    ) {
       navigate("/thankyou");
     }
-  }, [chainIdsBeingCheckedOut, navigate, voteStatus]);
+  }, [
+    chainIdsBeingCheckedOut,
+    chainsToCheckout,
+    navigate,
+    openMRCProgressModal,
+    voteStatus,
+  ]);
 
   function checkEmptyDonations() {
     const emptyDonations = projects.filter(

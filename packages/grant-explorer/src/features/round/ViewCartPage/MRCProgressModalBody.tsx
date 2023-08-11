@@ -19,17 +19,15 @@ type MRCProgressModalBodyProps = {
 };
 
 export function MRCProgressModalBody({
-  chainIdsBeingCheckedOut,
   tryAgainFn,
   setIsOpen,
 }: MRCProgressModalBodyProps) {
   const checkoutStore = useCheckoutStore();
+  const chainIdsBeingCheckedOut = checkoutStore.chainsToCheckout;
   const chainId = (checkoutStore.currentChainBeingCheckedOut ??
     chainIdsBeingCheckedOut[0]) as ChainId;
 
   const { voteStatus, permitStatus, chainSwitchStatus } = useCheckoutStore();
-
-  //const [progressSteps, setProgressSteps] = React.useState<Step[]>([]);
 
   const progressSteps = useMemo(() => {
     const stepsWithChainSwitch = [
@@ -67,83 +65,83 @@ export function MRCProgressModalBody({
         status: voteStatus[chainId],
       },
     ];
-    if (chainIdsBeingCheckedOut[0] === chainId) {
-      return stepsWithoutChainSwitch;
-    } else {
-      return stepsWithChainSwitch;
-    }
-  }, [
-    chainId,
-    chainIdsBeingCheckedOut,
-    chainSwitchStatus,
-    permitStatus,
-    voteStatus,
-  ]);
+    return chainSwitchStatus[chainId] !== ProgressStatus.NOT_STARTED
+      ? stepsWithChainSwitch
+      : stepsWithoutChainSwitch;
+  }, [chainId, chainSwitchStatus, permitStatus, voteStatus]);
 
   return (
     <>
       {chainIdsBeingCheckedOut.length > 1 && (
         <div className="flex py-2 justify-between">
-          {chainIdsBeingCheckedOut.map((chainId, idx) => (
-            <>
-              {checkoutStore.voteStatus[chainId as ChainId] ===
-              ProgressStatus.IN_PROGRESS ? (
-                <MRCModalChainStep
-                  key={chainId}
-                  icon={
-                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
-                      <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
-                    </span>
-                  }
-                  line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
-                  isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
-                  chainCount={chainIdsBeingCheckedOut.length}
-                />
-              ) : checkoutStore.voteStatus[chainId as ChainId] ===
-                ProgressStatus.IS_SUCCESS ? (
-                <MRCModalChainStep
-                  key={chainId}
-                  icon={
-                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full">
-                      <CheckIcon
-                        className="w-5 h-5 text-white"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  }
-                  line={<div className="flex-grow h-0.5 bg-teal-500"></div>}
-                  isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
-                  chainCount={chainIdsBeingCheckedOut.length}
-                />
-              ) : checkoutStore.voteStatus[chainId as ChainId] ===
-                ProgressStatus.IS_ERROR ? (
-                <MRCModalChainStep
-                  key={chainId}
-                  icon={
-                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
-                      <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
-                    </span>
-                  }
-                  line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
-                  isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
-                  chainCount={chainIdsBeingCheckedOut.length}
-                />
-              ) : checkoutStore.voteStatus[chainId as ChainId] ===
-                ProgressStatus.NOT_STARTED ? (
-                <MRCModalChainStep
-                  key={chainId}
-                  icon={
-                    <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"></span>
-                  }
-                  line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
-                  isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
-                  chainCount={chainIdsBeingCheckedOut.length}
-                />
-              ) : (
-                <></>
-              )}
-            </>
-          ))}
+          {chainIdsBeingCheckedOut.map((chainId, idx) => {
+            const notStarted =
+              chainSwitchStatus[chainId] === ProgressStatus.NOT_STARTED &&
+              voteStatus[chainId] === ProgressStatus.NOT_STARTED &&
+              permitStatus[chainId] === ProgressStatus.NOT_STARTED;
+            const inProgress =
+              chainSwitchStatus[chainId] === ProgressStatus.IN_PROGRESS ||
+              voteStatus[chainId] === ProgressStatus.IN_PROGRESS ||
+              permitStatus[chainId] === ProgressStatus.IN_PROGRESS ||
+              chainSwitchStatus[chainId] === ProgressStatus.IS_ERROR ||
+              voteStatus[chainId] === ProgressStatus.IS_ERROR ||
+              permitStatus[chainId] === ProgressStatus.IS_ERROR;
+            const isSuccess =
+              checkoutStore.voteStatus[chainId] === ProgressStatus.IS_SUCCESS;
+
+            console.log(
+              chainId,
+              "chainswitchstatus",
+              checkoutStore.chainSwitchStatus[chainId as ChainId]
+            );
+
+            debugger;
+
+            return (
+              <>
+                {inProgress && (
+                  <MRCModalChainStep
+                    key={chainId}
+                    icon={
+                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
+                        <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
+                      </span>
+                    }
+                    line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
+                    isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                    chainCount={chainIdsBeingCheckedOut.length}
+                  />
+                )}
+                {isSuccess && (
+                  <MRCModalChainStep
+                    key={chainId}
+                    icon={
+                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full">
+                        <CheckIcon
+                          className="w-5 h-5 text-white"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    }
+                    line={<div className="flex-grow h-0.5 bg-teal-500"></div>}
+                    isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                    chainCount={chainIdsBeingCheckedOut.length}
+                  />
+                )}
+                {notStarted && (
+                  <MRCModalChainStep
+                    key={chainId}
+                    icon={
+                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"></span>
+                    }
+                    line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
+                    isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
+                    chainCount={chainIdsBeingCheckedOut.length}
+                  />
+                )}
+              </>
+            );
+          })}
         </div>
       )}
       <div className="px-2 py-2 font-bold">
@@ -234,7 +232,7 @@ export function MRCProgressModalBody({
         </ol>
       </nav>
       <div>
-        <div className="flex justify-start">
+        <div className="flex justify-start flex-col">
           {permitStatus[chainId as ChainId] === ProgressStatus.IS_ERROR && (
             <p className="text-xs text-grey-400 mt-2 ml-2">
               Transaction rejected or signature denied. Please double check your

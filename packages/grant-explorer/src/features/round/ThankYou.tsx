@@ -41,6 +41,12 @@ export default function ThankYou() {
       .forEach((proj) => cart.remove(proj.grantApplicationId));
   }, [cart, checkedOutChains]);
 
+  useEffect(() => {
+    checkoutStore.setChainsToCheckout([]);
+    /* We really want this to run only once*/
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /** If there are projects left to check out, show a Back to cart button */
   const showBackToCartButton =
     cart.projects.filter((proj) => !checkedOutChains.includes(proj.chainId))
