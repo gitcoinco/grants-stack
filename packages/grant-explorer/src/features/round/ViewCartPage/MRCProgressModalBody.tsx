@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { ChainId } from "common";
 import { CHAINS } from "../../api/utils";
 import { ProgressStatus } from "../../api/types";
@@ -14,22 +14,71 @@ export type Step = {
 
 type MRCProgressModalBodyProps = {
   chainIdsBeingCheckedOut: number[];
-  steps: Step[];
   tryAgainFn: () => void;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function MRCProgressModalBody({
   chainIdsBeingCheckedOut,
-  steps,
   tryAgainFn,
   setIsOpen,
 }: MRCProgressModalBodyProps) {
   const checkoutStore = useCheckoutStore();
-  const permitStatus = checkoutStore.permitStatus;
-  const voteStatus = checkoutStore.voteStatus;
   const chainId = (checkoutStore.currentChainBeingCheckedOut ??
     chainIdsBeingCheckedOut[0]) as ChainId;
+
+  const { voteStatus, permitStatus, chainSwitchStatus } = useCheckoutStore();
+
+  //const [progressSteps, setProgressSteps] = React.useState<Step[]>([]);
+
+  const progressSteps = useMemo(() => {
+    const stepsWithChainSwitch = [
+      {
+        name: "Switch Network",
+        description: "Switch to the network you want to donate on next",
+        status: chainSwitchStatus[chainId],
+      },
+      {
+        name: "Permit",
+        description: "Permit the Checkout contract to access the payout token",
+        status:
+          chainSwitchStatus[chainId] !== ProgressStatus.IS_SUCCESS
+            ? ProgressStatus.NOT_STARTED
+            : permitStatus[chainId],
+      },
+      {
+        name: "Submit",
+        description: "Finalize your contribution",
+        status:
+          permitStatus[chainId] !== ProgressStatus.IS_SUCCESS
+            ? ProgressStatus.NOT_STARTED
+            : voteStatus[chainId],
+      },
+    ];
+    const stepsWithoutChainSwitch = [
+      {
+        name: "Permit",
+        description: "Permit the Checkout contract to access the payout token",
+        status: permitStatus[chainId],
+      },
+      {
+        name: "Submit",
+        description: "Finalize your contribution",
+        status: voteStatus[chainId],
+      },
+    ];
+    if (chainIdsBeingCheckedOut[0] === chainId) {
+      return stepsWithoutChainSwitch;
+    } else {
+      return stepsWithChainSwitch;
+    }
+  }, [
+    chainId,
+    chainIdsBeingCheckedOut,
+    chainSwitchStatus,
+    permitStatus,
+    voteStatus,
+  ]);
 
   return (
     <>
@@ -104,16 +153,24 @@ export function MRCProgressModalBody({
             alt={CHAINS[chainId].name}
             src={CHAINS[chainId].logo}
           />
-          Step {chainIdsBeingCheckedOut.indexOf(Number(chainId)) + 1}: Checkout{" "}
-          {CHAINS[chainId].name} donations
+          {chainIdsBeingCheckedOut.length > 1 ? (
+            <span>
+              Step {chainIdsBeingCheckedOut.indexOf(Number(chainId)) + 1}:
+              Checkout {CHAINS[chainId].name} donations
+            </span>
+          ) : (
+            <span>Checkout {CHAINS[chainId].name} donations</span>
+          )}
         </p>
       </div>
       <nav aria-label="Progress" className="ml-4 mt-2 mb-2">
         <ol className="overflow-hidden">
-          {steps.map((step, stepIdx) => (
+          {progressSteps.map((step, stepIdx) => (
             <li
               key={stepIdx}
-              className={`relative ${stepIdx !== steps.length - 1 && "pb-4"}`}
+              className={`relative ${
+                stepIdx !== progressSteps.length - 1 && "pb-4"
+              }`}
             >
               {step.status === ProgressStatus.IS_SUCCESS ? (
                 <MRCModalStep

@@ -106,9 +106,7 @@ export function SummaryContainer() {
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
-  const { checkout, voteStatus, permitStatus } = useCheckoutStore();
-  const { chain } = useNetwork();
-  const chainId = chain?.id as ChainId;
+  const { checkout, voteStatus } = useCheckoutStore();
 
   useEffect(() => {
     /* Check if all chains that were meant to be checked out were succesful */
@@ -120,19 +118,6 @@ export function SummaryContainer() {
       navigate("/thankyou");
     }
   }, [chainIdsBeingCheckedOut, navigate, voteStatus]);
-
-  const progressSteps = [
-    {
-      name: "Permit",
-      description: "Permit the Checkout contract to access the payout token",
-      status: permitStatus[chainId],
-    },
-    {
-      name: "Submit",
-      description: "Finalize your contribution",
-      status: voteStatus[chainId],
-    },
-  ];
 
   function checkEmptyDonations() {
     const emptyDonations = projects.filter(
@@ -192,7 +177,6 @@ export function SummaryContainer() {
           body={
             <MRCProgressModalBody
               chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
-              steps={progressSteps}
               tryAgainFn={handleSubmitDonation}
               setIsOpen={setOpenMRCProgressModal}
             />
@@ -304,16 +288,16 @@ export function SummaryContainer() {
           />
         ))}
         {totalDonationAcrossChainsInUSD &&
-          totalDonationAcrossChainsInUSD > 0 && (
-            <div className="flex flex-row justify-between mt-4 border-t-2">
-              <div className="flex flex-col mt-4">
-                <p className="mb-2">Your total contribution</p>
-              </div>
-              <div className="flex justify-end mt-4">
-                <p>$ {totalDonationAcrossChainsInUSD?.toFixed(2)}</p>
-              </div>
+        totalDonationAcrossChainsInUSD > 0 ? (
+          <div className="flex flex-row justify-between mt-4 border-t-2">
+            <div className="flex flex-col mt-4">
+              <p className="mb-2">Your total contribution</p>
             </div>
-          )}
+            <div className="flex justify-end mt-4">
+              <p>$ {totalDonationAcrossChainsInUSD?.toFixed(2)}</p>
+            </div>
+          </div>
+        ) : null}
         <Button
           $variant="solid"
           data-testid="handle-confirmation"
