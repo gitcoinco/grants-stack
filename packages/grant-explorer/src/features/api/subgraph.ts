@@ -1,8 +1,8 @@
+import { ChainId } from "common/src/chains";
 import { graphql_fetch } from "./utils";
-
+import sleep from "sleep-promise";
 export async function getCurrentSubgraphBlockNumber(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: ChainId
 ): Promise<number> {
   const res = await graphql_fetch(
     `
@@ -23,17 +23,12 @@ export async function getCurrentSubgraphBlockNumber(
 export async function waitForSubgraphSyncTo(
   chainId: number,
   blockNumber: number,
-  pollIntervalInMs = 1000
+  pollIntervalInMs = 100
 ): Promise<number> {
   let currentBlockNumber = await getCurrentSubgraphBlockNumber(chainId);
   while (currentBlockNumber < blockNumber) {
-    await wait(pollIntervalInMs);
+    await sleep(pollIntervalInMs);
     currentBlockNumber = await getCurrentSubgraphBlockNumber(chainId);
   }
   return currentBlockNumber;
 }
-
-const wait = (ms = 1000) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });

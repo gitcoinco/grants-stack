@@ -1,10 +1,10 @@
-import { Web3Provider } from "@ethersproject/providers";
-import { Signer } from "@ethersproject/abstract-signer";
 import { IPFS } from "ipfs-core-types";
+import { PublicClient } from "@wagmi/core";
+import { WalletClient } from "wagmi";
 
 export interface Global {
-  web3Provider: Web3Provider | undefined;
-  web3Signer: Signer | undefined;
+  web3Provider: PublicClient | undefined;
+  web3Signer: WalletClient | undefined;
   ipfs: IPFS | undefined;
 }
 

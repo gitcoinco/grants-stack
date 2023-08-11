@@ -1,4 +1,4 @@
-import { Project } from "../types";
+import { CartProject } from "../types";
 import { makeApprovedProjectData } from "../../../test-utils";
 import {
   loadCartFromLocalStorage,
@@ -13,49 +13,42 @@ describe("Local Storage", () => {
     });
 
     it("stores cart to local storage", () => {
-      const roundId1 = "1";
-      const cart: Project[] = [
+      const cart: CartProject[] = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
       ];
 
-      saveCartToLocalStorage(cart, roundId1);
+      saveCartToLocalStorage(cart);
 
       expect(localStorage.setItem).toHaveBeenLastCalledWith(
-        `cart-round-${roundId1}`,
+        "gitcoin-cart",
         JSON.stringify(cart)
       );
-      expect(localStorage.__STORE__[`cart-round-${roundId1}`]).toBe(
-        JSON.stringify(cart)
-      );
+      expect(localStorage.__STORE__["gitcoin-cart"]).toBe(JSON.stringify(cart));
       expect(Object.keys(localStorage.__STORE__).length).toBe(1);
     });
 
     it("retrieves a cart from localstorage for different rounds", function () {
-      const roundId1 = "1";
-      const roundId2 = "2";
-      const round1Cart: Project[] = [
+      const round1Cart: CartProject[] = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
       ];
-      const round2Cart: Project[] = [
+      const round2Cart: CartProject[] = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
       ];
-      localStorage.__STORE__[`cart-round-${roundId1}`] =
-        JSON.stringify(round1Cart);
-      localStorage.__STORE__[`cart-round-${roundId2}`] =
-        JSON.stringify(round2Cart);
+      const combinedCart = [...round1Cart, ...round2Cart];
 
-      const list1 = loadCartFromLocalStorage(roundId1);
-      const list2 = loadCartFromLocalStorage(roundId2);
+      localStorage.__STORE__["gitcoin-cart"] = JSON.stringify(round1Cart);
+      localStorage.__STORE__["gitcoin-cart"] = JSON.stringify(combinedCart);
 
-      expect(list1).toEqual(round1Cart);
-      expect(list2).toEqual(round2Cart);
+      const list = loadCartFromLocalStorage();
+
+      expect(list).toEqual(combinedCart);
     });
 
     it("retrieves empty project list when cart is empty on localstrage ", function () {
-      const list = loadCartFromLocalStorage("1");
+      const list = loadCartFromLocalStorage();
 
       expect(list).toEqual([]);
     });

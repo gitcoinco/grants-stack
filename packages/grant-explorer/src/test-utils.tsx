@@ -1,11 +1,6 @@
 import { faker } from "@faker-js/faker";
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
-import { BigNumber, ethers } from "ethers";
-import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { store } from "./app/store";
-import { CartProvider } from "./context/CartContext";
 import {
   RoundContext,
   RoundState,
@@ -15,11 +10,11 @@ import { RoundMetadata } from "./features/api/round";
 import { RoundOverview } from "./features/api/rounds";
 import {
   ApplicationStatus,
-  Project,
+  CartProject,
   ProjectMetadata,
   Round,
 } from "./features/api/types";
-import history from "./history";
+import { parseUnits } from "viem";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -69,10 +64,11 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 };
 
 export const makeApprovedProjectData = (
-  overrides?: Partial<Project>,
+  overrides?: Partial<CartProject>,
   projectMetadataOverrides?: Partial<ProjectMetadata>
-): Project => {
+): CartProject => {
   return {
+    amount: "",
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
     grantApplicationFormAnswers: [],
     projectRegistryId: faker.datatype.number().toString(),
@@ -90,6 +86,8 @@ export const makeApprovedProjectData = (
     },
     status: ApplicationStatus.APPROVED,
     applicationIndex: faker.datatype.number(),
+    roundId: faker.finance.ethereumAddress(),
+    chainId: 1,
     ...overrides,
   };
 };
@@ -150,24 +148,14 @@ export const renderWithContext = (
           dispatch,
         }}
       >
-        <CartProvider>{ui}</CartProvider>
+        {ui}
       </RoundContext.Provider>
     </MemoryRouter>
   );
 
-export const renderWrapped = (ui: JSX.Element) => {
-  render(
-    <Provider store={store}>
-      <ReduxRouter store={store} history={history}>
-        {ui}
-      </ReduxRouter>
-    </Provider>
-  );
-};
-
 export const mockBalance = {
   data: {
-    value: BigNumber.from(ethers.utils.parseUnits("10", 18)),
+    value: parseUnits("10", 18),
   },
 };
 

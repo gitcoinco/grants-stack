@@ -41,7 +41,7 @@ export type PassportResponse = {
  */
 export const fetchPassport = (
   address: string,
-  communityId: string,
+  communityId: string
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`;
   return fetch(url, {
@@ -62,7 +62,7 @@ export const fetchPassport = (
  */
 export const submitPassport = (
   address: string,
-  communityId: string,
+  communityId: string
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/submit-passport`;
 
@@ -133,7 +133,7 @@ export const graphql_fetch = async (
   chainId: ChainId,
   // eslint-disable-next-line @typescript-eslint/ban-types
   variables: object = {},
-  fromProjectRegistry = false,
+  fromProjectRegistry = false
 ) => {
   let endpoint = getGraphQLEndpoint(chainId);
 
@@ -164,7 +164,7 @@ export const graphql_fetch = async (
  */
 export function fetchProjectPaidInARound(
   roundId: string,
-  chainId: ChainId,
+  chainId: ChainId
 ): Promise<Payout[]> {
   const { data } = useSWR(
     [roundId, chainId],
@@ -193,9 +193,9 @@ export function fetchProjectPaidInARound(
         }
       `,
         chainId,
-        { roundId },
+        { roundId }
       );
-    },
+    }
   );
 
   const payouts = data?.data?.payoutStrategies[0]?.payouts || [];
@@ -227,7 +227,7 @@ export function formatDateWithOrdinal(date: Date) {
 
   return `${formattedDate.replace(
     dayOfMonth.toString(),
-    `${dayOfMonth}${suffix}`,
+    `${dayOfMonth}${suffix}`
   )}`;
 }
 
@@ -245,7 +245,7 @@ enum ApplicationStatus {
 }
 
 export const convertStatusToText = (
-  applicationStatus: string | number,
+  applicationStatus: string | number
 ): string => {
   // Ensure the applicationStatus is a string
   applicationStatus = applicationStatus.toString();
@@ -299,7 +299,7 @@ export const getUTCDateTime = (date: Date): string => {
 
 export const RedstoneTokenIds: Record<string, string> = {
   FTM: "FTM",
-  BUSD: "BUSD",
+  USDC: "USDC",
   DAI: "DAI",
   ETH: "ETH",
 };
@@ -351,3 +351,10 @@ export const useTokenPrice = (tokenId: string | undefined) => {
     loading,
   };
 };
+
+export async function getTokenPrice(tokenId: string) {
+  const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
+  const resp = await fetch(tokenPriceEndpoint);
+  const data = await resp.json();
+  return data[0].value;
+}

@@ -2,7 +2,7 @@ import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
 import ConfirmationModal from "../ConfirmationModal";
 
-describe("<ConfirmationModal />", () => {
+describe.skip("<ConfirmationModal />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

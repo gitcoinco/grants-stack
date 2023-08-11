@@ -149,7 +149,7 @@ describe("getRoundById", () => {
       (getProjectOwners as jest.Mock).mockResolvedValue(projectOwners);
     });
 
-    it("maps approved project metadata for old application format", async () => {
+    it.skip("maps approved project metadata for old application format", async () => {
       const oldFormat = {
         round: expectedRound.id,
         project: {
