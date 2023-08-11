@@ -10,15 +10,12 @@ import {
 import { Button, Input } from "common/src/styles";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useNetwork, useSwitchNetwork } from "wagmi";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
-import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
-import { Project, Requirement, Round } from "../api/types";
+import { CartProject, Project, Requirement, Round } from "../api/types";
 import { CHAINS, payoutTokens } from "../api/utils";
-import ConfirmationModal from "../common/ConfirmationModal";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
@@ -41,6 +38,8 @@ import { Tab } from "@headlessui/react";
 import AllCollectionsView from "../collection/AllCollections";
 import { getAllCollectionsForRound } from "../api/collections";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
+import CartNotification from "../common/CartNotification";
+import { useCartStorage } from "../../store";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -137,43 +136,25 @@ function AfterRoundStart(props: {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [collections, setCollections] = useState<string[]>([])
 
-  const [showChangeNetworkModal, setShowChangeNetworkModal] = useState(false);
-  const { switchNetwork } = useSwitchNetwork();
-  const { chain } = useNetwork();
+  const [showCartNotification, setShowCartNotification] = useState(false);
+  const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
+    useState<Project>({} as Project);
 
   useEffect(() => {
-    if (chain && chainId && Number(chainId) !== chain?.id) {
-      setShowChangeNetworkModal(true);
-    } else {
-      setShowChangeNetworkModal(false);
+    if (showCartNotification) {
+      setTimeout(() => {
+        setShowCartNotification(false);
+      }, 3000);
     }
-  }, [chainId, chain]);
+  }, [showCartNotification]);
 
-  const onSwitchNetwork = () => {
-    switchNetwork?.(Number(chainId));
-  };
-
-  function ConfirmationModalBody() {
+  const renderCartNotification = () => {
     return (
-      <>
-        <p className="text-sm text-grey-400">
-          To view and donate to projects on this round, you need to switch the
-          network on your wallet.
-        </p>
-      </>
-    );
-  }
-
-  const renderNetworkChangeModal = () => {
-    return (
-      // eslint-disable-next-line
-      <ConfirmationModal
-        isOpen={showChangeNetworkModal}
-        setIsOpen={setShowChangeNetworkModal}
-        confirmButtonAction={onSwitchNetwork}
-        title="Switch Network to Continue"
-        body={<ConfirmationModalBody />}
-        modalStyle="wide"
+      <CartNotification
+        showCartNotification={showCartNotification}
+        setShowCartNotification={setShowCartNotification}
+        currentProjectAddedToCart={currentProjectAddedToCart}
+        roundUrlPath={`/round/${chainId}/${roundId}`}
       />
     );
   };
@@ -187,10 +168,10 @@ function AfterRoundStart(props: {
       );
       return () => clearTimeout(timeOutId);
     } else {
-      let projects = round?.approvedProjects;
+      const projects = round?.approvedProjects;
 
       // shuffle projects
-      projects = projects?.sort(() => Math.random() - 0.5);
+      // projects = projects?.sort(() => Math.random() - 0.5);
       setProjects(projects);
     }
   });
@@ -226,7 +207,7 @@ function AfterRoundStart(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+      (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
     )[0].name;
 
   const breadCrumbs = [
@@ -247,7 +228,7 @@ function AfterRoundStart(props: {
 
   return (
     <>
-      {showChangeNetworkModal && renderNetworkChangeModal()}
+      {showCartNotification && renderCartNotification()}
       <Navbar
         roundUrlPath={`/round/${chainId}/${roundId}`}
         isBeforeRoundEndDate={props.isBeforeRoundEndDate}
@@ -350,6 +331,10 @@ function AfterRoundStart(props: {
                     roundId={roundId}
                     isBeforeRoundEndDate={props.isBeforeRoundEndDate}
                     canUseCollections
+                    roundId={roundId}
+                    chainId={chainId}
+                    setCurrentProjectAddedToCart={setCurrentProjectAddedToCart}
+                    setShowCartNotification={setShowCartNotification}
                   />
                 )}
               </Tab.Panel>
@@ -374,6 +359,9 @@ export const ProjectList = (props: {
   canUseCollections?: boolean
   isInCollection?: boolean;
   roundId: string;
+  chainId: ChainId;
+  setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
+  setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
   const { projects, roundRoutePath } = props;
   const { setActiveProject, renderModal } = useCollections();
@@ -390,6 +378,9 @@ export const ProjectList = (props: {
             isInCollection={props.isInCollection}
             addToCollection={props.canUseCollections ? () => setActiveProject(project) : undefined}
             roundId={props.roundId}
+            chainId={props.chainId}
+            setCurrentProjectAddedToCart={props.setCurrentProjectAddedToCart}
+            setShowCartNotification={props.setShowCartNotification}
           />
         );
       })}
@@ -405,18 +396,24 @@ export const ProjectCard = (props: {
   isBeforeRoundEndDate?: boolean;
   isInCollection?: boolean;
   roundId: string;
+  chainId: ChainId;
+  setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
+  setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { project, roundRoutePath } = props;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
 
-  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
-    useCart();
+  const { projects, add, remove } = useCartStorage();
 
-  const isAlreadyInCart = cart.some(
+  const isAlreadyInCart = projects.some(
     (cartProject) =>
       cartProject.grantApplicationId === project.grantApplicationId
   );
+
+  const cartProject = project as CartProject;
+  cartProject.roundId = props.roundId;
+  cartProject.chainId = Number(props.chainId);
 
   return (
     <BasicCard className="relative md:w-[296px]" data-testid="project-card">
@@ -467,11 +464,13 @@ export const ProjectCard = (props: {
               project={project}
               isAlreadyInCart={isAlreadyInCart}
               removeFromCart={() => {
-                handleRemoveProjectsFromCart([project], props.roundId);
+                remove(cartProject.grantApplicationId);
               }}
               addToCart={() => {
-                handleAddProjectsToCart([project], props.roundId);
+                add(cartProject);
               }}
+              setCurrentProjectAddedToCart={props.setCurrentProjectAddedToCart}
+              setShowCartNotification={props.setShowCartNotification}
             />
           )}
         </CardContent>
@@ -485,6 +484,8 @@ function CartButton(props: {
   isAlreadyInCart: boolean;
   removeFromCart: () => void;
   addToCart: () => void;
+  setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
+  setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
     <div>
@@ -493,6 +494,8 @@ function CartButton(props: {
         isAlreadyInCart={props.isAlreadyInCart}
         removeFromCart={props.removeFromCart}
         addToCart={props.addToCart}
+        setCurrentProjectAddedToCart={props.setCurrentProjectAddedToCart}
+        setShowCartNotification={props.setShowCartNotification}
       />
     </div>
   );
@@ -503,6 +506,8 @@ function CartButtonToggle(props: {
   isAlreadyInCart: boolean;
   addToCart: () => void;
   removeFromCart: () => void;
+  setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
+  setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   // if the project is not added, show the add to cart button
   // if the project is added to the cart, show the remove from cart button
@@ -521,7 +526,12 @@ function CartButtonToggle(props: {
     <div
       className="float-right"
       data-testid="add-to-cart"
-      onClick={props.addToCart}
+      // oonclick adds the project to the cart, sets the current project added to cart and shows the cart notification
+      onClick={() => {
+        props.addToCart();
+        props.setCurrentProjectAddedToCart(props.project);
+        props.setShowCartNotification(true);
+      }}
     >
       <CartCircleIcon className="w-10" />
     </div>
@@ -553,7 +563,7 @@ function PreRoundPage(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+      (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
     )[0]?.name;
 
   return (

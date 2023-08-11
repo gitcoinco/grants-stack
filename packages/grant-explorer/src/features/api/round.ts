@@ -12,6 +12,7 @@ import {
   DetailedVote as Contribution,
 } from "allo-indexer-client";
 import { useEffect, useState } from "react";
+import { getAddress } from "viem";
 
 /**
  * Shape of subgraph response
@@ -318,7 +319,7 @@ export async function getProjectOwners(
 
     return (
       res.data?.projects[0]?.accounts.map((account: { account: { address: string } }) =>
-        ethers.utils.getAddress(account.account.address)
+        getAddress(account.account.address)
       ) || []
     )
   } catch (error) {
@@ -359,7 +360,7 @@ export const useContributionHistory = (
         let address = "";
         try {
           // ensure the address is a valid address
-          address = ethers.utils.getAddress(rawAddress.toLowerCase());
+          address = getAddress(rawAddress.toLowerCase());
         } catch (e) {
           return Promise.resolve({
             chainId,

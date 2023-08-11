@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
 import { RoundOverview } from "../api/rounds";
-import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
+import { Skeleton } from "@chakra-ui/react";
 
 type ApplyNow = {
   isLoading: boolean;
-  roundOverview: RoundOverview[];
+  roundOverview?: RoundOverview[];
 };
 
 const ApplyNowSection = (props: ApplyNow) => {
-  const applyNowRoundsCount = props.roundOverview.length;
+  const applyNowRoundsCount = props.roundOverview?.length ?? 0;
 
   return (
     <div data-testid="apply-now-rounds">
@@ -31,12 +31,16 @@ const ApplyNowSection = (props: ApplyNow) => {
         </div>
       </div>
       {props.isLoading ? (
-        <div className="flex flex-col lg:flex-row my-auto">
-          <Spinner />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
+          {new Array(3).fill(undefined).map((_, index) => {
+            return (
+              <Skeleton key={index} my={3} rounded={"md"} w={"full"} h={"64"} />
+            );
+          })}
         </div>
       ) : applyNowRoundsCount > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
-          {props.roundOverview.slice(0, 4).map((round, index) => {
+          {props.roundOverview?.slice(0, 4).map((round, index) => {
             return <RoundCard key={index} round={round} />;
           })}
         </div>

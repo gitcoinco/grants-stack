@@ -20,7 +20,7 @@ const RoundCard = (props: RoundCardProps) => {
 
   const matchingFundPayoutTokenName = payoutTokens.filter(
     (t) =>
-      t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
+      t.address.toLocaleLowerCase() === props.round.token.toLocaleLowerCase()
   )[0]?.name;
 
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];

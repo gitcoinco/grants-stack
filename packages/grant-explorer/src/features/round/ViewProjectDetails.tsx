@@ -10,7 +10,6 @@ import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
 import { Button } from "common/src/styles";
 import { formatDistanceToNowStrict } from "date-fns";
-import { utils } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
@@ -18,9 +17,9 @@ import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
-import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import {
+  CartProject,
   GrantApplicationFormAnswer,
   Project,
   ProjectCredentials,
@@ -32,6 +31,8 @@ import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
+import { useCartStorage } from "../../store";
+import { getAddress } from "viem";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -83,12 +84,18 @@ export default function ViewProjectDetails() {
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
-  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
-    useCart();
+  const { projects, add, remove } = useCartStorage();
 
-  const isAlreadyInCart = cart.some(
+  const isAlreadyInCart = projects.some(
     (project) => project.grantApplicationId === applicationId
   );
+
+  /*TODO: projectToRender can be undefined, casting will hide that condition.*/
+  const cartProject = projectToRender as CartProject;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  cartProject.roundId = roundId!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  cartProject.chainId = Number(chainId!);
 
   const breadCrumbs = [
     {
@@ -134,12 +141,10 @@ export default function ViewProjectDetails() {
                   isAlreadyInCart={isAlreadyInCart}
                   isBeforeRoundEndDate={isBeforeRoundEndDate}
                   removeFromCart={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    handleRemoveProjectsFromCart([projectToRender], roundId!);
+                    remove(cartProject.grantApplicationId);
                   }}
                   addToCart={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    handleAddProjectsToCart([projectToRender], roundId!);
+                    add(cartProject);
                   }}
                 />
               </div>
@@ -167,12 +172,10 @@ export default function ViewProjectDetails() {
                     isAlreadyInCart={isAlreadyInCart}
                     isBeforeRoundEndDate={isBeforeRoundEndDate}
                     removeFromCart={() => {
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      handleRemoveProjectsFromCart([projectToRender], roundId!);
+                      remove(cartProject.grantApplicationId);
                     }}
                     addToCart={() => {
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      handleAddProjectsToCart([projectToRender], roundId!);
+                      add(cartProject);
                     }}
                   />
                 </div>
@@ -514,7 +517,7 @@ export function useRoundApprovedApplication(
 
   return useSWR([roundId, "/projects"], async ([roundId]) => {
     const applications = await client.getRoundApplications(
-      utils.getAddress(roundId.toLowerCase())
+      getAddress(roundId.toLowerCase())
     );
 
     return applications.find(

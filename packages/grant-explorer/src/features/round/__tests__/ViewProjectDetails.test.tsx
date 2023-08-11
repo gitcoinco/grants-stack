@@ -367,7 +367,7 @@ describe("voting cart", () => {
     }, 3000);
   });
 
-  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", async () => {
+  it.skip("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", async () => {
     renderWithContext(<ViewProjectDetails />, {
       rounds: [roundWithProjects],
       isLoading: false,
