@@ -135,6 +135,7 @@ function AfterRoundStart(props: {
   const [projects, setProjects] = useState<Project[]>();
   const [activeTab, setActiveTab] = useState<number>(0);
   const [collections, setCollections] = useState<string[]>([])
+  const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
 
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
@@ -159,6 +160,15 @@ function AfterRoundStart(props: {
     );
   };
 
+  useEffect(() => {
+    let projects = round?.approvedProjects;
+
+    // shuffle projects
+    projects = projects?.sort(() => Math.random() - 0.5);
+    setRandomizedProjects(projects);
+    setProjects(projects);
+  }, [round]);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
@@ -168,11 +178,7 @@ function AfterRoundStart(props: {
       );
       return () => clearTimeout(timeOutId);
     } else {
-      const projects = round?.approvedProjects;
-
-      // shuffle projects
-      // projects = projects?.sort(() => Math.random() - 0.5);
-      setProjects(projects);
+      setProjects(randomizedProjects);
     }
   });
 
