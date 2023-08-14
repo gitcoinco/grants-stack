@@ -93,9 +93,7 @@ export function RoundsSubNav() {
                 rel="noreferrer"
                 className="flex-shrink-0 flex items-center"
               >
-                <span className="mr-2">
-                  <PGNLogoIcon />
-                </span>
+                <PGNLogoIcon className="mr-2" />
                 <PGNTextLogoIcon fill="black" />
               </a>
             </div>
@@ -103,12 +101,10 @@ export function RoundsSubNav() {
               <span className="cursor-pointer" onClick={() => setOpen(!open)}>
                 <GG18Icon className="inline mr-2" />
 
-                <span>
-                  <DropdownIcon
-                    className="inline"
-                    direction={open ? "up" : "down"}
-                  />
-                </span>
+                <DropdownIcon
+                  className="inline"
+                  direction={open ? "up" : "down"}
+                />
               </span>
               <div
                 className={`absolute right-0 top-8 bg-grey-150 py-4 px-6 rounded-lg text-right whitespace-nowrap ${
