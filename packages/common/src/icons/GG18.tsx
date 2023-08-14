@@ -8,7 +8,7 @@ export function GG18(props: React.SVGProps<SVGSVGElement>) {
       viewBox="0 0 95 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
+      {...props}
     >
       <path
         d="M11.8699 23.8373C18.4255 23.8373 23.7399 18.5011 23.7399 11.9186C23.7399 5.33616 18.4255 0 11.8699 0C5.31435 0 0 5.33616 0 11.9186C0 18.5011 5.31435 23.8373 11.8699 23.8373Z"
