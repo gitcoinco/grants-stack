@@ -47,7 +47,7 @@ export default function ThankYou() {
   const checkoutStore = useCheckoutStore();
   const { address } = useAccount();
 
-  /** Remove checked out projects from cart, but keep the ones we didn't yet checkout succesfully. */
+  /** Remove checked out projects from cart, but keep the ones we didn't yet check out succesfully. */
   const checkedOutChains = useMemo(
     () =>
       Object.keys(checkoutStore.voteStatus)
