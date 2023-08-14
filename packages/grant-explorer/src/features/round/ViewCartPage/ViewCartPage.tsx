@@ -36,7 +36,10 @@ export default function ViewCart() {
           <Header />
           <div className="flex flex-col md:flex-row gap-5">
             {projects.length === 0 ? (
-              <EmptyCart />
+              <>
+                <EmptyCart />
+                <SummaryContainer />
+              </>
             ) : (
               <div className={"grid sm:grid-cols-3 gap-5 w-full"}>
                 <div className="flex flex-col gap-5 sm:col-span-2 order-2 sm:order-1">

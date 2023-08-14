@@ -67,25 +67,25 @@ export const useCheckoutStore = create<CheckoutState>()(
   devtools((set, get) => ({
     permitStatus: defaultProgressStatusForAllChains,
     setPermitStatusForChain: (chain: ChainId, permitStatus: ProgressStatus) =>
-      set({
-        permitStatus: { ...get().permitStatus, [chain]: permitStatus },
-      }),
+      set((oldState) => ({
+        permitStatus: { ...oldState.permitStatus, [chain]: permitStatus },
+      })),
     voteStatus: defaultProgressStatusForAllChains,
     setVoteStatusForChain: (chain: ChainId, voteStatus: ProgressStatus) =>
-      set({
-        voteStatus: { ...get().voteStatus, [chain]: voteStatus },
-      }),
+      set((oldState) => ({
+        voteStatus: { ...oldState.voteStatus, [chain]: voteStatus },
+      })),
     chainSwitchStatus: defaultProgressStatusForAllChains,
     setChainSwitchStatusForChain: (
       chain: ChainId,
       chainSwitchStatus: ProgressStatus
     ) =>
-      set({
+      set((oldState) => ({
         chainSwitchStatus: {
-          ...get().chainSwitchStatus,
+          ...oldState.chainSwitchStatus,
           [chain]: chainSwitchStatus,
         },
-      }),
+      })),
     currentChainBeingCheckedOut: undefined,
     chainsToCheckout: [],
     setChainsToCheckout: (chains: ChainId[]) => {
@@ -135,7 +135,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         const chainId = currentChain.chainId;
         const deadline = currentChain.permitDeadline;
         const donations = projectsByChain[chainId];
-        debugger;
+
         set({
           currentChainBeingCheckedOut: chainId,
         });
@@ -260,7 +260,6 @@ export const useCheckoutStore = create<CheckoutState>()(
               : undefined
           );
 
-          get().setVoteStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
           console.log(
             "Voting succesful for chain",
             chainId,
@@ -271,6 +270,12 @@ export const useCheckoutStore = create<CheckoutState>()(
           donations.forEach((donation) => {
             useCartStorage.getState().remove(donation.grantApplicationId);
           });
+          set((oldState) => ({
+            voteStatus: {
+              ...oldState.voteStatus,
+              [chainId]: ProgressStatus.IS_SUCCESS,
+            },
+          }));
         } catch (error) {
           datadogLogs.logger.error(
             `error: vote - ${error}. Data - ${donations.toString()}`

@@ -35,14 +35,29 @@ export default function ThankYou() {
         ProgressStatus.IS_SUCCESS
     )
     .map(Number);
+
   useEffect(() => {
     cart.projects
       .filter((proj) => checkedOutChains.includes(proj.chainId))
-      .forEach((proj) => cart.remove(proj.grantApplicationId));
+      .forEach((proj) => {
+        cart.remove(proj.grantApplicationId);
+      });
   }, [cart, checkedOutChains]);
 
   useEffect(() => {
+    checkedOutChains.forEach((chain) => {
+      checkoutStore.setVoteStatusForChain(chain, ProgressStatus.NOT_STARTED);
+      checkoutStore.setPermitStatusForChain(chain, ProgressStatus.NOT_STARTED);
+      checkoutStore.setChainSwitchStatusForChain(
+        chain,
+        ProgressStatus.NOT_STARTED
+      );
+    });
+  }, [checkedOutChains]);
+
+  useEffect(() => {
     checkoutStore.setChainsToCheckout([]);
+
     /* We really want this to run only once*/
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -90,7 +105,7 @@ export default function ThankYou() {
 
   return (
     <>
-      <Navbar roundUrlPath={"/"} />
+      <Navbar />
       <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
         <main>
           <div className="text-center">

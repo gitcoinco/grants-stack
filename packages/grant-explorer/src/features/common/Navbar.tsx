@@ -8,9 +8,7 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 
 export interface NavbarProps {
-  roundUrlPath?: string;
   customBackground?: string;
-  isBeforeRoundEndDate?: boolean;
   showWalletInteraction?: boolean;
 }
 
@@ -43,9 +41,7 @@ export default function Navbar(props: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <a
-              href={`${currentOrigin}${
-                props.roundUrlPath ? `#${props.roundUrlPath}` : ""
-              }`}
+              href={currentOrigin}
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >

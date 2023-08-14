@@ -95,8 +95,6 @@ export function MRCProgressModalBody({
               checkoutStore.chainSwitchStatus[chainId as ChainId]
             );
 
-            debugger;
-
             return (
               <>
                 {inProgress && (

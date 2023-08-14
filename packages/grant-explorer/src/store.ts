@@ -27,66 +27,61 @@ const ethOnlyPayoutTokens = Object.fromEntries(
 ) as Record<ChainId, PayoutToken>;
 
 export const useCartStorage = create<CartState>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        projects: [],
-        add: (project: CartProject) =>
-          set({
-            projects: [...get().projects, project],
-          }),
-        remove: (grantApplicationId: string) => {
-          set({
-            projects: get().projects.filter(
-              (proj) => proj.grantApplicationId !== grantApplicationId
-            ),
-          });
-        },
-        clear: () => {
-          set({
-            projects: [],
-          });
-        },
-        updateDonationsForChain: (chainId: ChainId, amount: string) => {
-          const newState = get().projects.map((project) => ({
-            ...project,
-            amount: project.chainId === chainId ? amount : project.amount,
-          }));
+  persist(
+    (set, get) => ({
+      projects: [],
+      add: (project: CartProject) =>
+        set({
+          projects: [...get().projects, project],
+        }),
+      remove: (grantApplicationId: string) => {
+        set({
+          projects: get().projects.filter(
+            (proj) => proj.grantApplicationId !== grantApplicationId
+          ),
+        });
+      },
+      clear: () => {
+        set({
+          projects: [],
+        });
+      },
+      updateDonationsForChain: (chainId: ChainId, amount: string) => {
+        const newState = get().projects.map((project) => ({
+          ...project,
+          amount: project.chainId === chainId ? amount : project.amount,
+        }));
 
+        set({
+          projects: newState,
+        });
+      },
+      updateDonationAmount: (grantApplicationId: string, amount: string) => {
+        const projectIndex = get().projects.findIndex(
+          (donation) => donation.grantApplicationId === grantApplicationId
+        );
+
+        if (projectIndex !== -1) {
+          const newState = [...get().projects];
+          newState[projectIndex].amount = amount;
           set({
             projects: newState,
           });
-        },
-        updateDonationAmount: (grantApplicationId: string, amount: string) => {
-          const projectIndex = get().projects.findIndex(
-            (donation) => donation.grantApplicationId === grantApplicationId
-          );
-
-          if (projectIndex !== -1) {
-            const newState = [...get().projects];
-            newState[projectIndex].amount = amount;
-            set({
-              projects: newState,
-            });
-          }
-        },
-        chainToPayoutToken: ethOnlyPayoutTokens,
-        setPayoutTokenForChain: (
-          chainId: ChainId,
-          payoutToken: PayoutToken
-        ) => {
-          set({
-            chainToPayoutToken: {
-              ...get().chainToPayoutToken,
-              [chainId]: payoutToken,
-            },
-          });
-        },
-      }),
-      {
-        /*This is the localStorage key. Change this whenever the shape of the stores objects changes. append a v1, v2. etc. */
-        name: "cart-storage",
-      }
-    )
+        }
+      },
+      chainToPayoutToken: ethOnlyPayoutTokens,
+      setPayoutTokenForChain: (chainId: ChainId, payoutToken: PayoutToken) => {
+        set({
+          chainToPayoutToken: {
+            ...get().chainToPayoutToken,
+            [chainId]: payoutToken,
+          },
+        });
+      },
+    }),
+    {
+      /*This is the localStorage key. Change this whenever the shape of the stores objects changes. append a v1, v2. etc. */
+      name: "cart-storage",
+    }
   )
 );
