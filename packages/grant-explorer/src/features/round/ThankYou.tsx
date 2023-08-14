@@ -14,7 +14,7 @@ import { useAccount } from "wagmi";
 import { Hex } from "viem";
 
 function TwitterButton(props: { address: Hex }) {
-  const shareText = `I just donated to GG18 on @gitcoin. Check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${props.address}`;
+  const shareText = `I just donated to GG18 on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${props.address}`;
   const shareUrl = `https://twitter.com/share?text=${encodeURIComponent(
     shareText
   )}`;
