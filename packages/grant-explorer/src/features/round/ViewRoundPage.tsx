@@ -127,6 +127,7 @@ function AfterRoundStart(props: {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
+  const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
 
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
@@ -156,6 +157,7 @@ function AfterRoundStart(props: {
 
     // shuffle projects
     projects = projects?.sort(() => Math.random() - 0.5);
+    setRandomizedProjects(projects);
     setProjects(projects);
   }, [round]);
 
@@ -167,6 +169,8 @@ function AfterRoundStart(props: {
         300
       );
       return () => clearTimeout(timeOutId);
+    } else {
+      setProjects(randomizedProjects);
     }
   });
 
