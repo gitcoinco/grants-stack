@@ -118,10 +118,7 @@ export function RoundsSubNav(props: Props) {
                 <ul>
                   {ROUNDS_GROUPS.map((group: RoundsGroup) => (
                     <React.Fragment key={group.name}>
-                      <li
-                        key={group.name}
-                        className="border-b border-solid border-grey-200 py-1 mb-2 font-bold"
-                      >
+                      <li className="border-b border-solid border-grey-200 py-1 mb-2 font-bold">
                         {group.name}
                       </li>
 
