@@ -1,4 +1,6 @@
-export function PGN() {
+import React from "react";
+
+export function PGN(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       width="24"
@@ -6,6 +8,7 @@ export function PGN() {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...props}
     >
       <circle
         cx="12"

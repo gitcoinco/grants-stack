@@ -58,9 +58,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
                 target="_blank"
                 className="flex-shrink-0 flex items-center"
               >
-                <span className="mr-2">
-                  <PGNLogoIcon />
-                </span>
+                <PGNLogoIcon className="mr-2" />
                 <PGNTextLogoIcon fill="white" />
               </a>
             </div>

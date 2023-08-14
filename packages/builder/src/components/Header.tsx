@@ -57,9 +57,7 @@ export default function Header() {
               rel="noreferrer"
               className="flex-shrink-0 flex items-center mx-3"
             >
-              <span className="mr-2">
-                <PGNLogoIcon />
-              </span>
+              <PGNLogoIcon className="mr-2" />
               <PGNTextLogoIcon fill="black" />
             </a>
             <CustomerSupport />
