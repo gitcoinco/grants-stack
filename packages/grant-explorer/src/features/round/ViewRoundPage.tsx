@@ -151,6 +151,14 @@ function AfterRoundStart(props: {
     );
   };
 
+  useEffect(() => {
+    let projects = round?.approvedProjects;
+
+    // shuffle projects
+    projects = projects?.sort(() => Math.random() - 0.5);
+    setProjects(projects);
+  }, [round]);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
@@ -159,12 +167,6 @@ function AfterRoundStart(props: {
         300
       );
       return () => clearTimeout(timeOutId);
-    } else {
-      const projects = round?.approvedProjects;
-
-      // shuffle projects
-      // projects = projects?.sort(() => Math.random() - 0.5);
-      setProjects(projects);
     }
   });
 
