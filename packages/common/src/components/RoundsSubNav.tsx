@@ -4,7 +4,7 @@ import { PGN as PGNLogoIcon } from "../icons/PGN";
 import { PGNText as PGNTextLogoIcon } from "../icons/PGNText";
 import React, { useState } from "react";
 
-type Round = {
+export type Round = {
   name: string;
   chainId: number;
   id: `0x${string}`;
@@ -78,7 +78,11 @@ const ROUNDS_GROUPS: RoundGroups[] = [
   },
 ];
 
-export function RoundsSubNav() {
+type Props = {
+  onClick: (round: Round) => void;
+};
+
+export function RoundsSubNav(props: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -113,22 +117,31 @@ export function RoundsSubNav() {
               >
                 <ul>
                   {ROUNDS_GROUPS.map((group: RoundsGroup) => (
-                    <>
-                      <li className="border-b border-solid border-grey-200 py-1 mb-2 font-bold">
+                    <React.Fragment key={group.name}>
+                      <li
+                        key={group.name}
+                        className="border-b border-solid border-grey-200 py-1 mb-2 font-bold"
+                      >
                         {group.name}
                       </li>
 
                       {group.rounds.map((round: Round) => (
-                        <li>
+                        <li key={round.id}>
                           <a
-                            href={`/#/round/${round.chainId}/${round.id}`}
+                            href="#"
+                            onClick={(
+                              e: React.MouseEvent<HTMLAnchorElement>
+                            ) => {
+                              e.preventDefault();
+                              props.onClick(round);
+                            }}
                             className="block py-2 "
                           >
                             {round.name}
                           </a>
                         </li>
                       ))}
-                    </>
+                    </React.Fragment>
                   ))}
                 </ul>
               </div>
