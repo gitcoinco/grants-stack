@@ -4,41 +4,40 @@ import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-
 import { RoundsSubNav } from "common/src/components/RoundsSubNav";
 import { useCart } from "../../context/CartContext";
 import NavbarCart from "./NavbarCart";
-import { useParams } from "react-router-dom";
-import { reloadPageOnLocalStorageEvent } from "../api/LocalStorage";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
+import { useCartStorage } from "../../store";
 
 export interface NavbarProps {
-  roundUrlPath: string;
+  roundUrlPath?: string;
   customBackground?: string;
   isBeforeRoundEndDate?: boolean;
   showWalletInteraction?: boolean;
 }
 
 export default function Navbar(props: NavbarProps) {
-  const [cart] = useCart();
+  /** This part keeps the store in sync between tabs */
+  const store = useCartStorage();
+
+  const updateStore = () => {
+    useCartStorage.persist.rehydrate();
+  };
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", updateStore);
+    window.addEventListener("focus", updateStore);
+    return () => {
+      document.removeEventListener("visibilitychange", updateStore);
+      window.removeEventListener("focus", updateStore);
+    };
+  }, []);
+  /** end of part that keeps the store in sync between tabs */
+
   const showWalletInteraction = props.showWalletInteraction ?? true;
   const currentOrigin = window.location.origin;
 
-  const { roundId } = useParams();
   const { address: walletAddress } = useAccount();
-
-  useEffect(() => {
-    if (!roundId) {
-      return;
-    }
-    const storageEventHandler = (event: StorageEvent) =>
-      reloadPageOnLocalStorageEvent(roundId, event);
-
-    window.addEventListener("storage", storageEventHandler);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener("storage", storageEventHandler);
-    };
-  }, [roundId]);
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
@@ -46,7 +45,9 @@ export default function Navbar(props: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <a
-              href={`${currentOrigin}#${props.roundUrlPath}`}
+              href={`${currentOrigin}${
+                props.roundUrlPath ? `#${props.roundUrlPath}` : ""
+              }`}
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
@@ -66,7 +67,7 @@ export default function Navbar(props: NavbarProps) {
                 >
                   <ConnectButton
                     showBalance={false}
-                    chainStatus={{ largeScreen: "icon", smallScreen: "icon" }}
+                    chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
                   />
                 </div>
               </div>
@@ -82,9 +83,7 @@ export default function Navbar(props: NavbarProps) {
                 </a>
               </div>
             )}
-            {props.isBeforeRoundEndDate && (
-              <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
-            )}
+            <NavbarCart cart={store.projects} />
           </div>
         </div>
       </div>

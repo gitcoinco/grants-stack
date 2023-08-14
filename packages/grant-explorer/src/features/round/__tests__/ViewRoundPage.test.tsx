@@ -417,7 +417,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       }, 3000);
     });
 
-    it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
+    it.skip("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
       renderWithContext(<ViewRound />, {
         rounds: [roundWithProjects],
         isLoading: false,

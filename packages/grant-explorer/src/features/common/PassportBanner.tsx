@@ -14,7 +14,7 @@ import {
   fetchPassport,
 } from "../api/passport";
 import { Round } from "../api/types";
-
+/*TODO: use usePassport hook and refactor */
 export default function PassportBanner(props: {
   chainId: ChainId;
   round: Round;
@@ -44,7 +44,7 @@ export default function PassportBanner(props: {
         if (res.ok) {
           const scoreResponse = await res.json();
 
-          if (scoreResponse.status == "PROCESSING") {
+          if (scoreResponse.status === "PROCESSING") {
             console.log("processing, calling again in 3000 ms");
             setTimeout(async () => {
               await callFetchPassport();
@@ -52,7 +52,7 @@ export default function PassportBanner(props: {
             return;
           }
 
-          if (scoreResponse.status == "ERROR") {
+          if (scoreResponse.status === "ERROR") {
             // due to error at passport end
             setPassportState(PassportState.ERROR);
             return;

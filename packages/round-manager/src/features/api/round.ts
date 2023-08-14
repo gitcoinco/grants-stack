@@ -79,7 +79,7 @@ export async function getRoundById(
     const { chainId } = await signerOrProvider.getNetwork();
 
     // query the subgraph for all rounds by  the given address in the given program
-    const res = await graphql_fetch(
+    let res = await graphql_fetch(
       `
           query GetRounds($roundId: String) {
 
@@ -129,8 +129,10 @@ export async function getRoundById(
                 }
               }
               payoutStrategy {
-                id
-                isReadyForPayout
+                ...on MerklePayout {
+                  id
+                  isReadyForPayout
+                }
               }
             }
           }
@@ -138,6 +140,70 @@ export async function getRoundById(
       chainId,
       { roundId: roundId }
     );
+
+    if (res.errors !== undefined) {
+      // FIXME: remove this part after all the subgraphs have been deployed
+      // try the old query
+      res = await graphql_fetch(
+        `
+          query GetRounds($roundId: String) {
+
+            alloSettings(id:"1") {
+              protocolFeePercentage
+            }
+
+            rounds(where: {
+              ${roundId ? `id: $roundId` : ``}
+            }) {
+              id
+              program {
+                id
+              }
+              roundMetaPtr {
+                protocol
+                pointer
+              }
+              applicationMetaPtr {
+                protocol
+                pointer
+              }
+              applicationsStartTime
+              applicationsEndTime
+              roundStartTime
+              roundEndTime
+              roundFeePercentage
+              token
+              projectsMetaPtr {
+                pointer
+              }
+              projects(first: 1000) {
+                id
+                project
+                status
+                applicationIndex
+                metaPtr {
+                  protocol
+                  pointer
+                }
+              }
+              roles(where: {
+                role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
+              }) {
+                accounts {
+                  address
+                }
+              }
+              payoutStrategy {
+                  id
+                  isReadyForPayout
+              }
+            }
+          }
+        `,
+        chainId,
+        { roundId: roundId }
+      );
+    }
 
     const round: RoundResult = res.data.rounds[0];
 
