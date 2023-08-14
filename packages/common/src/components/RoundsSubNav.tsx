@@ -102,7 +102,7 @@ export function RoundsSubNav() {
               >
                 <ul>
                   <li className="border-b border-solid border-grey-200 py-1 mb-2">
-                    Core Round
+                    Core Rounds
                   </li>
                   {ROUNDS.map((round: Round) => (
                     <li>
