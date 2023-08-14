@@ -1,8 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { PGN as PGNLogoIcon } from "common/src/icons/PGN";
-import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
+import { RoundsSubNav } from "common/src/components/RoundsSubNav";
 import { useCart } from "../../context/CartContext";
 import NavbarCart from "./NavbarCart";
 import { useParams } from "react-router-dom";
@@ -72,19 +71,6 @@ export default function Navbar(props: NavbarProps) {
                 </div>
               </div>
             )}
-            <div>
-              <a
-                href="https://bridge.gitcoin.co"
-                target="_blank"
-                rel="noreferrer"
-                className="flex-shrink-0 flex items-center"
-              >
-                <span className="mr-2">
-                  <PGNLogoIcon />
-                </span>
-                <PGNTextLogoIcon fill="black" />
-              </a>
-            </div>
             {walletAddress && (
               <div>
                 <a
@@ -102,6 +88,7 @@ export default function Navbar(props: NavbarProps) {
           </div>
         </div>
       </div>
+      <RoundsSubNav />
     </nav>
   );
 }
