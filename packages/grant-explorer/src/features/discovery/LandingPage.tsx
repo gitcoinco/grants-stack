@@ -84,7 +84,7 @@ const LandingPage = () => {
 
   return (
     <>
-      <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
+      <Navbar showWalletInteraction={true} />
       <div className=" mx-auto pt-8">
         <main>
           <Suspense

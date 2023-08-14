@@ -22,8 +22,10 @@ import { formatUnits, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export function SummaryContainer() {
-  const { openConnectModal } = useConnectModal();
   const { projects, chainToPayoutToken: payoutTokens } = useCartStorage();
+  const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
+
+  const { openConnectModal } = useConnectModal();
   const publicClient = usePublicClient();
   const projectsByChain = useMemo(
     () => groupBy(projects, "chainId"),
@@ -101,28 +103,16 @@ export function SummaryContainer() {
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
-  const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
-
   useEffect(() => {
     /* Check if all chains that were meant to be checked out were succesful */
     const success = chainsToCheckout
       .map((chain) => voteStatus[chain])
-      .some((status) => status === ProgressStatus.IS_SUCCESS);
+      .every((status) => status === ProgressStatus.IS_SUCCESS);
     /* Redirect to thank you page */
-    if (
-      success &&
-      chainIdsBeingCheckedOut.length > 0 &&
-      !openMRCProgressModal
-    ) {
+    if (success && chainsToCheckout.length > 0) {
       navigate("/thankyou");
     }
-  }, [
-    chainIdsBeingCheckedOut,
-    chainsToCheckout,
-    navigate,
-    openMRCProgressModal,
-    voteStatus,
-  ]);
+  }, [chainsToCheckout, navigate, voteStatus]);
 
   function checkEmptyDonations() {
     const emptyDonations = projects.filter(
@@ -273,6 +263,7 @@ export function SummaryContainer() {
     }
   );
 
+  /*TODO: this can be a variable */
   useEffect(() => {
     if (totalDonationAcrossChainsInUSDData) {
       setTotalDonationAcrossChainsInUSD(
@@ -280,6 +271,10 @@ export function SummaryContainer() {
       );
     }
   }, [totalDonationAcrossChainsInUSDData]);
+
+  if (projects.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
