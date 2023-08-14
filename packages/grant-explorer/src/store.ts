@@ -1,6 +1,6 @@
 import { ChainId } from "common";
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { CartProject, PayoutToken } from "./features/api/types";
 import { payoutTokensMap } from "./features/api/utils";
 import { zeroAddress } from "viem";

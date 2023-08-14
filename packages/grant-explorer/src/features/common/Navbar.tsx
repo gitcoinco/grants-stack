@@ -32,7 +32,6 @@ export default function Navbar(props: NavbarProps) {
   /** end of part that keeps the store in sync between tabs */
 
   const showWalletInteraction = props.showWalletInteraction ?? true;
-  const currentOrigin = window.location.origin;
 
   const { address: walletAddress } = useAccount();
 

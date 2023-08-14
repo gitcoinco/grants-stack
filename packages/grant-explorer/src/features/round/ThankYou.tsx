@@ -53,6 +53,7 @@ export default function ThankYou() {
         ProgressStatus.NOT_STARTED
       );
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkedOutChains]);
 
   useEffect(() => {
