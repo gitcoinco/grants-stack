@@ -104,15 +104,15 @@ export function SummaryContainer() {
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
   useEffect(() => {
-    /* Check if any chains that were meant to be checked out were succesful */
+    /* Check if all chains that were meant to be checked out were succesful */
     const success = chainsToCheckout
       .map((chain) => voteStatus[chain])
-      .some((status) => status === ProgressStatus.IS_SUCCESS);
+      .every((status) => status === ProgressStatus.IS_SUCCESS);
     /* Redirect to thank you page */
-    if (success && !openMRCProgressModal) {
+    if (success && chainsToCheckout.length > 0) {
       navigate("/thankyou");
     }
-  }, [chainsToCheckout, navigate, openMRCProgressModal, voteStatus]);
+  }, [chainsToCheckout, navigate, voteStatus]);
 
   function checkEmptyDonations() {
     const emptyDonations = projects.filter(

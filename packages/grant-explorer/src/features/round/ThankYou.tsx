@@ -1,7 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
@@ -28,23 +28,28 @@ export default function ThankYou() {
   const { address } = useAccount();
 
   /** Remove checked out projects from cart, but keep the ones we didn't yet checkout succesfully. */
-  const checkedOutChains = Object.keys(checkoutStore.voteStatus)
-    .filter(
-      (key) =>
-        checkoutStore.voteStatus[Number(key) as ChainId] ===
-        ProgressStatus.IS_SUCCESS
-    )
-    .map(Number);
+  const checkedOutChains = useMemo(
+    () =>
+      Object.keys(checkoutStore.voteStatus)
+        .filter(
+          (key) =>
+            checkoutStore.voteStatus[Number(key) as ChainId] ===
+            ProgressStatus.IS_SUCCESS
+        )
+        .map(Number),
+    [checkoutStore]
+  );
 
+  /** Cleanup */
   useEffect(() => {
     cart.projects
       .filter((proj) => checkedOutChains.includes(proj.chainId))
       .forEach((proj) => {
         cart.remove(proj.grantApplicationId);
       });
-  }, [cart, checkedOutChains]);
 
-  useEffect(() => {
+    checkoutStore.setChainsToCheckout([]);
+
     checkedOutChains.forEach((chain) => {
       checkoutStore.setVoteStatusForChain(chain, ProgressStatus.NOT_STARTED);
       checkoutStore.setPermitStatusForChain(chain, ProgressStatus.NOT_STARTED);
@@ -53,14 +58,6 @@ export default function ThankYou() {
         ProgressStatus.NOT_STARTED
       );
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkedOutChains]);
-
-  useEffect(() => {
-    checkoutStore.setChainsToCheckout([]);
-
-    /* We really want this to run only once*/
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** If there are projects left to check out, show a Back to cart button */
