@@ -95,16 +95,12 @@ const ApplyNowPage = () => {
   // Fetch rounds in application phase
   useEffect(() => {
     const fetchRoundsInApplicationPhase = async () => {
-      const { isLoading, error, rounds } = await getRoundsInApplicationPhase(
-        debugModeEnabled
-      );
+      const rounds = await getRoundsInApplicationPhase(debugModeEnabled);
       setRoundsInApplicationPhase(rounds);
       setFilteredRoundsInApplicationPhase(rounds);
-      setApplyRoundsLoading(isLoading);
+      setApplyRoundsLoading(false);
       console.log("Rounds in Application Phase: ", {
         roundsInApplicationPhase,
-        isLoading,
-        error,
       });
     };
     fetchRoundsInApplicationPhase();
@@ -125,7 +121,7 @@ const ApplyNowPage = () => {
 
   return (
     <>
-      <Navbar roundUrlPath={"/"} showWalletInteraction={false} />
+      <Navbar showWalletInteraction={false} />
       <Suspense
         fallback={
           <div
