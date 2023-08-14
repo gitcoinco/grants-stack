@@ -78,6 +78,7 @@ export default function ThankYou() {
         ProgressStatus.NOT_STARTED
       );
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** If there are projects left to check out, show a Back to cart button */
