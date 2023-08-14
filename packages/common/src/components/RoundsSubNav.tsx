@@ -94,7 +94,7 @@ export function RoundsSubNav() {
                 className="flex-shrink-0 flex items-center"
               >
                 <PGNLogoIcon className="mr-2" />
-                <PGNTextLogoIcon fill="black" />
+                <PGNTextLogoIcon fill="black" className="mt-1" />
               </a>
             </div>
             <div className="relative">
