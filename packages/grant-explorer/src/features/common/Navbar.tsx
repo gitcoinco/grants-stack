@@ -6,6 +6,7 @@ import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
+import { Link } from "react-router-dom";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -40,8 +41,8 @@ export default function Navbar(props: NavbarProps) {
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <a
-              href={currentOrigin}
+            <Link
+              to={"/"}
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
@@ -50,7 +51,7 @@ export default function Navbar(props: NavbarProps) {
                 <span className="mx-6 text-grey-400">|</span>
                 <GrantsExplorerLogo className="lg:inline-block md:inline-block" />
               </div>
-            </a>
+            </Link>
           </div>
           <div className="flex items-center gap-6">
             {showWalletInteraction && (
@@ -68,13 +69,13 @@ export default function Navbar(props: NavbarProps) {
             )}
             {walletAddress && (
               <div>
-                <a
-                  href={`${currentOrigin}#/contributors/${walletAddress}`}
+                <Link
+                  to={`contributors/${walletAddress}`}
                   className="flex-shrink-0 flex items-center"
                   data-testid={"contributions-link"}
                 >
                   <UserCircleIcon className="h-8 w-8" />
-                </a>
+                </Link>
               </div>
             )}
             <NavbarCart cart={store.projects} />
