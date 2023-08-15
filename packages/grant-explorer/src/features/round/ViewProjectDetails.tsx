@@ -92,10 +92,13 @@ export default function ViewProjectDetails() {
 
   /*TODO: projectToRender can be undefined, casting will hide that condition.*/
   const cartProject = projectToRender as CartProject;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  cartProject.roundId = roundId!;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  cartProject.chainId = Number(chainId!);
+
+  if (cartProject !== undefined) {
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+    cartProject.roundId = roundId!;
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+    cartProject.chainId = Number(chainId!);
+  }
 
   const breadCrumbs = [
     {
@@ -114,13 +117,9 @@ export default function ViewProjectDetails() {
 
   return (
     <>
-      <Navbar
-        roundUrlPath={`/round/${chainId}/${roundId}`}
-        isBeforeRoundEndDate={isBeforeRoundEndDate}
-      />
+      <Navbar />
 
       {isBeforeRoundEndDate && (
-        /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
         <PassportBanner chainId={Number(chainId)} round={round} />
       )}
       {isAfterRoundEndDate && (

@@ -8,7 +8,7 @@ export default function AccessDenied() {
 
   return (
     <>
-      <Navbar roundUrlPath={""} />
+      <Navbar />
       <div className="lg:mx-20 h-screen px-4 py-7">
         <main className="h-screen">
           <div className="flex pt-8">

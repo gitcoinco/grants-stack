@@ -99,10 +99,7 @@ function BeforeRoundStart(props: {
 
   return (
     <>
-      <Navbar
-        roundUrlPath={`/round/${chainId}/${roundId}`}
-        customBackground="bg-[#F0F0F0]"
-      />
+      <Navbar customBackground="bg-[#F0F0F0]" />
       <div className="relative top-16 px-4 pt-7 h-screen bg-gradient-to-b from-[#F0F0F0] to-[#FFFFFF] h-full">
         <main>
           <PreRoundPage
@@ -235,10 +232,7 @@ function AfterRoundStart(props: {
   return (
     <>
       {showCartNotification && renderCartNotification()}
-      <Navbar
-        roundUrlPath={`/round/${chainId}/${roundId}`}
-        isBeforeRoundEndDate={props.isBeforeRoundEndDate}
-      />
+      <Navbar isBeforeRoundEndDate={props.isBeforeRoundEndDate} />
       {props.isBeforeRoundEndDate && (
         <PassportBanner chainId={chainId} round={round} />
       )}
