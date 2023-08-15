@@ -27,7 +27,7 @@ export default function () {
 
   return (
     <>
-      <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
+      <Navbar showWalletInteraction={true} />
       <ViewContributionHistoryFetcher
         address={params.address}
         chainIds={chainIds}
