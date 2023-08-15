@@ -1,5 +1,5 @@
 import Footer from "common/src/components/Footer";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import {
   getActiveRounds,
   getRoundsInApplicationPhase,
@@ -25,6 +25,12 @@ export function useRoundsInApplicationPhase() {
 }
 
 const LandingPage = () => {
+  useEffect(() => {
+    if (process.env.REACT_APP_ENV === "production") {
+      window.location.replace("https://grants.gitcoin.co");
+    }
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const { isLoading: activeRoundsLoading, data: activeRounds } =
