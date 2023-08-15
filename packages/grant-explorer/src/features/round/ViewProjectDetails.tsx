@@ -92,10 +92,11 @@ export default function ViewProjectDetails() {
 
   /*TODO: projectToRender can be undefined, casting will hide that condition.*/
   const cartProject = projectToRender as CartProject;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  cartProject.roundId = roundId!;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  cartProject.chainId = Number(chainId!);
+
+  if (cartProject !== undefined) {
+    cartProject.roundId = roundId!;
+    cartProject.chainId = Number(chainId!);
+  }
 
   const breadCrumbs = [
     {
