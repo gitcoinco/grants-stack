@@ -92,6 +92,7 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    permitVersion: "2",
   },
   {
     name: "ETH",
