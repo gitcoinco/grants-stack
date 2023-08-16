@@ -71,6 +71,10 @@ export default function Navbar(props: NavbarProps) {
                 >
                   <ConnectButton
                     showBalance={false}
+                    accountStatus={{
+                      smallScreen: "avatar",
+                      largeScreen: "full",
+                    }}
                     chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
                   />
                 </div>
