@@ -5,7 +5,6 @@ import { Button } from "common/src/styles";
 import { Project } from "../api/types";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { renderToPlainText } from "common";
-import { useNavigate } from "react-router-dom";
 
 export default function CartNotification(props: {
   showCartNotification: boolean;
@@ -13,8 +12,6 @@ export default function CartNotification(props: {
   currentProjectAddedToCart: Project;
   roundUrlPath: string;
 }) {
-  const navigate = useNavigate();
-
   return (
     <>
       {/* Global notification live region, render this permanently at the end of the document */}
