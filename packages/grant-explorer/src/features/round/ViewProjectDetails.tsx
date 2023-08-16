@@ -127,7 +127,7 @@ export default function ViewProjectDetails() {
           <RoundEndedBanner />
         </div>
       )}
-      <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
+      <div className="relative top-28 lg:mx-20 h-screen px-4 py-7">
         <div className="flex flex-col pb-6" data-testid="bread-crumbs">
           <Breadcrumb items={breadCrumbs} />
         </div>
