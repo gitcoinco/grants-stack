@@ -57,7 +57,10 @@ export default function CartNotification(props: {
                     type="button"
                     $variant="solid"
                     className="px-3 bg-violet-400 text-white border-0 text-xs mb-2"
-                    onClick={() => navigate(`/cart`)}
+                    onClick={() => {
+                      const url = "#/cart";
+                      window.open(url, "_blank");
+                    }}
                   >
                     View my cart
                   </Button>
