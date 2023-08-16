@@ -11,7 +11,10 @@ export default function NavbarCart(props: { cart: Project[] }) {
     <div
       data-testid="navbar-cart"
       className="relative flex-row"
-      onClick={() => navigate(`/cart`)}
+      onClick={() => {
+        const url = "#/cart";
+        window.open(url, "_blank");
+      }}
     >
       <QuickViewIcon count={projectCount} />
     </div>

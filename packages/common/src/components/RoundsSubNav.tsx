@@ -86,63 +86,54 @@ export function RoundsSubNav(props: Props) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="bg-grey-150">
-      <div className="mx-auto px-4 sm:px-6 lg:px-20">
-        <div className="flex justify-between h-16 flex-row-reverse">
-          <div className="flex items-center gap-6">
-            <div>
-              <a
-                href="https://bridge.gitcoin.co"
-                target="_blank"
-                rel="noreferrer"
-                className="flex-shrink-0 flex items-center"
-              >
-                <PGNLogoIcon className="mr-2" />
-                <PGNTextLogoIcon fill="black" className="mt-1" />
-              </a>
-            </div>
-            <div className="relative">
-              <span className="cursor-pointer" onClick={() => setOpen(!open)}>
-                <GG18Icon className="inline mr-2" />
+    <div className="hidden lg:block">
+      <div className="flex items-center gap-6">
+        <div>
+          <a
+            href="https://bridge.gitcoin.co"
+            target="_blank"
+            rel="noreferrer"
+            className="flex-shrink-0 flex items-center"
+          >
+            <PGNLogoIcon className="mr-2" />
+            <PGNTextLogoIcon fill="black" className="mt-1" />
+          </a>
+        </div>
+        <div className="relative">
+          <span className="cursor-pointer" onClick={() => setOpen(!open)}>
+            <GG18Icon className="inline mr-2" />
 
-                <DropdownIcon
-                  className="inline"
-                  direction={open ? "up" : "down"}
-                />
-              </span>
-              <div
-                className={`absolute right-0 top-8 bg-grey-150 py-4 px-6 rounded-lg text-right whitespace-nowrap ${
-                  open ? "block" : "hidden"
-                }`}
-              >
-                <ul>
-                  {ROUNDS_GROUPS.map((group: RoundsGroup) => (
-                    <React.Fragment key={group.name}>
-                      <li className="border-b border-solid border-grey-200 py-1 mb-2 font-bold">
-                        {group.name}
-                      </li>
+            <DropdownIcon className="inline" direction={open ? "up" : "down"} />
+          </span>
+          <div
+            className={`absolute right-0 top-12 bg-grey-150 py-4 px-6 rounded-lg text-right whitespace-nowrap ${
+              open ? "block" : "hidden"
+            }`}
+          >
+            <ul>
+              {ROUNDS_GROUPS.map((group: RoundsGroup) => (
+                <React.Fragment key={group.name}>
+                  <li className="border-b border-solid border-grey-200 py-1 mb-2 font-bold">
+                    {group.name}
+                  </li>
 
-                      {group.rounds.map((round: Round) => (
-                        <li key={round.id}>
-                          <a
-                            href="#"
-                            onClick={(
-                              e: React.MouseEvent<HTMLAnchorElement>
-                            ) => {
-                              e.preventDefault();
-                              props.onClick(round);
-                            }}
-                            className="block py-2 "
-                          >
-                            {round.name}
-                          </a>
-                        </li>
-                      ))}
-                    </React.Fragment>
+                  {group.rounds.map((round: Round) => (
+                    <li key={round.id}>
+                      <a
+                        href="#"
+                        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                          e.preventDefault();
+                          props.onClick(round);
+                        }}
+                        className="block py-2 "
+                      >
+                        {round.name}
+                      </a>
+                    </li>
                   ))}
-                </ul>
-              </div>
-            </div>
+                </React.Fragment>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

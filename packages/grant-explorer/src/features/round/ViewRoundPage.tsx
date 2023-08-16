@@ -227,7 +227,7 @@ function AfterRoundStart(props: {
           <Breadcrumb items={breadCrumbs} />
         </div>
         <main>
-          <p data-testid="round-title" className="text-3xl my-5">
+          <p data-testid="round-title" className="text-3xl mb-5">
             {round.roundMetadata?.name}
           </p>
           <div className="flex text-grey-400 mb-1">

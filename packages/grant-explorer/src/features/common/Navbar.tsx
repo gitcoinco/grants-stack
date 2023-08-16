@@ -59,6 +59,12 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
+            <RoundsSubNav
+              onClick={(round: NavRound) => {
+                const url = `#/round/${round.chainId}/${round.id}`;
+                window.open(url, "_blank");
+              }}
+            />
             {showWalletInteraction && (
               <div>
                 <div
@@ -87,11 +93,6 @@ export default function Navbar(props: NavbarProps) {
           </div>
         </div>
       </div>
-      <RoundsSubNav
-        onClick={(round: NavRound) => {
-          navigate(`/round/${round.chainId}/${round.id}`);
-        }}
-      />
     </nav>
   );
 }
