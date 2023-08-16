@@ -180,6 +180,7 @@ export const useCheckoutStore = create<CheckoutState>()(
                 erc20Name: tokenName,
                 ownerAddress: owner,
                 nonce,
+                permitVersion: token.permitVersion ?? "1",
               });
             } else {
               sig = await signPermit2612({
