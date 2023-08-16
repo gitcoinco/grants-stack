@@ -241,12 +241,12 @@ function AfterRoundStart(props: {
           <RoundEndedBanner />
         </div>
       )}
-      <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
+      <div className="relative top-28 lg:mx-20 px-4 py-7 h-screen">
         <div className="flex flex-col pb-4" data-testid="bread-crumbs">
           <Breadcrumb items={breadCrumbs} />
         </div>
         <main>
-          <p data-testid="round-title" className="text-3xl my-5">
+          <p data-testid="round-title" className="text-3xl mb-5">
             {round.roundMetadata?.name}
           </p>
           <div className="flex text-grey-400 mb-1">

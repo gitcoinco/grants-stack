@@ -5,7 +5,6 @@ import { Button } from "common/src/styles";
 import { Project } from "../api/types";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { renderToPlainText } from "common";
-import { useNavigate } from "react-router-dom";
 
 export default function CartNotification(props: {
   showCartNotification: boolean;
@@ -13,8 +12,6 @@ export default function CartNotification(props: {
   currentProjectAddedToCart: Project;
   roundUrlPath: string;
 }) {
-  const navigate = useNavigate();
-
   return (
     <>
       {/* Global notification live region, render this permanently at the end of the document */}
@@ -57,7 +54,10 @@ export default function CartNotification(props: {
                     type="button"
                     $variant="solid"
                     className="px-3 bg-violet-400 text-white border-0 text-xs mb-2"
-                    onClick={() => navigate(`/cart`)}
+                    onClick={() => {
+                      const url = "#/cart";
+                      window.open(url, "_blank");
+                    }}
                   >
                     View my cart
                   </Button>

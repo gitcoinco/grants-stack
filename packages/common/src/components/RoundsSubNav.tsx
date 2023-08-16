@@ -84,11 +84,10 @@ type Props = {
 
 export function RoundsSubNav(props: Props) {
   const [open, setOpen] = useState(false);
-
   return (
     <div className="bg-grey-150">
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
-        <div className="flex justify-between h-16 flex-row-reverse">
+        <div className="flex justify-between h-12 flex-row-reverse">
           <div className="flex items-center gap-6">
             <div>
               <a
@@ -111,7 +110,7 @@ export function RoundsSubNav(props: Props) {
                 />
               </span>
               <div
-                className={`absolute right-0 top-8 bg-grey-150 py-4 px-6 rounded-lg text-right whitespace-nowrap ${
+                className={`absolute right-0 top-12 bg-grey-150 py-4 px-6 rounded-lg text-right whitespace-nowrap ${
                   open ? "block" : "hidden"
                 }`}
               >
