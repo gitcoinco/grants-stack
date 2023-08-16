@@ -165,7 +165,7 @@ export default function PassportBanner(props: {
   const AlertIcon = () => {
     return (
       <div className="hidden md:block md:justify-center h-7 w-7 relative text-white items-center rounded-full bg-yellow-400">
-        <ExclamationCircleIcon className="fill-yellow-400 stroke-yellow-100 h-4 w-4 relative text-white items-center rounded-full" />
+        <ExclamationCircleIcon className="fill-yellow-400 stroke-yellow-100 h-7 w-7 relative text-white items-center rounded-full" />
       </div>
     );
   };
