@@ -64,7 +64,8 @@ export const voteUsingMRCContract = async (
     );
   } else if (permit) {
     /* Is token DAI? */
-    if (/DAI/i.test(token.name)) {
+    /** DAI on optimism supports normal eip2612 permit, so we skip that*/
+    if (/DAI/i.test(token.name) && chainId !== 10) {
       tx = await mrcImplementation.write.voteDAIPermit([
         Object.values(groupedVotes),
         Object.keys(groupedVotes) as Hex[],
