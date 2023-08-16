@@ -5,7 +5,6 @@ import {
   RoundsSubNav,
   Round as NavRound,
 } from "common/src/components/RoundsSubNav";
-import { useNavigate } from "react-router-dom";
 import NavbarCart from "./NavbarCart";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
@@ -21,7 +20,6 @@ export interface NavbarProps {
 export default function Navbar(props: NavbarProps) {
   /** This part keeps the store in sync between tabs */
   const store = useCartStorage();
-  const navigate = useNavigate();
 
   const updateStore = () => {
     useCartStorage.persist.rehydrate();

@@ -1,11 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { Project } from "../api/types";
 import tw from "tailwind-styled-components";
 
 export default function NavbarCart(props: { cart: Project[] }) {
   const projectCount = props.cart.length;
-
-  const navigate = useNavigate();
 
   return (
     <div
