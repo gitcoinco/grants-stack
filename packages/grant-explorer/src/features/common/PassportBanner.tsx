@@ -237,7 +237,7 @@ export default function PassportBanner(props: {
   };
 
   return (
-    <div className="relative top-16">
+    <div className="relative top-28 lg:top-16">
       <div className={bannerConfig[passportState].color}>
         <div className="max-w-full py-3 px-3 sm:px-6 lg:px-8 z-0">
           <div className="flex flex-row justify-center items-center items-left">

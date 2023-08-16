@@ -84,9 +84,8 @@ type Props = {
 
 export function RoundsSubNav(props: Props) {
   const [open, setOpen] = useState(false);
-
   return (
-    <div className="hidden lg:block">
+    <>
       <div className="flex items-center gap-6">
         <div>
           <a
@@ -137,6 +136,6 @@ export function RoundsSubNav(props: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

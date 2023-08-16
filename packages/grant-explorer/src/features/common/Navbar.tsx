@@ -1,6 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
+import { useNavigate } from "react-router-dom";
 import {
   RoundsSubNav,
   Round as NavRound,
@@ -20,6 +21,7 @@ export interface NavbarProps {
 export default function Navbar(props: NavbarProps) {
   /** This part keeps the store in sync between tabs */
   const store = useCartStorage();
+  const navigate = useNavigate();
 
   const updateStore = () => {
     useCartStorage.persist.rehydrate();
@@ -57,12 +59,13 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
-            <RoundsSubNav
-              onClick={(round: NavRound) => {
-                const url = `#/round/${round.chainId}/${round.id}`;
-                window.open(url, "_blank");
-              }}
-            />
+            <div className="hidden lg:block">
+              <RoundsSubNav
+                onClick={(round: NavRound) => {
+                  navigate(`/round/${round.chainId}/${round.id}`);
+                }}
+              />
+            </div>
             {showWalletInteraction && (
               <div>
                 <div
@@ -92,6 +95,19 @@ export default function Navbar(props: NavbarProps) {
               </div>
             )}
             <NavbarCart cart={store.projects} />
+          </div>
+        </div>
+      </div>
+      <div className="lg:hidden">
+        <div className="bg-grey-150">
+          <div className="mx-auto px-4 sm:px-6">
+            <div className="flex justify-between h-12 flex-row-reverse">
+              <RoundsSubNav
+                onClick={(round: NavRound) => {
+                  navigate(`/round/${round.chainId}/${round.id}`);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
