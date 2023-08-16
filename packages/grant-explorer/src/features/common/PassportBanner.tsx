@@ -175,7 +175,7 @@ export default function PassportBanner(props: {
       icon: (
         <ExclamationCircleIcon className="sm:flex fill-violet-400 stroke-violet-200 h-7 w-7 relative text-white items-center rounded-full" />
       ),
-      color: "bg-violet-100",
+      color: "bg-white",
       testId: "wallet-not-connected",
       body: `Want to make sure your donations get matched? Verify your Gitcoin Passport by ${getUTCDateTime(
         props.round.roundEndTime
@@ -186,14 +186,14 @@ export default function PassportBanner(props: {
       icon: (
         <CheckBadgeIcon className="fill-teal-400 stroke-teal-100 h-7 w-7 relative text-white items-center rounded-full" />
       ),
-      color: "bg-teal-100",
+      color: "bg-white",
       testId: "match-eligible",
       body: "Gitcoin Passport score verified. Your donation will be matched!",
       button: <ViewScoreButton />,
     },
     [PassportState.MATCH_INELIGIBLE]: {
       icon: <AlertIcon />,
-      color: "bg-yelllow-100",
+      color: "bg-white",
       testId: "match-ineligible",
       body: `Your Gitcoin Passport is not currently eligible for donation matching. Please update by ${getUTCDateTime(
         props.round.roundEndTime
@@ -209,7 +209,7 @@ export default function PassportBanner(props: {
     },
     [PassportState.INVALID_PASSPORT]: {
       icon: <AlertIcon />,
-      color: "bg-yellow-100",
+      color: "bg-white",
       testId: "invalid-passport",
       body: `You don't have a Gitcoin Passport. Please create one by ${getUTCDateTime(
         props.round.roundEndTime
@@ -220,7 +220,7 @@ export default function PassportBanner(props: {
       icon: (
         <ExclamationCircleIcon className="fill-red-500 stroke-red-200 h-7 w-7 relative text-white items-center rounded-full" />
       ),
-      color: "bg-red-200",
+      color: "bg-white",
       testId: "error-loading-passport",
       body: "An error occurred while loading your Gitcoin Passport. Please try again later.",
       button: null,
@@ -229,7 +229,7 @@ export default function PassportBanner(props: {
       icon: (
         <ExclamationCircleIcon className="fill-red-500 stroke-red-200 h-7 w-7 relative text-white items-center rounded-full" />
       ),
-      color: "bg-red-200",
+      color: "bg-white",
       testId: "error-loading-passport",
       body: "Passport Profile not detected. Please open Passport to troubleshoot.",
       button: null,
@@ -237,7 +237,7 @@ export default function PassportBanner(props: {
   };
 
   return (
-    <div className="relative top-28 lg:top-16">
+    <div className="relative top-28">
       <div className={bannerConfig[passportState].color}>
         <div className="max-w-full py-3 px-3 sm:px-6 lg:px-8 z-0">
           <div className="flex flex-row justify-center items-center items-left">

@@ -59,13 +59,6 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
-            <div className="hidden lg:block">
-              <RoundsSubNav
-                onClick={(round: NavRound) => {
-                  navigate(`/round/${round.chainId}/${round.id}`);
-                }}
-              />
-            </div>
             {showWalletInteraction && (
               <div>
                 <div
@@ -98,19 +91,11 @@ export default function Navbar(props: NavbarProps) {
           </div>
         </div>
       </div>
-      <div className="lg:hidden">
-        <div className="bg-grey-150">
-          <div className="mx-auto px-4 sm:px-6">
-            <div className="flex justify-between h-12 flex-row-reverse">
-              <RoundsSubNav
-                onClick={(round: NavRound) => {
-                  navigate(`/round/${round.chainId}/${round.id}`);
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      <RoundsSubNav
+        onClick={(round: NavRound) => {
+          navigate(`/round/${round.chainId}/${round.id}`);
+        }}
+      />
     </nav>
   );
 }

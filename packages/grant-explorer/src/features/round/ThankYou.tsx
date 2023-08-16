@@ -89,7 +89,7 @@ export default function ThankYou() {
   return (
     <>
       <Navbar />
-      <div className="relative top-24 lg:top-16 lg:mx-20 px-4 py-7 h-screen">
+      <div className="relative top-28 lg:mx-20 px-4 py-7 h-screen">
         <main>
           <div className="text-center">
             <h1 className="text-4xl my-8">

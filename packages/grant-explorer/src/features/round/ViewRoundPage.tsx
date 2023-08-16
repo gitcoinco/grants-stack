@@ -222,7 +222,7 @@ function AfterRoundStart(props: {
           <RoundEndedBanner />
         </div>
       )}
-      <div className="relative top-24 lg:top-16 lg:mx-20 px-4 py-7 h-screen">
+      <div className="relative top-28 lg:mx-20 px-4 py-7 h-screen">
         <div className="flex flex-col pb-4" data-testid="bread-crumbs">
           <Breadcrumb items={breadCrumbs} />
         </div>
