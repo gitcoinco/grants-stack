@@ -170,7 +170,8 @@ export const useCheckoutStore = create<CheckoutState>()(
             nonce = await erc20Contract.read.nonces([owner]);
             const tokenName = await erc20Contract.read.name();
             /*TODO: better dai test, extract into function, test*/
-            if (/DAI/i.test(tokenName)) {
+            /** DAI on optimism supports normal eip2612 permit*/
+            if (/DAI/i.test(tokenName) && chainId !== 10) {
               sig = await signPermitDai({
                 walletClient: walletClient,
                 spenderAddress: MRC_CONTRACTS[chainId],
@@ -180,6 +181,7 @@ export const useCheckoutStore = create<CheckoutState>()(
                 erc20Name: tokenName,
                 ownerAddress: owner,
                 nonce,
+                permitVersion: token.permitVersion ?? "1",
               });
             } else {
               sig = await signPermit2612({
