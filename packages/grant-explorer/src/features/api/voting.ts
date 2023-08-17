@@ -13,6 +13,25 @@ export type PermitSignature = {
   s: string;
 };
 
+export type PermitType = "dai" | "eip2612";
+/** Given a payout token, selects the correct permit type.
+ * - DAI is the old permit type without `value` and with the `allowed` prop
+ * - eip2612 is the standard permit interface, as specified in https://eips.ethereum.org/EIPS/eip-2612
+ *
+ * Old DAI permit type is only implemented on Ethereum and Polygon PoS. Check /docs/DAI.md for more info.
+ * */
+export const selectPermitType = (token: PayoutToken): PermitType => {
+  if (
+    /DAI/i.test(token.name) &&
+    token.chainId ===
+      1 /* || token.chainId === 137 Polygon not yet supported, but soon */
+  ) {
+    return "dai";
+  } else {
+    return "eip2612";
+  }
+};
+
 export const voteUsingMRCContract = async (
   walletClient: WalletClient,
   chainId: ChainId,
@@ -65,7 +84,7 @@ export const voteUsingMRCContract = async (
   } else if (permit) {
     /* Is token DAI? */
     /** DAI on optimism supports normal eip2612 permit, so we skip that*/
-    if (/DAI/i.test(token.name) && chainId !== 10) {
+    if (selectPermitType(token) === "dai") {
       tx = await mrcImplementation.write.voteDAIPermit([
         Object.values(groupedVotes),
         Object.keys(groupedVotes) as Hex[],

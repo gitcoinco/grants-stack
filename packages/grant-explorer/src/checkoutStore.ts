@@ -17,6 +17,7 @@ import {
   zeroAddress,
 } from "viem";
 import {
+  selectPermitType,
   signPermit2612,
   signPermitDai,
   voteUsingMRCContract,
@@ -169,9 +170,7 @@ export const useCheckoutStore = create<CheckoutState>()(
             });
             nonce = await erc20Contract.read.nonces([owner]);
             const tokenName = await erc20Contract.read.name();
-            /*TODO: better dai test, extract into function, test*/
-            /** DAI on optimism supports normal eip2612 permit*/
-            if (/DAI/i.test(tokenName) && chainId !== 10) {
+            if (selectPermitType(token) === "dai") {
               sig = await signPermitDai({
                 walletClient: walletClient,
                 spenderAddress: MRC_CONTRACTS[chainId],
@@ -243,8 +242,6 @@ export const useCheckoutStore = create<CheckoutState>()(
               0n
             );
           }
-
-          console.log("chainid before voteusing mrc contract", chainId);
 
           const receipt = await voteUsingMRCContract(
             wc!,
