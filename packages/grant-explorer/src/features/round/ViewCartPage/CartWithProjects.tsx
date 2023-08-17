@@ -49,7 +49,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
       ) ?? getPayoutTokenOptions(chainId)[0]
     );
     /* We only want this to happen on first render */
-  }, [chainId, selectedPayoutToken.address, setPayoutTokenForChain]);
+  }, [chainId]);
 
   return (
     <div className="grow block px-[16px] py-4 bg-white">
