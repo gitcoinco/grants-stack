@@ -49,6 +49,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
       ) ?? getPayoutTokenOptions(chainId)[0]
     );
     /* We only want this to happen on first render */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId]);
 
   return (
