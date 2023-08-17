@@ -48,6 +48,8 @@ export function CartWithProjects({ cart, chainId }: Props) {
         (token) => token.address === selectedPayoutToken.address
       ) ?? getPayoutTokenOptions(chainId)[0]
     );
+    /* We only want this to happen onfirst render */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
