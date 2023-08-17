@@ -66,7 +66,7 @@ export const TokenNamesAndLogos: Record<string, string> = {
   GcV: "./logos/fantom-gcv-logo.png",
 };
 
-const MAINNET_TOKENS: PayoutToken[] = [
+export const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,

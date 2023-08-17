@@ -130,7 +130,8 @@
     "postcss": "^8.4.14",
     "prettier": "^2.8.3",
     "tailwind-styled-components": "^2.1.7",
-    "tailwindcss": "^3.0.24"
+    "tailwindcss": "^3.0.24",
+    "vitest": "^0.34.2"
   },
   "engines": {
     "node": ">=16.15.0",
