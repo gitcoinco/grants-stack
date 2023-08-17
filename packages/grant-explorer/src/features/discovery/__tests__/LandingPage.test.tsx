@@ -14,12 +14,13 @@ import {
   getRoundsInApplicationPhase,
 } from "../../api/rounds";
 import LandingPage from "../LandingPage";
+import { MockedFunction, vi } from "vitest";
 
 // Mock the API calls
-jest.mock("../../api/rounds", () => {
+vi.mock("../../api/rounds", () => {
   return {
-    getActiveRounds: jest.fn(),
-    getRoundsInApplicationPhase: jest.fn(),
+    getActiveRounds: vi.fn(),
+    getRoundsInApplicationPhase: vi.fn(),
   };
 });
 
@@ -32,13 +33,13 @@ const mockSwitchNetwork = {
   chainId: chainId,
 };
 
-jest.mock("../../common/Navbar");
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+vi.mock("../../common/Navbar");
+vi.mock("../../common/Auth");
+vi.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: vi.fn(),
 }));
 
-jest.mock("wagmi", () => ({
+vi.mock("wagmi", () => ({
   useAccount: () => mockAccount,
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
@@ -46,11 +47,11 @@ jest.mock("wagmi", () => ({
   useSwitchNetwork: () => mockSwitchNetwork,
 }));
 
-const mockGetActiveRounds = getActiveRounds as jest.MockedFunction<
+const mockGetActiveRounds = getActiveRounds as MockedFunction<
   typeof getActiveRounds
 >;
 const mockGetRoundsInApplicationPhase =
-  getRoundsInApplicationPhase as jest.MockedFunction<
+  getRoundsInApplicationPhase as MockedFunction<
     typeof getRoundsInApplicationPhase
   >;
 
@@ -110,7 +111,7 @@ describe("LandingPage", () => {
     });
   });
 
-  it.skip("filters active rounds based on search query", async () => {
+  it("filters active rounds based on search query", async () => {
     const roundMetadata: RoundMetadata = {
       name: "gitcoin",
       roundType: "private",

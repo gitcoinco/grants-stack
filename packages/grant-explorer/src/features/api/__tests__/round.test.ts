@@ -2,17 +2,21 @@ import { makeApprovedProjectData, makeRoundData } from "../../../test-utils";
 import { ApplicationStatus, Round } from "../types";
 import { fetchFromIPFS, graphql_fetch } from "../utils";
 import { getRoundById, GetRoundByIdResult, getProjectOwners } from "../round";
+import { Mock } from "vitest";
 
-jest.mock("../utils", () => ({
-  ...jest.requireActual("../utils"),
-  graphql_fetch: jest.fn(),
-  fetchFromIPFS: jest.fn(),
+vi.mock("../utils", () => ({
+  ...vi.importActual("../utils"),
+  graphql_fetch: vi.fn(),
+  fetchFromIPFS: vi.fn(),
 }));
 
-jest.mock("../round", () => ({
-  ...jest.requireActual("../round"),
-  getProjectOwners: jest.fn(),
-}));
+vi.mock("../round", async () => {
+  const actual = await vi.importActual("../round");
+  return {
+    ...actual,
+    getProjectOwners: vi.fn(),
+  };
+});
 
 describe("getRoundById", () => {
   let expectedRoundData: Round;
@@ -20,7 +24,7 @@ describe("getRoundById", () => {
   let graphQLResult: GetRoundByIdResult;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     expectedRoundData = makeRoundData();
     expectedRound = {
@@ -60,8 +64,8 @@ describe("getRoundById", () => {
       },
     };
 
-    (graphql_fetch as jest.Mock).mockResolvedValue(graphQLResult);
-    (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
+    (graphql_fetch as Mock).mockResolvedValue(graphQLResult);
+    (fetchFromIPFS as Mock).mockImplementation((pointer: string) => {
       if (pointer === expectedRoundData.store?.pointer) {
         return expectedRoundData.roundMetadata;
       }
@@ -73,9 +77,9 @@ describe("getRoundById", () => {
     const actualRound = await getRoundById(expectedRoundData.id!, "someChain");
 
     expect(actualRound).toMatchObject(expectedRound);
-    expect(graphql_fetch as jest.Mock).toBeCalledTimes(1);
-    expect(fetchFromIPFS as jest.Mock).toBeCalledTimes(1);
-    expect(fetchFromIPFS as jest.Mock).toBeCalledWith(
+    expect(graphql_fetch as Mock).toBeCalledTimes(1);
+    expect(fetchFromIPFS as Mock).toBeCalledTimes(1);
+    expect(fetchFromIPFS as Mock).toBeCalledWith(
       expectedRoundData.store?.pointer
     );
   });
@@ -146,10 +150,10 @@ describe("getRoundById", () => {
           (it) => it.address
         );
 
-      (getProjectOwners as jest.Mock).mockResolvedValue(projectOwners);
+      (getProjectOwners as Mock).mockResolvedValue(projectOwners);
     });
 
-    it.skip("maps approved project metadata for old application format", async () => {
+    it("maps approved project metadata for old application format", async () => {
       const oldFormat = {
         round: expectedRound.id,
         project: {
@@ -157,11 +161,11 @@ describe("getRoundById", () => {
         },
       };
 
-      (graphql_fetch as jest.Mock)
+      (graphql_fetch as Mock)
         .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
         .mockResolvedValueOnce(graphQLResultWithProjectOwners);
 
-      (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
+      (fetchFromIPFS as Mock).mockImplementation((pointer: string) => {
         if (pointer === expectedRoundData.store?.pointer) {
           return roundMetadataIpfsResult;
         }

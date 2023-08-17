@@ -8,14 +8,6 @@ import {
 } from "../../../test-utils";
 import Navbar from "../Navbar";
 
-const chainId = 5;
-const roundId = faker.finance.ethereumAddress();
-
-const useParamsFn = () => ({
-  chainId,
-  roundId,
-});
-
 const userAddress = faker.finance.ethereumAddress();
 
 const mockAccount = {
@@ -23,43 +15,52 @@ const mockAccount = {
   isConnected: false,
 };
 
-jest.mock("wagmi", () => ({
-  useAccount: () => mockAccount,
-  useBalance: () => mockBalance,
-  useSigner: () => mockSigner,
-  useNetwork: () => mockNetwork,
+vi.mock("wagmi", async () => {
+  const actual = await vi.importActual("wagmi");
+  return {
+    ...actual,
+    useAccount: () => mockAccount,
+    useBalance: () => mockBalance,
+    useSigner: () => mockSigner,
+    useNetwork: () => mockNetwork,
+  };
+});
+
+vi.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: vi.fn(),
 }));
 
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
+vi.mock("../Auth");
 
-jest.mock("../Auth");
+vi.mock("react-router-dom", async () => {
+  const chainId = 5;
+  const roundId = faker.finance.ethereumAddress();
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useParams: useParamsFn,
-}));
+  const useParamsFn = () => ({
+    chainId,
+    roundId,
+  });
 
-describe.skip("<Navbar>", () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useParams: useParamsFn,
+  };
+});
+
+describe("<Navbar>", () => {
   it("SHOULD display home-link", () => {
-    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
+    renderWithContext(<Navbar customBackground="" />);
     expect(screen.getByTestId("home-link")).toBeInTheDocument();
   });
 
   it("SHOULD display connect wallet button", () => {
-    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
+    renderWithContext(<Navbar customBackground="" />);
     expect(screen.getByTestId("connect-wallet-button")).toBeInTheDocument();
   });
 
   it("SHOULD display cart if round has not ended", () => {
-    renderWithContext(
-      <Navbar
-        customBackground=""
-        roundUrlPath={"/random"}
-        isBeforeRoundEndDate={true}
-      />
-    );
+    renderWithContext(<Navbar customBackground="" />);
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
   });
 });

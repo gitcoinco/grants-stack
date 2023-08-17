@@ -5,15 +5,12 @@ import { makeRoundData } from "../../test-utils";
 import { getRoundById } from "../../features/api/round";
 import { Round } from "../../features/api/types";
 
-jest.mock("../../features/api/round");
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
+vi.mock("../../features/api/round");
+vi.mock("wagmi");
 
 describe("<ListRoundProvider />", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("useRoundById()", () => {

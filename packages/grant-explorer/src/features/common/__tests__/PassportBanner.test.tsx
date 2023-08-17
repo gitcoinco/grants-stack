@@ -9,6 +9,7 @@ import {
   mockNetwork,
   mockSigner,
 } from "../../../test-utils";
+import { Mock } from "vitest";
 
 const userAddress = faker.finance.ethereumAddress();
 
@@ -17,14 +18,14 @@ const mockAccount = {
   isConnected: false,
 };
 
-jest.mock("wagmi", () => ({
+vi.mock("wagmi", () => ({
   useAccount: () => mockAccount,
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
   useNetwork: () => mockNetwork,
 }));
 
-jest.mock("../../../features/api/passport");
+vi.mock("../../../features/api/passport");
 
 process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = "12";
 
@@ -58,9 +59,7 @@ describe("PassportBanner", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockResolvedValueOnce(
-        mockFetchPassportPromise
-      );
+      (fetchPassport as Mock).mockResolvedValueOnce(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -89,9 +88,7 @@ describe("PassportBanner", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
-      );
+      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -120,9 +117,7 @@ describe("PassportBanner", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
-      );
+      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -148,9 +143,7 @@ describe("PassportBanner", () => {
         status: 400,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
-      );
+      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -172,9 +165,7 @@ describe("PassportBanner", () => {
         status: 401,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
-      );
+      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -205,9 +196,7 @@ describe("PassportBanner", () => {
         status: 200,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockReturnValueOnce(
-        mockFetchPassportPromise
-      );
+      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,

@@ -1,7 +1,3 @@
-import fetchMock from "jest-fetch-mock";
-
-fetchMock.enableMocks();
-
 import { faker } from "@faker-js/faker";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { rest } from "msw";
@@ -33,13 +29,13 @@ const mockAccount = {
   address: userAddress,
 };
 
-jest.mock("../../common/Navbar");
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+vi.mock("../../common/Navbar");
+vi.mock("../../common/Auth");
+vi.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: vi.fn(),
 }));
 
-jest.mock("wagmi", () => ({
+vi.mock("wagmi", () => ({
   useAccount: () => mockAccount,
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
@@ -47,8 +43,8 @@ jest.mock("wagmi", () => ({
   useEnsName: () => "mocked.eth",
 }));
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+vi.mock("react-router-dom", () => ({
+  ...vi.requireActual("react-router-dom"),
   useParams: useParamsFn,
 }));
 
@@ -101,7 +97,7 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       renderWithContext(<ViewProjectDetails />, {
         rounds: [roundWithProjects],
         isLoading: false,
