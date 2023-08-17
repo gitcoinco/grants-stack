@@ -48,9 +48,8 @@ export function CartWithProjects({ cart, chainId }: Props) {
         (token) => token.address === selectedPayoutToken.address
       ) ?? getPayoutTokenOptions(chainId)[0]
     );
-    /* We only want this to happen on πfirst render */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    /* We only want this to happen on first render */
+  }, [chainId, selectedPayoutToken.address, setPayoutTokenForChain]);
 
   return (
     <div className="grow block px-[16px] py-4 bg-white">
