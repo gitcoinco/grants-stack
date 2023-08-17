@@ -3,7 +3,7 @@ import {
   getPayoutTokenOptions,
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { PayoutToken } from "../../api/types";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
@@ -38,18 +38,6 @@ export function CartWithProjects({ cart, chainId }: Props) {
 
   // get number of projects in cartByRound
   const projectCount = cartByRound.reduce((acc, curr) => acc + curr.length, 0);
-
-  /** The payout token data (like permit version etc.) might've changed since the user last visited the page
-   * Refresh it to update, default to the first payout token if the previous token was deleted */
-  useEffect(() => {
-    setPayoutTokenForChain(
-      chainId,
-      getPayoutTokenOptions(chainId).find(
-        (token) => token.address === selectedPayoutToken.address
-      ) ?? getPayoutTokenOptions(chainId)[0]
-    );
-    /* We only want this to happen on first render */
-  }, [chainId, selectedPayoutToken.address, setPayoutTokenForChain]);
 
   return (
     <div className="grow block px-[16px] py-4 bg-white">
