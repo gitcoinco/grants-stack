@@ -262,21 +262,6 @@ export const useCheckoutStore = create<CheckoutState>()(
               : undefined
           );
 
-          if (receipt.status === "reverted") {
-            console.error(
-              `vote on chain ${chainId} - roundIds ${Object.keys(
-                donations.map((d) => d.roundId)
-              )}, token ${token.name}`,
-              receipt,
-              sig,
-              token
-            );
-
-            throw new Error("vote failed", {
-              cause: receipt,
-            });
-          }
-
           console.log(
             "Voting succesful for chain",
             chainId,
