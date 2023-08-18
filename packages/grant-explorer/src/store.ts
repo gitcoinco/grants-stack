@@ -21,7 +21,8 @@ const ethOnlyPayoutTokens = Object.fromEntries(
     ([key, value]) =>
       [
         Number(key) as ChainId,
-        value.find((token) => token.address === zeroAddress) ?? value[0],
+        value.find((token) => token.defaultForVoting && token.canVote) ??
+          value[0],
       ] as [ChainId, PayoutToken]
   )
 ) as Record<ChainId, PayoutToken>;
