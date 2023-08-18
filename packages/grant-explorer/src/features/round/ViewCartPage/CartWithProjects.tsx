@@ -29,7 +29,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
   const selectedPayoutToken = chainToPayoutToken[chainId];
   const payoutTokenOptions: PayoutToken[] = getPayoutTokenOptions(
     Number(chainId)
-  );
+  ).filter((p) => p.canVote);
 
   const { data, error, loading } = useTokenPrice(
     selectedPayoutToken.redstoneTokenId

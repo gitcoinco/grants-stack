@@ -63,6 +63,7 @@ export const TokenNamesAndLogos: Record<string, string> = {
   ETH: "./logos/ethereum-eth-logo.svg",
   OP: "./logos/optimism-logo.svg",
   PGN: "./logos/pgn-logo.svg",
+  GcV: "./logos/fantom-gcv-logo.png",
 };
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -73,6 +74,8 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
   },
   {
     name: "ETH",
@@ -81,6 +84,8 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
   },
 ];
 
@@ -93,6 +98,8 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
     permitVersion: "2",
+    defaultForVoting: false,
+    canVote: true,
   },
   {
     name: "ETH",
@@ -101,6 +108,8 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
   },
 ];
 
@@ -112,6 +121,8 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
     redstoneTokenId: RedstoneTokenIds["FTM"],
+    defaultForVoting: false,
+    canVote: false,
   },
   {
     name: "FTM",
@@ -120,6 +131,8 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
     redstoneTokenId: RedstoneTokenIds["FTM"],
+    defaultForVoting: false,
+    canVote: false,
   },
   {
     name: "BUSD",
@@ -128,6 +141,8 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["BUSD"],
     redstoneTokenId: RedstoneTokenIds["BUSD"],
+    defaultForVoting: false,
+    canVote: false,
   },
   {
     name: "DAI",
@@ -136,6 +151,18 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: false,
+  },
+  {
+    name: "GcV",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: "0x83791638da5EB2fAa432aff1c65fbA47c5D29510",
+    decimal: 18,
+    logo: TokenNamesAndLogos["GcV"],
+    redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI to keep the valueless token to 1$
+    defaultForVoting: true,
+    canVote: true,
   },
 ];
 
@@ -148,6 +175,8 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
     permitVersion: "2",
+    defaultForVoting: false,
+    canVote: true,
   },
   {
     name: "DAI",
@@ -156,6 +185,8 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
   },
   {
     name: "ETH",
@@ -164,6 +195,8 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
   },
 ];
 
@@ -175,6 +208,8 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: true,
+    canVote: true,
   },
 ];
 
@@ -186,6 +221,8 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
   },
   {
     name: "ETH",
@@ -194,6 +231,8 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
   },
 ];
 
@@ -205,6 +244,8 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
   },
 ];
 
