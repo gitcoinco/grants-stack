@@ -63,6 +63,7 @@ export const TokenNamesAndLogos: Record<string, string> = {
   ETH: "./logos/ethereum-eth-logo.svg",
   OP: "./logos/optimism-logo.svg",
   PGN: "./logos/pgn-logo.svg",
+  GcV: "./logos/fantom-gcv-logo.png",
 };
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -105,37 +106,46 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
 ];
 
 const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
+  // Temporarily removed to use a valueless token
+  // {
+  //   name: "WFTM",
+  //   chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+  //   address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+  //   decimal: 18,
+  //   logo: TokenNamesAndLogos["FTM"],
+  //   redstoneTokenId: RedstoneTokenIds["FTM"],
+  // },
+  // {
+  //   name: "FTM",
+  //   chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+  //   address: zeroAddress,
+  //   decimal: 18,
+  //   logo: TokenNamesAndLogos["FTM"],
+  //   redstoneTokenId: RedstoneTokenIds["FTM"],
+  // },
+  // {
+  //   name: "BUSD",
+  //   chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+  //   address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
+  //   decimal: 18,
+  //   logo: TokenNamesAndLogos["BUSD"],
+  //   redstoneTokenId: RedstoneTokenIds["BUSD"],
+  // },
+  // {
+  //   name: "DAI",
+  //   chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+  //   address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+  //   decimal: 18,
+  //   logo: TokenNamesAndLogos["DAI"],
+  //   redstoneTokenId: RedstoneTokenIds["DAI"],
+  // },
   {
-    name: "WFTM",
+    name: "GcV",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    address: "0x83791638da5EB2fAa432aff1c65fbA47c5D29510",
     decimal: 18,
-    logo: TokenNamesAndLogos["FTM"],
-    redstoneTokenId: RedstoneTokenIds["FTM"],
-  },
-  {
-    name: "FTM",
-    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: zeroAddress,
-    decimal: 18,
-    logo: TokenNamesAndLogos["FTM"],
-    redstoneTokenId: RedstoneTokenIds["FTM"],
-  },
-  {
-    name: "BUSD",
-    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
-    decimal: 18,
-    logo: TokenNamesAndLogos["BUSD"],
-    redstoneTokenId: RedstoneTokenIds["BUSD"],
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
+    logo: TokenNamesAndLogos["GcV"],
+    redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI to keep the valueless token to 1$
   },
 ];
 
