@@ -3,7 +3,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartProject, PayoutToken } from "./features/api/types";
 import { payoutTokensMap } from "./features/api/utils";
-import { zeroAddress } from "viem";
 
 interface CartState {
   projects: CartProject[];
