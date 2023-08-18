@@ -200,4 +200,7 @@ export type PayoutToken = {
   default?: boolean;
   redstoneTokenId?: string;
   permitVersion?: string;
+  //TODO: split PayoutTokens and VotingTokens in
+  // 2 different types/lists and remove the following attribute
+  canVote: boolean;
 };

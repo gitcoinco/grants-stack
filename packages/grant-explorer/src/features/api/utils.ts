@@ -74,6 +74,7 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    canVote: true,
   },
   {
     name: "ETH",
@@ -82,6 +83,7 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    canVote: true,
   },
 ];
 
@@ -94,6 +96,7 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
     permitVersion: "2",
+    canVote: true,
   },
   {
     name: "ETH",
@@ -102,43 +105,47 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    canVote: true,
   },
 ];
 
 const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
-  // Temporarily removed to use a valueless token
-  // {
-  //   name: "WFTM",
-  //   chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-  //   address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-  //   decimal: 18,
-  //   logo: TokenNamesAndLogos["FTM"],
-  //   redstoneTokenId: RedstoneTokenIds["FTM"],
-  // },
-  // {
-  //   name: "FTM",
-  //   chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-  //   address: zeroAddress,
-  //   decimal: 18,
-  //   logo: TokenNamesAndLogos["FTM"],
-  //   redstoneTokenId: RedstoneTokenIds["FTM"],
-  // },
-  // {
-  //   name: "BUSD",
-  //   chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-  //   address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
-  //   decimal: 18,
-  //   logo: TokenNamesAndLogos["BUSD"],
-  //   redstoneTokenId: RedstoneTokenIds["BUSD"],
-  // },
-  // {
-  //   name: "DAI",
-  //   chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-  //   address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
-  //   decimal: 18,
-  //   logo: TokenNamesAndLogos["DAI"],
-  //   redstoneTokenId: RedstoneTokenIds["DAI"],
-  // },
+  {
+    name: "WFTM",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    decimal: 18,
+    logo: TokenNamesAndLogos["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
+    canVote: false,
+  },
+  {
+    name: "FTM",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
+    canVote: false,
+  },
+  {
+    name: "BUSD",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
+    decimal: 18,
+    logo: TokenNamesAndLogos["BUSD"],
+    redstoneTokenId: RedstoneTokenIds["BUSD"],
+    canVote: false,
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    canVote: false,
+  },
   {
     name: "GcV",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
@@ -146,6 +153,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["GcV"],
     redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI to keep the valueless token to 1$
+    canVote: true,
   },
 ];
 
@@ -158,6 +166,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
     permitVersion: "2",
+    canVote: true,
   },
   {
     name: "DAI",
@@ -166,6 +175,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    canVote: true,
   },
   {
     name: "ETH",
@@ -174,6 +184,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    canVote: true,
   },
 ];
 
@@ -185,6 +196,7 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    canVote: true,
   },
 ];
 
@@ -196,6 +208,7 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    canVote: true,
   },
   {
     name: "ETH",
@@ -204,6 +217,7 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    canVote: true,
   },
 ];
 
@@ -215,6 +229,7 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    canVote: true,
   },
 ];
 
