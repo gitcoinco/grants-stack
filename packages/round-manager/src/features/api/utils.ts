@@ -143,6 +143,14 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
+  {
+    name: "GcV",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: "0x83791638da5EB2fAa432aff1c65fbA47c5D29510",
+    decimal: 18,
+    logo: TokenNamesAndLogos["GcV"],
+    redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI for the price
+  },
 ];
 
 const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
