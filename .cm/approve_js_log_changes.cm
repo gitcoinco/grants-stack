@@ -1,0 +1,21 @@
+# -*- mode: yaml -*-
+
+manifest:
+  version: 1.0
+
+automations:
+  approve_javascript_log_output:
+    # Triggered for JavaScript changes that only affect the console.log() method
+    if:
+      - {{ files | match(regex=r/\.js$|\.ts$/) | every }}
+      - {{ source.diff.files | matchDiffLines(regex=r/^[+-].*console\.log/, ignoreWhiteSpaces=true) | every }}
+    run:
+      - action: add-label@v1
+        args:
+          label: 'log-output-only'
+      - action: approve@v1
+      - action: add-comment@v1
+        args:
+          comment: |
+            This PR has been approved because it only contains changes to log output
+
