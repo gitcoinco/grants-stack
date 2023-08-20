@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start:dev": "NODE_ENV=development nodemon -e ts -x tsx -r dotenv-flow/config src/index.ts",
-    "start:prod": "node dist/index.js",
+    "dev": "tsx -r dotenv-flow/config src/index.ts",
+    "start": "node dist/index.js",
     "lint": "eslint --cache --max-warnings=0 src",
     "test": "jest",
     "build": "tsc",
@@ -30,7 +30,6 @@
     "jest": "^28.1.0",
     "lint-staged": ">=10",
     "node-notifier": "^10.0.0",
-    "nodemon": "^2.0.16",
     "prettier": "^2.0.5",
     "ts-jest": "^28.0.3",
     "tsx": "^3.10.1",
