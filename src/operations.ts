@@ -1,5 +1,5 @@
-import { PI } from './constants'
+import { PI } from "./constants";
 
-export const add = (a: number, b: number): number => a + b
+export const add = (a: number, b: number): number => a + b;
 
-export const multiplyByPI = (n: number) => PI * n
+export const multiplyByPI = (n: number) => PI * n;
