@@ -30,10 +30,14 @@ export const useCartStorage = create<CartState>()(
   persist(
     (set, get) => ({
       projects: [],
-      add: (project: CartProject) =>
+      add: (project: CartProject) => {
+        if (get().projects.includes(project)) {
+          return;
+        }
         set({
           projects: [...get().projects, project],
-        }),
+        });
+      },
       remove: (grantApplicationId: string) => {
         set({
           projects: get().projects.filter(
