@@ -15,7 +15,7 @@ type RoundsGroup = {
   rounds: Round[];
 };
 
-const ROUNDS_GROUPS: RoundGroups[] = [
+const ROUNDS_GROUPS: RoundsGroup[] = [
   {
     name: "Core Rounds",
     rounds: [
@@ -106,7 +106,11 @@ export function RoundsSubNav(props: Props) {
               </a>
             </div>
             <div className="relative">
-              <span className="cursor-pointer" onClick={() => setOpen(!open)}>
+              <span
+                className="cursor-pointer"
+                aria-label={"Open Grants Subnav"}
+                onClick={() => setOpen(!open)}
+              >
                 <GG18Icon className="inline mr-2" />
 
                 <DropdownIcon
@@ -129,6 +133,7 @@ export function RoundsSubNav(props: Props) {
                       {group.rounds.map((round: Round) => (
                         <li key={round.id}>
                           <a
+                            data-testid={`round-link-${round.id}`}
                             href="#"
                             onClick={(
                               e: React.MouseEvent<HTMLAnchorElement>

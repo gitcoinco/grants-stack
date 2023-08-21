@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import {
   mockBalance,
   mockNetwork,
@@ -33,6 +33,8 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
 
 vi.mock("../Auth");
 
+const navigateMock = vi.fn();
+
 vi.mock("react-router-dom", async () => {
   const chainId = 5;
   const roundId = faker.finance.ethereumAddress();
@@ -46,6 +48,7 @@ vi.mock("react-router-dom", async () => {
   return {
     ...actual,
     useParams: useParamsFn,
+    useNavigate: () => navigateMock,
   };
 });
 
@@ -63,5 +66,25 @@ describe("<Navbar>", () => {
   it("SHOULD display cart if round has not ended", () => {
     renderWithContext(<Navbar customBackground="" />);
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
+  });
+
+  it("SHOULD navigate to the correct round URL when a round is clicked in RoundsSubNav", () => {
+    renderWithContext(<Navbar customBackground="" />);
+
+    const openSubnavButton = screen.getByLabelText("Open Grants Subnav");
+    fireEvent.click(openSubnavButton);
+
+    const link = screen.getByRole("link", {
+      name: /climate solutions/i,
+    });
+
+    fireEvent.click(link);
+
+    const expectedChainId = "10";
+    const expectedRoundId = "0xb6be0ecafdb66dd848b0480db40056ff94a9465d";
+    screen.logTestingPlaygroundURL();
+    expect(navigateMock).toHaveBeenCalledWith(
+      `/round/${expectedChainId}/${expectedRoundId}`
+    );
   });
 });
