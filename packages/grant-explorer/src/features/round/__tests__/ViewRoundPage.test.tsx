@@ -4,14 +4,13 @@ import {
   generateIpfsCid,
   makeApprovedProjectData,
   makeRoundData,
-  mockBalance,
-  mockNetwork,
-  mockSigner,
   renderWithContext,
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
 import { payoutTokens } from "../../api/utils";
+import { vi } from "vitest";
+import { parseUnits, zeroAddress } from "viem";
 
 fetchMock.mockIf(/summary/, JSON.stringify({}));
 
@@ -21,22 +20,28 @@ vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
 
 vi.mock("wagmi", async () => {
-  const userAddress = faker.finance.ethereumAddress();
-  const mockAccount = {
-    address: userAddress,
-  };
-  const mockSwitchNetwork = {
-    chainId: 5,
-  };
-
   const actual = await vi.importActual("wagmi");
   return {
     ...actual,
-    useAccount: () => mockAccount,
-    useBalance: () => mockBalance,
-    useSigner: () => mockSigner,
-    useNetwork: () => mockNetwork,
-    useSwitchNetwork: () => mockSwitchNetwork,
+    useAccount: () => ({
+      address: zeroAddress,
+    }),
+    useBalance: () => ({
+      data: {
+        value: parseUnits("10", 18),
+      },
+    }),
+    useSigner: () => ({ data: {} }),
+    useNetwork: () => ({
+      chain: { id: 5, name: "Goerli" },
+      chains: [
+        { id: 10, name: "Optimism" },
+        { id: 5, name: "Goerli" },
+      ],
+    }),
+    useSwitchNetwork: () => ({
+      chainId: 5,
+    }),
   };
 });
 
@@ -438,6 +443,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         const removeFromCart = screen.getByTestId("remove-from-cart");
         fireEvent.click(removeFromCart);
         expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
+        screen.logTestingPlaygroundURL();
         expect(
           screen.queryByTestId("remove-from-cart")
         ).not.toBeInTheDocument();

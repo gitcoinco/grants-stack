@@ -7,10 +7,12 @@ import {
 import { mockSigner } from "../../../test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { BreadcrumbItem } from "../../common/Breadcrumb";
+import { zeroAddress } from "viem";
+import { PayoutToken } from "../../api/types";
 
 const mockAddress = faker.finance.ethereumAddress();
 
-const mockTokens = {
+const mockTokens: Record<string, PayoutToken> = {
   ETH: {
     name: "Ethereum",
     chainId: 1,
@@ -19,12 +21,16 @@ const mockTokens = {
     logo: "https://example.com/eth_logo.png",
     default: true,
     redstoneTokenId: "abc123",
+    defaultForVoting: true,
+    canVote: true,
   },
   DAI: {
     name: "Dai",
     chainId: 1,
     address: "0x123456789abcdef",
     decimal: 18,
+    defaultForVoting: true,
+    canVote: true,
   },
 };
 
@@ -72,10 +78,6 @@ const mockContributions = [
   },
 ];
 
-const useParamsFn = () => ({
-  address: mockAddress,
-});
-
 const breadCrumbs = [
   {
     name: "Explorer Home",
@@ -89,25 +91,38 @@ const breadCrumbs = [
 
 Object.defineProperty(window, "scrollTo", { value: () => {}, writable: true });
 
-jest.mock("../../common/Navbar");
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+vi.mock("../../common/Navbar");
+vi.mock("../../common/Auth");
+
+vi.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: vi.fn(),
 }));
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => jest.fn(),
-  useParams: useParamsFn,
-}));
-jest.mock("wagmi", () => ({
-  useSigner: () => mockSigner,
-  useEnsName: jest.fn().mockReturnValue({ data: "" }),
-  useAccount: jest.fn().mockReturnValue({ data: "mockedAccount" }),
-}));
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+    useParams: () => ({ address: zeroAddress }),
+  };
+});
+
+vi.mock("wagmi", async () => {
+  const actual = await vi.importActual("wagmi");
+  return {
+    ...actual,
+    useSigner: () => ({
+      data: {},
+    }),
+    useEnsName: vi.fn().mockReturnValue({ data: "" }),
+    useAccount: vi.fn().mockReturnValue({ data: "mockedAccount" }),
+  };
+});
 
 describe("<ViewContributionHistory/>", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("Should show donation impact & donation history", async () => {
@@ -150,7 +165,7 @@ describe("<ViewContributionHistory/>", () => {
 
 describe("<ViewContributionHistoryWithoutDonations/>", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("Should show donation history", async () => {

@@ -18,3 +18,14 @@ fetchMocker.dontMock();
 afterEach(() => {
   cleanup();
 });
+
+beforeEach(() => {
+  // @headlessui/react needs IntersectionObserver but isn't available in test environment
+  const mockIntersectionObserver = vi.fn();
+  mockIntersectionObserver.mockReturnValue({
+    observe: () => null,
+    unobserve: () => null,
+    disconnect: () => null,
+  });
+  window.IntersectionObserver = mockIntersectionObserver;
+});

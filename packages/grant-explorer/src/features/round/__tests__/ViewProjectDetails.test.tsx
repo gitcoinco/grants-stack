@@ -1,7 +1,5 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
 import { act } from "react-dom/test-utils";
 import { SWRConfig } from "swr";
 import {
@@ -15,19 +13,11 @@ import {
   setWindowDimensions,
 } from "../../../test-utils";
 import ViewProjectDetails from "../ViewProjectDetails";
+import { zeroAddress } from "viem";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
 const grantApplicationId = "0xdeadbeef-0xdeadbeef";
-const useParamsFn = () => ({
-  chainId,
-  roundId,
-  applicationId: grantApplicationId,
-});
-const userAddress = faker.finance.ethereumAddress();
-const mockAccount = {
-  address: userAddress,
-};
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
@@ -35,40 +25,30 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: vi.fn(),
 }));
 
-vi.mock("wagmi", () => ({
-  useAccount: () => mockAccount,
-  useBalance: () => mockBalance,
-  useSigner: () => mockSigner,
-  useNetwork: () => mockNetwork,
-  useEnsName: () => "mocked.eth",
-}));
+vi.mock("wagmi", async () => {
+  const actual = await vi.importActual("wagmi");
+  return {
+    ...actual,
+    useSigner: () => ({
+      data: {},
+    }),
+    useEnsName: vi.fn().mockReturnValue({ data: "" }),
+    useAccount: vi.fn().mockReturnValue({ data: "mockedAccount" }),
+  };
+});
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
 
-vi.mock("react-router-dom", () => ({
-  ...vi.requireActual("react-router-dom"),
-  useParams: useParamsFn,
-}));
-
-const server = setupServer(
-  rest.get(
-    `https://grants-stack-indexer.fly.dev/data/:chainId/rounds/:roundId/projects.json`,
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json([
-          {
-            id: "0xdeadbeef",
-            amountUSD: 12345,
-            uniqueContributors: 42,
-          },
-        ])
-      );
-    }
-  )
-);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+    useParams: () => ({
+      chainId,
+      roundId,
+      applicationId: grantApplicationId,
+    }),
+  };
+});
 
 describe("<ViewProjectDetails/>", () => {
   it("shows project name", async () => {
