@@ -294,7 +294,7 @@ function MRCModalStep(props: {
         >
           {props.icon}
         </span>
-        <span className="ml-2 min-w-0 flex flex-col">
+        <span className="ml-2 w-full flex flex-col">
           <span
             className={`text-xs font-semibold tracking-wide uppercase ${props.nameColor}`}
           >
