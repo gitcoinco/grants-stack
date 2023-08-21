@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithContext } from "../../../test-utils";
 import ErrorModal from "../../common/ErrorModal";
 
@@ -76,5 +76,33 @@ describe("<ErrorModal />", () => {
     expect(doneFn).toBeCalledTimes(1);
     expect(setIsOpenFn).toBeCalledTimes(1);
     expect(setIsOpenFn).toBeCalledWith(false);
+  });
+
+  it("should close the modal if close on background click is enabled and background is clicked", () => {
+    const doneFn = vi.fn();
+    const setIsOpenFn = vi.fn();
+
+    renderWithContext(
+      <ErrorModal
+        heading="error title"
+        subheading="this is an error message"
+        isOpen={true}
+        closeOnBackgroundClick={true}
+        setIsOpen={setIsOpenFn}
+        onDone={doneFn}
+      />
+    );
+    fireEvent.click(screen.getByTestId("backdrop"));
+
+    /** Need to add timeout for the function to actually be called */
+    waitFor(
+      () => {
+        expect(setIsOpenFn).toBeCalledTimes(1);
+        expect(setIsOpenFn).toBeCalledWith(false);
+      },
+      {
+        timeout: 10,
+      }
+    );
   });
 });

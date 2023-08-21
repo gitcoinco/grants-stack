@@ -148,7 +148,6 @@ function AfterRoundStart(props: {
         showCartNotification={showCartNotification}
         setShowCartNotification={setShowCartNotification}
         currentProjectAddedToCart={currentProjectAddedToCart}
-        roundUrlPath={`/round/${chainId}/${roundId}`}
       />
     );
   };
