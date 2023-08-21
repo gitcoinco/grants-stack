@@ -2,7 +2,11 @@
 
 import { useCartStorage } from "./store";
 import { ChainId } from "common";
-import { CartProject, PayoutToken } from "./features/api/types";
+import {
+  ApplicationStatus,
+  CartProject,
+  PayoutToken,
+} from "./features/api/types";
 import { makeApprovedProjectData } from "./test-utils";
 import { payoutTokensMap } from "./features/api/utils";
 
@@ -127,6 +131,67 @@ describe("useCartStorage Zustand store", () => {
 
     expect(useCartStorage.getState().chainToPayoutToken[chainId]).toEqual(
       newPayoutToken
+    );
+  });
+
+  test("should handle removal of non-existing project gracefully", () => {
+    const nonExistingId = "1234"; // Mock ID
+    const initialProjects = [...useCartStorage.getState().projects];
+
+    useCartStorage.getState().remove(nonExistingId);
+
+    // Assert that the store state remains unchanged
+    expect(useCartStorage.getState().projects).toEqual(initialProjects);
+  });
+
+  test("should handle adding a project with duplicate ID gracefully", () => {
+    const project: CartProject = makeApprovedProjectData();
+
+    const modifiedProject: CartProject = {
+      ...project,
+      status: ApplicationStatus.REJECTED,
+    };
+
+    useCartStorage.getState().add(project);
+    useCartStorage.getState().add(modifiedProject);
+
+    expect(useCartStorage.getState().projects).toContainEqual(modifiedProject);
+  });
+
+  test("should handle invalid donation amount updates gracefully", () => {
+    const project: CartProject = makeApprovedProjectData();
+
+    useCartStorage.getState().add(project);
+    useCartStorage
+      .getState()
+      .updateDonationAmount(project.grantApplicationId, "-50");
+
+    // Assuming negative donations are invalid and thus unchanged:
+    expect(
+      useCartStorage
+        .getState()
+        .projects.find(
+          (p) => p.grantApplicationId === project.grantApplicationId
+        )?.amount
+    ).not.toBe("-50");
+  });
+
+  test("should handle setting payout token for non-existing chain gracefully", () => {
+    const nonExistingChainId = 123123; // Mock a non-existing ChainId
+    const payoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][0];
+
+    const initialChainToPayoutToken = {
+      ...useCartStorage.getState().chainToPayoutToken,
+    };
+
+    useCartStorage
+      .getState()
+      // @ts-expect-error We purposefully pass a wrong ChainId here
+      .setPayoutTokenForChain(nonExistingChainId, payoutToken);
+
+    // The state should remain unchanged unchanged.
+    expect(useCartStorage.getState().chainToPayoutToken).toEqual(
+      initialChainToPayoutToken
     );
   });
 });

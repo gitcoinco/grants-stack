@@ -61,6 +61,10 @@ export const useCartStorage = create<CartState>()(
         });
       },
       updateDonationAmount: (grantApplicationId: string, amount: string) => {
+        if (amount.includes("-")) {
+          return;
+        }
+
         const projectIndex = get().projects.findIndex(
           (donation) => donation.grantApplicationId === grantApplicationId
         );
@@ -75,6 +79,10 @@ export const useCartStorage = create<CartState>()(
       },
       chainToPayoutToken: ethOnlyPayoutTokens,
       setPayoutTokenForChain: (chainId: ChainId, payoutToken: PayoutToken) => {
+        if (!Object.values(ChainId).includes(chainId)) {
+          return;
+        }
+
         set({
           chainToPayoutToken: {
             ...get().chainToPayoutToken,
