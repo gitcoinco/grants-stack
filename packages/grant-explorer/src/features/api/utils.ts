@@ -89,7 +89,7 @@ export const MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
+export const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
