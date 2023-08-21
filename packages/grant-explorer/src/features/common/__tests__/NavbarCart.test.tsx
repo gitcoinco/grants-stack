@@ -1,42 +1,44 @@
-import { act, fireEvent, screen } from "@testing-library/react";
-import {
-  makeApprovedProjectData,
-  renderWithContext,
-} from "../../../test-utils";
+import { render, fireEvent, screen } from "@testing-library/react";
 import NavbarCart from "../NavbarCart";
+import { makeApprovedProjectData } from "../../../test-utils"; // replace with the correct path to your NavbarCart component
 
-describe("<NavbarCart/>", () => {
-  it("SHOULD always show CART icon", () => {
-    renderWithContext(<NavbarCart cart={[]} />);
-    screen.logTestingPlaygroundURL();
-    expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
+describe("<NavbarCart />", () => {
+  // Mock the window.open function to test if it gets called correctly
+  global.window.open = vi.fn();
+
+  test("renders the NavbarCart without errors", () => {
+    render(<NavbarCart cart={[]} />);
+
+    const navbarCart = screen.getByTestId("navbar-cart");
+    expect(navbarCart).toBeInTheDocument();
   });
 
-  it("SHOULD not display a number when empty", () => {
-    renderWithContext(<NavbarCart cart={[]} />);
+  test("displays the correct count of projects in the cart", () => {
+    const mockCart = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+    ];
 
-    /* Verify we are displaying the 0 */
-    expect(screen.queryByText("0")).not.toBeInTheDocument();
+    render(<NavbarCart cart={mockCart} />);
+
+    const badge = screen.getByText("3");
+    expect(badge).toBeInTheDocument();
   });
 
-  it("SHOULD display the number when full", () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
+  test("does not display count badge when cart is empty", () => {
+    render(<NavbarCart cart={[]} />);
 
-    renderWithContext(<NavbarCart cart={cart} />);
-
-    /* Verify we aren't displaying the 0 */
-    expect(screen.getByText("2")).toBeInTheDocument();
+    const badge = screen.queryByText(/(\d+)/); // This will match any number
+    expect(badge).not.toBeInTheDocument();
   });
 
-  it("SHOULD not show dropdown on clicking cart icon WHEN cart is empty", async () => {
-    renderWithContext(<NavbarCart cart={[]} />);
+  test('opens a new window/tab with URL "#/cart" when clicked', () => {
+    render(<NavbarCart cart={[]} />);
 
-    const icon = screen.getByTestId("navbar-cart");
+    const navbarCart = screen.getByTestId("navbar-cart");
+    fireEvent.click(navbarCart);
 
-    await act(() => {
-      fireEvent.click(icon);
-    });
-
-    expect(screen.queryByTestId("quick-view-summary")).not.toBeInTheDocument();
+    expect(window.open).toHaveBeenCalledWith("#/cart", "_blank");
   });
 });

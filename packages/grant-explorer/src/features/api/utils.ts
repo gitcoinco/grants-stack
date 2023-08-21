@@ -439,32 +439,6 @@ export const getDaysLeft = (epochTime: number) => {
   return differenceInDays;
 };
 
-export const listenForOutsideClicks = ({
-  listening,
-  setListening,
-  menuRef,
-  setOpen,
-}: {
-  listening: boolean;
-  setListening: React.Dispatch<React.SetStateAction<boolean>>;
-  menuRef: React.MutableRefObject<HTMLDivElement | null>;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  return () => {
-    if (listening) return;
-    if (!menuRef.current) return;
-    setListening(true);
-    [`click`, `touchstart`].forEach((type) => {
-      document.addEventListener(type, (evt) => {
-        if (menuRef.current && menuRef.current.contains(evt.target as Node)) {
-          return;
-        }
-        setOpen(false);
-      });
-    });
-  };
-};
-
 export function getChainIds(): number[] {
   const isProduction = process.env.REACT_APP_ENV === "production";
   if (isProduction) {
