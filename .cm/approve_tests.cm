@@ -1,0 +1,20 @@
+# -*- mode: yaml -*-
+
+manifest:
+  version: 1.0
+
+automations:
+  approve_tests:
+    if:
+      # Triggered for PRs that only include changes to tests
+      - {{ files | allTests }}
+    run:
+      - action: add-label@v1
+        args:
+          label: 'tests-only'
+      - action: add-comment@v1
+        args:
+          comment: |
+            This merge has been automatically approved because it only contains changes to tests.
+      - action: approve@v1
+
