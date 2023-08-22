@@ -16,8 +16,7 @@ it("Checkout Store - permitStatus manipulation", async () => {
 
   // Update the status
   store.getState().setPermitStatusForChain(chain, ProgressStatus.IN_PROGRESS);
-  assert.equal(
-    store.getState().permitStatus[chain],
+  expect(store.getState().permitStatus[chain]).toEqual(
     ProgressStatus.IN_PROGRESS
   );
 });
@@ -28,7 +27,9 @@ it("Checkout Store - voteStatus manipulation", async () => {
   assert.equal(store.getState().voteStatus[chain], ProgressStatus.NOT_STARTED);
 
   store.getState().setVoteStatusForChain(chain, ProgressStatus.IN_PROGRESS);
-  assert.equal(store.getState().voteStatus[chain], ProgressStatus.IN_PROGRESS);
+  expect(store.getState().voteStatus[chain]).toEqual(
+    ProgressStatus.IN_PROGRESS
+  );
 });
 
 it("Checkout Store - chainSwitchStatus manipulation", async () => {
@@ -42,8 +43,7 @@ it("Checkout Store - chainSwitchStatus manipulation", async () => {
   store
     .getState()
     .setChainSwitchStatusForChain(chain, ProgressStatus.IN_PROGRESS);
-  assert.equal(
-    store.getState().chainSwitchStatus[chain],
+  expect(store.getState().chainSwitchStatus[chain]).toEqual(
     ProgressStatus.IN_PROGRESS
   );
 });
