@@ -1,4 +1,4 @@
-import { selectPermitType, signPermit2612 } from "../voting";
+import { selectPermitType, signPermit2612, signPermitDai } from "../voting";
 import { MAINNET_TOKENS, OPTIMISM_MAINNET_TOKENS } from "../utils";
 import { Hex, zeroAddress } from "viem";
 import { faker } from "@faker-js/faker";
@@ -84,6 +84,77 @@ describe("Permit signatures", () => {
           {
             name: "deadline",
             type: "uint256",
+          },
+        ],
+      },
+    });
+    expect(sig).toStrictEqual({
+      r: "0x1438526e38f86bf347572817781e6bef1e4d44fdcd28b8dcf2495c19a087864d",
+      s: "0x2636da993a30d95b57a6df1deb1b6aaf59f960fbb6f07ce53ed7c873312dd4e3",
+      v: 28,
+    });
+  });
+
+  it("signs a valid dai typed message", async function () {
+    const signTypedData = vi
+      .fn()
+      .mockReturnValue(
+        "0x1438526e38f86bf347572817781e6bef1e4d44fdcd28b8dcf2495c19a087864d2636da993a30d95b57a6df1deb1b6aaf59f960fbb6f07ce53ed7c873312dd4e31c"
+      );
+    const walletClient = {
+      signTypedData,
+    } as unknown as WalletClient;
+    const spenderAddress = faker.finance.ethereumAddress() as Hex;
+    const ownerAddress = faker.finance.ethereumAddress() as Hex;
+
+    const sig = await signPermitDai({
+      spenderAddress,
+      chainId: ChainId.MAINNET,
+      ownerAddress,
+      permitVersion: "1",
+      walletClient,
+      contractAddress: zeroAddress,
+      deadline: 123123123123n,
+      erc20Name: "TEST",
+      nonce: 1n,
+    });
+    expect(signTypedData).toHaveBeenCalledWith({
+      account: ownerAddress,
+      primaryType: "Permit",
+      domain: {
+        name: "TEST",
+        version: "1",
+        chainId: 1,
+        verifyingContract: "0x0000000000000000000000000000000000000000",
+      },
+      message: {
+        holder: ownerAddress,
+        spender: spenderAddress,
+        nonce: 1n,
+        expiry: 123123123123n,
+        allowed: true,
+      },
+      types: {
+        Permit: [
+          {
+            name: "holder",
+            type: "address",
+          },
+          {
+            name: "spender",
+            type: "address",
+          },
+          {
+            name: "nonce",
+            type: "uint256",
+          },
+          {
+            name: "expiry",
+            type: "uint256",
+          },
+          {
+            name: "allowed",
+            type: "bool",
           },
         ],
       },
