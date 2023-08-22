@@ -211,7 +211,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         }
 
         try {
-          /** When voting via native toke, we just set the permit status to success */
+          /** When voting via native token, we just set the permit status to success */
           if (!sig) {
             get().setPermitStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
           }
