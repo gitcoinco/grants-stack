@@ -189,6 +189,14 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
+  {
+    name: "FTM",
+    chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
+  },
 ];
 
 const PGN_TESTNET_TOKENS: PayoutToken[] = [
