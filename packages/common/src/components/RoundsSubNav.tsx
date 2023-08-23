@@ -50,6 +50,11 @@ const ROUNDS_GROUPS: RoundGroups[] = [
         id: "0xc5fdf5cff79e92fac1d6efa725c319248d279200",
       },
       {
+        name: "Arbitrum Domain Round",
+        chainId: 1,
+        id: "0x69e423181f1d3e6bebf8ab88030c36da73785f26",
+      },
+      {
         name: "Zuzalu",
         chainId: 10,
         id: "0x5b95acf46c73fd116f0fedadcbedf453530e35d0",
