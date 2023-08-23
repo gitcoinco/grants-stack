@@ -92,7 +92,9 @@ export default function FundContract(props: {
     props.round &&
     payoutTokens.filter(
       (t) =>
-        t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
+        t.address.toLocaleLowerCase() ==
+          props.round?.token?.toLocaleLowerCase() &&
+        t.chainId == props.round?.chainId
     )[0];
 
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
