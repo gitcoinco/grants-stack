@@ -18,6 +18,14 @@ const roundId = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
+vi.mock("../../api/utils", async () => {
+  const actual = await vi.importActual("../../api/utils");
+  return {
+    ...actual,
+    graphql_fetch: vi.fn().mockReturnValue({ data: { rounds: [] } }),
+    fetchFromIPFS: vi.fn(),
+  };
+});
 
 vi.mock("wagmi", async () => {
   const actual = await vi.importActual("wagmi");
