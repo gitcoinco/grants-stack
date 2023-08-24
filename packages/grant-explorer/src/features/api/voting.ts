@@ -1,6 +1,15 @@
 import { MRC_CONTRACTS } from "./contracts";
-import { Hex, hexToNumber, slice, zeroAddress } from "viem";
-import { PayoutToken } from "./types";
+import {
+  encodeAbiParameters,
+  getAddress,
+  Hex,
+  hexToNumber,
+  parseAbiParameters,
+  parseUnits,
+  slice,
+  zeroAddress,
+} from "viem";
+import { CartProject, PayoutToken } from "./types";
 import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
 import { WalletClient } from "wagmi";
@@ -251,3 +260,26 @@ export const signPermitDai = async ({
   ];
   return { r, s, v: hexToNumber(v) };
 };
+
+export function encodeQFVotes(
+  donationToken: PayoutToken,
+  donations: Pick<
+    CartProject,
+    "amount" | "recipient" | "projectRegistryId" | "applicationIndex"
+  >[]
+): Hex[] {
+  return donations.map((donation) => {
+    const vote = [
+      getAddress(donationToken.address) as Hex,
+      parseUnits(donation.amount, donationToken.decimal),
+      getAddress(donation.recipient),
+      donation.projectRegistryId as Hex,
+      BigInt(donation.applicationIndex),
+    ] as const;
+
+    return encodeAbiParameters(
+      parseAbiParameters(["address,uint256,address,bytes32,uint256"]),
+      vote
+    );
+  });
+}

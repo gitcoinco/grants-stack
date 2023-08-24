@@ -1,22 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { CartProject, PayoutToken, ProgressStatus } from "./features/api/types";
+import { CartProject, ProgressStatus } from "./features/api/types";
 import { ChainId } from "common";
 import { useCartStorage } from "./store";
 import {
-  encodeAbiParameters,
   getAddress,
   Hex,
   InternalRpcError,
   parseAbi,
-  parseAbiParameters,
   parseUnits,
   SwitchChainError,
   UserRejectedRequestError,
   zeroAddress,
 } from "viem";
 import {
+  encodeQFVotes,
   selectPermitType,
   signPermit2612,
   signPermitDai,
@@ -357,24 +356,4 @@ async function switchToChain(
     }
   }
   get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
-}
-
-function encodeQFVotes(
-  donationToken: PayoutToken,
-  donations: CartProject[]
-): Hex[] {
-  return donations.map((donation) => {
-    const vote = [
-      getAddress(donationToken.address) as Hex,
-      parseUnits(donation.amount, donationToken.decimal),
-      getAddress(donation.recipient),
-      donation.projectRegistryId as Hex,
-      BigInt(donation.applicationIndex),
-    ] as const;
-
-    return encodeAbiParameters(
-      parseAbiParameters(["address,uint256,address,bytes32,uint256"]),
-      vote
-    );
-  });
 }
