@@ -103,6 +103,7 @@ export const useCartStorage = create<CartState>()(
     {
       /*This is the localStorage key. Change this whenever the shape of the stores objects changes. append a v1, v2. etc. */
       name: "cart-storage",
+      version: 2,
     }
   )
 );
