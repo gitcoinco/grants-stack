@@ -451,7 +451,6 @@ describe("<ViewRound /> in case of after the round start date", () => {
         const removeFromCart = screen.getByTestId("remove-from-cart");
         fireEvent.click(removeFromCart);
         expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
-        screen.logTestingPlaygroundURL();
         expect(
           screen.queryByTestId("remove-from-cart")
         ).not.toBeInTheDocument();

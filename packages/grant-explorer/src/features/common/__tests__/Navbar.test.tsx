@@ -82,7 +82,6 @@ describe("<Navbar>", () => {
 
     const expectedChainId = "10";
     const expectedRoundId = "0xb6be0ecafdb66dd848b0480db40056ff94a9465d";
-    screen.logTestingPlaygroundURL();
     expect(navigateMock).toHaveBeenCalledWith(
       `/round/${expectedChainId}/${expectedRoundId}`
     );

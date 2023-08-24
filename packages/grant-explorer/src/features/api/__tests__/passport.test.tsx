@@ -37,7 +37,6 @@ describe("fetchPassport", () => {
       status: 200,
     });
     const resp = await fetchPassport(userAddress, communityId);
-    console.log(resp);
     expect(resp).toBeDefined();
     expect(resp.ok).toBeTruthy();
     expect(resp.status).toEqual(200);
