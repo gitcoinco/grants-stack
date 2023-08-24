@@ -9,6 +9,7 @@ export enum ChainId {
   FANTOM_TESTNET_CHAIN_ID = 4002,
   PGN = 424,
   PGN_TESTNET = 58008,
+  ARBITRUM_GOERLI = 421613,
 }
 
 export const pgnTestnet: Chain = {

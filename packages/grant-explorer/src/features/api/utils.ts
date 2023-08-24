@@ -53,6 +53,11 @@ export const CHAINS: Record<
     name: "PGN Testnet",
     logo: "./logos/pgn-logo.svg",
   },
+  [ChainId.ARBITRUM_GOERLI]: {
+    id: ChainId.ARBITRUM_GOERLI,
+    name: "Arbitrum Goerli",
+    logo: "./logo/arb-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos: Record<string, string> = {
@@ -249,6 +254,19 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -268,6 +286,7 @@ export const payoutTokensMap: PayoutTokensMap = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: FANTOM_TESTNET_TOKENS,
   [ChainId.PGN]: PGN_MAINNET_TOKENS,
   [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
+  [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_TOKENS,
 };
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
@@ -284,6 +303,8 @@ const graphQlEndpoints: Record<ChainId, string> = {
     process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API!,
   [ChainId.FANTOM_TESTNET_CHAIN_ID]:
     process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
+  [ChainId.ARBITRUM_GOERLI]:
+    process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
 };
 
 /**
@@ -304,6 +325,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",
   [ChainId.PGN_TESTNET]: "https://explorer.sepolia.publicgoods.network/tx/",
   [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
+  [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
 };
 
 /**

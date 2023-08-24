@@ -23,12 +23,14 @@ import { configureChains, createConfig } from "wagmi";
 import { pgnTestnet, pgn } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
+import { arbitrumGoerli } from "viem/chains";
 
 const testnetChains = () => {
   return [
     goerli,
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
+    arbitrumGoerli,
   ];
 };
 

@@ -46,6 +46,11 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "PGN",
     logo: "/logos/pgn-logo.svg",
   },
+  [ChainId.ARBITRUM_GOERLI]: {
+    id: ChainId.ARBITRUM_GOERLI,
+    name: "Arbitrum Goerli",
+    logo: "./logo/arb-logo.svg",
+  },
 };
 
 export type PayoutToken = {
