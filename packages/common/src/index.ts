@@ -5,7 +5,17 @@ import { ChainId } from "./chains";
 export * from "./icons";
 export * from "./markdown";
 
-export { ChainId };
+export const TMP_DIRECT_ROUND_SUBGRAPH_URL =
+  "https://api.thegraph.com/subgraphs/name/lmcorbalan/gc-rounds-v0";
+
+export enum ChainId {
+  MAINNET = 1,
+  GOERLI_CHAIN_ID = 5,
+  OPTIMISM_MAINNET_CHAIN_ID = 10,
+  FANTOM_MAINNET_CHAIN_ID = 250,
+  FANTOM_TESTNET_CHAIN_ID = 4002,
+  PGN_TESTNET = 58008,
+}
 
 export enum PassportState {
   NOT_CONNECTED,
@@ -118,6 +128,7 @@ const graphQlEndpoints: Record<ChainId, string> = {
  * @returns the subgraph endpoint
  */
 const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
+
 
 /**
  * Fetch data from a GraphQL endpoint

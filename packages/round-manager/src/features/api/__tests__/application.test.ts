@@ -18,7 +18,7 @@ jest.mock("common", () => ({
 jest.mock("ethers");
 
 const signerOrProviderStub = {
-  getNetwork: async () => Promise.resolve({ chainId: "chain" }),
+  getNetwork: async () => Promise.resolve({ chainId: 5 }),
 } as unknown as Web3Provider;
 
 describe("getApplicationById", () => {

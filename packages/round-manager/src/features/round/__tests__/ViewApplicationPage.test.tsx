@@ -7,10 +7,12 @@ import {
 import ViewApplicationPage from "../ViewApplicationPage";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
@@ -33,6 +35,9 @@ import {
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import { GrantApplication, ProgressStatus } from "../../api/types";
+import { errorModalDelayMs } from "../../../constants";
+import moment from "moment";
+import { ROUND_PAYOUT_DIRECT } from "../../common/Utils";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth");
@@ -89,7 +94,7 @@ describe("ViewApplicationPage", () => {
     (useDisconnect as any).mockReturnValue({});
   });
 
-  it("should display 404 when there no application is found", () => {
+  it("should display 404 when no application is found", () => {
     (getApplicationsByRoundId as jest.Mock).mockRejectedValue(
       "No application :("
     );
@@ -254,7 +259,11 @@ describe("ViewApplicationPage", () => {
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Confirm"));
 
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
     });
 
     it("choosing done closes the error modal", async () => {
@@ -286,6 +295,215 @@ describe("ViewApplicationPage", () => {
       });
 
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Sidebar steps", () => {
+    let application: GrantApplication;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      application = makeGrantApplicationData({
+        applicationIdOverride,
+        roundIdOverride,
+      });
+      (getApplicationsByRoundId as any).mockResolvedValue(application);
+    });
+
+    it("should show application steps", async () => {
+      renderWithContext(<ViewApplicationPage />, {
+        applications: [application],
+      });
+
+      expect(
+        await screen.findByTestId("sidebar-steps-container")
+      ).toBeInTheDocument();
+    });
+
+    it("QF: should show pending:current, evaluation:inactive when application is Pending", async () => {
+      renderWithContext(<ViewApplicationPage />, {
+        applications: [
+          makeGrantApplicationData({
+            applicationIdOverride,
+            roundIdOverride,
+            status: "PENDING",
+          }),
+        ],
+      });
+
+      // Pending
+      const pendingStep = await screen.findByTestId("application-step-pending");
+      expect(
+        within(pendingStep).queryByTestId("status-current")
+      ).toBeInTheDocument();
+
+      // Evaluation
+      const evaluationStep = await screen.findByTestId(
+        "application-step-Evaluation"
+      );
+      expect(
+        within(evaluationStep).queryByTestId("status-none")
+      ).toBeInTheDocument();
+    });
+
+    it("DR: should show pending:current, in-review and evaluation:inactive when application is Pending", async () => {
+      const application = makeGrantApplicationData({
+        applicationIdOverride,
+        roundIdOverride,
+        status: "PENDING",
+        inReview: false,
+        payoutStrategy: {
+          id: "1",
+          strategyName: ROUND_PAYOUT_DIRECT,
+          payouts: [],
+        },
+      });
+
+      renderWithContext(<ViewApplicationPage />, {
+        applications: [application],
+      });
+
+      // Pending
+      const pendingStep = await screen.findByTestId("application-step-pending");
+      expect(
+        within(pendingStep).queryByTestId("status-current")
+      ).toBeInTheDocument();
+
+      // In review
+      const inReviewStep = await screen.findByTestId(
+        "application-step-In review"
+      );
+      expect(
+        within(inReviewStep).queryByTestId("status-none")
+      ).toBeInTheDocument();
+
+      // Evaluation
+      const evaluationStep = await screen.findByTestId(
+        "application-step-Evaluation"
+      );
+      expect(
+        within(evaluationStep).queryByTestId("status-none")
+      ).toBeInTheDocument();
+    });
+
+    it("should show pending:done, approved:done when application is Approved", async () => {
+      renderWithContext(<ViewApplicationPage />, {
+        applications: [
+          makeGrantApplicationData({
+            applicationIdOverride,
+            roundIdOverride,
+            statusSnapshots: [
+              {
+                status: "PENDING",
+                statusDescription: "PENDING",
+                timestamp: moment().subtract(1, "day").toDate(),
+              },
+              {
+                status: "APPROVED",
+                statusDescription: "APPROVED",
+                timestamp: moment().add(1, "day").toDate(),
+              },
+            ],
+          }),
+        ],
+      });
+
+      // Pending
+      const pendingStep = await screen.findByTestId("application-step-pending");
+      expect(
+        within(pendingStep).queryByTestId("status-done")
+      ).toBeInTheDocument();
+
+      // Approved
+      const approvedStep = await screen.findByTestId(
+        "application-step-approved"
+      );
+      expect(
+        within(approvedStep).queryByTestId("status-done")
+      ).toBeInTheDocument();
+    });
+
+    it("should show pending:done, rejected:rejected when application is Rejected", async () => {
+      renderWithContext(<ViewApplicationPage />, {
+        applications: [
+          makeGrantApplicationData({
+            applicationIdOverride,
+            roundIdOverride,
+            statusSnapshots: [
+              {
+                status: "PENDING",
+                statusDescription: "PENDING",
+                timestamp: moment().subtract(2, "day").toDate(),
+              },
+              {
+                status: "REJECTED",
+                statusDescription: "REJECTED",
+                timestamp: moment().add(1, "day").toDate(),
+              },
+            ],
+          }),
+        ],
+      });
+
+      // Pending
+      const pendingStep = await screen.findByTestId("application-step-pending");
+      expect(
+        within(pendingStep).queryByTestId("status-done")
+      ).toBeInTheDocument();
+
+      // Rejected
+      const rejectedStep = await screen.findByTestId(
+        "application-step-rejected"
+      );
+      expect(
+        within(rejectedStep).queryByTestId("status-rejected")
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("Payout for Direct Round", () => {
+    let application: GrantApplication;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      application = makeGrantApplicationData({
+        applicationIdOverride,
+        roundIdOverride,
+        applicationAnswers: [
+          {
+            questionId: 0,
+            question: "Email Address",
+            answer: "johndoe@example.com",
+          },
+          {
+            questionId: 1,
+            question: "Payout token",
+            answer: "DAI",
+          },
+          {
+            questionId: 2,
+            question: "Payout wallet address",
+            answer: "0x444",
+          },
+        ],
+        status: "APPROVED",
+        inReview: false,
+        payoutStrategy: {
+          id: "1",
+          strategyName: ROUND_PAYOUT_DIRECT,
+          payouts: [],
+        },
+      });
+      (getApplicationsByRoundId as any).mockResolvedValue(application);
+    });
+
+    it("should show the ApplicationDirectPayoutComponent", async () => {
+      renderWithContext(<ViewApplicationPage />, {
+        applications: [application],
+      });
+
+      const payout = await screen.findByTestId("application-direct-payout");
+      expect(payout).toBeInTheDocument();
     });
   });
 });

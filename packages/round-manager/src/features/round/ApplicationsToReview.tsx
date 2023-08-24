@@ -20,15 +20,12 @@ import {
   GrantApplication,
   ProgressStatus,
   ProgressStep,
-  ProjectStatus,
 } from "../api/types";
 import ConfirmationModal from "../common/ConfirmationModal";
 import {
   AdditionalGasFeesNote,
   ApplicationHeader,
-  ApprovedApplicationsCount,
   Cancel,
-  RejectedApplicationsCount,
   Select,
 } from "./BulkApplicationCommon";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
@@ -40,6 +37,7 @@ import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
 import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
+import { CheckIcon } from "@heroicons/react/solid";
 
 async function exportAndDownloadCSV(
   roundId: string,
@@ -67,15 +65,15 @@ async function exportAndDownloadCSV(
   }
 }
 
-export default function ApplicationsReceived() {
+export default function ApplicationsToReview() {
   const { id } = useParams();
   const { chain } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
-  const pendingApplications =
+  const filteredApplications =
     applications?.filter(
-      (a) => a.status == ApplicationStatus.PENDING.toString()
+      (a) => a.status == ApplicationStatus.PENDING.toString() && !a.inReview
     ) || [];
 
   const [bulkSelect, setBulkSelect] = useState(false);
@@ -118,13 +116,14 @@ export default function ApplicationsReceived() {
   useEffect(() => {
     if (!isLoading || !bulkSelect) {
       setSelected(
-        (pendingApplications || []).map((application) => {
+        (filteredApplications || []).map((application) => {
           return {
             id: application.id,
             round: application.round,
             recipient: application.recipient,
             projectsMetaPtr: application.projectsMetaPtr,
             status: application.status,
+            inReview: application.inReview,
             applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
           };
@@ -150,11 +149,10 @@ export default function ApplicationsReceived() {
     window.location.reload();
   };
 
-  const toggleSelection = (id: string, status: ProjectStatus) => {
+  const toggleSelection = (id: string) => {
     const newState = selected?.map((grantApp: GrantApplication) => {
       if (grantApp.id === id) {
-        const newStatus = grantApp.status === status ? "PENDING" : status;
-        return { ...grantApp, status: newStatus };
+        return { ...grantApp, inReview: !grantApp.inReview };
       }
 
       return grantApp;
@@ -163,9 +161,12 @@ export default function ApplicationsReceived() {
     setSelected(newState);
   };
 
-  const checkSelectionStatus = (id: string) => {
-    return selected?.find((grantApp: GrantApplication) => grantApp.id === id)
-      ?.status;
+  const checkSelectionStatus = (id: string): boolean => {
+    const selectedApplication = selected?.find(
+      (grantApp: GrantApplication) => grantApp.id === id
+    );
+    if (!selectedApplication) return false;
+    return Boolean(selectedApplication.inReview);
   };
 
   const handleBulkReview = async () => {
@@ -177,8 +178,10 @@ export default function ApplicationsReceived() {
         roundId: id!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         applications: applications!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        payoutAddress: applications![0].payoutStrategy?.id,
         selectedApplications: selected.filter(
-          (application) => application.status !== "PENDING"
+          (application) => application.inReview
         ),
       });
       setBulkSelect(false);
@@ -233,11 +236,11 @@ export default function ApplicationsReceived() {
             )}
           </Button>
         )}
-        {pendingApplications && pendingApplications.length > 0 && (
+        {filteredApplications && filteredApplications.length > 0 && (
           <div className="flex items-center justify-end ml-auto">
             <span className="text-grey-400 text-sm mr-6">
-              Save in gas fees by approving/rejecting multiple applications at
-              once.
+              Save in gas fees by moving multiple applications to "In Review"
+              state at once.
             </span>
             {bulkSelect ? (
               <Cancel onClick={() => setBulkSelect(false)} />
@@ -249,7 +252,7 @@ export default function ApplicationsReceived() {
       </div>
       <CardsContainer>
         {!isLoading &&
-          pendingApplications?.map((application, index) => (
+          filteredApplications?.map((application, index) => (
             <BasicCard
               key={index}
               className="application-card"
@@ -259,12 +262,7 @@ export default function ApplicationsReceived() {
                 <ApplicationHeader
                   bulkSelect={bulkSelect}
                   applicationStatus={checkSelectionStatus(application.id)}
-                  approveOnClick={() =>
-                    toggleSelection(application.id, "APPROVED")
-                  }
-                  rejectOnClick={() =>
-                    toggleSelection(application.id, "REJECTED")
-                  }
+                  inReviewOnClick={() => toggleSelection(application.id)}
                   application={application}
                 />
               </CardHeader>
@@ -281,50 +279,64 @@ export default function ApplicationsReceived() {
         {isLoading && (
           <Spinner text="We're fetching your Grant Applications." />
         )}
-        {!isLoading && pendingApplications?.length === 0 && (
+        {!isLoading && filteredApplications?.length === 0 && (
           <NoApplicationsContent />
         )}
       </CardsContainer>
-      {selected &&
-        selected?.filter((obj) => obj.status !== "PENDING").length > 0 && (
-          <>
-            <div className="fixed w-full left-0 bottom-0 bg-white">
-              <hr />
-              <div className="flex justify-end items-center py-5 pr-20">
-                <NumberOfApplicationsSelectedMessage
-                  grantApplications={selected}
-                  predicate={(selected) => selected.status !== "PENDING"}
-                />
-                <Continue onClick={() => setOpenModal(true)} />
-              </div>
+      {selected && selected?.filter((obj) => obj.inReview).length > 0 && (
+        <>
+          <div className="fixed w-full left-0 bottom-0 bg-white">
+            <hr />
+            <div className="flex justify-end items-center py-5 pr-20">
+              <NumberOfApplicationsSelectedMessage
+                grantApplications={selected}
+                predicate={(selected) => Boolean(selected.inReview)}
+              />
+              <Continue onClick={() => setOpenModal(true)} />
             </div>
-            <ConfirmationModal
-              title={"Confirm Decision"}
-              confirmButtonText={
-                isBulkUpdateLoading ? "Confirming..." : "Confirm"
-              }
-              body={
-                <>
-                  <p className="text-sm text-grey-400">
-                    {
-                      "You have selected multiple Grant Applications to approve and/or reject."
-                    }
-                  </p>
-                  <div className="flex my-8 gap-16 justify-center items-center text-center">
-                    <ApprovedApplicationsCount grantApplications={selected} />
-                    <span className="text-4xl font-thin">|</span>
-                    <RejectedApplicationsCount grantApplications={selected} />
+          </div>
+          <ConfirmationModal
+            title={"Confirm Decision"}
+            confirmButtonText={
+              isBulkUpdateLoading ? "Confirming..." : "Confirm"
+            }
+            body={
+              <>
+                <p className="text-sm text-grey-400">
+                  You have selected multiple Grant Applications to move them to
+                  "In Review" state.
+                </p>
+                <div className="flex my-8 gap-16 justify-center items-center text-center">
+                  <div
+                    className="grid gap-2"
+                    data-testid="approved-applications-count"
+                  >
+                    <i className="flex justify-center">
+                      <CheckIcon
+                        className="bg-teal-400 text-grey-500 rounded-full h-6 w-6 p-1"
+                        aria-hidden="true"
+                      />
+                    </i>
+                    <>
+                      <span className="text-xs text-grey-400 font-semibold text-center mt-2">
+                        In review
+                      </span>
+                      <span className="text-grey-500 font-semibold">
+                        {selected?.filter((obj) => obj.inReview).length}
+                      </span>
+                    </>
                   </div>
-                  <AdditionalGasFeesNote />
-                </>
-              }
-              confirmButtonAction={handleBulkReview}
-              cancelButtonAction={() => setOpenModal(false)}
-              isOpen={openModal}
-              setIsOpen={setOpenModal}
-            />
-          </>
-        )}
+                </div>
+                <AdditionalGasFeesNote />
+              </>
+            }
+            confirmButtonAction={handleBulkReview}
+            cancelButtonAction={() => setOpenModal(false)}
+            isOpen={openModal}
+            setIsOpen={setOpenModal}
+          />
+        </>
+      )}
       <ProgressModal
         isOpen={openProgressModal}
         subheading={"Please hold while we update the grant applications."}
@@ -383,7 +395,10 @@ function NumberOfApplicationsSelectedMessage(props: {
   predicate: (obj: GrantApplication) => boolean;
 }) {
   return (
-    <span className="text-grey-400 text-sm mr-6">
+    <span
+      className="text-grey-400 text-sm mr-6"
+      data-testid="move-in-review-selected-applications-message"
+    >
       You have selected{" "}
       {props.grantApplications?.filter(props.predicate).length} Grant
       Applications

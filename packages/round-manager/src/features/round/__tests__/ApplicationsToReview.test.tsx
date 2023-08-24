@@ -7,7 +7,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import ApplicationsReceived from "../ApplicationsReceived";
+import ApplicationsByStatus from "../ApplicationsToReview";
 import { makeGrantApplicationData } from "../../../test-utils";
 import {
   ApplicationContext,
@@ -22,10 +22,12 @@ import {
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import {
   getApplicationsByRoundId,
-  updateApplicationStatuses,
+  updatePayoutApplicationStatuses,
 } from "../../api/application";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ApplicationStatus, ProgressStatus } from "../../api/types";
+import { errorModalDelayMs } from "../../../constants";
+import { ROUND_PAYOUT_DIRECT } from "../../common/Utils";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({
@@ -51,11 +53,32 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 const roundIdOverride = "0x0000000000000000000000000000000000000000";
-
+const payoutStrategyId = "0x01";
 const grantApplications = [
-  makeGrantApplicationData({ roundIdOverride }),
-  makeGrantApplicationData({ roundIdOverride }),
-  makeGrantApplicationData({ roundIdOverride }),
+  makeGrantApplicationData({
+    roundIdOverride,
+    payoutStrategy: {
+      id: payoutStrategyId,
+      strategyName: ROUND_PAYOUT_DIRECT,
+      payouts: [],
+    },
+  }),
+  makeGrantApplicationData({
+    roundIdOverride,
+    payoutStrategy: {
+      id: payoutStrategyId,
+      strategyName: ROUND_PAYOUT_DIRECT,
+      payouts: [],
+    },
+  }),
+  makeGrantApplicationData({
+    roundIdOverride,
+    payoutStrategy: {
+      id: payoutStrategyId,
+      strategyName: ROUND_PAYOUT_DIRECT,
+      payouts: [],
+    },
+  }),
 ];
 
 grantApplications.forEach((application) => {
@@ -65,7 +88,7 @@ grantApplications.forEach((application) => {
 const bulkUpdateGrantApplications = jest.fn();
 
 function setupInBulkSelectionMode() {
-  renderWithContext(<ApplicationsReceived />, {
+  renderWithContext(<ApplicationsByStatus />, {
     applications: grantApplications,
     isLoading: false,
   });
@@ -84,7 +107,7 @@ describe("<ApplicationsReceived />", () => {
   });
 
   it("should display a loading spinner if received applications are loading", () => {
-    renderWithContext(<ApplicationsReceived />, {
+    renderWithContext(<ApplicationsByStatus />, {
       applications: [],
       isLoading: true,
     });
@@ -94,7 +117,7 @@ describe("<ApplicationsReceived />", () => {
 
   describe("when there are no approved applications", () => {
     it("should not display the bulk select option", () => {
-      renderWithContext(<ApplicationsReceived />, {
+      renderWithContext(<ApplicationsByStatus />, {
         applications: [],
         isLoading: false,
       });
@@ -114,14 +137,14 @@ describe("<ApplicationsReceived />", () => {
 
   describe("when received applications are shown", () => {
     it("should display the bulk select option", () => {
-      renderWithContext(<ApplicationsReceived />, {
+      renderWithContext(<ApplicationsByStatus />, {
         applications: grantApplications,
         isLoading: false,
       });
 
       expect(
         screen.getByText(
-          "Save in gas fees by approving/rejecting multiple applications at once."
+          'Save in gas fees by moving multiple applications to "In Review" state at once.'
         )
       ).toBeInTheDocument();
       expect(
@@ -167,7 +190,7 @@ describe("<ApplicationsReceived />", () => {
   });
 
   it("renders no cards when there are no projects", () => {
-    renderWithContext(<ApplicationsReceived />, {
+    renderWithContext(<ApplicationsByStatus />, {
       applications: [],
       isLoading: false,
     });
@@ -176,7 +199,7 @@ describe("<ApplicationsReceived />", () => {
   });
 
   it("renders a card for every project with PENDING status", () => {
-    renderWithContext(<ApplicationsReceived />, {
+    renderWithContext(<ApplicationsByStatus />, {
       applications: grantApplications,
       isLoading: false,
     });
@@ -191,7 +214,7 @@ describe("<ApplicationsReceived />", () => {
   });
 
   describe("when choosing select", () => {
-    it("renders approve and reject options on each project", () => {
+    it("renders move to in review option on each project", () => {
       setupInBulkSelectionMode();
 
       expect(
@@ -199,94 +222,49 @@ describe("<ApplicationsReceived />", () => {
       ).toHaveLength(grantApplications.length);
     });
 
-    it("displays an approved button as selected when approve button is selected", () => {
+    it("displays an in-review button as selected when approve button is selected", () => {
       setupInBulkSelectionMode();
 
-      const approveButton = screen.queryAllByTestId("approve-button")[0];
+      const inReviewButton = screen.queryAllByTestId("in-review-button")[0];
 
-      fireEvent.click(approveButton);
+      fireEvent.click(inReviewButton);
 
-      expect(approveButton).toHaveClass("bg-teal-400 text-grey-500");
+      expect(inReviewButton).toHaveClass("bg-teal-400 text-grey-500");
     });
 
-    it("displays a rejected option as selected when reject option is selected", () => {
+    describe("and when an in-review option is already selected", () => {
+      it("unselects the in-review option when that selected approve option is selected", () => {
+        setupInBulkSelectionMode();
+
+        const inReviewButton = screen.queryAllByTestId("in-review-button")[0];
+
+        fireEvent.click(inReviewButton);
+        fireEvent.click(inReviewButton);
+
+        expect(inReviewButton).not.toHaveClass("bg-teal-400 text-grey-500");
+      });
+    });
+
+    it("should move to in-review individual applications independently", () => {
       setupInBulkSelectionMode();
 
-      const rejectButton = screen.queryAllByTestId("reject-button")[0];
-      fireEvent.click(rejectButton);
+      const firstinReviewButton =
+        screen.queryAllByTestId("in-review-button")[0];
+      fireEvent.click(firstinReviewButton);
+      expect(firstinReviewButton).toHaveClass("bg-teal-400 text-grey-500");
 
-      expect(rejectButton).toHaveClass("bg-white text-pink-500");
-    });
-
-    describe("and when an approve option is already selected", () => {
-      it("selects the reject option and unselects the approve option when the reject option selected", () => {
-        setupInBulkSelectionMode();
-
-        const approveButton = screen.queryAllByTestId("approve-button")[0];
-        const rejectButton = screen.queryAllByTestId("reject-button")[0];
-
-        fireEvent.click(approveButton);
-        fireEvent.click(rejectButton);
-
-        expect(approveButton).not.toHaveClass("bg-teal-400 text-grey-500");
-        expect(rejectButton).toHaveClass("bg-white text-pink-500");
-      });
-
-      it("unselects the approve option when that selected approve option is selected", () => {
-        setupInBulkSelectionMode();
-
-        const approveButton = screen.queryAllByTestId("approve-button")[0];
-
-        fireEvent.click(approveButton);
-        fireEvent.click(approveButton);
-
-        expect(approveButton).not.toHaveClass("bg-teal-400 text-grey-500");
-      });
-    });
-
-    describe("and when an reject option is already selected", () => {
-      it("selects the approve button and unselects the reject button when the approve button is selected", () => {
-        setupInBulkSelectionMode();
-
-        const approveButton = screen.queryAllByTestId("approve-button")[0];
-        const rejectButton = screen.queryAllByTestId("reject-button")[0];
-
-        fireEvent.click(rejectButton);
-        fireEvent.click(approveButton);
-
-        expect(approveButton).toHaveClass("bg-teal-400 text-grey-500");
-        expect(rejectButton).not.toHaveClass("bg-white text-pink-500");
-      });
-      it("unselects the reject option when that selected reject option is selected", () => {
-        setupInBulkSelectionMode();
-
-        const rejectButton = screen.queryAllByTestId("reject-button")[0];
-
-        fireEvent.click(rejectButton);
-        fireEvent.click(rejectButton);
-
-        expect(rejectButton).not.toHaveClass("bg-white text-pink-500");
-      });
-    });
-
-    it("should approve individual applications independently", () => {
-      setupInBulkSelectionMode();
-
-      const firstApproveButton = screen.queryAllByTestId("approve-button")[0];
-      fireEvent.click(firstApproveButton);
-      expect(firstApproveButton).toHaveClass("bg-teal-400 text-grey-500");
-
-      const secondApproveButton = screen.queryAllByTestId("approve-button")[1];
-      fireEvent.click(secondApproveButton);
-      expect(secondApproveButton).toHaveClass("bg-teal-400 text-grey-500");
+      const secondinReviewButton =
+        screen.queryAllByTestId("in-review-button")[1];
+      fireEvent.click(secondinReviewButton);
+      expect(secondinReviewButton).toHaveClass("bg-teal-400 text-grey-500");
     });
 
     describe("when at least one application is selected", () => {
       it("displays the continue option and copy", () => {
         setupInBulkSelectionMode();
 
-        const approveButton = screen.queryAllByTestId("approve-button")[0];
-        fireEvent.click(approveButton);
+        const inReviewButton = screen.queryAllByTestId("in-review-button")[0];
+        fireEvent.click(inReviewButton);
 
         const continueButton = screen.getByRole("button", {
           name: /Continue/i,
@@ -296,8 +274,8 @@ describe("<ApplicationsReceived />", () => {
           screen.getByText(/You have selected 1 Grant Applications/i)
         ).toBeInTheDocument();
 
-        const approveButton2 = screen.queryAllByTestId("approve-button")[1];
-        fireEvent.click(approveButton2);
+        const inReviewButton2 = screen.queryAllByTestId("in-review-button")[1];
+        fireEvent.click(inReviewButton2);
 
         expect(continueButton).toBeInTheDocument();
         expect(
@@ -308,8 +286,8 @@ describe("<ApplicationsReceived />", () => {
       it("opens confirmation when continue is selected", async () => {
         setupInBulkSelectionMode();
 
-        const approveButton = screen.queryAllByTestId("approve-button")[0];
-        fireEvent.click(approveButton);
+        const inReviewButton = screen.queryAllByTestId("in-review-button")[0];
+        fireEvent.click(inReviewButton);
 
         const continueButton = screen.getByRole("button", {
           name: /Continue/i,
@@ -319,35 +297,30 @@ describe("<ApplicationsReceived />", () => {
         expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
       });
 
-      it("shows the correct number of approved and rejected applications in the confirmation modal", async () => {
+      it("shows the correct number of selected applications in the confirmation modal", async () => {
         setupInBulkSelectionMode();
 
-        fireEvent.click(screen.queryAllByTestId("approve-button")[0]);
-        fireEvent.click(screen.queryAllByTestId("reject-button")[1]);
-        fireEvent.click(screen.queryAllByTestId("approve-button")[2]);
+        fireEvent.click(screen.queryAllByTestId("in-review-button")[0]);
+        fireEvent.click(screen.queryAllByTestId("in-review-button")[2]);
 
         const continueButton = screen.getByRole("button", {
           name: /Continue/i,
         });
         fireEvent.click(continueButton);
 
-        const approvedApplicationsCount = screen.getByTestId(
-          "approved-applications-count"
-        );
-        const rejectedApplicationsCount = screen.getByTestId(
-          "rejected-applications-count"
+        const message = screen.getByTestId(
+          "move-in-review-selected-applications-message"
         );
 
-        within(approvedApplicationsCount).getByText(/2/);
-        within(rejectedApplicationsCount).getByText(/1/);
+        within(message).getByText(/2/);
       });
 
       it("starts the bulk update process when confirm is selected", async () => {
-        (updateApplicationStatuses as jest.Mock).mockResolvedValue("");
+        (updatePayoutApplicationStatuses as jest.Mock).mockResolvedValue("");
         setupInBulkSelectionMode();
 
-        const approveButton = screen.queryAllByTestId("approve-button")[0];
-        fireEvent.click(approveButton);
+        const inReviewButton = screen.queryAllByTestId("in-review-button")[0];
+        fireEvent.click(inReviewButton);
 
         const continueButton = screen.getByRole("button", {
           name: /Continue/i,
@@ -361,22 +334,19 @@ describe("<ApplicationsReceived />", () => {
         fireEvent.click(confirmationModalConfirmButton);
 
         await waitFor(() => {
-          expect(updateApplicationStatuses).toBeCalled();
+          expect(updatePayoutApplicationStatuses).toBeCalled();
         });
 
-        expect(updateApplicationStatuses).toBeCalled();
-        const updateApplicationStatusesFirstCall = (
-          updateApplicationStatuses as jest.Mock
-        ).mock.calls[0];
-        const actualRoundId = updateApplicationStatusesFirstCall[0];
-        expect(actualRoundId).toEqual(roundIdOverride);
+        expect(updatePayoutApplicationStatuses).toBeCalled();
+        const calls = (updatePayoutApplicationStatuses as jest.Mock).mock.calls;
+        expect(calls[0][0]).toEqual(payoutStrategyId);
       });
 
       it("closes confirmation when cancel is selected", async () => {
         setupInBulkSelectionMode();
 
-        const approveButton = screen.queryAllByTestId("approve-button")[0];
-        fireEvent.click(approveButton);
+        const inReviewButton = screen.queryAllByTestId("in-review-button")[0];
+        fireEvent.click(inReviewButton);
 
         const continueButton = screen.getByRole("button", {
           name: /Continue/i,
@@ -399,7 +369,7 @@ describe("<ApplicationsReceived />", () => {
 
   describe("when bulkSelect is false", () => {
     it("does not render approve and reject options on each card", () => {
-      renderWithContext(<ApplicationsReceived />);
+      renderWithContext(<ApplicationsByStatus />);
       expect(
         screen.queryAllByTestId("bulk-approve-reject-buttons")
       ).toHaveLength(0);
@@ -409,12 +379,12 @@ describe("<ApplicationsReceived />", () => {
   describe("when processing bulk action fails", () => {
     beforeEach(() => {
       const transactionBlockNumber = 10;
-      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
+      (updatePayoutApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
 
       renderWithContext(
-        <ApplicationsReceived />,
+        <ApplicationsByStatus />,
         {
           applications: grantApplications,
         },
@@ -428,8 +398,8 @@ describe("<ApplicationsReceived />", () => {
       fireEvent.click(selectButton);
 
       // select approve on 1 application
-      const approveButton = screen.queryAllByTestId("approve-button")[0];
-      fireEvent.click(approveButton);
+      const inReviewButton = screen.queryAllByTestId("in-review-button")[0];
+      fireEvent.click(inReviewButton);
 
       // click continue
       const continueButton = screen.getByRole("button", {
@@ -445,7 +415,11 @@ describe("<ApplicationsReceived />", () => {
     });
 
     it("shows error modal when reviewing applications fail", async () => {
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
     });
 
     it("choosing done closes the error modal", async () => {

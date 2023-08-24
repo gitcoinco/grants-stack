@@ -2,10 +2,13 @@ import { ChainId, fetchProjectPaidInARound, Payout } from "common";
 import { BigNumber, ethers, Signer } from "ethers";
 import { useEffect, useState } from "react";
 import { useWallet } from "../../common/Auth";
-import { merklePayoutStrategyImplementationContract } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
-import { MatchingStatsData } from "../types";
 import { generateMerkleTree } from "../utils";
+import {
+  directPayoutStrategyFactoryContract,
+  merklePayoutStrategyImplementationContract,
+} from "../contracts";
+import { MatchingStatsData } from "../types";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -14,6 +17,20 @@ import { generateMerkleTree } from "../utils";
  * @param signerOrProvider
  * @returns
  */
+
+/**
+ * @param signerOrProvider
+ * @returns the factory address.
+ */
+export const getDirectPayoutFactoryAddress = async (
+  signerOrProvider: Signer
+): Promise<{ payoutContractAddress: string }> => {
+  const chainId = await signerOrProvider.getChainId();
+  const factoryAddress = directPayoutStrategyFactoryContract(chainId);
+  return {
+    payoutContractAddress: factoryAddress,
+  };
+};
 
 interface UpdateDistributionProps {
   payoutStrategy: string;
