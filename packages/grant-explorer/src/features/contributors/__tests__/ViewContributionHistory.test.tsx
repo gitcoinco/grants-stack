@@ -4,7 +4,6 @@ import {
   ViewContributionHistory,
   ViewContributionHistoryWithoutDonations,
 } from "../ViewContributionHistory";
-import { mockSigner } from "../../../test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { BreadcrumbItem } from "../../common/Breadcrumb";
 import { zeroAddress } from "viem";

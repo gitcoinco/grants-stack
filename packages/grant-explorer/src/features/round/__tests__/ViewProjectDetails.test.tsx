@@ -5,15 +5,11 @@ import { SWRConfig } from "swr";
 import {
   makeApprovedProjectData,
   makeRoundData,
-  mockBalance,
-  mockNetwork,
-  mockSigner,
   renderComponentsBasedOnDeviceSize,
   renderWithContext,
   setWindowDimensions,
 } from "../../../test-utils";
 import ViewProjectDetails from "../ViewProjectDetails";
-import { zeroAddress } from "viem";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
