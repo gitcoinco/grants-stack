@@ -4,7 +4,7 @@ import React from "react";
 
 export function ApplyTooltip() {
   return (
-    <div className="hidden md:block">
+    <div>
       <InformationCircleIcon
         data-tip
         data-background-color="#5932C4"
