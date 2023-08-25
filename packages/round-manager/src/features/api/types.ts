@@ -344,9 +344,17 @@ export interface GrantApplication {
   status?: ProjectStatus; // handle round status 0,1,2,3
   inReview?: boolean; // handle payoutStatus for DirectStrategy
 
+  projectId?: string;
+
   payoutStrategy?: {
     strategyName: string;
     id: string;
+    payouts: {
+      applicationIndex: number;
+      amount: string;
+      createdAt: string;
+      txnHash: string;
+    }[];
   };
 
   statusSnapshots?: {
