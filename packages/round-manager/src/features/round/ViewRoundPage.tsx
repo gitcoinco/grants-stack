@@ -521,7 +521,7 @@ type ViewGrantsExplorerButtonType = {
   roundId: string | undefined;
 };
 
-function RoundName(props: { round?: Round }) {
+export function RoundName(props: { round?: Round }) {
   return (
     <h1 className="text-3xl sm:text-[32px] my-2">
       {props.round?.roundMetadata?.name || "Round Details"}
@@ -554,7 +554,7 @@ function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
   }, 1000);
 }
 
-function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
+export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
   const res = parseRoundDates(round);
 
   return (
@@ -582,7 +582,7 @@ function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
   );
 }
 
-function RoundOpenDateRange({ round }: { round: RoundDates }) {
+export function RoundOpenDateRange({ round }: { round: RoundDates }) {
   const res = parseRoundDates(round);
 
   return (
@@ -610,7 +610,7 @@ function RoundOpenDateRange({ round }: { round: RoundDates }) {
   );
 }
 
-function RoundBadgeStatus({ round }: { round: Round }) {
+export function RoundBadgeStatus({ round }: { round: Round }) {
   const applicationEnds = round.applicationsEndTime;
   const roundEnds = round.roundEndTime;
   const now = moment();
