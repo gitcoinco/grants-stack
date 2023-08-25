@@ -132,6 +132,7 @@ export async function getRoundById(
               }
               payoutStrategy {
                 id
+                strategyName
                 type: __typename
                 ... on DirectPayout {
                   vaultAddress
@@ -179,7 +180,6 @@ export async function getRoundById(
 
     const roundFeePercentage =
       res.data.rounds[0].roundFeePercentage / DENOMINATOR;
-
     return {
       id: round.id,
       chainId: chainId,
@@ -188,9 +188,15 @@ export async function getRoundById(
       applicationsStartTime: new Date(
         Number(round.applicationsStartTime) * 1000
       ),
-      applicationsEndTime: new Date(Number(round.applicationsEndTime) * 1000),
+      applicationsEndTime:
+        round.applicationsEndTime == ethers.constants.MaxUint256.toString()
+          ? maxDateForUint256
+          : new Date(Number(round.applicationsEndTime) * 1000),
       roundStartTime: new Date(Number(round.roundStartTime) * 1000),
-      roundEndTime: new Date(Number(round.roundEndTime) * 1000),
+      roundEndTime:
+        round.applicationsEndTime == ethers.constants.MaxUint256.toString()
+          ? maxDateForUint256
+          : new Date(Number(round.roundEndTime) * 1000),
       protocolFeePercentage: protocolFeePercentage,
       roundFeePercentage: roundFeePercentage,
       token: round.token,
@@ -236,6 +242,10 @@ export async function listRounds(
               id
               program {
                 id
+              }
+              payoutStrategy {
+                id
+                strategyName
               }
               roundMetaPtr {
                 protocol
@@ -292,7 +302,11 @@ export async function listRounds(
             : new Date(round.roundEndTime * 1000),
         token: round.token,
         votingStrategy: round.votingStrategy,
-        payoutStrategy: res.data.rounds[0].payoutStrategy,
+        payoutStrategy: {
+          id: round.payoutStrategy?.id || "",
+          isReadyForPayout: false,
+          strategyName: round.payoutStrategy?.strategyName || "unknown",
+        },
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
         finalized: false,

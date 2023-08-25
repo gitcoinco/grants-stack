@@ -67,16 +67,20 @@ async function exportAndDownloadCSV(
   }
 }
 
-export default function ApplicationsReceived() {
+type Props = {
+  status?: ApplicationStatus.PENDING | ApplicationStatus.IN_REVIEW;
+};
+
+export default function ApplicationsByStatus({
+  status = ApplicationStatus.PENDING,
+}: Props) {
   const { id } = useParams();
   const { chain } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
-  const pendingApplications =
-    applications?.filter(
-      (a) => a.status == ApplicationStatus.PENDING.toString()
-    ) || [];
+  const filteredApplications =
+    applications?.filter((a) => a.status == status.toString()) || [];
 
   const [bulkSelect, setBulkSelect] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -118,7 +122,7 @@ export default function ApplicationsReceived() {
   useEffect(() => {
     if (!isLoading || !bulkSelect) {
       setSelected(
-        (pendingApplications || []).map((application) => {
+        (filteredApplications || []).map((application) => {
           return {
             id: application.id,
             round: application.round,
@@ -210,7 +214,7 @@ export default function ApplicationsReceived() {
   return (
     <div>
       <div className="flex items-center mb-4">
-        {id && applications && applications.length > 0 && (
+        {id && filteredApplications?.length > 0 && (
           <Button
             type="button"
             $variant="outline"
@@ -233,7 +237,7 @@ export default function ApplicationsReceived() {
             )}
           </Button>
         )}
-        {pendingApplications && pendingApplications.length > 0 && (
+        {filteredApplications && filteredApplications.length > 0 && (
           <div className="flex items-center justify-end ml-auto">
             <span className="text-grey-400 text-sm mr-6">
               Save in gas fees by approving/rejecting multiple applications at
@@ -249,7 +253,7 @@ export default function ApplicationsReceived() {
       </div>
       <CardsContainer>
         {!isLoading &&
-          pendingApplications?.map((application, index) => (
+          filteredApplications?.map((application, index) => (
             <BasicCard
               key={index}
               className="application-card"
@@ -281,8 +285,8 @@ export default function ApplicationsReceived() {
         {isLoading && (
           <Spinner text="We're fetching your Grant Applications." />
         )}
-        {!isLoading && pendingApplications?.length === 0 && (
-          <NoApplicationsContent />
+        {!isLoading && filteredApplications?.length === 0 && (
+          <NoApplicationsContent status={status} />
         )}
       </CardsContainer>
       {selected &&
@@ -340,7 +344,7 @@ export default function ApplicationsReceived() {
   );
 }
 
-function NoApplicationsMessage() {
+function NoApplicationsPendingMessage() {
   return (
     <>
       <h2 className="mt-8 text-2xl antialiased">No Applications</h2>
@@ -354,13 +358,34 @@ function NoApplicationsMessage() {
   );
 }
 
-function NoApplicationsContent() {
+function NoApplicationsInReviewMessage() {
+  return (
+    <>
+      <h2 className="mt-8 text-2xl antialiased">No Applications</h2>
+      <div className="mt-2 text-sm">
+        No Applications have been moved to In Review status yet.
+      </div>
+      <div className="text-sm">
+        Try promoting your Grant Program to get more traction!
+      </div>
+    </>
+  );
+}
+
+function NoApplicationsContent({
+  status = ApplicationStatus.PENDING,
+}: {
+  status?: ApplicationStatus.PENDING | ApplicationStatus.IN_REVIEW;
+}) {
   return (
     <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
       <div className="flex flex-center justify-center items-center bg-grey-150 rounded-full h-12 w-12 text-violet-400">
         <NoApplicationsForRoundIcon className="w-6 h-6" />
       </div>
-      <NoApplicationsMessage />
+      {status === ApplicationStatus.PENDING && <NoApplicationsPendingMessage />}
+      {status === ApplicationStatus.IN_REVIEW && (
+        <NoApplicationsInReviewMessage />
+      )}
     </div>
   );
 }
