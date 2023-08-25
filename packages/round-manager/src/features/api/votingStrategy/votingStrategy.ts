@@ -1,6 +1,9 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { ethers } from "ethers";
-import { qfVotingStrategyFactoryContract } from "../contracts";
+import {
+  dgVotingStrategyDummyContract,
+  qfVotingStrategyFactoryContract,
+} from "../contracts";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -9,22 +12,32 @@ import { qfVotingStrategyFactoryContract } from "../contracts";
  * @param signerOrProvider
  * @returns
  */
-export const deployQFVotingContract = async (
-  signerOrProvider: Signer
+export const deployVotingContract = async (
+  signerOrProvider: Signer,
+  isQF: boolean
 ): Promise<{ votingContractAddress: string }> => {
   try {
     const chainId = await signerOrProvider.getChainId();
 
-    const _QFVotingStrategyFactory = qfVotingStrategyFactoryContract(chainId); //roundFactoryContract(chainId);
-    const qfVotingStrategyFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _QFVotingStrategyFactory.address!,
-      _QFVotingStrategyFactory.abi,
+    if (!isQF) {
+      // Note: In direct-rounds, we use a dummy contract for the voting contract.
+      return {
+        votingContractAddress: dgVotingStrategyDummyContract(chainId),
+      };
+    }
+
+    const _votingStrategyFactory = qfVotingStrategyFactoryContract(chainId);
+    if (_votingStrategyFactory.address === undefined)
+      throw new Error("No votingStrategyFactoryContract address");
+
+    const votingStrategyFactory = new ethers.Contract(
+      _votingStrategyFactory.address,
+      _votingStrategyFactory.abi,
       signerOrProvider
     );
 
     // Deploy a new QF Voting Strategy contract
-    const tx = await qfVotingStrategyFactory.create();
+    const tx = await votingStrategyFactory.create();
 
     const receipt = await tx.wait();
 

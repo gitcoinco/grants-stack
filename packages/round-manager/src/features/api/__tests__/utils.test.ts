@@ -1,19 +1,15 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
 
-import {
-  ChainId,
-  fetchFromIPFS,
-  generateApplicationSchema,
-  pinToIPFS,
-} from "../utils";
+import { fetchFromIPFS, generateApplicationSchema, pinToIPFS } from "../utils";
+import { ChainId } from "common";
 
 import {
-  initialQuestions,
+  initialQuestionsQF,
   initialRequirements,
 } from "../../round/RoundApplicationForm";
 import { checkGrantApplicationStatus } from "../application";
 import { MetadataPointer } from "../types";
-import { graphql_fetch } from "common";
+import { graphql_fetch, TMP_DIRECT_ROUND_SUBGRAPH_URL } from "common";
 
 enableFetchMocks();
 
@@ -298,7 +294,10 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      TMP_DIRECT_ROUND_SUBGRAPH_URL,
+      //(process.env.REACT_APP_SUBGRAPH_GOERLI_API as string),
+      // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
+      // as we need to fetch data from the new version of the subgraph.
       params
     );
     expect(res.data.programs[0]).toEqual({
@@ -332,7 +331,10 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      TMP_DIRECT_ROUND_SUBGRAPH_URL,
+      //(process.env.REACT_APP_SUBGRAPH_GOERLI_API as string),
+      // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
+      // as we need to fetch data from the new version of the subgraph.
       params
     );
   });
@@ -356,7 +358,7 @@ describe("graphql_fetch", () => {
 describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
     const expectedSchema = {
-      questions: initialQuestions.map((question) => ({
+      questions: initialQuestionsQF.map((question) => ({
         title: question.title,
         type: question.type,
         required: question.required,
@@ -378,7 +380,7 @@ describe("generateApplicationSchema", () => {
     };
 
     const schema = generateApplicationSchema(
-      initialQuestions,
+      initialQuestionsQF,
       initialRequirements
     );
 

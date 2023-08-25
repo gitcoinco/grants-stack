@@ -7,42 +7,39 @@ import {
   MatchingStatsData,
   Program,
 } from "./types";
-import { RedstoneTokenIds } from "common";
-
-export enum ChainId {
-  MAINNET = 1,
-  GOERLI_CHAIN_ID = 5,
-  OPTIMISM_MAINNET_CHAIN_ID = 10,
-  FANTOM_MAINNET_CHAIN_ID = 250,
-  FANTOM_TESTNET_CHAIN_ID = 4002,
-}
+import { ChainId, RedstoneTokenIds } from "common";
 
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
     name: "Mainnet", // TODO get canonical network names
-    logo: "./logos/ethereum-eth-logo.svg",
+    logo: "/logos/ethereum-eth-logo.svg",
   },
   [ChainId.GOERLI_CHAIN_ID]: {
     id: ChainId.GOERLI_CHAIN_ID,
     name: "Goerli", // TODO get canonical network names
-    logo: "./logos/ethereum-eth-logo.svg",
+    logo: "/logos/ethereum-eth-logo.svg",
   },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     name: "Optimism",
-    logo: "./logos/optimism-logo.svg",
+    logo: "/logos/optimism-logo.svg",
   },
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
     id: ChainId.FANTOM_MAINNET_CHAIN_ID,
     name: "Fantom",
-    logo: "./logos/fantom-logo.svg",
+    logo: "/logos/fantom-logo.svg",
   },
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: {
     id: ChainId.FANTOM_TESTNET_CHAIN_ID,
     name: "Fantom Testnet",
-    logo: "./logos/fantom-logo.svg",
+    logo: "/logos/fantom-logo.svg",
+  },
+  [ChainId.PGN_TESTNET]: {
+    id: ChainId.PGN_TESTNET,
+    name: "PGN Testnet",
+    logo: "/logos/pgn-logo.svg",
   },
 };
 
@@ -63,11 +60,11 @@ export type SupportType = {
 };
 
 export const TokenNamesAndLogos: Record<string, string> = {
-  FTM: "./logos/fantom-logo.svg",
-  BUSD: "./logos/busd-logo.svg",
-  DAI: "./logos/dai-logo.svg",
-  ETH: "./logos/ethereum-eth-logo.svg",
-  OP: "./logos/optimism-logo.svg",
+  FTM: "/logos/fantom-logo.svg",
+  BUSD: "/logos/busd-logo.svg",
+  DAI: "/logos/dai-logo.svg",
+  ETH: "/logos/ethereum-eth-logo.svg",
+  OP: "/logos/optimism-logo.svg",
 };
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -181,12 +178,30 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const PGN_TESTNET_TOKENS: PayoutToken[] = [
+  {
+    name: "TEST",
+    chainId: ChainId.PGN_TESTNET,
+    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    logo: TokenNamesAndLogos["DAI"],
+    decimal: 18,
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.PGN_TESTNET,
+    address: ethers.constants.AddressZero,
+    logo: TokenNamesAndLogos["ETH"],
+    decimal: 18,
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
   ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
+  ...PGN_TESTNET_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -271,6 +286,23 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         },
       ];
     }
+    case ChainId.PGN_TESTNET:
+      return [
+        {
+          name: "TEST",
+          chainId: ChainId.PGN_TESTNET,
+          address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+          logo: TokenNamesAndLogos["DAI"],
+          decimal: 18,
+        },
+        {
+          name: "ETH",
+          chainId: ChainId.PGN_TESTNET,
+          address: ethers.constants.AddressZero,
+          logo: TokenNamesAndLogos["ETH"],
+          decimal: 18,
+        },
+      ];
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       return [
@@ -386,6 +418,8 @@ export interface SchemaQuestion {
   hidden: boolean;
   choices?: string[];
   encrypted: boolean;
+  fixed?: boolean;
+  metadataExcluded?: boolean;
 }
 
 export interface ProjectRequirementsSchema {
@@ -418,18 +452,20 @@ export const generateApplicationSchema = (
   const schema = { questions: new Array<SchemaQuestion>(), requirements };
   if (!questions) return schema;
 
-  schema.questions = questions.map((question, index) => {
-    return {
-      id: index,
-      title: question.title,
-      type: question.type,
-      required: question.required,
-      info: "",
-      choices: question.choices,
-      hidden: question.hidden,
-      encrypted: question.encrypted,
-    };
-  });
+  schema.questions = questions
+    .filter((q) => !q.metadataExcluded)
+    .map((question, index) => {
+      return {
+        id: index,
+        title: question.title,
+        type: question.type,
+        required: question.required,
+        info: "",
+        choices: question.choices,
+        hidden: question.hidden,
+        encrypted: question.encrypted,
+      };
+    });
 
   return schema;
 };

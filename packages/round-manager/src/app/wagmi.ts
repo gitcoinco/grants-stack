@@ -1,74 +1,37 @@
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   injectedWallet,
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { createClient, configureChains, chain } from "wagmi";
+import { createClient, configureChains } from "wagmi";
+import {
+  fantom,
+  fantomTestnet,
+  mainnet,
+  goerli,
+  optimism,
+  Chain,
+} from "wagmi/chains";
 
+import { pgnTestnet } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 
 const testnetChains = () => {
-  /***********************/
-  /* == Custom Chains == */
-  /***********************/
-
-  // Fantom Testnet
-  const fantomTestnet: Chain = {
-    id: 4002,
-    name: "Fantom Testnet",
-    network: "fantom testnet",
-    iconUrl:
-      "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
-    nativeCurrency: {
-      decimals: 18,
-      name: "Fantom",
-      symbol: "FTM",
-    },
-    rpcUrls: {
-      default: "https://rpc.testnet.fantom.network/",
-    },
-    blockExplorers: {
-      default: { name: "ftmscan", url: "https://testnet.ftmscan.com" },
-    },
-    testnet: true,
-  };
-
-  return [chain.goerli, fantomTestnet];
+  return [
+    goerli,
+    { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
+    pgnTestnet,
+  ];
 };
 
 const mainnetChains = () => {
-  /***********************/
-  /* == Custom Chains == */
-  /***********************/
-
-  // Fantom Mainnet
-  const fantomMainnet: Chain = {
-    id: 250,
-    name: "Fantom",
-    network: "fantom mainnet",
-    iconUrl:
-      "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
-    nativeCurrency: {
-      decimals: 18,
-      name: "Fantom",
-      symbol: "FTM",
-    },
-    rpcUrls: {
-      default: "https://rpc.ankr.com/fantom/",
-    },
-    blockExplorers: {
-      default: { name: "ftmscan", url: "https://ftmscan.com" },
-    },
-    testnet: false,
-  };
-
-  return [chain.mainnet, chain.optimism, fantomMainnet];
+  return [mainnet, optimism, { ...fantom, iconUrl: "/logos/fantom-logo.svg" }];
 };
 
 const allChains: Chain[] =
@@ -76,11 +39,21 @@ const allChains: Chain[] =
     ? [...testnetChains(), ...mainnetChains()]
     : [...mainnetChains()];
 
+/* TODO: remove hardcoded value once we have environment variables validation */
+const projectId =
+  process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
+  "2685061cae0bcaf2b244446153eda9e1";
 export const { chains, provider, webSocketProvider } = configureChains(
   allChains,
   [
-    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID, priority: 0 }),
-    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_ID, priority: 1 }),
+    infuraProvider({
+      apiKey: process.env.REACT_APP_INFURA_ID as string,
+      priority: 0,
+    }),
+    alchemyProvider({
+      apiKey: process.env.REACT_APP_ALCHEMY_ID as string,
+      priority: 1,
+    }),
     publicProvider({ priority: 2 }),
   ]
 );
@@ -92,9 +65,9 @@ const connectors = connectorsForWallets([
     groupName: "Recommended",
     wallets: [
       injectedWallet({ chains }),
-      walletConnectWallet({ chains }),
+      walletConnectWallet({ chains, projectId }),
       coinbaseWallet({ appName: "Gitcoin Round Manager", chains }),
-      metaMaskWallet({ chains }),
+      metaMaskWallet({ chains, projectId }),
     ],
   },
 ]);

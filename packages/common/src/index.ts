@@ -6,12 +6,16 @@ import { useMemo, useState } from "react";
 export * from "./icons";
 export * from "./markdown";
 
+export const TMP_DIRECT_ROUND_SUBGRAPH_URL =
+  "https://api.thegraph.com/subgraphs/name/lmcorbalan/gc-rounds-v0";
+
 export enum ChainId {
   MAINNET = 1,
   GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
   FANTOM_TESTNET_CHAIN_ID = 4002,
+  PGN_TESTNET = 58008,
 }
 
 export enum PassportState {
@@ -154,9 +158,15 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
 
+    case ChainId.PGN_TESTNET:
+      return `${process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API}`;
+
     case ChainId.GOERLI_CHAIN_ID:
     default:
-      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+      return TMP_DIRECT_ROUND_SUBGRAPH_URL;
+    //return (process.env.REACT_APP_SUBGRAPH_GOERLI_API as string)
+    // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
+    // as we need to fetch data from the new version of the subgraph.
   }
 };
 
@@ -363,43 +373,45 @@ export const RedstoneTokenIds: Record<string, string> = {
   ETH: "ETH",
 };
 
-export const useTokenPrice = (tokenId: string|undefined) => {
+export const useTokenPrice = (tokenId: string | undefined) => {
   const [tokenPrice, setTokenPrice] = useState<number>();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
 
-  if (!tokenId) return {
-    data: 0,
-    error,
-    loading,
-  };
+  if (!tokenId)
+    return {
+      data: 0,
+      error,
+      loading,
+    };
 
   useMemo(async () => {
     setLoading(true);
 
     const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
-    fetch(tokenPriceEndpoint).then(resp => {
-      if (resp.ok) {
-        return resp.json();
-      } else {
-        setError(resp);
+    fetch(tokenPriceEndpoint)
+      .then((resp) => {
+        if (resp.ok) {
+          return resp.json();
+        } else {
+          setError(resp);
+          setLoading(false);
+        }
+      })
+      .then((data) => {
+        if (data) {
+          setTokenPrice(data[0].value);
+        } else {
+          setError(data);
+        }
+
         setLoading(false);
-      }
-    }).then(data => {
-
-      if (data) {
-        setTokenPrice(data[0].value);
-      } else {
-        setError(data);
-      }
-
-      setLoading(false);
-    }).catch((err) => {
-      console.log("error fetching token price", { err });
-      setError(err);
-      setLoading(false);
-    });
-
+      })
+      .catch((err) => {
+        console.log("error fetching token price", { err });
+        setError(err);
+        setLoading(false);
+      });
   }, [tokenId]);
 
   return {

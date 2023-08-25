@@ -26,6 +26,7 @@ import {
 } from "../../api/application";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ApplicationStatus, ProgressStatus } from "../../api/types";
+import { errorModalDelayMs } from "../../../constants";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({
@@ -445,7 +446,11 @@ describe("<ApplicationsReceived />", () => {
     });
 
     it("shows error modal when reviewing applications fail", async () => {
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
     });
 
     it("choosing done closes the error modal", async () => {

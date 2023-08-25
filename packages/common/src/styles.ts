@@ -2,7 +2,7 @@ import { FieldError } from "react-hook-form";
 import tw from "tailwind-styled-components";
 
 type ButtonProps = {
-  $variant?: "solid" | "outline" | "secondary";
+  $variant?: "solid" | "outline" | "secondary" | "external-link";
   $hidden?: boolean;
 };
 
@@ -22,6 +22,8 @@ export const Button = tw.button`
       return "bg-white text-grey-500 border border-grey-100 hover:border-grey-300";
     } else if (p.$variant === "secondary") {
       return "bg-violet-100 text-violet-400 hover:bg-violet-50 hover:brightness-100";
+    } else if (p.$variant === "external-link") {
+      return "bg-white text-gitcoin-violet-500";
     } else {
       return "bg-violet-400 text-white";
     }

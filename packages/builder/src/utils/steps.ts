@@ -55,7 +55,7 @@ export const grantSteps: Step[] = [
   },
   {
     name: "Deploying",
-    description: "Connecting to the Mainnet blockchain.",
+    description: "Connecting to the blockchain.",
     status: GrantStatus.TransactionInitiated,
   },
   {

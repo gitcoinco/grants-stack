@@ -33,6 +33,7 @@ import {
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import { GrantApplication, ProgressStatus } from "../../api/types";
+import { errorModalDelayMs } from "../../../constants";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth");
@@ -254,7 +255,11 @@ describe("ViewApplicationPage", () => {
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Confirm"));
 
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
     });
 
     it("choosing done closes the error modal", async () => {

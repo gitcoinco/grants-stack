@@ -11,12 +11,13 @@ export interface NavbarProps {
 
 export default function Navbar({ programCta = true }: NavbarProps) {
   return (
-    <nav className="bg-moon-600" >
-      <div 
-        className="mx-auto px-4 sm:px-6 lg:px-20" 
+    <nav className="bg-moon-600">
+      <div
+        className="mx-auto px-4 sm:px-6 lg:px-20"
         style={{
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.15)",
-        }}>
+        }}
+      >
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link

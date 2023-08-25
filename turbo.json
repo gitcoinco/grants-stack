@@ -8,12 +8,9 @@
       "outputs": [
         "build"
       ],
-      "outputMode": "new-only"
+      "outputMode": "errors-only"
     },
     "test": {
-      "dependsOn": [
-        "build"
-      ],
       "inputs": [
         "src/**/*.tsx",
         "src/**/*.ts"
