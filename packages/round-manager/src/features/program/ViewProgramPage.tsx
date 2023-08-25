@@ -32,10 +32,8 @@ import { ProgressStatus } from "../api/types";
 import { useDebugMode } from "../../hooks";
 import { getRoundDescriptionStatus } from "./getRoundDescriptionStatus";
 import { parseRoundDates } from "../common/parseRoundDates";
-import {
-  ROUND_PAYOUT_DIRECT,
-  getPayoutRoundDescription,
-} from "../common/Utils";
+import { getPayoutRoundDescription } from "../common/Utils";
+import { isDirectRound } from "../round/ViewRoundPage";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -114,7 +112,7 @@ export default function ViewProgram() {
                 {/* Round details */}
                 <div className="grid sm:grid-cols-2">
                   {/* Application */}
-                  {round.payoutStrategy.strategyName != ROUND_PAYOUT_DIRECT && (
+                  {!isDirectRound(round) && (
                     <div className="text-xs flex gap-1">
                       <CalendarIcon className="h-5 w-5 text-grey-500" />
                       <span className="mt-[3px] text-grey-400">
