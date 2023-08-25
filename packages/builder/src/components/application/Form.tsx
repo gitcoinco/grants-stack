@@ -26,7 +26,10 @@ import {
   RoundApplicationAnswers,
   RoundApplicationMetadata,
 } from "../../types/roundApplication";
-import { getProjectURIComponents } from "../../utils/utils";
+import {
+  ROUND_PAYOUT_DIRECT,
+  getProjectURIComponents,
+} from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
@@ -324,13 +327,15 @@ export default function Form({
 
   const haveProjectRequirementsBeenMet = projectRequirementsResult.length === 0;
 
+  const isDirectRound =
+    round.payoutStrategy && round.payoutStrategy === ROUND_PAYOUT_DIRECT;
   // todo: ensure that the applications are made by a project owner
   const isValidProjectSelected =
-    !hasExistingApplication &&
-    selectedProjectID &&
+    (isDirectRound || !hasExistingApplication) &&
+    !!selectedProjectID &&
     publishedApplication === undefined;
 
-  const needsProject = schema.questions.find((q) => q.type === "project");
+  const needsProject = !schema.questions.find((q) => q.type === "project");
   const now = new Date().getTime() / 1000;
 
   return (
@@ -433,7 +438,7 @@ export default function Form({
                         >
                           <Stack>
                             <Radio
-                              label="Is your payout wallet a Gnosis Safe or multi-sig?"
+                              label="Is your Payout Wallet a Gnosis Safe or multi-sig?"
                               choices={["Yes", "No"]}
                               changeHandler={handleInput}
                               name="isSafe"
@@ -726,7 +731,7 @@ export default function Form({
             return null;
           })}
 
-          {selectedProjectID && hasExistingApplication && (
+          {!!selectedProjectID && !isDirectRound && hasExistingApplication && (
             <div className="rounded-md bg-red-50 p-4 mt-5">
               <div className="flex">
                 <ExclamationCircleIcon className="h-5 w-5 text-red-400" />
@@ -739,7 +744,7 @@ export default function Form({
           )}
 
           {!hasExistingApplication &&
-            selectedProjectID &&
+            !!selectedProjectID &&
             selectedProjectID !== "0" &&
             !haveProjectRequirementsBeenMet && (
               <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
@@ -871,7 +876,9 @@ export default function Form({
             </h5>
             <p className="mb-6">
               Please note that once you submit this application, you will NOT be
-              able to edit or re-apply with the same project to this round.
+              able to edit
+              {!isDirectRound &&
+                "or re-apply with the same project to this round."}
             </p>
           </>
         </CallbackModal>

@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
-import { IPFSObject, PayoutToken } from "./types";
+import { IPFSObject, PayoutToken, Round } from "./types";
 import { RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
+import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "../../constants";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -244,6 +245,8 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
       return `${process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API}`;
 
     case ChainId.GOERLI_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+    
     default:
       return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
   }
@@ -447,5 +450,22 @@ export function getChainIds(): number[] {
     ];
   } else {
     return Object.values(ChainId).map((chainId) => Number(chainId));
+  }
+}
+
+export const isDirectRound = (round: Round) => round?.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+export const isInfiniteDate = (roundTime: Date) => roundTime.toString() === "Invalid Date";
+
+export const getRoundType = (payoutStrategyName: string) => {
+  switch (payoutStrategyName) {
+    case ROUND_PAYOUT_MERKLE:
+      return "Quadratic Funding";
+      break;
+    case ROUND_PAYOUT_DIRECT:
+      return "Direct Grants";
+      break;
+    default:
+      return payoutStrategyName;
+      break;
   }
 }

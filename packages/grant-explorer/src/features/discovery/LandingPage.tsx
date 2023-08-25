@@ -9,11 +9,13 @@ import { useDebugMode } from "../api/utils";
 import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
 
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 
 const LandingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [type, setType] = useState<string>("round_type_all");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
     RoundOverview[]
@@ -26,6 +28,32 @@ const LandingPage = () => {
 
   const debugModeEnabled = useDebugMode();
 
+  useEffect(() => {
+    if (type) {
+      filterGrantRoundByType();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
+  
+  const filterGrantRoundByType = () => {
+    const getGrantRoundType = (type: string) => {
+      return type === "round_type_direct"
+        ? ROUND_PAYOUT_DIRECT
+        : ROUND_PAYOUT_MERKLE;
+    }
+    if (type === "round_type_all") {
+      setActiveRounds(allActiveRounds);
+    }
+    if (type !== "round_type_all") {
+      const filterType = getGrantRoundType(type);
+      const filteredRounds = allActiveRounds.filter((round: RoundOverview) => {
+        return round.payoutStrategy && round.payoutStrategy.strategyName === filterType
+      });
+      setActiveRounds(filteredRounds);
+      if (searchQuery) setSearchQuery("");
+    }
+  }
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
@@ -35,19 +63,15 @@ const LandingPage = () => {
       );
       return () => clearTimeout(timeOutId);
     } else {
-      setActiveRounds(allActiveRounds);
+      filterGrantRoundByType();
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterProjectsByTitle = (query: string) => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
-
-    if (!query || query === "") {
-      setActiveRounds(activeRounds);
-      return;
-    }
 
     const exactMatches = activeRounds?.filter(
       (round) =>
@@ -133,6 +157,7 @@ const LandingPage = () => {
             <ActiveRoundsSection
               isLoading={activeRoundsLoading}
               setSearchQuery={setSearchQuery}
+              setRoundType={setType}
               roundOverview={activeRounds}
               searchQuery={searchQuery}
             />

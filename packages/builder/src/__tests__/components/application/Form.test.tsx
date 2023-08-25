@@ -82,6 +82,7 @@ const round: Round = {
       ],
     },
   },
+  payoutStrategy: "MERKLE",
   programName: "sample program",
 };
 

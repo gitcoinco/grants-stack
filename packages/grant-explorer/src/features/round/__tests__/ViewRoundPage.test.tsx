@@ -18,6 +18,7 @@ import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
 import { payoutTokens } from "../../api/utils";
 
+const builderURL = process.env.REACT_APP_BUILDER_URL;
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
 const useParamsFn = () => ({ chainId: chainId, roundId: roundId });
@@ -123,11 +124,11 @@ describe("<ViewRound /> in case of during the application period", () => {
   it("Should show apply to round button", async () => {
     renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
     const appURL =
-      "https://builder.gitcoin.co/#/chains/" + chainId + "/rounds/" + roundId;
+      builderURL + "/#/chains/" + chainId + "/rounds/" + roundId;
 
-    const AppSubmissionButton = await screen.findByText("Apply to Grant Round");
-    expect(AppSubmissionButton).toBeInTheDocument();
-    fireEvent.click(AppSubmissionButton);
+    const AppSubmissionButton = await screen.findAllByText("Apply to Grant Round");
+    expect(AppSubmissionButton[0]).toBeInTheDocument();
+    fireEvent.click(AppSubmissionButton[0]);
     expect(window.open).toBeCalled();
     expect(window.open).toHaveBeenCalledWith(appURL, "_blank");
   });
@@ -439,5 +440,32 @@ describe("<ViewRound /> in case of after the round start date", () => {
         ).not.toBeInTheDocument();
       }, 3000);
     });
+  });
+});
+
+describe("<ViewRound /> in case ApplicationsEnd and RoundEnd dates are not set", () => {
+  let stubRound: Round;
+  
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    const applicationsEndTime = new Date("foo");
+    const applicationsStartTime = faker.date.past();
+    const roundStartTime = faker.date.soon();
+    const roundEndTime = new Date("foo");
+    stubRound = makeRoundData({
+      id: roundId,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+    });
+  });
+
+  it("Should display 'No End Date' for Applications and Round end dates", async () => {
+    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+
+    const AppSubmissionButton = await screen.findAllByText("No End Date");
+    expect(AppSubmissionButton.length).toEqual(2);
   });
 });
