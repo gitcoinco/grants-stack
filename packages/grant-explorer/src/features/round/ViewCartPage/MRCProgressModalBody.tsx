@@ -33,12 +33,12 @@ export function MRCProgressModalBody({
     const stepsWithChainSwitch = [
       {
         name: "Switch Network",
-        description: "Switch to the network you want to donate on next",
+        description: "Switch to the network you want to donate",
         status: chainSwitchStatus[chainId],
       },
       {
         name: "Permit",
-        description: "Permit the Checkout contract to access the payout token",
+        description: "Permit the checkout contract",
         status:
           chainSwitchStatus[chainId] !== ProgressStatus.IS_SUCCESS
             ? ProgressStatus.NOT_STARTED
@@ -56,7 +56,7 @@ export function MRCProgressModalBody({
     const stepsWithoutChainSwitch = [
       {
         name: "Permit",
-        description: "Permit the Checkout contract to access the payout token",
+        description: "Permit the checkout contract",
         status: permitStatus[chainId],
       },
       {
@@ -294,14 +294,16 @@ function MRCModalStep(props: {
         >
           {props.icon}
         </span>
-        <span className="ml-2 min-w-0 flex flex-col">
+        <span className="ml-2 w-full flex flex-col">
           <span
-            className={`text-xs font-semibold tracking-wide uppercase ${props.nameColor}`}
+            className={`flex justify-start text-xs font-semibold tracking-wide uppercase ${props.nameColor}`}
           >
             {props.step.name}
           </span>
           <span
-            className={`text-sm ${props.descriptionColor ?? "text-grey-400"}`}
+            className={`flex justify-start text-sm ${
+              props.descriptionColor ?? "text-grey-400"
+            }`}
           >
             {props.step.description}
           </span>

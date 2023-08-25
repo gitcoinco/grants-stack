@@ -23,7 +23,7 @@ function TwitterButton(props: { address: Hex }) {
     <Button
       type="button"
       onClick={() => window.open(shareUrl, "_blank")}
-      className="flex items-center justify-center shadow-sm text-sm rounded border-1 text-black bg-[#C1E4FC] px-10 border-grey-100 hover:shadow-md"
+      className="flex items-center justify-center shadow-sm text-sm rounded border-1 text-black bg-[#C1E4FC] px-4 sm:px-10 border-grey-100 hover:shadow-md"
       data-testid="twitter-button"
     >
       <TwitterBlueIcon />
@@ -104,7 +104,7 @@ export default function ThankYou() {
                   type="button"
                   $variant="outline"
                   onClick={() => navigate(`/contributors/${address}`)}
-                  className="items-center justify-center shadow-sm text-sm rounded border border-solid border-grey-100 px-10"
+                  className="items-center justify-center shadow-sm text-sm rounded border border-solid border-grey-100 px-2 sm:px-10"
                   data-testid="donation-history-button"
                 >
                   View Donation History
