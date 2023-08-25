@@ -68,7 +68,7 @@ export function ProjectInCart(
           </div>
         </div>
 
-        <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3">
+        <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3 justify-center">
           <div className="md:hidden sm:w-12"></div>
           <Input
             aria-label={
@@ -93,7 +93,7 @@ export function ProjectInCart(
                 e.target.value
               );
             }}
-            className="w-min"
+            className="w-[150px] sm:w-min"
           />
           <p className="m-auto">{props.selectedPayoutToken.name}</p>
           {props.payoutTokenPrice && (

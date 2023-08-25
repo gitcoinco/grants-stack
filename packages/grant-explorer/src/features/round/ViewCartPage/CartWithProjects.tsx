@@ -64,9 +64,9 @@ export function CartWithProjects({ cart, chainId }: Props) {
           <h2 className="mt-3 text-xl font-semibold">{chain.name}</h2>
           <h2 className="mt-3 text-xl font-semibold">({projectCount})</h2>
         </div>
-        <div className="flex sm:justify-end flex-row gap-2 basis-[72%]">
+        <div className="flex justify-center sm:justify-end flex-row gap-2 basis-[72%]">
           <div className="flex gap-4">
-            <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text">
+            <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
               Amount
             </p>
             <Input
@@ -78,7 +78,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setFixedDonation(e.target.value);
               }}
-              className="w-16 md:w-24"
+              className="w-16 lg:w-24"
             />
             <PayoutTokenDropdown
               selectedPayoutToken={selectedPayoutToken}
