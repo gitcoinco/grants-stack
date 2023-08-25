@@ -12,14 +12,14 @@ export type RoundDates = Pick<
 >;
 
 export function parseRoundDates(round: RoundDates) {
-  const noEndTime = "No end time";
+  const noEndTime = 'No end date <span class="text-grey-400 text-xs">(open round)</span>';
 
   return {
     application: {
       iso: {
         start: formatUTCDateAsISOString(round.applicationsStartTime),
         end: moment(round.applicationsEndTime).isSame(maxDateForUint256)
-          ? noEndTime
+          ? <span dangerouslySetInnerHTML={{__html: noEndTime}} />
           : formatUTCDateAsISOString(round.applicationsEndTime),
       },
       utc: {
@@ -33,7 +33,7 @@ export function parseRoundDates(round: RoundDates) {
       iso: {
         start: formatUTCDateAsISOString(round.roundStartTime),
         end: moment(round.roundEndTime).isSame(maxDateForUint256)
-          ? noEndTime
+          ? <span dangerouslySetInnerHTML={{__html: noEndTime}} />
           : formatUTCDateAsISOString(round.roundEndTime),
       },
       utc: {
