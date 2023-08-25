@@ -16,7 +16,7 @@ export const getPayoutRoundDescription = (key: string) => {
       return "Quadratic Funding";
       break;
     case ROUND_PAYOUT_DIRECT:
-      return "Direct Grants";
+      return "Direct Grant";
       break;
     default:
       return key;

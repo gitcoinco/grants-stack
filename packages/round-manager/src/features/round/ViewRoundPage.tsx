@@ -52,8 +52,8 @@ import moment from "moment";
 import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
 
-export const isDirectRound = (round: Round) => round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
-
+export const isDirectRound = (round: Round) =>
+  round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -224,7 +224,10 @@ export default function ViewRoundPage() {
                               }
                             >
                               <ChartBarIcon className="h-6 w-6 mr-2" />
-                              <span className="mt-0.5" data-testid="round-stats">
+                              <span
+                                className="mt-0.5"
+                                data-testid="round-stats"
+                              >
                                 Round Stats
                               </span>
                             </div>
@@ -257,8 +260,8 @@ export default function ViewRoundPage() {
                             )}
                           </Tab>
                           <Tab
-                          className={({ selected }) =>
-                          verticalTabStyles(selected)
+                            className={({ selected }) =>
+                              verticalTabStyles(selected)
                             }
                           >
                             {({ selected }) => (
@@ -339,7 +342,8 @@ export default function ViewRoundPage() {
                         <Tab.Panel>
                           <ViewFundGrantees
                             isRoundFinalized={
-                              round?.payoutStrategy?.isReadyForPayout ?? undefined
+                              round?.payoutStrategy?.isReadyForPayout ??
+                              undefined
                             }
                             round={round}
                           />
@@ -579,7 +583,9 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
       <div className="flex flex-row gap-2">
         <p className="flex flex-col">
           <span>{res.application.iso.start}</span>
-          <span className="text-grey-400 text-xs">({res.application.utc.start})</span>
+          <span className="text-grey-400 text-xs">
+            ({res.application.utc.start})
+          </span>
         </p>
         <p className="flex flex-col">
           <span className="mx-1">-</span>
@@ -589,7 +595,9 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
             {res.application.iso.end}
           </span>
           {res.application.utc.end && (
-            <span className="text-grey-400 text-xs">{res.application.utc.end}</span>
+            <span className="text-grey-400 text-xs">
+              {res.application.utc.end}
+            </span>
           )}
         </p>
       </div>
@@ -613,9 +621,7 @@ export function RoundOpenDateRange({ round }: { round: RoundDates }) {
           <span className="mx-1">-</span>
         </p>
         <p className="flex flex-col">
-          <span className="[&>*]:flex [&>*]:flex-col">
-            {res.round.iso.end}
-          </span>
+          <span className="[&>*]:flex [&>*]:flex-col">{res.round.iso.end}</span>
           {res.round.utc.end && (
             <span className="text-grey-400 text-xs">{res.round.utc.end}</span>
           )}
