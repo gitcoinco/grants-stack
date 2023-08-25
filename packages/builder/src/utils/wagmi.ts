@@ -9,6 +9,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
 import PublicGoodsNetworkIcon from "common/src/icons/PublicGoodsNetwork.svg";
+import { arbitrum, arbitrumGoerli } from "@wagmi/core/chains";
 import { FantomFTMLogo, FTMTestnet, OPIcon } from "../assets";
 
 const ftmTestnetIcon = FTMTestnet;
@@ -125,7 +126,13 @@ if (process.env.REACT_APP_LOCALCHAIN) {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(chain.mainnet, fantomMainnet, optimismMainnet, pgn);
+  chainsAvailable.push(
+    chain.mainnet,
+    fantomMainnet,
+    optimismMainnet,
+    pgn,
+    arbitrum
+  );
 } else {
   chainsAvailable.push(
     optimismMainnet,
@@ -134,7 +141,8 @@ if (process.env.REACT_APP_ENV === "production") {
     fantomMainnet,
     chain.mainnet,
     pgnTestnet,
-    pgn
+    pgn,
+    arbitrumGoerli
   );
 }
 

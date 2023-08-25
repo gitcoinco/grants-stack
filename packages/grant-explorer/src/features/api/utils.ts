@@ -287,6 +287,7 @@ export const payoutTokensMap: PayoutTokensMap = {
   [ChainId.PGN]: PGN_MAINNET_TOKENS,
   [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
   [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_TOKENS,
+  [ChainId.ARBITRUM]: ARBITRUM_GOERLI_TOKENS,
 };
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
@@ -305,6 +306,7 @@ const graphQlEndpoints: Record<ChainId, string> = {
     process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
   [ChainId.ARBITRUM_GOERLI]:
     process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
+  [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
 };
 
 /**

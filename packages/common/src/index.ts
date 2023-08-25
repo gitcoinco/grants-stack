@@ -109,6 +109,7 @@ const graphQlEndpoints: Record<ChainId, string> = {
     process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
   [ChainId.ARBITRUM_GOERLI]:
     process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
+  [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
 };
 
 /**
