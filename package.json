@@ -40,6 +40,6 @@
   "dependencies": {
     "debug": "^4.3.4",
     "dotenv-flow": "^3.2.0",
-    "suretype": "^3.0.5"
+    "zod": "^3.22.2"
   }
 }
