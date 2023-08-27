@@ -27,7 +27,7 @@
     "lint-staged": ">=10",
     "prettier": "^3.0.2",
     "tsx": "^3.10.1",
-    "typescript": "^4.7.2",
+    "typescript": "^5.2.2",
     "vitest": "^0.34.3"
   },
   "lint-staged": {
