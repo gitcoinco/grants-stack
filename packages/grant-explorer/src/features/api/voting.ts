@@ -29,7 +29,7 @@ export type PermitType = "dai" | "eip2612";
  *
  * Old DAI permit type is only implemented on Ethereum and Polygon PoS. Check /docs/DAI.md for more info.
  * */
-export const selectPermitType = (token: PayoutToken): PermitType => {
+export const getPermitType = (token: PayoutToken): PermitType => {
   if (
     /DAI/i.test(token.name) &&
     token.chainId ===
@@ -77,7 +77,7 @@ export const voteUsingMRCContract = async (
       }
     );
   } else if (permit) {
-    if (selectPermitType(token) === "dai") {
+    if (getPermitType(token) === "dai") {
       tx = await mrcImplementation.write.voteDAIPermit([
         Object.values(groupedVotes),
         Object.keys(groupedVotes) as Hex[],
@@ -254,7 +254,7 @@ export function encodeQFVotes(
 ): Hex[] {
   return donations.map((donation) => {
     const vote = [
-      getAddress(donationToken.address) as Hex,
+      getAddress(donationToken.address),
       parseUnits(donation.amount, donationToken.decimal),
       getAddress(donation.recipient),
       donation.projectRegistryId as Hex,

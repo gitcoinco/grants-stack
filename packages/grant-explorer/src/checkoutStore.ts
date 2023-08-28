@@ -16,7 +16,7 @@ import {
 } from "viem";
 import {
   encodeQFVotes,
-  selectPermitType,
+  getPermitType,
   signPermit2612,
   signPermitDai,
   voteUsingMRCContract,
@@ -169,7 +169,7 @@ export const useCheckoutStore = create<CheckoutState>()(
             });
             nonce = await erc20Contract.read.nonces([owner]);
             const tokenName = await erc20Contract.read.name();
-            if (selectPermitType(token) === "dai") {
+            if (getPermitType(token) === "dai") {
               sig = await signPermitDai({
                 walletClient: walletClient,
                 spenderAddress: MRC_CONTRACTS[chainId],
