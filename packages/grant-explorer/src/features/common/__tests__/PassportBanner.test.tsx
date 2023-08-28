@@ -59,7 +59,9 @@ describe("PassportBanner", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as Mock).mockResolvedValueOnce(mockFetchPassportPromise);
+      vitest
+        .mocked(fetchPassport)
+        .mockResolvedValueOnce(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -88,7 +90,7 @@ describe("PassportBanner", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
+      vitest.mocked(fetchPassport).mockResolvedValue(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -117,7 +119,7 @@ describe("PassportBanner", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
+      vitest.mocked(fetchPassport).mockResolvedValue(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -143,7 +145,7 @@ describe("PassportBanner", () => {
         status: 400,
       } as unknown as Response;
 
-      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
+      vitest.mocked(fetchPassport).mockResolvedValue(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -165,7 +167,7 @@ describe("PassportBanner", () => {
         status: 401,
       } as unknown as Response;
 
-      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
+      vitest.mocked(fetchPassport).mockResolvedValue(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
@@ -196,7 +198,7 @@ describe("PassportBanner", () => {
         status: 200,
       } as unknown as Response;
 
-      (fetchPassport as Mock).mockReturnValueOnce(mockFetchPassportPromise);
+      vitest.mocked(fetchPassport).mockResolvedValue(mockFetchPassportPromise);
 
       render(<PassportBanner chainId={5} round={mockRound} />, {
         wrapper: BrowserRouter,
