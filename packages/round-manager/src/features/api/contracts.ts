@@ -275,15 +275,15 @@ export const directPayoutStrategyFactoryContract = (
 
   switch (chainId) {
     case ChainId.MAINNET: {
-      address = "";
+      address = "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140";
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "";
+      address = "0x2Bb670C3ffC763b691062d671b386E51Cf1840f0";
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
+      address = "0x9B1Ee60B539a3761E328a621A3d980EE9385679a";
       break;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
