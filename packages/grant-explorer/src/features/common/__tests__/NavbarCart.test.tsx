@@ -1,10 +1,12 @@
 import { render, fireEvent, screen } from "@testing-library/react";
 import NavbarCart from "../NavbarCart";
-import { makeApprovedProjectData } from "../../../test-utils"; // replace with the correct path to your NavbarCart component
+import { makeApprovedProjectData } from "../../../test-utils";
+import { beforeEach } from "vitest"; // replace with the correct path to your NavbarCart component
 
 describe("<NavbarCart />", () => {
-  // Mock the window.open function to test if it gets called correctly
-  global.window.open = vi.fn();
+  beforeEach(() => {
+    global.window.open = vi.fn();
+  });
 
   test("renders the NavbarCart without errors", () => {
     render(<NavbarCart cart={[]} />);

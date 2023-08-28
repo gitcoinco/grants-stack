@@ -2,12 +2,17 @@ import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 import CartNotification, { ProjectView } from "../CartNotification";
 import { makeApprovedProjectData } from "../../../test-utils";
-import { vi } from "vitest"; // Adjust the path accordingly
+import { beforeEach, vi } from "vitest"; // Adjust the path accordingly
 import DefaultLogoImage from "../../../assets/default_logo.png";
 
 const mockProject = makeApprovedProjectData();
 
 describe("<CartNotification />", () => {
+  let mockOpen = vi.fn();
+  beforeEach(() => {
+    mockOpen = vi.fn();
+    global.open = mockOpen;
+  });
   it("renders when showCartNotification is true", () => {
     render(
       <CartNotification
@@ -45,10 +50,6 @@ describe("<CartNotification />", () => {
   });
 
   it('opens cart in a new tab when "View my cart" button is clicked', () => {
-    // Mocking window.open
-    const mockOpen = vi.fn();
-    global.open = mockOpen;
-
     render(
       <CartNotification
         showCartNotification={true}
