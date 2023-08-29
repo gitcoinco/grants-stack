@@ -56,12 +56,12 @@ export const CHAINS: Record<
   [ChainId.ARBITRUM_GOERLI]: {
     id: ChainId.ARBITRUM_GOERLI,
     name: "Arbitrum Goerli",
-    logo: "./logo/arb-logo.svg",
+    logo: "./logos/arb-logo.svg",
   },
   [ChainId.ARBITRUM]: {
     id: ChainId.ARBITRUM,
     name: "Arbitrum",
-    logo: "./logo/arb-logo.svg",
+    logo: "./logos/arb-logo.svg",
   },
 };
 

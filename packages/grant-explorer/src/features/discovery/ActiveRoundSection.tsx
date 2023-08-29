@@ -5,6 +5,7 @@ import SearchInput, { SortFilterDropdown } from "../common/SearchInput";
 import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
+import { ChainId } from "common";
 
 type ActiveRounds = {
   isLoading: boolean;
