@@ -58,6 +58,11 @@ export const CHAINS: Record<
     name: "Arbitrum Goerli",
     logo: "./logo/arb-logo.svg",
   },
+  [ChainId.ARBITRUM]: {
+    id: ChainId.ARBITRUM,
+    name: "Arbitrum",
+    logo: "./logo/arb-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos: Record<string, string> = {
@@ -254,6 +259,19 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const ARBITRUM_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
 const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -275,6 +293,8 @@ export const payoutTokens = [
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
   ...PGN_MAINNET_TOKENS,
+  ...ARBITRUM_TOKENS,
+  ...ARBITRUM_GOERLI_TOKENS,
 ];
 
 type PayoutTokensMap = Record<ChainId, PayoutToken[]>;
@@ -287,7 +307,7 @@ export const payoutTokensMap: PayoutTokensMap = {
   [ChainId.PGN]: PGN_MAINNET_TOKENS,
   [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
   [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_TOKENS,
-  [ChainId.ARBITRUM]: ARBITRUM_GOERLI_TOKENS,
+  [ChainId.ARBITRUM]: ARBITRUM_TOKENS,
 };
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
@@ -328,6 +348,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.PGN_TESTNET]: "https://explorer.sepolia.publicgoods.network/tx/",
   [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
   [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
+  [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
 };
 
 /**
@@ -471,6 +492,7 @@ export function getChainIds(): number[] {
       Number(ChainId.OPTIMISM_MAINNET_CHAIN_ID),
       Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
       Number(ChainId.PGN),
+      Number(ChainId.ARBITRUM),
     ];
   } else {
     return Object.values(ChainId)

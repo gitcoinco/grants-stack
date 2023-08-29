@@ -46,10 +46,15 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "PGN",
     logo: "/logos/pgn-logo.svg",
   },
+  [ChainId.ARBITRUM]: {
+    id: ChainId.ARBITRUM,
+    name: "Arbitrum",
+    logo: "/logos/arb-logo.svg",
+  },
   [ChainId.ARBITRUM_GOERLI]: {
     id: ChainId.ARBITRUM_GOERLI,
     name: "Arbitrum Goerli",
-    logo: "./logo/arb-logo.svg",
+    logo: "/logos/arb-logo.svg",
   },
 };
 
@@ -232,6 +237,28 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM_GOERLI,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+];
+
+const ARBITRUM_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -240,6 +267,8 @@ export const payoutTokens = [
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
   ...PGN_MAINNET_TOKENS,
+  ...ARBITRUM_TOKENS,
+  ...ARBITRUM_GOERLI_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -343,6 +372,11 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
       ];
     case ChainId.PGN:
       return PGN_MAINNET_TOKENS;
+
+    case ChainId.ARBITRUM_GOERLI:
+      return payoutTokens.filter(
+        (token) => token.chainId === ChainId.ARBITRUM_GOERLI
+      );
 
     case ChainId.GOERLI_CHAIN_ID:
     default: {
