@@ -1666,7 +1666,8 @@ function Funding(props: {
     editedRound &&
     payoutTokens.filter(
       (t) =>
-        t.address.toLocaleLowerCase() == editedRound.token.toLocaleLowerCase()
+        t.address.toLowerCase() == editedRound.token.toLowerCase() &&
+        t.chainId == editedRound.chainId
     )[0];
 
   const matchingFunds =
