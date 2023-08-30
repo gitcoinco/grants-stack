@@ -1,42 +1,46 @@
-import { act, fireEvent, screen } from "@testing-library/react";
-import {
-  makeApprovedProjectData,
-  renderWithContext,
-} from "../../../test-utils";
+import { render, fireEvent, screen } from "@testing-library/react";
 import NavbarCart from "../NavbarCart";
+import { makeApprovedProjectData } from "../../../test-utils";
+import { beforeEach } from "vitest"; // replace with the correct path to your NavbarCart component
 
-describe("<NavbarCart/>", () => {
-  it("SHOULD always show CART icon", () => {
-    renderWithContext(<NavbarCart cart={[]} />);
-    screen.logTestingPlaygroundURL();
-    expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
+describe("<NavbarCart />", () => {
+  beforeEach(() => {
+    global.window.open = vi.fn();
   });
 
-  it("SHOULD not display a number when empty", () => {
-    renderWithContext(<NavbarCart cart={[]} />);
+  test("renders the NavbarCart without errors", () => {
+    render(<NavbarCart cart={[]} />);
 
-    /* Verify we are displaying the 0 */
-    expect(screen.queryByText("0")).not.toBeInTheDocument();
+    const navbarCart = screen.getByTestId("navbar-cart");
+    expect(navbarCart).toBeInTheDocument();
   });
 
-  it("SHOULD display the number when full", () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
+  test("displays the correct count of projects in the cart", () => {
+    const mockCart = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+    ];
 
-    renderWithContext(<NavbarCart cart={cart} />);
+    render(<NavbarCart cart={mockCart} />);
 
-    /* Verify we aren't displaying the 0 */
-    expect(screen.getByText("2")).toBeInTheDocument();
+    const badge = screen.getByText("3");
+    expect(badge).toBeInTheDocument();
   });
 
-  it("SHOULD not show dropdown on clicking cart icon WHEN cart is empty", async () => {
-    renderWithContext(<NavbarCart cart={[]} />);
+  test("does not display count badge when cart is empty", () => {
+    render(<NavbarCart cart={[]} />);
 
-    const icon = screen.getByTestId("navbar-cart");
+    const badge = screen.queryByText(/(\d+)/); // This will match any number
+    expect(badge).not.toBeInTheDocument();
+  });
 
-    await act(() => {
-      fireEvent.click(icon);
-    });
+  test('opens a new window/tab with URL "#/cart" when clicked', () => {
+    render(<NavbarCart cart={[]} />);
 
-    expect(screen.queryByTestId("quick-view-summary")).not.toBeInTheDocument();
+    const navbarCart = screen.getByTestId("navbar-cart");
+    fireEvent.click(navbarCart);
+
+    expect(window.open).toHaveBeenCalledWith("#/cart", "_blank");
   });
 });

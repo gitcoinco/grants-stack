@@ -3,8 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 
 export type SortFilterDropdownProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onChange: any;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
 };
 
 export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
@@ -25,7 +24,7 @@ export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
   );
 };
 
-const SearchInput = (props: {
+export const SearchInput = (props: {
   searchQuery: string;
   onChange: Dispatch<SetStateAction<string>>;
 }) => {

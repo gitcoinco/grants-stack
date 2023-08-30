@@ -4,16 +4,12 @@ import { renderWithContext } from "../../../test-utils";
 
 describe("<InfoModal />", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should display the modal when isOpen is true", () => {
     renderWithContext(
-      <InfoModal
-        isOpen
-        setIsOpen={jest.fn()}
-        continueButtonAction={jest.fn()}
-      />
+      <InfoModal isOpen setIsOpen={vi.fn()} continueButtonAction={vi.fn()} />
     );
 
     expect(screen.getByTestId("info-modal")).toBeInTheDocument();
@@ -23,8 +19,8 @@ describe("<InfoModal />", () => {
     renderWithContext(
       <InfoModal
         isOpen={false}
-        setIsOpen={jest.fn()}
-        continueButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        continueButtonAction={vi.fn()}
       />
     );
 
@@ -32,13 +28,9 @@ describe("<InfoModal />", () => {
   });
 
   it("should close the modal by default when cancel button is clicked", () => {
-    const setIsOpen = jest.fn();
+    const setIsOpen = vi.fn();
     renderWithContext(
-      <InfoModal
-        isOpen
-        setIsOpen={setIsOpen}
-        continueButtonAction={jest.fn()}
-      />
+      <InfoModal isOpen setIsOpen={setIsOpen} continueButtonAction={vi.fn()} />
     );
 
     const cancelButton = screen.getByRole("button", { name: /Cancel/i });
@@ -49,12 +41,12 @@ describe("<InfoModal />", () => {
   });
 
   it("should execute cancelButtonAction when cancelButtonAction is provided and cancel button is clicked", () => {
-    const cancelButtonAction = jest.fn();
+    const cancelButtonAction = vi.fn();
     renderWithContext(
       <InfoModal
         isOpen
-        setIsOpen={jest.fn()}
-        continueButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        continueButtonAction={vi.fn()}
         cancelButtonAction={cancelButtonAction}
       />
     );
@@ -66,11 +58,11 @@ describe("<InfoModal />", () => {
   });
 
   it("should execute continueButtonAction when continue button is clicked", () => {
-    const continueButtonAction = jest.fn();
+    const continueButtonAction = vi.fn();
     renderWithContext(
       <InfoModal
         isOpen
-        setIsOpen={jest.fn()}
+        setIsOpen={vi.fn()}
         continueButtonAction={continueButtonAction}
       />
     );
@@ -83,11 +75,11 @@ describe("<InfoModal />", () => {
 
   it("should display custom text for button that executes continueButtonAction when continueButtonText is provided in props", () => {
     const continueButtonText = "My Cool Button";
-    const continueButtonAction = jest.fn();
+    const continueButtonAction = vi.fn();
     renderWithContext(
       <InfoModal
         isOpen
-        setIsOpen={jest.fn()}
+        setIsOpen={vi.fn()}
         continueButtonAction={continueButtonAction}
         continueButtonText={continueButtonText}
       />
@@ -106,8 +98,8 @@ describe("<InfoModal />", () => {
     renderWithContext(
       <InfoModal
         isOpen={true}
-        setIsOpen={jest.fn()}
-        continueButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        continueButtonAction={vi.fn()}
         title={modalTitle}
       />
     );
@@ -121,8 +113,8 @@ describe("<InfoModal />", () => {
     renderWithContext(
       <InfoModal
         isOpen={true}
-        setIsOpen={jest.fn()}
-        continueButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        continueButtonAction={vi.fn()}
         body={body}
       />
     );
@@ -136,8 +128,8 @@ describe("<InfoModal />", () => {
     renderWithContext(
       <InfoModal
         isOpen
-        setIsOpen={jest.fn()}
-        continueButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        continueButtonAction={vi.fn()}
         body={<div />}
       >
         {child}

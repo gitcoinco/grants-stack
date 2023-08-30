@@ -24,9 +24,7 @@ const ApplyNowSection = (props: ApplyNow) => {
             className="cursor-pointer mr-1 text-violet-400 text-sm"
             to="/apply-now"
           >
-            {applyNowRoundsCount > 0
-              ? `View All (${applyNowRoundsCount})`
-              : null}
+            {applyNowRoundsCount > 0 && `View All (${applyNowRoundsCount})`}
           </Link>
         </div>
       </div>
@@ -34,7 +32,15 @@ const ApplyNowSection = (props: ApplyNow) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
           {new Array(3).fill(undefined).map((_, index) => {
             return (
-              <Skeleton key={index} my={3} rounded={"md"} w={"full"} h={"64"} />
+              // @ts-expect-error Tsc too weak to represent this type lol
+              <Skeleton
+                key={index}
+                my={3}
+                rounded={"md"}
+                w={"full"}
+                h={"64"}
+                role={"progressbar"}
+              />
             );
           })}
         </div>

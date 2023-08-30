@@ -1,6 +1,15 @@
 import { MRC_CONTRACTS } from "./contracts";
-import { Hex, hexToNumber, slice, zeroAddress } from "viem";
-import { PayoutToken } from "./types";
+import {
+  encodeAbiParameters,
+  getAddress,
+  Hex,
+  hexToNumber,
+  parseAbiParameters,
+  parseUnits,
+  slice,
+  zeroAddress,
+} from "viem";
+import { CartProject, PayoutToken } from "./types";
 import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
 import { WalletClient } from "wagmi";
@@ -11,6 +20,25 @@ export type PermitSignature = {
   v: number;
   r: string;
   s: string;
+};
+
+export type PermitType = "dai" | "eip2612";
+/** Given a payout token, selects the correct permit type.
+ * - DAI is the old permit type without `value` and with the `allowed` prop
+ * - eip2612 is the standard permit interface, as specified in https://eips.ethereum.org/EIPS/eip-2612
+ *
+ * Old DAI permit type is only implemented on Ethereum and Polygon PoS. Check /docs/DAI.md for more info.
+ * */
+export const getPermitType = (token: PayoutToken): PermitType => {
+  if (
+    /DAI/i.test(token.name) &&
+    token.chainId ===
+      1 /* || token.chainId === 137 Polygon not yet supported, but soon */
+  ) {
+    return "dai";
+  } else {
+    return "eip2612";
+  }
 };
 
 export const voteUsingMRCContract = async (
@@ -26,7 +54,6 @@ export const voteUsingMRCContract = async (
     nonce: bigint;
   }
 ) => {
-  console.log("chainId in mrc vote", chainId);
   const mrcImplementation = getContract({
     address: MRC_CONTRACTS[(await walletClient.getChainId()) as ChainId],
     abi: mrcAbi,
@@ -38,19 +65,6 @@ export const voteUsingMRCContract = async (
 
   /* decide which function to use based on whether token is native, permit-compatible or DAI */
   if (token.address === zeroAddress) {
-    // const { request } = await publicClient.simulateContract({
-    //   account: walletClient.account,
-    //   address: mrcImplementation.address,
-    //   abi: mrcAbi,
-    //   functionName: "vote",
-    //   args: [
-    //     Object.values(groupedVotes),
-    //     Object.keys(groupedVotes) as Hex[],
-    //     Object.values(groupedAmounts),
-    //   ],
-    //   value: nativeTokenAmount,
-    // });
-
     tx = await mrcImplementation.write.vote(
       [
         Object.values(groupedVotes),
@@ -63,9 +77,7 @@ export const voteUsingMRCContract = async (
       }
     );
   } else if (permit) {
-    /* Is token DAI? */
-    /** DAI on optimism supports normal eip2612 permit, so we skip that*/
-    if (/DAI/i.test(token.name) && chainId !== 10) {
+    if (getPermitType(token) === "dai") {
       tx = await mrcImplementation.write.voteDAIPermit([
         Object.values(groupedVotes),
         Object.keys(groupedVotes) as Hex[],
@@ -232,3 +244,26 @@ export const signPermitDai = async ({
   ];
   return { r, s, v: hexToNumber(v) };
 };
+
+export function encodeQFVotes(
+  donationToken: PayoutToken,
+  donations: Pick<
+    CartProject,
+    "amount" | "recipient" | "projectRegistryId" | "applicationIndex"
+  >[]
+): Hex[] {
+  return donations.map((donation) => {
+    const vote = [
+      getAddress(donationToken.address),
+      parseUnits(donation.amount, donationToken.decimal),
+      getAddress(donation.recipient),
+      donation.projectRegistryId as Hex,
+      BigInt(donation.applicationIndex),
+    ] as const;
+
+    return encodeAbiParameters(
+      parseAbiParameters(["address,uint256,address,bytes32,uint256"]),
+      vote
+    );
+  });
+}

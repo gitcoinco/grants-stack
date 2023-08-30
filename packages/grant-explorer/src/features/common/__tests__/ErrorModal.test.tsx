@@ -1,13 +1,13 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithContext } from "../../../test-utils";
 import ErrorModal from "../../common/ErrorModal";
 
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+vi.mock("../../common/Auth");
+vi.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: vi.fn(),
 }));
 
-describe.skip("<ErrorModal />", () => {
+describe("<ErrorModal />", () => {
   it("shows error modal heading and error message", async () => {
     renderWithContext(
       <ErrorModal
@@ -39,8 +39,8 @@ describe.skip("<ErrorModal />", () => {
   });
 
   it("should call the try again callback and close the modal if try again is clicked", () => {
-    const tryAgainFn = jest.fn();
-    const setIsOpenFn = jest.fn();
+    const tryAgainFn = vi.fn();
+    const setIsOpenFn = vi.fn();
 
     renderWithContext(
       <ErrorModal
@@ -59,8 +59,8 @@ describe.skip("<ErrorModal />", () => {
   });
 
   it("should call the done callback and close the modal if done is clicked", () => {
-    const doneFn = jest.fn();
-    const setIsOpenFn = jest.fn();
+    const doneFn = vi.fn();
+    const setIsOpenFn = vi.fn();
 
     renderWithContext(
       <ErrorModal
@@ -76,5 +76,33 @@ describe.skip("<ErrorModal />", () => {
     expect(doneFn).toBeCalledTimes(1);
     expect(setIsOpenFn).toBeCalledTimes(1);
     expect(setIsOpenFn).toBeCalledWith(false);
+  });
+
+  it.skip("should close the modal if close on background click is enabled and background is clicked", () => {
+    const doneFn = vi.fn();
+    const setIsOpenFn = vi.fn();
+
+    renderWithContext(
+      <ErrorModal
+        heading="error title"
+        subheading="this is an error message"
+        isOpen={true}
+        closeOnBackgroundClick={true}
+        setIsOpen={setIsOpenFn}
+        onDone={doneFn}
+      />
+    );
+    fireEvent.click(screen.getByTestId("backdrop"));
+
+    /** Need to add timeout for the function to actually be called */
+    waitFor(
+      () => {
+        expect(setIsOpenFn).toBeCalledTimes(1);
+        expect(setIsOpenFn).toBeCalledWith(false);
+      },
+      {
+        timeout: 10,
+      }
+    );
   });
 });

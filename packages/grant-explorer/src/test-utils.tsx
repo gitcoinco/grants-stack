@@ -138,7 +138,7 @@ export const renderWithContext = (
   ui: JSX.Element,
   roundStateOverrides: Partial<RoundState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
+  dispatch: any = vi.fn()
 ) =>
   render(
     <MemoryRouter>

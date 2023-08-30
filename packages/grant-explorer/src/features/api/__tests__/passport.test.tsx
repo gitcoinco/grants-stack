@@ -1,12 +1,13 @@
 import { fetchPassport, submitPassport } from "../passport";
 import { faker } from "@faker-js/faker";
 import { mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
+import { Mock } from "vitest";
 
-jest.mock("../passport", () => {
+vi.mock("../passport", () => {
   return {
-    ...jest.requireActual("../passport"),
-    fetchPassport: jest.fn(),
-    submitPassport: jest.fn(),
+    ...vi.importActual("../passport"),
+    fetchPassport: vi.fn(),
+    submitPassport: vi.fn(),
   };
 });
 
@@ -18,7 +19,7 @@ const mockAccount = {
   isConnected: true,
 };
 
-jest.mock("wagmi", () => ({
+vi.mock("wagmi", () => ({
   useAccount: () => mockAccount,
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
@@ -27,16 +28,15 @@ jest.mock("wagmi", () => ({
 
 describe("fetchPassport", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should return a response", async () => {
-    (fetchPassport as jest.Mock).mockResolvedValue({
+    (fetchPassport as Mock).mockResolvedValue({
       ok: true,
       status: 200,
     });
     const resp = await fetchPassport(userAddress, communityId);
-    console.log(resp);
     expect(resp).toBeDefined();
     expect(resp.ok).toBeTruthy();
     expect(resp.status).toEqual(200);
@@ -45,11 +45,11 @@ describe("fetchPassport", () => {
 
 describe("submitPassport", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should return a response", async () => {
-    (submitPassport as jest.Mock).mockResolvedValue({
+    (submitPassport as Mock).mockResolvedValue({
       ok: true,
       status: 200,
     });
