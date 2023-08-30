@@ -32,6 +32,14 @@ describe("<CopyToClipboardButton />", () => {
     expect(screen.getByText("Link Copied")).toBeInTheDocument();
   });
 
+  /*TODO: a better way to do this:
+  *    const clipboard = { writeText: vi.fn() }
+    Object.assign(navigator, { clipboard })
+    renderWithContext(<CopyToClipboardButton textToCopy={'foobar'} />);
+    const copyButton = screen.getByRole("button");
+    fireEvent.click(copyButton);
+    expect(navigator.clipboard.writeText()).toHaveBeenCalledWith('foobar');
+  * */
   it("should copy value to clipboard when clicked", () => {
     renderWrapped(<CopyToClipboardButton textToCopy={textToCopy} />);
     const copyButton = screen.getByRole("button");
