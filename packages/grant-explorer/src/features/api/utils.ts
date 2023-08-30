@@ -66,7 +66,7 @@ export const TokenNamesAndLogos: Record<string, string> = {
   GcV: "./logos/fantom-gcv-logo.png",
 };
 
-const MAINNET_TOKENS: PayoutToken[] = [
+export const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
@@ -89,7 +89,7 @@ const MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
+export const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
@@ -437,32 +437,6 @@ export const getDaysLeft = (epochTime: number) => {
   const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
 
   return differenceInDays;
-};
-
-export const listenForOutsideClicks = ({
-  listening,
-  setListening,
-  menuRef,
-  setOpen,
-}: {
-  listening: boolean;
-  setListening: React.Dispatch<React.SetStateAction<boolean>>;
-  menuRef: React.MutableRefObject<HTMLDivElement | null>;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  return () => {
-    if (listening) return;
-    if (!menuRef.current) return;
-    setListening(true);
-    [`click`, `touchstart`].forEach((type) => {
-      document.addEventListener(type, (evt) => {
-        if (menuRef.current && menuRef.current.contains(evt.target as Node)) {
-          return;
-        }
-        setOpen(false);
-      });
-    });
-  };
 };
 
 export function getChainIds(): number[] {

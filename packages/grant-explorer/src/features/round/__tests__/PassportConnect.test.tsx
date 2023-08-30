@@ -11,26 +11,27 @@ import { fetchPassport, submitPassport } from "../../api/passport";
 import PassportConnect from "../PassportConnect";
 import { Round } from "../../api/types";
 import { payoutTokens } from "../../api/utils";
+import { Mock } from "vitest";
 
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
 
-jest.mock("../../api/passport");
-jest.mock("../../common/Navbar");
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
+vi.mock("../../api/passport");
+vi.mock("../../common/Navbar");
+vi.mock("../../common/Auth");
 
-const useParamsFn = () => ({
-  chainId: chainId,
-  roundId: roundId,
+vi.mock("react-router-dom", async () => {
+  const useParamsFn = () => ({
+    chainId: chainId,
+    roundId: roundId,
+  });
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+    useParams: useParamsFn,
+  };
 });
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => jest.fn(),
-  useParams: useParamsFn,
-}));
 
 const userAddress = faker.finance.ethereumAddress();
 const mockAccount = {
@@ -53,7 +54,7 @@ const mockPassportPromise = {
   json: () => mockJsonPromise,
 } as unknown as Response;
 
-jest.mock("wagmi", () => ({
+vi.mock("wagmi", () => ({
   useAccount: () => mockAccount,
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
@@ -65,7 +66,7 @@ process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = "12";
 describe("<PassportConnect/>", () => {
   describe("Navigation Buttons", () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       let stubRound: Round;
       const roundStartTime = faker.date.recent();
@@ -112,7 +113,7 @@ describe("<PassportConnect/>", () => {
 
   describe("Passport Connect", () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       let stubRound: Round;
       const roundStartTime = faker.date.recent();
@@ -146,8 +147,8 @@ describe("<PassportConnect/>", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
-      (submitPassport as jest.Mock).mockResolvedValueOnce(jest.fn());
+      (fetchPassport as Mock).mockResolvedValueOnce(mockPassportPromise);
+      (submitPassport as Mock).mockResolvedValueOnce(vi.fn());
 
       renderWithContext(<PassportConnect />, {
         rounds: [stubRound],
@@ -185,7 +186,7 @@ describe("<PassportConnect/>", () => {
 describe("<PassportConnect/>", () => {
   describe("PassportConnect Passport State", () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("IF passport state return error status THEN it shows issue in fetching passport", async () => {
@@ -221,7 +222,7 @@ describe("<PassportConnect/>", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
+      (fetchPassport as Mock).mockResolvedValueOnce(mockPassportPromise);
 
       renderWithContext(<PassportConnect />, {
         rounds: [stubRound],
@@ -271,7 +272,7 @@ describe("<PassportConnect/>", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
+      (fetchPassport as Mock).mockResolvedValueOnce(mockPassportPromise);
 
       renderWithContext(<PassportConnect />, {
         rounds: [stubRound],
@@ -316,7 +317,7 @@ describe("<PassportConnect/>", () => {
         json: () => mockJsonPromise,
       } as unknown as Response;
 
-      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
+      (fetchPassport as Mock).mockResolvedValueOnce(mockPassportPromise);
 
       renderWithContext(<PassportConnect />, {
         rounds: [stubRound],
@@ -346,7 +347,7 @@ describe("<PassportConnect/>", () => {
         token: token,
       });
 
-      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
+      (fetchPassport as Mock).mockResolvedValueOnce(mockPassportPromise);
       mockAccount.isConnected = false;
 
       renderWithContext(<PassportConnect />, {

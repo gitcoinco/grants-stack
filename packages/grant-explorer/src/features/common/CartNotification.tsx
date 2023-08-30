@@ -10,7 +10,6 @@ export default function CartNotification(props: {
   showCartNotification: boolean;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
   currentProjectAddedToCart: Project;
-  roundUrlPath: string;
 }) {
   return (
     <>
@@ -71,7 +70,7 @@ export default function CartNotification(props: {
   );
 }
 
-function ProjectView(props: { project: Project }) {
+export function ProjectView(props: { project: Project }) {
   return (
     <div className="flex mb-4" data-testid="project-quick-view">
       <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">

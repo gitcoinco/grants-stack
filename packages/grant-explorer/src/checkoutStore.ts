@@ -1,22 +1,22 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { CartProject, PayoutToken, ProgressStatus } from "./features/api/types";
+import { CartProject, ProgressStatus } from "./features/api/types";
 import { ChainId } from "common";
 import { useCartStorage } from "./store";
 import {
-  encodeAbiParameters,
   getAddress,
   Hex,
   InternalRpcError,
   parseAbi,
-  parseAbiParameters,
   parseUnits,
   SwitchChainError,
   UserRejectedRequestError,
   zeroAddress,
 } from "viem";
 import {
+  encodeQFVotes,
+  getPermitType,
   signPermit2612,
   signPermitDai,
   voteUsingMRCContract,
@@ -169,9 +169,7 @@ export const useCheckoutStore = create<CheckoutState>()(
             });
             nonce = await erc20Contract.read.nonces([owner]);
             const tokenName = await erc20Contract.read.name();
-            /*TODO: better dai test, extract into function, test*/
-            /** DAI on optimism supports normal eip2612 permit*/
-            if (/DAI/i.test(tokenName) && chainId !== 10) {
+            if (getPermitType(token) === "dai") {
               sig = await signPermitDai({
                 walletClient: walletClient,
                 spenderAddress: MRC_CONTRACTS[chainId],
@@ -212,7 +210,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         }
 
         try {
-          /** When voting via native toke, we just set the permit status to success */
+          /** When voting via native token, we just set the permit status to success */
           if (!sig) {
             get().setPermitStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
           }
@@ -243,8 +241,6 @@ export const useCheckoutStore = create<CheckoutState>()(
               0n
             );
           }
-
-          console.log("chainid before voteusing mrc contract", chainId);
 
           const receipt = await voteUsingMRCContract(
             wc!,
@@ -360,24 +356,4 @@ async function switchToChain(
     }
   }
   get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
-}
-
-function encodeQFVotes(
-  donationToken: PayoutToken,
-  donations: CartProject[]
-): Hex[] {
-  return donations.map((donation) => {
-    const vote = [
-      getAddress(donationToken.address) as Hex,
-      parseUnits(donation.amount, donationToken.decimal),
-      getAddress(donation.recipient),
-      donation.projectRegistryId as Hex,
-      BigInt(donation.applicationIndex),
-    ] as const;
-
-    return encodeAbiParameters(
-      parseAbiParameters(["address,uint256,address,bytes32,uint256"]),
-      vote
-    );
-  });
 }
