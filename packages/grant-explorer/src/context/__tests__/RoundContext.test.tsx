@@ -6,6 +6,7 @@ import { getRoundById } from "../../features/api/round";
 import { Round } from "../../features/api/types";
 
 vi.mock("../../features/api/round");
+/*TODO: look into wagmi MockConnector*/
 vi.mock("wagmi");
 
 describe("<ListRoundProvider />", () => {

@@ -5,9 +5,8 @@ import { makeApprovedProjectData } from "../../../test-utils";
 import { beforeEach, vi } from "vitest"; // Adjust the path accordingly
 import DefaultLogoImage from "../../../assets/default_logo.png";
 
-const mockProject = makeApprovedProjectData();
-
 describe("<CartNotification />", () => {
+  const mockProject = makeApprovedProjectData();
   let mockOpen = vi.fn();
   beforeEach(() => {
     mockOpen = vi.fn();
@@ -64,6 +63,8 @@ describe("<CartNotification />", () => {
 });
 
 describe("<ProjectView />", () => {
+  const mockProject = makeApprovedProjectData();
+
   it("renders the correct project title", () => {
     render(<ProjectView project={mockProject} />);
     expect(

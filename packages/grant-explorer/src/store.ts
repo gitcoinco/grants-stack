@@ -80,6 +80,15 @@ export const useCartStorage = create<CartState>()(
       chainToPayoutToken: ethOnlyPayoutTokens,
       setPayoutTokenForChain: (chainId: ChainId, payoutToken: PayoutToken) => {
         if (!Object.values(ChainId).includes(chainId)) {
+          console.warn(
+            "Tried setting payoutToken",
+            payoutToken,
+            "for chain",
+            chainId,
+            ", but chain",
+            chainId,
+            " doesn't exist"
+          );
           return;
         }
 
