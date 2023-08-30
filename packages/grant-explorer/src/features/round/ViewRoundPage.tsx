@@ -196,7 +196,9 @@ function AfterRoundStart(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
+      (t) =>
+        t.address.toLowerCase() === round.token.toLowerCase() &&
+        t.chainId === chainId
     )[0].name;
 
   const breadCrumbs = [
