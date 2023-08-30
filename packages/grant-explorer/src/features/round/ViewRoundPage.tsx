@@ -199,7 +199,7 @@ function AfterRoundStart(props: {
       (t) =>
         t.address.toLowerCase() === round.token.toLowerCase() &&
         t.chainId === chainId
-    )[0].name;
+    )[0]?.name;
 
   const breadCrumbs = [
     {
