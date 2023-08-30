@@ -47,7 +47,7 @@ export default function ViewRound() {
 
   const { round, isLoading } = useRoundById(
     chainId as string,
-    roundId as string
+    roundId?.toLowerCase() as string
   );
 
   const currentTime = new Date();

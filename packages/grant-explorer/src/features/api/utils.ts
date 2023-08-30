@@ -3,6 +3,7 @@ import { CartProject, IPFSObject, PayoutToken } from "./types";
 import { ChainId, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 import { zeroAddress } from "viem";
+import { ethers } from "ethers";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -262,11 +263,31 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
 const ARBITRUM_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
-    chainId: ChainId.PGN,
-    address: zeroAddress,
+    chainId: ChainId.ARBITRUM,
+    address: ethers.constants.AddressZero,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.ARBITRUM,
+    address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "ARB",
+    chainId: ChainId.ARBITRUM,
+    address: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    decimal: 18,
+    logo: TokenNamesAndLogos["ARB"],
+    redstoneTokenId: RedstoneTokenIds["ARB"],
     defaultForVoting: true,
     canVote: true,
   },
