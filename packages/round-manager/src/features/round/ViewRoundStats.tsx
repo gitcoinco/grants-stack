@@ -9,10 +9,11 @@ import {
 } from "../../hooks";
 import { getUTCDate } from "common";
 import { payoutTokens } from "../api/utils";
+import { useChainId } from "wagmi";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
-
+  const chainId = useChainId();
   const roundId = utils.getAddress(id?.toLowerCase() ?? "");
 
   const { data: round } = useRound(roundId);
@@ -26,7 +27,9 @@ export default function ViewRoundStats() {
   const matchToken =
     round &&
     payoutTokens.find(
-      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+      (t) =>
+        t.address.toLowerCase() == round.token.toLowerCase() &&
+        t.chainId === chainId
     );
 
   return (

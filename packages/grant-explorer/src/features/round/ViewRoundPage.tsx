@@ -232,7 +232,7 @@ function AfterRoundStart(props: {
   return (
     <>
       {showCartNotification && renderCartNotification()}
-      <Navbar isBeforeRoundEndDate={props.isBeforeRoundEndDate} />
+      <Navbar />
       {props.isBeforeRoundEndDate && (
         <PassportBanner chainId={chainId} round={round} />
       )}
@@ -563,7 +563,9 @@ function PreRoundPage(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
+      (t) =>
+        t.address.toLowerCase() === round.token.toLowerCase() &&
+        t.chainId.toString() === chainId
     )[0]?.name;
 
   return (
