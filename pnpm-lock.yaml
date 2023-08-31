@@ -484,7 +484,7 @@ importers:
         version: github.com/gitcoinco/allo-indexer-client/0549b473941a916b38426b32f59250f87ec3274d
       babel-loader:
         specifier: ^8.3.0
-        version: 8.3.0(@babel/core@7.20.12)(webpack@5.75.0)
+        version: 8.3.0(@babel/core@7.20.12)
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -596,9 +596,6 @@ importers:
       web-vitals:
         specifier: ^2.1.0
         version: 2.1.4
-      webpack:
-        specifier: '>=2'
-        version: 5.75.0
       zustand:
         specifier: ^4.4.0
         version: 4.4.0(@types/react@18.0.27)(react@18.2.0)
@@ -6299,7 +6296,7 @@ packages:
     dependencies:
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.45
+      '@types/node': 18.17.6
       jest-mock: 27.5.1
 
   /@jest/expect-utils@29.5.0:
@@ -6314,7 +6311,7 @@ packages:
     dependencies:
       '@jest/types': 27.5.1
       '@sinonjs/fake-timers': 8.1.0
-      '@types/node': 17.0.45
+      '@types/node': 18.17.6
       jest-message-util: 27.5.1
       jest-mock: 27.5.1
       jest-util: 27.5.1
@@ -10870,6 +10867,20 @@ packages:
       slash: 3.0.0
     transitivePeerDependencies:
       - supports-color
+
+  /babel-loader@8.3.0(@babel/core@7.20.12):
+    resolution: {integrity: sha512-H8SvsMF+m9t15HNLMipppzkC+Y2Yq+v3SonZyU70RBL/h1gxPkH08Ot8pEE9Z4Kd+czyWJClmFS8qzIP9OZ04Q==}
+    engines: {node: '>= 8.9'}
+    peerDependencies:
+      '@babel/core': ^7.0.0
+      webpack: '>=2'
+    dependencies:
+      '@babel/core': 7.20.12
+      find-cache-dir: 3.3.2
+      loader-utils: 2.0.4
+      make-dir: 3.1.0
+      schema-utils: 2.7.1
+    dev: false
 
   /babel-loader@8.3.0(@babel/core@7.20.12)(webpack@5.75.0):
     resolution: {integrity: sha512-H8SvsMF+m9t15HNLMipppzkC+Y2Yq+v3SonZyU70RBL/h1gxPkH08Ot8pEE9Z4Kd+czyWJClmFS8qzIP9OZ04Q==}
@@ -17291,7 +17302,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 17.0.45
+      '@types/node': 18.17.6
 
   /jest-pnp-resolver@1.2.3(jest-resolve@27.5.1):
     resolution: {integrity: sha512-+3NpwQEnRoIBtx4fyhblQDPgJI0H1IEIkX7ShLUjPGA7TtUTvI1oiKi3SR4oBR0hQhQR80l4WAe5RrXBwWMA8w==}
