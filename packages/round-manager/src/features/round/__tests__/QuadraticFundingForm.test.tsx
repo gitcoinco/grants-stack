@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
+import { ChainId } from "common";
 
-import { ChainId, getPayoutTokenOptions } from "../../api/utils";
+import { getPayoutTokenOptions } from "../../api/utils";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import QuadraticFundingForm from "../QuadraticFundingForm";

@@ -1,4 +1,5 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { ChainId } from "common";
 import { ReactNode } from "react";
 import { RoundApplicationMetadata } from "./roundApplication";
 
@@ -150,6 +151,7 @@ export type Round = {
   applicationMetaPtr: MetaPtr;
   applicationMetadata: RoundApplicationMetadata;
   programName: string;
+  payoutStrategy: string;
 };
 
 export enum RoundDisplayType {
@@ -162,7 +164,7 @@ export type ProjectOption = {
   id: string | undefined;
   title?: string;
   chainInfo?: {
-    chainId: number;
+    chainId: ChainId;
     chainName: string;
     icon?: any;
   };

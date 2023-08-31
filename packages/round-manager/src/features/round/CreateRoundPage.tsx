@@ -11,6 +11,7 @@ import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
 import { RoundDetailForm } from "./RoundDetailForm";
 import QuadraticFundingForm from "./QuadraticFundingForm";
+import { RoundCategory } from "../api/types";
 
 function ExitCreateRound(props: { onClick: () => void }) {
   return (
@@ -32,6 +33,20 @@ export default function CreateRound() {
 
   const [searchParams] = useSearchParams();
   const programId = searchParams.get("programId");
+  const roundCategoryParam = searchParams.get("roundCategory");
+  const roundCategory =
+    roundCategoryParam === "direct"
+      ? RoundCategory.Direct
+      : RoundCategory.QuadraticFunding;
+  const steps =
+    roundCategory == RoundCategory.Direct
+      ? [RoundDetailForm, ApplicationEligibilityForm, RoundApplicationForm]
+      : [
+          RoundDetailForm,
+          QuadraticFundingForm,
+          ApplicationEligibilityForm,
+          RoundApplicationForm,
+        ];
 
   const { program } = useProgramById(programId ?? undefined);
 
@@ -44,20 +59,21 @@ export default function CreateRound() {
         <div className="pb-10 container mx-auto px-4 pt-8">
           <header>
             <div className="flow-root">
-              <h1 className="float-left text-[32px] mb-7">Create a Round</h1>
+              <h1 className="float-left text-[32px] mb-7">
+                Create a {roundCategoryParam == "direct" && "Direct Grants"}
+                &nbsp;Round
+              </h1>
               <ExitCreateRound onClick={() => navigate("/")} />
             </div>
           </header>
           <main>
             <FormWizard
-              steps={[
-                RoundDetailForm,
-                QuadraticFundingForm,
-                ApplicationEligibilityForm,
-                // @ts-expect-error Needs refactoring/typing as a whole
-                RoundApplicationForm,
-              ]}
+              // @ts-expect-error Needs refactoring/typing as a whole
+              steps={steps}
               initialData={{ program }}
+              configuration={{
+                roundCategory: roundCategory,
+              }}
             />
           </main>
         </div>

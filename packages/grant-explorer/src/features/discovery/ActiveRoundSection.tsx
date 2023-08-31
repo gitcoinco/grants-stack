@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dispatch, SetStateAction, useState } from "react";
 import { RoundOverview } from "../api/rounds";
-import SearchInput, { SortFilterDropdown } from "../common/SearchInput";
+import SearchInput, { GrantRoundTypeFilterDropdown, SortFilterDropdown } from "../common/SearchInput";
 import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
@@ -9,6 +9,7 @@ import RoundCard from "./RoundCard";
 type ActiveRounds = {
   isLoading: boolean;
   setSearchQuery: Dispatch<SetStateAction<string>>;
+  setRoundType: Dispatch<SetStateAction<string>>;
   roundOverview: RoundOverview[];
   searchQuery: string;
 };
@@ -41,18 +42,23 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
         <div className="flex flex-col mt-4 justify-items-center">
           <p className="text-grey-400 text-2xl">
-            All Active Rounds{" "}
-            {activeRoundsCount > 0 ? `(${activeRoundsCount})` : null}
+            {`All Active Rounds (${activeRoundsCount})`}
           </p>
           <p className="text-grey-400 text-sm mb-4 mt-2">
             Rounds that are ongoing
           </p>
         </div>
-        {!props.isLoading && activeRoundsCount > 0 ? (
+        {!props.isLoading && (
           <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput
               searchQuery={props.searchQuery}
               onChange={props.setSearchQuery}
+            />
+            <GrantRoundTypeFilterDropdown
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onChange={(e: { target: { value: any } }) => {
+                props.setRoundType(e.target.value)
+              }}              
             />
             <SortFilterDropdown
               onChange={(e: { target: { value: any } }) =>
@@ -60,15 +66,15 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
               }
             />
           </div>
-        ) : null}
+        )}
       </div>
       <div>
-        {props.isLoading ? (
+        {props.isLoading && (
           <div className="flex flex-col lg:flex-row my-auto">
             <Spinner />
           </div>
-        ) : null}
-        {activeRoundsCount > 0 ? (
+        )}
+        {activeRoundsCount > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
             {sortRoundsByTime(props.roundOverview, order).map(
               (round, index) => {
@@ -76,9 +82,10 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
               }
             )}
           </div>
-        ) : !props.isLoading ? (
+        )}
+        {!props.isLoading && activeRoundsCount === 0 && (
           <NoRounds type={"active"} />
-        ) : null}
+        )}
       </div>
     </div>
   );

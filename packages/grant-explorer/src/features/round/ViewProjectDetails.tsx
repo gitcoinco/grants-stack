@@ -32,6 +32,7 @@ import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
+import { isInfiniteDate } from "../api/utils";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -81,8 +82,13 @@ export default function ViewProjectDetails() {
   );
 
   const currentTime = new Date();
-  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
-  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
+  const isAfterRoundEndDate = 
+    round && 
+    (isInfiniteDate(round.roundEndTime) ? false : (round && round.roundEndTime <= currentTime));
+  const isBeforeRoundEndDate =
+    round && 
+    (!isInfiniteDate(round.roundEndTime) ? (round.roundEndTime > currentTime) : true);
+
   const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
     useCart();
 
@@ -234,6 +240,7 @@ function AboutProject(props: { projectToRender: Project }) {
     "..." +
     projectToRender.recipient.slice(-4);
   const { data: ensName } = useEnsName({
+    // @ts-expect-error Temp until viem
     address: projectToRender.recipient ?? "",
   });
   const projectWebsite = projectToRender.projectMetadata.website;
@@ -537,9 +544,12 @@ export function ProjectStats() {
     projectToRender?.projectRegistryId as string
   );
 
-  const timeRemaining = round?.roundEndTime
+  const timeRemaining = round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
     ? formatDistanceToNowStrict(round.roundEndTime)
     : null;
+  const isBeforeRoundEndDate =
+    round && 
+    (!isInfiniteDate(round.roundEndTime) ? (round.roundEndTime > new Date()) : true);
 
   return (
     <div
@@ -556,7 +566,7 @@ export function ProjectStats() {
         <p>contributors</p>
       </div>
       <div>
-        {(round?.roundEndTime ?? 0) > new Date() ? (
+        {isBeforeRoundEndDate ? (
           <>
             <h3>{timeRemaining ?? "-"}</h3>
             <p>to go</p>

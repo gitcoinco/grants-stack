@@ -1,15 +1,15 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../common/Navbar";
+import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
-import { ChainId, getTxExplorer } from "../api/utils";
-import { useRoundById } from "../../context/RoundContext";
-import { useQFDonation } from "../../context/QFDonationContext";
-import Footer from "common/src/components/Footer";
 import { useCart } from "../../context/CartContext";
-import { useEffect } from "react";
+import { useQFDonation } from "../../context/QFDonationContext";
+import { useRoundById } from "../../context/RoundContext";
+import { ChainId, getTxExplorer } from "../api/utils";
+import Navbar from "../common/Navbar";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -39,7 +39,7 @@ export default function ThankYou() {
   }, []);
 
   function TwitterButton(props: { roundName?: string }) {
-    const shareText = `I just donated to the ${props.roundName} on @gitcoin. Join me in making a difference by donating today! https://explorer.gitcoin.co/#/round/${chainId}/${roundId}`;
+    const shareText = `I just donated to the ${props.roundName?.trim()} on @gitcoin. Join me in making a difference by donating today!\n\nhttps://explorer.gitcoin.co/#/round/${chainId}/${roundId}`;
     const shareUrl = `http://twitter.com/share?text=${encodeURIComponent(
       shareText
     )}`;

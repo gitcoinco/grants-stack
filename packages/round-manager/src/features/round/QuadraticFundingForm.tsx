@@ -7,7 +7,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { classNames } from "common";
 import { Input } from "common/src/styles";
-import _ from 'lodash';
+import _ from "lodash";
 import { Fragment, useContext, useState } from "react";
 import {
   Control,
@@ -234,8 +234,8 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
               <p className="text-grey-400 mb-2 mt-1 text-sm">
                 Ensure that project supporters are not bots or sybil with
                 Gitcoin Passport. Learn more about Gitcoin Passport{" "}
-                <a 
-                  href="https://docs.passport.gitcoin.co/overview/readme" 
+                <a
+                  href="https://docs.passport.gitcoin.co/overview/readme"
                   className="text-violet-300"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -762,7 +762,7 @@ function MinDonationThreshold(props: {
               effect="solid"
             >
               <p className="text-xs">
-                Set a minimum amount for each <br /> 
+                Set a minimum amount for each <br />
                 donation to be eligible for matching.
               </p>
             </ReactTooltip>

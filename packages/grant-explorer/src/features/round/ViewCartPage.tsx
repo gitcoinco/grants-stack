@@ -31,7 +31,7 @@ import {
   Project,
   recipient,
 } from "../api/types";
-import { getPayoutTokenOptions } from "../api/utils";
+import { getPayoutTokenOptions, isInfiniteDate } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import Footer from "common/src/components/Footer";
@@ -74,8 +74,12 @@ export default function ViewCart() {
   }, [donations, selectedPayoutToken.decimal]);
 
   const currentTime = new Date();
-  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
-  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
+  const isBeforeRoundEndDate =
+    round && 
+    (!isInfiniteDate(round.roundEndTime) ? (round.roundEndTime > currentTime) : true);
+  const isAfterRoundEndDate =
+    round && 
+    (isInfiniteDate(round.roundEndTime) ? false : (round && round.roundEndTime <= currentTime));
 
   const [cart, , handleRemoveProjectsFromCart] = useCart();
 
@@ -95,9 +99,10 @@ export default function ViewCart() {
 
   const tokenDetail =
     selectedPayoutToken.address == ethers.constants.AddressZero
-      ? { addressOrName: address }
-      : { addressOrName: address, token: selectedPayoutToken.address };
+      ? { address: address }
+      : { address: address, token: selectedPayoutToken.address };
 
+  // @ts-expect-error Temp until viem
   const selectedPayoutTokenBalance = useBalance(tokenDetail);
 
   const [wrongChain, setWrongChain] = useState(false);

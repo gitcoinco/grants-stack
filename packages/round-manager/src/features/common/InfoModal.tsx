@@ -92,14 +92,16 @@ export default function InfoModal({
                     >
                       Cancel
                     </Button>
-                    {!disableContinueButton && <Button
-                      type="button"
-                      className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-3.5 py-2"
-                      onClick={continueButtonAction}
-                      data-testid="info-continue"
-                    >
-                      {continueButtonText}
-                    </Button>}
+                    {!disableContinueButton && (
+                      <Button
+                        type="button"
+                        className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-3.5 py-2"
+                        onClick={continueButtonAction}
+                        data-testid="info-continue"
+                      >
+                        {continueButtonText}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </Dialog.Panel>

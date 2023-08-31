@@ -10,6 +10,7 @@ import {
 import { useParams } from "react-router-dom";
 import { useDisconnect, useNetwork } from "wagmi";
 import {
+  makeDirectGrantRoundData,
   makeRoundData,
   wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -62,6 +63,8 @@ jest.mock("react-router-dom", () => ({
 }));
 
 const mockRoundData: Round = makeRoundData();
+
+const mockDirectGrantRoundData: Round = makeDirectGrantRoundData();
 
 describe("View Round", () => {
   beforeEach(() => {
@@ -251,6 +254,103 @@ describe("View Round", () => {
       const editButton = await screen.findByTestId("edit-round-button");
       expect(editButton).toBeInTheDocument();
       fireEvent.click(editButton);
+    });
+  });
+
+  it("round and application periods tab for quadratic funding round settings", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
+
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const periodTab = await screen.findAllByText("Round & Application Period");
+      expect(periodTab.length).toBe(1);
+    });
+  });
+
+  it("round period tab for direct grant round settings", async () => {
+    (useParams as jest.Mock).mockImplementation(() => {
+      return {
+        id: mockDirectGrantRoundData.id,
+      };
+    });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockDirectGrantRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
+
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const periodTab = await screen.findAllByText("Round Period");
+      expect(periodTab.length).toBe(1);
+    });
+  });
+
+  it("round period tab for direct grant round settings does not displays application period inputs", async () => {
+    (useParams as jest.Mock).mockImplementation(() => {
+      return {
+        id: mockDirectGrantRoundData.id,
+      };
+    });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockDirectGrantRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
+
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const periodTab = await screen.findAllByText("Round Period");
+      expect(periodTab.length).toBe(1);
+      fireEvent.click(periodTab[0]);
+      const applicationPeriodInput = await screen.findAllByText("Application");
+      expect(applicationPeriodInput.length).toBe(0);
     });
   });
 

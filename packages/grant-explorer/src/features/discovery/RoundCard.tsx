@@ -1,6 +1,6 @@
 import { renderToPlainText, truncateDescription } from "common";
 import { RoundOverview } from "../api/rounds";
-import { ChainId, getDaysLeft, payoutTokens } from "../api/utils";
+import { ChainId, getDaysLeft, getRoundType, isInfiniteDate, payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -50,8 +50,17 @@ const RoundCard = (props: RoundCardProps) => {
               240
             )}
           </CardDescription>
+          <p data-testid="round-badge"
+            className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mt-4"
+            style={{ borderRadius: "20px" }}>
+            {props.round.payoutStrategy?.strategyName
+              && getRoundType(props.round.payoutStrategy.strategyName)}
+          </p>
           <p className="mt-4 text-xs" data-testid="days-left">
-            {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
+            {!isInfiniteDate(new Date(props.round.roundEndTime)) 
+              ? (<span>{daysLeft} {daysLeft === 1 ? "day" : "days"} left in round</span>)
+              : (<span>No end time</span>)
+            }
           </p>
         </CardContent>
       </a>

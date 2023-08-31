@@ -24,6 +24,7 @@ module.exports = {
     "react/prop-types": "off",
     "max-len": ["error", { code: 150 }],
     "no-console": "off",
+    "import/prefer-default-export": "off",
     "no-restricted-syntax": [
       "error",
       "ForInStatement",

@@ -31,6 +31,6 @@
     "@commitlint/config-conventional": "^17.6.3"
   },
   "dependencies": {
-    "turbo": "^1.9.9"
+    "turbo": "^1.10.7"
   }
 }

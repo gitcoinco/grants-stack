@@ -16,6 +16,8 @@ import {
   Round,
 } from "./types";
 import { fetchFromIPFS, payoutTokens } from "./utils";
+import { maxDateForUint256 } from "../../constants";
+import { RoundFactory__factory } from "../../types/generated/typechain/factories/RoundFactory__factory";
 
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
@@ -23,7 +25,7 @@ export enum UpdateAction {
   UPDATE_ROUND_START_AND_END_TIMES = "updateStartAndEndTimes",
   UPDATE_MATCH_AMOUNT = "updateMatchAmount",
   UPDATE_ROUND_FEE_ADDRESS = "updateRoundFeeAddress",
-  UPDATE_ROUND_FEE_PERCENTAGE = "updateRoundFeePercentage"
+  UPDATE_ROUND_FEE_PERCENTAGE = "updateRoundFeePercentage",
 }
 
 export class TransactionBuilder {
@@ -40,7 +42,7 @@ export class TransactionBuilder {
       this.contract = new ethers.Contract(
         round.id,
         roundImplementationContract.abi,
-        signer,
+        signer
       );
     } else {
       throw new Error("Round ID is undefined");
@@ -48,7 +50,9 @@ export class TransactionBuilder {
   }
 
   add(action: any, args: any[]) {
-    this.transactions.push(this.contract.interface.encodeFunctionData(action, args));
+    this.transactions.push(
+      this.contract.interface.encodeFunctionData(action, args)
+    );
   }
 
   async execute(): Promise<TransactionResponse> {
@@ -70,7 +74,7 @@ export class TransactionBuilder {
  */
 export async function getRoundById(
   signerOrProvider: Web3Provider,
-  roundId: string,
+  roundId: string
 ): Promise<Round> {
   try {
     // fetch chain id
@@ -128,13 +132,20 @@ export async function getRoundById(
               }
               payoutStrategy {
                 id
-                isReadyForPayout
+                strategyName
+                type: __typename
+                ... on DirectPayout {
+                  vaultAddress
+                }
+                ... on MerklePayout {
+                  isReadyForPayout
+                }
               }
             }
           }
         `,
       chainId,
-      { roundId: roundId },
+      { roundId: roundId }
     );
 
     const round: RoundResult = res.data.rounds[0];
@@ -154,33 +165,37 @@ export async function getRoundById(
 
     const approvedProjectsWithMetadata = await loadApprovedProjects(
       round,
-      chainId,
+      chainId
     );
 
     const operatorWallets = res.data.rounds[0].roles[0].accounts.map(
-      (account: { address: string }) => account.address,
+      (account: { address: string }) => account.address
     );
 
     const DENOMINATOR = 100000;
-
     const protocolFeePercentage = res.data.alloSettings
-      ? res.data.alloSettings.protocolFeePercentage / DENOMINATOR
+      ? res.data.alloSettings[0].protocolFeePercentage / DENOMINATOR
       : 0;
 
     const roundFeePercentage =
       res.data.rounds[0].roundFeePercentage / DENOMINATOR;
-
     return {
       id: round.id,
       chainId: chainId,
       roundMetadata,
       applicationMetadata,
       applicationsStartTime: new Date(
-        Number(round.applicationsStartTime) * 1000,
+        Number(round.applicationsStartTime) * 1000
       ),
-      applicationsEndTime: new Date(Number(round.applicationsEndTime) * 1000),
+      applicationsEndTime:
+        round.applicationsEndTime == ethers.constants.MaxUint256.toString()
+          ? maxDateForUint256
+          : new Date(Number(round.applicationsEndTime) * 1000),
       roundStartTime: new Date(Number(round.roundStartTime) * 1000),
-      roundEndTime: new Date(Number(round.roundEndTime) * 1000),
+      roundEndTime:
+        round.applicationsEndTime == ethers.constants.MaxUint256.toString()
+          ? maxDateForUint256
+          : new Date(Number(round.roundEndTime) * 1000),
       protocolFeePercentage: protocolFeePercentage,
       roundFeePercentage: roundFeePercentage,
       token: round.token,
@@ -208,7 +223,7 @@ export async function listRounds(
   address: string,
   signerOrProvider: Web3Provider,
   programId: string,
-  roundId?: string,
+  roundId?: string
 ): Promise<{ rounds: Round[] }> {
   try {
     // fetch chain id
@@ -226,6 +241,10 @@ export async function listRounds(
               id
               program {
                 id
+              }
+              payoutStrategy {
+                id
+                strategyName
               }
               roundMetaPtr {
                 protocol
@@ -250,7 +269,7 @@ export async function listRounds(
           }
         `,
       chainId,
-      { address: address?.toLowerCase(), programId, roundId },
+      { address: address?.toLowerCase(), programId, roundId }
     );
 
     const rounds: Round[] = [];
@@ -263,7 +282,7 @@ export async function listRounds(
       ]);
 
       const operatorWallets = round.roles[0].accounts.map(
-        (account: { address: string }) => account.address,
+        (account: { address: string }) => account.address
       );
 
       rounds.push({
@@ -271,12 +290,22 @@ export async function listRounds(
         roundMetadata,
         applicationMetadata,
         applicationsStartTime: new Date(round.applicationsStartTime * 1000),
-        applicationsEndTime: new Date(round.applicationsEndTime * 1000),
+        applicationsEndTime:
+          round.applicationsEndTime === ethers.constants.MaxUint256.toString()
+            ? maxDateForUint256
+            : new Date(round.applicationsEndTime * 1000),
         roundStartTime: new Date(round.roundStartTime * 1000),
-        roundEndTime: new Date(round.roundEndTime * 1000),
+        roundEndTime:
+          round.roundEndTime === ethers.constants.MaxUint256.toString()
+            ? maxDateForUint256
+            : new Date(round.roundEndTime * 1000),
         token: round.token,
         votingStrategy: round.votingStrategy,
-        payoutStrategy: res.data.rounds[0].payoutStrategy,
+        payoutStrategy: {
+          id: round.payoutStrategy?.id || "",
+          isReadyForPayout: false,
+          strategyName: round.payoutStrategy?.strategyName || "unknown",
+        },
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
         finalized: false,
@@ -291,7 +320,7 @@ export async function listRounds(
 }
 
 /**
- * Deploys a round by invoking the create funciton on RoundFactory
+ * Deploys a round by invoking the create function on RoundFactory
  *
  * @param round
  * @param signerOrProvider
@@ -300,57 +329,79 @@ export async function listRounds(
 export async function deployRoundContract(
   round: Round,
   signerOrProvider: Signer,
+  isQF: boolean
 ): Promise<{ transactionBlockNumber: number }> {
   try {
     const chainId = await signerOrProvider.getChainId();
-
-    const _roundFactoryContract = roundFactoryContract(chainId);
-    const roundFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _roundFactoryContract.address!,
-      _roundFactoryContract.abi,
-      signerOrProvider,
+    const roundFactoryAddress = roundFactoryContract(chainId);
+    const roundFactory = RoundFactory__factory.connect(
+      roundFactoryAddress,
+      signerOrProvider
     );
 
-    if (!round.applicationsEndTime) {
-      round.applicationsEndTime = round.roundStartTime;
+    let initRoundTimes: string[] = [];
+    const formatDate = (date: Date) => (date.getTime() / 1000).toString();
+    if (isQF) {
+      if (round.applicationsEndTime === undefined) {
+        round.applicationsEndTime = round.roundStartTime;
+      }
+      initRoundTimes = [
+        formatDate(round.applicationsStartTime),
+        formatDate(round.applicationsEndTime),
+        formatDate(round.roundStartTime),
+        formatDate(round.roundEndTime),
+      ];
+    } else {
+      // note: DirectRounds does not set application dates.
+      // in those cases, we set:
+      // application start time with the round start time
+      // application end time with MaxUint256.
+      // if the round has not end time, we set it with MaxUint256.
+
+      initRoundTimes = [
+        formatDate(round.applicationsStartTime ?? round.roundStartTime),
+        round.applicationsEndTime
+          ? formatDate(round.applicationsEndTime)
+          : round.roundEndTime
+          ? formatDate(round.roundEndTime)
+          : ethers.constants.MaxUint256.toString(),
+        formatDate(round.roundStartTime),
+        round.roundEndTime
+          ? formatDate(round.roundEndTime)
+          : ethers.constants.MaxUint256.toString(),
+      ];
     }
 
     round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
-
     const initAddresses = [round.votingStrategy, round.payoutStrategy.id];
-
-    const initRoundTimes = [
-      new Date(round.applicationsStartTime).getTime() / 1000,
-      new Date(round.applicationsEndTime).getTime() / 1000,
-      new Date(round.roundStartTime).getTime() / 1000,
-      new Date(round.roundEndTime).getTime() / 1000,
-    ];
-
     const initMetaPtr = [round.store, round.applicationStore];
-
     const initRoles = [
       [await signerOrProvider.getAddress()],
       round.operatorWallets,
     ];
 
-    // Ensure tokenAmount is normalized to token decimals
-    const tokenAmount =
-      round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable || 0;
-    const token = payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase(),
-    )[0];
-    const parsedTokenAmount = utils.parseUnits(
-      tokenAmount.toString(),
-      token.decimal,
-    );
+    const token = ethers.constants.AddressZero;
+    let parsedTokenAmount = ethers.constants.Zero;
+
+    if (isQF) {
+      // Ensure tokenAmount is normalized to token decimals
+      const tokenAmount =
+        round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable ?? 0;
+      const pyToken = payoutTokens.filter(
+        (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
+      )[0];
+      parsedTokenAmount = utils.parseUnits(
+        tokenAmount.toString(),
+        pyToken.decimal
+      );
+    }
 
     // encode input parameters
     const params = [
       initAddresses,
       initRoundTimes,
       parsedTokenAmount,
-      round.token,
+      token,
       round.feesPercentage || 0,
       round.feesAddress || ethers.constants.AddressZero,
       initMetaPtr,
@@ -368,7 +419,7 @@ export async function deployRoundContract(
         "tuple(tuple(uint256 protocol, string pointer), tuple(uint256 protocol, string pointer))",
         "tuple(address[] adminRoles, address[] roundOperators)",
       ],
-      params,
+      params
     );
 
     // Deploy a new Round contract
@@ -379,9 +430,7 @@ export async function deployRoundContract(
     let roundAddress;
 
     if (receipt.events) {
-      const event = receipt.events.find(
-        (e: { event: string }) => e.event === "RoundCreated",
-      );
+      const event = receipt.events.find((e) => e.event === "RoundCreated");
       if (event && event.args) {
         roundAddress = event.args.roundAddress;
       }
@@ -448,7 +497,7 @@ function convertStatus(status: string | number) {
 async function loadApprovedProjects(
   round: RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any,
+  chainId: any
 ): Promise<ApprovedProject[]> {
   if (!round.projectsMetaPtr || round.projects.length === 0) {
     return [];
@@ -456,11 +505,11 @@ async function loadApprovedProjects(
   const allRoundProjects = round.projects;
 
   const approvedProjects = allRoundProjects.filter(
-    (project) => project.status === ApplicationStatus.APPROVED,
+    (project) => project.status === ApplicationStatus.APPROVED
   );
   const fetchApprovedProjectMetadata: Promise<ApprovedProject>[] =
     approvedProjects.map((project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId),
+      fetchMetadataAndMapProject(project, chainId)
     );
   return Promise.all(fetchApprovedProjectMetadata);
 }
@@ -468,7 +517,7 @@ async function loadApprovedProjects(
 async function fetchMetadataAndMapProject(
   project: RoundProjectResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any,
+  chainId: any
 ): Promise<ApprovedProject> {
   const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
   // NB: applicationData can be in two formats:
@@ -494,7 +543,7 @@ async function fetchMetadataAndMapProject(
 export async function getProjectOwners(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
-  projectRegistryId: string,
+  projectRegistryId: string
 ) {
   try {
     // get the subgraph for project owners by $projectRegistryId
@@ -515,13 +564,13 @@ export async function getProjectOwners(
       `,
       chainId,
       { projectRegistryId },
-      true,
+      true
     );
 
     return (
       res.data?.projects[0]?.accounts.map(
         (account: { account: { address: string } }) =>
-          ethers.utils.getAddress(account.account.address),
+          ethers.utils.getAddress(account.account.address)
       ) || []
     );
   } catch (error) {
@@ -537,7 +586,7 @@ export async function getProjectOwners(
  */
 export async function fetchMatchingDistribution(
   roundId: string | undefined,
-  signerOrProvider: Web3Provider,
+  signerOrProvider: Web3Provider
 ): Promise<{
   distributionMetaPtr: string;
   matchingDistribution: MatchingStatsData[];
@@ -550,13 +599,13 @@ export async function fetchMatchingDistribution(
     const roundImplementation = new ethers.Contract(
       roundId,
       roundImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
     const payoutStrategyAddress = await roundImplementation.payoutStrategy();
     const payoutStrategy = new ethers.Contract(
       payoutStrategyAddress,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
     const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
     const distributionMetaPtr = distributionMetaPtrRes.pointer;
@@ -570,7 +619,7 @@ export async function fetchMatchingDistribution(
       matchingDistribution.map((distribution) => {
         distribution.matchAmountInToken = BigNumber.from(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (distribution.matchAmountInToken as any).hex,
+          (distribution.matchAmountInToken as any).hex
         );
       });
     }
@@ -598,7 +647,7 @@ export const setReadyForPayout = async ({
   const roundImplementation = new ethers.Contract(
     roundId,
     roundImplementationContract.abi,
-    signerOrProvider,
+    signerOrProvider
   );
 
   const tx = await roundImplementation.setReadyForPayout();

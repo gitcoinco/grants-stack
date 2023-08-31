@@ -2,15 +2,14 @@
 type Error = {
   key: string;
   message: string;
-}
+};
 
 export default function FormValidationErrorList({ errors }: any) {
-
   function extractErrorMessages(err: any) {
     let errorMessages: Error[] = [];
 
     for (const key in err) {
-      if (typeof err[key] === 'object' && err[key] !== null) {
+      if (typeof err[key] === "object" && err[key] !== null) {
         if (err[key].message) {
           errorMessages.push({ key: key, message: err[key].message });
         } else {
@@ -24,9 +23,11 @@ export default function FormValidationErrorList({ errors }: any) {
   }
 
   function convertToTitleCase(input: string): string {
-    const words = input.replace(/([a-z])([A-Z])/g, '$1 $2').split(/(?=[A-Z])/);
-    const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
-    return capitalizedWords.join(' ');
+    const words = input.replace(/([a-z])([A-Z])/g, "$1 $2").split(/(?=[A-Z])/);
+    const capitalizedWords = words.map(
+      (word) => word.charAt(0).toUpperCase() + word.slice(1)
+    );
+    return capitalizedWords.join(" ");
   }
 
   const errorsArray = extractErrorMessages(errors);
@@ -38,8 +39,7 @@ export default function FormValidationErrorList({ errors }: any) {
         role="alert"
       >
         <strong className="text-pink-500 font-medium text-sm">
-          There {errorsArray.length === 1 ? "was" : "were"}{" "}
-          {errorsArray.length}{" "}
+          There {errorsArray.length === 1 ? "was" : "were"} {errorsArray.length}{" "}
           {errorsArray.length === 1 ? "error" : "errors"} with your form
           submission
         </strong>

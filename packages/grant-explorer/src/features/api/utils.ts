@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
-import { IPFSObject, PayoutToken } from "./types";
+import { IPFSObject, PayoutToken, Round } from "./types";
 import { RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
+import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "../../constants";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -19,6 +20,7 @@ export enum ChainId {
   OPTIMISM_MAINNET_CHAIN_ID = "10",
   FANTOM_MAINNET_CHAIN_ID = "250",
   FANTOM_TESTNET_CHAIN_ID = "4002",
+  PGN_TESTNET_CHAIN_ID = "58008",
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,6 +50,11 @@ export const CHAINS: Record<number, any> = {
     name: "Fantom Testnet",
     logo: "./logos/fantom-logo.svg",
   },
+  [ChainId.PGN_TESTNET_CHAIN_ID]: {
+    id: ChainId.PGN_TESTNET_CHAIN_ID,
+    name: "PGN Testnet",
+    logo: "./logos/pgn-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos: Record<string, string> = {
@@ -56,6 +63,7 @@ export const TokenNamesAndLogos: Record<string, string> = {
   DAI: "./logos/dai-logo.svg",
   ETH: "./logos/ethereum-eth-logo.svg",
   OP: "./logos/optimism-logo.svg",
+  PGN: "./logos/pgn-logo.svg",
 };
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -169,12 +177,24 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const PGN_TESTNET_TOKENS: PayoutToken[] = [
+  {
+    name: "DAI",
+    chainId: ChainId.PGN_TESTNET_CHAIN_ID,
+    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
   ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
+  ...PGN_TESTNET_TOKENS,
 ];
 
 export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
@@ -190,6 +210,9 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
       return FANTOM_TESTNET_TOKENS;
+    }
+    case ChainId.PGN_TESTNET_CHAIN_ID: {
+      return PGN_TESTNET_TOKENS;
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
@@ -218,7 +241,12 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
 
+    case ChainId.PGN_TESTNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API}`;
+
     case ChainId.GOERLI_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+    
     default:
       return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
   }
@@ -231,19 +259,27 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
  * @param txHash - The transaction hash
  * @returns the transaction explorer URL for the provided transaction hash and network
  */
-export const getTxExplorer = (chainId?: ChainId, txHash?: string) => {
+export const getTxExplorer = (chainId?: ChainId | number, txHash?: string) => {
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+    case 10:
       return `https://optimistic.etherscan.io/tx/${txHash}`;
 
     case ChainId.FANTOM_MAINNET_CHAIN_ID:
+    case 250:
       return `https://ftmscan.com/tx/${txHash}`;
 
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
+    case 4002:
       return `https://testnet.ftmscan.com/tx/${txHash}`;
 
     case ChainId.MAINNET:
+    case 1:
       return `https://etherscan.io/tx/${txHash}`;
+
+    case ChainId.PGN_TESTNET_CHAIN_ID:
+    case 58008:
+      return `https://explorer.sepolia.publicgoods.network/tx/${txHash}`;
 
     default:
       return `https://goerli.etherscan.io/tx/${txHash}`;
@@ -403,3 +439,33 @@ export const listenForOutsideClicks = ({
     });
   };
 };
+
+export function getChainIds(): number[] {
+  const isProduction = process.env.REACT_APP_ENV === "production";
+  if (isProduction) {
+    return [
+      Number(ChainId.MAINNET),
+      Number(ChainId.OPTIMISM_MAINNET_CHAIN_ID),
+      Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
+    ];
+  } else {
+    return Object.values(ChainId).map((chainId) => Number(chainId));
+  }
+}
+
+export const isDirectRound = (round: Round) => round?.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+export const isInfiniteDate = (roundTime: Date) => roundTime.toString() === "Invalid Date";
+
+export const getRoundType = (payoutStrategyName: string) => {
+  switch (payoutStrategyName) {
+    case ROUND_PAYOUT_MERKLE:
+      return "Quadratic Funding";
+      break;
+    case ROUND_PAYOUT_DIRECT:
+      return "Direct Grants";
+      break;
+    default:
+      return payoutStrategyName;
+      break;
+  }
+}

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
+import { ChainId } from "common";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -12,7 +13,7 @@ import { Status as ProjectStatus } from "../../reducers/projects";
 import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { Status } from "../../reducers/rounds";
 import { grantsPath, newGrantPath, roundApplicationPath } from "../../routes";
-import { formatTimeUTC } from "../../utils/components";
+import { formatTimeUTC, isInfinite } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -25,7 +26,7 @@ interface ApplyButtonProps {
   applicationsHaveStarted: boolean;
   applicationsHaveEnded: boolean;
   projects: GrantsMetadataState;
-  chainId: number;
+  chainId: ChainId;
   roundId: string | undefined;
 }
 
@@ -140,16 +141,21 @@ function ShowRound() {
     let votingHasStarted = false;
     let votingHasEnded = false;
 
+    // covers QF and DF application and voting periods condition evaluation
+    if (
+      roundState?.round &&
+      roundState?.round?.applicationsStartTime !== undefined &&
+      roundState?.round?.roundStartTime !== undefined
+    ) {
+      applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
+      votingHasStarted = roundState.round?.roundStartTime <= now;
+    }
     if (
       roundState?.round &&
       roundState?.round?.applicationsEndTime !== undefined &&
-      roundState?.round?.applicationsStartTime !== undefined &&
-      roundState?.round?.roundStartTime !== undefined &&
       roundState?.round?.roundEndTime !== undefined
     ) {
-      applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
       applicationsHaveEnded = roundState.round?.applicationsEndTime <= now;
-      votingHasStarted = roundState.round?.roundStartTime <= now;
       votingHasEnded = roundState.round?.roundEndTime <= now;
     }
 
@@ -172,14 +178,19 @@ function ShowRound() {
   const renderApplicationDate = () => (
     <>
       {formatTimeUTC(roundData?.applicationsStartTime)} -{" "}
-      {formatTimeUTC(roundData?.applicationsEndTime)}
+      {isInfinite(roundData?.applicationsEndTime)
+        ? "No End Date"
+        : formatTimeUTC(roundData?.applicationsEndTime)}
     </>
   );
 
   const renderRoundDate = () => (
     <>
       {formatTimeUTC(roundData?.roundStartTime)} -{" "}
-      {formatTimeUTC(roundData?.roundEndTime)}
+      {isInfinite(roundData?.roundEndTime)
+        ? "No End Date"
+        : formatTimeUTC(roundData?.roundEndTime)}
+      {}
     </>
   );
 
@@ -309,6 +320,7 @@ function ShowRound() {
       </div>
     );
   }
+  const isDirectRound = props.round?.payoutStrategy === "DIRECT";
 
   return (
     <div
@@ -330,10 +342,12 @@ function ShowRound() {
           <div className="flex flex-1 flex-col mt-8">
             <span>{roundData?.roundMetadata.eligibility?.description}</span>
           </div>
-          <div className="flex flex-1 flex-col mt-8">
-            <span>Application Period:</span>
-            <span>{renderApplicationDate()}</span>
-          </div>
+          {!isDirectRound && (
+            <div className="flex flex-1 flex-col mt-8">
+              <span>Application Period:</span>
+              <span>{renderApplicationDate()}</span>
+            </div>
+          )}
           <div className="flex flex-1 flex-col mt-8">
             <span>Round Dates:</span>
             <span>{renderRoundDate()}</span>

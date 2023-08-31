@@ -6,6 +6,7 @@ import { Application } from "../../../reducers/projects";
 import { Status } from "../../../reducers/rounds";
 import { RoundDisplayType } from "../../../types";
 import RoundListItem from "./RoundListItem";
+import { isInfinite } from "../../../utils/components";
 
 const displayHeaders = {
   [RoundDisplayType.Active]: "Active Rounds",
@@ -36,33 +37,48 @@ export default function Rounds() {
       const status = roundState.status ?? Status.Undefined;
       const { round } = roundState;
 
+      const infiniteApplicationsEndDate = isInfinite(
+        Number(round?.applicationsEndTime)
+      );
+      const infiniteRoundEndDate = isInfinite(Number(round?.roundEndTime));
+
       if (status === Status.Loaded && round) {
         let category = null;
         const currentTime = secondsSinceEpoch();
         // Current Applications
+        // FOCUS on Direct Rounds infinite periods
+        // FOCUS on Both Rounds application dates period
+        // FOCUS on Quadratic Rounds roundStartTime not met
         if (
+          !infiniteApplicationsEndDate &&
+          !infiniteRoundEndDate &&
           round.applicationsStartTime < currentTime &&
           round.applicationsEndTime > currentTime &&
-          round.roundStartTime > currentTime &&
-          round.roundEndTime > currentTime
+          round.roundStartTime !== round.applicationsStartTime &&
+          round.roundStartTime > currentTime
         ) {
           category = RoundDisplayType.Current;
         }
         // Active Rounds
+        // FOCUS on Direct Rounds infinite periods
+        // FOCUS on Round dates period
         if (
-          round.roundEndTime > currentTime &&
-          round.roundStartTime < currentTime &&
-          round.applicationsEndTime < currentTime &&
-          round.applicationsStartTime < currentTime
+          (infiniteApplicationsEndDate && infiniteRoundEndDate) ||
+          (round.roundEndTime > currentTime &&
+            round.roundStartTime < currentTime &&
+            (round.roundEndTime === round.applicationsEndTime ||
+              round.applicationsEndTime < currentTime) &&
+            round.applicationsStartTime < currentTime)
         ) {
           category = RoundDisplayType.Active;
         }
         // Past Rounds
+        // EXCLUDES Direct Rounds since infinite periods
+        // FOCUS on Round dates period
         if (
+          !infiniteRoundEndDate &&
           round.roundEndTime < currentTime &&
-          round.roundStartTime < currentTime &&
-          round.applicationsEndTime < currentTime &&
-          round.applicationsStartTime < currentTime
+          round.roundStartTime < currentTime
         ) {
           category = RoundDisplayType.Past;
         }

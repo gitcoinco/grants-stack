@@ -93,60 +93,60 @@ root.render(
                               <ReclaimFundsProvider>
                                 <UpdateRoundProvider>
                                   <ViewRoundPage />
-                              </UpdateRoundProvider>
-                            </ReclaimFundsProvider>
-                          </FundContractProvider>
-                        </FinalizeRoundProvider>
-                      </BulkUpdateGrantApplicationProvider>
-                    </ApplicationProvider>
+                                </UpdateRoundProvider>
+                              </ReclaimFundsProvider>
+                            </FundContractProvider>
+                          </FinalizeRoundProvider>
+                        </BulkUpdateGrantApplicationProvider>
+                      </ApplicationProvider>
                     </RoundProvider>
                   }
                 />
-              <Route
-                path="/round/:roundId/application/:id"
-                element={
-                  <RoundProvider>
-                    <ApplicationProvider>
-                      <BulkUpdateGrantApplicationProvider>
-                        <ViewApplication />
-                      </BulkUpdateGrantApplicationProvider>
-                    </ApplicationProvider>
-                  </RoundProvider>
-                }
-              />
+                <Route
+                  path="/round/:roundId/application/:id"
+                  element={
+                    <RoundProvider>
+                      <ApplicationProvider>
+                        <BulkUpdateGrantApplicationProvider>
+                          <ViewApplication />
+                        </BulkUpdateGrantApplicationProvider>
+                      </ApplicationProvider>
+                    </RoundProvider>
+                  }
+                />
 
-              {/* Program Routes */}
-              <Route
-                path="/program/create"
-                element={
-                  <CreateProgramProvider>
-                    <CreateProgram />
-                  </CreateProgramProvider>
-                }
-              />
-              <Route
-                path="/program/:id"
-                element={
-                  <RoundProvider>
-                    <ReadProgramProvider>
-                      <ViewProgram />
-                    </ReadProgramProvider>
-                  </RoundProvider>
-                }
-              />
+                {/* Program Routes */}
+                <Route
+                  path="/program/create"
+                  element={
+                    <CreateProgramProvider>
+                      <CreateProgram />
+                    </CreateProgramProvider>
+                  }
+                />
+                <Route
+                  path="/program/:id"
+                  element={
+                    <RoundProvider>
+                      <ReadProgramProvider>
+                        <ViewProgram />
+                      </ReadProgramProvider>
+                    </RoundProvider>
+                  }
+                />
 
-              {/* Access Denied */}
-              <Route path="/access-denied" element={<AccessDenied />} />
+                {/* Access Denied */}
+                <Route path="/access-denied" element={<AccessDenied />} />
 
-              {/* 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </ReduxRouter>
-      </RainbowKitProvider>
-    </WagmiConfig>
-  </Provider>
-  </React.StrictMode >
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </ReduxRouter>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </Provider>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
