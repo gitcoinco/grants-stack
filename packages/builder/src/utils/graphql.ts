@@ -13,6 +13,23 @@ const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_URL_PGN!,
 };
 
+const hypercertsGraphQlEndpoints: Record<ChainId, string> = {
+  [ChainId.MAINNET]:
+    process.env.REACT_APP_HYPERCERTS_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+  [ChainId.GOERLI_CHAIN_ID]:
+    process.env.REACT_APP_HYPERCERTS_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_HYPERCERTS_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_HYPERCERTS_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
+    process.env.REACT_APP_HYPERCERTS_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+  [ChainId.PGN_TESTNET]:
+    process.env.REACT_APP_HYPERCERTS_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+  [ChainId.PGN]:
+    process.env.REACT_APP_HYPERCERTS_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+};
+
 /**
  * Fetch subgraph uri for a given chain id
  *
@@ -22,6 +39,9 @@ const graphQlEndpoints: Record<ChainId, string> = {
 const getGraphQLEndpoint = (chainId: ChainId): string =>
   graphQlEndpoints[chainId];
 
+const getHypercertsGraphQLEndpoint = (chainId: ChainId): string =>
+  hypercertsGraphQlEndpoints[chainId];
+
 // eslint-disable-next-line import/prefer-default-export
 export const graphqlFetch = async (
   query: string,
@@ -29,6 +49,33 @@ export const graphqlFetch = async (
   variables: object = {}
 ) => {
   const endpoint = getGraphQLEndpoint(chainId);
+  if (endpoint) {
+    return fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+    }).then((resp) => {
+      if (resp.ok) {
+        return resp.json();
+      }
+      return Promise.reject(resp);
+    });
+  }
+
+  throw new Error(`Subgraph endpoint for chain id ${chainId} not defined.`);
+};
+
+export const hypercertsGraphqlFetch = async (
+  query: string,
+  chainId: ChainId,
+  variables: object = {}
+) => {
+  const endpoint = getHypercertsGraphQLEndpoint(chainId);
   if (endpoint) {
     return fetch(endpoint, {
       method: "POST",

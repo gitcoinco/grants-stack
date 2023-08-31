@@ -17,6 +17,7 @@
     "@gitcoinco/passport-sdk-verifier": "^0.2.2",
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^2.0.11",
+    "@hypercerts-org/sdk": "^0.3.1",
     "@lagunovsky/redux-react-router": "^2.2.0",
     "@pinata/sdk": "^1.1.26",
     "@rainbow-me/rainbowkit": "^0.7.2",
@@ -37,6 +38,7 @@
     "@wagmi/core": "0.5.4",
     "@walletconnect/ethereum-provider": "^2.9.0",
     "@walletconnect/modal": "^2.5.9",
+    "add": "^2.0.6",
     "allo-indexer-client": "github:gitcoinco/allo-indexer-client#0487c02c9bb89307b12ffe75f5bfb578278994a1",
     "assert": "^2.0.0",
     "autoprefixer": "^10.4.7",
@@ -77,6 +79,7 @@
     "wagmi": "^0.6.4",
     "web-vitals": "^2.1.4",
     "webpack": "^4",
+    "yarn": "^1.22.19",
     "yup": "^0.32.11"
   },
   "scripts": {

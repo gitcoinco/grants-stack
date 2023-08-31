@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
+import { HypercertClient } from "@hypercerts-org/sdk";
 import { metadataImageSaved, metadataSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
@@ -12,6 +13,7 @@ import ExitModal from "./ExitModal";
 import { validateProjectForm } from "./formValidation";
 import FormValidationErrorList from "./FormValidationErrorList";
 import ImageInput from "./ImageInput";
+import PinataClient from "../../services/pinata";
 
 const validation = {
   messages: [""],
@@ -19,7 +21,13 @@ const validation = {
   errorCount: 0,
 };
 
-function ProjectForm({
+const client = new HypercertClient({
+  chainId: 5, // goerli testnet
+});
+
+const pinataClient = new PinataClient();
+
+function HypercertProjectForm({
   setVerifying,
 }: {
   setVerifying: (verifying: ProjectFormStatus) => void;
@@ -125,6 +133,56 @@ function ProjectForm({
     }
   };
 
+  const handleFetchHypercert = async () => {
+    if (props.formMetaData.hypercertId) {
+      const hypercert = await client.indexer.claimById(
+        props.formMetaData.hypercertId
+      );
+
+      console.log(hypercert);
+      if (!hypercert) {
+        throw new Error("Hypercert not found");
+      }
+
+      const hypercertMetadata = await pinataClient.fetchJson(
+        hypercert.claim?.uri?.replace("ipfs://", "")!
+      );
+      console.log(hypercertMetadata);
+
+      const b64Identifier = "base64,";
+      const contentType = hypercertMetadata.image.slice(
+        hypercertMetadata.image.indexOf("data:") + 5,
+        hypercertMetadata.image.indexOf(b64Identifier)
+      );
+      const imageb64Data = hypercertMetadata.image.slice(
+        hypercertMetadata.image.indexOf(b64Identifier) + b64Identifier.length
+      );
+
+      const byteCharacters = atob(imageb64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: contentType });
+
+      setLogoImg(blob);
+      dispatch(metadataImageSaved(blob, "logoImgData"));
+
+      dispatch(
+        metadataSaved({
+          ...props.formMetaData,
+          title: hypercertMetadata.name as string,
+          description: hypercertMetadata.description as string,
+          website: hypercertMetadata.external_url as string,
+          logoImgData: blob,
+        })
+      );
+    }
+  };
+
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
@@ -146,11 +204,11 @@ function ProjectForm({
         <div className="border w-full mt-8" />
         <TextInput
           label="Hypercert ID"
-          name="hypercertid"
+          name="hypercertId"
           placeholder="What's the hypercert ID?"
           value={props.formMetaData.hypercertId}
           changeHandler={handleInput}
-          required={false}
+          required
           feedback={
             feedback.find((fb) => fb.title === "hypercertId") ?? {
               type: "none",
@@ -158,6 +216,9 @@ function ProjectForm({
             }
           }
         />
+        <Button onClick={handleFetchHypercert} variant={ButtonVariants.outline}>
+          Fetch
+        </Button>
         <div className="border w-full mt-8" />
         <TextInput
           label="Project Name"
@@ -165,6 +226,7 @@ function ProjectForm({
           placeholder="What's the project name?"
           value={props.formMetaData.title}
           changeHandler={handleInput}
+          disabled
           required
           feedback={
             feedback.find((fb) => fb.title === "title") ?? {
@@ -179,6 +241,7 @@ function ProjectForm({
           placeholder="Your project's website"
           value={props.formMetaData.website}
           changeHandler={handleInput}
+          disabled
           required
           feedback={
             feedback.find((fb) => fb.title === "website") ?? {
@@ -219,6 +282,7 @@ function ProjectForm({
           changeHandler={handleInput}
           required
           rows={15}
+          disabled
           containerClass="sm:w-full"
           feedback={
             feedback.find((fb) => fb.title === "description") ?? {
@@ -267,4 +331,4 @@ function ProjectForm({
   );
 }
 
-export default ProjectForm;
+export default HypercertProjectForm;

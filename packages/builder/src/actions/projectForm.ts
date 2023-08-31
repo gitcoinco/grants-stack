@@ -44,6 +44,7 @@ export const metadataSaved = ({
   projectGithub,
   logoImg,
   bannerImg,
+  hypercertId,
 }: FormInputs): ProjectFormActions => ({
   type: METADATA_SAVED,
   metadata: {
@@ -55,6 +56,7 @@ export const metadataSaved = ({
     projectGithub,
     logoImg,
     bannerImg,
+    hypercertId,
   },
 });
 

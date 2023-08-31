@@ -10,6 +10,7 @@ import { ProjectFormStatus } from "../../types";
 import Preview from "../base/Preview";
 import { formReset } from "../../actions/projectForm";
 import NetworkForm from "../base/NetworkForm";
+import HypercertProjectForm from "../base/HypercertProjectForm";
 
 function NewProject() {
   const dispatch = useDispatch();
@@ -68,6 +69,12 @@ function NewProject() {
       case ProjectFormStatus.Metadata:
         return (
           <ProjectForm
+            setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
+          />
+        );
+      case ProjectFormStatus.HypercertMetadata:
+        return (
+          <HypercertProjectForm
             setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
           />
         );
