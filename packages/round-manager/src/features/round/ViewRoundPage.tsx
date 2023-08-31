@@ -391,6 +391,8 @@ function GrantApplications(props: {
     props.isDirectRound ? a.inReview : true
   );
 
+  const builderLink = process.env.REACT_APP_BUILDER_URL;
+
   const TabApplicationCounter = tw.div`
   rounded-md
   ml-2
@@ -492,7 +494,7 @@ function GrantApplications(props: {
                 </Tab.List>
                 <div className="text-right absolute ml-24 bottom-4 left-3/4">
                   <CopyToClipboardButton
-                    textToCopy={`https://builder.gitcoin.co/#/chains/${props.chainId}/rounds/${props.roundId}`}
+                    textToCopy={`${builderLink}/#/chains/${props.chainId}/rounds/${props.roundId}`}
                     styles="text-xs p-2"
                     iconStyle="h-4 w-4 mr-1"
                   />
