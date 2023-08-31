@@ -33,10 +33,6 @@ export const projectRegistryContract = (
       address = "0x984749e408FF0446d8ADaf20E293F2F299396631";
       break;
     }
-    case ChainId.PGN_TESTNET: {
-      address = "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11";
-      break;
-    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0xa71864fAd36439C50924359ECfF23Bb185FFDf21";
@@ -82,10 +78,6 @@ export const programFactoryContract = (
       address = "";
       break;
     }
-    case ChainId.PGN_TESTNET: {
-      address = "0x2Ff06F96Bb265698e47BfdED83f1aa0aC7c3a4Ce";
-      break;
-    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e";
@@ -127,10 +119,6 @@ export const roundFactoryContract = (chainId: ChainId | undefined): string => {
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
       address = "";
-      break;
-    }
-    case ChainId.PGN_TESTNET: {
-      address = "0x0479b9DA9f287539FEBd597350B1eBaEBF7479ac";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
@@ -175,10 +163,6 @@ export const qfVotingStrategyFactoryContract = (
       address = "";
       break;
     }
-    case ChainId.PGN_TESTNET: {
-      address = "0xE8027a807Bb85e57da4B7A5ecE65b0aBDf231ce8";
-      break;
-    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
@@ -201,23 +185,19 @@ export const dgVotingStrategyDummyContract = (
 
   switch (chainId) {
     case ChainId.MAINNET: {
-      address = "";
+      address = "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e";
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "";
+      address = "0xB9fd0d433d2ca03D26A182Dc709bA1EccA3B00cC";
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
+      address = "0xB91749077A0dE932a4AE2b882d846ef9C53b9505";
       break;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.PGN_TESTNET: {
-      address = "0xE42D1Da8d75Cf1d6f6C460DAa3f1b10a79D689B1";
+      address = "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
