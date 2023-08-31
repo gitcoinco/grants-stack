@@ -66,7 +66,7 @@ export const CHAINS: Record<
   },
 };
 
-export const TokenNamesAndLogos: Record<string, string> = {
+export const TokenNamesAndLogos = {
   FTM: "./logos/fantom-logo.svg",
   BUSD: "./logos/busd-logo.svg",
   USDC: "./logos/usdc-logo.svg",
@@ -75,7 +75,8 @@ export const TokenNamesAndLogos: Record<string, string> = {
   OP: "./logos/optimism-logo.svg",
   PGN: "./logos/pgn-logo.svg",
   GcV: "./logos/fantom-gcv-logo.png",
-};
+  ARB: "./logos/arb-logo.svg",
+} as const;
 
 export const MAINNET_TOKENS: PayoutToken[] = [
   {
