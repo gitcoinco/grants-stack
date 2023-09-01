@@ -300,11 +300,12 @@ export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
 };
 
-export const RedstoneTokenIds: Record<string, string> = {
+export const RedstoneTokenIds = {
   FTM: "FTM",
   USDC: "USDC",
   DAI: "DAI",
   ETH: "ETH",
+  ARB: "ARB",
 };
 
 export const useTokenPrice = (tokenId: string | undefined) => {
