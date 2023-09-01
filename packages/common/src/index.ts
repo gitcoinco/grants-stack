@@ -306,6 +306,7 @@ export const RedstoneTokenIds = {
   DAI: "DAI",
   ETH: "ETH",
   ARB: "ARB",
+  BUSD: "BUSD",
 };
 
 export const useTokenPrice = (tokenId: string | undefined) => {
