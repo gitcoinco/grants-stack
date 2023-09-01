@@ -47,7 +47,7 @@ export default function ViewRound() {
 
   const { round, isLoading } = useRoundById(
     chainId as string,
-    roundId as string
+    roundId?.toLowerCase() as string
   );
 
   const currentTime = new Date();
@@ -578,13 +578,17 @@ function PreRoundPage(props: {
             data-testid="matching-cap"
           >
             Matching Cap:
-            <span>
-              {" "}
-              &nbsp;
-              {round.roundMetadata?.quadraticFundingConfig?.matchingCapAmount}
-              &nbsp;
-              {"%"}
-            </span>
+            {round.roundMetadata?.quadraticFundingConfig?.matchingCapAmount ? (
+              <span>
+                {" "}
+                &nbsp;
+                {round.roundMetadata?.quadraticFundingConfig?.matchingCapAmount}
+                &nbsp;
+                {"%"}
+              </span>
+            ) : (
+              <span>None</span>
+            )}
           </p>
           <p className="text-lg my-5 text-grey-400 font-normal border-t py-5 border-b">
             <span>{round.roundMetadata?.eligibility.description}</span>

@@ -23,6 +23,8 @@ const projectRegistryMap: ChainIdToStringMap = {
     "0x984749e408FF0446d8ADaf20E293F2F299396631",
   [ChainId.PGN_TESTNET]: "0x6294bed5B884Ae18bf737793Ef9415069Bf4bc11",
   [ChainId.PGN]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
+  [ChainId.ARBITRUM]: "0x73AB205af1476Dc22104A6B8b3d4c273B58C6E27",
+  [ChainId.ARBITRUM_GOERLI]: "0x0CD135777dEaB6D0Bb150bDB0592aC9Baa4d0871",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -52,6 +54,8 @@ const programFactoryMap: ChainIdToStringMap = {
     "0x424C5C175fbd46CA0b27866044A5B956c6AbEe0D",
   [ChainId.PGN_TESTNET]: "0x2Ff06F96Bb265698e47BfdED83f1aa0aC7c3a4Ce",
   [ChainId.PGN]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
+  [ChainId.ARBITRUM]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
+  [ChainId.ARBITRUM_GOERLI]: "0xd39b40aC9279EeeB86FBbDeb2C9acDF16e16cF89",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -75,6 +79,8 @@ const roundFactoryMap: ChainIdToStringMap = {
     "0x8AdFcF226dfb2fA73788Ad711C958Ba251369cb3",
   [ChainId.PGN_TESTNET]: "0x0479b9DA9f287539FEBd597350B1eBaEBF7479ac",
   [ChainId.PGN]: "0x8AdFcF226dfb2fA73788Ad711C958Ba251369cb3",
+  [ChainId.ARBITRUM_GOERLI]: "0xdf25423c9ec15347197Aa5D3a41c2ebE27587D59",
+  [ChainId.ARBITRUM]: "0xF2a07728107B04266015E67b1468cA0a536956C8",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (chainId: ChainId): Contract => {
@@ -103,6 +109,8 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
     "0x545B282A50EaeA01A619914d44105437036CbB36",
   [ChainId.PGN_TESTNET]: "0xE8027a807Bb85e57da4B7A5ecE65b0aBDf231ce8",
   [ChainId.PGN]: "0x2AFA4bE0f2468347A2F086c2167630fb1E58b725",
+  [ChainId.ARBITRUM_GOERLI]: "0x0BFA0AAF5f2D81f859e85C8E82A3fc5b624fc6E8",
+  [ChainId.ARBITRUM]: "0xC3A195EEa198e74D67671732E1B8F8A23781D735",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (chainId: ChainId): Contract => {
@@ -126,6 +134,8 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
     "0x5b55728e41154562ee80027C1247B13382692e5C",
   [ChainId.PGN_TESTNET]: "0xE42D1Da8d75Cf1d6f6C460DAa3f1b10a79D689B1",
   [ChainId.PGN]: "0x27efa1C90e097c980c669AB1a6e326AD4164f1Cb",
+  [ChainId.ARBITRUM_GOERLI]: "0x8F8d78f119Aa722453d33d6881f4D400D67D054F",
+  [ChainId.ARBITRUM]: "0x04b194b14532070F5cc8D3A760c9a0957D85ad5B",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId

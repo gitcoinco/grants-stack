@@ -46,6 +46,16 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "PGN",
     logo: "/logos/pgn-logo.svg",
   },
+  [ChainId.ARBITRUM]: {
+    id: ChainId.ARBITRUM,
+    name: "Arbitrum",
+    logo: "/logos/arb-logo.svg",
+  },
+  [ChainId.ARBITRUM_GOERLI]: {
+    id: ChainId.ARBITRUM_GOERLI,
+    name: "Arbitrum Goerli",
+    logo: "/logos/arb-logo.svg",
+  },
 };
 
 export type PayoutToken = {
@@ -64,13 +74,15 @@ export type SupportType = {
   default: boolean;
 };
 
-export const TokenNamesAndLogos: Record<string, string> = {
+export const TokenNamesAndLogos = {
   FTM: "/logos/fantom-logo.svg",
   BUSD: "/logos/busd-logo.svg",
   DAI: "/logos/dai-logo.svg",
   ETH: "/logos/ethereum-eth-logo.svg",
   OP: "/logos/optimism-logo.svg",
-};
+  ARB: "/logos/arb-logo.svg",
+  GCV: "/logos/gcv.svg",
+} as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -148,7 +160,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: "0x83791638da5EB2fAa432aff1c65fbA47c5D29510",
     decimal: 18,
-    logo: TokenNamesAndLogos["GcV"],
+    logo: TokenNamesAndLogos["GCV"],
     redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI for the price
   },
 ];
@@ -227,6 +239,44 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM_GOERLI,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+];
+
+const ARBITRUM_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.ARBITRUM,
+    address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+  {
+    name: "ARB",
+    chainId: ChainId.ARBITRUM,
+    address: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    decimal: 18,
+    logo: TokenNamesAndLogos["ARB"],
+    redstoneTokenId: RedstoneTokenIds["ARB"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -235,6 +285,8 @@ export const payoutTokens = [
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
   ...PGN_MAINNET_TOKENS,
+  ...ARBITRUM_TOKENS,
+  ...ARBITRUM_GOERLI_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -338,6 +390,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
       ];
     case ChainId.PGN:
       return PGN_MAINNET_TOKENS;
+
+    case ChainId.ARBITRUM_GOERLI:
+      return payoutTokens.filter(
+        (token) => token.chainId === ChainId.ARBITRUM_GOERLI
+      );
+
+    case ChainId.ARBITRUM:
+      return payoutTokens.filter((token) => token.chainId === ChainId.ARBITRUM);
 
     case ChainId.GOERLI_CHAIN_ID:
     default: {

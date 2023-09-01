@@ -3,6 +3,7 @@ import { CartProject, IPFSObject, PayoutToken } from "./types";
 import { ChainId, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 import { zeroAddress } from "viem";
+import { ethers } from "ethers";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -53,9 +54,19 @@ export const CHAINS: Record<
     name: "PGN Testnet",
     logo: "./logos/pgn-logo.svg",
   },
+  [ChainId.ARBITRUM_GOERLI]: {
+    id: ChainId.ARBITRUM_GOERLI,
+    name: "Arbitrum Goerli",
+    logo: "./logos/arb-logo.svg",
+  },
+  [ChainId.ARBITRUM]: {
+    id: ChainId.ARBITRUM,
+    name: "Arbitrum",
+    logo: "./logos/arb-logo.svg",
+  },
 };
 
-export const TokenNamesAndLogos: Record<string, string> = {
+export const TokenNamesAndLogos = {
   FTM: "./logos/fantom-logo.svg",
   BUSD: "./logos/busd-logo.svg",
   USDC: "./logos/usdc-logo.svg",
@@ -64,7 +75,8 @@ export const TokenNamesAndLogos: Record<string, string> = {
   OP: "./logos/optimism-logo.svg",
   PGN: "./logos/pgn-logo.svg",
   GcV: "./logos/fantom-gcv-logo.png",
-};
+  ARB: "./logos/arb-logo.svg",
+} as const;
 
 export const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -249,6 +261,52 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const ARBITRUM_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.ARBITRUM,
+    address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "ARB",
+    chainId: ChainId.ARBITRUM,
+    address: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    decimal: 18,
+    logo: TokenNamesAndLogos["ARB"],
+    redstoneTokenId: RedstoneTokenIds["ARB"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -257,6 +315,8 @@ export const payoutTokens = [
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
   ...PGN_MAINNET_TOKENS,
+  ...ARBITRUM_TOKENS,
+  ...ARBITRUM_GOERLI_TOKENS,
 ];
 
 type PayoutTokensMap = Record<ChainId, PayoutToken[]>;
@@ -268,6 +328,8 @@ export const payoutTokensMap: PayoutTokensMap = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: FANTOM_TESTNET_TOKENS,
   [ChainId.PGN]: PGN_MAINNET_TOKENS,
   [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
+  [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_TOKENS,
+  [ChainId.ARBITRUM]: ARBITRUM_TOKENS,
 };
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
@@ -284,6 +346,9 @@ const graphQlEndpoints: Record<ChainId, string> = {
     process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API!,
   [ChainId.FANTOM_TESTNET_CHAIN_ID]:
     process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
+  [ChainId.ARBITRUM_GOERLI]:
+    process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
+  [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
 };
 
 /**
@@ -304,6 +369,8 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",
   [ChainId.PGN_TESTNET]: "https://explorer.sepolia.publicgoods.network/tx/",
   [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
+  [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
+  [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
 };
 
 /**
@@ -447,6 +514,7 @@ export function getChainIds(): number[] {
       Number(ChainId.OPTIMISM_MAINNET_CHAIN_ID),
       Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
       Number(ChainId.PGN),
+      Number(ChainId.ARBITRUM),
     ];
   } else {
     return Object.values(ChainId)
