@@ -42,13 +42,13 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
         <div className="flex flex-col mt-4 justify-items-center">
           <p className="text-grey-400 text-2xl">
             All Active Rounds{" "}
-            {activeRoundsCount > 0 ? `(${activeRoundsCount})` : null}
+            {activeRoundsCount > 0 && `(${activeRoundsCount})`}
           </p>
           <p className="text-grey-400 text-sm mb-4 mt-2">
             Rounds that are ongoing
           </p>
         </div>
-        {!props.isLoading && activeRoundsCount > 0 ? (
+        {!props.isLoading && activeRoundsCount > 0 && (
           <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput
               searchQuery={props.searchQuery}
@@ -60,14 +60,14 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
               }
             />
           </div>
-        ) : null}
+        )}
       </div>
       <div>
-        {props.isLoading ? (
+        {props.isLoading && (
           <div className="flex flex-col lg:flex-row my-auto">
             <Spinner />
           </div>
-        ) : null}
+        )}
         {activeRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
             {sortRoundsByTime(props.roundOverview ?? [], order).map(
@@ -76,9 +76,9 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
               }
             )}
           </div>
-        ) : !props.isLoading ? (
-          <NoRounds type={"active"} />
-        ) : null}
+        ) : (
+          !props.isLoading && <NoRounds type={"active"} />
+        )}
       </div>
     </div>
   );

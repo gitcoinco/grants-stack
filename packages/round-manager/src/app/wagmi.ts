@@ -15,6 +15,8 @@ import {
   goerli,
   optimism,
   Chain,
+  arbitrum,
+  arbitrumGoerli,
 } from "wagmi/chains";
 
 import { pgn, pgnTestnet } from "common/src/chains";
@@ -27,6 +29,7 @@ const testnetChains = () => {
     goerli,
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
+    arbitrumGoerli,
   ];
 };
 
@@ -35,6 +38,7 @@ const mainnetChains = () => {
     mainnet,
     optimism,
     pgn,
+    arbitrum,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
   ];
 };

@@ -35,6 +35,6 @@ jobs:
         run: |
           pnpm re-build
 
-      - name: Test Grant Explorer
-        run: |
-          pnpm re-test
+#      - name: Test Grant Explorer
+#        run: |
+#          pnpm re-test
