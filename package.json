@@ -26,6 +26,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^6.0.0",
+    "leasot": "^13.3.0",
     "lint-staged": ">=10",
     "prettier": "^3.0.2",
     "tsx": "^3.10.1",
