@@ -15,15 +15,38 @@ import FormValidationErrorList from "./FormValidationErrorList";
 import ImageInput from "./ImageInput";
 import PinataClient from "../../services/pinata";
 
+export const fetchHypercertMetadata = async (hypercertId: string) =>
+  fetch(
+    "https://api.thegraph.com/subgraphs/name/hypercerts-admin/hypercerts-testnet",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        variables: {
+          id: hypercertId,
+        },
+        query: `
+query ClaimById($id: ID!) {
+  claim(id: $id) {
+    contract
+    tokenID
+    creator
+    id
+    owner
+    totalUnits
+    uri
+  }
+}`,
+      }),
+    }
+  )
+    .then((res) => res.json())
+    .then((res) => res?.data?.claim);
+
 const validation = {
   messages: [""],
   valid: false,
   errorCount: 0,
 };
-
-const client = new HypercertClient({
-  chainId: 5, // goerli testnet
-});
 
 const pinataClient = new PinataClient();
 
@@ -32,6 +55,19 @@ function HypercertProjectForm({
 }: {
   setVerifying: (verifying: ProjectFormStatus) => void;
 }) {
+  const { chain } = useNetwork();
+  const [hypercertClient, setHypercertClient] = useState<HypercertClient>();
+
+  useEffect(() => {
+    if (chain?.id) {
+      const client = new HypercertClient({
+        chainId: chain?.id,
+      });
+      setHypercertClient(client);
+    }
+  }, []);
+  console.log(chain?.id);
+
   const dispatch = useDispatch();
 
   const props = useSelector(
@@ -134,53 +170,58 @@ function HypercertProjectForm({
   };
 
   const handleFetchHypercert = async () => {
-    if (props.formMetaData.hypercertId) {
-      const hypercert = await client.indexer.claimById(
-        props.formMetaData.hypercertId
-      );
-
-      console.log(hypercert);
-      if (!hypercert) {
-        throw new Error("Hypercert not found");
-      }
-
-      const hypercertMetadata = await pinataClient.fetchJson(
-        hypercert.claim?.uri?.replace("ipfs://", "")!
-      );
-      console.log(hypercertMetadata);
-
-      const b64Identifier = "base64,";
-      const contentType = hypercertMetadata.image.slice(
-        hypercertMetadata.image.indexOf("data:") + 5,
-        hypercertMetadata.image.indexOf(b64Identifier)
-      );
-      const imageb64Data = hypercertMetadata.image.slice(
-        hypercertMetadata.image.indexOf(b64Identifier) + b64Identifier.length
-      );
-
-      const byteCharacters = atob(imageb64Data);
-      const byteNumbers = new Array(byteCharacters.length);
-
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: contentType });
-
-      setLogoImg(blob);
-      dispatch(metadataImageSaved(blob, "logoImgData"));
-
-      dispatch(
-        metadataSaved({
-          ...props.formMetaData,
-          title: hypercertMetadata.name as string,
-          description: hypercertMetadata.description as string,
-          website: hypercertMetadata.external_url as string,
-          logoImgData: blob,
-        })
-      );
+    if (!props.formMetaData.hypercertId) {
+      throw new Error("Hypercert ID is required");
     }
+
+    const hypercert = await fetchHypercertMetadata(
+      props.formMetaData.hypercertId
+    );
+
+    if (!hypercertClient) {
+      throw new Error("Hypercert client not initialized");
+    }
+
+    if (!hypercert) {
+      throw new Error("Hypercert not found");
+    }
+
+    const hypercertMetadata = await pinataClient.fetchJson(
+      hypercert.uri?.replace("ipfs://", "")!
+    );
+    console.log(hypercertMetadata);
+
+    const b64Identifier = "base64,";
+    const contentType = hypercertMetadata.image.slice(
+      hypercertMetadata.image.indexOf("data:") + 5,
+      hypercertMetadata.image.indexOf(b64Identifier)
+    );
+    const imageb64Data = hypercertMetadata.image.slice(
+      hypercertMetadata.image.indexOf(b64Identifier) + b64Identifier.length
+    );
+
+    const byteCharacters = atob(imageb64Data);
+    const byteNumbers = new Array(byteCharacters.length);
+
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: contentType });
+
+    setLogoImg(blob);
+    dispatch(metadataImageSaved(blob, "logoImgData"));
+
+    dispatch(
+      metadataSaved({
+        ...props.formMetaData,
+        title: hypercertMetadata.name as string,
+        description: hypercertMetadata.description as string,
+        website: hypercertMetadata.external_url as string,
+        logoImgData: blob,
+      })
+    );
   };
 
   return (
