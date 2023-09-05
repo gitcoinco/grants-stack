@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "vitest --run",
-    "build": "pkgroll"
+    "build": "pkgroll",
+    "preinstall": "pkgroll"
   },
   "keywords": [],
   "author": "Atris",

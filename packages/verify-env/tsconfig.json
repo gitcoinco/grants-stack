@@ -2,7 +2,8 @@
   "extends": "@tsconfig/node-lts/tsconfig.json",
   "compilerOptions": {
     "types": ["@types/node"],
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]
