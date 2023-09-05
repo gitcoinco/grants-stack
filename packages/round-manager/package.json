@@ -88,7 +88,8 @@
     "util": "^0.12.4",
     "wagmi": "0.12.18",
     "web-vitals": "^2.1.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "verify-env": "*"
   },
   "jest": {
     "transformIgnorePatterns": [
