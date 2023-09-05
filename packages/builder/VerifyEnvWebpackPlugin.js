@@ -8,30 +8,64 @@ class VerifyEnvPlugin {
 
   apply(compiler) {
     compiler.hooks.run.tap("VerifyEnvPlugin", () => {
-      const envExamplePath = path.resolve(process.cwd(), this.filePath);
+      /** Get all source files */
 
-      try {
-        const envExampleContent = fs.readFileSync(envExamplePath, "utf-8");
-        const envExampleVariables = this.extractEnvVariables(envExampleContent);
+      // Recursive function to get files with specific extensions
+      const getFilesWithExtensions = (dir, extensions, fileList = []) => {
+        const files = fs.readdirSync(dir);
 
-        this.verifyEnvVariables(envExampleVariables);
-      } catch (error) {
-        console.error(`Error reading ${this.filePath}:`, error);
-        process.exit(1);
-      }
+        files.forEach((file) => {
+          const filePath = path.join(dir, file);
+          const stat = fs.statSync(filePath);
+
+          if (stat.isDirectory()) {
+            getFilesWithExtensions(filePath, extensions, fileList); // Recurse into subdirectories
+          } else {
+            const ext = path.extname(file);
+            if (extensions.includes(ext)) {
+              fileList.push(filePath); // Add to fileList if it matches the extensions
+            }
+          }
+        });
+
+        return fileList;
+      };
+
+      // Extensions to look for
+      const extensions = [".ts", ".tsx", ".js", ".jsx"];
+
+      // Directory to search
+      const srcDir = "src/";
+
+      const files = getFilesWithExtensions(srcDir, extensions);
+
+      // Initialize an array to store the extracted environment variables
+      const envVars = [];
+
+      // Function to extract environment variables from file content
+      const extractEnvVars = (content) => {
+        const regex = /process\.env\.([A-Z0-9_]+)/gi;
+        let match;
+        while ((match = regex.exec(content)) !== null) {
+          envVars.push(match[1]);
+        }
+      };
+
+      // Read each file and extract environment variables
+      files.forEach((filePath) => {
+        try {
+          const fileContent = fs.readFileSync(filePath, "utf-8");
+          extractEnvVars(fileContent);
+        } catch (error) {
+          console.error(`Error reading file ${filePath}: ${error}`);
+        }
+      });
+
+      // Remove duplicates
+      const uniqueEnvVars = [...new Set(envVars)];
+      console.log(uniqueEnvVars);
+      this.verifyEnvVariables(uniqueEnvVars);
     });
-  }
-
-  extractEnvVariables(content) {
-    const regex = /^\s*([A-Za-z_0-9]+)\s*=/gm;
-    let match;
-    const variables = [];
-
-    while ((match = regex.exec(content))) {
-      variables.push(match[1]);
-    }
-
-    return variables;
   }
 
   verifyEnvVariables(variables) {
