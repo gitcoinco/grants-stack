@@ -37,7 +37,7 @@
     "@wagmi/core": "0.5.4",
     "@walletconnect/ethereum-provider": "^2.9.0",
     "@walletconnect/modal": "^2.5.9",
-    "allo-indexer-client": "github:gitcoinco/allo-indexer-client#0487c02c9bb89307b12ffe75f5bfb578278994a1",
+    "allo-indexer-client": "github:gitcoinco/allo-indexer-client",
     "assert": "^2.0.0",
     "autoprefixer": "^10.4.7",
     "axios": "^0.27.2",
