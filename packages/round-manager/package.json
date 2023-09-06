@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.20.12",
-    "@craco/craco": "^6.4.5",
+    "@craco/craco": "^7.1.0",
     "@datadog/browser-logs": "^4.17.1",
     "@datadog/browser-rum": "^4.17.1",
     "@ethersproject/abi": "5.7.0",
