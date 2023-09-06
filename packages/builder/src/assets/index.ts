@@ -26,6 +26,7 @@ import TwitterLogo from "./twitter_logo.svg";
 import BuilderLogo from "./builder-logo.svg";
 import BuilderLandingBackground from "./builder-landing-background.svg";
 import WhiteEthIconFilledCircle from "./white-eth-icon-filled-circle.png";
+import ARBIcon from "./icons/arb-logo.svg";
 
 export {
   FourZeroFour,
@@ -56,4 +57,5 @@ export {
   BuilderLogo,
   BuilderLandingBackground,
   WhiteEthIconFilledCircle,
+  ARBIcon,
 };
