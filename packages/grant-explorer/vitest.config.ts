@@ -11,6 +11,8 @@ export default defineConfig({
     ],
     globals: true,
     environmentMatchGlobs: [
+      ["**/voting.test.tsx", "happy-dom"],
+      ["**/round.test.tsx", "happy-dom"],
       // all component tests need to be tsx and run in jsdom
       ["**/*.tsx", "jsdom"],
       // everything else runs in node

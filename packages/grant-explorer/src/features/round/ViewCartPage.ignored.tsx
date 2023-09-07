@@ -60,9 +60,7 @@ describe.skip("View Cart Page", () => {
         makeApprovedProjectData(),
       ];
 
-      renderWrapped(cart, () => {
-        /**/
-      });
+      renderWrapped();
 
       const projects = screen.getAllByTestId("cart-project");
       expect(projects.length).toEqual(cart.length);
@@ -85,7 +83,7 @@ describe.skip("View Cart Page", () => {
 
       const setCart = jest.fn();
 
-      renderWrapped(cart, setCart);
+      renderWrapped();
 
       // expect(screen.getAllByTestId("project").length).toEqual(0);
       expect(screen.getAllByTestId("cart-project").length).toEqual(2);
@@ -120,7 +118,7 @@ describe.skip("View Cart Page", () => {
     it("reflects a change in donation to one project in the final contribution", () => {
       const cart: CartProject[] = [makeApprovedProjectData()];
 
-      renderWrapped(cart);
+      renderWrapped();
 
       /* Set donation amount on one project */
       const projectDonationInput = screen.getByRole("spinbutton", {
@@ -143,7 +141,7 @@ describe.skip("View Cart Page", () => {
         makeApprovedProjectData(),
       ];
 
-      renderWrapped(cart);
+      renderWrapped();
 
       /* Set donation amount on one project */
       const projectDonationInput = screen.getByRole("spinbutton", {
@@ -212,7 +210,7 @@ describe.skip("View Cart Page", () => {
     it("shows error when clicking on submit with a donation field empty", async () => {
       const cart: CartProject[] = [makeApprovedProjectData()];
 
-      renderWrapped(cart);
+      renderWrapped();
 
       /* Click on Confirm Button */
       const confirmButton = screen.getByTestId("handle-confirmation");
@@ -230,7 +228,7 @@ describe.skip("View Cart Page", () => {
     it("shows error when clicking on submit with user having lesser balance then total donation", async () => {
       const cart: CartProject[] = [makeApprovedProjectData()];
 
-      renderWrapped(cart);
+      renderWrapped();
 
       /* Set donation amount on one project */
       const projectDonationInput = screen.getByRole("spinbutton", {
@@ -258,7 +256,7 @@ describe.skip("View Cart Page", () => {
     it("opens confirmation modal when user clicks on submit with sufficient balance and donation fields set", async () => {
       const cart: CartProject[] = [makeApprovedProjectData()];
 
-      renderWrapped(cart);
+      renderWrapped();
 
       /* Set donation amount on one project */
       const projectDonationInput = screen.getByRole("spinbutton", {
@@ -314,7 +312,7 @@ describe.skip("View Cart Page", () => {
 
     const setCart = jest.fn();
 
-    renderWrapped(cart, setCart);
+    renderWrapped();
 
     const amountInputField = screen.getByRole("spinbutton", {
       name: /donation amount for all projects/i,

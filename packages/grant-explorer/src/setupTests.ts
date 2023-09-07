@@ -4,6 +4,11 @@ import matchers from "@testing-library/jest-dom/matchers";
 import createFetchMock from "vitest-fetch-mock";
 import { vi } from "vitest";
 const fetchMocker = createFetchMock(vi);
+import ResizeObserver from "resize-observer-polyfill";
+global.ResizeObserver = ResizeObserver;
+import { Blob } from "buffer";
+
+global.Uint8Array = Uint8Array;
 
 // extends Vitest's expect method with methods from react-testing-library
 expect.extend(matchers);

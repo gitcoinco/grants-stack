@@ -81,7 +81,7 @@ if ((queryError || queryCode) && queryState && /^github-.*/.test(queryState)) {
   window.close();
 }
 
-const pathname = process.env.REACT_APP_PATHNAME;
+const pathname = process.env["REACT_APP_PATHNAME"];
 if (pathname && pathname !== window.location.pathname) {
   window.location.pathname = pathname;
 }

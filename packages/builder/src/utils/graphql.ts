@@ -9,8 +9,8 @@ const graphQlEndpoints: Record<ChainId, string> = {
     process.env.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET!,
   [ChainId.FANTOM_TESTNET_CHAIN_ID]:
     process.env.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET!,
-  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_URL_PGN_TESTNET!,
-  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_URL_PGN!,
+  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
+  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
   [ChainId.ARBITRUM_GOERLI]:
     process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
   [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
