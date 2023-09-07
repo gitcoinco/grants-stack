@@ -19,11 +19,11 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 7
+          version: 8
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
           cache: 'pnpm'
 
       - name: Install Dependencies
@@ -35,6 +35,6 @@ jobs:
         run: |
           pnpm re-build
 
-#      - name: Test Grant Explorer
-#        run: |
-#          pnpm re-test
+      - name: Test Grant Explorer
+        run: |
+          pnpm re-test

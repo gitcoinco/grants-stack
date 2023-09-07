@@ -4,10 +4,10 @@
   "main": "index.js",
   "private": true,
   "dependencies": {
-    "eslint-config-turbo": "latest",
-    "@typescript-eslint/eslint-plugin": "^5.36.2",
-    "@typescript-eslint/parser": "^5.36.2",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
     "eslint": "^8.22.0",
+    "eslint-config-turbo": "latest",
     "eslint-plugin-react": "^7.31.7",
     "eslint-plugin-react-hooks": "^4.6.0"
   }
