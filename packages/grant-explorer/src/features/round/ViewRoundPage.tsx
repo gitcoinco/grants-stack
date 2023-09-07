@@ -1,4 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
+import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 import {
   ChainId,
   formatUTCDateAsISOString,
@@ -7,14 +10,15 @@ import {
   truncateDescription,
 } from "common";
 import { Button, Input } from "common/src/styles";
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
+
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
 import { CHAINS, payoutTokens } from "../api/utils";
+
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
@@ -43,7 +47,7 @@ export default function ViewRound() {
 
   const { round, isLoading } = useRoundById(
     chainId as string,
-    roundId as string
+    roundId?.toLowerCase() as string
   );
 
   const currentTime = new Date();
@@ -144,7 +148,6 @@ function AfterRoundStart(props: {
         showCartNotification={showCartNotification}
         setShowCartNotification={setShowCartNotification}
         currentProjectAddedToCart={currentProjectAddedToCart}
-        roundUrlPath={`/round/${chainId}/${roundId}`}
       />
     );
   };
@@ -196,8 +199,10 @@ function AfterRoundStart(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
-    )[0].name;
+      (t) =>
+        t.address.toLowerCase() === round.token.toLowerCase() &&
+        t.chainId === chainId
+    )[0]?.name;
 
   const breadCrumbs = [
     {
@@ -213,7 +218,7 @@ function AfterRoundStart(props: {
   return (
     <>
       {showCartNotification && renderCartNotification()}
-      <Navbar isBeforeRoundEndDate={props.isBeforeRoundEndDate} />
+      <Navbar />
       {props.isBeforeRoundEndDate && (
         <PassportBanner chainId={chainId} round={round} />
       )}
@@ -500,7 +505,9 @@ function PreRoundPage(props: {
   const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
+      (t) =>
+        t.address.toLowerCase() === round.token.toLowerCase() &&
+        t.chainId.toString() === chainId
     )[0]?.name;
 
   return (
@@ -571,13 +578,17 @@ function PreRoundPage(props: {
             data-testid="matching-cap"
           >
             Matching Cap:
-            <span>
-              {" "}
-              &nbsp;
-              {round.roundMetadata?.quadraticFundingConfig?.matchingCapAmount}
-              &nbsp;
-              {"%"}
-            </span>
+            {round.roundMetadata?.quadraticFundingConfig?.matchingCapAmount ? (
+              <span>
+                {" "}
+                &nbsp;
+                {round.roundMetadata?.quadraticFundingConfig?.matchingCapAmount}
+                &nbsp;
+                {"%"}
+              </span>
+            ) : (
+              <span>None</span>
+            )}
           </p>
           <p className="text-lg my-5 text-grey-400 font-normal border-t py-5 border-b">
             <span>{round.roundMetadata?.eligibility.description}</span>

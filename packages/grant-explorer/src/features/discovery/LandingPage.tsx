@@ -38,7 +38,6 @@ const LandingPage = () => {
 
   const { isLoading: applyRoundsLoading, data: roundsInApplicationPhase } =
     useRoundsInApplicationPhase();
-
   return (
     <>
       <Navbar showWalletInteraction={true} />

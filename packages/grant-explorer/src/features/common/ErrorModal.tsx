@@ -49,7 +49,10 @@ export default function ErrorModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-grey-400 bg-opacity-75 transition-opacity" />
+          <div
+            data-testid={"backdrop"}
+            className="fixed inset-0 bg-grey-400 bg-opacity-75 transition-opacity"
+          />
         </Transition.Child>
 
         <div className="fixed z-10 inset-0 overflow-y-auto">

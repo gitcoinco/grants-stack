@@ -30,10 +30,14 @@ export const useCartStorage = create<CartState>()(
   persist(
     (set, get) => ({
       projects: [],
-      add: (project: CartProject) =>
+      add: (project: CartProject) => {
+        if (get().projects.includes(project)) {
+          return;
+        }
         set({
           projects: [...get().projects, project],
-        }),
+        });
+      },
       remove: (grantApplicationId: string) => {
         set({
           projects: get().projects.filter(
@@ -57,6 +61,10 @@ export const useCartStorage = create<CartState>()(
         });
       },
       updateDonationAmount: (grantApplicationId: string, amount: string) => {
+        if (amount.includes("-")) {
+          return;
+        }
+
         const projectIndex = get().projects.findIndex(
           (donation) => donation.grantApplicationId === grantApplicationId
         );
@@ -71,6 +79,19 @@ export const useCartStorage = create<CartState>()(
       },
       chainToPayoutToken: ethOnlyPayoutTokens,
       setPayoutTokenForChain: (chainId: ChainId, payoutToken: PayoutToken) => {
+        if (!Object.values(ChainId).includes(chainId)) {
+          console.warn(
+            "Tried setting payoutToken",
+            payoutToken,
+            "for chain",
+            chainId,
+            ", but chain",
+            chainId,
+            " doesn't exist"
+          );
+          return;
+        }
+
         set({
           chainToPayoutToken: {
             ...get().chainToPayoutToken,
@@ -82,6 +103,7 @@ export const useCartStorage = create<CartState>()(
     {
       /*This is the localStorage key. Change this whenever the shape of the stores objects changes. append a v1, v2. etc. */
       name: "cart-storage",
+      version: 2,
     }
   )
 );
