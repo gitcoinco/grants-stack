@@ -345,10 +345,10 @@ importers:
         version: 7.42.1(react@18.2.0)
       react-router:
         specifier: ^6
-        version: 6.11.1(react@18.2.0)
+        version: 6.15.0(react@18.2.0)
       react-router-dom:
         specifier: ^6.11.1
-        version: 6.11.1(react-dom@18.2.0)(react@18.2.0)
+        version: 6.15.0(react-dom@18.2.0)(react@18.2.0)
       swr:
         specifier: ^2.0.1
         version: 2.0.1(react@18.2.0)
@@ -720,9 +720,6 @@ importers:
       '@hookform/resolvers':
         specifier: ^2.9.2
         version: 2.9.10(react-hook-form@7.42.1)
-      '@lagunovsky/redux-react-router':
-        specifier: ^3.1.0
-        version: 3.2.0(history@5.3.0)(react-dom@18.2.0)(react-redux@8.0.5)(react-router@6.15.0)(react@18.2.0)(redux@4.2.1)
       '@openzeppelin/merkle-tree':
         specifier: ^1.0.2
         version: 1.0.2
@@ -846,9 +843,12 @@ importers:
       react-redux:
         specifier: ^8.0.1
         version: 8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.33)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
+      react-router:
+        specifier: 6.15.0
+        version: 6.15.0(react@18.2.0)
       react-router-dom:
-        specifier: '6'
-        version: 6.11.1(react-dom@18.2.0)(react@18.2.0)
+        specifier: 6.15.0
+        version: 6.15.0(react-dom@18.2.0)(react@18.2.0)
       react-scripts:
         specifier: 5.0.1
         version: 5.0.1(@babel/plugin-syntax-flow@7.22.5)(@babel/plugin-transform-react-jsx@7.22.15)(esbuild@0.19.2)(eslint@8.48.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5)
@@ -5679,24 +5679,6 @@ packages:
       redux: 4.2.1
     dev: false
 
-  /@lagunovsky/redux-react-router@3.2.0(history@5.3.0)(react-dom@18.2.0)(react-redux@8.0.5)(react-router@6.15.0)(react@18.2.0)(redux@4.2.1):
-    resolution: {integrity: sha512-6S+ekq+dAuIS+sN1QiOBYMpetTLpZSHpz+mxG/gaDciXVjE4KHijsn23trFuW5pv8hoMHm0GUSRuPhgq2lGEyw==}
-    peerDependencies:
-      history: ^5
-      react: ^16.8 || ^17 || ^18
-      react-dom: ^16.8 || ^17 || ^18
-      react-redux: ^6 || ^7 || ^8
-      react-router: ^6
-      redux: ^4
-    dependencies:
-      history: 5.3.0
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      react-redux: 8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.33)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
-      react-router: 6.15.0(react@18.2.0)
-      redux: 4.2.1
-    dev: false
-
   /@ledgerhq/connect-kit-loader@1.1.0:
     resolution: {integrity: sha512-HUy12FEczoWY2FPubnsm1uOA8tkVWc0j90i47suThV3C9NL2xx69ZAIEU3Ytzs2bwLek9S1Q2S1VQJvA+3Ygkg==}
     dev: false
@@ -5983,7 +5965,7 @@ packages:
       react-refresh: '>=0.10.0 <1.0.0'
       sockjs-client: ^1.4.0
       type-fest: '>=0.17.0 <4.0.0'
-      webpack: '>=4.43.0 <6.0.0'
+      webpack: ^5
       webpack-dev-server: 3.x || 4.x
       webpack-hot-middleware: 2.x
       webpack-plugin-serve: 0.x || 1.x
@@ -9728,7 +9710,7 @@ packages:
     engines: {node: '>= 8.9'}
     peerDependencies:
       '@babel/core': ^7.0.0
-      webpack: '>=2'
+      webpack: ^5
     dependencies:
       '@babel/core': 7.22.10
       find-cache-dir: 3.3.2
@@ -11052,7 +11034,7 @@ packages:
     resolution: {integrity: sha512-qhOH1KlBMnZP8FzRO6YCH9UHXQhVMcEGLyNdb7Hv2cpcmJbW0YrddO+tG1ab5nT41KpHIYGsbeHqxB9xPu1pKQ==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.28)
       postcss: 8.4.28
@@ -11072,7 +11054,7 @@ packages:
       clean-css: '*'
       csso: '*'
       esbuild: '*'
-      webpack: ^5.0.0
+      webpack: ^5
     peerDependenciesMeta:
       '@parcel/css':
         optional: true
@@ -12047,7 +12029,7 @@ packages:
   /esbuild-loader@2.21.0(webpack@5.88.2):
     resolution: {integrity: sha512-k7ijTkCT43YBSZ6+fBCW1Gin7s46RrJ0VQaM8qA7lq7W+OLsGgtLyFV8470FzYi/4TeDexniTBTPTwZUnXXR5g==}
     peerDependencies:
-      webpack: ^4.40.0 || ^5.0.0
+      webpack: ^5
     dependencies:
       esbuild: 0.16.17
       joycon: 3.1.1
@@ -12869,7 +12851,7 @@ packages:
     engines: {node: '>= 12.13.0'}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       '@types/eslint': 8.4.10
       eslint: 8.32.0
@@ -12884,7 +12866,7 @@ packages:
     engines: {node: '>= 12.13.0'}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       '@types/eslint': 8.4.10
       eslint: 8.48.0
@@ -13392,7 +13374,7 @@ packages:
     resolution: {integrity: sha512-qo3glqyTa61Ytg4u73GultjHGjdRyig3tG6lPtyX/jOEJvHif9uB0/OCI2Kif6ctF3caQTW2G5gym21oAsI4pw==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
-      webpack: ^4.0.0 || ^5.0.0
+      webpack: ^5
     dependencies:
       loader-utils: 2.0.4
       schema-utils: 3.1.1
@@ -13550,7 +13532,7 @@ packages:
       eslint: '>= 6'
       typescript: '>= 2.7'
       vue-template-compiler: '*'
-      webpack: '>= 4'
+      webpack: ^5
     peerDependenciesMeta:
       eslint:
         optional: true
@@ -13581,7 +13563,7 @@ packages:
       eslint: '>= 6'
       typescript: '>= 2.7'
       vue-template-compiler: '*'
-      webpack: '>= 4'
+      webpack: ^5
     peerDependenciesMeta:
       eslint:
         optional: true
@@ -13613,7 +13595,7 @@ packages:
       eslint: '>= 6'
       typescript: '>= 2.7'
       vue-template-compiler: '*'
-      webpack: '>= 4'
+      webpack: ^5
     peerDependenciesMeta:
       eslint:
         optional: true
@@ -14277,7 +14259,7 @@ packages:
     resolution: {integrity: sha512-sy88PC2cRTVxvETRgUHFrL4No3UxvcH8G1NepGhqaTT+GXN2kTamqasot0inS5hXeg1cMbFDt27zzo9p35lZVw==}
     engines: {node: '>=10.13.0'}
     peerDependencies:
-      webpack: ^5.20.0
+      webpack: ^5
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -17408,7 +17390,7 @@ packages:
     resolution: {integrity: sha512-EdlUizq13o0Pd+uCp+WO/JpkLvHRVGt97RqfeGhXqAcorYo1ypJSpkV+WDT0vY/kmh/p7wRdJNJtuyK540PXDw==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       schema-utils: 4.0.0
       webpack: 5.88.2(esbuild@0.19.2)
@@ -18757,7 +18739,7 @@ packages:
     engines: {node: '>= 12.13.0'}
     peerDependencies:
       postcss: ^7.0.0 || ^8.0.1
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       cosmiconfig: 7.1.0
       klona: 2.0.6
@@ -19578,7 +19560,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       typescript: '>=2.7'
-      webpack: '>=4'
+      webpack: ^5
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -19619,7 +19601,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       typescript: '>=2.7'
-      webpack: '>=4'
+      webpack: ^5
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -19661,7 +19643,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       typescript: '>=2.7'
-      webpack: '>=4'
+      webpack: ^5
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -19924,6 +19906,19 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-router: 6.11.1(react@18.2.0)
+    dev: false
+
+  /react-router-dom@6.15.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-aR42t0fs7brintwBGAv2+mGlCtgtFQeOzK0BM1/OiqEzRejOZtpMZepvgkscpMUnKb8YO84G7s3LsHnnDNonbQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.8.0
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-router: 6.15.0(react@18.2.0)
     dev: false
 
   /react-router@6.11.1(react@18.2.0):
@@ -20745,7 +20740,7 @@ packages:
       node-sass: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
       sass: ^1.3.0
       sass-embedded: '*'
-      webpack: ^5.0.0
+      webpack: ^5
     peerDependenciesMeta:
       fibers:
         optional: true
@@ -21086,7 +21081,7 @@ packages:
     resolution: {integrity: sha512-BokxPoLjyl3iOrgkWaakaxqnelAJSS+0V+De0kKIq6lyWrXuiPgYTGp6z3iHmqljKAaLXwZa+ctD8GccRJeVvg==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       abab: 2.0.6
       iconv-lite: 0.6.3
@@ -21470,7 +21465,7 @@ packages:
     resolution: {integrity: sha512-GPcQ+LDJbrcxHORTRes6Jy2sfvK2kS6hpSfI/fXhPt+spVzxF6LJ1dHLN9zIGmVaaP044YKaIatFaufENRiDoQ==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       webpack: 5.88.2(esbuild@0.19.2)
 
@@ -21696,7 +21691,7 @@ packages:
       '@swc/core': '*'
       esbuild: '*'
       uglify-js: '*'
-      webpack: ^5.1.0
+      webpack: ^5
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -21720,7 +21715,7 @@ packages:
       '@swc/core': '*'
       esbuild: '*'
       uglify-js: '*'
-      webpack: ^5.1.0
+      webpack: ^5
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -23053,7 +23048,7 @@ packages:
     resolution: {integrity: sha512-hj5CYrY0bZLB+eTO+x/j67Pkrquiy7kWepMHmUMoPsmcUaeEnQJqFzHJOyxgWlq746/wUuA64p9ta34Kyb01pA==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^4.0.0 || ^5.0.0
+      webpack: ^5
     dependencies:
       colorette: 2.0.19
       memfs: 3.4.13
@@ -23067,7 +23062,7 @@ packages:
     engines: {node: '>= 12.13.0'}
     hasBin: true
     peerDependencies:
-      webpack: ^4.37.0 || ^5.0.0
+      webpack: ^5
       webpack-cli: '*'
     peerDependenciesMeta:
       webpack-cli:
@@ -23113,7 +23108,7 @@ packages:
     resolution: {integrity: sha512-YXUAwxtfKIJIKkhg03MKuiFAD72PlrqCiwdwO4VEXdRO5V0ORCNwaOwAZawPZalCbmH9kBDmXnNeQOw+BIEiow==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
-      webpack: ^4.44.2 || ^5.47.0
+      webpack: ^5
     dependencies:
       tapable: 2.2.1
       webpack: 5.88.2(esbuild@0.19.2)
@@ -23436,7 +23431,7 @@ packages:
     resolution: {integrity: sha512-LmWm/zoaahe0EGmMTrSLUi+BjyR3cdGEfU3fS6PN1zKFYbqAKuQ+Oy/27e4VSXsyIwAw8+QDfk1XHNGtZu9nQg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
-      webpack: ^4.4.0 || ^5.9.0
+      webpack: ^5
     dependencies:
       fast-json-stable-stringify: 2.1.0
       pretty-bytes: 5.6.0
