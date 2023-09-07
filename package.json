@@ -39,5 +39,10 @@
   },
   "dependencies": {
     "turbo": "^1.10.9"
+  },
+  "pnpm": {
+    "overrides": {
+      "webpack": "^5"
+    }
   }
 }
