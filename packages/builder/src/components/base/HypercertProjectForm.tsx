@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
-import { HypercertClient } from "@hypercerts-org/sdk";
 import { metadataImageSaved, metadataSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
@@ -55,19 +54,6 @@ function HypercertProjectForm({
 }: {
   setVerifying: (verifying: ProjectFormStatus) => void;
 }) {
-  const { chain } = useNetwork();
-  const [hypercertClient, setHypercertClient] = useState<HypercertClient>();
-
-  useEffect(() => {
-    if (chain?.id) {
-      const client = new HypercertClient({
-        chainId: chain?.id,
-      });
-      setHypercertClient(client);
-    }
-  }, []);
-  console.log(chain?.id);
-
   const dispatch = useDispatch();
 
   const props = useSelector(
@@ -177,10 +163,6 @@ function HypercertProjectForm({
     const hypercert = await fetchHypercertMetadata(
       props.formMetaData.hypercertId
     );
-
-    if (!hypercertClient) {
-      throw new Error("Hypercert client not initialized");
-    }
 
     if (!hypercert) {
       throw new Error("Hypercert not found");
