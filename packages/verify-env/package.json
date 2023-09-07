@@ -16,7 +16,6 @@
   "devDependencies": {
     "@tsconfig/node-lts": "^18.12.5",
     "@types/node": "^20.5.9",
-    "@types/webpack": "^5.28.2",
     "pkgroll": "^1.11.0",
     "typescript": "^5.2.2",
     "vitest": "^0.34.2"
