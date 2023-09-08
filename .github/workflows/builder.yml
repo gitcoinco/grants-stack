@@ -27,6 +27,10 @@ jobs:
         node-version: '18'
         cache: 'pnpm'
 
+    - name: Install Dependencies
+      run: |
+        pnpm install
+
     - name: Lint Builder
       run: |
         pnpm b-lint    
