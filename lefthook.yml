@@ -7,6 +7,7 @@ pre-commit:
     prettier:
       glob: "*.{js,ts,jsx,tsx}"
       run: pnpm prettier --write {staged_files}
+      stage_fixed: true
 
 pre-push:
   parallel: true
