@@ -76,11 +76,6 @@ describe.skip("View Cart Page", () => {
     });
 
     it("moves project from final donation to cart when clicking the send back button", async () => {
-      const cart: CartProject[] = [
-        makeApprovedProjectData(),
-        makeApprovedProjectData(),
-      ];
-
       const setCart = jest.fn();
 
       renderWrapped();
@@ -208,8 +203,6 @@ describe.skip("View Cart Page", () => {
     });
 
     it("shows error when clicking on submit with a donation field empty", async () => {
-      const cart: CartProject[] = [makeApprovedProjectData()];
-
       renderWrapped();
 
       /* Click on Confirm Button */
@@ -309,8 +302,6 @@ describe.skip("View Cart Page", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-
-    const setCart = jest.fn();
 
     renderWrapped();
 
