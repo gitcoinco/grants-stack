@@ -4,6 +4,7 @@ const CracoEsbuildPlugin = require("craco-esbuild");
 module.exports = {
   webpack: {
     configure: {
+      devtool: "eval-source-map",
       module: {
         rules: [
           {
