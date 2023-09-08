@@ -1,4 +1,4 @@
-name: package/round-manager - Build -> Test
+name: Manager - Lint & Test & Typecheck
 on:
   push:
     branches:
@@ -30,10 +30,14 @@ jobs:
         run: |
           pnpm install
 
-      - name: Build Round Manager
+      - name: Lint Explorer
         run: |
-          pnpm rm-build
+          pnpm rm-lint    
 
-      - name: Test Round Manager
+      - name: Test Explorer
         run: |
           pnpm rm-test
+
+      - name: Typecheck Explorer
+        run: |
+          pnpm rm-typecheck

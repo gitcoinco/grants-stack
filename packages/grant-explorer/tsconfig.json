@@ -22,8 +22,7 @@
     "sourceMap": true,
     "types": [
       "vitest/globals",
-      "@testing-library/jest-dom",
-      "src/react-app-env.d.ts"
+      "@testing-library/jest-dom"
     ]
   },
   "include": [

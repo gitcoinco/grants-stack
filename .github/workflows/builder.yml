@@ -1,4 +1,4 @@
-name: package/builder - Build -> Test
+name: Builder - Lint & Test & Typecheck
 
 on:
   push:
@@ -27,12 +27,14 @@ jobs:
         node-version: '18'
         cache: 'pnpm'
 
-    - name: Test and Build
+    - name: Lint Builder
       run: |
-        pnpm install
+        pnpm b-lint    
 
-        cd packages/builder
+    - name: Test Builder
+      run: |
+        pnpm b-test
 
-        pnpm lint
-        pnpm test
-        pnpm build
+    - name: Typecheck Builder
+      run: |
+        pnpm b-typecheck

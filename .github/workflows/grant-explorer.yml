@@ -1,4 +1,4 @@
-name: package/grant-explorer - Build -> Test
+name: Explorer - Lint & Test & Typecheck
 on:
   push:
     branches:
@@ -30,11 +30,14 @@ jobs:
         run: |
           pnpm install
 
-
-      - name: Build Grant Explorer
+      - name: Lint Explorer
         run: |
-          pnpm re-build
+          pnpm re-lint    
 
-      - name: Test Grant Explorer
+      - name: Test Explorer
         run: |
           pnpm re-test
+
+      - name: Typecheck Explorer
+        run: |
+          pnpm re-typecheck
