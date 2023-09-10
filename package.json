@@ -10,7 +10,6 @@
     "test": "vitest run --coverage",
     "build": "tsc",
     "test:watch": "vitest watch",
-    "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
     "todo": "leasot 'src/**/*.ts'"
@@ -26,9 +25,8 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "husky": "^6.0.0",
     "leasot": "^13.3.0",
-    "lint-staged": ">=10",
+    "lefthook": "^1.4.10",
     "prettier": "^3.0.2",
     "tsx": "^3.10.1",
     "typescript": "^5.2.2",
