@@ -24,7 +24,7 @@ export function verify(srcDir: string = "src/") {
   const uniqueEnvVars = [...new Set(envVars)];
 
   // Validate
-  const badVars = validateVariables(uniqueEnvVars);
+  const badVars = getInvalidVariables(uniqueEnvVars);
   if (badVars.length > 0) {
     console.error(
       "Error: Some environment variables are not set or are empty:"
@@ -70,7 +70,7 @@ export const extractEnvVars = (content: string): string[] => {
   return envVars;
 };
 
-export function validateVariables(variables: string[]) {
+export function getInvalidVariables(variables: string[]) {
   return variables.filter((variable) => {
     const value = process.env[variable];
     return (
