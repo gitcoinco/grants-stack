@@ -504,8 +504,6 @@ function PreRoundPage(props: {
     round.applicationsEndTime <= currentTime &&
     round.roundStartTime >= currentTime;
 
-  console.log(round.token);
-
   const { data: tokenData } = useToken({
     address: getAddress(round.token),
     chainId: Number(chainId),
