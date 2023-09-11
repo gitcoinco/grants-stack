@@ -8,7 +8,7 @@ on:
     branches:
       - "**"
 jobs:
-  build-and-deploy:
+  lint-test-typecheck:
     concurrency: ci-grant-explorer-${{ github.head_ref || github.run_id }}
     runs-on: ubuntu-latest
     steps:
