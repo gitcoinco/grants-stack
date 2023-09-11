@@ -82,6 +82,7 @@ export const TokenNamesAndLogos = {
   OP: "/logos/optimism-logo.svg",
   ARB: "/logos/arb-logo.svg",
   GCV: "/logos/gcv.svg",
+  GTC: "/logos/gtc.svg",
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -236,6 +237,14 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "GTC",
+    chainId: ChainId.PGN,
+    address: "0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2",
+    decimal: 18,
+    logo: TokenNamesAndLogos["GTC"],
+    redstoneTokenId: RedstoneTokenIds["GTC"],
   },
 ];
 
