@@ -38,6 +38,8 @@ import {
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
+import { useToken } from "wagmi";
+import { getAddress } from "viem";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -502,13 +504,12 @@ function PreRoundPage(props: {
     round.applicationsEndTime <= currentTime &&
     round.roundStartTime >= currentTime;
 
-  const matchingFundPayoutTokenName =
-    round &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLowerCase() === round.token.toLowerCase() &&
-        t.chainId.toString() === chainId
-    )[0]?.name;
+  console.log(round.token);
+
+  const { data: tokenData } = useToken({
+    address: getAddress(round.token),
+    chainId: Number(chainId),
+  });
 
   return (
     <div className="mt-20 flex justify-center">
@@ -570,7 +571,7 @@ function PreRoundPage(props: {
               &nbsp;
               {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
               &nbsp;
-              {matchingFundPayoutTokenName}
+              {tokenData?.symbol ?? "..."}
             </span>
           </p>
           <p
