@@ -17,7 +17,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
-import { CHAINS, payoutTokens } from "../api/utils";
+import { CHAINS } from "../api/utils";
 
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -198,13 +198,10 @@ function AfterRoundStart(props: {
     setProjects([...exactMatches!, ...nonExactMatches!]);
   };
 
-  const matchingFundPayoutTokenName =
-    round &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLowerCase() === round.token.toLowerCase() &&
-        t.chainId === chainId
-    )[0]?.name;
+  const { data: tokenData } = useToken({
+    address: getAddress(props.round.token),
+    chainId: Number(props.chainId),
+  });
 
   const breadCrumbs = [
     {
@@ -272,7 +269,7 @@ function AfterRoundStart(props: {
             Matching funds available: &nbsp;
             {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
             &nbsp;
-            {matchingFundPayoutTokenName}
+            {tokenData?.symbol ?? "..."}
           </p>
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
