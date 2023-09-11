@@ -1,5 +1,6 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
@@ -54,6 +55,9 @@ function HypercertProjectForm({
 }: {
   setVerifying: (verifying: ProjectFormStatus) => void;
 }) {
+  const [searchParams] = useSearchParams();
+  const hypercertIdFromQuery = searchParams.get("hypercertId");
+
   const dispatch = useDispatch();
 
   const props = useSelector(
@@ -155,14 +159,12 @@ function HypercertProjectForm({
     }
   };
 
-  const handleFetchHypercert = async () => {
-    if (!props.formMetaData.hypercertId) {
+  const handleFetchHypercert = async (hypercertId: string) => {
+    if (!hypercertId) {
       throw new Error("Hypercert ID is required");
     }
 
-    const hypercert = await fetchHypercertMetadata(
-      props.formMetaData.hypercertId
-    );
+    const hypercert = await fetchHypercertMetadata(hypercertId);
 
     if (!hypercert) {
       throw new Error("Hypercert not found");
@@ -198,6 +200,7 @@ function HypercertProjectForm({
     dispatch(
       metadataSaved({
         ...props.formMetaData,
+        hypercertId: hypercertId as string,
         title: hypercertMetadata.name as string,
         description: hypercertMetadata.description as string,
         website: hypercertMetadata.external_url as string,
@@ -205,6 +208,20 @@ function HypercertProjectForm({
       })
     );
   };
+
+  useEffect(() => {
+    if (hypercertIdFromQuery) {
+      dispatch(
+        metadataSaved({
+          ...props.formMetaData,
+          hypercertId: hypercertIdFromQuery,
+        })
+      );
+      handleFetchHypercert(hypercertIdFromQuery);
+    }
+  }, [hypercertIdFromQuery]);
+
+  useEffect(() => {}, []);
 
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
@@ -239,7 +256,14 @@ function HypercertProjectForm({
             }
           }
         />
-        <Button onClick={handleFetchHypercert} variant={ButtonVariants.outline}>
+        <Button
+          onClick={() =>
+            props.formMetaData.hypercertId
+              ? handleFetchHypercert(props.formMetaData.hypercertId)
+              : {}
+          }
+          variant={ButtonVariants.outline}
+        >
           Fetch
         </Button>
         <div className="border w-full mt-8" />
