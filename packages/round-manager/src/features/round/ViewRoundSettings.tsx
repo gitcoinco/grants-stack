@@ -247,6 +247,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const updateRoundHandler = async () => {
     try {
+      // @ts-expect-error TS upgrade broke this, TODO fix this
       handleSubmit(submit(editedRound as Round));
       const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
       console.log("editedGroups", editedGroups);

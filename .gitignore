@@ -5,3 +5,4 @@ node_modules
 /lerna-debug.log
 .turbo
 .vercel
+/packages/verify-env/dist/
