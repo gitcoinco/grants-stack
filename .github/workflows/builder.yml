@@ -1,4 +1,4 @@
-name: package/builder - Build -> Test
+name: Builder - Lint & Test & Typecheck
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
       - "**"
 
 jobs:
-  build:
+  lint-test-typecheck:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,12 +27,18 @@ jobs:
         node-version: '18'
         cache: 'pnpm'
 
-    - name: Test and Build
+    - name: Install Dependencies
       run: |
         pnpm install
 
-        cd packages/builder
+    - name: Lint Builder
+      run: |
+        pnpm b-lint    
 
-        pnpm lint
-        pnpm test
-        pnpm build
+    - name: Test Builder
+      run: |
+        pnpm b-test
+
+    - name: Typecheck Builder
+      run: |
+        pnpm b-typecheck

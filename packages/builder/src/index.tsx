@@ -80,8 +80,9 @@ if ((queryError || queryCode) && queryState && /^github-.*/.test(queryState)) {
   // always close the redirected window
   window.close();
 }
-
-const pathname = process.env.REACT_APP_PATHNAME;
+/* this makes env var validation miss this var and therefore make it optional */
+// eslint-disable-next-line @typescript-eslint/dot-notation
+const pathname = process.env["REACT_APP_PATHNAME"];
 if (pathname && pathname !== window.location.pathname) {
   window.location.pathname = pathname;
 }

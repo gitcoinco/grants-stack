@@ -1,5 +1,5 @@
 import { Button } from "common/src/styles";
-import { LinkIcon } from "@heroicons/react//24/solid";
+import { LinkIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
 type CopyToClipboardType = {
