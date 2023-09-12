@@ -1,23 +1,40 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
 import Navbar from "../common/Navbar";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
-import { ProgressStatus } from "../api/types";
+import { ProgressStatus, Round } from "../api/types";
 import { ChainId } from "common";
 import { useAccount } from "wagmi";
 import { Hex } from "viem";
+import { getRoundById } from "../api/round";
 
-function TwitterButton(props: { address: Hex }) {
-  const shareText = `I just donated to GG18 on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${props.address}`;
-  const shareUrl = `https://twitter.com/share?text=${encodeURIComponent(
-    shareText
-  )}`;
+export function createTwitterShareText(props: TwitterButtonParams) {
+  return `I just donated to ${props.roundName ?? "a round"}${
+    props.isMrc && props.roundName ? " and more" : ""
+  } on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${
+    props.address
+  }`;
+}
+
+export function createTwitterShareUrl(props: TwitterButtonParams) {
+  const shareText = createTwitterShareText(props);
+  return `https://twitter.com/share?text=${encodeURIComponent(shareText)}`;
+}
+
+type TwitterButtonParams = {
+  address: Hex;
+  roundName?: string;
+  isMrc: boolean;
+};
+
+export function TwitterButton(props: TwitterButtonParams) {
+  const shareUrl = createTwitterShareUrl(props);
 
   return (
     <Button
@@ -38,14 +55,15 @@ export default function ThankYou() {
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  // scroll to top of window on load
-  window.scrollTo(0, 0);
-
   const navigate = useNavigate();
 
   const cart = useCartStorage();
   const checkoutStore = useCheckoutStore();
   const { address } = useAccount();
+
+  /** A round to put into the Tweet */
+  const [round, setRound] = useState<Round | undefined>();
+  const [isMrc, setIsMrc] = useState(false);
 
   /** Remove checked out projects from cart, but keep the ones we didn't yet check out succesfully. */
   const checkedOutChains = useMemo(
@@ -62,6 +80,19 @@ export default function ThankYou() {
 
   /** Cleanup */
   useEffect(() => {
+    /** Get a random round from the user's cart before it gets cleared*/
+    if (cart.projects.length > 0) {
+      const roundId = cart.projects[0].roundId;
+      getRoundById(roundId, cart.projects[0].chainId).then((round) => {
+        setRound(round);
+      });
+    }
+
+    /** Naively test if we checked out multiple chains */
+    if (cart.projects.length > 2) {
+      setIsMrc(true);
+    }
+
     cart.projects
       .filter((proj) => checkedOutChains.includes(proj.chainId))
       .forEach((proj) => {
@@ -98,7 +129,11 @@ export default function ThankYou() {
 
             <div className={"flex flex-col gap-5 items-center justify-center"}>
               <div className={"flex gap-5 items-center justify-center"}>
-                <TwitterButton address={address ?? "0x"} />
+                <TwitterButton
+                  address={address ?? "0x"}
+                  roundName={round?.roundMetadata?.name}
+                  isMrc={isMrc}
+                />
 
                 <Button
                   type="button"
