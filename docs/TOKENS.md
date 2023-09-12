@@ -1,3 +1,7 @@
+# Tokens
+
+This is the kb for token-related info in relation to GS/Allo
+
 # DAI in relation to Allo and Grants Stack
 
 ## Permit
