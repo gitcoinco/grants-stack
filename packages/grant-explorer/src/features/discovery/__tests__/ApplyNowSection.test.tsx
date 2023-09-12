@@ -3,7 +3,6 @@ import { MemoryRouter as Router } from "react-router-dom";
 import ApplyNowSection from "../ApplyNowSection";
 import { makeRoundOverviewData } from "../../../test-utils";
 import { vi } from "vitest";
-import { parseUnits, zeroAddress } from "viem";
 
 const mockRounds = [
   makeRoundOverviewData(),
@@ -18,6 +17,14 @@ vi.mock("wagmi", async () => {
     useToken: () => ({
       data: { symbol: "TEST" },
     }),
+  };
+});
+
+vi.mock("common", async () => {
+  const actual = await vi.importActual<typeof import("common")>("common");
+  return {
+    ...actual,
+    renderToPlainText: vi.fn().mockReturnValue(""),
   };
 });
 

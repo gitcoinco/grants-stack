@@ -16,6 +16,13 @@ fetchMock.mockIf(/summary/, JSON.stringify({}));
 
 const roundId = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
+vi.mock("common", async () => {
+  const actual = await vi.importActual<typeof import("common")>("common");
+  return {
+    ...actual,
+    renderToPlainText: vi.fn().mockReturnValue(""),
+  };
+});
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
 vi.mock("../../api/utils", async () => {
