@@ -187,7 +187,7 @@ export function SummaryContainer() {
           }}
           tryAgainText={"Go to Passport"}
           doneText={"Donate without matching"}
-          onTryAgain={() => {
+          onTryAgain={() => { 
             navigate(`/round/passport/connect`);
           }}
           heading={`Don’t miss out on getting your donations matched!`}
