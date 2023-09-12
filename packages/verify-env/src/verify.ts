@@ -1,11 +1,11 @@
 import fs from "fs";
-import path from "path";
+import { globSync } from "glob";
 
 export function verify(srcDir: string = "src/") {
   // Get all source files
   // Extensions to look for
   const extensions = [".ts", ".tsx", ".js", ".jsx"];
-  const files = getFilesWithExtensions(srcDir, extensions);
+  const files = globSync(`${srcDir}**/*.{ts,tsx,js,jsx}`);
 
   // Initialize an array to store the extracted environment variables
   const envVars: string[] = [];
@@ -35,30 +35,6 @@ export function verify(srcDir: string = "src/") {
     process.exit(1);
   }
 }
-
-const getFilesWithExtensions = (
-  dir: string,
-  extensions: string[],
-  fileList: string[] = []
-) => {
-  const files = fs.readdirSync(dir);
-
-  files.forEach((file) => {
-    const filePath = path.join(dir, file);
-    const stat = fs.statSync(filePath);
-
-    if (stat.isDirectory()) {
-      getFilesWithExtensions(filePath, extensions, fileList); // Recurse into subdirectories
-    } else {
-      const ext = path.extname(file);
-      if (extensions.includes(ext)) {
-        fileList.push(filePath); // Add to fileList if it matches the extensions
-      }
-    }
-  });
-
-  return fileList;
-};
 
 export const extractEnvVars = (content: string): string[] => {
   const envVars = [];

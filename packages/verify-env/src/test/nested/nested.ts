@@ -1,4 +1,4 @@
-const allChains = process.env.REACT_APP_ENV === "development";
+const isDevelopment = process.env.REACT_APP_ENV === "development";
 
 const projectId =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??

@@ -25,7 +25,9 @@ vi.mock("react-router-dom", async () => {
     chainId: chainId,
     roundId: roundId,
   });
-  const actual = await vi.importActual("react-router-dom");
+  const actual = await vi.importActual<typeof import("react-router-dom")>(
+    "react-router-dom"
+  );
   return {
     ...actual,
     useNavigate: () => vi.fn(),

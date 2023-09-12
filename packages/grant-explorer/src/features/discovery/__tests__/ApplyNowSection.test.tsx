@@ -12,7 +12,7 @@ const mockRounds = [
 ];
 
 vi.mock("wagmi", async () => {
-  const actual = await vi.importActual("wagmi");
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
   return {
     ...actual,
     useToken: () => ({
