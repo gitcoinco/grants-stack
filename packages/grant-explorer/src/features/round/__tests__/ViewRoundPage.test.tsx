@@ -50,6 +50,9 @@ vi.mock("wagmi", async () => {
     useSwitchNetwork: () => ({
       chainId: 5,
     }),
+    useToken: () => ({
+      data: { symbol: "TEST" },
+    }),
   };
 });
 
