@@ -32,7 +32,6 @@ const ApplyNowSection = (props: ApplyNow) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
           {new Array(3).fill(undefined).map((_, index) => {
             return (
-              // @ts-expect-error Tsc too weak to represent this type lol
               <Skeleton
                 key={index}
                 my={3}
