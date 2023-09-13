@@ -273,16 +273,6 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
     canVote: true,
   },
   {
-    name: "Bridged USDC",
-    chainId: ChainId.ARBITRUM,
-    address: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
-    decimal: 18,
-    logo: TokenNamesAndLogos["USDC"],
-    redstoneTokenId: RedstoneTokenIds["USDC"],
-    defaultForVoting: false,
-    canVote: true,
-  },
-  {
     name: "USDC",
     chainId: ChainId.ARBITRUM,
     address: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
