@@ -1,18 +1,18 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
 import Navbar from "../common/Navbar";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
-import { ProgressStatus, Round } from "../api/types";
+import { ProgressStatus } from "../api/types";
 import { ChainId } from "common";
 import { useAccount } from "wagmi";
 import { Hex } from "viem";
-import { getRoundById } from "../api/round";
+import { useRoundById } from "../../context/RoundContext";
 
 export function createTwitterShareText(props: TwitterButtonParams) {
   return `I just donated to ${props.roundName ?? "a round"}${
@@ -61,10 +61,6 @@ export default function ThankYou() {
   const checkoutStore = useCheckoutStore();
   const { address } = useAccount();
 
-  /** A round to put into the Tweet */
-  const [round, setRound] = useState<Round | undefined>();
-  const [isMrc, setIsMrc] = useState(false);
-
   /** Remove checked out projects from cart, but keep the ones we didn't yet check out succesfully. */
   const checkedOutChains = useMemo(
     () =>
@@ -80,19 +76,6 @@ export default function ThankYou() {
 
   /** Cleanup */
   useEffect(() => {
-    /** Get a random round from the user's cart before it gets cleared*/
-    if (cart.projects.length > 0) {
-      const roundId = cart.projects[0].roundId;
-      getRoundById(roundId, cart.projects[0].chainId).then((round) => {
-        setRound(round);
-      });
-    }
-
-    /** Naively test if we checked out multiple chains */
-    if (cart.projects.length > 2) {
-      setIsMrc(true);
-    }
-
     cart.projects
       .filter((proj) => checkedOutChains.includes(proj.chainId))
       .forEach((proj) => {
@@ -116,6 +99,28 @@ export default function ThankYou() {
   const showBackToCartButton =
     cart.projects.filter((proj) => !checkedOutChains.includes(proj.chainId))
       .length > 0;
+
+  /** Fetch round data for tweet */
+  const checkedOutProjects = useCheckoutStore((state) =>
+    state.getCheckedOutProjects()
+  );
+  const isMrc =
+    new Set(checkedOutProjects.map((project) => project.chainId)).size > 1;
+  const topProject = checkedOutProjects
+    .sort((a, b) =>
+      Number(a.amount) > Number(b.amount)
+        ? -1
+        : Number(a.amount) < Number(b.amount)
+        ? 1
+        : 0
+    )
+    .at(0);
+
+  const { round } = useRoundById(
+    /* If we don't have a round, pass in invalid params and silently fail */
+    topProject?.chainId.toString() ?? "",
+    topProject?.roundId ?? ""
+  );
 
   return (
     <>

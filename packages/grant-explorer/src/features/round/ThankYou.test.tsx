@@ -28,13 +28,9 @@ describe("<TwitterButton />", () => {
   });
 
   it("Should redirect to twitter with correct text", async () => {
-    const openSpy = vi
-      .spyOn(window, "open")
-      .mockImplementation(
-        (url?: string | URL, target?: string, features?: string) => {
-          return null;
-        }
-      );
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => {
+      return null;
+    });
 
     renderWithContext(
       <TwitterButton address={zeroAddress} isMrc={true} roundName={"Round"} />
