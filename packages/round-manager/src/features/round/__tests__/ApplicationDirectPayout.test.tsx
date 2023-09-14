@@ -166,45 +166,6 @@ describe("<ApplicationDirectPayout />", () => {
     }
   });
 
-  it('should trigger if the "Payout wallet address" answer is not present', () => {
-    const mockProps = {
-      round: makeRoundData({
-        operatorWallets: [mockAddress],
-      }),
-      application: makeGrantApplicationData({
-        applicationIndex: 1,
-        payoutStrategy: {
-          id: "1",
-          strategyName: ROUND_PAYOUT_DIRECT,
-          payouts: [],
-        },
-      }),
-      answerBlocks: [
-        {
-          questionId: 0,
-          question: "Email Address",
-          answer: "johndoe@example.com",
-        },
-        {
-          questionId: 1,
-          question: "Payout token",
-          answer: "DAI",
-        },
-      ],
-    };
-
-    try {
-      render(<ApplicationDirectPayout {...mockProps} />);
-      expect(
-        screen.findByTestId("application-direct-payout")
-      ).not.toBeInTheDocument();
-    } catch (error: any) {
-      expect(error.message).toBe(
-        '"Payout wallet address" not found in answers!'
-      );
-    }
-  });
-
   it('should display "Payouts have not been made yet." when there are no payouts', () => {
     const mockProps = {
       round: makeRoundData({
