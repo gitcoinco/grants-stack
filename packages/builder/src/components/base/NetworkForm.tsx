@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { useSwitchNetwork } from "wagmi";
 import { RootState } from "../../reducers";
@@ -9,8 +9,10 @@ import NetworkSwitchModal from "./NetworkSwitchModal";
 
 function NetworkForm({
   setVerifying,
+  targetNetwork,
 }: {
   setVerifying: (verifying: ProjectFormStatus) => void;
+  targetNetwork?: number;
 }) {
   const props = useSelector(
     (state: RootState) => ({
@@ -33,9 +35,26 @@ function NetworkForm({
     }
   };
 
-  const nextStep = () => {
+  const nextStepRegularRound = () => {
     setVerifying(ProjectFormStatus.Metadata);
   };
+
+  const nextStepHypercertRound = () => {
+    setVerifying(ProjectFormStatus.HypercertMetadata);
+  };
+
+  useEffect(() => {
+    if (targetNetwork) {
+      setSwitchTo(targetNetwork);
+      if (targetNetwork !== props.currentChain) {
+        setShowModal(true);
+      }
+
+      if (targetNetwork === props.currentChain) {
+        nextStepHypercertRound();
+      }
+    }
+  }, [targetNetwork, props.currentChain?.toString()]);
 
   return (
     <div
@@ -65,9 +84,16 @@ function NetworkForm({
           <Button
             disabled={switchTo !== props.currentChain}
             variant={ButtonVariants.primary}
-            onClick={nextStep}
+            onClick={nextStepRegularRound}
           >
-            Next
+            Regular round
+          </Button>
+          <Button
+            disabled={switchTo !== props.currentChain}
+            variant={ButtonVariants.primary}
+            onClick={nextStepHypercertRound}
+          >
+            Hypercert round
           </Button>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import colors from "../../styles/colors";
 import Button, { ButtonVariants } from "../base/Button";
 import ProjectForm from "../base/ProjectForm";
@@ -10,9 +11,13 @@ import { ProjectFormStatus } from "../../types";
 import Preview from "../base/Preview";
 import { formReset } from "../../actions/projectForm";
 import NetworkForm from "../base/NetworkForm";
+import HypercertProjectForm from "../base/HypercertProjectForm";
 
 function NewProject() {
   const dispatch = useDispatch();
+  const [params] = useSearchParams();
+
+  const chainId = params.get("chainId");
 
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
@@ -63,11 +68,20 @@ function NewProject() {
     switch (status) {
       case ProjectFormStatus.Network:
         return (
-          <NetworkForm setVerifying={(newStatus) => setFormStatus(newStatus)} />
+          <NetworkForm
+            setVerifying={(newStatus) => setFormStatus(newStatus)}
+            targetNetwork={chainId !== null ? parseInt(chainId, 10) : undefined}
+          />
         );
       case ProjectFormStatus.Metadata:
         return (
           <ProjectForm
+            setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
+          />
+        );
+      case ProjectFormStatus.HypercertMetadata:
+        return (
+          <HypercertProjectForm
             setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
           />
         );
