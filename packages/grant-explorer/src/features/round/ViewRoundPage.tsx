@@ -18,7 +18,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
-import { CHAINS } from "../api/utils";
+import { CHAINS, payoutTokens } from "../api/utils";
 
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -212,10 +212,21 @@ function AfterRoundStart(props: {
     setProjects([...exactMatches!, ...nonExactMatches!]);
   };
 
-  const { data: tokenData } = useToken({
+  const { data } = useToken({
     address: getAddress(props.round.token),
     chainId: Number(props.chainId),
   });
+
+  const nativePayoutToken = payoutTokens.find(
+    (t) =>
+      t.chainId === Number(props.chainId) &&
+      t.address === getAddress(props.round.token)
+  );
+
+  const tokenData = data ?? {
+    ...nativePayoutToken,
+    symbol: nativePayoutToken?.name ?? "ETH",
+  };
 
   const breadCrumbs = [
     {
@@ -564,10 +575,21 @@ function PreRoundPage(props: {
     round.applicationsEndTime <= currentTime &&
     round.roundStartTime >= currentTime;
 
-  const { data: tokenData } = useToken({
-    address: getAddress(round.token),
+  const { data } = useToken({
+    address: getAddress(props.round.token),
     chainId: Number(chainId),
   });
+
+  const nativePayoutToken = payoutTokens.find(
+    (t) =>
+      t.chainId === Number(chainId) &&
+      t.address === getAddress(props.round.token)
+  );
+
+  const tokenData = data ?? {
+    ...nativePayoutToken,
+    symbol: nativePayoutToken?.name ?? "ETH",
+  };
 
   return (
     <div className="mt-20 flex justify-center">
