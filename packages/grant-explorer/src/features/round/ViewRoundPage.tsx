@@ -333,7 +333,7 @@ function AfterRoundStart(props: {
             {round.roundMetadata?.eligibility?.description}
           </p>
 
-          {(isDirectRound(round) || isBeforeApplicationEndDate) && (
+          {isDirectRound(round) && isBeforeApplicationEndDate && (
             <ApplyButton applicationURL={applicationURL} />
           )}
           <hr className="mt-4 mb-4" />
