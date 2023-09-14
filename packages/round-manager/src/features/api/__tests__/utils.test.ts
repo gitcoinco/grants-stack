@@ -28,7 +28,7 @@ describe("fetchFromIPFS", () => {
     const res = await fetchFromIPFS(cid);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
     );
     expect(res).toEqual({ name: "My First Metadata" });
   });
@@ -43,7 +43,7 @@ describe("fetchFromIPFS", () => {
     await expect(fetchFromIPFS(cid)).rejects.toHaveProperty("status", 404);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
     );
   });
 });
@@ -251,7 +251,7 @@ describe("checkGrantApplicationStatus", () => {
     const res = await checkGrantApplicationStatus("1", metadataPointer);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${metadataPointer.pointer}`
+      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${metadataPointer.pointer}`
     );
     expect(res).toEqual("FRAUD");
   });
