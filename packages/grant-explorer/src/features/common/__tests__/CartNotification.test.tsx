@@ -84,7 +84,7 @@ describe("<ProjectView />", () => {
   });
 
   it("correctly computes the logo image URL when logoImg is provided", () => {
-    const expectedUrl = `${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/sampleLogoPath`;
+    const expectedUrl = `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/sampleLogoPath`;
     const modifiedMock = { ...mockProject };
     modifiedMock.projectMetadata.logoImg = "sampleLogoPath";
 

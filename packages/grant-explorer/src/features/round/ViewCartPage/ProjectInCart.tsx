@@ -36,7 +36,7 @@ export function ProjectInCart(
               className="inline-block rounded-full"
               src={
                 props.project.projectMetadata.logoImg
-                  ? `${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                  ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
                   : DefaultLogoImage
               }
               alt={"Project Logo"}
