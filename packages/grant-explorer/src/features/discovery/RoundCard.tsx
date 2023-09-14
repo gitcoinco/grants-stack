@@ -1,6 +1,6 @@
 import { ChainId, renderToPlainText, truncateDescription } from "common";
 import { RoundOverview } from "../api/rounds";
-import { getDaysLeft } from "../api/utils";
+import { getDaysLeft, payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -19,13 +19,23 @@ type RoundCardProps = {
 
 const RoundCard = (props: RoundCardProps) => {
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
+  const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
 
-  const { data: tokenData } = useToken({
+  const { data } = useToken({
     address: getAddress(props.round.token),
     chainId: Number(props.round.chainId),
   });
 
-  const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
+  const nativePayoutToken = payoutTokens.find(
+    (t) =>
+      t.chainId === chainIdEnumValue &&
+      t.address === getAddress(props.round.token)
+  );
+
+  const tokenData = data ?? {
+    ...nativePayoutToken,
+    symbol: nativePayoutToken?.name ?? "ETH",
+  };
 
   const approvedApplicationsCount = props.round.projects?.length ?? 0;
 

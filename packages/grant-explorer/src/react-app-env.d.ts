@@ -1,4 +1,17 @@
-/// <reference types="react-scripts" />
+declare module "*.svg" {
+  export const ReactComponent;
+  export default "";
+}
+
+declare module "*.png" {
+  export const ReactComponent;
+  export default "";
+}
+
+declare module "*.jpg" {
+  export const ReactComponent;
+  export default "";
+}
 
 declare module "*.svg" {
   const content: string;
