@@ -27,7 +27,7 @@
     "// builder script": "====== packages/builder specific ======",
     "b-start": "pnpm --filter builder run start",
     "b-lint": "turbo run lint:ci --filter=builder",
-    "b-test": "turbo run test --filter=builder",
+    "b-test": "pnpm test --filter=builder",
     "b-typecheck": "turbo run typecheck --filter=builder"
   },
   "devDependencies": {
