@@ -273,7 +273,7 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
     name: "USDC",
     chainId: ChainId.ARBITRUM,
     address: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
-    decimal: 18,
+    decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
