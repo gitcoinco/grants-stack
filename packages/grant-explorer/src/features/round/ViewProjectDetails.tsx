@@ -32,7 +32,7 @@ import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import { isInfiniteDate } from "../api/utils";
+import { isDirectRound, isInfiniteDate } from "../api/utils";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -82,12 +82,16 @@ export default function ViewProjectDetails() {
   );
 
   const currentTime = new Date();
-  const isAfterRoundEndDate = 
-    round && 
-    (isInfiniteDate(round.roundEndTime) ? false : (round && round.roundEndTime <= currentTime));
+  const isAfterRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime)
+      ? false
+      : round && round.roundEndTime <= currentTime);
   const isBeforeRoundEndDate =
-    round && 
-    (!isInfiniteDate(round.roundEndTime) ? (round.roundEndTime > currentTime) : true);
+    round &&
+    (!isInfiniteDate(round.roundEndTime)
+      ? round.roundEndTime > currentTime
+      : true);
 
   const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
     useCart();
@@ -118,7 +122,7 @@ export default function ViewProjectDetails() {
         isBeforeRoundEndDate={isBeforeRoundEndDate}
       />
 
-      {isBeforeRoundEndDate && (
+      {round && !isDirectRound(round) && isBeforeRoundEndDate && (
         /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
         <PassportBanner chainId={chainId!} round={round} />
       )}
@@ -168,20 +172,26 @@ export default function ViewProjectDetails() {
                     />
                   </div>
                 </div>
-                <div className="md:visible invisible  min-w-fit">
-                  <Sidebar
-                    isAlreadyInCart={isAlreadyInCart}
-                    isBeforeRoundEndDate={isBeforeRoundEndDate}
-                    removeFromCart={() => {
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      handleRemoveProjectsFromCart([projectToRender], roundId!);
-                    }}
-                    addToCart={() => {
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      handleAddProjectsToCart([projectToRender], roundId!);
-                    }}
-                  />
-                </div>
+                {round && !isDirectRound(round) && (
+                  <div className="md:visible invisible  min-w-fit">
+                    <Sidebar
+                      isAlreadyInCart={isAlreadyInCart}
+                      isBeforeRoundEndDate={isBeforeRoundEndDate}
+                      removeFromCart={() => {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        handleRemoveProjectsFromCart(
+                          [projectToRender],
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                          roundId!
+                        );
+                      }}
+                      addToCart={() => {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        handleAddProjectsToCart([projectToRender], roundId!);
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -544,12 +554,15 @@ export function ProjectStats() {
     projectToRender?.projectRegistryId as string
   );
 
-  const timeRemaining = round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
-    ? formatDistanceToNowStrict(round.roundEndTime)
-    : null;
+  const timeRemaining =
+    round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
+      ? formatDistanceToNowStrict(round.roundEndTime)
+      : null;
   const isBeforeRoundEndDate =
-    round && 
-    (!isInfiniteDate(round.roundEndTime) ? (round.roundEndTime > new Date()) : true);
+    round &&
+    (!isInfiniteDate(round.roundEndTime)
+      ? round.roundEndTime > new Date()
+      : true);
 
   return (
     <div

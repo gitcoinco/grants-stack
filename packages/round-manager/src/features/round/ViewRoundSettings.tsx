@@ -47,6 +47,7 @@ import {
   supportTypes,
 } from "./RoundDetailForm";
 import { isDirectRound } from "./ViewRoundPage";
+import { maxDateForUint256 } from "../../constants";
 
 type EditMode = {
   canEdit: boolean;
@@ -117,126 +118,138 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [ipfsStep, setIpfsStep] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
 
-  const ValidationSchema = !isDirectRound(round!) 
+  const ValidationSchema = !isDirectRound(round!)
     ? RoundValidationSchema.shape({
-      // Overrides for validation schema that was not included in imported schema.
-      roundMetadata: yup.object({
-        name: yup
-          .string()
-          .required("This field is required.")
-          .min(8, "Round name must be at least 8 characters."),
-        roundType: yup.string().required("You must select the round type."),
-        support: yup.object({
-          type: yup
-            .string()
-            .required("You must select a support type.")
-            .notOneOf(
-              ["Select what type of input."],
-              "You must select a support type."
-            ),
-          info: yup
+        // Overrides for validation schema that was not included in imported schema.
+        roundMetadata: yup.object({
+          name: yup
             .string()
             .required("This field is required.")
-            .when("type", {
-              is: "Email",
-              then: yup
-                .string()
-                .email()
-                .required("You must provide a valid email address."),
-            })
-            .when("type", {
-              is: (val: string) => val && val != "Email",
-              then: yup.string().url().required("You must provide a valid URL."),
-            }),
-        }),
-        eligibility: yup.object({
-          description: yup.string().required("A round description is required."),
-          requirements: yup.array().of(
-            yup.object({
-              requirement: yup
-                .string()
-                .required("This field cannot be left blank."),
-            })
-          ),
-        }),
-        quadraticFundingConfig: yup.object({
-          matchingFundsAvailable: yup
-            .number()
-            .typeError("Invalid value.")
-            .min(
-              round?.roundMetadata?.quadraticFundingConfig
-                ?.matchingFundsAvailable ?? 0,
-              `Must be greater than previous value of ${round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}.`
+            .min(8, "Round name must be at least 8 characters."),
+          roundType: yup.string().required("You must select the round type."),
+          support: yup.object({
+            type: yup
+              .string()
+              .required("You must select a support type.")
+              .notOneOf(
+                ["Select what type of input."],
+                "You must select a support type."
+              ),
+            info: yup
+              .string()
+              .required("This field is required.")
+              .when("type", {
+                is: "Email",
+                then: yup
+                  .string()
+                  .email()
+                  .required("You must provide a valid email address."),
+              })
+              .when("type", {
+                is: (val: string) => val && val != "Email",
+                then: yup
+                  .string()
+                  .url()
+                  .required("You must provide a valid URL."),
+              }),
+          }),
+          eligibility: yup.object({
+            description: yup
+              .string()
+              .required("A round description is required."),
+            requirements: yup.array().of(
+              yup.object({
+                requirement: yup
+                  .string()
+                  .required("This field cannot be left blank."),
+              })
             ),
-          matchingCapAmount: yup.number().when("matchingCap", {
-            is: (val: any) => val === "yes",
-            then: yup
-              .number()
-              .typeError("Invalid value.")
-              .positive()
-              .integer()
-              .required("This field is required.")
-              .moreThan(0.001, "Must be greater than zero (0).")
-              .lessThan(101, "Must be equal or less than 100."),
-            otherwise: yup.number().notRequired(),
           }),
-          minDonationThresholdAmount: yup.number().when("minDonationThreshold", {
-            is: (val: any) => val === "yes",
-            then: yup
+          quadraticFundingConfig: yup.object({
+            matchingFundsAvailable: yup
               .number()
               .typeError("Invalid value.")
-              .positive()
-              .integer()
-              .required("This field is required.")
-              .moreThan(0, "Must be greater than 0."),
-            otherwise: yup.number().notRequired(),
+              .min(
+                round?.roundMetadata?.quadraticFundingConfig
+                  ?.matchingFundsAvailable ?? 0,
+                `Must be greater than previous value of ${round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}.`
+              ),
+            matchingCapAmount: yup.number().when("matchingCap", {
+              is: (val: any) => val === "yes",
+              then: yup
+                .number()
+                .typeError("Invalid value.")
+                .positive()
+                .integer()
+                .required("This field is required.")
+                .moreThan(0.001, "Must be greater than zero (0).")
+                .lessThan(101, "Must be equal or less than 100."),
+              otherwise: yup.number().notRequired(),
+            }),
+            minDonationThresholdAmount: yup
+              .number()
+              .when("minDonationThreshold", {
+                is: (val: any) => val === "yes",
+                then: yup
+                  .number()
+                  .typeError("Invalid value.")
+                  .positive()
+                  .integer()
+                  .required("This field is required.")
+                  .moreThan(0, "Must be greater than 0."),
+                otherwise: yup.number().notRequired(),
+              }),
           }),
         }),
-      }),
-    })
+      })
     : RoundValidationSchema.shape({
-      // Overrides for validation schema that was not included in imported schema.
-      roundMetadata: yup.object({
-        name: yup
-          .string()
-          .required("This field is required.")
-          .min(8, "Round name must be at least 8 characters."),
-        roundType: yup.string().required("You must select the round type."),
-        support: yup.object({
-          type: yup
-            .string()
-            .required("You must select a support type.")
-            .notOneOf(
-              ["Select what type of input."],
-              "You must select a support type."
-            ),
-          info: yup
+        // Overrides for validation schema that was not included in imported schema.
+        roundMetadata: yup.object({
+          name: yup
             .string()
             .required("This field is required.")
-            .when("type", {
-              is: "Email",
-              then: yup
-                .string()
-                .email()
-                .required("You must provide a valid email address."),
-            })
-            .when("type", {
-              is: (val: string) => val && val != "Email",
-              then: yup.string().url().required("You must provide a valid URL."),
-            }),
+            .min(8, "Round name must be at least 8 characters."),
+          roundType: yup.string().required("You must select the round type."),
+          support: yup.object({
+            type: yup
+              .string()
+              .required("You must select a support type.")
+              .notOneOf(
+                ["Select what type of input."],
+                "You must select a support type."
+              ),
+            info: yup
+              .string()
+              .required("This field is required.")
+              .when("type", {
+                is: "Email",
+                then: yup
+                  .string()
+                  .email()
+                  .required("You must provide a valid email address."),
+              })
+              .when("type", {
+                is: (val: string) => val && val != "Email",
+                then: yup
+                  .string()
+                  .url()
+                  .required("You must provide a valid URL."),
+              }),
+          }),
+          eligibility: yup.object({
+            description: yup
+              .string()
+              .required("A round description is required."),
+            requirements: yup.array().of(
+              yup.object({
+                requirement: yup
+                  .string()
+                  .required("This field cannot be left blank."),
+              })
+            ),
+          }),
         }),
-        eligibility: yup.object({
-          description: yup.string().required("A round description is required."),
-          requirements: yup.array().of(
-            yup.object({
-              requirement: yup
-                .string()
-                .required("This field cannot be left blank."),
-            })
-          ),
-        }),
-      }),
-    });
+      });
 
   const {
     control,
@@ -458,7 +471,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 >
                   {({ selected }) => (
                     <div className={selected ? "text-violet-500" : ""}>
-                      {!isDirectRound(round) ? 'Round & Application Period' : 'Round Period'}
+                      {!isDirectRound(round)
+                        ? "Round & Application Period"
+                        : "Round Period"}
                     </div>
                   )}
                 </Tab>
@@ -1244,17 +1259,25 @@ function RoundApplicationPeriod(props: {
     return inputTime.isBefore(moment());
   };
 
+  const noRoundEndDate = moment(editedRound.roundEndTime).isSame(
+    maxDateForUint256
+  );
+
   return (
     <div className="w-full w-10/12">
       <span className="mt-4 inline-flex text-gray-400 mb-4">
-        What are the dates for the {!isDirectRound(editedRound) ? 'Applications and' : ''} Round voting period(s)?
+        What are the dates for the{" "}
+        {!isDirectRound(editedRound) ? "Applications and" : ""} Round voting
+        period(s)?
       </span>
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
         {!isDirectRound(editedRound) && (
           <>
             <div>
               <div
-                className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
+                className={
+                  "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
+                }
               >
                 Applications
               </div>
@@ -1267,7 +1290,9 @@ function RoundApplicationPeriod(props: {
               >
                 {props.editMode.canEdit &&
                 !props.editMode.canEditOnlyRoundEndDate &&
-                !moment(editedRound.applicationsStartTime).isBefore(new Date()) ? (
+                !moment(editedRound.applicationsStartTime).isBefore(
+                  new Date()
+                ) ? (
                   <div className="col-span-6 sm:col-span-3">
                     <div
                       className={`${
@@ -1305,7 +1330,9 @@ function RoundApplicationPeriod(props: {
                               className: `${
                                 props.editMode.canEdit &&
                                 !timeHasPassed(
-                                  moment(props.editedRound.applicationsStartTime)
+                                  moment(
+                                    props.editedRound.applicationsStartTime
+                                  )
                                 )
                                   ? ""
                                   : "bg-grey-50"
@@ -1342,7 +1369,9 @@ function RoundApplicationPeriod(props: {
                   <div
                     className={`${
                       !props.editMode.canEdit ||
-                      timeHasPassed(moment(props.editedRound.applicationsStartTime))
+                      timeHasPassed(
+                        moment(props.editedRound.applicationsStartTime)
+                      )
                         ? "bg-grey-50"
                         : ""
                     } relative border rounded-md shadow-sm focus-within:ring-1 ${
@@ -1373,7 +1402,9 @@ function RoundApplicationPeriod(props: {
             </div>
             <div>
               <div
-                className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
+                className={
+                  "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
+                }
               >
                 &nbsp;
               </div>
@@ -1385,7 +1416,9 @@ function RoundApplicationPeriod(props: {
               >
                 {props.editMode.canEdit &&
                 !props.editMode.canEditOnlyRoundEndDate &&
-                !moment(editedRound.applicationsEndTime).isBefore(new Date()) ? (
+                !moment(editedRound.applicationsEndTime).isBefore(
+                  new Date()
+                ) ? (
                   <div className="col-span-6 sm:col-span-3">
                     <div
                       className={`${
@@ -1455,7 +1488,9 @@ function RoundApplicationPeriod(props: {
                   <div
                     className={`${
                       !props.editMode.canEdit ||
-                      timeHasPassed(moment(props.editedRound.applicationsEndTime))
+                      timeHasPassed(
+                        moment(props.editedRound.applicationsEndTime)
+                      )
                         ? "bg-grey-50"
                         : ""
                     } relative border rounded-md shadow-sm focus-within:ring-1 ${
@@ -1698,9 +1733,13 @@ function RoundApplicationPeriod(props: {
                   className={`${
                     !props.editMode.canEdit ? "bg-grey-50" : ""
                   } border-0 pt-0 pl-2 -mt-2 text-sm`}
-                  defaultValue={`${getUTCDate(
-                    editedRound.roundEndTime
-                  )} ${getUTCTime(editedRound.roundEndTime)}`}
+                  defaultValue={
+                    noRoundEndDate
+                      ? ""
+                      : `${getUTCDate(editedRound.roundEndTime)} ${getUTCTime(
+                          editedRound.roundEndTime
+                        )}`
+                  }
                   disabled
                 />
               </div>

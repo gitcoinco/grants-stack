@@ -15,7 +15,13 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useCart } from "../../context/CartContext";
 import { useRoundById } from "../../context/RoundContext";
 import { Project, Requirement, Round } from "../api/types";
-import { CHAINS, getRoundType, isDirectRound, isInfiniteDate, payoutTokens } from "../api/utils";
+import {
+  CHAINS,
+  getRoundType,
+  isDirectRound,
+  isInfiniteDate,
+  payoutTokens,
+} from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -40,9 +46,9 @@ const builderURL = process.env.REACT_APP_BUILDER_URL;
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-  
+
   const { chainId, roundId } = useParams();
-  
+
   const { round, isLoading } = useRoundById(
     chainId as string,
     roundId as string
@@ -52,12 +58,16 @@ export default function ViewRound() {
   const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
   const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
   // covers infinte dates for roundEndDate
-  const isAfterRoundEndDate = 
-    round && 
-    (isInfiniteDate(round.roundEndTime) ? false : (round && round.roundEndTime <= currentTime));
+  const isAfterRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime)
+      ? false
+      : round && round.roundEndTime <= currentTime);
   const isBeforeRoundEndDate =
-    round && 
-    (!isInfiniteDate(round.roundEndTime) ? (round.roundEndTime > currentTime) : true);
+    round &&
+    (!isInfiniteDate(round.roundEndTime)
+      ? round.roundEndTime > currentTime
+      : true);
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
@@ -233,8 +243,11 @@ function AfterRoundStart(props: {
 
   const applicationURL = `${builderURL}/#/chains/${chainId}/rounds/${roundId}`;
   const currentTime = new Date();
-  const isBeforeApplicationEndDate = round && 
-    (!isInfiniteDate(round.applicationsEndTime) ? (round.applicationsEndTime >= currentTime) : true);
+  const isBeforeApplicationEndDate =
+    round &&
+    (!isInfiniteDate(round.applicationsEndTime)
+      ? round.applicationsEndTime >= currentTime
+      : true);
 
   return (
     <>
@@ -243,7 +256,7 @@ function AfterRoundStart(props: {
         roundUrlPath={`/round/${chainId}/${roundId}`}
         isBeforeRoundEndDate={props.isBeforeRoundEndDate}
       />
-      {props.isBeforeRoundEndDate && (
+      {round && !isDirectRound(round) && props.isBeforeRoundEndDate && (
         <PassportBanner chainId={chainId} round={round} />
       )}
       {props.isAfterRoundEndDate && (
@@ -259,10 +272,13 @@ function AfterRoundStart(props: {
           <p data-testid="round-title" className="text-3xl my-5">
             {round.roundMetadata?.name}
           </p>
-          <p data-testid="round-badge"
+          <p
+            data-testid="round-badge"
             className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4"
-            style={{ borderRadius: "20px" }}>
-            {round.payoutStrategy.strategyName && getRoundType(round.payoutStrategy.strategyName)}
+            style={{ borderRadius: "20px" }}
+          >
+            {round.payoutStrategy.strategyName &&
+              getRoundType(round.payoutStrategy.strategyName)}
           </p>
           <div className="flex text-grey-400 mb-1">
             <p className="mr-4 text-sm">
@@ -304,24 +320,27 @@ function AfterRoundStart(props: {
             </div>
           </p>
 
-          <p className="text-1xl mb-4">
-            Matching funds available: &nbsp;
-            {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
-            &nbsp;
-            {matchingFundPayoutTokenName}
-          </p>
+          {!isDirectRound(round) && (
+            <p className="text-1xl mb-4">
+              Matching funds available: &nbsp;
+              {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
+              &nbsp;
+              {matchingFundPayoutTokenName}
+            </p>
+          )}
 
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
 
-          {(isDirectRound(round) || isBeforeApplicationEndDate) && (
-              <ApplyButton applicationURL={applicationURL} />
+          {isDirectRound(round) && isBeforeApplicationEndDate && (
+            <ApplyButton applicationURL={applicationURL} />
           )}
           <hr className="mt-4 mb-4" />
           <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
             <p className="text-2xl mb-4">
-              {isDirectRound(round) ? 'Approved Projects' : 'All Projects' } ({projects ? projects.length : 0})
+              {isDirectRound(round) ? "Approved Projects" : "All Projects"} (
+              {projects ? projects.length : 0})
             </p>
             <div className="relative">
               <Search className="absolute h-4 w-4 mt-3 ml-3" />
@@ -340,6 +359,7 @@ function AfterRoundStart(props: {
               roundRoutePath={`/round/${chainId}/${roundId}`}
               isBeforeRoundEndDate={props.isBeforeRoundEndDate}
               roundId={roundId}
+              round={round}
             />
           )}
         </main>
@@ -356,6 +376,7 @@ const ProjectList = (props: {
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
+  round: Round;
 }): JSX.Element => {
   const { projects, roundRoutePath } = props;
 
@@ -369,6 +390,7 @@ const ProjectList = (props: {
             roundRoutePath={roundRoutePath}
             isBeforeRoundEndDate={props.isBeforeRoundEndDate}
             roundId={props.roundId}
+            round={props.round}
           />
         );
       })}
@@ -381,8 +403,9 @@ function ProjectCard(props: {
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
+  round: Round;
 }) {
-  const { project, roundRoutePath } = props;
+  const { project, roundRoutePath, round } = props;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
 
@@ -427,22 +450,24 @@ function ProjectCard(props: {
           </CardDescription>
         </CardContent>
       </Link>
-      <CardFooter className="bg-white border-t">
-        <CardContent className="text-xs mt-2">
-          {props.isBeforeRoundEndDate && (
-            <CartButton
-              project={project}
-              isAlreadyInCart={isAlreadyInCart}
-              removeFromCart={() => {
-                handleRemoveProjectsFromCart([project], props.roundId);
-              }}
-              addToCart={() => {
-                handleAddProjectsToCart([project], props.roundId);
-              }}
-            />
-          )}
-        </CardContent>
-      </CardFooter>
+      {!isDirectRound(round) && (
+        <CardFooter className="bg-white border-t">
+          <CardContent className="text-xs mt-2">
+            {props.isBeforeRoundEndDate && (
+              <CartButton
+                project={project}
+                isAlreadyInCart={isAlreadyInCart}
+                removeFromCart={() => {
+                  handleRemoveProjectsFromCart([project], props.roundId);
+                }}
+                addToCart={() => {
+                  handleAddProjectsToCart([project], props.roundId);
+                }}
+              />
+            )}
+          </CardContent>
+        </CardFooter>
+      )}
     </BasicCard>
   );
 }
@@ -504,7 +529,7 @@ function PreRoundPage(props: {
   const { round, chainId, roundId, element } = props;
 
   const applicationURL = `${builderURL}/#/chains/${chainId}/rounds/${roundId}`;
-  
+
   const currentTime = new Date();
   const isBeforeApplicationStartDate =
     round && round.applicationsStartTime >= currentTime;
@@ -512,11 +537,15 @@ function PreRoundPage(props: {
   const isDuringApplicationPeriod =
     round &&
     round.applicationsStartTime <= currentTime &&
-    (!isInfiniteDate(round.applicationsEndTime) ? round.applicationsEndTime >= currentTime : true);
+    (!isInfiniteDate(round.applicationsEndTime)
+      ? round.applicationsEndTime >= currentTime
+      : true);
   const isAfterApplicationEndDateAndBeforeRoundStartDate =
     round &&
     round.roundStartTime >= currentTime &&
-    (!isInfiniteDate(round.applicationsEndTime) ? round.applicationsEndTime <= currentTime : true);
+    (!isInfiniteDate(round.applicationsEndTime)
+      ? round.applicationsEndTime <= currentTime
+      : true);
 
   const matchingFundPayoutTokenName =
     round &&

@@ -83,14 +83,9 @@ export default function ApplicationDirectPayout({
       `Token info not found for chain id: ${chain.id} and token ${payoutTokenAnswer}!`
     );
   }
-  // find answer with question "Payout wallet address"
-  const payoutWalletAddress = answerBlocks?.find(
-    (a) => a.question == "Payout wallet address"
-  );
-  if (
-    payoutWalletAddress === undefined ||
-    payoutWalletAddress.answer === undefined
-  ) {
+  // get payout wallet address
+  const payoutWalletAddress = application.recipient;
+  if (payoutWalletAddress === undefined) {
     throw Error('"Payout wallet address" not found in answers!');
   }
 
@@ -140,7 +135,7 @@ export default function ApplicationDirectPayout({
 
     setOpenPayoutProgressModal(true);
 
-    if (payoutWalletAddress?.answer === undefined) {
+    if (payoutWalletAddress === undefined) {
       throw Error("Payout wallet address not found in answers!");
     }
 
@@ -154,7 +149,7 @@ export default function ApplicationDirectPayout({
         payoutStrategyAddress: round.payoutStrategy.id,
         payoutAmount: amountBN,
         payoutVault: data.address,
-        payoutWallet: payoutWalletAddress.answer,
+        payoutWallet: payoutWalletAddress,
         allowance,
       });
 
