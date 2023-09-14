@@ -273,14 +273,15 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
     canVote: true,
   },
   {
-    name: "DAI",
+    name: "USDC",
     chainId: ChainId.ARBITRUM,
-    address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
+    address: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
     defaultForVoting: false,
     canVote: true,
+    permitVersion: "2",
   },
   {
     name: "ARB",
@@ -427,15 +428,15 @@ export const graphql_fetch = async (
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
-  return fetch(`${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(
-    (resp) => {
-      if (resp.ok) {
-        return resp.json();
-      }
-
-      return Promise.reject(resp);
+  return fetch(
+    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+  ).then((resp) => {
+    if (resp.ok) {
+      return resp.json();
     }
-  );
+
+    return Promise.reject(resp);
+  });
 };
 
 /**
