@@ -10,44 +10,10 @@ import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import {
-  mainnet,
-  goerli,
-  fantom,
-  fantomTestnet,
-  optimism,
-  Chain,
-} from "wagmi/chains";
 import { configureChains, createConfig } from "wagmi";
-
-import { pgnTestnet, pgn } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
-import { arbitrumGoerli, arbitrum } from "viem/chains";
-
-const testnetChains = () => {
-  return [
-    goerli,
-    { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
-    pgnTestnet,
-    arbitrumGoerli,
-  ];
-};
-
-const mainnetChains = () => {
-  return [
-    mainnet,
-    optimism,
-    pgn,
-    arbitrum,
-    { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
-  ];
-};
-
-export const allChains: Chain[] =
-  process.env.REACT_APP_ENV === "development"
-    ? [...testnetChains(), ...mainnetChains()]
-    : [...mainnetChains()];
+import { allChains } from "./chainConfig";
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   allChains,

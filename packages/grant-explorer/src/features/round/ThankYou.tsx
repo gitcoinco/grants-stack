@@ -12,12 +12,29 @@ import { ProgressStatus } from "../api/types";
 import { ChainId } from "common";
 import { useAccount } from "wagmi";
 import { Hex } from "viem";
+import { useRoundById } from "../../context/RoundContext";
 
-function TwitterButton(props: { address: Hex }) {
-  const shareText = `I just donated to GG18 on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${props.address}`;
-  const shareUrl = `https://twitter.com/share?text=${encodeURIComponent(
-    shareText
-  )}`;
+export function createTwitterShareText(props: TwitterButtonParams) {
+  return `I just donated to ${props.roundName ?? "a round"}${
+    props.isMrc && props.roundName ? " and more" : ""
+  } on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${
+    props.address
+  }`;
+}
+
+export function createTwitterShareUrl(props: TwitterButtonParams) {
+  const shareText = createTwitterShareText(props);
+  return `https://twitter.com/share?text=${encodeURIComponent(shareText)}`;
+}
+
+type TwitterButtonParams = {
+  address: Hex;
+  roundName?: string;
+  isMrc: boolean;
+};
+
+export function TwitterButton(props: TwitterButtonParams) {
+  const shareUrl = createTwitterShareUrl(props);
 
   return (
     <Button
@@ -37,9 +54,6 @@ export default function ThankYou() {
     "====> Route: /round/:chainId/:roundId/:txHash/thankyou"
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-
-  // scroll to top of window on load
-  window.scrollTo(0, 0);
 
   const navigate = useNavigate();
 
@@ -86,6 +100,28 @@ export default function ThankYou() {
     cart.projects.filter((proj) => !checkedOutChains.includes(proj.chainId))
       .length > 0;
 
+  /** Fetch round data for tweet */
+  const checkedOutProjects = useCheckoutStore((state) =>
+    state.getCheckedOutProjects()
+  );
+  const isMrc =
+    new Set(checkedOutProjects.map((project) => project.chainId)).size > 1;
+  const topProject = checkedOutProjects
+    .sort((a, b) =>
+      Number(a.amount) > Number(b.amount)
+        ? -1
+        : Number(a.amount) < Number(b.amount)
+        ? 1
+        : 0
+    )
+    .at(0);
+
+  const { round } = useRoundById(
+    /* If we don't have a round, pass in invalid params and silently fail */
+    topProject?.chainId.toString() ?? "",
+    topProject?.roundId ?? ""
+  );
+
   return (
     <>
       <Navbar />
@@ -98,7 +134,11 @@ export default function ThankYou() {
 
             <div className={"flex flex-col gap-5 items-center justify-center"}>
               <div className={"flex gap-5 items-center justify-center"}>
-                <TwitterButton address={address ?? "0x"} />
+                <TwitterButton
+                  address={address ?? "0x"}
+                  roundName={round?.roundMetadata?.name}
+                  isMrc={isMrc}
+                />
 
                 <Button
                   type="button"
