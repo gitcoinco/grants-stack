@@ -7,7 +7,7 @@ export function ProjectBanner(props: {
   resizeHeight?: number;
 }) {
   const projectBannerImage = props.projectMetadata.bannerImg
-    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.projectMetadata.bannerImg}`
+    ? `${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.projectMetadata.bannerImg}`
     : DefaultBannerImage;
 
   return (

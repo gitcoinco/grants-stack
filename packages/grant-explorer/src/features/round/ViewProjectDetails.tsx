@@ -460,7 +460,7 @@ export function ProjectLogo(props: {
   const { projectMetadata, classNameOverride } = props;
 
   const applicationLogoImage = projectMetadata.logoImg
-    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${projectMetadata.logoImg}`
+    ? `${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${projectMetadata.logoImg}`
     : DefaultLogoImage;
 
   return (

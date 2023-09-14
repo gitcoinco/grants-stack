@@ -24,7 +24,7 @@ import {
 import { MRC_CONTRACTS } from "./features/api/contracts";
 import { groupBy, uniq } from "lodash-es";
 import { datadogLogs } from "@datadog/browser-logs";
-import { allChains } from "./app/wagmi";
+import { allChains } from "./app/chainConfig";
 import { WalletClient } from "wagmi";
 import { getContract, getWalletClient, PublicClient } from "@wagmi/core";
 
