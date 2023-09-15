@@ -38,6 +38,8 @@ import {
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
+import { useToken } from "wagmi";
+import { getAddress } from "viem";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -196,13 +198,21 @@ function AfterRoundStart(props: {
     setProjects([...exactMatches!, ...nonExactMatches!]);
   };
 
-  const matchingFundPayoutTokenName =
-    round &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLowerCase() === round.token.toLowerCase() &&
-        t.chainId === chainId
-    )[0]?.name;
+  const { data } = useToken({
+    address: getAddress(props.round.token),
+    chainId: Number(props.chainId),
+  });
+
+  const nativePayoutToken = payoutTokens.find(
+    (t) =>
+      t.chainId === Number(props.chainId) &&
+      t.address === getAddress(props.round.token)
+  );
+
+  const tokenData = data ?? {
+    ...nativePayoutToken,
+    symbol: nativePayoutToken?.name ?? "ETH",
+  };
 
   const breadCrumbs = [
     {
@@ -270,7 +280,7 @@ function AfterRoundStart(props: {
             Matching funds available: &nbsp;
             {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
             &nbsp;
-            {matchingFundPayoutTokenName}
+            {tokenData?.symbol ?? "..."}
           </p>
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
@@ -522,13 +532,21 @@ function PreRoundPage(props: {
     round.applicationsEndTime <= currentTime &&
     round.roundStartTime >= currentTime;
 
-  const matchingFundPayoutTokenName =
-    round &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLowerCase() === round.token.toLowerCase() &&
-        t.chainId.toString() === chainId
-    )[0]?.name;
+  const { data } = useToken({
+    address: getAddress(props.round.token),
+    chainId: Number(chainId),
+  });
+
+  const nativePayoutToken = payoutTokens.find(
+    (t) =>
+      t.chainId === Number(chainId) &&
+      t.address === getAddress(props.round.token)
+  );
+
+  const tokenData = data ?? {
+    ...nativePayoutToken,
+    symbol: nativePayoutToken?.name ?? "ETH",
+  };
 
   return (
     <div className="mt-20 flex justify-center">
@@ -590,7 +608,7 @@ function PreRoundPage(props: {
               &nbsp;
               {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
               &nbsp;
-              {matchingFundPayoutTokenName}
+              {tokenData?.symbol ?? "..."}
             </span>
           </p>
           <p

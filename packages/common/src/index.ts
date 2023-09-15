@@ -307,7 +307,8 @@ export const RedstoneTokenIds = {
   ETH: "ETH",
   ARB: "ARB",
   BUSD: "BUSD",
-};
+  GTC: "GTC",
+} as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {
   const [tokenPrice, setTokenPrice] = useState<number>();

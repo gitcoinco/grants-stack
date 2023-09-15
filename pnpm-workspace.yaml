@@ -4,3 +4,4 @@ packages:
   - 'packages/round-manager'
   - 'packages/grant-explorer'
   - 'packages/builder'
+  - 'packages/verify-env'

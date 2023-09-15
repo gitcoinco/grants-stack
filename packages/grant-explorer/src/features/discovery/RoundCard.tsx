@@ -10,6 +10,8 @@ import {
 } from "../common/styles";
 import RoundBanner from "./RoundBanner";
 import RoundCardStat from "./RoundCardStat";
+import { useToken } from "wagmi";
+import { getAddress } from "viem";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -17,13 +19,23 @@ type RoundCardProps = {
 
 const RoundCard = (props: RoundCardProps) => {
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
-
-  const matchingFundPayoutTokenName = payoutTokens.filter(
-    (t) =>
-      t.address.toLocaleLowerCase() === props.round.token.toLocaleLowerCase()
-  )[0]?.name;
-
   const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
+
+  const { data } = useToken({
+    address: getAddress(props.round.token),
+    chainId: Number(props.round.chainId),
+  });
+
+  const nativePayoutToken = payoutTokens.find(
+    (t) =>
+      t.chainId === chainIdEnumValue &&
+      t.address === getAddress(props.round.token)
+  );
+
+  const tokenData = data ?? {
+    ...nativePayoutToken,
+    symbol: nativePayoutToken?.name ?? "ETH",
+  };
 
   const approvedApplicationsCount = props.round.projects?.length ?? 0;
 
@@ -62,7 +74,7 @@ const RoundCard = (props: RoundCardProps) => {
           <RoundCardStat
             chainId={Number(chainIdEnumValue)}
             matchAmount={props.round.matchAmount}
-            token={matchingFundPayoutTokenName}
+            token={tokenData?.symbol ?? "..."}
             approvedApplicationsCount={approvedApplicationsCount}
           />
         </CardContent>

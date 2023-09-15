@@ -4,6 +4,8 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect";
 import { TextEncoder, TextDecoder } from "util";
+import ResizeObserver from "resize-observer-polyfill";
+global.ResizeObserver = ResizeObserver;
 
 global.TextEncoder = TextEncoder;
 // @ts-expect-error I love jest

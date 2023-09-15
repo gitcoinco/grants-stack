@@ -16,10 +16,19 @@ fetchMock.mockIf(/summary/, JSON.stringify({}));
 
 const roundId = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
+vi.mock("common", async () => {
+  const actual = await vi.importActual<typeof import("common")>("common");
+  return {
+    ...actual,
+    renderToPlainText: vi.fn().mockReturnValue(""),
+  };
+});
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
 vi.mock("../../api/utils", async () => {
-  const actual = await vi.importActual("../../api/utils");
+  const actual = await vi.importActual<typeof import("../../api/utils")>(
+    "../../api/utils"
+  );
   return {
     ...actual,
     graphql_fetch: vi.fn().mockReturnValue({ data: { rounds: [] } }),
@@ -28,7 +37,7 @@ vi.mock("../../api/utils", async () => {
 });
 
 vi.mock("wagmi", async () => {
-  const actual = await vi.importActual("wagmi");
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
   return {
     ...actual,
     useAccount: () => ({
@@ -50,6 +59,9 @@ vi.mock("wagmi", async () => {
     useSwitchNetwork: () => ({
       chainId: 5,
     }),
+    useToken: () => ({
+      data: { symbol: "TEST" },
+    }),
   };
 });
 
@@ -58,7 +70,9 @@ vi.mock("react-router-dom", async () => {
     chainId: 5,
     roundId: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
   });
-  const actual = await vi.importActual("react-router-dom");
+  const actual = await vi.importActual<typeof import("react-router-dom")>(
+    "react-router-dom"
+  );
   return {
     ...actual,
     useParams: useParamsFn,
