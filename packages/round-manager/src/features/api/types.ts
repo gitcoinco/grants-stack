@@ -167,6 +167,7 @@ export interface Round {
       type: string;
       info: string;
     };
+    hypercertRequired?: boolean;
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.

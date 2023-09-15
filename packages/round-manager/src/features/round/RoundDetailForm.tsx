@@ -591,6 +591,39 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               )}
             </div>
 
+            <div className="p-6 bg-white">
+              <p className="text-grey-400">
+                Do you want to require a hypercert when applying to this round?
+              </p>
+              <div className="flex items-center mt-2">
+                <input
+                  id="hypercertRequired"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  {...register("roundMetadata.hypercertRequired")}
+                />
+                <label
+                  htmlFor="hypercertRequired"
+                  className="ml-2 block text-sm text-grey-400"
+                >
+                  Require hypercert
+                </label>
+                <InformationCircleIcon
+                  data-tip
+                  data-for="hypercertRequired"
+                  className="h-4 w-4 ml-1 text-grey-400"
+                />
+                <ReactTooltip
+                  id="hypercertRequired"
+                  place="top"
+                  effect="solid"
+                  className="text-grey-400"
+                >
+                  <span>If enabled, applications will require a hypercert</span>
+                </ReactTooltip>
+              </div>
+            </div>
+
             <div className="px-6 align-middle py-3.5 shadow-md">
               <FormStepper
                 currentStep={currentStep}
