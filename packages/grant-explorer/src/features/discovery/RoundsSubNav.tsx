@@ -17,7 +17,7 @@ type Props = {
 const rounds: SubNavRound[] = [
   {
     id: "0xd0a086c37fbd20c44f3ba2cff69208d1b62f54e3",
-    name: "The Gaming Round",
+    name: "Gaming Round",
     chainId: ChainId.ARBITRUM,
   },
   {
