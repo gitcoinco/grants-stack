@@ -1,16 +1,20 @@
 pre-commit:
   commands:
-    prettier:
+    format:
       glob: "*.{js,ts,jsx,tsx}"
-      run: pnpm exec prettier --write {staged_files}
+      run: pnpm run format {staged_files}
+      stage_fixed: true
+    lint:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: pnpm run lint {staged_files}
       stage_fixed: true
 
 pre-push:
   parallel: true
   commands:
-    eslint:
+    check-unused-exports:
       glob: "*.{js,ts,jsx,tsx}"
-      run: pnpm run lint {staged_files}
+      run: pnpm run lint:unused-exports
     typecheck:
       glob: "*.{js,ts,jsx,tsx}"
       run: pnpm run typecheck

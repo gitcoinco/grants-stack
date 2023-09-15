@@ -7,6 +7,8 @@
     "dev": "tsx watch -r dotenv-flow/config src/index.ts",
     "start": "node dist/index.js",
     "lint": "eslint --cache --max-warnings=0 src",
+    "format": "prettier --write",
+    "check-unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
     "test": "vitest run --coverage",
     "build": "tsc",
     "test:watch": "vitest watch",
@@ -28,6 +30,7 @@
     "leasot": "^13.3.0",
     "lefthook": "^1.4.10",
     "prettier": "^3.0.3",
+    "ts-unused-exports": "^10.0.1",
     "tsx": "^3.12.8",
     "typescript": "^5.2.2",
     "vitest": "^0.34.4"
