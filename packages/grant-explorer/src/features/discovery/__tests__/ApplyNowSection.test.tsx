@@ -2,12 +2,31 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter as Router } from "react-router-dom";
 import ApplyNowSection from "../ApplyNowSection";
 import { makeRoundOverviewData } from "../../../test-utils";
+import { vi } from "vitest";
 
 const mockRounds = [
   makeRoundOverviewData(),
   makeRoundOverviewData(),
   makeRoundOverviewData(),
 ];
+
+vi.mock("wagmi", async () => {
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
+  return {
+    ...actual,
+    useToken: () => ({
+      data: { symbol: "TEST" },
+    }),
+  };
+});
+
+vi.mock("common", async () => {
+  const actual = await vi.importActual<typeof import("common")>("common");
+  return {
+    ...actual,
+    renderToPlainText: vi.fn().mockReturnValue(""),
+  };
+});
 
 describe("<ApplyNowSection />", () => {
   test("renders skeletons when isLoading is true", () => {

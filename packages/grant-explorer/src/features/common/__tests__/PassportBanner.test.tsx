@@ -9,7 +9,6 @@ import {
   mockNetwork,
   mockSigner,
 } from "../../../test-utils";
-import { Mock } from "vitest";
 
 const userAddress = faker.finance.ethereumAddress();
 

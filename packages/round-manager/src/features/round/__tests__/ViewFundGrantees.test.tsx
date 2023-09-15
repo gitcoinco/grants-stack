@@ -16,6 +16,8 @@ import * as merklePayoutStrategy from "../../api/payoutStrategy/merklePayoutStra
 import * as roundTs from "../../api/round";
 import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
+import { faker } from "@faker-js/faker";
+import { parseEther } from "ethers/lib/utils";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
@@ -72,6 +74,11 @@ describe("View Fund Grantees", () => {
       projectId: "0x1",
       matchAmountInToken: ethers.utils.parseEther("1.11"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000001",
+      applicationId: faker.datatype.number().toString(),
+      contributionsCount: faker.datatype.number(),
+      originalMatchAmountInToken: parseEther(
+        faker.datatype.number().toString()
+      ),
     },
     {
       index: 1,
@@ -81,6 +88,11 @@ describe("View Fund Grantees", () => {
       projectId: "0x2",
       matchAmountInToken: ethers.utils.parseEther("2.22"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000002",
+      applicationId: faker.datatype.number().toString(),
+      contributionsCount: faker.datatype.number(),
+      originalMatchAmountInToken: parseEther(
+        faker.datatype.number().toString()
+      ),
     },
     {
       index: 2,
@@ -90,6 +102,11 @@ describe("View Fund Grantees", () => {
       projectId: "0x3",
       matchAmountInToken: ethers.utils.parseEther("3.33"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000003",
+      applicationId: faker.datatype.number().toString(),
+      contributionsCount: faker.datatype.number(),
+      originalMatchAmountInToken: parseEther(
+        faker.datatype.number().toString()
+      ),
     },
     {
       index: 3,
@@ -99,6 +116,11 @@ describe("View Fund Grantees", () => {
       projectId: "0x4",
       matchAmountInToken: ethers.utils.parseEther("4.44"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000004",
+      applicationId: faker.datatype.number().toString(),
+      contributionsCount: faker.datatype.number(),
+      originalMatchAmountInToken: parseEther(
+        faker.datatype.number().toString()
+      ),
     },
   ];
 

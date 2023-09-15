@@ -78,10 +78,12 @@ export const TokenNamesAndLogos = {
   FTM: "/logos/fantom-logo.svg",
   BUSD: "/logos/busd-logo.svg",
   DAI: "/logos/dai-logo.svg",
+  USDC: "./logos/usdc-logo.svg",
   ETH: "/logos/ethereum-eth-logo.svg",
   OP: "/logos/optimism-logo.svg",
   ARB: "/logos/arb-logo.svg",
   GCV: "/logos/gcv.svg",
+  GTC: "/logos/gtc.svg",
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -237,6 +239,14 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
+  {
+    name: "GTC",
+    chainId: ChainId.PGN,
+    address: "0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2",
+    decimal: 18,
+    logo: TokenNamesAndLogos["GTC"],
+    redstoneTokenId: RedstoneTokenIds["GTC"],
+  },
 ];
 
 const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
@@ -260,12 +270,12 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
   {
-    name: "DAI",
+    name: "USDC",
     chainId: ChainId.ARBITRUM,
-    address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
+    address: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
   },
   {
     name: "ARB",
