@@ -73,7 +73,7 @@ export function RoundsSubNav(props: Props) {
                 aria-label={"Open Grants Subnav"}
                 onClick={() => setOpen(!open)}
               >
-                Active Rounds
+                Active rounds
                 <DropdownIcon
                   className="inline"
                   direction={open ? "up" : "down"}
