@@ -400,20 +400,40 @@ function ProjectCard(props: {
         </CardContent>
       </Link>
       <CardFooter className="bg-white border-t">
-        <CardContent className="text-xs mt-2">
+        <CardContent className="p-4 text-xs flex items-center h-full">
+          {project.projectMetadata.hypercertId && (
+            <div className="flex items-center">
+              <img
+                alt="The hypercerts logo"
+                src="https://site-assets.plasmic.app/e1dddbd0e6a7104aee374d7b1b47a04a.svg"
+                className="w-8 h-8 mr-2"
+              />
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://hypercerts.org/app/view#claimId=${project.projectMetadata.hypercertId}`}
+              >
+                Built with hypercerts
+              </a>
+            </div>
+          )}
           {props.isBeforeRoundEndDate && (
-            <CartButton
-              project={project}
-              isAlreadyInCart={isAlreadyInCart}
-              removeFromCart={() => {
-                remove(cartProject.grantApplicationId);
-              }}
-              addToCart={() => {
-                add(cartProject);
-              }}
-              setCurrentProjectAddedToCart={props.setCurrentProjectAddedToCart}
-              setShowCartNotification={props.setShowCartNotification}
-            />
+            <div className="ml-auto">
+              <CartButton
+                project={project}
+                isAlreadyInCart={isAlreadyInCart}
+                removeFromCart={() => {
+                  remove(cartProject.grantApplicationId);
+                }}
+                addToCart={() => {
+                  add(cartProject);
+                }}
+                setCurrentProjectAddedToCart={
+                  props.setCurrentProjectAddedToCart
+                }
+                setShowCartNotification={props.setShowCartNotification}
+              />
+            </div>
           )}
         </CardContent>
       </CardFooter>

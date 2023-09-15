@@ -167,6 +167,33 @@ export async function getRoundById(
   }
 }
 
+export const fetchHypercertMetadata = async (hypercertId: string) =>
+  fetch(
+    "https://api.thegraph.com/subgraphs/name/hypercerts-admin/hypercerts-testnet",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        variables: {
+          id: hypercertId,
+        },
+        query: `
+query ClaimById($id: ID!) {
+  claim(id: $id) {
+    contract
+    tokenID
+    creator
+    id
+    owner
+    totalUnits
+    uri
+  }
+}`,
+      }),
+    }
+  )
+    .then((res) => res.json())
+    .then((res) => res?.data?.claim);
+
 export function convertStatus(status: string | number) {
   switch (status) {
     case 0:
@@ -193,9 +220,15 @@ async function loadApprovedProjectsMetadata(
 
   const approvedProjects = round.projects;
 
+  const roundMetadata = await fetchFromIPFS(round.roundMetaPtr.pointer);
+
   const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map(
     (project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId)
+      fetchMetadataAndMapProject(
+        project,
+        !!roundMetadata?.hypercertRequired,
+        chainId
+      )
   );
 
   return Promise.all(fetchApprovedProjectMetadata);
@@ -203,6 +236,7 @@ async function loadApprovedProjectsMetadata(
 
 async function fetchMetadataAndMapProject(
   project: RoundProjectResult,
+  hypercertRequired: boolean,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
 ): Promise<Project> {
@@ -212,6 +246,25 @@ async function fetchMetadataAndMapProject(
   // new format: { signature: "...", application: { round, project, ... } }
   const application = applicationData.application || applicationData;
   const projectMetadataFromApplication = application.project;
+  let hypercertMetadata = {};
+  let hypercertId: string | undefined;
+
+  if (hypercertRequired) {
+    const metadata = await fetchFromIPFS(
+      projectMetadataFromApplication.metaPtr.pointer
+    );
+
+    if (!metadata.hypercertId) {
+      throw new Error("Hypercert ID not found");
+    }
+
+    hypercertId = metadata.hypercertId;
+    const hypercert = await fetchHypercertMetadata(metadata.hypercertId!);
+    hypercertMetadata = await fetchFromIPFS(
+      hypercert.uri?.replace("ipfs://", "")!
+    );
+  }
+
   const projectRegistryId = `0x${projectMetadataFromApplication.id}`;
   const projectOwners = await getProjectOwners(chainId, projectRegistryId);
 
@@ -222,6 +275,8 @@ async function fetchMetadataAndMapProject(
     recipient: application.recipient,
     projectMetadata: {
       ...projectMetadataFromApplication,
+      hypercertId,
+      hypercertMetadata,
       owners: projectOwners.map((address: string) => ({ address })),
     },
     status: ApplicationStatus.APPROVED,
