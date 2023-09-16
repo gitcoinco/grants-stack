@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch -r dotenv-flow/config src/index.ts",
-    "start": "node dist/index.js",
+    "start": "node -r dotenv-flow/config dist/index.js",
     "lint": "eslint --cache --max-warnings=0 src",
     "format": "prettier --write",
     "check-unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
