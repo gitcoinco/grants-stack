@@ -1,8 +1,8 @@
 {
-  "name": "starter-node-basic",
+  "name": "starter-node",
   "private": true,
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch -r dotenv-flow/config src/index.ts",
     "start": "node -r dotenv-flow/config dist/index.js",
