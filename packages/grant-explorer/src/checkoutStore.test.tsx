@@ -1,7 +1,8 @@
 import { useCheckoutStore } from "./checkoutStore";
-import { ProgressStatus } from "./features/api/types";
+import { CartProject, ProgressStatus } from "./features/api/types";
 import { ChainId } from "common";
 import { beforeEach } from "vitest";
+import { makeApprovedProjectData } from "./test-utils";
 
 const store = useCheckoutStore;
 const initialState = store.getState();
@@ -66,5 +67,18 @@ describe("Checkout Store", () => {
       ChainId.MAINNET,
       ChainId.GOERLI_CHAIN_ID,
     ]);
+  });
+
+  it("chainsToCheckout manipulation", async () => {
+    const projects: CartProject[] = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+    ];
+    expect(store.getState().checkedOutProjects).toEqual([]);
+
+    store.getState().setCheckedOutProjects(projects);
+    expect(store.getState().checkedOutProjects).toStrictEqual(projects);
+    expect(store.getState().getCheckedOutProjects()).toStrictEqual(projects);
   });
 });
