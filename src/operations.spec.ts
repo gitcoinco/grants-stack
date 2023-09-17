@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { add, multiplyByPI } from "./operations";
+import { add, multiplyByPI } from "./operations.js";
 
 describe("suite", () => {
   test("addition", () => {

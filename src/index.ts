@@ -1,4 +1,4 @@
-import { add } from "./operations";
+import { add } from "./operations.js";
 
 const main = () => {
   const result = add(2, 4);
