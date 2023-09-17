@@ -8,7 +8,7 @@
     "start": "node -r dotenv-flow/config dist/index.js",
     "lint": "eslint --cache --max-warnings=0 src",
     "format": "prettier --write",
-    "check-unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
+    "lint:unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
     "test": "vitest run --coverage",
     "build": "tsc",
     "test:watch": "vitest watch",
