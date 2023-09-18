@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch -r dotenv-flow/config src/index.ts",
     "start": "node -r dotenv-flow/config dist/index.js",
-    "lint": "eslint --cache --max-warnings=0 src",
+    "lint": "eslint --cache --max-warnings=0",
+    "lint:fix": "eslint --cache --max-warnings=0 --fix",
+    "lint:all": "eslint --cache --max-warnings=0 src",
     "format": "prettier --write",
     "lint:unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
     "test": "vitest run --coverage",
