@@ -890,7 +890,7 @@ function Support(props: {
     <div className="mt-2 mb-2">
       <div className="flex justify-between">
         <label htmlFor="roundMetadata.support.info" className="text-sm">
-          Suppport Input
+          Support Input
         </label>
         <span className="text-right text-violet-400 float-right text-xs mt-1">
           *Required
