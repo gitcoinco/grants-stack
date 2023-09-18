@@ -259,9 +259,14 @@ async function fetchMetadataAndMapProject(
     }
 
     hypercertId = metadata.hypercertId;
-    const hypercert = await fetchHypercertMetadata(metadata.hypercertId!);
+    const hypercert = await fetchHypercertMetadata(metadata.hypercertId);
+
+    if (!hypercert) {
+      throw new Error("Hypercert not found");
+    }
+
     hypercertMetadata = await fetchFromIPFS(
-      hypercert.uri?.replace("ipfs://", "")!
+      hypercert.uri.replace("ipfs://", "")
     );
   }
 
