@@ -8,13 +8,13 @@ pre-commit:
       glob: "*.{js,ts,jsx,tsx}"
       run: pnpm run lint {staged_files}
       stage_fixed: true
+    lint-unused-exports:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: pnpm run lint:unused-exports
 
 pre-push:
   parallel: true
   commands:
-    check-unused-exports:
-      glob: "*.{js,ts,jsx,tsx}"
-      run: pnpm run lint:unused-exports
     typecheck:
       glob: "*.{js,ts,jsx,tsx}"
       run: pnpm run typecheck
