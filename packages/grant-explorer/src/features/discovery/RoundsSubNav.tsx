@@ -60,7 +60,7 @@ export function RoundsSubNav(props: Props) {
                 <PGNTextLogoIcon fill="black" className="mt-1" />
               </a>
             </div>
-            <div className="relative bg[#F3F3F5]">
+            <div className="relative bg-white">
               <span
                 style={{
                   border: "1px solid var(--sky-600, #15B8DC)",
