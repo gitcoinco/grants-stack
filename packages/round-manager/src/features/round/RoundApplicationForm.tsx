@@ -588,7 +588,7 @@ function ReviewInformation() {
         fulfill the application process.
       </p>
       <p className="italic mt-4 text-sm text-grey-400">
-        Note: that some personal identifiable information will be stored
+        Note that some personal identifiable information will be stored
         publicly.
       </p>
     </div>
