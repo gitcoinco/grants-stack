@@ -11,6 +11,8 @@ export enum ChainId {
   PGN_TESTNET = 58008,
   ARBITRUM = 42161,
   ARBITRUM_GOERLI = 421613,
+  AVALANCHE = 43114,
+  FUJI = 43113,
 }
 
 export const pgnTestnet: Chain = {

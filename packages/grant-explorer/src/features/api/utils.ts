@@ -64,6 +64,16 @@ export const CHAINS: Record<
     name: "Arbitrum",
     logo: "./logos/arb-logo.svg",
   },
+  [ChainId.AVALANCHE]: {
+    id: ChainId.AVALANCHE,
+    name: "Avalanche",
+    logo: "/logos/avax-logo.svg",
+  },
+  [ChainId.FUJI]: {
+    id: ChainId.FUJI,
+    name: "Fuji (Avalanche Testnet)",
+    logo: "/logos/avax-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos = {
@@ -76,6 +86,7 @@ export const TokenNamesAndLogos = {
   PGN: "./logos/pgn-logo.svg",
   GcV: "./logos/fantom-gcv-logo.png",
   ARB: "./logos/arb-logo.svg",
+  AVAX: "./logos/avax-logo.svg",
 } as const;
 
 export const MAINNET_TOKENS: PayoutToken[] = [
@@ -308,7 +319,55 @@ const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
   },
 ];
 
-export const payoutTokens = [
+const AVALANCHE_TOKENS: PayoutToken[] = [
+  {
+    name: "AVAX",
+    chainId: ChainId.AVALANCHE,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["AVAX"],
+    redstoneTokenId: RedstoneTokenIds["AVAX"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.AVALANCHE,
+    address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
+    canVote: true,
+    permitVersion: "2",
+  },
+];
+
+const FUJI_TOKENS: PayoutToken[] = [
+  {
+    name: "AVAX",
+    chainId: ChainId.AVALANCHE,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["AVAX"],
+    redstoneTokenId: RedstoneTokenIds["AVAX"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.AVALANCHE,
+    address: "0x5425890298aed601595a70ab815c96711a31bc65",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
+    canVote: true,
+    permitVersion: "2",
+  },
+];
+
+export const votingTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
@@ -318,6 +377,8 @@ export const payoutTokens = [
   ...PGN_MAINNET_TOKENS,
   ...ARBITRUM_TOKENS,
   ...ARBITRUM_GOERLI_TOKENS,
+  ...AVALANCHE_TOKENS,
+  ...FUJI_TOKENS,
 ];
 
 type PayoutTokensMap = Record<ChainId, PayoutToken[]>;
@@ -331,6 +392,8 @@ export const payoutTokensMap: PayoutTokensMap = {
   [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
   [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_TOKENS,
   [ChainId.ARBITRUM]: ARBITRUM_TOKENS,
+  [ChainId.AVALANCHE]: AVALANCHE_TOKENS,
+  [ChainId.FUJI]: FUJI_TOKENS,
 };
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
@@ -350,6 +413,8 @@ const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.ARBITRUM_GOERLI]:
     process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
   [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
+  [ChainId.FUJI]: process.env.REACT_APP_SUBGRAPH_FUJI_API!,
+  [ChainId.AVALANCHE]: process.env.REACT_APP_SUBGRAPH_AVALANCHE_API!,
 };
 
 /**
@@ -372,6 +437,8 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
   [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
   [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
+  [ChainId.FUJI]: "https://snowtrace.io/tx/",
+  [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
 };
 
 /**

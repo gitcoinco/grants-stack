@@ -56,6 +56,16 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Arbitrum Goerli",
     logo: "/logos/arb-logo.svg",
   },
+  [ChainId.AVALANCHE]: {
+    id: ChainId.AVALANCHE,
+    name: "Avalanche",
+    logo: "/logos/avax-logo.svg",
+  },
+  [ChainId.FUJI]: {
+    id: ChainId.FUJI,
+    name: "Fuji (Avalanche Testnet)",
+    logo: "/logos/avax-logo.svg",
+  },
 };
 
 export type PayoutToken = {
@@ -84,6 +94,7 @@ export const TokenNamesAndLogos = {
   ARB: "/logos/arb-logo.svg",
   GCV: "/logos/gcv.svg",
   GTC: "/logos/gtc.svg",
+  AVAX: "/logos/avax-logo.svg",
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -287,6 +298,44 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
   },
 ];
 
+const AVALANCHE_TOKENS: PayoutToken[] = [
+  {
+    name: "AVAX",
+    chainId: ChainId.AVALANCHE,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["AVAX"],
+    redstoneTokenId: RedstoneTokenIds["AVAX"],
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.AVALANCHE,
+    address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+  },
+];
+
+const FUJI_TOKENS: PayoutToken[] = [
+  {
+    name: "AVAX",
+    chainId: ChainId.AVALANCHE,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["AVAX"],
+    redstoneTokenId: RedstoneTokenIds["AVAX"],
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.AVALANCHE,
+    address: "0x5425890298aed601595a70ab815c96711a31bc65",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -297,6 +346,8 @@ export const payoutTokens = [
   ...PGN_MAINNET_TOKENS,
   ...ARBITRUM_TOKENS,
   ...ARBITRUM_GOERLI_TOKENS,
+  ...AVALANCHE_TOKENS,
+  ...FUJI_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -408,6 +459,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 
     case ChainId.ARBITRUM:
       return payoutTokens.filter((token) => token.chainId === ChainId.ARBITRUM);
+
+    case ChainId.AVALANCHE:
+      return payoutTokens.filter(
+        (token) => token.chainId === ChainId.AVALANCHE
+      );
+
+    case ChainId.FUJI:
+      return payoutTokens.filter((token) => token.chainId === ChainId.FUJI);
 
     case ChainId.GOERLI_CHAIN_ID:
     default: {

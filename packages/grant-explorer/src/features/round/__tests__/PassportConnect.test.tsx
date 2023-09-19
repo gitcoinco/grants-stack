@@ -10,7 +10,7 @@ import {
 import { fetchPassport, submitPassport } from "../../api/passport";
 import PassportConnect from "../PassportConnect";
 import { Round } from "../../api/types";
-import { payoutTokens } from "../../api/utils";
+import { votingTokens } from "../../api/utils";
 import { Mock } from "vitest";
 
 const chainId = 5;
@@ -75,7 +75,7 @@ describe("<PassportConnect/>", () => {
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
       const roundEndTime = faker.date.soon();
-      const token = payoutTokens[0].address;
+      const token = votingTokens[0].address;
 
       // eslint-disable-next-line prefer-const
       stubRound = makeRoundData({
@@ -122,7 +122,7 @@ describe("<PassportConnect/>", () => {
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
       const roundEndTime = faker.date.soon();
-      const token = payoutTokens[0].address;
+      const token = votingTokens[0].address;
 
       // eslint-disable-next-line prefer-const
       stubRound = makeRoundData({
@@ -197,7 +197,7 @@ describe("<PassportConnect/>", () => {
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
       const roundEndTime = faker.date.soon();
-      const token = payoutTokens[0].address;
+      const token = votingTokens[0].address;
 
       // eslint-disable-next-line prefer-const
       stubRound = makeRoundData({
@@ -247,7 +247,7 @@ describe("<PassportConnect/>", () => {
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
       const roundEndTime = faker.date.soon();
-      const token = payoutTokens[0].address;
+      const token = votingTokens[0].address;
 
       // eslint-disable-next-line prefer-const
       stubRound = makeRoundData({
@@ -292,7 +292,7 @@ describe("<PassportConnect/>", () => {
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
       const roundEndTime = faker.date.soon();
-      const token = payoutTokens[0].address;
+      const token = votingTokens[0].address;
 
       // eslint-disable-next-line prefer-const
       stubRound = makeRoundData({
@@ -337,7 +337,7 @@ describe("<PassportConnect/>", () => {
       const applicationsEndTime = faker.date.past(1, roundStartTime);
       const applicationsStartTime = faker.date.past(1, applicationsEndTime);
       const roundEndTime = faker.date.soon();
-      const token = payoutTokens[0].address;
+      const token = votingTokens[0].address;
 
       // eslint-disable-next-line prefer-const
       stubRound = makeRoundData({

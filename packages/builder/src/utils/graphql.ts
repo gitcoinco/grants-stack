@@ -14,6 +14,8 @@ const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.ARBITRUM_GOERLI]:
     process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
   [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
+  [ChainId.FUJI]: process.env.REACT_APP_SUBGRAPH_FUJI_API!,
+  [ChainId.AVALANCHE]: process.env.REACT_APP_SUBGRAPH_AVALANCHE_API!,
 };
 
 /**
