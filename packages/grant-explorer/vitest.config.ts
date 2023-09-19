@@ -11,7 +11,13 @@ export default defineConfig({
     ],
     globals: true,
     environmentMatchGlobs: [
-      // all component tests need to be tsx and run in jsdom
+      // Some components run into issues with jsdom, so we run them in happy-dom instead
+      /* jsdom's buffer impl doesn't match dom impl, and viem expects this to match */
+      ["**/voting.test.tsx", "happy-dom"],
+      ["**/round.test.tsx", "happy-dom"],
+      ["**/ViewRoundPage.test.tsx", "happy-dom"],
+      ["**/ApplyNowSection.test.tsx", "happy-dom"],
+      // most component tests need to be tsx and run in jsdom
       ["**/*.tsx", "jsdom"],
       // everything else runs in node
       ["**/*", "node"],

@@ -75,13 +75,13 @@ describe("<Navbar>", () => {
     fireEvent.click(openSubnavButton);
 
     const link = screen.getByRole("link", {
-      name: /climate solutions/i,
+      name: /gaming round/i,
     });
 
     fireEvent.click(link);
 
-    const expectedChainId = "10";
-    const expectedRoundId = "0xb6be0ecafdb66dd848b0480db40056ff94a9465d";
+    const expectedChainId = "42161";
+    const expectedRoundId = "0xd0a086c37fbd20c44f3ba2cff69208d1b62f54e3";
     expect(navigateMock).toHaveBeenCalledWith(
       `/round/${expectedChainId}/${expectedRoundId}`
     );
