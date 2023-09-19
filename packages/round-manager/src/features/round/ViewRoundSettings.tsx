@@ -1236,6 +1236,7 @@ function RoundApplicationPeriod(props: {
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
   const [applicationEndDate, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
+  const [noRoundEndDate, setNoRoundEndDate] = useState(false);
 
   const yesterday = moment().subtract(1, "day");
 
@@ -1259,9 +1260,11 @@ function RoundApplicationPeriod(props: {
     return inputTime.isBefore(moment());
   };
 
-  const noRoundEndDate = moment(editedRound.roundEndTime).isSame(
-    maxDateForUint256
-  );
+  useEffect(() => {
+    setNoRoundEndDate(
+      moment(editedRound.roundEndTime).isSame(maxDateForUint256)
+    );
+  }, [editedRound.roundEndTime]);
 
   return (
     <div className="w-full w-10/12">
@@ -1670,6 +1673,13 @@ function RoundApplicationPeriod(props: {
                         <Datetime
                           {...field}
                           {...props.register("roundEndTime")}
+                          value={
+                            noRoundEndDate
+                              ? ""
+                              : `${getUTCDate(
+                                  editedRound.roundEndTime
+                                )} ${getUTCTime(editedRound.roundEndTime)}`
+                          }
                           closeOnSelect
                           onChange={(date) => {
                             field.onChange(moment(date).toDate());
@@ -1733,7 +1743,7 @@ function RoundApplicationPeriod(props: {
                   className={`${
                     !props.editMode.canEdit ? "bg-grey-50" : ""
                   } border-0 pt-0 pl-2 -mt-2 text-sm`}
-                  defaultValue={
+                  value={
                     noRoundEndDate
                       ? ""
                       : `${getUTCDate(editedRound.roundEndTime)} ${getUTCTime(
