@@ -4,14 +4,43 @@ pre-commit:
     - rebase
   parallel: true
   commands:
-    prettier:
-      glob: "*.{js,ts,jsx,tsx}"
-      run: pnpm prettier --write {staged_files}
+    prettier-ge:
+      root: "packages/grant-explorer"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "grant-explorer" prettier --write {staged_files}
+      stage_fixed: true
+    prettier-rm:
+      root: "packages/round-manager"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "round-manager" prettier --write {staged_files}
+      stage_fixed: true
+    prettier-b:
+      root: "packages/grant-explorer"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "builder" prettier --write {staged_files}
+      stage_fixed: true
+    lint:ci-ge:
+      root: "packages/grant-explorer"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "grant-explorer" lint:local {staged_files}
+      stage_fixed: true
+    lint:ci-rm:
+      root: "packages/round-manager"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "round-manager" lint:local {staged_files}
+      stage_fixed: true
+    lint:ci-b:
+      root: "packages/builder"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "builder" lint:local {staged_files}
       stage_fixed: true
 
 pre-push:
   parallel: true
   commands:
-    eslint:
-      glob: "*.{js,ts,jsx,tsx}"
-      run: turbo lint:ci
+    typecheck:
+      run: turbo run typecheck
+    build:
+      run: turbo run build
+    test:
+      run: turbo run test

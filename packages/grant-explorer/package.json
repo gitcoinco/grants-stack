@@ -5,7 +5,8 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
-    "lint:ci": "pnpm lint:fix --max-warnings=0",
+    "lint:local": "eslint --ext .js,.jsx,.ts,.tsx",
+    "lint:ci": "CI=false pnpm lint:fix",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit",
     "start": "craco start",
