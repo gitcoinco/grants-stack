@@ -38,6 +38,7 @@ export const pgn: Chain = {
   },
   rpcUrls: {
     default: { http: ["https://rpc.publicgoods.network"] },
+    public: { http: ["https://rpc.publicgoods.network"] },
   },
   blockExplorers: {
     default: {
@@ -60,6 +61,7 @@ export const pgnTestnet: Chain = {
   },
   rpcUrls: {
     default: { http: ["https://sepolia.publicgoods.network"] },
+    public: { http: ["https://sepolia.publicgoods.network"] },
   },
   blockExplorers: {
     default: {
@@ -107,7 +109,10 @@ const connectors = connectorsForWallets([
     wallets: [
       injectedWallet({ chains }),
       coinbaseWallet({ appName: "Builder", chains }),
-      metaMaskWallet({ chains }),
+      metaMaskWallet({
+        chains,
+        projectId: "0000000000" /* We don't support walletconnect */,
+      }),
     ],
   },
 ]);
