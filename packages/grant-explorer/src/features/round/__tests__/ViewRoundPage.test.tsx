@@ -8,7 +8,7 @@ import {
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
-import { payoutTokens } from "../../api/utils";
+import { votingTokens } from "../../api/utils";
 import { vi } from "vitest";
 import { parseUnits, zeroAddress } from "viem";
 
@@ -89,7 +89,7 @@ describe("<ViewRound /> in case of before the application start date", () => {
     const applicationsEndTime = faker.date.future(1, applicationsStartTime);
     const roundStartTime = faker.date.soon(1, applicationsEndTime);
     const roundEndTime = faker.date.future(1, roundStartTime);
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
     stubRound = makeRoundData({
       id: roundId,
       applicationsStartTime,
@@ -120,7 +120,7 @@ describe("<ViewRound /> in case of during the application period", () => {
     const applicationsEndTime = faker.date.soon();
     const roundStartTime = faker.date.future(1, applicationsEndTime);
     const roundEndTime = faker.date.soon(10, roundStartTime);
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
     stubRound = makeRoundData({
       id: roundId,
       applicationsStartTime,
@@ -174,7 +174,7 @@ describe("<ViewRound /> in case of post application end date & before round star
     const applicationsStartTime = faker.date.past(1, applicationsEndTime);
     const roundStartTime = faker.date.soon();
     const roundEndTime = faker.date.future(1, roundStartTime);
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
     stubRound = makeRoundData({
       id: roundId,
       applicationsStartTime,
@@ -202,7 +202,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
   const applicationsEndTime = faker.date.past(1, roundStartTime);
   const applicationsStartTime = faker.date.past(1, applicationsEndTime);
   const roundEndTime = faker.date.soon();
-  const token = payoutTokens[0].address;
+  const token = votingTokens[0].address;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -241,7 +241,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
   it("displays the project details of an approved grant application", async () => {
     const expectedApprovedProject: Project = makeApprovedProjectData();
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
 
     const roundWithProjects = makeRoundData({
       id: roundId,
@@ -275,7 +275,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       }
     );
     const expectedBannerImg = expectedApprovedProject.projectMetadata.bannerImg;
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects: [expectedApprovedProject],
@@ -303,7 +303,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects,
@@ -334,7 +334,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects,
@@ -382,7 +382,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         projectMetadata: { ...projectMetadata, title: "my great gitcoin" },
       }),
     ];
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects,
@@ -414,7 +414,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
   describe("add project to cart", () => {
     const approvedProjects = [makeApprovedProjectData()];
-    const token = payoutTokens[0].address;
+    const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects,

@@ -3,6 +3,7 @@ import { getAddress } from "@ethersproject/address";
 import { ChainId } from "common";
 import { ethers } from "ethers";
 import PGNIcon from "common/src/icons/PublicGoodsNetwork.svg";
+import POLIcon from "common/src/icons/pol-icon.svg";
 import {
   EthDiamondGlyph,
   FantomFTMLogo,
@@ -37,6 +38,8 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   pgn: "PGN",
   arbitrum: "Arbitrum",
   arbitrumGoerli: "Arbitrum Goerli",
+  polygon: "Polygon PoS",
+  polygonMumbai: "Polygon Mumbai",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -50,6 +53,8 @@ export const networkIcon: { [key in ChainName]: string } = {
   localhost: EthDiamondGlyph,
   arbitrum: ARBIcon,
   arbitrumGoerli: ARBIcon,
+  polygon: POLIcon,
+  polygonMumbai: POLIcon,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -63,6 +68,8 @@ export const payoutIcon: { [key in ChainName]: string } = {
   localhost: EthDiamondGlyph,
   arbitrumGoerli: ARBIcon,
   arbitrum: ARBIcon,
+  polygon: POLIcon,
+  polygonMumbai: POLIcon,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {

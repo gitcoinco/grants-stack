@@ -1,6 +1,6 @@
 import { ChainId, renderToPlainText, truncateDescription } from "common";
 import { RoundOverview } from "../api/rounds";
-import { getDaysLeft, payoutTokens } from "../api/utils";
+import { getDaysLeft, votingTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -26,7 +26,7 @@ const RoundCard = (props: RoundCardProps) => {
     chainId: Number(props.round.chainId),
   });
 
-  const nativePayoutToken = payoutTokens.find(
+  const nativePayoutToken = votingTokens.find(
     (t) =>
       t.chainId === chainIdEnumValue &&
       t.address === getAddress(props.round.token)

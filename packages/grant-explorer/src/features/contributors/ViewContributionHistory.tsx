@@ -2,8 +2,8 @@ import { useAccount } from "wagmi";
 import { DetailedVote as Contribution } from "allo-indexer-client";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { PayoutToken } from "../api/types";
-import { getChainIds, payoutTokens } from "../api/utils";
+import { VotingToken } from "../api/types";
+import { getChainIds, votingTokens } from "../api/utils";
 import Navbar from "../common/Navbar";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -61,7 +61,7 @@ function ViewContributionHistoryFetcher(props: {
   }, [props.address]);
 
   const tokens = Object.fromEntries(
-    payoutTokens.map((token) => [token.address, token])
+    votingTokens.map((token) => [token.address, token])
   );
 
   if (contributionHistory.type === "loading") {
@@ -89,7 +89,7 @@ function ViewContributionHistoryFetcher(props: {
 }
 
 export function ViewContributionHistory(props: {
-  tokens: Record<string, PayoutToken>;
+  tokens: Record<string, VotingToken>;
   contributions: { chainId: number; data: Contribution[] }[];
   address: string;
   addressLogo: string;

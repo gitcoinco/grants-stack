@@ -11,6 +11,8 @@ export const chains = {
   58008: "pgnTestnet",
   42161: "arbitrum",
   421613: "arbitrumGoerli",
+  137: "polygon",
+  80001: "polygonMumbai",
 } as const;
 
 export type ChainName = (typeof chains)[keyof typeof chains];
@@ -58,6 +60,12 @@ export const addresses: DeploymentAddressesMap = {
     projectRegistry: "0x73AB205af1476Dc22104A6B8b3d4c273B58C6E27",
   },
   arbitrumGoerli: {
+    projectRegistry: "0x0CD135777dEaB6D0Bb150bDB0592aC9Baa4d0871",
+  },
+  polygon: {
+    projectRegistry: "0x73AB205af1476Dc22104A6B8b3d4c273B58C6E27",
+  },
+  polygonMumbai: {
     projectRegistry: "0x0CD135777dEaB6D0Bb150bDB0592aC9Baa4d0871",
   },
 };

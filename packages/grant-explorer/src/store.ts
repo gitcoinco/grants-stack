@@ -1,8 +1,8 @@
 import { ChainId } from "common";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { CartProject, PayoutToken } from "./features/api/types";
-import { payoutTokensMap } from "./features/api/utils";
+import { CartProject, VotingToken } from "./features/api/types";
+import { votingTokensMap } from "./features/api/utils";
 
 interface CartState {
   projects: CartProject[];
@@ -11,20 +11,20 @@ interface CartState {
   remove: (grantApplicationId: string) => void;
   updateDonationsForChain: (chainId: ChainId, amount: string) => void;
   updateDonationAmount: (grantApplicationId: string, amount: string) => void;
-  chainToPayoutToken: Record<ChainId, PayoutToken>;
-  setPayoutTokenForChain: (chainId: ChainId, payoutToken: PayoutToken) => void;
+  chainToPayoutToken: Record<ChainId, VotingToken>;
+  setPayoutTokenForChain: (chainId: ChainId, payoutToken: VotingToken) => void;
 }
 
 const ethOnlyPayoutTokens = Object.fromEntries(
-  Object.entries(payoutTokensMap).map(
+  Object.entries(votingTokensMap).map(
     ([key, value]) =>
       [
         Number(key) as ChainId,
         value.find((token) => token.defaultForVoting && token.canVote) ??
           value[0],
-      ] as [ChainId, PayoutToken]
+      ] as [ChainId, VotingToken]
   )
-) as Record<ChainId, PayoutToken>;
+) as Record<ChainId, VotingToken>;
 
 export const useCartStorage = create<CartState>()(
   persist(
@@ -78,7 +78,7 @@ export const useCartStorage = create<CartState>()(
         }
       },
       chainToPayoutToken: ethOnlyPayoutTokens,
-      setPayoutTokenForChain: (chainId: ChainId, payoutToken: PayoutToken) => {
+      setPayoutTokenForChain: (chainId: ChainId, payoutToken: VotingToken) => {
         if (!Object.values(ChainId).includes(chainId)) {
           console.warn(
             "Tried setting payoutToken",

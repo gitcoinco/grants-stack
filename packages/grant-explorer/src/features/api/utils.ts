@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CartProject, IPFSObject, PayoutToken } from "./types";
-import { ChainId, RedstoneTokenIds } from "common";
+import { CartProject, IPFSObject, VotingToken } from "./types";
+import { ChainId, graphQlEndpoints, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 import { zeroAddress } from "viem";
 import { ethers } from "ethers";
-
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
 
@@ -17,7 +16,11 @@ export function useDebugMode(): boolean {
 
 export const CHAINS: Record<
   ChainId,
-  { id: ChainId; name: string; logo: string }
+  {
+    id: ChainId;
+    name: string;
+    logo: string;
+  }
 > = {
   [ChainId.PGN]: {
     id: ChainId.PGN,
@@ -64,6 +67,16 @@ export const CHAINS: Record<
     name: "Arbitrum",
     logo: "./logos/arb-logo.svg",
   },
+  [ChainId.POLYGON]: {
+    id: ChainId.POLYGON,
+    name: "Polygon PoS",
+    logo: "./logos/pol-logo.svg",
+  },
+  [ChainId.POLYGON_MUMBAI]: {
+    id: ChainId.POLYGON_MUMBAI,
+    name: "Polygon Mumbai",
+    logo: "./logos/pol-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos = {
@@ -78,7 +91,7 @@ export const TokenNamesAndLogos = {
   ARB: "./logos/arb-logo.svg",
 } as const;
 
-export const MAINNET_TOKENS: PayoutToken[] = [
+export const MAINNET_TOKENS: VotingToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
@@ -101,7 +114,7 @@ export const MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-export const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
+export const OPTIMISM_MAINNET_TOKENS: VotingToken[] = [
   {
     name: "DAI",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
@@ -125,7 +138,7 @@ export const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
+const FANTOM_MAINNET_TOKENS: VotingToken[] = [
   {
     name: "WFTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
@@ -178,7 +191,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
+const GOERLI_TESTNET_TOKENS: VotingToken[] = [
   {
     name: "USDC",
     chainId: ChainId.GOERLI_CHAIN_ID,
@@ -212,7 +225,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
+const FANTOM_TESTNET_TOKENS: VotingToken[] = [
   {
     name: "DAI",
     chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
@@ -225,7 +238,7 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const PGN_TESTNET_TOKENS: PayoutToken[] = [
+const PGN_TESTNET_TOKENS: VotingToken[] = [
   {
     name: "TEST",
     chainId: ChainId.PGN_TESTNET,
@@ -248,7 +261,7 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const PGN_MAINNET_TOKENS: PayoutToken[] = [
+const PGN_MAINNET_TOKENS: VotingToken[] = [
   {
     name: "ETH",
     chainId: ChainId.PGN,
@@ -261,7 +274,7 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const ARBITRUM_TOKENS: PayoutToken[] = [
+const ARBITRUM_TOKENS: VotingToken[] = [
   {
     name: "ETH",
     chainId: ChainId.ARBITRUM,
@@ -295,7 +308,7 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
   },
 ];
 
-const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
+const ARBITRUM_GOERLI_TOKENS: VotingToken[] = [
   {
     name: "ETH",
     chainId: ChainId.PGN,
@@ -308,7 +321,33 @@ const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
   },
 ];
 
-export const payoutTokens = [
+const POLYGON_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.POLYGON,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+const POLYGON_MUMBAI_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.POLYGON_MUMBAI,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+export const votingTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
@@ -318,10 +357,12 @@ export const payoutTokens = [
   ...PGN_MAINNET_TOKENS,
   ...ARBITRUM_TOKENS,
   ...ARBITRUM_GOERLI_TOKENS,
+  ...POLYGON_TOKENS,
+  ...POLYGON_MUMBAI_TOKENS,
 ];
 
-type PayoutTokensMap = Record<ChainId, PayoutToken[]>;
-export const payoutTokensMap: PayoutTokensMap = {
+type PayoutTokensMap = Record<ChainId, VotingToken[]>;
+export const votingTokensMap: PayoutTokensMap = {
   [ChainId.GOERLI_CHAIN_ID]: GOERLI_TESTNET_TOKENS,
   [ChainId.MAINNET]: MAINNET_TOKENS,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
@@ -331,26 +372,12 @@ export const payoutTokensMap: PayoutTokensMap = {
   [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
   [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_TOKENS,
   [ChainId.ARBITRUM]: ARBITRUM_TOKENS,
+  [ChainId.POLYGON]: POLYGON_TOKENS,
+  [ChainId.POLYGON_MUMBAI]: POLYGON_MUMBAI_TOKENS,
 };
 
-export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
-  payoutTokensMap[chainId];
-
-const graphQlEndpoints: Record<ChainId, string> = {
-  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
-  [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_GOERLI_API!,
-  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
-  [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_MAINNET_API!,
-  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API!,
-  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API!,
-  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
-  [ChainId.ARBITRUM_GOERLI]:
-    process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
-  [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
-};
+export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
+  votingTokensMap[chainId];
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -372,6 +399,8 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
   [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
   [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
+  [ChainId.POLYGON]: "https://polygonscan.io/tx/",
+  [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
 };
 
 /**

@@ -130,7 +130,8 @@ if (process.env.REACT_APP_ENV === "production") {
     fantomMainnet,
     optimismMainnet,
     pgn,
-    chain.arbitrum
+    chain.arbitrum,
+    chain.polygon
   );
 } else {
   chainsAvailable.push(
@@ -142,7 +143,9 @@ if (process.env.REACT_APP_ENV === "production") {
     pgnTestnet,
     pgn,
     chain.arbitrum,
-    chain.arbitrumGoerli
+    chain.arbitrumGoerli,
+    chain.polygon,
+    chain.polygonMumbai
   );
 }
 
