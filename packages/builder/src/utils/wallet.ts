@@ -3,7 +3,7 @@ import { getAddress } from "@ethersproject/address";
 import { ChainId } from "common";
 import { ethers } from "ethers";
 import PGNIcon from "common/src/icons/PublicGoodsNetwork.svg";
-import POLIcon from "common/src/icons/pol-icon.svg";
+import POLIcon from "common/src/icons/pol-logo.svg";
 import {
   EthDiamondGlyph,
   FantomFTMLogo,
