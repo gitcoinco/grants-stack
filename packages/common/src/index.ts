@@ -269,7 +269,7 @@ export const convertStatusToText = (
 };
 
 /** Returns true if the current javascript context is running inside a Jest test  */
-export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
+export const isJestRunning = () => process.env["JEST_WORKER_ID"] !== undefined;
 
 export const padSingleDigitNumberWithZero = (i: number): string =>
   i < 10 ? "0" + i : i.toString();
