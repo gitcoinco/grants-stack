@@ -89,6 +89,7 @@ export const TokenNamesAndLogos = {
   PGN: "./logos/pgn-logo.svg",
   GcV: "./logos/fantom-gcv-logo.png",
   ARB: "./logos/arb-logo.svg",
+  MATIC: "./logos/pol-logo.svg",
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -323,14 +324,25 @@ const ARBITRUM_GOERLI_TOKENS: VotingToken[] = [
 
 const POLYGON_TOKENS: VotingToken[] = [
   {
-    name: "ETH",
+    name: "MATIC",
     chainId: ChainId.POLYGON,
     address: zeroAddress,
     decimal: 18,
-    logo: TokenNamesAndLogos["ETH"],
-    redstoneTokenId: RedstoneTokenIds["ETH"],
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
     defaultForVoting: true,
     canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.POLYGON,
+    address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
+    canVote: true,
+    permitVersion: "2",
   },
 ];
 
