@@ -13,6 +13,6 @@ export const MRC_CONTRACTS: Record<ChainId, Hex> = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "0x" /*TODO: add ftm testnet*/,
   [ChainId.ARBITRUM_GOERLI]: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
   [ChainId.ARBITRUM]: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
-  [ChainId.POLYGON]: "0x" /*TODO: MRC Polygon contract*/,
+  [ChainId.POLYGON]: "0x0xe04d9e9CcDf65EB1Db51E56C04beE4c8582edB73",
   [ChainId.POLYGON_MUMBAI]: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
 };
