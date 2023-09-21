@@ -98,7 +98,9 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
 }));
 
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
+  const actual = await vi.importActual<typeof import("react-router-dom")>(
+    "react-router-dom"
+  );
 
   return {
     ...actual,
@@ -108,7 +110,7 @@ vi.mock("react-router-dom", async () => {
 });
 
 vi.mock("wagmi", async () => {
-  const actual = await vi.importActual("wagmi");
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
   return {
     ...actual,
     useSigner: () => ({

@@ -120,7 +120,7 @@ const optimismMainnet: Chain = {
 };
 
 // todo: fix for rpc issue is with hardhat local chain calling rpc
-if (process.env.REACT_APP_LOCALCHAIN) {
+if (process.env.REACT_APP_LOCALCHAIN === "true") {
   chainsAvailable.push(chain.hardhat);
 }
 

@@ -73,23 +73,11 @@ describe("LandingPage", () => {
     ];
 
     mockGetActiveRounds.mockImplementation(async () => {
-      return new Promise((resolve) => {
-        resolve({
-          isLoading: false,
-          error: null,
-          rounds: activeRounds,
-        });
-      });
+      return activeRounds;
     });
 
     mockGetRoundsInApplicationPhase.mockImplementation(async () => {
-      return new Promise((resolve) => {
-        resolve({
-          isLoading: false,
-          error: null,
-          rounds: roundsInApplicationPhase,
-        });
-      });
+      return roundsInApplicationPhase;
     });
 
     renderWithContext(<LandingPage />);
@@ -135,13 +123,7 @@ describe("LandingPage", () => {
     ];
 
     mockGetActiveRounds.mockImplementation(async () => {
-      return new Promise((resolve) => {
-        resolve({
-          isLoading: false,
-          error: null,
-          rounds: activeRounds,
-        });
-      });
+      return activeRounds;
     });
 
     renderWithContext(<LandingPage />);

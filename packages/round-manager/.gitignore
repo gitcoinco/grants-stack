@@ -29,3 +29,5 @@ npm-debug.log*
 /.eslintcache
 
 /src/types/generated
+.vercel
+.env*.local

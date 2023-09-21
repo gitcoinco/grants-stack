@@ -11,7 +11,7 @@ vi.mock("../utils", () => ({
 }));
 
 vi.mock("../round", async () => {
-  const actual = await vi.importActual("../round");
+  const actual = await vi.importActual<typeof import("../round")>("../round");
   return {
     ...actual,
     getProjectOwners: vi.fn(),

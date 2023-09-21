@@ -2,11 +2,13 @@ const webpack = require("webpack");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const CracoEsbuildPlugin = require("craco-esbuild");
 const path = require("path");
+const { VerifyEnvPlugin } = require("verify-env");
 
 const plugins = [
   new webpack.ProvidePlugin({
     Buffer: ["buffer", "Buffer"],
   }),
+  new VerifyEnvPlugin(),
 ];
 
 if (process.env.REACT_APP_ENV === "production") {
