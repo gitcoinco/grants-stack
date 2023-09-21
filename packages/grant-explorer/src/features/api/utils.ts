@@ -342,7 +342,6 @@ const POLYGON_TOKENS: VotingToken[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
     defaultForVoting: false,
     canVote: true,
-    permitVersion: "2",
   },
 ];
 
