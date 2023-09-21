@@ -1,15 +1,15 @@
-import { fireEvent, screen } from "@testing-library/react";
-import { renderWrapped } from "../../../test-utils";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithContext } from "../../../test-utils";
 import ErrorModal from "../../common/ErrorModal";
 
-jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
+vi.mock("../../common/Auth");
+vi.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: vi.fn(),
 }));
 
 describe("<ErrorModal />", () => {
   it("shows error modal heading and error message", async () => {
-    renderWrapped(
+    renderWithContext(
       <ErrorModal
         heading="error title"
         subheading="this is an error message"
@@ -24,7 +24,7 @@ describe("<ErrorModal />", () => {
   });
 
   it("does not show error modal heading or message when modal is not open", async () => {
-    renderWrapped(
+    renderWithContext(
       <ErrorModal
         heading="error title"
         subheading="this is an error message"
@@ -39,16 +39,16 @@ describe("<ErrorModal />", () => {
   });
 
   it("should call the try again callback and close the modal if try again is clicked", () => {
-    const tryAgainFn = jest.fn();
-    const setIsOpenFn = jest.fn();
+    const tryAgainFn = vi.fn();
+    const setIsOpenFn = vi.fn();
 
-    renderWrapped(
+    renderWithContext(
       <ErrorModal
         heading="error title"
         subheading="this is an error message"
         isOpen={true}
         setIsOpen={setIsOpenFn}
-        tryAgainFn={tryAgainFn}
+        onTryAgain={tryAgainFn}
       />
     );
     fireEvent.click(screen.getByTestId("tryAgain"));
@@ -59,16 +59,16 @@ describe("<ErrorModal />", () => {
   });
 
   it("should call the done callback and close the modal if done is clicked", () => {
-    const doneFn = jest.fn();
-    const setIsOpenFn = jest.fn();
+    const doneFn = vi.fn();
+    const setIsOpenFn = vi.fn();
 
-    renderWrapped(
+    renderWithContext(
       <ErrorModal
         heading="error title"
         subheading="this is an error message"
         isOpen={true}
         setIsOpen={setIsOpenFn}
-        doneFn={doneFn}
+        onDone={doneFn}
       />
     );
     fireEvent.click(screen.getByTestId("done"));
@@ -76,5 +76,33 @@ describe("<ErrorModal />", () => {
     expect(doneFn).toBeCalledTimes(1);
     expect(setIsOpenFn).toBeCalledTimes(1);
     expect(setIsOpenFn).toBeCalledWith(false);
+  });
+
+  it.skip("should close the modal if close on background click is enabled and background is clicked", () => {
+    const doneFn = vi.fn();
+    const setIsOpenFn = vi.fn();
+
+    renderWithContext(
+      <ErrorModal
+        heading="error title"
+        subheading="this is an error message"
+        isOpen={true}
+        closeOnBackgroundClick={true}
+        setIsOpen={setIsOpenFn}
+        onDone={doneFn}
+      />
+    );
+    fireEvent.click(screen.getByTestId("backdrop"));
+
+    /** Need to add timeout for the function to actually be called */
+    waitFor(
+      () => {
+        expect(setIsOpenFn).toBeCalledTimes(1);
+        expect(setIsOpenFn).toBeCalledWith(false);
+      },
+      {
+        timeout: 10,
+      }
+    );
   });
 });

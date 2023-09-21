@@ -1,4 +1,4 @@
-name: package/round-manager - Build -> Test
+name: Manager - Lint & Test & Typecheck
 on:
   push:
     branches:
@@ -8,7 +8,7 @@ on:
     branches:
       - "**"
 jobs:
-  build-and-deploy:
+  lint-test-typecheck:
     concurrency: ci-round-manager-${{ github.head_ref || github.run_id }}
     runs-on: ubuntu-latest
     steps:
@@ -19,21 +19,25 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 7
+          version: 8
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
           cache: "pnpm"
 
       - name: Install Dependencies
         run: |
           pnpm install
 
-      - name: Build Round Manager
+      - name: Lint Explorer
         run: |
-          pnpm rm-build
+          pnpm rm-lint
 
-      - name: Test Round Manager
+      - name: Test Explorer
         run: |
           pnpm rm-test
+
+      - name: Typecheck Explorer
+        run: |
+          pnpm rm-typecheck

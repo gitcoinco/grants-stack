@@ -1,22 +1,11 @@
-import { useParams } from "react-router";
 import useSWR from "swr";
-import { isAddress } from "viem";
 import { useMemo, useState } from "react";
+import { ChainId } from "./chains";
 
 export * from "./icons";
 export * from "./markdown";
 
-export const TMP_DIRECT_ROUND_SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/lmcorbalan/gc-rounds-v0";
-
-export enum ChainId {
-  MAINNET = 1,
-  GOERLI_CHAIN_ID = 5,
-  OPTIMISM_MAINNET_CHAIN_ID = 10,
-  FANTOM_MAINNET_CHAIN_ID = 250,
-  FANTOM_TESTNET_CHAIN_ID = 4002,
-  PGN_TESTNET = 58008,
-}
+export { ChainId };
 
 export enum PassportState {
   NOT_CONNECTED,
@@ -42,43 +31,6 @@ export type PassportResponse = {
   error?: string;
   detail?: string;
 };
-
-type UsePassportHook = {
-  /** Passport for the given address and communityId */
-  passport: PassportResponse | undefined;
-  /** State of the hook
-   * Handles loading, error and other states */
-  state: PassportState;
-  /** Error during fetching of passport score */
-  error: Response | undefined;
-  /** Re-submits the address for passport scoring
-   * Promise resolves when the submission is successful, NOT when the score is updated */
-  recalculateScore: () => Promise<Response>;
-  /**
-   * Refreshes the score without resubmitting for scoring */
-  refreshScore: () => Promise<void>;
-};
-
-export function usePassport(
-  address: string,
-  communityId: string
-): UsePassportHook {
-  const { data, error, mutate } = useSWR<PassportResponse>(
-    [address, communityId],
-    ([address, communityId]: [address: string, communityId: string]) =>
-      fetchPassport(address, communityId).then((res) => res.json())
-  );
-
-  return {
-    error,
-    state: PassportState.NOT_CONNECTED,
-    refreshScore: async () => {
-      await mutate();
-    },
-    recalculateScore: () => submitPassport(address, communityId),
-    passport: data,
-  };
-}
 
 /**
  * Endpoint used to fetch the passport score for a given address
@@ -144,31 +96,31 @@ export type Payout = {
   createdAt: string;
 };
 
-const getGraphQLEndpoint = async (chainId: ChainId) => {
-  switch (chainId) {
-    case ChainId.MAINNET:
-      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
-
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
-
-    case ChainId.FANTOM_MAINNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API}`;
-
-    case ChainId.FANTOM_TESTNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
-
-    case ChainId.PGN_TESTNET:
-      return `${process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API}`;
-
-    case ChainId.GOERLI_CHAIN_ID:
-    default:
-      return TMP_DIRECT_ROUND_SUBGRAPH_URL;
-    //return (process.env.REACT_APP_SUBGRAPH_GOERLI_API as string)
-    // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
-    // as we need to fetch data from the new version of the subgraph.
-  }
+const graphQlEndpoints: Record<ChainId, string> = {
+  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
+  [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_GOERLI_API!,
+  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
+  [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_MAINNET_API!,
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API!,
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API!,
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
+  [ChainId.ARBITRUM_GOERLI]:
+    process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
+  [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
 };
+
+/**
+ * Fetch subgraph network for provided web3 network.
+ * The backticks are here to work around a failure of a test that tetsts graphql_fetch,
+ * and fails if the endpoint is undefined, so we convert the undefined to a string here in order not to fail the test.
+ *
+ * @param chainId - The chain ID of the blockchain
+ * @returns the subgraph endpoint
+ */
+const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -186,7 +138,7 @@ export const graphql_fetch = async (
   variables: object = {},
   fromProjectRegistry = false
 ) => {
-  let endpoint = await getGraphQLEndpoint(chainId);
+  let endpoint = getGraphQLEndpoint(chainId);
 
   if (fromProjectRegistry) {
     endpoint = endpoint.replace("grants-round", "grants-hub");
@@ -217,7 +169,7 @@ export function fetchProjectPaidInARound(
   roundId: string,
   chainId: ChainId
 ): Promise<Payout[]> {
-  const { data, error, mutate } = useSWR(
+  const { data } = useSWR(
     [roundId, chainId],
     ([roundId, chainId]: [roundId: string, chainId: ChainId]) => {
       return graphql_fetch(
@@ -252,24 +204,6 @@ export function fetchProjectPaidInARound(
   const payouts = data?.data?.payoutStrategies[0]?.payouts || [];
 
   return payouts;
-}
-
-/** Returns the current round id extracted from the current  route
- * If there's no id parameter, or it isn't an Ethereum address, logs a warning to sentry.
- * Types the return as string to avoid superfluous undefined-checks. If this hook is used on a page that doesn't contain a
- * round id, we don't care about that page breaking either way.
- * @return current round id extracted from route parameters
- * */
-export function useRoundId() {
-  const { id: roundId } = useParams();
-
-  /* Check if the ID is an Ethereum address */
-  if (!isAddress(roundId ?? "")) {
-    console.warn(
-      "id extracted from url in useRoundId hook isn't a valid address. Check usage."
-    );
-  }
-  return roundId as string;
 }
 
 export function formatDateWithOrdinal(date: Date) {
@@ -366,12 +300,15 @@ export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
 };
 
-export const RedstoneTokenIds: Record<string, string> = {
+export const RedstoneTokenIds = {
   FTM: "FTM",
-  BUSD: "BUSD",
+  USDC: "USDC",
   DAI: "DAI",
   ETH: "ETH",
-};
+  ARB: "ARB",
+  BUSD: "BUSD",
+  GTC: "GTC",
+} as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {
   const [tokenPrice, setTokenPrice] = useState<number>();
@@ -420,3 +357,10 @@ export const useTokenPrice = (tokenId: string | undefined) => {
     loading,
   };
 };
+
+export async function getTokenPrice(tokenId: string) {
+  const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
+  const resp = await fetch(tokenPriceEndpoint);
+  const data = await resp.json();
+  return data[0].value;
+}

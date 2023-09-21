@@ -3,10 +3,8 @@ import { Dispatch, SetStateAction } from "react";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 
 export type SortFilterDropdownProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onChange: any;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
 };
-
 
 export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
   return (
@@ -18,7 +16,7 @@ export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
         className="border-0 cursor-pointer text-violet-400 text-sm"
         placeholder="Select Filter"
         onChange={props.onChange}
-        >
+      >
         <option value="round_asc">Round End (Earliest)</option>
         <option value="round_desc">Round Start (Earliest)</option>
       </select>
@@ -31,7 +29,9 @@ export type GrantRoundTypeFilterDropdownProps = {
   onChange: any;
 };
 
-export const GrantRoundTypeFilterDropdown = (props: GrantRoundTypeFilterDropdownProps) => {
+export const GrantRoundTypeFilterDropdown = (
+  props: GrantRoundTypeFilterDropdownProps
+) => {
   return (
     <div>
       <span className="text-sm mx-auto md:ml-8">
@@ -50,7 +50,7 @@ export const GrantRoundTypeFilterDropdown = (props: GrantRoundTypeFilterDropdown
   );
 };
 
-const SearchInput = (props: {
+export const SearchInput = (props: {
   searchQuery: string;
   onChange: Dispatch<SetStateAction<string>>;
 }) => {

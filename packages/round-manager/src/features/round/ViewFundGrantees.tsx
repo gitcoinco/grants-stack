@@ -16,6 +16,7 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+import { assertAddress } from "common/src/address";
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;
@@ -209,10 +210,10 @@ export function PayProjectsTable(props: {
 
   const tokenDetail =
     props.token.address == ethers.constants.AddressZero
-      ? { addressOrName: props.round?.payoutStrategy.id }
+      ? { address: assertAddress(props.round?.payoutStrategy.id) }
       : {
-          addressOrName: props.round?.payoutStrategy.id,
-          token: props.token.address as `0x{string}`,
+          address: assertAddress(props.round?.payoutStrategy.id),
+          token: assertAddress(props.token.address),
         };
 
   const tokenBalance = useBalance(tokenDetail);

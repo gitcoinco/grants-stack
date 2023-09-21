@@ -1,83 +1,46 @@
-import { act, fireEvent, screen } from "@testing-library/react";
-import {
-  makeApprovedProjectData,
-  renderWithContext,
-} from "../../../test-utils";
+import { render, fireEvent, screen } from "@testing-library/react";
 import NavbarCart from "../NavbarCart";
+import { makeApprovedProjectData } from "../../../test-utils";
+import { beforeEach } from "vitest"; // replace with the correct path to your NavbarCart component
 
-describe("<NavbarCart/>", () => {
-  it("SHOULD always show CART icon", () => {
-    renderWithContext(<NavbarCart cart={[]} roundUrlPath={""} />);
-
-    expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
+describe("<NavbarCart />", () => {
+  beforeEach(() => {
+    global.window.open = vi.fn();
   });
 
-  it("SHOULD not display a number when empty", () => {
-    renderWithContext(<NavbarCart cart={[]} roundUrlPath={""} />);
+  test("renders the NavbarCart without errors", () => {
+    render(<NavbarCart cart={[]} />);
 
-    /* Verify we are displaying the 0 */
-    expect(screen.queryByText("0")).not.toBeInTheDocument();
+    const navbarCart = screen.getByTestId("navbar-cart");
+    expect(navbarCart).toBeInTheDocument();
   });
 
-  it("SHOULD display the number when full", () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
+  test("displays the correct count of projects in the cart", () => {
+    const mockCart = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+    ];
 
-    renderWithContext(<NavbarCart cart={cart} roundUrlPath={""} />);
+    render(<NavbarCart cart={mockCart} />);
 
-    /* Verify we aren't displaying the 0 */
-    expect(screen.getByText("2")).toBeInTheDocument();
+    const badge = screen.getByText("3");
+    expect(badge).toBeInTheDocument();
   });
 
-  it("SHOULD not show dropdown on clicking cart icon WHEN cart is empty", async () => {
-    renderWithContext(<NavbarCart cart={[]} roundUrlPath={""} />);
+  test("does not display count badge when cart is empty", () => {
+    render(<NavbarCart cart={[]} />);
 
-    const icon = screen.getByTestId("navbar-cart");
-
-    await act(() => {
-      fireEvent.click(icon);
-    });
-
-    expect(screen.queryByTestId("quick-view-summary")).not.toBeInTheDocument();
+    const badge = screen.queryByText(/(\d+)/); // This will match any number
+    expect(badge).not.toBeInTheDocument();
   });
 
-  it("SHOULD show dropdown on clicking cart icon WHEN cart is NOT empty", async () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
-    renderWithContext(<NavbarCart cart={cart} roundUrlPath={""} />);
+  test('opens a new window/tab with URL "#/cart" when clicked', () => {
+    render(<NavbarCart cart={[]} />);
 
-    const icon = screen.getByTestId("navbar-cart");
+    const navbarCart = screen.getByTestId("navbar-cart");
+    fireEvent.click(navbarCart);
 
-    await act(() => {
-      fireEvent.click(icon);
-    });
-
-    expect(screen.queryByTestId("quick-view-summary")).toBeInTheDocument();
-  });
-
-  it("SHOULD show View my cart button with count", async () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
-    renderWithContext(<NavbarCart cart={cart} roundUrlPath={""} />);
-
-    const icon = screen.getByTestId("navbar-cart");
-
-    await act(() => {
-      fireEvent.click(icon);
-    });
-
-    expect(screen.queryByText("View my cart (2)")).toBeInTheDocument();
-  });
-
-  it("SHOULD show project info in quick view summary", async () => {
-    const cart = [makeApprovedProjectData(), makeApprovedProjectData()];
-    renderWithContext(<NavbarCart cart={cart} roundUrlPath={""} />);
-
-    const icon = screen.getByTestId("navbar-cart");
-
-    await act(() => {
-      fireEvent.click(icon);
-    });
-
-    expect(screen.queryAllByTestId("project-quick-view").length).toEqual(
-      cart.length
-    );
+    expect(window.open).toHaveBeenCalledWith("#/cart", "_blank");
   });
 });

@@ -15,7 +15,7 @@ type ActiveRounds = {
 };
 
 const ActiveRoundsSection = (props: ActiveRounds) => {
-  const activeRoundsCount = props.roundOverview.length;
+  const activeRoundsCount = props.roundOverview?.length ?? 0;
   const [order, setOrder] = useState<string>("round_asc");
 
   function sortRoundsByTime(rounds: RoundOverview[], order: string) {
@@ -42,13 +42,14 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
         <div className="flex flex-col mt-4 justify-items-center">
           <p className="text-grey-400 text-2xl">
-            {`All Active Rounds (${activeRoundsCount})`}
+            All Active Rounds{" "}
+            {activeRoundsCount > 0 && `(${activeRoundsCount})`}
           </p>
           <p className="text-grey-400 text-sm mb-4 mt-2">
             Rounds that are ongoing
           </p>
         </div>
-        {!props.isLoading && (
+        {!props.isLoading && activeRoundsCount > 0 && (
           <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput
               searchQuery={props.searchQuery}
@@ -74,9 +75,9 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
             <Spinner />
           </div>
         )}
-        {activeRoundsCount > 0 && (
+        {activeRoundsCount > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
-            {sortRoundsByTime(props.roundOverview, order).map(
+            {sortRoundsByTime(props.roundOverview ?? [], order).map(
               (round, index) => {
                 return <RoundCard key={index} round={round} />;
               }

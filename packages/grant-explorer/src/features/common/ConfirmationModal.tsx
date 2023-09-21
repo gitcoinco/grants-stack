@@ -12,6 +12,7 @@ interface ModalProps {
   cancelButtonAction?: () => void;
   children?: ReactNode;
   modalStyle?: "wide" | "normal";
+  disabled?: boolean;
 }
 
 export default function ConfirmationModal({
@@ -80,10 +81,11 @@ export default function ConfirmationModal({
                     className={`w-full inline-flex text-sm sm:ml-3 ${
                       modalStyle === "wide"
                         ? "sm_full justify-center"
-                        : "sm:w-auto"
+                        : "sm:w-auto justify-center"
                     }`}
                     onClick={props.confirmButtonAction}
                     data-testid={"confirm-continue"}
+                    disabled={props.disabled}
                   >
                     {confirmButtonText}
                   </Button>
@@ -93,7 +95,7 @@ export default function ConfirmationModal({
                     className={`w-full inline-flex text-sm sm:ml-3 ${
                       modalStyle === "wide"
                         ? "sm_full justify-center"
-                        : "sm:w-auto"
+                        : "sm:w-auto justify-center"
                     }`}
                     onClick={cancelButtonAction}
                     ref={cancelButtonRef}

@@ -1,19 +1,19 @@
 import { ChainId } from "common";
 
-export type GraphQLEndpoints = {
-  [key in ChainId]: string;
-};
-
-const graphQlEndpoints: GraphQLEndpoints = {
-  [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_URL_MAINNET!,
-  [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_URL_GOERLI!,
+const graphQlEndpoints: Record<ChainId, string> = {
+  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
+  [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_GOERLI_API!,
+  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
+  [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_MAINNET_API!,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET!,
+    process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API!,
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET!,
+    process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API!,
   [ChainId.FANTOM_TESTNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET!,
-  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_URL_PGN_TESTNET!,
+    process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
+  [ChainId.ARBITRUM_GOERLI]:
+    process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
+  [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
 };
 
 /**
@@ -25,6 +25,7 @@ const graphQlEndpoints: GraphQLEndpoints = {
 const getGraphQLEndpoint = (chainId: ChainId): string =>
   graphQlEndpoints[chainId];
 
+// eslint-disable-next-line import/prefer-default-export
 export const graphqlFetch = async (
   query: string,
   chainId: ChainId,

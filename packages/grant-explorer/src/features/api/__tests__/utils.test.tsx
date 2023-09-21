@@ -1,11 +1,7 @@
-import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
+import { ChainId } from "common";
 
-import { ChainId, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils";
+import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils";
 import { TMP_DIRECT_ROUND_SUBGRAPH_URL } from "common";
-
-enableFetchMocks();
-
-const fetchMock = fetch as FetchMock;
 
 describe("graphql_fetch", () => {
   beforeEach(() => {

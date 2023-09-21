@@ -14,7 +14,7 @@ export default function NotFoundPage() {
 
   return (
     <>
-      <Navbar roundUrlPath={""} />
+      <Navbar />
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <main>
           <div className="flex pt-8">

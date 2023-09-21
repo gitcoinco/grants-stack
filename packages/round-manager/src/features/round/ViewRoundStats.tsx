@@ -9,10 +9,11 @@ import {
 } from "../../hooks";
 import { getUTCDate } from "common";
 import { payoutTokens } from "../api/utils";
+import { useChainId } from "wagmi";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
-
+  const chainId = useChainId();
   const roundId = utils.getAddress(id?.toLowerCase() ?? "");
 
   const { data: round } = useRound(roundId);
@@ -26,7 +27,9 @@ export default function ViewRoundStats() {
   const matchToken =
     round &&
     payoutTokens.find(
-      (t) => t.address.toLowerCase() == round.token.toLowerCase()
+      (t) =>
+        t.address.toLowerCase() == round.token.toLowerCase() &&
+        t.chainId === chainId
     );
 
   return (
@@ -47,8 +50,7 @@ export default function ViewRoundStats() {
         <StatsCard
           text={
             round &&
-            `${utils.formatUnits(round.matchAmount, matchToken?.decimal)} ${
-              matchToken?.name
+            `${utils.formatUnits(round.matchAmount, matchToken?.decimal)} ${matchToken?.name
             }`
           }
           title={"Matching Funds Available"}
@@ -123,11 +125,12 @@ export default function ViewRoundStats() {
             grayBorder={true}
             title="Avg. Contribution"
             text={
-              round &&
-              new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(round.amountUSD / round.uniqueContributors)
+              round && round.uniqueContributors > 0
+                ? new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(round.amountUSD / round.uniqueContributors)
+                : "N/A"
             }
           />
           <StatsCard
@@ -150,9 +153,8 @@ type StatsCardProps = {
 function StatsCard(props: StatsCardProps) {
   return (
     <div
-      className={`p-4 border rounded ${
-        props.grayBorder ? "border-grey-100" : "border-violet-400"
-      } flex flex-col justify-center`}
+      className={`p-4 border rounded ${props.grayBorder ? "border-grey-100" : "border-violet-400"
+        } flex flex-col justify-center`}
     >
       <span
         className={

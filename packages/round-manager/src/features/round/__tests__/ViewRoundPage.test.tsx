@@ -281,7 +281,6 @@ describe("View Round", () => {
       )
     );
 
-    screen.logTestingPlaygroundURL();
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
   });
 

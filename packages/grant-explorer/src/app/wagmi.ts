@@ -10,38 +10,12 @@ import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import {
-  mainnet,
-  goerli,
-  fantom,
-  fantomTestnet,
-  optimism,
-  Chain,
-} from "wagmi/chains";
-import { createClient, configureChains } from "wagmi";
-
-import { pgnTestnet } from "common/src/chains";
+import { configureChains, createConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
+import { allChains } from "./chainConfig";
 
-const testnetChains = () => {
-  return [
-    goerli,
-    { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
-    pgnTestnet,
-  ];
-};
-
-const mainnetChains = () => {
-  return [mainnet, optimism, { ...fantom, iconUrl: "/logos/fantom-logo.svg" }];
-};
-
-const allChains: Chain[] =
-  process.env.REACT_APP_ENV === "development"
-    ? [...testnetChains(), ...mainnetChains()]
-    : [...mainnetChains()];
-
-export const { chains, provider, webSocketProvider } = configureChains(
+export const { chains, publicClient, webSocketPublicClient } = configureChains(
   allChains,
   [
     infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID as string }),
@@ -75,9 +49,9 @@ const connectors = connectorsForWallets([
   },
 ]);
 
-export const client = createClient({
+export const config = createConfig({
   autoConnect: true,
   connectors: connectors,
-  provider,
-  webSocketProvider,
+  publicClient,
+  webSocketPublicClient,
 });

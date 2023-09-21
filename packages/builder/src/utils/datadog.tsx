@@ -23,7 +23,7 @@ const initDatadog = () => {
 
   // Init datadog-logs
   datadogLogs.init({
-    clientToken: process.env.REACT_APP_DATADOG_LOGGER_CLIENT_TOKEN || "",
+    clientToken: process.env.REACT_APP_DATADOG_CLIENT_TOKEN || "",
     site: "datadoghq.eu",
     forwardErrorsToLogs: true,
     sampleRate: 100,

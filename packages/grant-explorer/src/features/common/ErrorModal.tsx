@@ -8,8 +8,8 @@ interface ErrorModalProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   heading?: string;
   subheading?: string | React.ReactNode;
-  tryAgainFn?: () => void;
-  doneFn?: () => void;
+  onTryAgain?: () => void;
+  onDone?: () => void;
   tryAgainText?: string;
   doneText?: string;
   closeOnBackgroundClick?: boolean;
@@ -20,10 +20,10 @@ export default function ErrorModal({
   setIsOpen,
   heading = "Error",
   subheading = "There has been a system error during the payout.",
-  tryAgainFn = () => {
+  onTryAgain = () => {
     /**/
   },
-  doneFn = () => setIsOpen(false),
+  onDone = () => setIsOpen(false),
   tryAgainText = "Try Again",
   doneText = "Done",
   closeOnBackgroundClick = false,
@@ -49,7 +49,10 @@ export default function ErrorModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-grey-400 bg-opacity-75 transition-opacity" />
+          <div
+            data-testid={"backdrop"}
+            className="fixed inset-0 bg-grey-400 bg-opacity-75 transition-opacity"
+          />
         </Transition.Child>
 
         <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -97,7 +100,7 @@ export default function ErrorModal({
                       $variant="outline"
                       data-testid="tryAgain"
                       onClick={() => {
-                        tryAgainFn();
+                        onTryAgain();
                         setIsOpen(false);
                       }}
                       className="mr-4 text-sm px-4"
@@ -107,7 +110,7 @@ export default function ErrorModal({
                     <Button
                       type="button"
                       onClick={() => {
-                        doneFn();
+                        onDone();
                         setIsOpen(false);
                       }}
                       data-testid="done"

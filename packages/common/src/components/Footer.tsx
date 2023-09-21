@@ -30,10 +30,15 @@ const navigation = [
   },
 ];
 
+const COMMIT_HASH = process.env.REACT_APP_GIT_SHA ?? "localhost";
+
 export default function Footer() {
   return (
-    <footer>
-      <div className="max-w-full flex flex-row-reverse justify-between mx-auto px-4 sm:px-6 lg:px-20 py-12 overflow-hidden">
+    <footer className={"p-3 px-8 flex flex-row justify-between items-center"}>
+      <div className={"text-gray-500 text-xs"}>
+        build <pre className={"inline"}>{COMMIT_HASH}</pre>
+      </div>
+      <div className="flex flex-row-reverse justify-between py-12 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">
           {navigation.map((item) => (
             <a

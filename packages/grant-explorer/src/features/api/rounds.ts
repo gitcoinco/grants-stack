@@ -32,9 +32,9 @@ export type RoundOverview = {
   roundMetadata?: RoundMetadata;
   projects?: [];
   payoutStrategy: {
-    id: string,
-    strategyName: string
-  }
+    id: string;
+    strategyName: string;
+  };
 };
 
 async function fetchRoundsByTimestamp(
@@ -45,7 +45,7 @@ async function fetchRoundsByTimestamp(
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
     const currentTimestamp = Math.floor(Date.now() / 1000).toString();
-    const infiniteTimestamp = ethers.constants.MaxUint256.toString()
+    const infiniteTimestamp = ethers.constants.MaxUint256.toString();
 
     const res: GetRoundOverviewResult = await graphql_fetch(
       query,
@@ -118,17 +118,10 @@ function getActiveChainIds() {
 
 export async function getRoundsInApplicationPhase(
   debugModeEnabled: boolean
-): Promise<{
-  isLoading: boolean;
-  error: unknown;
-  rounds: RoundOverview[];
-}> {
-  try {
-    const chainIds = getActiveChainIds();
+): Promise<RoundOverview[]> {
+  const chainIds = getActiveChainIds();
 
-    const rounds: RoundOverview[] = [];
-
-    const query = `
+  const query = `
       query GetRoundsInApplicationPhase($currentTimestamp: String, $infiniteTimestamp: String) {
         rounds(where:
           { and: [
@@ -164,41 +157,21 @@ export async function getRoundsInApplicationPhase(
       }
     `;
 
-    for (let i = 0; i < chainIds.length; i++) {
-      const roundsForChainId = await fetchRoundsByTimestamp(
-        query,
-        chainIds[i],
-        debugModeEnabled
-      );
-      rounds.push(...roundsForChainId);
-    }
+  const rounds = await Promise.all(
+    chainIds.map((chainId) =>
+      fetchRoundsByTimestamp(query, chainId, debugModeEnabled)
+    )
+  );
 
-    return {
-      isLoading: false,
-      error: undefined,
-      rounds,
-    };
-  } catch (error) {
-    console.error("getRoundsInApplicationPhase", error);
-    return {
-      isLoading: false,
-      error,
-      rounds: [],
-    };
-  }
+  return rounds.flat();
 }
 
-export async function getActiveRounds(debugModeEnabled: boolean): Promise<{
-  isLoading: boolean;
-  error: unknown;
-  rounds: RoundOverview[];
-}> {
-  try {
-    let isLoading = true;
-    const chainIds = getActiveChainIds();
-    const rounds: RoundOverview[] = [];
+export async function getActiveRounds(
+  debugModeEnabled: boolean
+): Promise<RoundOverview[]> {
+  const chainIds = getActiveChainIds();
 
-    const query = `
+  const query = `
       query GetActiveRounds($currentTimestamp: String) {
         rounds(where: {
           roundStartTime_lt: $currentTimestamp
@@ -229,29 +202,11 @@ export async function getActiveRounds(debugModeEnabled: boolean): Promise<{
       }
     `;
 
-    for (let i = 0; i < chainIds.length; i++) {
-      const roundsForChainId = await fetchRoundsByTimestamp(
-        query,
-        chainIds[i],
-        debugModeEnabled
-      );
-      rounds.push(...roundsForChainId);
-    }
+  const rounds = await Promise.all(
+    chainIds.map((chainId) =>
+      fetchRoundsByTimestamp(query, chainId, debugModeEnabled)
+    )
+  );
 
-    const error = undefined;
-    isLoading = false;
-
-    return {
-      isLoading,
-      error,
-      rounds,
-    };
-  } catch (error) {
-    console.error("getActiveRounds", error);
-    return {
-      isLoading: false,
-      error,
-      rounds: [],
-    };
-  }
+  return rounds.flat();
 }

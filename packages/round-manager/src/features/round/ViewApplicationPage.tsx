@@ -292,9 +292,18 @@ export default function ViewApplicationPage() {
 
               const response = await fetch(base64EncryptedString);
               const encryptedString: Blob = await response.blob();
+              let fixedChainName = chain.name;
+              switch (fixedChainName.toLowerCase()) {
+                case "pgn":
+                  fixedChainName = "publicGoodsNetwork";
+                  break;
 
+                case "arbitrum one":
+                  fixedChainName = "arbitrum";
+                  break;
+              }
               const lit = new Lit({
-                chain: chain.name.toLowerCase(),
+                chain: fixedChainName.toLowerCase(),
                 contract: utils.getAddress(roundId),
               });
 

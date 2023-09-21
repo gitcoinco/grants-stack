@@ -1,7 +1,5 @@
 type NoRoundsProps = {
-  className?: string;
-  children?: React.ReactNode;
-  type: string;
+  type: "apply" | "active";
 };
 
 const NoRounds = (props: NoRoundsProps) => {
@@ -44,8 +42,6 @@ const NoRounds = (props: NoRoundsProps) => {
           </p>
         </div>
       );
-    default:
-      return null;
   }
 };
 

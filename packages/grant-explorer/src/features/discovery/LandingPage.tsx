@@ -1,5 +1,5 @@
 import Footer from "common/src/components/Footer";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import {
   getActiveRounds,
   getRoundsInApplicationPhase,
@@ -10,7 +10,7 @@ import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
-
+import useSWR from "swr";
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 
 const LandingPage = () => {
@@ -34,25 +34,28 @@ const LandingPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
-  
+
   const filterGrantRoundByType = () => {
     const getGrantRoundType = (type: string) => {
       return type === "round_type_direct"
         ? ROUND_PAYOUT_DIRECT
         : ROUND_PAYOUT_MERKLE;
-    }
+    };
     if (type === "round_type_all") {
       setActiveRounds(allActiveRounds);
     }
     if (type !== "round_type_all") {
       const filterType = getGrantRoundType(type);
       const filteredRounds = allActiveRounds.filter((round: RoundOverview) => {
-        return round.payoutStrategy && round.payoutStrategy.strategyName === filterType
+        return (
+          round.payoutStrategy &&
+          round.payoutStrategy.strategyName === filterType
+        );
       });
       setActiveRounds(filteredRounds);
       if (searchQuery) setSearchQuery("");
     }
-  }
+  };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -113,25 +116,21 @@ const LandingPage = () => {
 
   // Fetch rounds in application phase
   useEffect(() => {
-    const fetchRoundsInApplicationPhase = async () => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { isLoading, error, rounds } = await getRoundsInApplicationPhase(
-          debugModeEnabled
-        );
-        setRoundsInApplicationPhase(rounds);
-        setApplyRoundsLoading(isLoading);
-      } catch (error) {
-        setApplyRoundsLoading(false);
-      }
-    };
-    fetchRoundsInApplicationPhase();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (process.env.REACT_APP_ENV === "production") {
+      window.location.replace("https://grants.gitcoin.co");
+    }
   }, []);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { isLoading: activeRoundsLoading, data: activeRounds } =
+    useActiveRounds();
+
+  const { isLoading: applyRoundsLoading, data: roundsInApplicationPhase } =
+    useRoundsInApplicationPhase();
   return (
     <>
-      <Navbar roundUrlPath={"/"} showWalletInteraction={true} />
+      <Navbar showWalletInteraction={true} />
       <div className=" mx-auto pt-8">
         <main>
           <Suspense
@@ -139,7 +138,7 @@ const LandingPage = () => {
               <div
                 style={{
                   width: "100%",
-                  height: "560px",
+                  height: "582px",
                 }}
               />
             }
@@ -158,7 +157,10 @@ const LandingPage = () => {
               isLoading={activeRoundsLoading}
               setSearchQuery={setSearchQuery}
               setRoundType={setType}
-              roundOverview={activeRounds}
+              roundOverview={filterProjectsByTitle(
+                activeRounds ?? [],
+                searchQuery
+              )}
               searchQuery={searchQuery}
             />
           </div>
@@ -169,6 +171,32 @@ const LandingPage = () => {
       </div>
     </>
   );
+};
+
+const filterProjectsByTitle = (rounds: RoundOverview[], query: string) => {
+  // filter by exact title matches first
+  // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
+
+  if (query.trim() === "") {
+    return rounds;
+  }
+
+  const exactMatches = rounds.filter(
+    (round) =>
+      round.roundMetadata?.name?.toLocaleLowerCase() ===
+      query.toLocaleLowerCase()
+  );
+
+  const nonExactMatches = rounds.filter(
+    (round) =>
+      round.roundMetadata?.name
+        ?.toLocaleLowerCase()
+        .includes(query.toLocaleLowerCase()) &&
+      round.roundMetadata?.name?.toLocaleLowerCase() !==
+        query.toLocaleLowerCase()
+  );
+
+  return [...exactMatches, ...nonExactMatches];
 };
 
 export default LandingPage;

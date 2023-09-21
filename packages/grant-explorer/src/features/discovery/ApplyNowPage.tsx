@@ -3,7 +3,10 @@ const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 import { RoundOverview, getRoundsInApplicationPhase } from "../api/rounds";
 import Breadcrumb from "../common/Breadcrumb";
 import Navbar from "../common/Navbar";
-import SearchInput, { GrantRoundTypeFilterDropdown, SortFilterDropdown } from "../common/SearchInput";
+import SearchInput, {
+  GrantRoundTypeFilterDropdown,
+  SortFilterDropdown,
+} from "../common/SearchInput";
 import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
@@ -45,33 +48,38 @@ const ApplyNowPage = () => {
     // Return the sorted array
     return rounds;
   }
-  
+
   useEffect(() => {
     if (type) {
       filterGrantRoundByType();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
-  
+
   const filterGrantRoundByType = () => {
     const getGrantRoundType = (type: string) => {
       return type === "round_type_direct"
         ? ROUND_PAYOUT_DIRECT
         : ROUND_PAYOUT_MERKLE;
-    }
+    };
     if (type === "round_type_all") {
       setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
     }
     if (type !== "round_type_all") {
       const filterType = getGrantRoundType(type);
-      const filteredRounds = roundsInApplicationPhase.filter((round: RoundOverview) => {
-        return round.payoutStrategy && round.payoutStrategy.strategyName === filterType
-      });
+      const filteredRounds = roundsInApplicationPhase.filter(
+        (round: RoundOverview) => {
+          return (
+            round.payoutStrategy &&
+            round.payoutStrategy.strategyName === filterType
+          );
+        }
+      );
       setFilteredRoundsInApplicationPhase(filteredRounds);
       if (searchQuery) setSearchQuery("");
     }
-  }
-  
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     // filterGrantRoundByType(roundsInApplicationPhase, type);
@@ -92,7 +100,12 @@ const ApplyNowPage = () => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
 
-    const exactMatches = filteredRoundsInApplicationPhase?.filter(
+    if (query.trim() === "") {
+      setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
+      return;
+    }
+
+    const exactMatches = roundsInApplicationPhase?.filter(
       (round) =>
         round.roundMetadata?.name?.toLocaleLowerCase() ===
         query.toLocaleLowerCase()
@@ -120,16 +133,12 @@ const ApplyNowPage = () => {
   // Fetch rounds in application phase
   useEffect(() => {
     const fetchRoundsInApplicationPhase = async () => {
-      const { isLoading, error, rounds } = await getRoundsInApplicationPhase(
-        debugModeEnabled
-      );
+      const rounds = await getRoundsInApplicationPhase(debugModeEnabled);
       setRoundsInApplicationPhase(rounds);
       setFilteredRoundsInApplicationPhase(rounds);
-      setApplyRoundsLoading(isLoading);
+      setApplyRoundsLoading(false);
       console.log("Rounds in Application Phase: ", {
         roundsInApplicationPhase,
-        isLoading,
-        error,
       });
     };
     fetchRoundsInApplicationPhase();
@@ -150,7 +159,7 @@ const ApplyNowPage = () => {
 
   return (
     <>
-      <Navbar roundUrlPath={"/"} showWalletInteraction={false} />
+      <Navbar showWalletInteraction={false} />
       <Suspense
         fallback={
           <div
@@ -181,9 +190,8 @@ const ApplyNowPage = () => {
             <GrantRoundTypeFilterDropdown
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e: { target: { value: any } }) => {
-                setType(e.target.value)
-              }
-              }
+                setType(e.target.value);
+              }}
             />
             <SortFilterDropdown
               // eslint-disable-next-line @typescript-eslint/no-explicit-any

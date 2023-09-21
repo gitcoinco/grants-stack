@@ -10,7 +10,7 @@ import {
 import { ChainId, RedstoneTokenIds } from "common";
 
 // NB: number keys are coerced into strings for JS object keys
-export const CHAINS: Record<number, Program["chain"]> = {
+export const CHAINS: Record<ChainId, Program["chain"]> = {
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
     name: "Mainnet", // TODO get canonical network names
@@ -41,6 +41,21 @@ export const CHAINS: Record<number, Program["chain"]> = {
     name: "PGN Testnet",
     logo: "/logos/pgn-logo.svg",
   },
+  [ChainId.PGN]: {
+    id: ChainId.PGN_TESTNET,
+    name: "PGN",
+    logo: "/logos/pgn-logo.svg",
+  },
+  [ChainId.ARBITRUM]: {
+    id: ChainId.ARBITRUM,
+    name: "Arbitrum",
+    logo: "/logos/arb-logo.svg",
+  },
+  [ChainId.ARBITRUM_GOERLI]: {
+    id: ChainId.ARBITRUM_GOERLI,
+    name: "Arbitrum Goerli",
+    logo: "/logos/arb-logo.svg",
+  },
 };
 
 export type PayoutToken = {
@@ -59,13 +74,17 @@ export type SupportType = {
   default: boolean;
 };
 
-export const TokenNamesAndLogos: Record<string, string> = {
+export const TokenNamesAndLogos = {
   FTM: "/logos/fantom-logo.svg",
   BUSD: "/logos/busd-logo.svg",
   DAI: "/logos/dai-logo.svg",
+  USDC: "./logos/usdc-logo.svg",
   ETH: "/logos/ethereum-eth-logo.svg",
   OP: "/logos/optimism-logo.svg",
-};
+  ARB: "/logos/arb-logo.svg",
+  GCV: "/logos/gcv.svg",
+  GTC: "/logos/gtc.svg",
+} as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -138,6 +157,14 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
+  {
+    name: "GcV",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: "0x83791638da5EB2fAa432aff1c65fbA47c5D29510",
+    decimal: 18,
+    logo: TokenNamesAndLogos["GCV"],
+    redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI for the price
+  },
 ];
 
 const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
@@ -176,6 +203,14 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
+  {
+    name: "FTM",
+    chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
+  },
 ];
 
 const PGN_TESTNET_TOKENS: PayoutToken[] = [
@@ -195,6 +230,63 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const PGN_MAINNET_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "GTC",
+    chainId: ChainId.PGN,
+    address: "0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2",
+    decimal: 18,
+    logo: TokenNamesAndLogos["GTC"],
+    redstoneTokenId: RedstoneTokenIds["GTC"],
+  },
+];
+
+const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM_GOERLI,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+];
+
+const ARBITRUM_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.ARBITRUM,
+    address: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+  },
+  {
+    name: "ARB",
+    chainId: ChainId.ARBITRUM,
+    address: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    decimal: 18,
+    logo: TokenNamesAndLogos["ARB"],
+    redstoneTokenId: RedstoneTokenIds["ARB"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -202,6 +294,9 @@ export const payoutTokens = [
   ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
+  ...PGN_MAINNET_TOKENS,
+  ...ARBITRUM_TOKENS,
+  ...ARBITRUM_GOERLI_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -303,6 +398,17 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           decimal: 18,
         },
       ];
+    case ChainId.PGN:
+      return PGN_MAINNET_TOKENS;
+
+    case ChainId.ARBITRUM_GOERLI:
+      return payoutTokens.filter(
+        (token) => token.chainId === ChainId.ARBITRUM_GOERLI
+      );
+
+    case ChainId.ARBITRUM:
+      return payoutTokens.filter((token) => token.chainId === ChainId.ARBITRUM);
+
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       return [

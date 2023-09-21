@@ -9,6 +9,7 @@ import {
   FTMTestnet,
   OPIcon,
   WhiteEthIconFilledCircle,
+  ARBIcon,
 } from "../assets";
 import { ChainName, chains } from "../contracts/deployments";
 
@@ -33,6 +34,9 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   optimism: "Optimism",
   localhost: "Localhost",
   pgnTestnet: "PGN Testnet",
+  pgn: "PGN",
+  arbitrum: "Arbitrum",
+  arbitrumGoerli: "Arbitrum Goerli",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -42,7 +46,10 @@ export const networkIcon: { [key in ChainName]: string } = {
   fantom: FantomFTMLogo,
   optimism: OPIcon,
   pgnTestnet: PGNIcon,
+  pgn: PGNIcon,
   localhost: EthDiamondGlyph,
+  arbitrum: ARBIcon,
+  arbitrumGoerli: ARBIcon,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -52,7 +59,10 @@ export const payoutIcon: { [key in ChainName]: string } = {
   fantom: FantomFTMLogo,
   optimism: OPIcon,
   pgnTestnet: PGNIcon,
+  pgn: PGNIcon,
   localhost: EthDiamondGlyph,
+  arbitrumGoerli: ARBIcon,
+  arbitrum: ARBIcon,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {

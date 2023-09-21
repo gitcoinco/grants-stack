@@ -1,18 +1,18 @@
 import { fireEvent, screen } from "@testing-library/react";
-import { renderWrapped } from "../../../test-utils";
+import { renderWithContext } from "../../../test-utils";
 import ConfirmationModal from "../ConfirmationModal";
 
 describe("<ConfirmationModal />", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should display the modal when isOpen is true", () => {
-    renderWrapped(
+    renderWithContext(
       <ConfirmationModal
         isOpen
-        setIsOpen={jest.fn()}
-        confirmButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        confirmButtonAction={vi.fn()}
       />
     );
 
@@ -20,11 +20,11 @@ describe("<ConfirmationModal />", () => {
   });
 
   it("should not display the modal when isOpen is false", () => {
-    renderWrapped(
+    renderWithContext(
       <ConfirmationModal
         isOpen={false}
-        setIsOpen={jest.fn()}
-        confirmButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        confirmButtonAction={vi.fn()}
       />
     );
 
@@ -32,12 +32,12 @@ describe("<ConfirmationModal />", () => {
   });
 
   it("should close the modal by default when cancel button is clicked", () => {
-    const setIsOpen = jest.fn();
-    renderWrapped(
+    const setIsOpen = vi.fn();
+    renderWithContext(
       <ConfirmationModal
         isOpen
         setIsOpen={setIsOpen}
-        confirmButtonAction={jest.fn()}
+        confirmButtonAction={vi.fn()}
       />
     );
 
@@ -49,12 +49,12 @@ describe("<ConfirmationModal />", () => {
   });
 
   it("should execute cancelButtonAction when cancelButtonAction is provided and cancel button is clicked", () => {
-    const cancelButtonAction = jest.fn();
-    renderWrapped(
+    const cancelButtonAction = vi.fn();
+    renderWithContext(
       <ConfirmationModal
         isOpen
-        setIsOpen={jest.fn()}
-        confirmButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        confirmButtonAction={vi.fn()}
         cancelButtonAction={cancelButtonAction}
       />
     );
@@ -66,11 +66,11 @@ describe("<ConfirmationModal />", () => {
   });
 
   it("should execute confirmButtonAction when confirm button is clicked", () => {
-    const confirmButtonAction = jest.fn();
-    renderWrapped(
+    const confirmButtonAction = vi.fn();
+    renderWithContext(
       <ConfirmationModal
         isOpen
-        setIsOpen={jest.fn()}
+        setIsOpen={vi.fn()}
         confirmButtonAction={confirmButtonAction}
       />
     );
@@ -83,11 +83,11 @@ describe("<ConfirmationModal />", () => {
 
   it("should display custom text for button that executes confirmButtonAction when confirmButtonText is provided in props", () => {
     const confirmButtonText = "My Cool Button";
-    const confirmButtonAction = jest.fn();
-    renderWrapped(
+    const confirmButtonAction = vi.fn();
+    renderWithContext(
       <ConfirmationModal
         isOpen
-        setIsOpen={jest.fn()}
+        setIsOpen={vi.fn()}
         confirmButtonAction={confirmButtonAction}
         confirmButtonText={confirmButtonText}
       />
@@ -103,11 +103,11 @@ describe("<ConfirmationModal />", () => {
 
   it("should display custom title text when title is provided in props", () => {
     const modalTitle = "My cool modal";
-    renderWrapped(
+    renderWithContext(
       <ConfirmationModal
         isOpen={true}
-        setIsOpen={jest.fn()}
-        confirmButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        confirmButtonAction={vi.fn()}
         title={modalTitle}
       />
     );
@@ -118,11 +118,11 @@ describe("<ConfirmationModal />", () => {
   it("should render body element inside the modal if provided in props", () => {
     const testId = "modal-body";
     const body = <div data-testid={testId} />;
-    renderWrapped(
+    renderWithContext(
       <ConfirmationModal
         isOpen={true}
-        setIsOpen={jest.fn()}
-        confirmButtonAction={jest.fn()}
+        setIsOpen={vi.fn()}
+        confirmButtonAction={vi.fn()}
         body={body}
       />
     );

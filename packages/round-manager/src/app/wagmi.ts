@@ -15,9 +15,11 @@ import {
   goerli,
   optimism,
   Chain,
+  arbitrum,
+  arbitrumGoerli,
 } from "wagmi/chains";
 
-import { pgnTestnet } from "common/src/chains";
+import { pgn, pgnTestnet } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -27,11 +29,18 @@ const testnetChains = () => {
     goerli,
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
+    arbitrumGoerli,
   ];
 };
 
 const mainnetChains = () => {
-  return [mainnet, optimism, { ...fantom, iconUrl: "/logos/fantom-logo.svg" }];
+  return [
+    mainnet,
+    optimism,
+    pgn,
+    arbitrum,
+    { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
+  ];
 };
 
 const allChains: Chain[] =

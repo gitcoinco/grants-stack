@@ -1,5 +1,10 @@
 import { Outlet, useOutletContext } from "react-router-dom";
-import { useAccount, useNetwork, useProvider, useSigner } from "wagmi";
+import {
+  useAccount,
+  useNetwork,
+  usePublicClient,
+  useWalletClient,
+} from "wagmi";
 
 import { Web3Instance } from "../api/types";
 import { Spinner } from "./Spinner";
@@ -12,8 +17,8 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 export default function Auth() {
   const { address, isConnected, isConnecting } = useAccount();
   const { chain } = useNetwork();
-  const { data: signer } = useSigner();
-  const provider = useProvider();
+  const { data: signer } = useWalletClient();
+  const provider = usePublicClient();
 
   const data = {
     address,

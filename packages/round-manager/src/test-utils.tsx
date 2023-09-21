@@ -1,13 +1,10 @@
 import { faker } from "@faker-js/faker";
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
 import { BigNumber, ethers } from "ethers";
 import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
-import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { store } from "./app/store";
 import {
   ApplicationContext,
   ApplicationState,
@@ -402,13 +399,7 @@ export const makeProjectCredentials = (
 };
 
 export const renderWrapped = (ui: JSX.Element) => {
-  render(
-    <Provider store={store}>
-      <ReduxRouter store={store} history={history}>
-        {ui}
-      </ReduxRouter>
-    </Provider>
-  );
+  render(<MemoryRouter>{ui}</MemoryRouter>);
 };
 
 // TODO finish and replace other renderWrapped function @vacekj

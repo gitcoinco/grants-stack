@@ -201,7 +201,6 @@ export const submitApplication =
     const project: Project = metadataToProject(projectMetadata, 0);
 
     const { chainID } = state.web3;
-    const chainName = chains[chainID!];
     if (chainID === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
@@ -211,6 +210,7 @@ export const submitApplication =
       );
       return;
     }
+    const chainName = chains[chainID];
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
@@ -221,13 +221,23 @@ export const submitApplication =
     let application: RoundApplication;
     let deterministicApplication: string;
 
+    let chain: string = "";
+
+    if (chainName === "mainnet") {
+      chain = "ethereum";
+    } else if (chainName === "pgn") {
+      chain = "publicGoodsNetwork";
+    } else {
+      chain = chainName;
+    }
+
     try {
       const builder = new RoundApplicationBuilder(
         true,
         project,
         roundApplicationMetadata,
         roundAddress,
-        chainName === "mainnet" ? "ethereum" : chainName // lit wants "ethereum" for mainnet
+        chain
       );
 
       application = await builder.build(roundAddress, formInputs);

@@ -1,51 +1,50 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { useCart } from "../../context/CartContext";
+import { useNavigate } from "react-router-dom";
+import { RoundsSubNav } from "../discovery/RoundsSubNav";
 import NavbarCart from "./NavbarCart";
-import { useParams } from "react-router-dom";
-import { reloadPageOnLocalStorageEvent } from "../api/LocalStorage";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
+import { useCartStorage } from "../../store";
+import { Link } from "react-router-dom";
 
 export interface NavbarProps {
-  roundUrlPath: string;
   customBackground?: string;
-  isBeforeRoundEndDate?: boolean;
   showWalletInteraction?: boolean;
 }
 
 export default function Navbar(props: NavbarProps) {
-  const [cart] = useCart();
-  const showWalletInteraction = props.showWalletInteraction ?? true;
-  const currentOrigin = window.location.origin;
+  /** This part keeps the store in sync between tabs */
+  const store = useCartStorage();
+  const navigate = useNavigate();
 
-  const { roundId } = useParams();
-  const { address: walletAddress } = useAccount();
+  const updateStore = () => {
+    useCartStorage.persist.rehydrate();
+  };
 
   useEffect(() => {
-    if (!roundId) {
-      return;
-    }
-    const storageEventHandler = (event: StorageEvent) =>
-      reloadPageOnLocalStorageEvent(roundId, event);
-
-    window.addEventListener("storage", storageEventHandler);
-
-    // Clean up the event listener when the component unmounts
+    document.addEventListener("visibilitychange", updateStore);
+    window.addEventListener("focus", updateStore);
     return () => {
-      window.removeEventListener("storage", storageEventHandler);
+      document.removeEventListener("visibilitychange", updateStore);
+      window.removeEventListener("focus", updateStore);
     };
-  }, [roundId]);
+  }, []);
+  /** end of part that keeps the store in sync between tabs */
+
+  const showWalletInteraction = props.showWalletInteraction ?? true;
+
+  const { address: walletAddress } = useAccount();
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <a
-              href={`${currentOrigin}#${props.roundUrlPath}`}
+            <Link
+              to={"/"}
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
@@ -54,7 +53,7 @@ export default function Navbar(props: NavbarProps) {
                 <span className="mx-6 text-grey-400">|</span>
                 <GrantsExplorerLogo className="lg:inline-block md:inline-block" />
               </div>
-            </a>
+            </Link>
           </div>
           <div className="flex items-center gap-6">
             {showWalletInteraction && (
@@ -65,28 +64,35 @@ export default function Navbar(props: NavbarProps) {
                 >
                   <ConnectButton
                     showBalance={false}
-                    chainStatus={{ largeScreen: "icon", smallScreen: "icon" }}
+                    accountStatus={{
+                      smallScreen: "avatar",
+                      largeScreen: "full",
+                    }}
+                    chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
                   />
                 </div>
               </div>
             )}
             {walletAddress && (
               <div>
-                <a
-                  href={`${currentOrigin}#/contributors/${walletAddress}`}
+                <Link
+                  to={`/contributors/${walletAddress}`}
                   className="flex-shrink-0 flex items-center"
                   data-testid={"contributions-link"}
                 >
                   <UserCircleIcon className="h-8 w-8" />
-                </a>
+                </Link>
               </div>
             )}
-            {props.isBeforeRoundEndDate && (
-              <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
-            )}
+            <NavbarCart cart={store.projects} />
           </div>
         </div>
       </div>
+      <RoundsSubNav
+        onClick={(round) => {
+          navigate(`/round/${round.chainId}/${round.id}`);
+        }}
+      />
     </nav>
   );
 }
