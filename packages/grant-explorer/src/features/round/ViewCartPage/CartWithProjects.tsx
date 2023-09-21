@@ -1,10 +1,10 @@
 import {
   CHAINS,
-  getPayoutTokenOptions,
+  getVotingTokenOptions,
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
 import React, { useEffect, useState } from "react";
-import { PayoutToken } from "../../api/types";
+import { VotingToken } from "../../api/types";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
@@ -27,7 +27,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
 
   const { chainToPayoutToken, setPayoutTokenForChain } = useCartStorage();
   const selectedPayoutToken = chainToPayoutToken[chainId];
-  const payoutTokenOptions: PayoutToken[] = getPayoutTokenOptions(
+  const payoutTokenOptions: VotingToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
 
@@ -44,9 +44,9 @@ export function CartWithProjects({ cart, chainId }: Props) {
   useEffect(() => {
     setPayoutTokenForChain(
       chainId,
-      getPayoutTokenOptions(chainId).find(
+      getVotingTokenOptions(chainId).find(
         (token) => token.address === selectedPayoutToken.address
-      ) ?? getPayoutTokenOptions(chainId)[0]
+      ) ?? getVotingTokenOptions(chainId)[0]
     );
     /* We only want this to happen on first render */
     // eslint-disable-next-line react-hooks/exhaustive-deps

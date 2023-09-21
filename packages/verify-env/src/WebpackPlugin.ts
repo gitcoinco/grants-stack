@@ -1,12 +1,12 @@
 import { verify } from "./verify.ts";
 export class VerifyEnvPlugin {
-  private readonly srcPath: string;
-  constructor(srcPath: string = "src/") {
-    this.srcPath = srcPath;
+  private readonly srcPaths: string[];
+  constructor(srcPath: string[] = ["src/", "../common/src"]) {
+    this.srcPaths = srcPath;
   }
   apply(compiler: any) {
     compiler.hooks.run.tap("VerifyEnvPlugin", () => {
-      return verify(this.srcPath);
+      return verify(this.srcPaths);
     });
   }
 }

@@ -18,7 +18,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
-import { CHAINS, payoutTokens } from "../api/utils";
+import { CHAINS, votingTokens } from "../api/utils";
 
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -217,7 +217,7 @@ function AfterRoundStart(props: {
     chainId: Number(props.chainId),
   });
 
-  const nativePayoutToken = payoutTokens.find(
+  const nativePayoutToken = votingTokens.find(
     (t) =>
       t.chainId === Number(props.chainId) &&
       t.address === getAddress(props.round.token)
@@ -580,7 +580,7 @@ function PreRoundPage(props: {
     chainId: Number(chainId),
   });
 
-  const nativePayoutToken = payoutTokens.find(
+  const nativePayoutToken = votingTokens.find(
     (t) =>
       t.chainId === Number(chainId) &&
       t.address === getAddress(props.round.token)

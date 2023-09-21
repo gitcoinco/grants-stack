@@ -1,12 +1,12 @@
 import { ChainId, useTokenPrice } from "common";
 import React from "react";
-import { PayoutToken } from "../../api/types";
+import { VotingToken } from "../../api/types";
 import { CHAINS } from "../../api/utils";
 import { formatUnits } from "viem";
 
 type SummaryProps = {
   totalDonation: bigint;
-  selectedPayoutToken: PayoutToken;
+  selectedPayoutToken: VotingToken;
   chainId: ChainId;
 };
 

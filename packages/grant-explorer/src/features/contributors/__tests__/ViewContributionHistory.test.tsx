@@ -7,11 +7,11 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { BreadcrumbItem } from "../../common/Breadcrumb";
 import { zeroAddress } from "viem";
-import { PayoutToken } from "../../api/types";
+import { VotingToken } from "../../api/types";
 
 const mockAddress = faker.finance.ethereumAddress();
 
-const mockTokens: Record<string, PayoutToken> = {
+const mockTokens: Record<string, VotingToken> = {
   ETH: {
     name: "Ethereum",
     chainId: 1,
