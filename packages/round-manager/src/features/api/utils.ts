@@ -94,6 +94,7 @@ export const TokenNamesAndLogos = {
   ARB: "/logos/arb-logo.svg",
   GCV: "/logos/gcv.svg",
   GTC: "/logos/gtc.svg",
+  MATIC: "/logos/pol-logo.svg",
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
