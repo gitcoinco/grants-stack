@@ -4,9 +4,12 @@ import {
   getAddress,
   Hex,
   hexToNumber,
+  pad,
   parseAbiParameters,
   parseUnits,
   slice,
+  toHex,
+  TypedDataDomain,
   zeroAddress,
 } from "viem";
 import { CartProject, VotingToken } from "./types";
@@ -164,12 +167,20 @@ export const signPermit2612 = async ({
     ],
   };
 
-  const domainData = {
+  let domainData: TypedDataDomain = {
     name: erc20Name,
     version: permitVersion ?? "1",
     chainId: chainId,
     verifyingContract: contractAddress,
   };
+  if (chainId === 137 && erc20Name === "USD Coin (PoS)") {
+    domainData = {
+      name: erc20Name,
+      version: permitVersion ?? "1",
+      verifyingContract: contractAddress,
+      salt: pad(toHex(137), { size: 32 }),
+    };
+  }
 
   const message = {
     owner: ownerAddress,
