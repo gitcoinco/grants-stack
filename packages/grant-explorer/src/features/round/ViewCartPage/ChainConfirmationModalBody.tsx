@@ -1,5 +1,5 @@
 import React from "react";
-import { CartProject, PayoutToken } from "../../api/types";
+import { CartProject, VotingToken } from "../../api/types";
 import { ChainId } from "common";
 import { CHAINS } from "../../api/utils";
 import { useCartStorage } from "../../../store";
@@ -59,7 +59,7 @@ export function ChainConfirmationModalBody({
 
 type ChainSummaryProps = {
   totalDonation: bigint;
-  selectedPayoutToken: PayoutToken;
+  selectedPayoutToken: VotingToken;
   chainId: ChainId;
   checked: boolean;
   onChange: (checked: boolean) => void;

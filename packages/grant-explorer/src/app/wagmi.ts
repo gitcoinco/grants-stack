@@ -23,10 +23,8 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
   ]
 );
 
-/* TODO: remove hardcoded value once we have environment variables validation */
-const projectId =
-  process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
-  "2685061cae0bcaf2b244446153eda9e1";
+/** We perform environment variable verification at buildtime, so all process.env properties are guaranteed to be strings */
+const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID as string;
 
 const { wallets } = getDefaultWallets({
   appName: "Grant Explorer",
@@ -34,8 +32,6 @@ const { wallets } = getDefaultWallets({
   chains,
 });
 
-// Custom wallet connectors: more can be added by going here:
-// https://www.rainbowkit.com/docs/custom-wallet-list
 const connectors = connectorsForWallets([
   {
     ...wallets,

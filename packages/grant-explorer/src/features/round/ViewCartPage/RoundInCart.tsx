@@ -1,12 +1,12 @@
 import React from "react";
-import { CartProject, PayoutToken } from "../../api/types";
+import { CartProject, VotingToken } from "../../api/types";
 import { useRoundById } from "../../../context/RoundContext";
 import { ProjectInCart } from "./ProjectInCart";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {
     roundCart: CartProject[];
-    selectedPayoutToken: PayoutToken;
+    selectedPayoutToken: VotingToken;
     handleRemoveProjectFromCart: (projectsToRemove: string) => void;
     payoutTokenPrice: number;
   }
