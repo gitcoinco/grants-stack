@@ -310,12 +310,12 @@ const POLYGON_TOKENS: PayoutToken[] = [
 
 const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
   {
-    name: "ETH",
+    name: "MATIC",
     chainId: ChainId.POLYGON_MUMBAI,
     address: ethers.constants.AddressZero,
     decimal: 18,
-    logo: TokenNamesAndLogos["ETH"],
-    redstoneTokenId: RedstoneTokenIds["ETH"],
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
   },
 ];
 

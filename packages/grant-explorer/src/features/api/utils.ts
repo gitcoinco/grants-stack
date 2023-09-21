@@ -348,14 +348,25 @@ const POLYGON_TOKENS: VotingToken[] = [
 
 const POLYGON_MUMBAI_TOKENS: VotingToken[] = [
   {
-    name: "ETH",
+    name: "MATIC",
     chainId: ChainId.POLYGON_MUMBAI,
     address: zeroAddress,
     decimal: 18,
-    logo: TokenNamesAndLogos["ETH"],
-    redstoneTokenId: RedstoneTokenIds["ETH"],
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
     defaultForVoting: true,
     canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.POLYGON,
+    address: "0xe6b8a5cf854791412c1f6efc7caf629f5df1c747",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
+    canVote: true,
+    permitVersion: "2",
   },
 ];
 
