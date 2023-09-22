@@ -79,7 +79,15 @@ if (process.env.REACT_APP_LOCALCHAIN === "true") {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(mainnet, fantom, optimism, pgn, arbitrum, avalanche, polygon);
+  chainsAvailable.push(
+    mainnet,
+    fantom,
+    optimism,
+    pgn,
+    arbitrum,
+    avalanche,
+    polygon
+  );
 } else {
   chainsAvailable.push(
     optimism,
