@@ -331,7 +331,7 @@ const AVALANCHE_TOKENS: PayoutToken[] = [
 const FUJI_TOKENS: PayoutToken[] = [
   {
     name: "AVAX",
-    chainId: ChainId.AVALANCHE,
+    chainId: ChainId.FUJI,
     address: ethers.constants.AddressZero,
     decimal: 18,
     logo: TokenNamesAndLogos["AVAX"],
@@ -339,7 +339,7 @@ const FUJI_TOKENS: PayoutToken[] = [
   },
   {
     name: "USDC",
-    chainId: ChainId.AVALANCHE,
+    chainId: ChainId.FUJI,
     address: "0x5425890298aed601595a70ab815c96711a31bc65",
     decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
