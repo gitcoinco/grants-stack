@@ -4,12 +4,15 @@ import {
   getAddress,
   Hex,
   hexToNumber,
+  pad,
   parseAbiParameters,
   parseUnits,
   slice,
+  toHex,
+  TypedDataDomain,
   zeroAddress,
 } from "viem";
-import { CartProject, PayoutToken } from "./types";
+import { CartProject, VotingToken } from "./types";
 import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
 import { WalletClient } from "wagmi";
@@ -29,7 +32,7 @@ export type PermitType = "dai" | "eip2612";
  *
  * Old DAI permit type is only implemented on Ethereum and Polygon PoS. Check /docs/DAI.md for more info.
  * */
-export const getPermitType = (token: PayoutToken): PermitType => {
+export const getPermitType = (token: VotingToken): PermitType => {
   if (
     /DAI/i.test(token.name) &&
     token.chainId ===
@@ -44,7 +47,7 @@ export const getPermitType = (token: PayoutToken): PermitType => {
 export const voteUsingMRCContract = async (
   walletClient: WalletClient,
   chainId: ChainId,
-  token: PayoutToken,
+  token: VotingToken,
   groupedVotes: Record<string, Hex[]>,
   groupedAmounts: Record<string, bigint>,
   nativeTokenAmount: bigint,
@@ -164,12 +167,20 @@ export const signPermit2612 = async ({
     ],
   };
 
-  const domainData = {
+  let domainData: TypedDataDomain = {
     name: erc20Name,
     version: permitVersion ?? "1",
     chainId: chainId,
     verifyingContract: contractAddress,
   };
+  if (chainId === 137 && erc20Name === "USD Coin (PoS)") {
+    domainData = {
+      name: erc20Name,
+      version: permitVersion ?? "1",
+      verifyingContract: contractAddress,
+      salt: pad(toHex(137), { size: 32 }),
+    };
+  }
 
   const message = {
     owner: ownerAddress,
@@ -246,7 +257,7 @@ export const signPermitDai = async ({
 };
 
 export function encodeQFVotes(
-  donationToken: PayoutToken,
+  donationToken: VotingToken,
   donations: Pick<
     CartProject,
     "amount" | "recipient" | "projectRegistryId" | "applicationIndex"

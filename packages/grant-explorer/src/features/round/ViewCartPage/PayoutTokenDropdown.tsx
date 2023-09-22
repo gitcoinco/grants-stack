@@ -1,4 +1,4 @@
-import { PayoutToken } from "../../api/types";
+import { VotingToken } from "../../api/types";
 import { Listbox, Transition } from "@headlessui/react";
 import { PayoutTokenButton } from "./PayoutTokenButton";
 import React, { Fragment } from "react";
@@ -6,9 +6,9 @@ import { CheckIcon } from "@heroicons/react/24/solid";
 import { classNames } from "common";
 
 export function PayoutTokenDropdown(props: {
-  payoutTokenOptions: PayoutToken[];
-  selectedPayoutToken?: PayoutToken;
-  setSelectedPayoutToken: (payoutToken: PayoutToken) => void;
+  payoutTokenOptions: VotingToken[];
+  selectedPayoutToken?: VotingToken;
+  setSelectedPayoutToken: (payoutToken: VotingToken) => void;
 }) {
   return (
     <div className="mt-1 relative col-span-6 sm:col-span-3">

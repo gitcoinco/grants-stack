@@ -10,7 +10,7 @@ import {
 import { RoundProvider } from "../../context/RoundContext";
 import { faker } from "@faker-js/faker";
 import { MemoryRouter } from "react-router-dom";
-import { getPayoutTokenOptions } from "../api/utils";
+import { getVotingTokenOptions } from "../api/utils";
 
 process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = "12";
 const chainId = 5;
@@ -190,7 +190,7 @@ describe.skip("View Cart Page", () => {
 
       renderWrapped();
 
-      const options = getPayoutTokenOptions(chainId);
+      const options = getVotingTokenOptions(chainId);
       expect(screen.getByTestId("summaryPayoutToken")).toHaveTextContent(
         options[0].name
       );
@@ -359,7 +359,7 @@ describe.skip("View Cart Page", () => {
 
     renderWrapped();
 
-    const options = getPayoutTokenOptions(chainId);
+    const options = getVotingTokenOptions(chainId);
 
     const payoutTokenSelection = screen.getByTestId("payout-token-select");
     fireEvent.click(payoutTokenSelection);

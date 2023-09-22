@@ -56,6 +56,16 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Arbitrum Goerli",
     logo: "/logos/arb-logo.svg",
   },
+  [ChainId.POLYGON]: {
+    id: ChainId.POLYGON,
+    name: "Polygon PoS",
+    logo: "./logos/pol-logo.svg",
+  },
+  [ChainId.POLYGON_MUMBAI]: {
+    id: ChainId.POLYGON_MUMBAI,
+    name: "Polygon Mumbai",
+    logo: "./logos/pol-logo.svg",
+  },
 };
 
 export type PayoutToken = {
@@ -84,6 +94,7 @@ export const TokenNamesAndLogos = {
   ARB: "/logos/arb-logo.svg",
   GCV: "/logos/gcv.svg",
   GTC: "/logos/gtc.svg",
+  MATIC: "/logos/pol-logo.svg",
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -287,6 +298,28 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
   },
 ];
 
+const POLYGON_TOKENS: PayoutToken[] = [
+  {
+    name: "MATIC",
+    chainId: ChainId.POLYGON,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
+  },
+];
+
+const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
+  {
+    name: "MATIC",
+    chainId: ChainId.POLYGON_MUMBAI,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -297,6 +330,8 @@ export const payoutTokens = [
   ...PGN_MAINNET_TOKENS,
   ...ARBITRUM_TOKENS,
   ...ARBITRUM_GOERLI_TOKENS,
+  ...POLYGON_TOKENS,
+  ...POLYGON_MUMBAI_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -408,6 +443,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 
     case ChainId.ARBITRUM:
       return payoutTokens.filter((token) => token.chainId === ChainId.ARBITRUM);
+
+    case ChainId.POLYGON:
+      return payoutTokens.filter((token) => token.chainId === ChainId.POLYGON);
+
+    case ChainId.POLYGON_MUMBAI:
+      return payoutTokens.filter(
+        (token) => token.chainId === ChainId.POLYGON_MUMBAI
+      );
 
     case ChainId.GOERLI_CHAIN_ID:
     default: {
