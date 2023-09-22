@@ -255,11 +255,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               <div className="grid grid-cols-6 gap-6 mb-1">
                 <div className="col-span-6 sm:col-span-3">
                   <div
-                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                      errors.applicationsStartTime
+                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${errors.applicationsStartTime
                         ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    }`}
+                      }`}
                   >
                     <label
                       htmlFor="applicationsStartTime"
@@ -351,15 +350,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
                 <div className="col-span-6 sm:col-span-3">
                   <div
-                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                      errors.applicationsEndTime
+                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${errors.applicationsEndTime
                         ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    } ${
-                      rollingApplications
+                      } ${rollingApplications
                         ? "cursor-not-allowed bg-gray-100"
                         : ""
-                    }`}
+                      }`}
                   >
                     <label
                       htmlFor="applicationsEndTime"
@@ -426,11 +423,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
                   <div
-                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                      errors.roundStartTime
+                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${errors.roundStartTime
                         ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    }`}
+                      }`}
                   >
                     <label
                       htmlFor="roundStartTime"
@@ -489,11 +485,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
                 <div className="col-span-6 sm:col-span-3">
                   <div
-                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                      errors.roundEndTime
+                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${errors.roundEndTime
                         ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
                         : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    }`}
+                      }`}
                   >
                     <label htmlFor="roundEndTime" className="block text-[10px]">
                       End Date
@@ -566,7 +561,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 <p className="text-sm mt-0.5">
                   <a
                     className="text-violet-400 mr-1"
-                    href="https://grant-explorer.gitcoin.co/"
+                    href="https://explorer.gitcoin.co/"
                     target="_blank"
                   >
                     Gitcoin Explorer
@@ -707,11 +702,10 @@ export function SupportTypeButton(props: {
   const { supportType } = props;
   return (
     <Listbox.Button
-      className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
-        props.errors.roundMetadata?.support?.type
+      className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${props.errors.roundMetadata?.support?.type
           ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
           : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-      }`}
+        }`}
       data-testid="support-type-select"
       id={"roundMetadata.support.type"}
     >

@@ -13,6 +13,8 @@ export const chains = {
   421613: "arbitrumGoerli",
   43114: "avalanche",
   43113: "fuji",
+  137: "polygon",
+  80001: "polygonMumbai",
 } as const;
 
 export type ChainName = (typeof chains)[keyof typeof chains];
@@ -67,6 +69,12 @@ export const addresses: DeploymentAddressesMap = {
   },
   fuji: {
     projectRegistry: "0x8918401DD47f1645fF1111D8E513c0404b84d5bB",
+  },
+  polygon: {
+    projectRegistry: "0x5C5E2D94b107C7691B08E43169fDe76EAAB6D48b",
+  },
+  polygonMumbai: {
+    projectRegistry: "0x545B282A50EaeA01A619914d44105437036CbB36",
   },
 };
 

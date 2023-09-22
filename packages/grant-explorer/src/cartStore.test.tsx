@@ -5,10 +5,10 @@ import { ChainId } from "common";
 import {
   ApplicationStatus,
   CartProject,
-  PayoutToken,
+  VotingToken,
 } from "./features/api/types";
 import { makeApprovedProjectData } from "./test-utils";
-import { payoutTokensMap } from "./features/api/utils";
+import { votingTokensMap } from "./features/api/utils";
 
 describe("useCartStorage Zustand store", () => {
   beforeEach(() => {
@@ -65,7 +65,7 @@ describe("useCartStorage Zustand store", () => {
 
   test("should set payout token for a specific chain", () => {
     const chainId: ChainId = ChainId.MAINNET; // Mock ChainId
-    const payoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][0];
+    const payoutToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
 
     useCartStorage.getState().setPayoutTokenForChain(chainId, payoutToken);
 
@@ -121,8 +121,8 @@ describe("useCartStorage Zustand store", () => {
 
   test("should override payout token for a specific chain", () => {
     const chainId: ChainId = ChainId.MAINNET; // Mock ChainId
-    const initialPayoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][0];
-    const newPayoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][1];
+    const initialPayoutToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
+    const newPayoutToken: VotingToken = votingTokensMap[ChainId.MAINNET][1];
 
     useCartStorage
       .getState()
@@ -178,7 +178,7 @@ describe("useCartStorage Zustand store", () => {
 
   test("should handle setting payout token for non-existing chain gracefully", () => {
     const nonExistingChainId = 123123; // Mock a non-existing ChainId
-    const payoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][0];
+    const payoutToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
 
     const initialChainToPayoutToken = {
       ...useCartStorage.getState().chainToPayoutToken,

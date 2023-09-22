@@ -21,6 +21,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
 import PublicGoodsNetworkIcon from "common/src/icons/PublicGoodsNetwork.svg";
+import { polygon, polygonMumbai } from "@wagmi/core/chains";
 
 // RPC keys
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID!;
@@ -78,7 +79,7 @@ if (process.env.REACT_APP_LOCALCHAIN === "true") {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(mainnet, fantom, optimism, pgn, arbitrum, avalanche);
+  chainsAvailable.push(mainnet, fantom, optimism, pgn, arbitrum, avalanche, polygon);
 } else {
   chainsAvailable.push(
     optimism,
@@ -90,6 +91,8 @@ if (process.env.REACT_APP_ENV === "production") {
     pgn,
     arbitrum,
     arbitrumGoerli,
+    polygon,
+    polygonMumbai,
     avalanche,
     avalancheFuji
   );

@@ -27,6 +27,8 @@ const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.ARBITRUM_GOERLI]: "0x0CD135777dEaB6D0Bb150bDB0592aC9Baa4d0871",
   [ChainId.FUJI]: "0x8918401DD47f1645fF1111D8E513c0404b84d5bB",
   [ChainId.AVALANCHE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
+  [ChainId.POLYGON]: "0x5C5E2D94b107C7691B08E43169fDe76EAAB6D48b",
+  [ChainId.POLYGON_MUMBAI]: "0x545B282A50EaeA01A619914d44105437036CbB36",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -60,6 +62,8 @@ const programFactoryMap: ChainIdToStringMap = {
   [ChainId.ARBITRUM_GOERLI]: "0xd39b40aC9279EeeB86FBbDeb2C9acDF16e16cF89",
   [ChainId.FUJI]: "0x862D7F621409cF572f179367DdF1B7144AcE1c76",
   [ChainId.AVALANCHE]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
+  [ChainId.POLYGON]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
+  [ChainId.POLYGON_MUMBAI]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -87,6 +91,8 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.ARBITRUM]: "0xF2a07728107B04266015E67b1468cA0a536956C8",
   [ChainId.FUJI]: "0x3615d870d5B760cea43693ABED70Cd8A9b59b3d8",
   [ChainId.AVALANCHE]: "0x8eC471f30cA797FD52F9D37A47Be2517a7BD6912",
+  [ChainId.POLYGON]: "0x5ab68dCdcA37A1C2b09c5218e28eB0d9cc3FEb03",
+  [ChainId.POLYGON_MUMBAI]: "0xE1c5812e9831bc1d5BDcF50AAEc1a47C4508F3fA",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (chainId: ChainId): Contract => {
@@ -119,6 +125,8 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.ARBITRUM]: "0xC3A195EEa198e74D67671732E1B8F8A23781D735",
   [ChainId.FUJI]: "0xd39b40aC9279EeeB86FBbDeb2C9acDF16e16cF89",
   [ChainId.AVALANCHE]: "0x2AFA4bE0f2468347A2F086c2167630fb1E58b725",
+  [ChainId.POLYGON]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
+  [ChainId.POLYGON_MUMBAI]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (chainId: ChainId): Contract => {
@@ -146,6 +154,8 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.ARBITRUM]: "0x04b194b14532070F5cc8D3A760c9a0957D85ad5B",
   [ChainId.FUJI]: "0x8F8d78f119Aa722453d33d6881f4D400D67D054F",
   [ChainId.AVALANCHE]: "0x27efa1C90e097c980c669AB1a6e326AD4164f1Cb",
+  [ChainId.POLYGON]: "0xD0e19DBF9b896199F35Df255A1bf8dB3C787531c",
+  [ChainId.POLYGON_MUMBAI]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId

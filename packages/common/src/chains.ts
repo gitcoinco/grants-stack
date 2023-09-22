@@ -13,6 +13,8 @@ export enum ChainId {
   ARBITRUM_GOERLI = 421613,
   AVALANCHE = 43114,
   FUJI = 43113,
+  POLYGON = 137,
+  POLYGON_MUMBAI = 80001,
 }
 
 export const pgnTestnet: Chain = {

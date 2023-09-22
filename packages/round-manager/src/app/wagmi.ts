@@ -19,6 +19,8 @@ import {
   arbitrumGoerli,
   avalancheFuji,
   avalanche,
+  polygon,
+  polygonMumbai,
 } from "wagmi/chains";
 
 import { pgn, pgnTestnet } from "common/src/chains";
@@ -32,6 +34,7 @@ const testnetChains = () => {
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
     arbitrumGoerli,
+    polygonMumbai,
     avalancheFuji,
   ];
 };
@@ -43,6 +46,7 @@ const mainnetChains = () => {
     pgn,
     arbitrum,
     avalanche,
+    polygon,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
   ];
 };

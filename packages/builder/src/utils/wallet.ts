@@ -4,6 +4,7 @@ import { ChainId } from "common";
 import { ethers } from "ethers";
 import PGNIcon from "common/src/icons/PublicGoodsNetwork.svg";
 import AVAXIcon from "common/src/icons/AVAX.svg";
+import POLIcon from "common/src/icons/pol-logo.svg";
 import {
   EthDiamondGlyph,
   FantomFTMLogo,
@@ -40,6 +41,8 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   arbitrumGoerli: "Arbitrum Goerli",
   avalanche: "Avalanche",
   fuji: "Fuji (Avalanche Testnet)",
+  polygon: "Polygon PoS",
+  polygonMumbai: "Polygon Mumbai",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -55,6 +58,8 @@ export const networkIcon: { [key in ChainName]: string } = {
   arbitrumGoerli: ARBIcon,
   avalanche: AVAXIcon,
   fuji: AVAXIcon,
+  polygon: POLIcon,
+  polygonMumbai: POLIcon,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -68,6 +73,8 @@ export const payoutIcon: { [key in ChainName]: string } = {
   localhost: EthDiamondGlyph,
   arbitrumGoerli: ARBIcon,
   arbitrum: ARBIcon,
+  polygon: POLIcon,
+  polygonMumbai: POLIcon,
   avalanche: AVAXIcon,
   fuji: AVAXIcon,
 };

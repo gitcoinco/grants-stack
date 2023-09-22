@@ -66,6 +66,16 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Fuji (Avalanche Testnet)",
     logo: "/logos/avax-logo.svg",
   },
+  [ChainId.POLYGON]: {
+    id: ChainId.POLYGON,
+    name: "Polygon PoS",
+    logo: "./logos/pol-logo.svg",
+  },
+  [ChainId.POLYGON_MUMBAI]: {
+    id: ChainId.POLYGON_MUMBAI,
+    name: "Polygon Mumbai",
+    logo: "./logos/pol-logo.svg",
+  },
 };
 
 export type PayoutToken = {
@@ -95,6 +105,7 @@ export const TokenNamesAndLogos = {
   GCV: "/logos/gcv.svg",
   GTC: "/logos/gtc.svg",
   AVAX: "/logos/avax-logo.svg",
+  MATIC: "/logos/pol-logo.svg",
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -336,6 +347,28 @@ const FUJI_TOKENS: PayoutToken[] = [
   },
 ];
 
+const POLYGON_TOKENS: PayoutToken[] = [
+  {
+    name: "MATIC",
+    chainId: ChainId.POLYGON,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
+  },
+];
+
+const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
+  {
+    name: "MATIC",
+    chainId: ChainId.POLYGON_MUMBAI,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -348,6 +381,8 @@ export const payoutTokens = [
   ...ARBITRUM_GOERLI_TOKENS,
   ...AVALANCHE_TOKENS,
   ...FUJI_TOKENS,
+  ...POLYGON_TOKENS,
+  ...POLYGON_MUMBAI_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -459,6 +494,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 
     case ChainId.ARBITRUM:
       return payoutTokens.filter((token) => token.chainId === ChainId.ARBITRUM);
+
+    case ChainId.POLYGON:
+      return payoutTokens.filter((token) => token.chainId === ChainId.POLYGON);
+
+    case ChainId.POLYGON_MUMBAI:
+      return payoutTokens.filter(
+        (token) => token.chainId === ChainId.POLYGON_MUMBAI
+      );
 
     case ChainId.AVALANCHE:
       return payoutTokens.filter(
