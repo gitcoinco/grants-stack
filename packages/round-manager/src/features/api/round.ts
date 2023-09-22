@@ -17,7 +17,6 @@ import {
 } from "./types";
 import { fetchFromIPFS, payoutTokens } from "./utils";
 import { maxDateForUint256 } from "../../constants";
-import { RoundFactory__factory } from "../../types/generated/typechain/factories/RoundFactory__factory";
 
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
@@ -384,7 +383,7 @@ export async function listRounds(
 }
 
 /**
- * Deploys a round by invoking the create function on RoundFactory
+ * Deploys a round by invoking the create funciton on RoundFactory
  *
  * @param round
  * @param signerOrProvider
@@ -397,11 +396,22 @@ export async function deployRoundContract(
 ): Promise<{ transactionBlockNumber: number }> {
   try {
     const chainId = await signerOrProvider.getChainId();
-    const roundFactoryAddress = roundFactoryContract(chainId).address;
-    const roundFactory = RoundFactory__factory.connect(
-      roundFactoryAddress,
+
+    /* Validate and prepare round data*/
+    if (!round.applicationsEndTime) {
+      round.applicationsEndTime = round.roundStartTime;
+    }
+    round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
+
+    const _roundFactoryContract = roundFactoryContract(chainId);
+    const roundFactory = new ethers.Contract(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      _roundFactoryContract.address!,
+      _roundFactoryContract.abi,
       signerOrProvider
     );
+
+    const initAddresses = [round.votingStrategy, round.payoutStrategy.id];
 
     let initRoundTimes: string[] = [];
     const formatDate = (date: Date) => (date.getTime() / 1000).toString();
@@ -436,15 +446,13 @@ export async function deployRoundContract(
       ];
     }
 
-    round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
-    const initAddresses = [round.votingStrategy, round.payoutStrategy.id];
     const initMetaPtr = [round.store, round.applicationStore];
+
     const initRoles = [
       [await signerOrProvider.getAddress()],
       round.operatorWallets,
     ];
 
-    const token = ethers.constants.AddressZero;
     let parsedTokenAmount = ethers.constants.Zero;
 
     if (isQF) {
@@ -465,7 +473,7 @@ export async function deployRoundContract(
       initAddresses,
       initRoundTimes,
       parsedTokenAmount,
-      token,
+      round.token,
       round.feesPercentage || 0,
       round.feesAddress || ethers.constants.AddressZero,
       initMetaPtr,
@@ -494,7 +502,9 @@ export async function deployRoundContract(
     let roundAddress;
 
     if (receipt.events) {
-      const event = receipt.events.find((e) => e.event === "RoundCreated");
+      const event = receipt.events.find(
+        (e: { event: string }) => e.event === "RoundCreated"
+      );
       if (event && event.args) {
         roundAddress = event.args.roundAddress;
       }
