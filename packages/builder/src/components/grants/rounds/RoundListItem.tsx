@@ -231,7 +231,7 @@ export default function RoundListItem({
     props.roundAddress!,
     projectId
   );
-  const explorerUrl = process.env.REACT_APP_EXPLORER_URL;
+  const explorerUrl = process.env.REACT_APP_GRANT_EXPLORER;
 
   // add check for application status
   // const enableStatusButton = () =>
