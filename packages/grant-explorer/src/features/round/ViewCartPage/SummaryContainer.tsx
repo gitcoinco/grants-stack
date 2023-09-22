@@ -90,7 +90,9 @@ export function SummaryContainer() {
           ),
       ])
     );
-  }, [chainToVotingToken, projectsByChain]);
+    /* NB: we want to update the totalDonationsPerChain value based on chainToVotingToken */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getVotingTokenForChain, chainToVotingToken, projectsByChain]);
 
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
