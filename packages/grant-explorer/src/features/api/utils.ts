@@ -381,7 +381,6 @@ const POLYGON_MUMBAI_TOKENS: VotingToken[] = [
   },
 ];
 
-export const votingTokens = [
 const AVALANCHE_TOKENS: VotingToken[] = [
   {
     name: "AVAX",
