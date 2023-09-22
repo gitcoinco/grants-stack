@@ -22,7 +22,8 @@ import { formatUnits, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export function SummaryContainer() {
-  const { projects, chainToPayoutToken: payoutTokens } = useCartStorage();
+  const { projects, getVotingTokenForChain, chainToVotingToken } =
+    useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
 
   const { openConnectModal } = useConnectModal();
@@ -83,13 +84,13 @@ export function SummaryContainer() {
               acc +
               parseUnits(
                 amount ? amount : "0",
-                payoutTokens[Number(key) as ChainId]?.decimal
+                getVotingTokenForChain(Number(key) as ChainId).decimal
               ),
             0n
           ),
       ])
     );
-  }, [payoutTokens, projectsByChain]);
+  }, [chainToVotingToken, projectsByChain]);
 
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
@@ -247,13 +248,13 @@ export function SummaryContainer() {
         Object.keys(totalDonationsPerChain).map((chainId) =>
           getTokenPrice(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            payoutTokens[Number(chainId) as ChainId].redstoneTokenId!
+            getVotingTokenForChain(Number(chainId) as ChainId).redstoneTokenId!
           ).then((price) => {
             return (
               Number(
                 formatUnits(
                   totalDonationsPerChain[chainId],
-                  payoutTokens[Number(chainId) as ChainId].decimal
+                  getVotingTokenForChain(Number(chainId) as ChainId).decimal
                 )
               ) * Number(price)
             );
@@ -284,7 +285,9 @@ export function SummaryContainer() {
           <Summary
             key={chainId}
             chainId={Number(chainId) as ChainId}
-            selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
+            selectedPayoutToken={getVotingTokenForChain(
+              Number(chainId) as ChainId
+            )}
             totalDonation={totalDonationsPerChain[chainId]}
           />
         ))}

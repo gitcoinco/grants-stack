@@ -114,7 +114,8 @@ export const useCheckoutStore = create<CheckoutState>()(
         [chain: number]: CartProject[];
       };
 
-      const payoutTokens = useCartStorage.getState().chainToPayoutToken;
+      const getVotingTokenForChain =
+        useCartStorage.getState().getVotingTokenForChain;
 
       const totalDonationPerChain = Object.fromEntries(
         Object.entries(projectsByChain).map(([key, value]) => [
@@ -126,7 +127,7 @@ export const useCheckoutStore = create<CheckoutState>()(
                 acc +
                 parseUnits(
                   amount ? amount : "0",
-                  payoutTokens[Number(key) as ChainId].decimal
+                  getVotingTokenForChain(Number(key) as ChainId).decimal
                 ),
               0n
             ),
@@ -149,7 +150,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         const wc = await getWalletClient({
           chainId,
         })!;
-        const token = payoutTokens[chainId];
+        const token = getVotingTokenForChain(chainId);
 
         let sig;
         let nonce;
