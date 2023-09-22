@@ -42,7 +42,6 @@ import {
   Round,
 } from "./features/api/types";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
-import history from "./history";
 import moment from "moment";
 import {
   ROUND_PAYOUT_DIRECT,

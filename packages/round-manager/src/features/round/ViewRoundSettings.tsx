@@ -173,7 +173,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 `Must be greater than previous value of ${round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}.`
               ),
             matchingCapAmount: yup.number().when("matchingCap", {
-              is: (val: any) => val === "yes",
+              is: (val: string) => val === "yes",
               then: yup
                 .number()
                 .typeError("Invalid value.")
@@ -187,7 +187,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
             minDonationThresholdAmount: yup
               .number()
               .when("minDonationThreshold", {
-                is: (val: any) => val === "yes",
+                is: (val: string) => val === "yes",
                 then: yup
                   .number()
                   .typeError("Invalid value.")
@@ -1231,6 +1231,7 @@ function RoundApplicationPeriod(props: {
   const { editedRound } = props;
 
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
+  const [applicationEndDate, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
   const [noRoundEndDate, setNoRoundEndDate] = useState(false);
 
@@ -1242,6 +1243,11 @@ function RoundApplicationPeriod(props: {
 
   const disableBeforeApplicationStartDate = (current: moment.Moment) => {
     return current.isAfter(applicationStartDate);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const disableBeforeApplicationEndDate = (current: moment.Moment) => {
+    return current.isAfter(applicationEndDate);
   };
 
   const disableBeforeRoundStartDate = (current: moment.Moment) => {

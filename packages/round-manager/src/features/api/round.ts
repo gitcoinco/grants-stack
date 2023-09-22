@@ -397,7 +397,7 @@ export async function deployRoundContract(
 ): Promise<{ transactionBlockNumber: number }> {
   try {
     const chainId = await signerOrProvider.getChainId();
-    const roundFactoryAddress = roundFactoryContract(chainId);
+    const roundFactoryAddress = roundFactoryContract(chainId).address;
     const roundFactory = RoundFactory__factory.connect(
       roundFactoryAddress,
       signerOrProvider

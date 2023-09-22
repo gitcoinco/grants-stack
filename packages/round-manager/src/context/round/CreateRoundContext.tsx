@@ -191,7 +191,7 @@ const _createRound = async ({
         : dgVotingStrategyDummyContract(chainId),
       payoutStrategy: {
         id: isQF
-          ? merklePayoutStrategyFactoryContract(chainId)
+          ? merklePayoutStrategyFactoryContract(chainId).address
           : directPayoutStrategyFactoryContract(chainId),
         isReadyForPayout: false,
       },

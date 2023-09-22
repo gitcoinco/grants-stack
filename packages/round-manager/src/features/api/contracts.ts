@@ -83,7 +83,9 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.ARBITRUM]: "0xF2a07728107B04266015E67b1468cA0a536956C8",
 };
 /* RoundFactory  */
-export const roundFactoryContract = (chainId: ChainId): Contract => {
+export const roundFactoryContract = (
+  chainId: ChainId
+): Contract & { address: string } => {
   return {
     address: roundFactoryMap[chainId],
     abi: abi.roundFactory,
@@ -113,7 +115,9 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.ARBITRUM]: "0xC3A195EEa198e74D67671732E1B8F8A23781D735",
 };
 /* QuadraticFundingVotingStrategy */
-export const qfVotingStrategyFactoryContract = (chainId: ChainId): Contract => {
+export const qfVotingStrategyFactoryContract = (
+  chainId: ChainId
+): Contract & { address: string } => {
   return {
     address: qfVotingStrategyFactoryMap[chainId],
     abi: abi.qfVotingStrategyFactory,
@@ -172,7 +176,7 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId
-): Contract => {
+): Contract & { address: string } => {
   return {
     address: merklePayoutStrategyFactoryMap[chainId],
     abi: abi.merklePayoutStrategyFactory,
@@ -220,4 +224,35 @@ export const alloSettingsContract = (
     // that's why we are
     abi: [],
   };
+};
+
+export const directPayoutStrategyFactoryContract = (
+  chainId: ChainId | undefined
+): string => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "0x2Bb670C3ffC763b691062d671b386E51Cf1840f0";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "0x9B1Ee60B539a3761E328a621A3d980EE9385679a";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x0077551e24bfB910aBABedC4336246e34B5fB0A2";
+      break;
+    }
+  }
+  return address;
 };
