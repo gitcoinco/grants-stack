@@ -2,7 +2,7 @@ import { ChainId } from "common";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartProject, VotingToken } from "./features/api/types";
-import { payoutTokensMap, votingTokensMap } from "./features/api/utils";
+import { votingTokensMap } from "./features/api/utils";
 import { zeroAddress } from "viem";
 
 interface CartState {
@@ -102,7 +102,7 @@ export const useCartStorage = create<CartState>()(
         const tokenFromStore = get().chainToVotingToken[chainId];
         if (!tokenFromStore) {
           const defaultToken = getDefaultVotingToken(
-            payoutTokensMap[chainId],
+            votingTokensMap[chainId],
             chainId
           );
           console.log(
