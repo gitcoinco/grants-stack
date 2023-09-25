@@ -294,7 +294,7 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      process.env.REACT_APP_SUBGRAPH_GOERLI_API as string,
+      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
       params
     );
     expect(res.data.programs[0]).toEqual({
@@ -328,7 +328,7 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      process.env.REACT_APP_SUBGRAPH_GOERLI_API as string,
+      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
       params
     );
   });
