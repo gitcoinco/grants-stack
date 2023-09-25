@@ -312,7 +312,7 @@ const ARBITRUM_TOKENS: VotingToken[] = [
 const ARBITRUM_GOERLI_TOKENS: VotingToken[] = [
   {
     name: "ETH",
-    chainId: ChainId.PGN,
+    chainId: ChainId.ARBITRUM_GOERLI,
     address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
