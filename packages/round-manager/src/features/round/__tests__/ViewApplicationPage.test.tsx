@@ -7,7 +7,6 @@ import {
 import ViewApplicationPage from "../ViewApplicationPage";
 import {
   act,
-  cleanup,
   fireEvent,
   render,
   screen,

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { fireEvent, render, screen } from "@testing-library/react";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
 import { useBalance, useDisconnect, useSwitchNetwork } from "wagmi";
@@ -67,11 +67,6 @@ const fetchMatchingDistributionMock = jest.spyOn(
 describe("View Fund Grantees", () => {
   // TODO: check default values in base.
   // I've added them to avoid typescript errors.
-  const base = {
-    contributionsCount: 0,
-    applicationId: "0",
-    originalMatchAmountInToken: BigNumber.from(0),
-  };
   const matchingStatsData: MatchingStatsData[] = [
     {
       index: 0,
