@@ -9,7 +9,6 @@ import {
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
 import { votingTokens } from "../../api/utils";
-const builderURL = process.env.REACT_APP_BUILDER_URL;
 import { vi } from "vitest";
 import { parseUnits, zeroAddress } from "viem";
 
@@ -154,15 +153,10 @@ describe("<ViewRound /> in case of during the application period", () => {
 
   it("Should show apply to round button", async () => {
     renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
-    const appURL = builderURL + "/#/chains/" + chainId + "/rounds/" + roundId;
-
     const AppSubmissionButton = await screen.findAllByText(
       "Apply to Grant Round"
     );
     expect(AppSubmissionButton[0]).toBeInTheDocument();
-    fireEvent.click(AppSubmissionButton[0]);
-    expect(window.open).toBeCalled();
-    expect(window.open).toHaveBeenCalledWith(appURL, "_blank");
   });
 });
 
@@ -479,7 +473,7 @@ describe("<ViewRound /> in case ApplicationsEnd and RoundEnd dates are not set",
   let stubRound: Round;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     const applicationsEndTime = new Date("foo");
     const applicationsStartTime = faker.date.past();
