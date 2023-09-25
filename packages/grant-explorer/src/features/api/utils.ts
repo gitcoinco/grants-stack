@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CartProject, IPFSObject, PayoutToken, Round } from "./types";
+import { CartProject, IPFSObject, VotingToken, Round } from "./types";
 import { ChainId, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "../../constants";
@@ -79,7 +79,7 @@ export const TokenNamesAndLogos = {
   ARB: "./logos/arb-logo.svg",
 } as const;
 
-export const MAINNET_TOKENS: PayoutToken[] = [
+export const MAINNET_TOKENS: VotingToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
@@ -102,7 +102,7 @@ export const MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-export const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
+export const OPTIMISM_MAINNET_TOKENS: VotingToken[] = [
   {
     name: "DAI",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
@@ -126,7 +126,7 @@ export const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
+const FANTOM_MAINNET_TOKENS: VotingToken[] = [
   {
     name: "WFTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
@@ -179,7 +179,7 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
+const GOERLI_TESTNET_TOKENS: VotingToken[] = [
   {
     name: "USDC",
     chainId: ChainId.GOERLI_CHAIN_ID,
@@ -213,7 +213,7 @@ const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
+const FANTOM_TESTNET_TOKENS: VotingToken[] = [
   {
     name: "DAI",
     chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
@@ -226,7 +226,7 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const PGN_TESTNET_TOKENS: PayoutToken[] = [
+const PGN_TESTNET_TOKENS: VotingToken[] = [
   {
     name: "TEST",
     chainId: ChainId.PGN_TESTNET,
@@ -249,7 +249,7 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const PGN_MAINNET_TOKENS: PayoutToken[] = [
+const PGN_MAINNET_TOKENS: VotingToken[] = [
   {
     name: "ETH",
     chainId: ChainId.PGN,
@@ -262,7 +262,7 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const ARBITRUM_TOKENS: PayoutToken[] = [
+const ARBITRUM_TOKENS: VotingToken[] = [
   {
     name: "ETH",
     chainId: ChainId.ARBITRUM,
@@ -296,7 +296,7 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
   },
 ];
 
-const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
+const ARBITRUM_GOERLI_TOKENS: VotingToken[] = [
   {
     name: "ETH",
     chainId: ChainId.PGN,
@@ -309,7 +309,7 @@ const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
   },
 ];
 
-export const payoutTokens = [
+export const VotingTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
@@ -321,8 +321,8 @@ export const payoutTokens = [
   ...ARBITRUM_GOERLI_TOKENS,
 ];
 
-type PayoutTokensMap = Record<ChainId, PayoutToken[]>;
-export const payoutTokensMap: PayoutTokensMap = {
+type VotingTokensMap = Record<ChainId, VotingToken[]>;
+export const VotingTokensMap: VotingTokensMap = {
   [ChainId.GOERLI_CHAIN_ID]: GOERLI_TESTNET_TOKENS,
   [ChainId.MAINNET]: MAINNET_TOKENS,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
@@ -334,8 +334,8 @@ export const payoutTokensMap: PayoutTokensMap = {
   [ChainId.ARBITRUM]: ARBITRUM_TOKENS,
 };
 
-export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
-  payoutTokensMap[chainId];
+export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
+  VotingTokensMap[chainId];
 
 const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,

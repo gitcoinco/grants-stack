@@ -205,7 +205,7 @@ export enum ProgressStatus {
   IS_ERROR = "IS_ERROR",
 }
 
-export type PayoutToken = {
+export type VotingToken = {
   name: string;
   chainId: ChainId;
   address: Hex;

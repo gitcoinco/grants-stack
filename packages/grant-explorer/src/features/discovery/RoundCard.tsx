@@ -4,7 +4,7 @@ import {
   getDaysLeft,
   getRoundType,
   isInfiniteDate,
-  payoutTokens,
+  VotingTokens,
 } from "../api/utils";
 import {
   BasicCard,
@@ -31,7 +31,7 @@ const RoundCard = (props: RoundCardProps) => {
     chainId: Number(props.round.chainId),
   });
 
-  const nativePayoutToken = payoutTokens.find(
+  const nativePayoutToken = VotingTokens.find(
     (t) =>
       t.chainId === chainIdEnumValue &&
       t.address === getAddress(props.round.token)
