@@ -1,7 +1,6 @@
 import { ChainId, renderToPlainText, truncateDescription } from "common";
 import { RoundOverview } from "../api/rounds";
 import {
-  ChainId,
   getDaysLeft,
   getRoundType,
   isInfiniteDate,

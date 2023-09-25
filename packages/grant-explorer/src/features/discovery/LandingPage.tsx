@@ -10,23 +10,44 @@ import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 
+export function useActiveRounds() {
+  const debugModeEnabled = useDebugMode();
+  return useSWR(`activeRounds`, () => getActiveRounds(debugModeEnabled));
+}
+
+export function useRoundsInApplicationPhase() {
+  const debugModeEnabled = useDebugMode();
+  return useSWR(`applicationRounds`, () =>
+    getRoundsInApplicationPhase(debugModeEnabled)
+  );
+}
+
 const LandingPage = () => {
+  useEffect(() => {
+    if (process.env.REACT_APP_ENV === "production") {
+      window.location.replace("https://grants.gitcoin.co");
+    }
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState("");
+
+  const { isLoading: activeRoundsLoading, data: activeRounds } =
+    useActiveRounds();
+
+  const { isLoading: applyRoundsLoading, data: roundsInApplicationPhase } =
+    useRoundsInApplicationPhase();
+
   const [type, setType] = useState<string>("round_type_all");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
-    RoundOverview[]
-  >([]);
-  const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]);
   const [allActiveRounds, setAllActiveRounds] = useState<RoundOverview[]>([]);
 
-  const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
-  const [activeRoundsLoading, setActiveRoundsLoading] = useState<boolean>(true);
-
-  const debugModeEnabled = useDebugMode();
+  useEffect(() => {
+    if (activeRounds) {
+      setAllActiveRounds(activeRounds);
+    }
+  }, [activeRounds]);
 
   useEffect(() => {
     if (type) {
@@ -42,7 +63,7 @@ const LandingPage = () => {
         : ROUND_PAYOUT_MERKLE;
     };
     if (type === "round_type_all") {
-      setActiveRounds(allActiveRounds);
+      mutate("activeRounds", allActiveRounds, false);
     }
     if (type !== "round_type_all") {
       const filterType = getGrantRoundType(type);
@@ -52,7 +73,7 @@ const LandingPage = () => {
           round.payoutStrategy.strategyName === filterType
         );
       });
-      setActiveRounds(filteredRounds);
+      mutate("activeRounds", filteredRounds, false);
       if (searchQuery) setSearchQuery("");
     }
   };
@@ -61,7 +82,7 @@ const LandingPage = () => {
   useEffect(() => {
     if (searchQuery) {
       const timeOutId = setTimeout(
-        () => filterProjectsByTitle(searchQuery),
+        () => filterProjectsByTitle(activeRounds ?? [], searchQuery),
         300
       );
       return () => clearTimeout(timeOutId);
@@ -71,63 +92,6 @@ const LandingPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const filterProjectsByTitle = (query: string) => {
-    // filter by exact title matches first
-    // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
-
-    const exactMatches = activeRounds?.filter(
-      (round) =>
-        round.roundMetadata?.name?.toLocaleLowerCase() ===
-        query.toLocaleLowerCase()
-    );
-
-    const nonExactMatches = activeRounds?.filter(
-      (round) =>
-        round.roundMetadata?.name
-          ?.toLocaleLowerCase()
-          .includes(query.toLocaleLowerCase()) &&
-        round.roundMetadata?.name?.toLocaleLowerCase() !==
-          query.toLocaleLowerCase()
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    setActiveRounds([...exactMatches!, ...nonExactMatches!]);
-  };
-
-  // Fetch active rounds
-  useEffect(() => {
-    const fetchActiveRounds = async () => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { isLoading, error, rounds } = await getActiveRounds(
-          debugModeEnabled
-        );
-        setActiveRounds(rounds);
-        setAllActiveRounds(rounds);
-        setActiveRoundsLoading(isLoading);
-      } catch (error) {
-        setActiveRoundsLoading(false);
-      }
-    };
-    fetchActiveRounds();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Fetch rounds in application phase
-  useEffect(() => {
-    if (process.env.REACT_APP_ENV === "production") {
-      window.location.replace("https://grants.gitcoin.co");
-    }
-  }, []);
-
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const { isLoading: activeRoundsLoading, data: activeRounds } =
-    useActiveRounds();
-
-  const { isLoading: applyRoundsLoading, data: roundsInApplicationPhase } =
-    useRoundsInApplicationPhase();
   return (
     <>
       <Navbar showWalletInteraction={true} />
