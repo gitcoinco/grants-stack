@@ -96,7 +96,7 @@ export type Payout = {
   createdAt: string;
 };
 
-const graphQlEndpoints: Record<ChainId, string> = {
+export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
   [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_GOERLI_API!,
   [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,

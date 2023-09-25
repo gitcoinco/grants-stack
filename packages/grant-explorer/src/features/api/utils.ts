@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CartProject, IPFSObject, VotingToken, Round } from "./types";
-import { ChainId, RedstoneTokenIds } from "common";
+import { ChainId, graphQlEndpoints, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "../../constants";
 import { zeroAddress } from "viem";
@@ -336,22 +336,6 @@ export const VotingTokensMap: VotingTokensMap = {
 
 export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
   VotingTokensMap[chainId];
-
-const graphQlEndpoints: Record<ChainId, string> = {
-  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
-  [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_GOERLI_API!,
-  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
-  [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_MAINNET_API!,
-  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API!,
-  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API!,
-  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
-  [ChainId.ARBITRUM_GOERLI]:
-    process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
-  [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
-};
 
 /**
  * Fetch subgraph network for provided web3 network
