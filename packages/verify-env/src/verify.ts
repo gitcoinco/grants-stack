@@ -1,11 +1,13 @@
 import fs from "fs";
 import { globSync } from "glob";
 
-export function verify(srcDir: string = "src/") {
+export function verify(srcDir: string[] = ["src/", "../common/src"]) {
   // Get all source files
   // Extensions to look for
   const extensions = [".ts", ".tsx", ".js", ".jsx"];
-  const files = globSync(`${srcDir}**/*.{ts,tsx,js,jsx}`);
+  const files = srcDir
+    .map((src) => globSync(`${src}**/*.{ts,tsx,js,jsx}`))
+    .flat();
 
   // Initialize an array to store the extracted environment variables
   const envVars: string[] = [];

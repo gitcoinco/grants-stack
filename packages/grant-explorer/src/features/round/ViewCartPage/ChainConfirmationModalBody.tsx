@@ -1,5 +1,5 @@
 import React from "react";
-import { CartProject, PayoutToken } from "../../api/types";
+import { CartProject, VotingToken } from "../../api/types";
 import { ChainId } from "common";
 import { CHAINS } from "../../api/utils";
 import { useCartStorage } from "../../../store";
@@ -32,7 +32,9 @@ export function ChainConfirmationModalBody({
     }
   };
 
-  const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
+  const getVotingTokenForChain = useCartStorage(
+    (state) => state.getVotingTokenForChain
+  );
   return (
     <>
       <p className="text-sm text-grey-400">
@@ -43,7 +45,9 @@ export function ChainConfirmationModalBody({
         {Object.keys(projectsByChain).map((chainId, index) => (
           <ChainSummary
             chainId={Number(chainId) as ChainId}
-            selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
+            selectedPayoutToken={getVotingTokenForChain(
+              Number(chainId) as ChainId
+            )}
             totalDonation={totalDonationsPerChain[Number(chainId)]}
             checked={chainIdsBeingCheckedOut.includes(Number(chainId))}
             onChange={(checked) =>
@@ -59,7 +63,7 @@ export function ChainConfirmationModalBody({
 
 type ChainSummaryProps = {
   totalDonation: bigint;
-  selectedPayoutToken: PayoutToken;
+  selectedPayoutToken: VotingToken;
   chainId: ChainId;
   checked: boolean;
   onChange: (checked: boolean) => void;

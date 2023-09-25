@@ -1,10 +1,10 @@
 import {
   CHAINS,
-  getPayoutTokenOptions,
+  getVotingTokenOptions,
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
 import React, { useEffect, useState } from "react";
-import { PayoutToken } from "../../api/types";
+import { VotingToken } from "../../api/types";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
@@ -25,9 +25,9 @@ export function CartWithProjects({ cart, chainId }: Props) {
 
   const [fixedDonation, setFixedDonation] = useState("");
 
-  const { chainToPayoutToken, setPayoutTokenForChain } = useCartStorage();
-  const selectedPayoutToken = chainToPayoutToken[chainId];
-  const payoutTokenOptions: PayoutToken[] = getPayoutTokenOptions(
+  const { getVotingTokenForChain, setVotingTokenForChain } = useCartStorage();
+  const selectedPayoutToken = getVotingTokenForChain(chainId);
+  const payoutTokenOptions: VotingToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
 
@@ -42,11 +42,11 @@ export function CartWithProjects({ cart, chainId }: Props) {
   /** The payout token data (like permit version etc.) might've changed since the user last visited the page
    * Refresh it to update, default to the first payout token if the previous token was deleted */
   useEffect(() => {
-    setPayoutTokenForChain(
+    setVotingTokenForChain(
       chainId,
-      getPayoutTokenOptions(chainId).find(
+      getVotingTokenOptions(chainId).find(
         (token) => token.address === selectedPayoutToken.address
-      ) ?? getPayoutTokenOptions(chainId)[0]
+      ) ?? getVotingTokenOptions(chainId)[0]
     );
     /* We only want this to happen on first render */
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,7 +83,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
             <PayoutTokenDropdown
               selectedPayoutToken={selectedPayoutToken}
               setSelectedPayoutToken={(token) => {
-                setPayoutTokenForChain(chainId, token);
+                setVotingTokenForChain(chainId, token);
               }}
               payoutTokenOptions={payoutTokenOptions}
             />

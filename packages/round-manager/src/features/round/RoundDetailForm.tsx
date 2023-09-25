@@ -285,7 +285,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   <p>What are the dates for this round? </p>
                 )}
               </div>
-
+              
               {/* Application dates */}
               {roundCategory === RoundCategory.QuadraticFunding && (
                 <>
@@ -396,18 +396,53 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                       </div>
                     </div>
 
-                    {/* Application end date */}
-                    <div className="col-span-6 sm:col-span-3">
-                      <div
-                        className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                          errors.applicationsEndTime
-                            ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                            : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                        } ${
-                          rollingApplications
-                            ? "cursor-not-allowed bg-gray-100"
-                            : ""
-                        }`}
+                <div className="col-span-6 sm:col-span-3">
+                  <div
+                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${errors.applicationsEndTime
+                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                      } ${rollingApplications
+                        ? "cursor-not-allowed bg-gray-100"
+                        : ""
+                      }`}
+                  >
+                    <label
+                      htmlFor="applicationsEndTime"
+                      className="block text-[10px]"
+                    >
+                      End Date
+                    </label>
+                    <Controller
+                      control={control}
+                      name="applicationsEndTime"
+                      render={({ field }) => (
+                        <Datetime
+                          {...field}
+                          closeOnSelect
+                          onChange={(date) => {
+                            setApplicationEndDate(moment(date));
+                            field.onChange(moment(date));
+                          }}
+                          inputProps={{
+                            id: "applicationsEndTime",
+                            placeholder: "",
+                            className:
+                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
+                            disabled: rollingApplications,
+                          }}
+                          isValidDate={disableBeforeApplicationStartDate}
+                          utc={true}
+                          dateFormat={"YYYY-MM-DD"}
+                          timeFormat={"HH:mm UTC"}
+                        />
+                      )}
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
                       >
                         <label
                           htmlFor="applicationsEndTime"
@@ -455,36 +490,33 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           </svg>
                         </div>
                       </div>
-                      {errors.applicationsEndTime && (
-                        <p
-                          className="text-xs text-pink-500"
-                          data-testid="application-end-date-error"
-                        >
-                          {errors.applicationsEndTime?.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Round dates */}
-              <>
-                <p className="text-sm mt-4 mb-2">
-                  Round
-                  <span className="text-right text-violet-400 float-right text-xs mt-1">
-                    *Required
-                  </span>
-                </p>
-                <div className="grid grid-cols-6 gap-6">
-                  {/* Round start date */}
-                  <div className="col-span-6 sm:col-span-3">
-                    <div
-                      className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                        errors.roundStartTime
-                          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                          : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                  {errors.applicationsEndTime && (
+                    <p
+                      className="text-xs text-pink-500"
+                      data-testid="application-end-date-error"
+                    >
+                      {errors.applicationsEndTime?.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <p className="text-sm mt-4 mb-2">
+                Round
+                <span className="text-right text-violet-400 float-right text-xs mt-1">
+                  *Required
+                </span>
+              </p>
+              <div className="grid grid-cols-6 gap-6">
+                <div className="col-span-6 sm:col-span-3">
+                  <div
+                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${errors.roundStartTime
+                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
                       }`}
+                  >
+                    <label
+                      htmlFor="roundStartTime"
+                      className="block text-[10px]"
                     >
                       <label
                         htmlFor="roundStartTime"
@@ -577,21 +609,53 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   </div>
 
                   {/* Round end date */}
-                  <div className="col-span-6 sm:col-span-3">
-                    <div
-                      className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${
-                        errors.roundEndTime
-                          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                          : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                      } ${
-                        isRoundEndTimeDisabled
-                          ? "cursor-not-allowed bg-gray-100"
-                          : ""
+                <div className="col-span-6 sm:col-span-3">
+                  <div
+                    className={`relative border rounded-md px-3 py-2 mb-2 shadow-sm focus-within:ring-1 ${errors.roundEndTime
+                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
                       }`}
-                    >
-                      <label
-                        htmlFor="roundEndTime"
-                        className="block text-[10px]"
+                  >
+                    <label htmlFor="roundEndTime" className="block text-[10px]">
+                      End Date
+                    </label>
+                    <Controller
+                      control={control}
+                      name="roundEndTime"
+                      render={({ field }) => (
+                        <Datetime
+                          {...field}
+                          closeOnSelect
+                          inputProps={{
+                            id: "roundEndTime",
+                            placeholder: "",
+                            className:
+                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                          }}
+                          onChange={(date) => {
+                            field.onChange(moment(date));
+                            setRoundEndDate(moment(date));
+                            if (rollingApplications) {
+                              setApplicationEndDate(moment(date));
+                              setValue(
+                                "applicationsEndTime",
+                                moment(date).toDate()
+                              );
+                            }
+                          }}
+                          isValidDate={disableBeforeRoundStartDate}
+                          utc={true}
+                          dateFormat={"YYYY-MM-DD"}
+                          timeFormat={"HH:mm UTC"}
+                        />
+                      )}
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
                       >
                         End Date
                       </label>
@@ -683,7 +747,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 <p className="text-sm mt-0.5">
                   <a
                     className="text-violet-400 mr-1"
-                    href="https://grant-explorer.gitcoin.co/"
+                    href="https://explorer.gitcoin.co/"
                     target="_blank"
                   >
                     Gitcoin Explorer
@@ -825,11 +889,10 @@ export function SupportTypeButton(props: {
   const { supportType } = props;
   return (
     <Listbox.Button
-      className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
-        props.errors.roundMetadata?.support?.type
+      className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${props.errors.roundMetadata?.support?.type
           ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
           : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-      }`}
+        }`}
       data-testid="support-type-select"
       id={"roundMetadata.support.type"}
     >

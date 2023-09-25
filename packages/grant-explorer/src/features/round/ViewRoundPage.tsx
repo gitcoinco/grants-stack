@@ -22,7 +22,7 @@ import {
   getRoundType,
   isDirectRound,
   isInfiniteDate,
-  payoutTokens,
+  votingTokens,
 } from "../api/utils";
 
 import Footer from "common/src/components/Footer";
@@ -219,7 +219,7 @@ function AfterRoundStart(props: {
     chainId: Number(props.chainId),
   });
 
-  const nativePayoutToken = payoutTokens.find(
+  const nativePayoutToken = votingTokens.find(
     (t) =>
       t.chainId === Number(props.chainId) &&
       t.address === getAddress(props.round.token)
@@ -579,7 +579,7 @@ function PreRoundPage(props: {
     chainId: Number(chainId),
   });
 
-  const nativePayoutToken = payoutTokens.find(
+  const nativePayoutToken = votingTokens.find(
     (t) =>
       t.chainId === Number(chainId) &&
       t.address === getAddress(props.round.token)

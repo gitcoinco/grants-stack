@@ -1,14 +1,12 @@
-// cartStore.test.ts
-
 import { useCartStorage } from "./store";
 import { ChainId } from "common";
 import {
   ApplicationStatus,
   CartProject,
-  PayoutToken,
+  VotingToken,
 } from "./features/api/types";
 import { makeApprovedProjectData } from "./test-utils";
-import { payoutTokensMap } from "./features/api/utils";
+import { votingTokensMap } from "./features/api/utils";
 
 describe("useCartStorage Zustand store", () => {
   beforeEach(() => {
@@ -65,11 +63,11 @@ describe("useCartStorage Zustand store", () => {
 
   test("should set payout token for a specific chain", () => {
     const chainId: ChainId = ChainId.MAINNET; // Mock ChainId
-    const payoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][0];
+    const payoutToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
 
-    useCartStorage.getState().setPayoutTokenForChain(chainId, payoutToken);
+    useCartStorage.getState().setVotingTokenForChain(chainId, payoutToken);
 
-    expect(useCartStorage.getState().chainToPayoutToken[chainId]).toEqual(
+    expect(useCartStorage.getState().chainToVotingToken[chainId]).toEqual(
       payoutToken
     );
   });
@@ -119,18 +117,18 @@ describe("useCartStorage Zustand store", () => {
     expect(useCartStorage.getState().projects).toEqual(initialProjects);
   });
 
-  test("should override payout token for a specific chain", () => {
+  test("should override voting token for a specific chain", () => {
     const chainId: ChainId = ChainId.MAINNET; // Mock ChainId
-    const initialPayoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][0];
-    const newPayoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][1];
+    const initialVotingToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
+    const newVotingToken: VotingToken = votingTokensMap[ChainId.MAINNET][1];
 
     useCartStorage
       .getState()
-      .setPayoutTokenForChain(chainId, initialPayoutToken);
-    useCartStorage.getState().setPayoutTokenForChain(chainId, newPayoutToken);
+      .setVotingTokenForChain(chainId, initialVotingToken);
+    useCartStorage.getState().setVotingTokenForChain(chainId, newVotingToken);
 
-    expect(useCartStorage.getState().chainToPayoutToken[chainId]).toEqual(
-      newPayoutToken
+    expect(useCartStorage.getState().chainToVotingToken[chainId]).toEqual(
+      newVotingToken
     );
   });
 
@@ -178,19 +176,19 @@ describe("useCartStorage Zustand store", () => {
 
   test("should handle setting payout token for non-existing chain gracefully", () => {
     const nonExistingChainId = 123123; // Mock a non-existing ChainId
-    const payoutToken: PayoutToken = payoutTokensMap[ChainId.MAINNET][0];
+    const payoutToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
 
     const initialChainToPayoutToken = {
-      ...useCartStorage.getState().chainToPayoutToken,
+      ...useCartStorage.getState().chainToVotingToken,
     };
 
     useCartStorage
       .getState()
       // @ts-expect-error We purposefully pass a wrong ChainId here
-      .setPayoutTokenForChain(nonExistingChainId, payoutToken);
+      .setVotingTokenForChain(nonExistingChainId, payoutToken);
 
-    // The state should remain unchanged unchanged.
-    expect(useCartStorage.getState().chainToPayoutToken).toEqual(
+    // The state should remain unchanged.
+    expect(useCartStorage.getState().chainToVotingToken).toEqual(
       initialChainToPayoutToken
     );
   });

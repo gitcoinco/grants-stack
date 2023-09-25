@@ -34,4 +34,4 @@ This is the kb for token-related info in relation to GS/Allo
 | Chain       | Address                                    | DAI Permit | EIP2612 Permit | Version | transferWithPermit |
 |-------------|--------------------------------------------|------------|----------------|---------|--------------------|
 | Avax        | 0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E | ⛔️         | ✅              | 2       | ⛔️                 |
-| Polygon PoS | 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174 | ⛔️         | ✅              | 2       | ⛔️                 |
+| Polygon PoS | 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174 | ⛔️         | ✅              | 1       | ⛔️                 |

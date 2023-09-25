@@ -110,6 +110,8 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.ARBITRUM_GOERLI]:
     process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
   [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
+  [ChainId.POLYGON]: process.env.REACT_APP_SUBGRAPH_POLYGON_API!,
+  [ChainId.POLYGON_MUMBAI]: process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API!,
 };
 
 /**
@@ -267,7 +269,7 @@ export const convertStatusToText = (
 };
 
 /** Returns true if the current javascript context is running inside a Jest test  */
-export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
+export const isJestRunning = () => process.env["JEST_WORKER_ID"] !== undefined;
 
 export const padSingleDigitNumberWithZero = (i: number): string =>
   i < 10 ? "0" + i : i.toString();
@@ -308,6 +310,7 @@ export const RedstoneTokenIds = {
   ARB: "ARB",
   BUSD: "BUSD",
   GTC: "GTC",
+  MATIC: "MATIC",
 } as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {
