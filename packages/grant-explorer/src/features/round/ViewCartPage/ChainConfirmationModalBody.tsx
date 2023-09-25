@@ -32,7 +32,9 @@ export function ChainConfirmationModalBody({
     }
   };
 
-  const payoutTokens = useCartStorage((state) => state.chainToPayoutToken);
+  const getVotingTokenForChain = useCartStorage(
+    (state) => state.getVotingTokenForChain
+  );
   return (
     <>
       <p className="text-sm text-grey-400">
@@ -43,7 +45,9 @@ export function ChainConfirmationModalBody({
         {Object.keys(projectsByChain).map((chainId, index) => (
           <ChainSummary
             chainId={Number(chainId) as ChainId}
-            selectedPayoutToken={payoutTokens[Number(chainId) as ChainId]}
+            selectedPayoutToken={getVotingTokenForChain(
+              Number(chainId) as ChainId
+            )}
             totalDonation={totalDonationsPerChain[Number(chainId)]}
             checked={chainIdsBeingCheckedOut.includes(Number(chainId))}
             onChange={(checked) =>
