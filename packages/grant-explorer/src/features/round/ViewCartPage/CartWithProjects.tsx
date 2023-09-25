@@ -25,8 +25,8 @@ export function CartWithProjects({ cart, chainId }: Props) {
 
   const [fixedDonation, setFixedDonation] = useState("");
 
-  const { chainToPayoutToken, setPayoutTokenForChain } = useCartStorage();
-  const selectedPayoutToken = chainToPayoutToken[chainId];
+  const { getVotingTokenForChain, setVotingTokenForChain } = useCartStorage();
+  const selectedPayoutToken = getVotingTokenForChain(chainId);
   const payoutTokenOptions: VotingToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
@@ -42,7 +42,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
   /** The payout token data (like permit version etc.) might've changed since the user last visited the page
    * Refresh it to update, default to the first payout token if the previous token was deleted */
   useEffect(() => {
-    setPayoutTokenForChain(
+    setVotingTokenForChain(
       chainId,
       getVotingTokenOptions(chainId).find(
         (token) => token.address === selectedPayoutToken.address
@@ -83,7 +83,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
             <PayoutTokenDropdown
               selectedPayoutToken={selectedPayoutToken}
               setSelectedPayoutToken={(token) => {
-                setPayoutTokenForChain(chainId, token);
+                setVotingTokenForChain(chainId, token);
               }}
               payoutTokenOptions={payoutTokenOptions}
             />
