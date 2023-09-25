@@ -1,7 +1,6 @@
 import { ChainId } from "common";
 
 import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils";
-import { TMP_DIRECT_ROUND_SUBGRAPH_URL } from "common";
 
 describe("graphql_fetch", () => {
   beforeEach(() => {
@@ -40,9 +39,7 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      process.env.REACT_APP_DIRECT_GRANT_ENABLED
-        ? TMP_DIRECT_ROUND_SUBGRAPH_URL
-        : `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      process.env.REACT_APP_SUBGRAPH_GOERLI_API,
       params
     );
     expect(res.data.rounds[0]).toEqual({
@@ -76,9 +73,7 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      process.env.REACT_APP_DIRECT_GRANT_ENABLED
-        ? TMP_DIRECT_ROUND_SUBGRAPH_URL
-        : `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      process.env.REACT_APP_SUBGRAPH_GOERLI_API,
       params
     );
   });
