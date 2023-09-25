@@ -9,7 +9,7 @@ import {
 } from "../../round/RoundApplicationForm";
 import { checkGrantApplicationStatus } from "../application";
 import { MetadataPointer } from "../types";
-import { graphql_fetch, TMP_DIRECT_ROUND_SUBGRAPH_URL } from "common";
+import { graphql_fetch } from "common";
 
 enableFetchMocks();
 
@@ -294,10 +294,7 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      TMP_DIRECT_ROUND_SUBGRAPH_URL,
-      //(process.env.REACT_APP_SUBGRAPH_GOERLI_API as string),
-      // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
-      // as we need to fetch data from the new version of the subgraph.
+      process.env.REACT_APP_SUBGRAPH_GOERLI_API as string,
       params
     );
     expect(res.data.programs[0]).toEqual({
@@ -331,10 +328,7 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      TMP_DIRECT_ROUND_SUBGRAPH_URL,
-      //(process.env.REACT_APP_SUBGRAPH_GOERLI_API as string),
-      // TODO: rollback this change once this PR https://github.com/allo-protocol/graph/pull/14 is merge and deployed.
-      // as we need to fetch data from the new version of the subgraph.
+      process.env.REACT_APP_SUBGRAPH_GOERLI_API as string,
       params
     );
   });
