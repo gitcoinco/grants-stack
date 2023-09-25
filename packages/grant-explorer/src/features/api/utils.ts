@@ -309,7 +309,7 @@ const ARBITRUM_GOERLI_TOKENS: VotingToken[] = [
   },
 ];
 
-export const VotingTokens = [
+export const votingTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
@@ -321,8 +321,8 @@ export const VotingTokens = [
   ...ARBITRUM_GOERLI_TOKENS,
 ];
 
-type VotingTokensMap = Record<ChainId, VotingToken[]>;
-export const VotingTokensMap: VotingTokensMap = {
+type PayoutTokensMap = Record<ChainId, VotingToken[]>;
+export const VotingTokensMap: PayoutTokensMap = {
   [ChainId.GOERLI_CHAIN_ID]: GOERLI_TESTNET_TOKENS,
   [ChainId.MAINNET]: MAINNET_TOKENS,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
