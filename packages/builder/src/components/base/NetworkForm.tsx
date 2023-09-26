@@ -66,6 +66,7 @@ function NetworkForm({
             disabled={switchTo !== props.currentChain}
             variant={ButtonVariants.primary}
             onClick={nextStep}
+            dataTestId="project-create-network-next"
           >
             Next
           </Button>

@@ -106,6 +106,7 @@ export default function Preview({
         <Button
           variant={ButtonVariants.outline}
           onClick={() => setVerifying(ProjectFormStatus.Verification)}
+          dataTestId="project-create-publish-back"
         >
           Back to Editing
         </Button>
@@ -113,6 +114,7 @@ export default function Preview({
           disabled={submitted}
           variant={ButtonVariants.primary}
           onClick={publishProject}
+          dataTestId="project-create-publish-next"
         >
           Save and Publish
         </Button>
