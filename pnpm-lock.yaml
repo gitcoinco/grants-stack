@@ -319,9 +319,6 @@ importers:
       postcss-import:
         specifier: ^14.1.0
         version: 14.1.0(postcss@8.4.29)
-      prettier:
-        specifier: ^2.6.2
-        version: 2.8.8
 
   packages/common:
     dependencies:
@@ -681,9 +678,6 @@ importers:
       postcss:
         specifier: ^8.4.14
         version: 8.4.29
-      prettier:
-        specifier: ^2.8.3
-        version: 2.8.8
       resize-observer-polyfill:
         specifier: ^1.5.1
         version: 1.5.1
@@ -952,9 +946,6 @@ importers:
       postcss:
         specifier: ^8.4.14
         version: 8.4.29
-      prettier:
-        specifier: ^2.7.1
-        version: 2.8.8
       resize-observer-polyfill:
         specifier: ^1.5.1
         version: 1.5.1
