@@ -9,8 +9,6 @@ import {
   fantom,
   fantomTestnet,
   mainnet,
-  avalanche,
-  avalancheFuji,
   arbitrum,
   optimism,
   goerli,
@@ -26,6 +24,81 @@ import { polygon, polygonMumbai } from "@wagmi/core/chains";
 // RPC keys
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID!;
 const infuraId = process.env.REACT_APP_INFURA_ID!;
+
+export const avalanche: Chain = {
+  id: 43114,
+  name: "Avalanche",
+  network: "avalanche",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Avalanche",
+    symbol: "AVAX",
+  },
+  rpcUrls: {
+    default: {
+      http: [
+        "https://avalanche-mainnet.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
+      ],
+    },
+    public: {
+      http: ["https://api.avax.network/ext/bc/C/rpc"],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "SnowTrace",
+      url: "https://snowtrace.io",
+    },
+    default: {
+      name: "SnowTrace",
+      url: "https://snowtrace.io",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xca11bde05977b3631167028862be2a173976ca11",
+      blockCreated: 11907934,
+    },
+  },
+};
+
+export const avalancheFuji: Chain = {
+  id: 43113,
+  name: "Avalanche Fuji",
+  network: "avalanche-fuji",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Avalanche",
+    symbol: "AVAX",
+  },
+  rpcUrls: {
+    default: {
+      http: [
+        "https://avalanche-fuji.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
+      ],
+    },
+    public: {
+      http: ["https://api.avax-test.network/ext/bc/C/rpc"],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "SnowTrace",
+      url: "https://testnet.snowtrace.io",
+    },
+    default: {
+      name: "SnowTrace",
+      url: "https://testnet.snowtrace.io",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xca11bde05977b3631167028862be2a173976ca11",
+      blockCreated: 7096959,
+    },
+  },
+  testnet: true,
+};
 
 export const pgn: Chain = {
   id: 424,
