@@ -6,14 +6,16 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createClient } from "wagmi";
 import {
-  fantom,
-  fantomTestnet,
+  fantom as fantomChain,
+  fantomTestnet as fantomTestnetChain,
   mainnet,
   arbitrum,
   optimism,
   goerli,
   arbitrumGoerli,
   hardhat,
+  avalancheFuji as avalancheFujiChain,
+  avalanche as avalancheChain,
 } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
@@ -26,14 +28,7 @@ const alchemyId = process.env.REACT_APP_ALCHEMY_ID!;
 const infuraId = process.env.REACT_APP_INFURA_ID!;
 
 export const avalanche: Chain = {
-  id: 43114,
-  name: "Avalanche",
-  network: "avalanche",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Avalanche",
-    symbol: "AVAX",
-  },
+  ...avalancheChain,
   rpcUrls: {
     default: {
       http: [
@@ -44,33 +39,10 @@ export const avalanche: Chain = {
       http: ["https://api.avax.network/ext/bc/C/rpc"],
     },
   },
-  blockExplorers: {
-    etherscan: {
-      name: "SnowTrace",
-      url: "https://snowtrace.io",
-    },
-    default: {
-      name: "SnowTrace",
-      url: "https://snowtrace.io",
-    },
-  },
-  contracts: {
-    multicall3: {
-      address: "0xca11bde05977b3631167028862be2a173976ca11",
-      blockCreated: 11907934,
-    },
-  },
 };
 
 export const avalancheFuji: Chain = {
-  id: 43113,
-  name: "Avalanche Fuji",
-  network: "avalanche-fuji",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Avalanche",
-    symbol: "AVAX",
-  },
+  ...avalancheFujiChain,
   rpcUrls: {
     default: {
       http: [
@@ -81,23 +53,30 @@ export const avalancheFuji: Chain = {
       http: ["https://api.avax-test.network/ext/bc/C/rpc"],
     },
   },
-  blockExplorers: {
-    etherscan: {
-      name: "SnowTrace",
-      url: "https://testnet.snowtrace.io",
-    },
+};
+
+export const fantom: Chain = {
+  ...fantomChain,
+  rpcUrls: {
     default: {
-      name: "SnowTrace",
-      url: "https://testnet.snowtrace.io",
+      http: ["https://rpcapi.fantom.network/"],
+    },
+    public: {
+      http: ["https://rpcapi.fantom.network/"],
     },
   },
-  contracts: {
-    multicall3: {
-      address: "0xca11bde05977b3631167028862be2a173976ca11",
-      blockCreated: 7096959,
+};
+
+export const fantomTestnet: Chain = {
+  ...fantomTestnetChain,
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.testnet.fantom.network/"],
+    },
+    public: {
+      http: ["https://rpc.testnet.fantom.network/"],
     },
   },
-  testnet: true,
 };
 
 export const pgn: Chain = {
