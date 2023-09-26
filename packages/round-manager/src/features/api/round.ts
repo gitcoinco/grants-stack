@@ -397,9 +397,11 @@ export async function deployRoundContract(
   try {
     const chainId = await signerOrProvider.getChainId();
 
-    /* Validate and prepare round data*/
-    if (!round.applicationsEndTime) {
-      round.applicationsEndTime = round.roundStartTime;
+    if (isQF) {
+      /* Validate and prepare round data*/
+      if (!round.applicationsEndTime) {
+        round.applicationsEndTime = round.roundStartTime;
+      }
     }
     round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
 
@@ -453,6 +455,7 @@ export async function deployRoundContract(
       round.operatorWallets,
     ];
 
+    const token = ethers.constants.AddressZero;
     let parsedTokenAmount = ethers.constants.Zero;
 
     if (isQF) {
@@ -473,7 +476,7 @@ export async function deployRoundContract(
       initAddresses,
       initRoundTimes,
       parsedTokenAmount,
-      round.token,
+      isQF ? round.token : token,
       round.feesPercentage || 0,
       round.feesAddress || ethers.constants.AddressZero,
       initMetaPtr,
