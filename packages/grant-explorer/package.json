@@ -6,8 +6,9 @@
   "scripts": {
     "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
     "lint:local": "eslint",
-    "lint:ci": "CI=false pnpm lint:fix",
+    "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix",
+    "lint": "eslint ./src",
     "typecheck": "tsc --noEmit",
     "start": "craco start",
     "test": "vitest run",
