@@ -86,7 +86,7 @@
     "test:dev": "jest --watch",
     "test:coverage": "jest --watchAll=false --coverage",
     "eject": "react-scripts eject",
-    "lint:local": "eslint --ext .js,.jsx,.ts,.tsx",
+    "lint:local": "eslint",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
     "lint:ci": "CI=false pnpm lint:fix",
     "lint:fix": "eslint ./src --fix --cache",
@@ -137,7 +137,6 @@
     "jest-when": "^3.5.1",
     "lokijs": "^1.5.12",
     "msw": "^0.47.4",
-    "postcss-import": "^14.1.0",
-    "prettier": "^2.6.2"
+    "postcss-import": "^14.1.0"
   }
 }
