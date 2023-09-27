@@ -1,4 +1,6 @@
 import {
+  avalanche,
+  avalancheFuji,
   Chain,
   fantom,
   fantomTestnet,
@@ -17,6 +19,7 @@ const testnetChains = () => {
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
     arbitrumGoerli,
+    avalancheFuji,
     polygonMumbai,
   ];
 };
@@ -27,6 +30,7 @@ const mainnetChains = () => {
     optimism,
     pgn,
     arbitrum,
+    avalanche,
     polygon,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
   ];
