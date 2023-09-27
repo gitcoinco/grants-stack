@@ -4,6 +4,7 @@ import { ChainId, graphQlEndpoints, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
 import { zeroAddress } from "viem";
 import { ethers } from "ethers";
+
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
 
@@ -67,6 +68,16 @@ export const CHAINS: Record<
     name: "Arbitrum",
     logo: "./logos/arb-logo.svg",
   },
+  [ChainId.AVALANCHE]: {
+    id: ChainId.AVALANCHE,
+    name: "Avalanche",
+    logo: "/logos/avax-logo.svg",
+  },
+  [ChainId.FUJI]: {
+    id: ChainId.FUJI,
+    name: "Fuji (Avalanche Testnet)",
+    logo: "/logos/avax-logo.svg",
+  },
   [ChainId.POLYGON]: {
     id: ChainId.POLYGON,
     name: "Polygon PoS",
@@ -89,6 +100,7 @@ export const TokenNamesAndLogos = {
   PGN: "./logos/pgn-logo.svg",
   GcV: "./logos/fantom-gcv-logo.png",
   ARB: "./logos/arb-logo.svg",
+  AVAX: "./logos/avax-logo.svg",
   MATIC: "./logos/pol-logo.svg",
 } as const;
 
@@ -369,6 +381,54 @@ const POLYGON_MUMBAI_TOKENS: VotingToken[] = [
   },
 ];
 
+const AVALANCHE_TOKENS: VotingToken[] = [
+  {
+    name: "AVAX",
+    chainId: ChainId.AVALANCHE,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["AVAX"],
+    redstoneTokenId: RedstoneTokenIds["AVAX"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.AVALANCHE,
+    address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
+    canVote: true,
+    permitVersion: "2",
+  },
+];
+
+const FUJI_TOKENS: VotingToken[] = [
+  {
+    name: "AVAX",
+    chainId: ChainId.AVALANCHE,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["AVAX"],
+    redstoneTokenId: RedstoneTokenIds["AVAX"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.AVALANCHE,
+    address: "0x5425890298aed601595a70ab815c96711a31bc65",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
+    canVote: true,
+    permitVersion: "2",
+  },
+];
+
 export const votingTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -379,12 +439,14 @@ export const votingTokens = [
   ...PGN_MAINNET_TOKENS,
   ...ARBITRUM_TOKENS,
   ...ARBITRUM_GOERLI_TOKENS,
+  ...AVALANCHE_TOKENS,
+  ...FUJI_TOKENS,
   ...POLYGON_TOKENS,
   ...POLYGON_MUMBAI_TOKENS,
 ];
 
-type PayoutTokensMap = Record<ChainId, VotingToken[]>;
-export const votingTokensMap: PayoutTokensMap = {
+type VotingTokensMap = Record<ChainId, VotingToken[]>;
+export const votingTokensMap: VotingTokensMap = {
   [ChainId.GOERLI_CHAIN_ID]: GOERLI_TESTNET_TOKENS,
   [ChainId.MAINNET]: MAINNET_TOKENS,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
@@ -394,6 +456,8 @@ export const votingTokensMap: PayoutTokensMap = {
   [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
   [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_TOKENS,
   [ChainId.ARBITRUM]: ARBITRUM_TOKENS,
+  [ChainId.AVALANCHE]: AVALANCHE_TOKENS,
+  [ChainId.FUJI]: FUJI_TOKENS,
   [ChainId.POLYGON]: POLYGON_TOKENS,
   [ChainId.POLYGON_MUMBAI]: POLYGON_MUMBAI_TOKENS,
 };
@@ -423,6 +487,8 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
   [ChainId.POLYGON]: "https://polygonscan.io/tx/",
   [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
+  [ChainId.FUJI]: "https://snowtrace.io/tx/",
+  [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
 };
 
 /**
@@ -558,6 +624,7 @@ export const getDaysLeft = (epochTime: number) => {
   return differenceInDays;
 };
 
+/* TODO: remove this and get the production chains automatically */
 export function getChainIds(): number[] {
   const isProduction = process.env.REACT_APP_ENV === "production";
   if (isProduction) {
@@ -567,6 +634,8 @@ export function getChainIds(): number[] {
       Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
       Number(ChainId.PGN),
       Number(ChainId.ARBITRUM),
+      Number(ChainId.AVALANCHE),
+      Number(ChainId.POLYGON),
     ];
   } else {
     return Object.values(ChainId)
