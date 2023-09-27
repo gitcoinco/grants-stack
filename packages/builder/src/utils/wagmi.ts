@@ -22,6 +22,7 @@ import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
 import PublicGoodsNetworkIcon from "common/src/icons/PublicGoodsNetwork.svg";
 import { polygon, polygonMumbai } from "@wagmi/core/chains";
+import { FantomFTMLogo } from "../assets";
 
 // RPC keys
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID!;
@@ -65,6 +66,7 @@ export const fantom: Chain = {
       http: ["https://rpcapi.fantom.network/"],
     },
   },
+  iconUrl: FantomFTMLogo,
 };
 
 export const fantomTestnet: Chain = {
@@ -77,6 +79,7 @@ export const fantomTestnet: Chain = {
       http: ["https://rpc.testnet.fantom.network/"],
     },
   },
+  iconUrl: FantomFTMLogo,
 };
 
 export const pgn: Chain = {
