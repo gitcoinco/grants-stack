@@ -1,4 +1,7 @@
 pre-commit:
+  skip:
+    - merge
+    - rebase
   parallel: true
   commands:
     prettier:

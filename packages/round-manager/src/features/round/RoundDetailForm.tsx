@@ -395,7 +395,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         </ReactTooltip>
                       </div>
                     </div>
-
                     {/* Application end date */}
                     <div className="col-span-6 sm:col-span-3">
                       <div
