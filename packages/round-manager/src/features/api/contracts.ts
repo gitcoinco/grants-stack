@@ -218,6 +218,8 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.PGN]: "",
   [ChainId.ARBITRUM_GOERLI]: "",
   [ChainId.ARBITRUM]: "",
+  [ChainId.FUJI]: "",
+  [ChainId.AVALANCHE]: "",
   [ChainId.POLYGON]: "",
   [ChainId.POLYGON_MUMBAI]: "",
 };
@@ -246,6 +248,8 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.PGN]: "",
   [ChainId.ARBITRUM_GOERLI]: "",
   [ChainId.ARBITRUM]: "",
+  [ChainId.FUJI]: "",
+  [ChainId.AVALANCHE]: "",
   [ChainId.POLYGON]: "",
   [ChainId.POLYGON_MUMBAI]: "",
 };
