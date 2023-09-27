@@ -15,7 +15,7 @@
     "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
     "lint:local": "eslint",
-    "lint": "eslint ./src",
+    "lint": "eslint ./src --cache",
     "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit",

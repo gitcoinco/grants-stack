@@ -8,7 +8,7 @@
     "lint:local": "eslint",
     "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix",
-    "lint": "eslint ./src",
+    "lint": "eslint ./src --cache",
     "typecheck": "tsc --noEmit",
     "start": "craco start",
     "test": "vitest run",
