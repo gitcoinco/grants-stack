@@ -624,6 +624,7 @@ export const getDaysLeft = (epochTime: number) => {
   return differenceInDays;
 };
 
+/* TODO: remove this and get the production chains automatically */
 export function getChainIds(): number[] {
   const isProduction = process.env.REACT_APP_ENV === "production";
   if (isProduction) {
@@ -633,6 +634,8 @@ export function getChainIds(): number[] {
       Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
       Number(ChainId.PGN),
       Number(ChainId.ARBITRUM),
+      Number(ChainId.AVALANCHE),
+      Number(ChainId.POLYGON),
     ];
   } else {
     return Object.values(ChainId)
