@@ -25,8 +25,7 @@ export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
 };
 
 export type GrantRoundTypeFilterDropdownProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onChange: any;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
 };
 
 export const GrantRoundTypeFilterDropdown = (

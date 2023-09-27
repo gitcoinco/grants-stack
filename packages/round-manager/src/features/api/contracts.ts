@@ -133,9 +133,7 @@ export const qfVotingStrategyFactoryContract = (
 };
 
 /* VotingStrategyFactory */
-export const dgVotingStrategyDummyContract = (
-  chainId: ChainId | undefined
-): string => {
+export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
   let address;
 
   switch (chainId) {
@@ -199,70 +197,55 @@ export const merklePayoutStrategyImplementationContract: Contract = {
 };
 
 /* AlloSettings contract  */
+
+const alloSettingsContractMap: ChainIdToStringMap = {
+  [ChainId.MAINNET]: "",
+  [ChainId.GOERLI_CHAIN_ID]: "0x991cd65cb6AE183F06a489857775D7aE14794055",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
+  [ChainId.PGN_TESTNET]: "",
+  [ChainId.PGN]: "",
+  [ChainId.ARBITRUM_GOERLI]: "",
+  [ChainId.ARBITRUM]: "",
+  [ChainId.POLYGON]: "",
+  [ChainId.POLYGON_MUMBAI]: "",
+};
+
+/* AlloSettingsContract  */
 export const alloSettingsContract = (
-  chainId: ChainId | undefined
-): Contract => {
-  let address;
-
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      address = "";
-      break;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      address = "0x991cd65cb6AE183F06a489857775D7aE14794055";
-      break;
-    }
-  }
-
+  chainId: ChainId
+): Contract & { address: string } => {
   return {
-    address: address,
-    // For direct grants we have implemented typechain so it is not needed to export ABIs anymore.
-    // that's why we are
+    address: alloSettingsContractMap[chainId],
     abi: [],
   };
 };
 
-export const directPayoutStrategyFactoryContract = (
-  chainId: ChainId | undefined
-): string => {
-  let address;
+/* DirectPayoutStrategyFactoryContract contract  */
 
-  switch (chainId) {
-    case ChainId.MAINNET: {
-      address = "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140";
-      break;
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x2Bb670C3ffC763b691062d671b386E51Cf1840f0";
-      break;
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "0x9B1Ee60B539a3761E328a621A3d980EE9385679a";
-      break;
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      address = "0x0077551e24bfB910aBABedC4336246e34B5fB0A2";
-      break;
-    }
-  }
-  return address;
+const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
+  [ChainId.MAINNET]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
+  [ChainId.GOERLI_CHAIN_ID]: "0x0077551e24bfB910aBABedC4336246e34B5fB0A2",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
+    "0x2Bb670C3ffC763b691062d671b386E51Cf1840f0",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
+    "0x9B1Ee60B539a3761E328a621A3d980EE9385679a",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
+  [ChainId.PGN_TESTNET]: "",
+  [ChainId.PGN]: "",
+  [ChainId.ARBITRUM_GOERLI]: "",
+  [ChainId.ARBITRUM]: "",
+  [ChainId.POLYGON]: "",
+  [ChainId.POLYGON_MUMBAI]: "",
+};
+
+/* DirectPayoutStrategyFactoryContract  */
+export const directPayoutStrategyFactoryContract = (
+  chainId: ChainId
+): Contract & { address: string } => {
+  return {
+    address: directPayoutStrategyFactoryContractMap[chainId],
+    abi: [],
+  };
 };

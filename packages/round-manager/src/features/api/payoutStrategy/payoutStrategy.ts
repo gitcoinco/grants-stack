@@ -26,7 +26,7 @@ export const getDirectPayoutFactoryAddress = async (
   signerOrProvider: Signer
 ): Promise<{ payoutContractAddress: string }> => {
   const chainId = await signerOrProvider.getChainId();
-  const factoryAddress = directPayoutStrategyFactoryContract(chainId);
+  const factoryAddress = directPayoutStrategyFactoryContract(chainId).address;
   return {
     payoutContractAddress: factoryAddress,
   };

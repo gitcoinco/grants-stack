@@ -192,7 +192,7 @@ const _createRound = async ({
       payoutStrategy: {
         id: isQF
           ? merklePayoutStrategyFactoryContract(chainId).address
-          : directPayoutStrategyFactoryContract(chainId),
+          : directPayoutStrategyFactoryContract(chainId).address,
         isReadyForPayout: false,
       },
     };

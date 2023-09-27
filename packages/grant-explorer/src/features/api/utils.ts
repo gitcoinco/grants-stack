@@ -577,7 +577,7 @@ export function getChainIds(): number[] {
 }
 
 export const isDirectRound = (round: Round) =>
-  round?.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
 export const isInfiniteDate = (roundTime: Date) =>
   roundTime.toString() === "Invalid Date";
 

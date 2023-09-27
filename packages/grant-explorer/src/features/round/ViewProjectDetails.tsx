@@ -90,9 +90,7 @@ export default function ViewProjectDetails() {
       : round && round.roundEndTime <= currentTime);
   const isBeforeRoundEndDate =
     round &&
-    (!isInfiniteDate(round.roundEndTime)
-      ? round.roundEndTime > currentTime
-      : true);
+    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
 
   const { projects, add, remove } = useCartStorage();
 
@@ -558,9 +556,7 @@ export function ProjectStats() {
       : null;
   const isBeforeRoundEndDate =
     round &&
-    (!isInfiniteDate(round.roundEndTime)
-      ? round.roundEndTime > new Date()
-      : true);
+    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > new Date());
 
   return (
     <div

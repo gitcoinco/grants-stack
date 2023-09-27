@@ -59,13 +59,12 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
               onChange={props.setSearchQuery}
             />
             <GrantRoundTypeFilterDropdown
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: { target: { value: any } }) => {
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                 props.setRoundType(e.target.value);
               }}
             />
             <SortFilterDropdown
-              onChange={(e: { target: { value: any } }) =>
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setOrder(e.target.value)
               }
             />

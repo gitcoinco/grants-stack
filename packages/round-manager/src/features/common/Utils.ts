@@ -10,7 +10,7 @@ export const horizontalTabStyles = (selected: boolean) =>
 
 export const ROUND_PAYOUT_MERKLE = "MERKLE";
 export const ROUND_PAYOUT_DIRECT = "DIRECT";
-export const getPayoutRoundDescription = (key: string) => {
+export const getPayoutRoundDescription = (key: "MERKLE" | "DIRECT") => {
   switch (key) {
     case ROUND_PAYOUT_MERKLE:
       return "Quadratic Funding";

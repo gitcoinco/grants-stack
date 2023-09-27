@@ -177,7 +177,7 @@ function createFullRow(statuses: Status[]) {
     const { index: columnIndex, status } = statusObj;
 
     if (columnIndex >= 0 && columnIndex < 128 && status >= 0 && status <= 3) {
-      const statusBigInt = BigInt(status == 4 ? 0 : status); // 4 is IN_REVIEW, but for the round is still pending.
+      const statusBigInt = BigInt(status === 4 ? 0 : status); // 4 is IN_REVIEW, but for the round is still pending.
       const shiftedStatus = statusBigInt << BigInt(columnIndex * 2);
       fullRow |= shiftedStatus;
     } else {
@@ -213,8 +213,7 @@ function fetchStatusesForPayoutStrategy(
 
 function createFullRowForPayoutStrategy(statuses: StatusForDirectPayout[]) {
   let fullRow = BigInt(0);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  for (const statusObj of statuses!) {
+  for (const statusObj of statuses) {
     const { index: columnIndex, status } = statusObj;
 
     if (columnIndex >= 0 && columnIndex < 256 && typeof status === "boolean") {

@@ -82,7 +82,6 @@ const ApplyNowPage = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    // filterGrantRoundByType(roundsInApplicationPhase, type);
     if (searchQuery) {
       const timeOutId = setTimeout(
         () => filterProjectsByTitle(searchQuery),
@@ -188,14 +187,12 @@ const ApplyNowPage = () => {
           <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput searchQuery={searchQuery} onChange={setSearchQuery} />
             <GrantRoundTypeFilterDropdown
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: { target: { value: any } }) => {
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                 setType(e.target.value);
               }}
             />
             <SortFilterDropdown
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: { target: { value: any } }) =>
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setOrder(e.target.value)
               }
             />

@@ -65,7 +65,7 @@ export interface Eligibility {
 export interface PayoutStrategy {
   id: string;
   /**
-   * Wether is QUADRATIC FUNDING or DIRECT GRANT
+   * Whether is QUADRATIC FUNDING or DIRECT GRANT
    * MERKLE for QF
    * DIRECT for DG
    */

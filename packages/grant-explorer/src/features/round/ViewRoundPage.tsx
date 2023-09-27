@@ -71,9 +71,7 @@ export default function ViewRound() {
       : round && round.roundEndTime <= currentTime);
   const isBeforeRoundEndDate =
     round &&
-    (!isInfiniteDate(round.roundEndTime)
-      ? round.roundEndTime > currentTime
-      : true);
+    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
@@ -245,9 +243,8 @@ function AfterRoundStart(props: {
   const currentTime = new Date();
   const isBeforeApplicationEndDate =
     round &&
-    (!isInfiniteDate(round.applicationsEndTime)
-      ? round.applicationsEndTime >= currentTime
-      : true);
+    (isInfiniteDate(round.applicationsEndTime) ||
+      round.applicationsEndTime >= currentTime);
 
   return (
     <>
@@ -564,15 +561,14 @@ function PreRoundPage(props: {
   const isDuringApplicationPeriod =
     round &&
     round.applicationsStartTime <= currentTime &&
-    (!isInfiniteDate(round.applicationsEndTime)
-      ? round.applicationsEndTime >= currentTime
-      : true);
+    (isInfiniteDate(round.applicationsEndTime) ||
+      round.applicationsEndTime >= currentTime);
+
   const isAfterApplicationEndDateAndBeforeRoundStartDate =
     round &&
     round.roundStartTime >= currentTime &&
-    (!isInfiniteDate(round.applicationsEndTime)
-      ? round.applicationsEndTime <= currentTime
-      : true);
+    (isInfiniteDate(round.applicationsEndTime) ||
+      round.applicationsEndTime <= currentTime);
 
   const { data } = useToken({
     address: getAddress(props.round.token),

@@ -78,7 +78,6 @@ const LandingPage = () => {
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
       const timeOutId = setTimeout(
