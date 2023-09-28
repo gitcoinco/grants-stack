@@ -62,7 +62,8 @@ export default function ViewProgram() {
     }
   }, [isProgramFetched, programToRender, address, debugModeEnabled]);
 
-  const roundItems = rounds
+  // @ts-expect-error remove when DG support is merged
+  const roundItems = rounds.filter((round) => !isNaN(round.applicationsEndTime))
     ? rounds.map((round, index) => (
         <Link to={`/round/${round.id}`} key={index}>
           <div
