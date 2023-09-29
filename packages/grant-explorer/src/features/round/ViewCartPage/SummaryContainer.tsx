@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { useAccount, useWalletClient, usePublicClient } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import { BoltIcon } from "@heroicons/react/24/outline";
+
 import { usePassport } from "../../api/passport";
 import useSWR from "swr";
 import { round, groupBy, uniqBy } from "lodash-es";
@@ -18,8 +20,9 @@ import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { formatUnits, parseUnits } from "viem";
+import { Address, formatUnits, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useMatchingEstimates } from "../../../hooks/matchingEstimate";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -275,6 +278,25 @@ export function SummaryContainer() {
     }
   }, [totalDonationAcrossChainsInUSDData]);
 
+  const { data: estimates, error: matchingError } = useMatchingEstimates(
+    rounds?.map((round) => {
+      const projs = projects.filter((project) => project.roundId === round.id);
+      return {
+        roundId: round.id as Address,
+        chainid: projs[0].chainId,
+        potentialVotes: projects.map((proj) => ({
+          amount: parseUnits(
+            proj.amount ?? "0",
+            getVotingTokenForChain(Number(proj.chainId) as ChainId).decimal ??
+              18
+          ),
+          recipient: proj.recipient,
+          contributor: address!,
+        })),
+      };
+    }) ?? []
+  );
+
   if (projects.length === 0) {
     return null;
   }
@@ -282,6 +304,25 @@ export function SummaryContainer() {
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
+      <div className="flex flex-row items-center justify-between mt-4 border-t-2 font-semibold italic text-teal-500">
+        <div className="flex flex-row mt-4">
+          <p className="mb-2">
+            Estimated match{" "}
+            <InformationCircleIcon className={"w-5 h-5 inline"} />
+          </p>
+        </div>
+        <div className="flex justify-end mt-4">
+          <p>
+            <BoltIcon className={"w-6 h-6 inline"} />
+            {JSON.stringify(estimates)}
+          </p>
+          {matchingError &&
+            JSON.stringify(
+              matchingError,
+              Object.getOwnPropertyNames(matchingError)
+            )}
+        </div>
+      </div>
       <div>
         {Object.keys(projectsByChain).map((chainId) => (
           <Summary
