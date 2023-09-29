@@ -291,7 +291,7 @@ export function SummaryContainer() {
               18
           ),
           recipient: proj.recipient,
-          contributor: address!,
+          contributor: address as Address,
         })),
       };
     }) ?? []
