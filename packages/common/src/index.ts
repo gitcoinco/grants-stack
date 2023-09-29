@@ -110,6 +110,8 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.ARBITRUM_GOERLI]:
     process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
   [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
+  [ChainId.FUJI]: process.env.REACT_APP_SUBGRAPH_FUJI_API!,
+  [ChainId.AVALANCHE]: process.env.REACT_APP_SUBGRAPH_AVALANCHE_API!,
   [ChainId.POLYGON]: process.env.REACT_APP_SUBGRAPH_POLYGON_API!,
   [ChainId.POLYGON_MUMBAI]: process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API!,
 };
@@ -275,6 +277,10 @@ export const padSingleDigitNumberWithZero = (i: number): string =>
   i < 10 ? "0" + i : i.toString();
 
 export const formatUTCDateAsISOString = (date: Date): string => {
+  // @ts-expect-error remove when DG support is merged
+  if (isNaN(date)) {
+    return "";
+  }
   const isoString = date.toISOString();
   return isoString.slice(0, 10).replace(/-/g, "/");
 };
@@ -311,6 +317,7 @@ export const RedstoneTokenIds = {
   BUSD: "BUSD",
   GTC: "GTC",
   MATIC: "MATIC",
+  AVAX: "AVAX",
 } as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {
