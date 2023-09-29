@@ -20,9 +20,12 @@ import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { Address, formatUnits, parseUnits } from "viem";
+import { Address, formatUnits, getAddress, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useMatchingEstimates } from "../../../hooks/matchingEstimate";
+import {
+  MatchingEstimateResult,
+  useMatchingEstimates,
+} from "../../../hooks/matchingEstimate";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -282,7 +285,7 @@ export function SummaryContainer() {
     rounds?.map((round) => {
       const projs = projects.filter((project) => project.roundId === round.id);
       return {
-        roundId: round.id as Address,
+        roundId: getAddress(round.id ?? ""),
         chainid: projs[0].chainId,
         potentialVotes: projects.map((proj) => ({
           amount: parseUnits(
@@ -301,6 +304,20 @@ export function SummaryContainer() {
     return null;
   }
 
+  const flattenedArray = (estimates?.flat().reduce((acc, item) => {
+    return acc.concat(Object.values(item));
+  }, []) ?? []) as MatchingEstimateResult[];
+  console.log(flattenedArray);
+  const estimateText = Number(
+    formatUnits(
+      flattenedArray
+        .map((est) => BigInt(est.difference ?? 0))
+        .filter((diff) => diff > 0)
+        .reduce((a, b) => (a += b), 0n),
+      18
+    )
+  ).toFixed(2);
+
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
@@ -315,12 +332,7 @@ export function SummaryContainer() {
           <p>
             <BoltIcon className={"w-6 h-6 inline"} />
             ~$
-            {estimates
-              ?.flat()
-              .map((est) => est.difference)
-              .filter((diff) => diff > 0)
-              .reduce((a, b) => (a += b))
-              .toString() ?? "...π"}
+            {estimateText}
           </p>
           {matchingError &&
             JSON.stringify(

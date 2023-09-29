@@ -32,12 +32,12 @@ jobs:
 
       - name: Lint Explorer
         run: |
-          pnpm re-lint    
+          pnpm ge-lint    
 
       - name: Test Explorer
         run: |
-          pnpm re-test
+          pnpm ge-test
 
       - name: Typecheck Explorer
         run: |
-          pnpm re-typecheck
+          pnpm ge-typecheck
