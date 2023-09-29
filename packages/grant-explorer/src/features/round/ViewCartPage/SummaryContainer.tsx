@@ -314,7 +314,13 @@ export function SummaryContainer() {
         <div className="flex justify-end mt-4">
           <p>
             <BoltIcon className={"w-6 h-6 inline"} />
-            {JSON.stringify(estimates)}
+            ~$
+            {estimates
+              ?.flat()
+              .map((est) => est.difference)
+              .filter((diff) => diff > 0)
+              .reduce((a, b) => (a += b))
+              .toString() ?? "...π"}
           </p>
           {matchingError &&
             JSON.stringify(

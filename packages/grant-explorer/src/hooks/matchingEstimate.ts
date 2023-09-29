@@ -27,15 +27,17 @@ export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
   const client = useAlloIndexerClient();
 
   return useSWR(params, (params) => {
-    return params.map((params) =>
-      client.getMatchingEstimates(
-        params.roundId,
-        params.chainid.toString(),
-        // @ts-expect-error stringify bigint beforehand
-        params.potentialVotes.map((vote) => ({
-          ...vote,
-          amount: vote.amount.toString(),
-        }))
+    return Promise.all(
+      params.map((params) =>
+        client.getMatchingEstimates(
+          params.roundId,
+          params.chainid.toString(),
+          // @ts-expect-error stringify bigint beforehand
+          params.potentialVotes.map((vote) => ({
+            ...vote,
+            amount: vote.amount.toString(),
+          }))
+        )
       )
     );
   });
