@@ -24,6 +24,31 @@ export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
   );
 };
 
+export type GrantRoundTypeFilterDropdownProps = {
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
+};
+
+export const GrantRoundTypeFilterDropdown = (
+  props: GrantRoundTypeFilterDropdownProps
+) => {
+  return (
+    <div>
+      <span className="text-sm mx-auto md:ml-8">
+        Filter <span className="hidden md:inline mr-1">by</span>
+      </span>
+      <select
+        className="border-0 cursor-pointer text-violet-400 text-sm"
+        placeholder="All"
+        onChange={props.onChange}
+      >
+        <option value="round_type_all">All Round Types</option>
+        <option value="round_type_quadratic">Quadratic Funding</option>
+        <option value="round_type_direct">Direct Grant</option>
+      </select>
+    </div>
+  );
+};
+
 export const SearchInput = (props: {
   searchQuery: string;
   onChange: Dispatch<SetStateAction<string>>;

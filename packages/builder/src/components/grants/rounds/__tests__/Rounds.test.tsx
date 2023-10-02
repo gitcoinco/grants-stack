@@ -103,7 +103,9 @@ describe("<Rounds />", () => {
       const store = setupStore();
       store.dispatch(web3ChainIDLoaded(5));
 
-      const round1 = buildActiveRound({});
+      const round1 = buildActiveRound({
+        address: addressFrom(1),
+      });
       const round2 = buildActiveRound({
         address: addressFrom(2),
       });
@@ -131,6 +133,7 @@ describe("<Rounds />", () => {
         applications,
         projectID: "2",
       });
+      console.log("STORE ", store);
 
       await act(async () => {
         renderWrapped(<Rounds />, store);

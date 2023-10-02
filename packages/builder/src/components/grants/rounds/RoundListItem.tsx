@@ -1,14 +1,20 @@
 // eslint-disable max-len
 import { Badge, Box, Spinner } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { RootState } from "../../../reducers";
 import { Application, AppStatus } from "../../../reducers/projects";
 import { roundApplicationPathForProject } from "../../../routes";
 import { RoundDisplayType } from "../../../types";
-import { formatDateFromSecs } from "../../../utils/components";
+import { formatDateFromSecs, isInfinite } from "../../../utils/components";
 import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
-import { getProjectURIComponents } from "../../../utils/utils";
+import {
+  ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE,
+  getProjectURIComponents,
+} from "../../../utils/utils";
 import LinkManager from "./LinkManager";
+import { PayoutStrategy } from "../../../reducers/rounds";
 
 export default function RoundListItem({
   applicationData,
@@ -19,6 +25,7 @@ export default function RoundListItem({
   displayType?: RoundDisplayType;
   projectId: string;
 }) {
+  const [roundData, setRoundData] = useState<any>();
   const props = useSelector((state: RootState) => {
     const { roundID: roundId, chainId: projectChainId } = applicationData!;
     const roundState = state.rounds[roundId];
@@ -47,10 +54,64 @@ export default function RoundListItem({
 
   const renderApplicationDate = () => (
     <>
-      {formatDateFromSecs(props.round?.roundStartTime!)} -{" "}
-      {formatDateFromSecs(props.round?.roundEndTime!)}
+      {formatDateFromSecs(roundData?.applicationsStartTime!)} -{" "}
+      {!isInfinite(roundData?.applicationsEndTime!)
+        ? formatDateFromSecs(roundData?.applicationsEndTime!)
+        : "No End Date"}
     </>
   );
+
+  const renderRoundBadge = () => {
+    let colorScheme:
+      | {
+          bg: string;
+          text: string;
+        }
+      | undefined;
+
+    switch (roundData?.payoutStrategy as PayoutStrategy) {
+      case "MERKLE":
+        colorScheme = {
+          bg: "#E6FFF9",
+          text: "gitcoin-grey-500",
+        };
+        break;
+      case "DIRECT":
+        colorScheme = {
+          bg: "#FDDEE4",
+          text: "gitcoin-grey-500",
+        };
+        break;
+      default:
+        colorScheme = undefined;
+        break;
+    }
+
+    const roundPayoutStrategy = roundData?.payoutStrategy;
+
+    return (
+      <span>
+        <Badge
+          backgroundColor={colorScheme?.bg}
+          className="max-w-fit"
+          borderRadius="full"
+          p={2}
+          textTransform="inherit"
+        >
+          {roundPayoutStrategy === ROUND_PAYOUT_MERKLE ? (
+            <span className={`text-${colorScheme?.text} text-sm`}>
+              Quadratic Funding
+            </span>
+          ) : null}
+          {roundPayoutStrategy === ROUND_PAYOUT_DIRECT ? (
+            <span className={`text-${colorScheme?.text} text-sm`}>
+              Direct Grant
+            </span>
+          ) : null}
+        </Badge>
+      </span>
+    );
+  };
 
   const renderApplicationBadge = (dt: RoundDisplayType) => {
     let colorScheme:
@@ -78,10 +139,20 @@ export default function RoundListItem({
           bg: "#E2E0E7",
         };
         break;
+      case "RECEIVED":
+        colorScheme = {
+          text: "gitcoin-grey-500",
+          bg: "#E2E0E7",
+        };
+        break;
       default:
         colorScheme = undefined;
         break;
     }
+
+    const applicationStatus = applicationData?.status;
+    const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
+    const applicationInReview = applicationData?.inReview;
 
     if (RoundDisplayType.Current === dt) {
       return (
@@ -92,17 +163,25 @@ export default function RoundListItem({
           p={2}
           textTransform="inherit"
         >
-          {applicationData?.status === "REJECTED" ? (
+          {applicationStatus === "REJECTED" ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Rejected
             </span>
           ) : null}
-          {applicationData?.status === "PENDING" ? (
+          {applicationStatus === "PENDING" &&
+          isDirectRound &&
+          !applicationInReview ? (
+            <span className={`text-${colorScheme?.text} text-sm`}>
+              Received
+            </span>
+          ) : null}
+          {(applicationStatus === "PENDING" && !isDirectRound) ||
+          (isDirectRound && applicationInReview) ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               In Review
             </span>
           ) : null}
-          {applicationData?.status === "APPROVED" ? (
+          {applicationStatus === "APPROVED" ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Approved
             </span>
@@ -128,10 +207,15 @@ export default function RoundListItem({
     }
 
     if (RoundDisplayType.Active === dt) {
-      if (applicationData?.status === "PENDING") {
+      if (applicationData?.status === "PENDING" && !applicationInReview) {
+        return <span className={`text-${colorScheme?.text}`}>Received</span>;
+      }
+      if (
+        (applicationStatus === "PENDING" && !isDirectRound) ||
+        (isDirectRound && applicationInReview)
+      ) {
         return <span className={`text-${colorScheme?.text}`}>In Review</span>;
       }
-
       if (applicationData?.status === "REJECTED") {
         return <span className={`text-${colorScheme?.text}`}>Rejected</span>;
       }
@@ -147,11 +231,18 @@ export default function RoundListItem({
     props.roundAddress!,
     projectId
   );
+  const explorerUrl = process.env.REACT_APP_GRANT_EXPLORER;
 
   // add check for application status
   // const enableStatusButton = () =>
   //   applicationData?.status === "APPROVED" &&
   //   displayType === RoundDisplayType.Past;
+
+  useEffect(() => {
+    if (props.round) {
+      setRoundData(props.round);
+    }
+  }, [props.round]);
 
   return (
     <Box>
@@ -177,6 +268,7 @@ export default function RoundListItem({
             <span>{renderApplicationDate()}</span>
           )}
         </Box>
+        <Box className="flex-1 my-2">{renderRoundBadge()}</Box>
         <Box className="flex-1 my-2">
           {renderApplicationBadge(displayType!)}
         </Box>
@@ -186,8 +278,8 @@ export default function RoundListItem({
               linkProps={{
                 displayType: RoundDisplayType.Active,
                 link:
-                  `https://explorer.gitcoin.co/#/round/${props.roundChain}/` +
-                  `${props.roundAddress}/${props.generatedProjectId}-${props.roundAddress}`,
+                  `${explorerUrl}/#/round/${props.roundChain}/` +
+                  `${props.roundAddress}`,
                 text: "View on Explorer",
                 applicationStatus: applicationData?.status!,
               }}

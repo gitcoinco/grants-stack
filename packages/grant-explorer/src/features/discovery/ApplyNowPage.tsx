@@ -3,12 +3,16 @@ const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 import { RoundOverview, getRoundsInApplicationPhase } from "../api/rounds";
 import Breadcrumb from "../common/Breadcrumb";
 import Navbar from "../common/Navbar";
-import SearchInput, { SortFilterDropdown } from "../common/SearchInput";
+import SearchInput, {
+  GrantRoundTypeFilterDropdown,
+  SortFilterDropdown,
+} from "../common/SearchInput";
 import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
 import { useDebugMode } from "../api/utils";
 import Footer from "common/src/components/Footer";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
 
 const ApplyNowPage = () => {
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
@@ -22,6 +26,7 @@ const ApplyNowPage = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [order, setOrder] = useState<string>("round_asc");
+  const [type, setType] = useState<string>("round_type_all");
 
   const debugModeEnabled = useDebugMode();
 
@@ -44,6 +49,37 @@ const ApplyNowPage = () => {
     return rounds;
   }
 
+  useEffect(() => {
+    if (type) {
+      filterGrantRoundByType();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
+
+  const filterGrantRoundByType = () => {
+    const getGrantRoundType = (type: string) => {
+      return type === "round_type_direct"
+        ? ROUND_PAYOUT_DIRECT
+        : ROUND_PAYOUT_MERKLE;
+    };
+    if (type === "round_type_all") {
+      setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
+    }
+    if (type !== "round_type_all") {
+      const filterType = getGrantRoundType(type);
+      const filteredRounds = roundsInApplicationPhase.filter(
+        (round: RoundOverview) => {
+          return (
+            round.payoutStrategy &&
+            round.payoutStrategy.strategyName === filterType
+          );
+        }
+      );
+      setFilteredRoundsInApplicationPhase(filteredRounds);
+      if (searchQuery) setSearchQuery("");
+    }
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
@@ -53,9 +89,10 @@ const ApplyNowPage = () => {
       );
       return () => clearTimeout(timeOutId);
     } else {
-      setFilteredRoundsInApplicationPhase(roundsInApplicationPhase);
+      filterGrantRoundByType();
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterProjectsByTitle = (query: string) => {
@@ -73,7 +110,7 @@ const ApplyNowPage = () => {
         query.toLocaleLowerCase()
     );
 
-    const nonExactMatches = roundsInApplicationPhase?.filter(
+    const nonExactMatches = filteredRoundsInApplicationPhase?.filter(
       (round) =>
         round.roundMetadata?.name
           ?.toLocaleLowerCase()
@@ -149,9 +186,13 @@ const ApplyNowPage = () => {
           </div>
           <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput searchQuery={searchQuery} onChange={setSearchQuery} />
+            <GrantRoundTypeFilterDropdown
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                setType(e.target.value);
+              }}
+            />
             <SortFilterDropdown
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: { target: { value: any } }) =>
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setOrder(e.target.value)
               }
             />

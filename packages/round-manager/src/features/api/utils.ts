@@ -626,6 +626,8 @@ export interface SchemaQuestion {
   hidden: boolean;
   choices?: string[];
   encrypted: boolean;
+  fixed?: boolean;
+  metadataExcluded?: boolean;
 }
 
 export interface ProjectRequirementsSchema {
@@ -658,18 +660,20 @@ export const generateApplicationSchema = (
   const schema = { questions: new Array<SchemaQuestion>(), requirements };
   if (!questions) return schema;
 
-  schema.questions = questions.map((question, index) => {
-    return {
-      id: index,
-      title: question.title,
-      type: question.type,
-      required: question.required,
-      info: "",
-      choices: question.choices,
-      hidden: question.hidden,
-      encrypted: question.encrypted,
-    };
-  });
+  schema.questions = questions
+    .filter((q) => !q.metadataExcluded)
+    .map((question, index) => {
+      return {
+        id: index,
+        title: question.title,
+        type: question.type,
+        required: question.required,
+        info: "",
+        choices: question.choices,
+        hidden: question.hidden,
+        encrypted: question.encrypted,
+      };
+    });
 
   return schema;
 };

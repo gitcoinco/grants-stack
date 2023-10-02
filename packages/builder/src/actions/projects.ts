@@ -11,7 +11,11 @@ import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
 import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
+import {
+  ROUND_PAYOUT_MERKLE,
+  getProjectURIComponents,
+  getProviderByChainId,
+} from "../utils/utils";
 import { chains } from "../utils/wagmi";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
@@ -447,6 +451,7 @@ export const fetchProjectApplications =
               round {
                 id
               }
+              inReview
               metaPtr {
                 pointer
                 protocol
@@ -468,6 +473,7 @@ export const fetchProjectApplications =
             (application: any) => ({
               status: convertStatusToText(application.status),
               roundID: application.round.id,
+              inReview: application.inReview,
               chainId: chain.id,
               metaPtr: application.metaPtr,
             })
@@ -499,7 +505,6 @@ export const fetchProjectApplications =
         }
       })
     );
-
     dispatch({
       type: PROJECT_APPLICATIONS_LOADED,
       projectID,
@@ -512,7 +517,7 @@ export const loadProjectStats =
     projectID: string,
     projectRegistryAddress: string,
     projectChainId: string,
-    rounds: Array<{ roundId: string; chainId: ChainId }>
+    rounds: Array<{ roundId: string; chainId: ChainId; roundType: string }>
   ) =>
   async (dispatch: Dispatch) => {
     const uniqueProjectID = generateUniqueRoundApplicationID(
@@ -564,7 +569,11 @@ export const loadProjectStats =
       );
 
       const project = applications.find(
-        (app) => app.projectId === uniqueProjectID && app.status === "APPROVED"
+        (app) =>
+          app.projectId === uniqueProjectID &&
+          app.status === "APPROVED" &&
+          !!round.roundType &&
+          round?.roundType === ROUND_PAYOUT_MERKLE
       );
 
       if (project) {

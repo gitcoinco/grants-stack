@@ -167,6 +167,7 @@ export const roundApplicationReducer = (
     case APPLICATION_DATA_LOADED: {
       const application =
         state[action.roundAddress] || roundApplicationInitialState;
+      // FIX: STATE HAS NO APPLICATIONS LOADED EVER
       return {
         ...state,
         [action.roundAddress]: {
