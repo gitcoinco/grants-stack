@@ -15,17 +15,14 @@ import { BoltIcon } from "@heroicons/react/24/outline";
 
 import { usePassport } from "../../api/passport";
 import useSWR from "swr";
-import { round, groupBy, uniqBy } from "lodash-es";
+import { groupBy, uniqBy } from "lodash-es";
 import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { Address, formatUnits, getAddress, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import {
-  MatchingEstimateResult,
-  useMatchingEstimates,
-} from "../../../hooks/matchingEstimate";
+import { useMatchingEstimates } from "../../../hooks/matchingEstimate";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -220,7 +217,7 @@ export function SummaryContainer() {
 
   async function handleSubmitDonation() {
     try {
-      if (!round || !walletClient) {
+      if (!walletClient) {
         return;
       }
 
@@ -281,7 +278,7 @@ export function SummaryContainer() {
     }
   }, [totalDonationAcrossChainsInUSDData]);
 
-  const { data: estimates, error: matchingError } = useMatchingEstimates(
+  const { data: matchingEstimates } = useMatchingEstimates(
     rounds?.map((round) => {
       const projs = projects.filter((project) => project.roundId === round.id);
       return {
@@ -295,28 +292,25 @@ export function SummaryContainer() {
           ),
           recipient: proj.recipient,
           contributor: address as Address,
+          token: getVotingTokenForChain(
+            Number(proj.chainId) as ChainId
+          ).address.toLowerCase(),
         })),
       };
     }) ?? []
   );
 
+  console.log(matchingEstimates);
+
+  const estimateText = (matchingEstimates?.flat() ?? [])
+    .map((est) => est.differenceInUSD ?? 0)
+    .filter((diff) => diff > 0)
+    .reduce((acc, b) => acc + b, 0)
+    .toFixed(2);
+
   if (projects.length === 0) {
     return null;
   }
-
-  const flattenedArray = (estimates?.flat().reduce((acc, item) => {
-    return acc.concat(Object.values(item));
-  }, []) ?? []) as MatchingEstimateResult[];
-  console.log(flattenedArray);
-  const estimateText = Number(
-    formatUnits(
-      flattenedArray
-        .map((est) => BigInt(est.difference ?? 0))
-        .filter((diff) => diff > 0)
-        .reduce((a, b) => (a += b), 0n),
-      18
-    )
-  ).toFixed(2);
 
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
@@ -334,11 +328,6 @@ export function SummaryContainer() {
             ~$
             {estimateText}
           </p>
-          {matchingError &&
-            JSON.stringify(
-              matchingError,
-              Object.getOwnPropertyNames(matchingError)
-            )}
         </div>
       </div>
       <div>

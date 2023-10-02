@@ -9,22 +9,33 @@ export type MatchingEstimateResult = {
   capOverflow: string;
   matchedWithoutCap: string;
   matched: string;
-  difference: string;
+  difference: bigint;
+  differenceInUSD: number;
+  roundId: string;
+  chainId: number;
+  recipient: string;
 };
 
 type UseMatchingEstimatesParams = {
   roundId: Address;
   chainid: ChainId;
-  potentialVotes: { contributor: string; recipient: string; amount: bigint }[];
+  potentialVotes: {
+    contributor: string;
+    recipient: string;
+    amount: bigint;
+    token: string;
+  }[];
 };
 
-function getMatchingEstimates(params: UseMatchingEstimatesParams) {
+function getMatchingEstimates(
+  params: UseMatchingEstimatesParams
+): Promise<MatchingEstimateResult[]> {
   // eslint-disable-next-line
   const replacer = (key: any, value: any) =>
     typeof value === "bigint" ? value.toString() : value;
 
   return fetch(
-    `https://indexer-development.fly.dev/api/v1/chains/${params.chainid}/rounds/${params.roundId}/estimate`,
+    `${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${params.chainid}/rounds/${params.roundId}/estimate`,
     {
       headers: {
         accept: "*/*",
@@ -37,8 +48,12 @@ function getMatchingEstimates(params: UseMatchingEstimatesParams) {
   ).then((r) => r.json());
 }
 
+/**
+ * Fetches matching estimates for the given round, given potential votes, as an array
+ * For a single round, pass in an array with a single element
+ * Returns amounts in the round token -> needs to be converted to USD usually based on the round token price */
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
-  return useSWR(params, (params) => {
-    return Promise.all(params.map((params) => getMatchingEstimates(params)));
-  });
+  return useSWR(params, (params) =>
+    Promise.all(params.map((params) => getMatchingEstimates(params)))
+  );
 }
