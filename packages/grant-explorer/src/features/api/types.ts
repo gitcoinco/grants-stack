@@ -62,6 +62,16 @@ export interface Eligibility {
   requirements?: Requirement[];
 }
 
+export interface PayoutStrategy {
+  id: string;
+  /**
+   * Whether is QUADRATIC FUNDING or DIRECT GRANT
+   * MERKLE for QF
+   * DIRECT for DG
+   */
+  strategyName: string;
+}
+
 export interface Round {
   /**
    * The on-chain unique round ID
@@ -96,6 +106,10 @@ export interface Round {
    * Pointer to application metadata in a decentralized storage e.g IPFS, Ceramic etc.
    */
   applicationStore?: MetadataPointer;
+  /**
+   * Helps identifying Round Types from QF and DG
+   */
+  payoutStrategy: PayoutStrategy;
   /**
    * Voting contract address
    */

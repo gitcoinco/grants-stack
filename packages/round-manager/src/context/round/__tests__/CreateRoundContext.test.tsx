@@ -1,6 +1,6 @@
 import { saveToIPFS } from "../../../features/api/ipfs";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ProgressStatus } from "../../../features/api/types";
+import { ProgressStatus, RoundCategory } from "../../../features/api/types";
 import {
   CreateRoundData,
   CreateRoundProvider,
@@ -13,12 +13,12 @@ const mockWallet = {
   address: "0x0",
   signer: {
     getChainId: () => {
-      /* do nothing.*/
+      return 5;
     },
   },
 };
 
-jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
+jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 jest.mock("../../../features/api/round");
 jest.mock("../../../features/api/ipfs");
 jest.mock("../../../features/api/subgraph");
@@ -415,7 +415,11 @@ const TestUseCreateRoundComponent = () => {
   return (
     <div>
       <button
-        onClick={() => createRound({} as unknown as CreateRoundData)}
+        onClick={() =>
+          createRound({
+            roundCategory: RoundCategory.QuadraticFunding,
+          } as unknown as CreateRoundData)
+        }
         data-testid="create-round"
       >
         Create My Program

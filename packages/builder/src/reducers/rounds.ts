@@ -20,11 +20,14 @@ export const enum Status {
   LoadingApplicationMetadata,
   LoadingProgramMetaPtr,
   LoadingProgramMetadata,
+  LoadingRoundPayoutStrategy,
   Loaded,
   LoadingRoundProjects,
   LoadedRoundProjects,
   Error,
 }
+
+export type PayoutStrategy = "MERKLE" | "DIRECT";
 
 export interface RoundsState {
   [address: string]: {

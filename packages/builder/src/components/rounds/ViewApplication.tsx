@@ -17,6 +17,8 @@ import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import Cross from "../icons/Cross";
 import { RoundApplicationAnswers } from "../../types/roundApplication";
+import { isInfinite } from "../../utils/components";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -49,9 +51,13 @@ function ViewApplication() {
       ? applicationState.metadataFromIpfs![ipfsHash!]
       : null;
 
+    const roundApplicationStatus =
+      applicationState?.metadataFromIpfs![ipfsHash!].publishedApplicationData
+        .status;
+
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
-    const projectID =
+    const fullProjectID =
       publishedApplicationMetadata?.publishedApplicationData?.application
         ?.project?.id;
 
@@ -68,7 +74,8 @@ function ViewApplication() {
       showErrorModal,
       web3ChainId,
       roundChainId,
-      projectID,
+      fullProjectID,
+      roundApplicationStatus,
     };
   }, shallowEqual);
 
@@ -83,7 +90,7 @@ function ViewApplication() {
     if (!props.round) return;
 
     if (params.ipfsHash !== undefined) {
-      dispatch(fetchApplicationData(ipfsHash!, roundId!));
+      dispatch(fetchApplicationData(ipfsHash!, roundId!, chainId!));
     }
   }, [dispatch, params.ipfsHash, props.round]);
 
@@ -112,6 +119,12 @@ function ViewApplication() {
     </div>;
   }
 
+  const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
+
+  const roundInReview = props.roundApplicationStatus === "IN_REVIEW";
+  const roundApproved = props.roundApplicationStatus === "APPROVED";
+  const hasProperStatus = roundInReview || roundApproved;
+
   if (
     props.roundState === undefined ||
     props.round === undefined ||
@@ -134,12 +147,12 @@ function ViewApplication() {
         <Button
           variant={ButtonVariants.outlineDanger}
           onClick={() => {
-            const path = projectPathByID(props.projectID);
+            const path = projectPathByID(props.fullProjectID);
             if (path !== undefined) {
               navigate(path);
             } else {
               console.error(
-                `cannot build project path from id: ${props.projectID}`
+                `cannot build project path from id: ${props.fullProjectID}`
               );
             }
           }}
@@ -156,15 +169,41 @@ function ViewApplication() {
           <p className="font-semibold">Grant Round</p>
           <p>{props.round.programName}</p>
           <p>{props.round.roundMetadata.name}</p>
-          <p className="font-semibold mt-4">Application Period:</p>
-          <p>
-            {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
-            {formatDate(props.round.applicationsEndTime * 1000)}
-          </p>
+          {isDirectRound && hasProperStatus && (
+            <>
+              <p className="font-semibold mt-4">Contact Information:</p>
+              <a
+                className="text-purple-500"
+                target="_blank"
+                href={`${
+                  props.round.roundMetadata.support?.type === "Email"
+                    ? "mailto:"
+                    : ""
+                }
+                ${props.round.roundMetadata.support?.info}`}
+                rel="noreferrer"
+              >
+                {props.round.roundMetadata.support?.info}
+              </a>
+            </>
+          )}
+          {!isDirectRound && (
+            <>
+              <p className="font-semibold mt-4">Application Period:</p>
+              <p>
+                {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
+                {isInfinite(props.round.applicationsEndTime)
+                  ? "No End Date"
+                  : formatDate(props.round.applicationsEndTime * 1000)}
+              </p>
+            </>
+          )}
           <p className="font-semibold mt-4">Round Dates:</p>
           <p>
             {formatDate(props.round.roundStartTime * 1000)} -{" "}
-            {formatDate(props.round.roundEndTime * 1000)}
+            {isInfinite(props.round.applicationsEndTime)
+              ? "No End Date"
+              : formatDate(props.round.roundEndTime * 1000)}
           </p>
           <p className="mt-4">
             Need Help? Check out the{" "}

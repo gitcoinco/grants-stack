@@ -18,6 +18,7 @@ import { Contract, ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
+import { DirectPayoutStrategy__factory } from "../../types/generated/typechain";
 // import { verifyApplicationMetadata } from "common/src/verification";
 // import { fetchProjectOwners } from "common/src/registry";
 
@@ -119,6 +120,8 @@ function convertStatus(status: number) {
       return "REJECTED";
     case 3:
       return "CANCELLED";
+    case 4:
+      return "IN_REVIEW";
     default:
       return "PENDING";
   }
@@ -146,17 +149,34 @@ export const getApplicationsByRoundId = async (
           }
           first: 1000) {
             id
+            project
             metaPtr {
               protocol
               pointer
             }
             applicationIndex
             status
+            inReview
             round {
               projectsMetaPtr {
                 protocol
                 pointer
               }
+              payoutStrategy {
+                id
+                strategyName
+                payouts {
+                  amount
+                  createdAt
+                  txnHash
+                  applicationIndex
+                }
+              }
+            }
+            statusSnapshots {
+              status
+              statusDescription
+              timestamp
             }
           }
         }
@@ -180,9 +200,23 @@ export const getApplicationsByRoundId = async (
       grantApplications.push({
         ...application,
         status: projectStatus,
+        inReview: Boolean(project.inReview),
         applicationIndex: project.applicationIndex,
         id: project.id,
+        projectId: project.project,
         projectsMetaPtr: project.round.projectsMetaPtr,
+        payoutStrategy: project.round.payoutStrategy,
+        statusSnapshots: project.statusSnapshots?.map(
+          (s: {
+            status: number;
+            statusDescription: string;
+            timestamp: string;
+          }) => ({
+            ...s,
+            status: convertStatus(s.status),
+            timestamp: new Date(Number(s.timestamp) * 1000),
+          })
+        ),
       });
     }
 
@@ -338,6 +372,31 @@ export const updateApplicationStatuses = async (
   console.log("Updating application statuses...", statuses);
 
   const tx = await roundImplementation.setApplicationStatuses(statuses);
+
+  const receipt = await tx.wait();
+
+  console.log("✅ Transaction hash: ", tx.hash);
+
+  const blockNumber = receipt.blockNumber;
+
+  return {
+    transactionBlockNumber: blockNumber,
+  };
+};
+
+export const updatePayoutApplicationStatuses = async (
+  payoutStrategyAddress: string,
+  signer: Signer,
+  statuses: AppStatus[]
+): Promise<{ transactionBlockNumber: number }> => {
+  const payout = DirectPayoutStrategy__factory.connect(
+    payoutStrategyAddress,
+    signer
+  );
+
+  console.log("Updating application statuses...", statuses);
+
+  const tx = await payout.setApplicationsInReview(statuses);
 
   const receipt = await tx.wait();
 

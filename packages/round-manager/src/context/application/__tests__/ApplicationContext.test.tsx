@@ -32,7 +32,7 @@ describe("<ApplicationProvider />", () => {
     it("provides application based on given application id", async () => {
       const expectedApplication = makeGrantApplicationData();
       const expectedApplicationId: string = expectedApplication.id;
-      (getApplicationById as any).mockResolvedValue(expectedApplication);
+      (getApplicationById as jest.Mock).mockResolvedValue(expectedApplication);
 
       render(
         <ApplicationProvider>
@@ -72,7 +72,9 @@ describe("<ApplicationProvider />", () => {
     it("sets isLoading back to false and when getApplicationById call succeeds", async () => {
       const expectedApplication = makeGrantApplicationData();
       const expectedApplicationId: string = expectedApplication.id;
-      (getApplicationById as any).mockResolvedValue(expectedApplication);
+      (getApplicationById as jest.Mock).mockResolvedValue(
+        Promise.resolve(expectedApplication)
+      );
 
       render(
         <ApplicationProvider>

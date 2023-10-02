@@ -31,6 +31,7 @@ import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
+import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { getAddress } from "viem";
 
@@ -82,8 +83,15 @@ export default function ViewProjectDetails() {
   );
 
   const currentTime = new Date();
-  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
-  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
+  const isAfterRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime)
+      ? false
+      : round && round.roundEndTime <= currentTime);
+  const isBeforeRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
+
   const { projects, add, remove } = useCartStorage();
 
   const isAlreadyInCart = projects.some(
@@ -119,7 +127,7 @@ export default function ViewProjectDetails() {
     <>
       <Navbar />
 
-      {isBeforeRoundEndDate && (
+      {round && !isDirectRound(round) && isBeforeRoundEndDate && (
         <PassportBanner chainId={Number(chainId)} round={round} />
       )}
       {isAfterRoundEndDate && (
@@ -166,18 +174,20 @@ export default function ViewProjectDetails() {
                     />
                   </div>
                 </div>
-                <div className="md:visible invisible  min-w-fit">
-                  <Sidebar
-                    isAlreadyInCart={isAlreadyInCart}
-                    isBeforeRoundEndDate={isBeforeRoundEndDate}
-                    removeFromCart={() => {
-                      remove(cartProject.grantApplicationId);
-                    }}
-                    addToCart={() => {
-                      add(cartProject);
-                    }}
-                  />
-                </div>
+                {round && !isDirectRound(round) && (
+                  <div className="md:visible invisible  min-w-fit">
+                    <Sidebar
+                      isAlreadyInCart={isAlreadyInCart}
+                      isBeforeRoundEndDate={isBeforeRoundEndDate}
+                      removeFromCart={() => {
+                        remove(cartProject.grantApplicationId);
+                      }}
+                      addToCart={() => {
+                        add(cartProject);
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -540,9 +550,13 @@ export function ProjectStats() {
     projectToRender?.projectRegistryId as string
   );
 
-  const timeRemaining = round?.roundEndTime
-    ? formatDistanceToNowStrict(round.roundEndTime)
-    : null;
+  const timeRemaining =
+    round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
+      ? formatDistanceToNowStrict(round.roundEndTime)
+      : null;
+  const isBeforeRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > new Date());
 
   return (
     <div
@@ -559,7 +573,7 @@ export function ProjectStats() {
         <p>contributors</p>
       </div>
       <div>
-        {(round?.roundEndTime ?? 0) > new Date() ? (
+        {isBeforeRoundEndDate ? (
           <>
             <h3>{timeRemaining ?? "-"}</h3>
             <p>to go</p>

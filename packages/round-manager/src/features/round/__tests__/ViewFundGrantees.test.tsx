@@ -12,7 +12,7 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import * as merklePayoutStrategy from "../../api/payoutStrategy/merklePayoutStrategy";
+import * as merklePayoutStrategy from "../../api/payoutStrategy/payoutStrategy";
 import * as roundTs from "../../api/round";
 import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
@@ -65,6 +65,8 @@ const fetchMatchingDistributionMock = jest.spyOn(
 );
 
 describe("View Fund Grantees", () => {
+  // TODO: check default values in base.
+  // I've added them to avoid typescript errors.
   const matchingStatsData: MatchingStatsData[] = [
     {
       index: 0,

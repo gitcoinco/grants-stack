@@ -6,6 +6,7 @@ import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
   makeGrantApplicationData,
   makeRoundData,
+  makeDirectGrantRoundData,
   wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
@@ -30,6 +31,8 @@ Object.assign(navigator, {
 });
 
 const mockRoundData: Round = makeRoundData();
+
+const mockDirectGrantRoundData: Round = makeDirectGrantRoundData();
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -181,6 +184,40 @@ describe("View Round", () => {
     expect(screen.getByText("Round Results")).toBeInTheDocument();
     expect(screen.getByText("Fund Grantees")).toBeInTheDocument();
     expect(screen.getByText("Reclaim Funds")).toBeInTheDocument();
+  });
+
+  it("displays fixed side navigation bar for Direct Grant rounds in the round page", () => {
+    (useParams as jest.Mock).mockImplementation(() => {
+      return {
+        id: mockDirectGrantRoundData.id,
+      };
+    });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockDirectGrantRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
+
+    expect(screen.getByTestId("side-nav-bar")).toBeInTheDocument();
+    expect(screen.getByText("Grant Applications")).toBeInTheDocument();
+    expect(screen.getByText("Round Settings")).toBeInTheDocument();
+    expect(screen.queryAllByText("Fund Contract").length).toBe(0);
+    expect(screen.queryAllByText("Round Stats").length).toBe(0);
+    expect(screen.queryAllByText("Round Results").length).toBe(0);
+    expect(screen.queryAllByText("Fund Grantees").length).toBe(0);
+    expect(screen.queryAllByText("Reclaim Funds").length).toBe(0);
   });
 
   it("indicates how many of each kind of application there are", () => {

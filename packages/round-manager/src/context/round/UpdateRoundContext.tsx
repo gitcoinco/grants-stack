@@ -158,7 +158,7 @@ const _updateRound = async ({
     }
 
     if (editedGroups.StartAndEndTimes) {
-      console.log("updating start and end times");
+      console.log("updating start and end times")
       transactionBuilder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
         Date.parse(round?.applicationsStartTime.toString()) / 1000,
         Date.parse(round?.applicationsEndTime.toString()) / 1000,

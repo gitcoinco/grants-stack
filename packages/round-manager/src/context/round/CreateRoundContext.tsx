@@ -2,6 +2,7 @@ import {
   ProgressStatus,
   ProjectRequirements,
   Round,
+  RoundCategory,
   StorageProtocolID,
 } from "../../features/api/types";
 import React, {
@@ -17,8 +18,9 @@ import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
-
 import {
+  dgVotingStrategyDummyContract,
+  directPayoutStrategyFactoryContract,
   merklePayoutStrategyFactoryContract,
   qfVotingStrategyFactoryContract,
 } from "../../features/api/contracts";
@@ -49,6 +51,7 @@ export type CreateRoundData = {
     };
   };
   round: Round;
+  roundCategory: RoundCategory;
 };
 
 export const initialCreateRoundState: CreateRoundState = {
@@ -138,7 +141,11 @@ const _createRound = async ({
     roundMetadataWithProgramContractAddress,
     applicationQuestions,
     round,
+    roundCategory,
   } = createRoundData;
+
+  const isQF = roundCategory === RoundCategory.QuadraticFunding;
+
   try {
     datadogLogs.logger.info(`_createRound: ${round}`);
 
@@ -179,10 +186,13 @@ const _createRound = async ({
 
     const roundContractInputsWithContracts = {
       ...roundContractInputsWithPointers,
-      votingStrategy: qfVotingStrategyFactoryContract(chainId)
-        .address as string,
+      votingStrategy: isQF
+        ? qfVotingStrategyFactoryContract(chainId).address
+        : dgVotingStrategyDummyContract(chainId),
       payoutStrategy: {
-        id: merklePayoutStrategyFactoryContract(chainId).address as string,
+        id: isQF
+          ? merklePayoutStrategyFactoryContract(chainId).address
+          : directPayoutStrategyFactoryContract(chainId).address,
         isReadyForPayout: false,
       },
     };
@@ -194,7 +204,8 @@ const _createRound = async ({
         setRoundContractDeploymentStatus,
       ],
       roundContractInputsWithContracts,
-      signerOrProvider
+      signerOrProvider,
+      isQF
     );
 
     await waitForSubgraphToUpdate(
@@ -311,13 +322,15 @@ async function storeDocuments(
 async function handleDeployUnifiedRoundContract(
   setDeploymentStatusFns: SetStatusFn[],
   round: Round,
-  signerOrProvider: Signer
+  signerOrProvider: Signer,
+  isQF: boolean
 ): Promise<number> {
   try {
     setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IN_PROGRESS));
     const { transactionBlockNumber } = await deployRoundContract(
       round,
-      signerOrProvider
+      signerOrProvider,
+      isQF
     );
 
     setDeploymentStatusFns.forEach((fn) => fn(ProgressStatus.IS_SUCCESS));

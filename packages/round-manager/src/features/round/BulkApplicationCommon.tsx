@@ -80,14 +80,7 @@ export function AdditionalGasFeesNote() {
 }
 
 function MarkForRejection(props: {
-  checkSelection:
-    | "PENDING"
-    | "APPROVED"
-    | "REJECTED"
-    | "CANCELLED"
-    | "APPEAL"
-    | "FRAUD"
-    | undefined;
+  applicationStatus?: ProjectStatus;
   onClick: () => void;
 }) {
   return (
@@ -95,7 +88,7 @@ function MarkForRejection(props: {
       type="button"
       $variant="solid"
       className={`border border-grey-400 w-10 h-10 p-2.5 px-3.5 py-2 ${
-        props.checkSelection === "REJECTED"
+        props.applicationStatus === "REJECTED"
           ? "bg-white text-pink-500"
           : "bg-grey-500 text-white"
       }`}
@@ -108,13 +101,7 @@ function MarkForRejection(props: {
 }
 
 function MarkForApproval(props: {
-  applicationStatus?:
-    | "PENDING"
-    | "APPROVED"
-    | "REJECTED"
-    | "CANCELLED"
-    | "APPEAL"
-    | "FRAUD";
+  applicationStatus?: ProjectStatus;
   onClick: () => void;
 }) {
   return (
@@ -134,16 +121,31 @@ function MarkForApproval(props: {
   );
 }
 
+function MarkForInReview(props: {
+  applicationStatus?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <Button
+      type="button"
+      $variant="solid"
+      className={`border border-grey-400 w-10 h-10 p-2.5 px-3.5 py-2 ${
+        props.applicationStatus === true
+          ? "bg-teal-400 text-grey-500"
+          : "bg-grey-500 text-white"
+      }`}
+      onClick={props.onClick}
+      data-testid="in-review-button"
+    >
+      <CheckIcon aria-hidden="true" />
+    </Button>
+  );
+}
+
 export function ApplicationHeader(props: {
   bulkSelect: boolean | undefined;
-  applicationStatus:
-    | "PENDING"
-    | "APPROVED"
-    | "REJECTED"
-    | "CANCELLED"
-    | "APPEAL"
-    | "FRAUD"
-    | undefined;
+  applicationStatus?: ProjectStatus | boolean;
+  inReviewOnClick?: () => void;
   approveOnClick?: () => void;
   rejectOnClick?: () => void;
   application: GrantApplication;
@@ -155,15 +157,24 @@ export function ApplicationHeader(props: {
           className="absolute right-4 top-4 gap-2 flex"
           data-testid="bulk-approve-reject-buttons"
         >
+          {props.inReviewOnClick && (
+            <MarkForInReview
+              data-testid="in-review-button"
+              applicationStatus={props.applicationStatus as boolean}
+              onClick={props.inReviewOnClick}
+            />
+          )}
           {props.approveOnClick && (
             <MarkForApproval
-              applicationStatus={props.applicationStatus}
+              data-testid="approve-button"
+              applicationStatus={props.applicationStatus as ProjectStatus}
               onClick={props.approveOnClick}
             />
           )}
           {props.rejectOnClick && (
             <MarkForRejection
-              checkSelection={props.applicationStatus}
+              data-testid="reject-button"
+              applicationStatus={props.applicationStatus as ProjectStatus}
               onClick={props.rejectOnClick}
             />
           )}

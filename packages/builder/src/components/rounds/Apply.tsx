@@ -18,7 +18,10 @@ import colors from "../../styles/colors";
 import { Round } from "../../types";
 import { RoundApplicationAnswers } from "../../types/roundApplication";
 import { applicationSteps } from "../../utils/steps";
-import { getProjectURIComponents } from "../../utils/utils";
+import {
+  ROUND_PAYOUT_DIRECT,
+  getProjectURIComponents,
+} from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -26,6 +29,7 @@ import ExitModal from "../base/ExitModal";
 import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import StatusModal from "../base/StatusModal";
 import Cross from "../icons/Cross";
+import { isInfinite } from "../../utils/components";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -76,6 +80,8 @@ function Apply() {
       showErrorModal,
     };
   }, shallowEqual);
+
+  const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
 
   /*
    * Alert elements
@@ -238,15 +244,23 @@ function Apply() {
             <p className="font-semibold">Grant Round</p>
             <p>{props.round.programName}</p>
             <p>{props.round.roundMetadata.name}</p>
-            <p className="font-semibold mt-4">Application Period:</p>
-            <p>
-              {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
-              {formatDate(props.round.applicationsEndTime * 1000)}
-            </p>
+            {!isDirectRound && (
+              <>
+                <p className="font-semibold mt-4">Application Period:</p>
+                <p>
+                  {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
+                  {isInfinite(props.round.applicationsEndTime)
+                    ? "No End Date"
+                    : formatDate(props.round.applicationsEndTime * 1000)}
+                </p>
+              </>
+            )}
             <p className="font-semibold mt-4">Round Dates:</p>
             <p>
               {formatDate(props.round.roundStartTime * 1000)} -{" "}
-              {formatDate(props.round.roundEndTime * 1000)}
+              {isInfinite(props.round.applicationsEndTime)
+                ? "No End Date"
+                : formatDate(props.round.roundEndTime * 1000)}
             </p>
             {/* tslint:disable-next-line:max-line-length */}
             <PurpleNotificationBox className="mt-5">
