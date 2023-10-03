@@ -21,17 +21,13 @@ export default class PinataClient {
       );
     }
     this.jwt = JWT!;
-    this.gateway = GATEWAY!;
+    this.gateway = GATEWAY.replace(/\/$/, "");
     this.pinJSONToIPFSURL = PIN_JSON_TO_IPFS_URL;
     this.pinFileToIPFSURL = PIN_FILE_TO_IPFS_URL;
   }
 
   fileURL(cid: string) {
-    // if GATEWAY is true it throws an exception in the constructor
-    const baseURL = new URL(this.gateway);
-    // using the baseURL makes sure that we don't have a double '/'
-    // for the path in case GATEWAY ends with one
-    return new URL(`/ipfs/${cid}`, baseURL).toString();
+    return `${this.gateway}/ipfs/${cid}`;
   }
 
   fetchText(cid: string) {
