@@ -161,7 +161,38 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
       address = "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID:
+    case ChainId.PGN_TESTNET: {
+      address = "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e";
+      break;
+    }
+    case ChainId.PGN: {
+      address = "0xcE7c30DbcEC2a98B516E4C64fA4E3256AB813b10";
+      break;
+    }
+    case ChainId.ARBITRUM_GOERLI: {
+      address = "0x809E751e5C5bB1446e9ab2Ac37c687a35DE53BC6";
+      break;
+    }
+    case ChainId.ARBITRUM: {
+      address = "0x5ab68dCdcA37A1C2b09c5218e28eB0d9cc3FEb03";
+      break;
+    }
+    case ChainId.FUJI: {
+      address = "0xCd3618509983FE4990D7770CF6f02c7145dC365F";
+      break;
+    }
+    case ChainId.AVALANCHE: {
+      address = "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918";
+      break;
+    }
+    case ChainId.POLYGON: {
+      address = "0x8142cAa6dED9F63434B1ED862d53E06332874570";
+      break;
+    }
+    case ChainId.POLYGON_MUMBAI: {
+      address = "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918";
+      break;
+    }
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
@@ -243,15 +274,16 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
     "0x2Bb670C3ffC763b691062d671b386E51Cf1840f0",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:
     "0x9B1Ee60B539a3761E328a621A3d980EE9385679a",
-  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
-  [ChainId.PGN_TESTNET]: "",
-  [ChainId.PGN]: "",
-  [ChainId.ARBITRUM_GOERLI]: "",
-  [ChainId.ARBITRUM]: "",
-  [ChainId.FUJI]: "",
-  [ChainId.AVALANCHE]: "",
-  [ChainId.POLYGON]: "",
-  [ChainId.POLYGON_MUMBAI]: "",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
+    "0x8eC471f30cA797FD52F9D37A47Be2517a7BD6912",
+  [ChainId.PGN_TESTNET]: "0x3D77E65aEA55C0e07Cb018aB4Dc22D38cAD75921",
+  [ChainId.PGN]: "0x0c33c9dEF7A3d9961b802C6C6402d306b7D48135",
+  [ChainId.ARBITRUM_GOERLI]: "0xCd3618509983FE4990D7770CF6f02c7145dC365F",
+  [ChainId.ARBITRUM]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
+  [ChainId.FUJI]: "0x0F98547e09D41e3c82086fC5Eb0E42Ab786aA763",
+  [ChainId.AVALANCHE]: "0x8AdFcF226dfb2fA73788Ad711C958Ba251369cb3",
+  [ChainId.POLYGON]: "0xF2a07728107B04266015E67b1468cA0a536956C8",
+  [ChainId.POLYGON_MUMBAI]: "0xD9B7Ce1F68A93dF783A8519ed52b74f5DcF5AFE1",
 };
 
 /* DirectPayoutStrategyFactoryContract  */

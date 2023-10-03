@@ -236,9 +236,10 @@ export async function getRoundById(
     );
 
     const DENOMINATOR = 100000;
-    const protocolFeePercentage = res.data.alloSettings
-      ? res.data.alloSettings[0].protocolFeePercentage / DENOMINATOR
-      : 0;
+    const protocolFeePercentage =
+      res.data.alloSettings && res.data.alloSettings[0]
+        ? res.data.alloSettings[0].protocolFeePercentage / DENOMINATOR
+        : 0;
 
     const roundFeePercentage =
       res.data.rounds[0].roundFeePercentage / DENOMINATOR;
