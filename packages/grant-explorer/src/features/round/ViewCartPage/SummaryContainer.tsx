@@ -23,6 +23,7 @@ import { useCheckoutStore } from "../../../checkoutStore";
 import { Address, formatUnits, getAddress, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMatchingEstimates } from "../../../hooks/matchingEstimate";
+import { Skeleton } from "@chakra-ui/react";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -278,7 +279,7 @@ export function SummaryContainer() {
     }
   }, [totalDonationAcrossChainsInUSDData]);
 
-  const { data: matchingEstimates } = useMatchingEstimates(
+  const matchingEstimateParams =
     rounds?.map((round) => {
       const projs = projects.filter((project) => project.roundId === round.id);
       return {
@@ -297,12 +298,16 @@ export function SummaryContainer() {
           ).address.toLowerCase(),
         })),
       };
-    }) ?? []
-  );
+    }) ?? [];
 
-  console.log(matchingEstimates);
+  const {
+    data: matchingEstimates,
+    error: matchingEstimateError,
+    isLoading: matchingEstimateLoading,
+  } = useMatchingEstimates(matchingEstimateParams);
 
-  const estimateText = (matchingEstimates?.flat() ?? [])
+  const estimateText = matchingEstimates
+    ?.flat()
     .map((est) => est.differenceInUSD ?? 0)
     .filter((diff) => diff > 0)
     .reduce((acc, b) => acc + b, 0)
@@ -312,23 +317,39 @@ export function SummaryContainer() {
     return null;
   }
 
+  console.log(
+    matchingEstimates,
+    matchingEstimateLoading,
+    matchingEstimateError
+  );
+
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
-      <div className="flex flex-row items-center justify-between mt-4 border-t-2 font-semibold italic text-teal-500">
-        <div className="flex flex-row mt-4">
-          <p className="mb-2">
-            Estimated match{" "}
-            <InformationCircleIcon className={"w-5 h-5 inline"} />
-          </p>
-        </div>
-        <div className="flex justify-end mt-4">
-          <p>
-            <BoltIcon className={"w-6 h-6 inline"} />
-            ~$
-            {estimateText}
-          </p>
-        </div>
+      <div
+        className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${
+          matchingEstimateError !== undefined ? "text-red-400" : "text-teal-500"
+        }`}
+      >
+        {matchingEstimateError === undefined && (
+          <>
+            <div className="flex flex-row mt-4">
+              <p className="mb-2">
+                Estimated match{" "}
+                <InformationCircleIcon className={"w-5 h-5 inline"} />
+              </p>
+            </div>
+            <div className="flex justify-end mt-4">
+              <Skeleton isLoaded={!matchingEstimateLoading}>
+                <p>
+                  <BoltIcon className={"w-4 h-4 inline"} />
+                  ~$
+                  {estimateText}
+                </p>
+              </Skeleton>
+            </div>
+          </>
+        )}
       </div>
       <div>
         {Object.keys(projectsByChain).map((chainId) => (
