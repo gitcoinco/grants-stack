@@ -161,7 +161,38 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
       address = "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab";
       break;
     }
-    case ChainId.GOERLI_CHAIN_ID:
+    case ChainId.PGN_TESTNET: {
+      address = "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e";
+      break;
+    }
+    case ChainId.PGN: {
+      address = "0xcE7c30DbcEC2a98B516E4C64fA4E3256AB813b10";
+      break;
+    }
+    case ChainId.ARBITRUM_GOERLI: {
+      address = "0x809E751e5C5bB1446e9ab2Ac37c687a35DE53BC6";
+      break;
+    }
+    case ChainId.ARBITRUM: {
+      address = "0x5ab68dCdcA37A1C2b09c5218e28eB0d9cc3FEb03";
+      break;
+    }
+    case ChainId.FUJI: {
+      address = "0xCd3618509983FE4990D7770CF6f02c7145dC365F";
+      break;
+    }
+    case ChainId.AVALANCHE: {
+      address = "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918";
+      break;
+    }
+    case ChainId.POLYGON: {
+      address = "0x8142cAa6dED9F63434B1ED862d53E06332874570";
+      break;
+    }
+    case ChainId.POLYGON_MUMBAI: {
+      address = "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918";
+      break;
+    }
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
