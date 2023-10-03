@@ -28,7 +28,7 @@ export default class PinataClient {
 
   fileURL(cid: string) {
     // if GATEWAY is true it throws an exception in the constructor
-    const baseURL = new URL(GATEWAY!);
+    const baseURL = new URL(this.gateway);
     // using the baseURL makes sure that we don't have a double '/'
     // for the path in case GATEWAY ends with one
     return new URL(`/ipfs/${cid}`, baseURL).toString();
