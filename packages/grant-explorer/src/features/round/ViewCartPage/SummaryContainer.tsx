@@ -279,6 +279,7 @@ export function SummaryContainer() {
     }
   }, [totalDonationAcrossChainsInUSDData]);
 
+  /* Matching estimates are calculated per-round */
   const matchingEstimateParams =
     rounds?.map((round) => {
       const projs = projects.filter((project) => project.roundId === round.id);
