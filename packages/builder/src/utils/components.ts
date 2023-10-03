@@ -49,3 +49,6 @@ export const formatTimeUTC = (ts: number) => {
   const date = new Date(ts * 1000);
   return date.toUTCString().replace("GMT", "UTC");
 };
+
+export const isInfinite = (number: Number) =>
+  number === Number.MAX_SAFE_INTEGER;

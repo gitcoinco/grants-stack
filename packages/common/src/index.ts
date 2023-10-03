@@ -277,6 +277,10 @@ export const padSingleDigitNumberWithZero = (i: number): string =>
   i < 10 ? "0" + i : i.toString();
 
 export const formatUTCDateAsISOString = (date: Date): string => {
+  // @ts-expect-error remove when DG support is merged
+  if (isNaN(date)) {
+    return "";
+  }
   const isoString = date.toISOString();
   return isoString.slice(0, 10).replace(/-/g, "/");
 };

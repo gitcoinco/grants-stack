@@ -25,6 +25,7 @@ import {
   updateApplicationStatuses,
 } from "../../api/application";
 import { ProgressStatus } from "../../api/types";
+import { errorModalDelayMs } from "../../../constants";
 
 jest.mock("../../api/application");
 jest.mock("react-router-dom", () => ({
@@ -369,7 +370,13 @@ describe("<ApplicationsRejected />", () => {
       });
 
       it("shows error modal when reviewing applications fail", async () => {
-        expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+        await waitFor(
+          async () =>
+            expect(
+              await screen.findByTestId("error-modal")
+            ).toBeInTheDocument(),
+          { timeout: errorModalDelayMs + 1000 }
+        );
       });
 
       it("choosing done closes the error modal", async () => {

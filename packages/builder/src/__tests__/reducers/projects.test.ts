@@ -23,6 +23,7 @@ describe("projects reducer", () => {
           {
             roundID: addressFrom(1),
             status: "PENDING" as AppStatus,
+            inReview: false,
             chainId: 1,
           },
         ],
@@ -30,6 +31,7 @@ describe("projects reducer", () => {
           {
             roundID: addressFrom(2),
             status: "PENDING" as AppStatus,
+            inReview: false,
             chainId: 1,
           },
         ],
@@ -46,6 +48,7 @@ describe("projects reducer", () => {
         {
           roundID: addressFrom(1),
           status: "PENDING",
+          inReview: false,
           chainId: 1,
         },
       ],
@@ -60,6 +63,7 @@ describe("projects reducer", () => {
           {
             roundID: addressFrom(1),
             status: "PENDING" as AppStatus,
+            inReview: false,
             chainId: 1,
           },
         ],
@@ -73,6 +77,7 @@ describe("projects reducer", () => {
         {
           roundID: addressFrom(2),
           status: "APPROVED",
+          inReview: false,
           chainId: 1,
         },
       ],
@@ -83,6 +88,7 @@ describe("projects reducer", () => {
         {
           roundID: addressFrom(1),
           status: "PENDING",
+          inReview: false,
           chainId: 1,
         },
       ],
@@ -90,6 +96,7 @@ describe("projects reducer", () => {
         {
           roundID: addressFrom(2),
           status: "APPROVED",
+          inReview: false,
           chainId: 1,
         },
       ],
@@ -110,14 +117,48 @@ describe("projects reducer", () => {
     const initialState = {
       ...state,
       applications: {
-        "1": [{ roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 }],
-        "2": [
-          { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
-          { roundID: "0x2", status: "PENDING" as AppStatus, chainId: 1 },
-          { roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 },
-          { roundID: "0x4", status: "PENDING" as AppStatus, chainId: 1 },
+        "1": [
+          {
+            roundID: "0x1",
+            status: "PENDING" as AppStatus,
+            inReview: false,
+            chainId: 1,
+          },
         ],
-        "3": [{ roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 }],
+        "2": [
+          {
+            roundID: "0x1",
+            status: "PENDING" as AppStatus,
+            inReview: false,
+            chainId: 1,
+          },
+          {
+            roundID: "0x2",
+            status: "PENDING" as AppStatus,
+            inReview: false,
+            chainId: 1,
+          },
+          {
+            roundID: "0x3",
+            status: "PENDING" as AppStatus,
+            inReview: false,
+            chainId: 1,
+          },
+          {
+            roundID: "0x4",
+            status: "PENDING" as AppStatus,
+            inReview: false,
+            chainId: 1,
+          },
+        ],
+        "3": [
+          {
+            roundID: "0x3",
+            status: "PENDING" as AppStatus,
+            inReview: false,
+            chainId: 1,
+          },
+        ],
       },
     };
 
@@ -129,14 +170,48 @@ describe("projects reducer", () => {
     });
 
     expect(newState.applications).toEqual({
-      "1": [{ roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 }],
-      "2": [
-        { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
-        { roundID: "0x2", status: "PENDING" as AppStatus, chainId: 1 },
-        { roundID: "0x3", status: "APPROVED" as AppStatus, chainId: 1 },
-        { roundID: "0x4", status: "PENDING" as AppStatus, chainId: 1 },
+      "1": [
+        {
+          roundID: "0x1",
+          status: "PENDING" as AppStatus,
+          inReview: false,
+          chainId: 1,
+        },
       ],
-      "3": [{ roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 }],
+      "2": [
+        {
+          roundID: "0x1",
+          status: "PENDING" as AppStatus,
+          inReview: false,
+          chainId: 1,
+        },
+        {
+          roundID: "0x2",
+          status: "PENDING" as AppStatus,
+          inReview: false,
+          chainId: 1,
+        },
+        {
+          roundID: "0x3",
+          status: "APPROVED" as AppStatus,
+          inReview: false,
+          chainId: 1,
+        },
+        {
+          roundID: "0x4",
+          status: "PENDING" as AppStatus,
+          inReview: false,
+          chainId: 1,
+        },
+      ],
+      "3": [
+        {
+          roundID: "0x3",
+          status: "PENDING" as AppStatus,
+          inReview: false,
+          chainId: 1,
+        },
+      ],
     });
   });
 

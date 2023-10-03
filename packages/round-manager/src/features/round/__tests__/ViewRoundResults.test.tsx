@@ -14,7 +14,7 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
+import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/payoutStrategy";
 import { ProgressStatus } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
 import { useRound, useRoundMatchingFunds } from "../../../hooks";
@@ -64,8 +64,8 @@ jest.mock("../../../hooks", () => ({
   })),
 }));
 
-jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
-  ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
+jest.mock("../../api/payoutStrategy/payoutStrategy", () => ({
+  ...jest.requireActual("../../api/payoutStrategy/payoutStrategy"),
   useFetchMatchingDistributionFromContract: jest.fn(),
 }));
 

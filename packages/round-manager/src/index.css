@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+#root > div[data-rk] {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#root > div[data-rk] nav + div {
+  flex-grow: 1;
+}
+
 @layer base {
   html {
     @apply text-grey-500;
