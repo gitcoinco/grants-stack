@@ -3,10 +3,12 @@ import { Dispatch } from "redux";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
+import { graphqlFetch } from "../utils/graphql";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { RootState } from "../reducers";
-import { Status } from "../reducers/rounds";
+// import { Status } from "../reducers/rounds";
+import { PayoutStrategy, Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
 import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
 import { getProviderByChainId } from "../utils/utils";
@@ -63,6 +65,9 @@ const loadingError = (address: string, error: string): RoundsActions => ({
 
 export const unloadRounds = () => roundsUnloaded();
 
+const isTooBig = (bigNumber: BigNumber) =>
+  bigNumber.eq(ethers.constants.MaxUint256);
+
 export const loadRound =
   (address: string, roundChainId?: number) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
@@ -116,7 +121,10 @@ export const loadRound =
     let applicationsEndTime;
     try {
       const aet: BigNumber = await contract.applicationsEndTime();
-      applicationsEndTime = aet.toNumber();
+      // fixes infinite applicationsEndTime representation
+      applicationsEndTime = isTooBig(aet)
+        ? Number.MAX_SAFE_INTEGER
+        : aet.toNumber();
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
@@ -156,7 +164,8 @@ export const loadRound =
     let roundEndTime;
     try {
       const ret: BigNumber = await contract.roundEndTime();
-      roundEndTime = ret.toNumber();
+      // fixes infinite roundEndTime representation
+      roundEndTime = isTooBig(ret) ? Number.MAX_SAFE_INTEGER : ret.toNumber();
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error(
@@ -310,6 +319,42 @@ export const loadRound =
       }
     }
 
+    dispatch({
+      type: ROUNDS_LOADING_ROUND,
+      address,
+      status: Status.LoadingRoundPayoutStrategy,
+    });
+
+    let roundPayoutStrategy: PayoutStrategy;
+    try {
+      const resp = await graphqlFetch(
+        `
+          query GetRoundById($roundId: String) {
+            rounds(where: {
+              id: $roundId
+            }) {
+              id
+              payoutStrategy {
+                id
+                strategyName
+              }
+            }
+          }
+        `,
+        chainId!,
+        { roundId: address }
+      );
+      roundPayoutStrategy = resp.data.rounds[0].payoutStrategy
+        ? resp.data.rounds[0].payoutStrategy.strategyName
+        : "MERKLE";
+    } catch (e) {
+      datadogRum.addError(e);
+      datadogLogs.logger.error("sg: error loading round payoutStrategy");
+      dispatch(loadingError(address, "error loading round payoutStrategy"));
+      console.error(e);
+      return;
+    }
+
     const round = {
       address,
       applicationsStartTime,
@@ -328,6 +373,7 @@ export const loadRound =
       },
       applicationMetadata,
       programName,
+      payoutStrategy: roundPayoutStrategy,
     };
 
     dispatch(roundLoaded(address, round));

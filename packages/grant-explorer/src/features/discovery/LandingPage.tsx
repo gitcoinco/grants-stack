@@ -9,7 +9,8 @@ import { useDebugMode } from "../api/utils";
 import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
-import useSWR from "swr";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
+import useSWR, { mutate } from "swr";
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 
 export function useActiveRounds() {
@@ -38,6 +39,58 @@ const LandingPage = () => {
 
   const { isLoading: applyRoundsLoading, data: roundsInApplicationPhase } =
     useRoundsInApplicationPhase();
+
+  const [type, setType] = useState<string>("round_type_all");
+  const [allActiveRounds, setAllActiveRounds] = useState<RoundOverview[]>([]);
+
+  useEffect(() => {
+    if (activeRounds) {
+      setAllActiveRounds(activeRounds);
+    }
+  }, [activeRounds]);
+
+  useEffect(() => {
+    if (type) {
+      filterGrantRoundByType();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
+
+  const filterGrantRoundByType = () => {
+    const getGrantRoundType = (type: string) => {
+      return type === "round_type_direct"
+        ? ROUND_PAYOUT_DIRECT
+        : ROUND_PAYOUT_MERKLE;
+    };
+    if (type === "round_type_all") {
+      mutate("activeRounds", allActiveRounds, false);
+    }
+    if (type !== "round_type_all") {
+      const filterType = getGrantRoundType(type);
+      const filteredRounds = allActiveRounds.filter((round: RoundOverview) => {
+        return (
+          round.payoutStrategy &&
+          round.payoutStrategy.strategyName === filterType
+        );
+      });
+      mutate("activeRounds", filteredRounds, false);
+      if (searchQuery) setSearchQuery("");
+    }
+  };
+
+  useEffect(() => {
+    if (searchQuery) {
+      const timeOutId = setTimeout(
+        () => filterProjectsByTitle(activeRounds ?? [], searchQuery),
+        300
+      );
+      return () => clearTimeout(timeOutId);
+    } else {
+      filterGrantRoundByType();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
+
   return (
     <>
       <Navbar showWalletInteraction={true} />
@@ -66,6 +119,7 @@ const LandingPage = () => {
             <ActiveRoundsSection
               isLoading={activeRoundsLoading}
               setSearchQuery={setSearchQuery}
+              setRoundType={setType}
               roundOverview={filterProjectsByTitle(
                 activeRounds ?? [],
                 searchQuery
