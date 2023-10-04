@@ -42,7 +42,7 @@ function Button({
       onClick={clickHandler}
       className={`base-btn ${variant} ${styles?.join(" ")}`}
       type="button"
-      data-testid={dataTrackEvent}
+      data-track-event={dataTrackEvent}
     >
       {children}
     </button>
