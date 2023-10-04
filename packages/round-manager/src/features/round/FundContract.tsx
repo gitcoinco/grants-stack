@@ -226,8 +226,9 @@ export default function FundContract(props: {
       <hr className="mt-2 mb-4" />
       <p className="text-sm text-grey-400 mb-4">
         You must fund the smart contract with the matching pool amount you
-        pledged during round creation. However, you are always welcome to fund
-        over the initial amount if you wish to do so.
+        pledged during round creation or more if you choose. You can either fund
+        the contract through your connected wallet or send the funds directly to
+        the contract address.
       </p>
       <div className="flex flex-col mt-4 max-w-xl">
         <div className="flex flex-row justify-start">
