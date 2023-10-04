@@ -98,8 +98,8 @@ export function ProjectInCart(
           />
           <p className="m-auto">{props.selectedPayoutToken.name}</p>
           {props.payoutTokenPrice && (
-            <div className="flex items-center justify-end">
-              <div className="text-[14px] text-grey-400">
+            <div className="m-auto px-2 min-w-max">
+              <span className="text-[14px] text-grey-400 ">
                 ${" "}
                 {(
                   Number(
@@ -110,7 +110,7 @@ export function ProjectInCart(
                     )?.amount || 0
                   ) * props.payoutTokenPrice
                 ).toFixed(2)}
-              </div>
+              </span>
             </div>
           )}
           <TrashIcon
