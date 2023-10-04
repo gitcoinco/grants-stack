@@ -27,11 +27,16 @@ type UseMatchingEstimatesParams = {
   }[];
 };
 
+type JSONValue = string | number | boolean | bigint | JSONObject | JSONValue[];
+
+interface JSONObject {
+  [x: string]: JSONValue;
+}
+
 function getMatchingEstimates(
   params: UseMatchingEstimatesParams
 ): Promise<MatchingEstimateResult[]> {
-  // eslint-disable-next-line
-  const replacer = (key: any, value: any) =>
+  const replacer = (_key: string, value: JSONValue) =>
     typeof value === "bigint" ? value.toString() : value;
 
   return fetch(
@@ -51,7 +56,7 @@ function getMatchingEstimates(
 /**
  * Fetches matching estimates for the given round, given potential votes, as an array
  * For a single round, pass in an array with a single element
- * Returns amounts in the round token -> needs to be converted to USD usually based on the round token price */
+ */
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
   return useSWR(params, (params) =>
     Promise.all(params.map((params) => getMatchingEstimates(params)))

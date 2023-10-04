@@ -98,8 +98,8 @@ export function ProjectInCart(
           />
           <p className="m-auto">{props.selectedPayoutToken.name}</p>
           {props.payoutTokenPrice && (
-            <div className="flex flex-col items-center justify-end">
-              <div className="text-[14px] text-grey-400 ">
+            <div className="flex items-center justify-end">
+              <div className="text-[14px] text-grey-400">
                 ${" "}
                 {(
                   Number(
@@ -111,7 +111,6 @@ export function ProjectInCart(
                   ) * props.payoutTokenPrice
                 ).toFixed(2)}
               </div>
-              <div>$ {props.matchingEstimateUSD?.toFixed(2)}</div>
             </div>
           )}
           <TrashIcon

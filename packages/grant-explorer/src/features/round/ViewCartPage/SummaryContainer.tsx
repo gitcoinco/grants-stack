@@ -280,7 +280,7 @@ export function SummaryContainer() {
   }, [totalDonationAcrossChainsInUSDData]);
 
   /* Matching estimates are calculated per-round */
-  const matchingEstimateParams =
+  const matchingEstimateParamsPerRound =
     rounds?.map((round) => {
       const projs = projects.filter((project) => project.roundId === round.id);
       return {
@@ -305,7 +305,7 @@ export function SummaryContainer() {
     data: matchingEstimates,
     error: matchingEstimateError,
     isLoading: matchingEstimateLoading,
-  } = useMatchingEstimates(matchingEstimateParams);
+  } = useMatchingEstimates(matchingEstimateParamsPerRound);
 
   const estimateText = matchingEstimates
     ?.flat()
@@ -318,39 +318,36 @@ export function SummaryContainer() {
     return null;
   }
 
-  console.log(
-    matchingEstimates,
-    matchingEstimateLoading,
-    matchingEstimateError
-  );
-
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
       <div
         className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${
-          matchingEstimateError !== undefined ? "text-red-400" : "text-teal-500"
+          matchingEstimateError === undefined && matchingEstimates !== undefined
+            ? "text-red-400"
+            : "text-teal-500"
         }`}
       >
-        {matchingEstimateError === undefined && (
-          <>
-            <div className="flex flex-row mt-4">
-              <p className="mb-2">
-                Estimated match{" "}
-                <InformationCircleIcon className={"w-5 h-5 inline"} />
-              </p>
-            </div>
-            <div className="flex justify-end mt-4">
-              <Skeleton isLoaded={!matchingEstimateLoading}>
-                <p>
-                  <BoltIcon className={"w-4 h-4 inline"} />
-                  ~$
-                  {estimateText}
+        {matchingEstimateError === undefined &&
+          matchingEstimates !== undefined && (
+            <>
+              <div className="flex flex-row mt-4">
+                <p className="mb-2">
+                  Estimated match{" "}
+                  <InformationCircleIcon className={"w-5 h-5 inline"} />
                 </p>
-              </Skeleton>
-            </div>
-          </>
-        )}
+              </div>
+              <div className="flex justify-end mt-4">
+                <Skeleton isLoaded={!matchingEstimateLoading}>
+                  <p>
+                    <BoltIcon className={"w-4 h-4 inline"} />
+                    ~$
+                    {estimateText}
+                  </p>
+                </Skeleton>
+              </div>
+            </>
+          )}
       </div>
       <div>
         {Object.keys(projectsByChain).map((chainId) => (
