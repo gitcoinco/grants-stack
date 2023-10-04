@@ -190,7 +190,7 @@ function ProjectsList() {
                   <Link
                     to={newGrantPath()}
                     className="mt-6"
-                    data-testid="project-create-center-next"
+                    data-track-event="project-create-center-next"
                   >
                     <Button variant={ButtonVariants.outline}>
                       Create a Project
