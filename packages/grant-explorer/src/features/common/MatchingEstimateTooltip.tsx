@@ -7,7 +7,7 @@ export function MatchingEstimateTooltip(props: { isEligible: boolean }) {
     <div>
       <Tooltip
         hasArrow
-        closeDelay={500}
+        closeDelay={2000}
         placement={"bottom-end"}
         label={
           <p className="text-xs p-1 pointer-events-auto select-all">
