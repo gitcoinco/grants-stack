@@ -39,7 +39,9 @@ type Props = {
   isDirectRound?: boolean;
 };
 
-export default function ApplicationsToApproveReject({
+// Direct Grant Applications to Approve/Reject
+
+export default function DGApplicationsToApproveReject({
   isDirectRound = false,
 }: Props) {
   const { id } = useParams();
