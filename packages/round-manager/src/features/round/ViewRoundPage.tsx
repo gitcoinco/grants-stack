@@ -49,7 +49,7 @@ import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
 import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
 import moment from "moment";
-import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
+import DGApplicationsToApproveReject from "./DGApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
 
 export const isDirectRound = (round: Round) =>
@@ -503,7 +503,7 @@ function GrantApplications(props: {
               <Tab.Panels>
                 <Tab.Panel>
                   {props.isDirectRound ? (
-                    <ApplicationsToApproveReject
+                    <DGApplicationsToApproveReject
                       isDirectRound={Boolean(props.isDirectRound)}
                     />
                   ) : (
@@ -512,7 +512,7 @@ function GrantApplications(props: {
                 </Tab.Panel>
                 {props.isDirectRound && (
                   <Tab.Panel>
-                    <ApplicationsToApproveReject
+                    <DGApplicationsToApproveReject
                       isDirectRound={Boolean(props.isDirectRound)}
                     />
                   </Tab.Panel>
