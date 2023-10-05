@@ -1052,7 +1052,7 @@ function RoundType(props: {
 }) {
   const { field: roundTypeField } = useController({
     name: "roundMetadata.roundType",
-    defaultValue: "",
+    defaultValue: "public",
     control: props.control,
     rules: {
       required: true,

@@ -2,17 +2,14 @@
 import { Badge, Box, Spinner } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { RootState } from "../../../reducers";
 import { Application, AppStatus } from "../../../reducers/projects";
 import { roundApplicationPathForProject } from "../../../routes";
 import { Round, RoundDisplayType } from "../../../types";
 import { formatDateFromSecs, isInfinite } from "../../../utils/components";
 import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
-import {
-  ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE,
-  getProjectURIComponents,
-} from "../../../utils/utils";
+import { getProjectURIComponents } from "../../../utils/utils";
 import LinkManager from "./LinkManager";
 import { PayoutStrategy } from "../../../reducers/rounds";
 
