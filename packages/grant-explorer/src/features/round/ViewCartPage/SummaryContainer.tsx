@@ -1,4 +1,4 @@
-import { ChainId, PassportState, getTokenPrice } from "common";
+import { ChainId, getTokenPrice, PassportState } from "common";
 import { useCartStorage } from "../../../store";
 import React, { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -8,7 +8,7 @@ import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useWalletClient, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
@@ -24,6 +24,7 @@ import { Address, formatUnits, getAddress, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMatchingEstimates } from "../../../hooks/matchingEstimate";
 import { Skeleton } from "@chakra-ui/react";
+import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -240,7 +241,7 @@ export function SummaryContainer() {
     }
   }
 
-  const { passportState } = usePassport({
+  const { passportState, passport } = usePassport({
     address: address ?? "",
   });
 
@@ -318,24 +319,26 @@ export function SummaryContainer() {
     return null;
   }
 
+  const isNotEligibleForMatching =
+    passportState === PassportState.NOT_CONNECTED ||
+    (passport?.score !== undefined && Number(passport.score) < 1);
+
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
       <div
         className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${
-          matchingEstimateError === undefined && matchingEstimates !== undefined
-            ? "text-red-400"
-            : "text-teal-500"
+          isNotEligibleForMatching ? "text-red-400" : "text-teal-500"
         }`}
       >
         {matchingEstimateError === undefined &&
           matchingEstimates !== undefined && (
             <>
-              <div className="flex flex-row mt-4">
-                <p className="mb-2">
-                  Estimated match{" "}
-                  <InformationCircleIcon className={"w-5 h-5 inline"} />
-                </p>
+              <div className="flex flex-row mt-4 items-center">
+                <p>Estimated match</p>
+                <MatchingEstimateTooltip
+                  isEligible={!isNotEligibleForMatching}
+                />
               </div>
               <div className="flex justify-end mt-4">
                 <Skeleton isLoaded={!matchingEstimateLoading}>
