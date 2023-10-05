@@ -483,8 +483,8 @@ importers:
         specifier: ^2.5.9
         version: 2.6.1(react@18.2.0)
       allo-indexer-client:
-        specifier: github:gitcoinco/allo-indexer-client#a479da51f4961c31ac580e24629843b0fce6cb70
-        version: github.com/gitcoinco/allo-indexer-client/a479da51f4961c31ac580e24629843b0fce6cb70
+        specifier: github:gitcoinco/allo-indexer-client
+        version: github.com/gitcoinco/allo-indexer-client/2f8dcdf1f1611e0efd0f48aa8aa426b78d9e8508
       babel-loader:
         specifier: ^8.3.0
         version: 8.3.0(@babel/core@7.22.15)(webpack@5.88.2)
@@ -23448,22 +23448,4 @@ packages:
     requiresBuild: true
     dependencies:
       '@types/node': 18.17.14
-    dev: false
-
-  github.com/gitcoinco/allo-indexer-client/a479da51f4961c31ac580e24629843b0fce6cb70:
-    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/a479da51f4961c31ac580e24629843b0fce6cb70}
-    name: allo-indexer-client
-    version: 0.1.0
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      '@types/node': 18.17.14
-      pluralistic: github.com/gitcoinco/pluralistic.js/644d14fff65100f005d7afc18799b0f99b72ae24
-    dev: false
-
-  github.com/gitcoinco/pluralistic.js/644d14fff65100f005d7afc18799b0f99b72ae24:
-    resolution: {tarball: https://codeload.github.com/gitcoinco/pluralistic.js/tar.gz/644d14fff65100f005d7afc18799b0f99b72ae24}
-    name: pluralistic
-    version: 0.1.0
-    requiresBuild: true
     dev: false
