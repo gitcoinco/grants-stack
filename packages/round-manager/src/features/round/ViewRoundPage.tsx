@@ -503,11 +503,11 @@ function GrantApplications(props: {
               <Tab.Panels>
                 <Tab.Panel>
                   {props.isDirectRound ? (
-                    <ApplicationsToReview />
-                  ) : (
                     <ApplicationsToApproveReject
                       isDirectRound={Boolean(props.isDirectRound)}
                     />
+                  ) : (
+                    <ApplicationsToReview />
                   )}
                 </Tab.Panel>
                 {props.isDirectRound && (
