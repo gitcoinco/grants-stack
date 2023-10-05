@@ -44,7 +44,6 @@ function getMatchingEstimates(
     {
       headers: {
         accept: "*/*",
-        "cache-control": "no-cache",
         "content-type": "application/json",
       },
       body: JSON.stringify({ potentialVotes: params.potentialVotes }, replacer),
@@ -54,7 +53,7 @@ function getMatchingEstimates(
 }
 
 /**
- * Fetches matching estimates for the given round, given potential votes, as an array
+ * Fetches matching estimates for the given rounds, given potential votes, as an array
  * For a single round, pass in an array with a single element
  */
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
