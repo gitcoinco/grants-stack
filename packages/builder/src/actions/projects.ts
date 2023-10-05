@@ -572,8 +572,7 @@ export const loadProjectStats =
         (app) =>
           app.projectId === uniqueProjectID &&
           app.status === "APPROVED" &&
-          !!round.roundType &&
-          round?.roundType === ROUND_PAYOUT_MERKLE
+          round.roundType === ROUND_PAYOUT_MERKLE
       );
 
       if (project) {

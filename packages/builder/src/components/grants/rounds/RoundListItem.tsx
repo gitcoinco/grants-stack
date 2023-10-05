@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { RootState } from "../../../reducers";
 import { Application, AppStatus } from "../../../reducers/projects";
 import { roundApplicationPathForProject } from "../../../routes";
-import { RoundDisplayType } from "../../../types";
+import { Round, RoundDisplayType } from "../../../types";
 import { formatDateFromSecs, isInfinite } from "../../../utils/components";
 import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
 import {
@@ -25,7 +25,7 @@ export default function RoundListItem({
   displayType?: RoundDisplayType;
   projectId: string;
 }) {
-  const [roundData, setRoundData] = useState<any>();
+  const [roundData, setRoundData] = useState<Round>();
   const props = useSelector((state: RootState) => {
     const { roundID: roundId, chainId: projectChainId } = applicationData!;
     const roundState = state.rounds[roundId];
