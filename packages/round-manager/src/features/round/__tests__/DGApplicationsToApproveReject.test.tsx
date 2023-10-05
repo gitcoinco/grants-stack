@@ -7,7 +7,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import ApplicationsByStatus from "../ApplicationsToApproveReject";
+import ApplicationsByStatus from "../DGApplicationsToApproveReject";
 import { makeGrantApplicationData } from "../../../test-utils";
 import {
   ApplicationContext,
