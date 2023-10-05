@@ -1,9 +1,8 @@
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
-import { Tooltip, useBoolean } from "@chakra-ui/react";
+import { Tooltip } from "@chakra-ui/react";
 
 export function MatchingEstimateTooltip(props: { isEligible: boolean }) {
-  const [tooltipOpen, { toggle }] = useBoolean(false);
   return (
     <div>
       <Tooltip
@@ -37,7 +36,6 @@ export function MatchingEstimateTooltip(props: { isEligible: boolean }) {
         className={"max-w-sm bg-gray-500 text-gray-50"}
       >
         <InformationCircleIcon
-          onClick={() => toggle()}
           data-background-color="#5932C4"
           className="inline w-4 h-4 ml-2"
           data-testid={"matching-estiamte-tooltip"}
