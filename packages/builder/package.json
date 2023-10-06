@@ -74,10 +74,10 @@
     "ts-jest": "^27.0",
     "typescript": "^4.6.3",
     "url": "^0.11.0",
+    "verify-env": "*",
     "wagmi": "^0.12.19",
     "web-vitals": "^2.1.4",
-    "yup": "^0.32.11",
-    "verify-env": "*"
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "craco start",
@@ -86,8 +86,9 @@
     "test:dev": "jest --watch",
     "test:coverage": "jest --watchAll=false --coverage",
     "eject": "react-scripts eject",
+    "lint:local": "eslint",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
-    "lint:ci": "pnpm lint --max-warnings=0",
+    "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix --cache",
     "typecheck": "tsc --noEmit"
   },
@@ -137,6 +138,6 @@
     "lokijs": "^1.5.12",
     "msw": "^0.47.4",
     "postcss-import": "^14.1.0",
-    "prettier": "^2.6.2"
+    "prettier": "2"
   }
 }

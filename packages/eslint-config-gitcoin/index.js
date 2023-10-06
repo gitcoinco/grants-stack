@@ -24,7 +24,6 @@ module.exports = {
       files: ["**/*.{ts,tsx,js,jsx}"],
       rules: {
         "@typescript-eslint/explicit-module-boundary-types": "off",
-        "no-debugger": "off",
         "@typescript-eslint/no-var-requires": "off",
       },
     },
