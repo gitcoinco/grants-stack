@@ -65,6 +65,8 @@ async function exportAndDownloadCSV(
   }
 }
 
+// Move applications received in direct grants to In Review
+
 export default function ApplicationsToReview() {
   const { id } = useParams();
   const { chain } = useWallet();
