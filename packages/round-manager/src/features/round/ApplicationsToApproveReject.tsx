@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline";
-import { Spinner } from "../common/Spinner";
+import {
+  DownloadIcon,
+  InboxInIcon as NoApplicationsForRoundIcon,
+} from "@heroicons/react/outline";
+import { LoadingRing, Spinner } from "../common/Spinner";
 import {
   BasicCard,
   CardContent,
@@ -34,17 +37,47 @@ import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
+import { roundApplicationsToCSV } from "../api/exports";
+import { utils } from "ethers";
+import { useWallet } from "../common/Auth";
+
+async function exportAndDownloadCSV(
+  roundId: string,
+  chainId: number,
+  chainName: string
+) {
+  const csv = await roundApplicationsToCSV(roundId, chainId, chainName);
+
+  // create a download link and click it
+  const outputBlob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const link = document.createElement("a");
+
+  try {
+    const dataUrl = URL.createObjectURL(outputBlob);
+    link.setAttribute("href", dataUrl);
+    link.setAttribute("download", `applications-${roundId}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+  } finally {
+    document.body.removeChild(link);
+  }
+}
 
 type Props = {
   isDirectRound?: boolean;
 };
 
-// Direct Grant Applications to Approve/Reject
+// Approve or reject applications received in bulk, both in QF & direct grants
 
-export default function DGApplicationsToApproveReject({
+export default function ApplicationsToApproveReject({
   isDirectRound = false,
 }: Props) {
   const { id } = useParams();
+  const { chain } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
@@ -59,6 +92,7 @@ export default function DGApplicationsToApproveReject({
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
+  const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
 
   const {
     bulkUpdateGrantApplications,
@@ -164,9 +198,50 @@ export default function DGApplicationsToApproveReject({
     }
   };
 
+  async function handleExportCsvClick(
+    roundId: string,
+    chainId: number,
+    chainName: string
+  ) {
+    try {
+      setIsCsvExportLoading(true);
+      await exportAndDownloadCSV(roundId, chainId, chainName);
+    } catch (e) {
+      datadogLogs.logger.error(
+        `error: exportApplicationCsv - ${e}, id: ${roundId}`
+      );
+      console.error("exportApplicationCsv", e);
+    } finally {
+      setIsCsvExportLoading(false);
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center mb-4">
+        {id && applications && applications.length > 0 && (
+          <Button
+            type="button"
+            $variant="outline"
+            className="text-xs px-3 py-1 inline-block"
+            disabled={isCsvExportLoading}
+            onClick={() =>
+              handleExportCsvClick(utils.getAddress(id), chain.id, chain.name)
+            }
+          >
+            {isCsvExportLoading ? (
+              <>
+                <LoadingRing className="animate-spin w-3 h-3 inline-block mr-2 -mt-0.5" />
+                <span className="text-grey-400">Exporting...</span>
+              </>
+            ) : (
+              <>
+                <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
+                <span>CSV</span>
+              </>
+            )}
+          </Button>
+        )}
         {filteredApplications && filteredApplications.length > 0 && (
           <div className="flex items-center justify-end ml-auto">
             <span className="text-grey-400 text-sm mr-6">
