@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { Address } from "viem";
 import { ChainId } from "common";
 
+/* TODO: Rename some of the types to hungarian-style notation once we have shared types between indexer and frontends */
 export type MatchingEstimateResult = {
   totalReceived: string;
   contributionsCount: string;
@@ -34,7 +35,7 @@ interface JSONObject {
 }
 
 function getMatchingEstimates(
-  params: UseMatchingEstimatesParams
+  params: UseMatchingEstimatesParams,
 ): Promise<MatchingEstimateResult[]> {
   const replacer = (_key: string, value: JSONValue) =>
     typeof value === "bigint" ? value.toString() : value;
@@ -48,7 +49,7 @@ function getMatchingEstimates(
       },
       body: JSON.stringify({ potentialVotes: params.potentialVotes }, replacer),
       method: "POST",
-    }
+    },
   ).then((r) => r.json());
 }
 
@@ -58,12 +59,12 @@ function getMatchingEstimates(
  */
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
   return useSWR(params, (params) =>
-    Promise.all(params.map((params) => getMatchingEstimates(params)))
+    Promise.all(params.map((params) => getMatchingEstimates(params))),
   );
 }
 
 export function matchingEstimatesToText(
-  matchingEstimates?: MatchingEstimateResult[][]
+  matchingEstimates?: MatchingEstimateResult[][],
 ) {
   return matchingEstimates
     ?.flat()
