@@ -29,7 +29,7 @@ export default function ViewRoundStats() {
     payoutTokens.find(
       (t) =>
         t.address.toLowerCase() == round.token.toLowerCase() &&
-        t.chainId === chainId
+        t.chainId === chainId,
     );
 
   return (
@@ -50,8 +50,10 @@ export default function ViewRoundStats() {
         <StatsCard
           text={
             round &&
-            `${utils.formatUnits(round.matchAmount, matchToken?.decimal)} ${matchToken?.name
-            }`
+            `${utils.formatUnits(
+              round.matchAmount,
+              matchToken?.decimal,
+            )} ${matchToken?.name}`
           }
           title={"Matching Funds Available"}
         />
@@ -100,7 +102,7 @@ export default function ViewRoundStats() {
                 matches.map((match: Match) => {
                   const percentage =
                     Number(
-                      (BigInt(1000000) * match.matched) / round.matchAmount
+                      (BigInt(1000000) * match.matched) / round.matchAmount,
                     ) / 10000;
 
                   return (
@@ -127,9 +129,9 @@ export default function ViewRoundStats() {
             text={
               round && round.uniqueContributors > 0
                 ? new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }).format(round.amountUSD / round.uniqueContributors)
+                    style: "currency",
+                    currency: "USD",
+                  }).format(round.amountUSD / round.uniqueContributors)
                 : "N/A"
             }
           />
@@ -153,8 +155,9 @@ type StatsCardProps = {
 function StatsCard(props: StatsCardProps) {
   return (
     <div
-      className={`p-4 border rounded ${props.grayBorder ? "border-grey-100" : "border-violet-400"
-        } flex flex-col justify-center`}
+      className={`p-4 border rounded ${
+        props.grayBorder ? "border-grey-100" : "border-violet-400"
+      } flex flex-col justify-center`}
     >
       <span
         className={
