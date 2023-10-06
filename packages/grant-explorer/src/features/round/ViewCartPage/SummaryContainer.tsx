@@ -22,9 +22,13 @@ import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { Address, formatUnits, getAddress, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useMatchingEstimates } from "../../../hooks/matchingEstimate";
+import {
+  matchingEstimatesToText,
+  useMatchingEstimates,
+} from "../../../hooks/matchingEstimate";
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
+import { parseChainId } from "common/src/chains";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -81,7 +85,7 @@ export function SummaryContainer() {
   const totalDonationsPerChain = useMemo(() => {
     return Object.fromEntries(
       Object.entries(projectsByChain).map(([key, value]) => [
-        Number(key) as ChainId,
+        parseChainId(key),
         value
           .map((project) => project.amount)
           .reduce(
@@ -89,7 +93,7 @@ export function SummaryContainer() {
               acc +
               parseUnits(
                 amount ? amount : "0",
-                getVotingTokenForChain(Number(key) as ChainId).decimal
+                getVotingTokenForChain(parseChainId(key)).decimal
               ),
             0n
           ),
@@ -254,14 +258,13 @@ export function SummaryContainer() {
       return Promise.all(
         Object.keys(totalDonationsPerChain).map((chainId) =>
           getTokenPrice(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            getVotingTokenForChain(Number(chainId) as ChainId).redstoneTokenId!
+            getVotingTokenForChain(parseChainId(chainId)).redstoneTokenId
           ).then((price) => {
             return (
               Number(
                 formatUnits(
                   totalDonationsPerChain[chainId],
-                  getVotingTokenForChain(Number(chainId) as ChainId).decimal
+                  getVotingTokenForChain(parseChainId(chainId)).decimal
                 )
               ) * Number(price)
             );
@@ -283,20 +286,19 @@ export function SummaryContainer() {
   /* Matching estimates are calculated per-round */
   const matchingEstimateParamsPerRound =
     rounds?.map((round) => {
-      const projs = projects.filter((project) => project.roundId === round.id);
+      const projs = projects.find((project) => project.roundId === round.id);
       return {
         roundId: getAddress(round.id ?? ""),
-        chainid: projs[0].chainId,
+        chainId: projs?.chainId ?? ChainId.MAINNET,
         potentialVotes: projects.map((proj) => ({
           amount: parseUnits(
             proj.amount ?? "0",
-            getVotingTokenForChain(Number(proj.chainId) as ChainId).decimal ??
-              18
+            getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
           ),
           recipient: proj.recipient,
           contributor: address as Address,
           token: getVotingTokenForChain(
-            Number(proj.chainId) as ChainId
+            parseChainId(proj.chainId)
           ).address.toLowerCase(),
         })),
       };
@@ -308,12 +310,7 @@ export function SummaryContainer() {
     isLoading: matchingEstimateLoading,
   } = useMatchingEstimates(matchingEstimateParamsPerRound);
 
-  const estimateText = matchingEstimates
-    ?.flat()
-    .map((est) => est.differenceInUSD ?? 0)
-    .filter((diff) => diff > 0)
-    .reduce((acc, b) => acc + b, 0)
-    .toFixed(2);
+  const estimateText = matchingEstimatesToText(matchingEstimates);
 
   if (projects.length === 0) {
     return null;
@@ -356,10 +353,8 @@ export function SummaryContainer() {
         {Object.keys(projectsByChain).map((chainId) => (
           <Summary
             key={chainId}
-            chainId={Number(chainId) as ChainId}
-            selectedPayoutToken={getVotingTokenForChain(
-              Number(chainId) as ChainId
-            )}
+            chainId={parseChainId(chainId)}
+            selectedPayoutToken={getVotingTokenForChain(parseChainId(chainId))}
             totalDonation={totalDonationsPerChain[chainId]}
           />
         ))}

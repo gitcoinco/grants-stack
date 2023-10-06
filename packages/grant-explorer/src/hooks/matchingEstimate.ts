@@ -18,7 +18,7 @@ export type MatchingEstimateResult = {
 
 type UseMatchingEstimatesParams = {
   roundId: Address;
-  chainid: ChainId;
+  chainId: ChainId;
   potentialVotes: {
     contributor: string;
     recipient: string;
@@ -40,10 +40,10 @@ function getMatchingEstimates(
     typeof value === "bigint" ? value.toString() : value;
 
   return fetch(
-    `${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${params.chainid}/rounds/${params.roundId}/estimate`,
+    `${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${params.chainId}/rounds/${params.roundId}/estimate`,
     {
       headers: {
-        accept: "*/*",
+        Accept: "application/json",
         "content-type": "application/json",
       },
       body: JSON.stringify({ potentialVotes: params.potentialVotes }, replacer),
@@ -60,4 +60,15 @@ export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
   return useSWR(params, (params) =>
     Promise.all(params.map((params) => getMatchingEstimates(params)))
   );
+}
+
+export function matchingEstimatesToText(
+  matchingEstimates?: MatchingEstimateResult[][]
+) {
+  return matchingEstimates
+    ?.flat()
+    .map((est) => est.differenceInUSD ?? 0)
+    .filter((diff) => diff > 0)
+    .reduce((acc, b) => acc + b, 0)
+    .toFixed(2);
 }

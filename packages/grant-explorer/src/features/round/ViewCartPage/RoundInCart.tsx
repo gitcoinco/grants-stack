@@ -2,7 +2,10 @@ import React from "react";
 import { CartProject, VotingToken } from "../../api/types";
 import { useRoundById } from "../../../context/RoundContext";
 import { ProjectInCart } from "./ProjectInCart";
-import { useMatchingEstimates } from "../../../hooks/matchingEstimate";
+import {
+  matchingEstimatesToText,
+  useMatchingEstimates,
+} from "../../../hooks/matchingEstimate";
 import { getAddress, parseUnits, zeroAddress } from "viem";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../../store";
@@ -30,7 +33,7 @@ export function RoundInCart(
 
   const { address } = useAccount();
   const votingTokenForChain = useCartStorage((state) =>
-    state.getVotingTokenForChain(props.roundCart[0].chainId)
+    state.getVotingTokenForChain(props.roundCart[0]?.chainId)
   );
 
   const {
@@ -40,7 +43,7 @@ export function RoundInCart(
   } = useMatchingEstimates([
     {
       roundId: getAddress(round?.id ?? zeroAddress),
-      chainid: props.roundCart[0].chainId,
+      chainId: props.roundCart[0].chainId,
       potentialVotes: props.roundCart.map((proj) => ({
         amount: parseUnits(
           proj.amount ?? "0",
@@ -53,12 +56,7 @@ export function RoundInCart(
     },
   ]);
 
-  const estimateText = matchingEstimates
-    ?.flat()
-    .map((est) => est.differenceInUSD ?? 0)
-    .filter((diff) => diff > 0)
-    .reduce((acc, b) => acc + b, 0)
-    .toFixed(2);
+  const estimateText = matchingEstimatesToText(matchingEstimates);
 
   const { passportState, passport } = usePassport({
     address: address ?? "",
@@ -111,29 +109,30 @@ export function RoundInCart(
           </p>
         </div>
       )}
-      {props.roundCart.map((project, key) => (
-        <div key={key}>
-          <ProjectInCart
-            projects={props.roundCart}
-            selectedPayoutToken={props.selectedPayoutToken}
-            removeProjectFromCart={props.handleRemoveProjectFromCart}
-            project={project}
-            index={key}
-            matchingEstimateUSD={
-              matchingEstimates
-                ?.flat()
-                .find(
-                  (est) =>
-                    getAddress(est.recipient ?? zeroAddress) ===
-                    getAddress(project.recipient ?? zeroAddress)
-                )?.differenceInUSD
-            }
-            roundRoutePath={`/round/${props.roundCart[0].chainId}/${props.roundCart[0].roundId}`}
-            last={key === props.roundCart.length - 1}
-            payoutTokenPrice={props.payoutTokenPrice}
-          />
-        </div>
-      ))}
+      {props.roundCart.map((project, key) => {
+        const matchingEstimateUSD = matchingEstimates
+          ?.flat()
+          .find(
+            (est) =>
+              getAddress(est.recipient ?? zeroAddress) ===
+              getAddress(project.recipient ?? zeroAddress)
+          )?.differenceInUSD;
+        return (
+          <div key={key}>
+            <ProjectInCart
+              projects={props.roundCart}
+              selectedPayoutToken={props.selectedPayoutToken}
+              removeProjectFromCart={props.handleRemoveProjectFromCart}
+              project={project}
+              index={key}
+              matchingEstimateUSD={matchingEstimateUSD}
+              roundRoutePath={`/round/${props.roundCart[0].chainId}/${props.roundCart[0].roundId}`}
+              last={key === props.roundCart.length - 1}
+              payoutTokenPrice={props.payoutTokenPrice}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

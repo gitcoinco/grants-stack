@@ -17,7 +17,10 @@ export function MatchingEstimateTooltip(props: { isEligible: boolean }) {
                 subject to change as the round progresses. Your match may start
                 at $0, but can change as the project receives more donations.
                 Read more about how quadratic funding works{" "}
-                <a href="https://wtfisqf.com">here</a>.
+                <a href="https://wtfisqf.com" target={"_blank"}>
+                  here
+                </a>
+                .
               </>
             ) : (
               <>
@@ -38,7 +41,7 @@ export function MatchingEstimateTooltip(props: { isEligible: boolean }) {
         <InformationCircleIcon
           data-background-color="#5932C4"
           className="inline w-4 h-4 ml-2"
-          data-testid={"matching-estiamte-tooltip"}
+          data-testid={"matching-estimate-tooltip"}
         />
       </Tooltip>
     </div>

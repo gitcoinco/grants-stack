@@ -40,7 +40,7 @@ it("verifies vars from files", () => {
     return undefined as never;
   });
 
-  verify(__dirname + "/test/");
+  verify([__dirname + "/test/"]);
   expect(processMock).toHaveBeenCalledOnce();
   expect(processMock).toHaveBeenCalledWith(1);
   expect(consoleMock).toHaveBeenCalledWith(
@@ -66,7 +66,7 @@ it("verifies vars from files when some vars are set", () => {
 
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID = "thisisset";
 
-  verify(__dirname + "/test/");
+  verify([__dirname + "/test/"]);
   expect(processMock).toHaveBeenCalledOnce();
   expect(processMock).toHaveBeenCalledWith(1);
   expect(consoleMock).toHaveBeenCalledWith(

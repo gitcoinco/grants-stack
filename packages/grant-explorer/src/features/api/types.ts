@@ -212,7 +212,7 @@ export type VotingToken = {
   decimal: number;
   logo?: string;
   default?: boolean;
-  redstoneTokenId?: string;
+  redstoneTokenId: string;
   permitVersion?: string;
   //TODO: remove if the previous default was intended to be used as defaultForVoting
   defaultForVoting: boolean;

@@ -28,14 +28,16 @@
     "b-start": "pnpm --filter builder run start",
     "b-lint": "turbo run lint:ci --filter=builder",
     "b-test": "pnpm test --filter=builder",
-    "b-typecheck": "turbo run typecheck --filter=builder"
+    "b-typecheck": "turbo run typecheck --filter=builder",
+    "c-test": "turbo run test --filter=common",
+    "ve-test": "turbo run test --filter=verify-env"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3"
   },
   "dependencies": {
-    "turbo": "^1.10.14"
+    "turbo": "^1.10.15"
   },
   "pnpm": {
     "overrides": {
