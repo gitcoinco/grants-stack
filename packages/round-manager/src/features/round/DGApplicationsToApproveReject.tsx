@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { utils } from "ethers";
-import {
-  InboxInIcon as NoApplicationsForRoundIcon,
-  DownloadIcon,
-} from "@heroicons/react/outline";
-import { Spinner, LoadingRing } from "../common/Spinner";
+import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline";
+import { Spinner } from "../common/Spinner";
 import {
   BasicCard,
   CardContent,
@@ -38,52 +34,31 @@ import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
-import { useWallet } from "../common/Auth";
-import { roundApplicationsToCSV } from "../api/exports";
 
-async function exportAndDownloadCSV(
-  roundId: string,
-  chainId: number,
-  chainName: string
-) {
-  const csv = await roundApplicationsToCSV(roundId, chainId, chainName);
+type Props = {
+  isDirectRound?: boolean;
+};
 
-  // create a download link and click it
-  const outputBlob = new Blob([csv], {
-    type: "text/csv;charset=utf-8;",
-  });
+// Direct Grant Applications to Approve/Reject
 
-  const link = document.createElement("a");
-
-  try {
-    const dataUrl = URL.createObjectURL(outputBlob);
-    link.setAttribute("href", dataUrl);
-    link.setAttribute("download", `applications-${roundId}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-  } finally {
-    document.body.removeChild(link);
-  }
-}
-
-export default function ApplicationsReceived() {
+export default function DGApplicationsToApproveReject({
+  isDirectRound = false,
+}: Props) {
   const { id } = useParams();
-  const { chain } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
-  const pendingApplications =
-    applications?.filter(
-      (a) => a.status == ApplicationStatus.PENDING.toString()
-    ) || [];
+  const filteredApplications = (applications || []).filter((a) =>
+    isDirectRound
+      ? a.inReview
+      : a.status == ApplicationStatus.PENDING.toString()
+  );
 
   const [bulkSelect, setBulkSelect] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
-  const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
 
   const {
     bulkUpdateGrantApplications,
@@ -118,7 +93,7 @@ export default function ApplicationsReceived() {
   useEffect(() => {
     if (!isLoading || !bulkSelect) {
       setSelected(
-        (pendingApplications || []).map((application) => {
+        (filteredApplications || []).map((application) => {
           return {
             id: application.id,
             round: application.round,
@@ -189,51 +164,10 @@ export default function ApplicationsReceived() {
     }
   };
 
-  async function handleExportCsvClick(
-    roundId: string,
-    chainId: number,
-    chainName: string
-  ) {
-    try {
-      setIsCsvExportLoading(true);
-      await exportAndDownloadCSV(roundId, chainId, chainName);
-    } catch (e) {
-      datadogLogs.logger.error(
-        `error: exportApplicationCsv - ${e}, id: ${roundId}`
-      );
-      console.error("exportApplicationCsv", e);
-    } finally {
-      setIsCsvExportLoading(false);
-    }
-  }
-
   return (
     <div>
       <div className="flex items-center mb-4">
-        {id && applications && applications.length > 0 && (
-          <Button
-            type="button"
-            $variant="outline"
-            className="text-xs px-3 py-1 inline-block"
-            disabled={isCsvExportLoading}
-            onClick={() =>
-              handleExportCsvClick(utils.getAddress(id), chain.id, chain.name)
-            }
-          >
-            {isCsvExportLoading ? (
-              <>
-                <LoadingRing className="animate-spin w-3 h-3 inline-block mr-2 -mt-0.5" />
-                <span className="text-grey-400">Exporting...</span>
-              </>
-            ) : (
-              <>
-                <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
-                <span>CSV</span>
-              </>
-            )}
-          </Button>
-        )}
-        {pendingApplications && pendingApplications.length > 0 && (
+        {filteredApplications && filteredApplications.length > 0 && (
           <div className="flex items-center justify-end ml-auto">
             <span className="text-grey-400 text-sm mr-6">
               Save in gas fees by approving/rejecting multiple applications at
@@ -249,7 +183,7 @@ export default function ApplicationsReceived() {
       </div>
       <CardsContainer>
         {!isLoading &&
-          pendingApplications?.map((application, index) => (
+          filteredApplications?.map((application, index) => (
             <BasicCard
               key={index}
               className="application-card"
@@ -281,50 +215,49 @@ export default function ApplicationsReceived() {
         {isLoading && (
           <Spinner text="We're fetching your Grant Applications." />
         )}
-        {!isLoading && pendingApplications?.length === 0 && (
+        {!isLoading && filteredApplications?.length === 0 && (
           <NoApplicationsContent />
         )}
       </CardsContainer>
-      {selected &&
-        selected?.filter((obj) => obj.status !== "PENDING").length > 0 && (
-          <>
-            <div className="fixed w-full left-0 bottom-0 bg-white">
-              <hr />
-              <div className="flex justify-end items-center py-5 pr-20">
-                <NumberOfApplicationsSelectedMessage
-                  grantApplications={selected}
-                  predicate={(selected) => selected.status !== "PENDING"}
-                />
-                <Continue onClick={() => setOpenModal(true)} />
-              </div>
+      {selected?.filter((obj) => obj.status !== "PENDING").length > 0 && (
+        <>
+          <div className="fixed w-full left-0 bottom-0 bg-white">
+            <hr />
+            <div className="flex justify-end items-center py-5 pr-20">
+              <NumberOfApplicationsSelectedMessage
+                grantApplications={selected}
+                predicate={(selected) => selected.status !== "PENDING"}
+              />
+              <Continue onClick={() => setOpenModal(true)} />
             </div>
-            <ConfirmationModal
-              title={"Confirm Decision"}
-              confirmButtonText={
-                isBulkUpdateLoading ? "Confirming..." : "Confirm"
-              }
-              body={
-                <>
-                  <p className="text-sm text-grey-400">
-                    {
-                      "You have selected multiple Grant Applications to approve and/or reject."
-                    }
-                  </p>
-                  <div className="flex my-8 gap-16 justify-center items-center text-center">
-                    <ApprovedApplicationsCount grantApplications={selected} />
-                    <span className="text-4xl font-thin">|</span>
-                    <RejectedApplicationsCount grantApplications={selected} />
-                  </div>
-                  <AdditionalGasFeesNote />
-                </>
-              }
-              confirmButtonAction={handleBulkReview}
-              cancelButtonAction={() => setOpenModal(false)}
-              isOpen={openModal}
-              setIsOpen={setOpenModal}
-            />
-          </>
-        )}
+          </div>
+          <ConfirmationModal
+            title={"Confirm Decision"}
+            confirmButtonText={
+              isBulkUpdateLoading ? "Confirming..." : "Confirm"
+            }
+            body={
+              <>
+                <p className="text-sm text-grey-400">
+                  {
+                    "You have selected multiple Grant Applications to approve and/or reject."
+                  }
+                </p>
+                <div className="flex my-8 gap-16 justify-center items-center text-center">
+                  <ApprovedApplicationsCount grantApplications={selected} />
+                  <span className="text-4xl font-thin">|</span>
+                  <RejectedApplicationsCount grantApplications={selected} />
+                </div>
+                <AdditionalGasFeesNote />
+              </>
+            }
+            confirmButtonAction={handleBulkReview}
+            cancelButtonAction={() => setOpenModal(false)}
+            isOpen={openModal}
+            setIsOpen={setOpenModal}
+          />
+        </>
+      )}
       <ProgressModal
         isOpen={openProgressModal}
         subheading={"Please hold while we update the grant applications."}

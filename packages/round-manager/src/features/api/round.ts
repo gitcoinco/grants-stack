@@ -16,6 +16,7 @@ import {
   Round,
 } from "./types";
 import { fetchFromIPFS, payoutTokens } from "./utils";
+import { maxDateForUint256 } from "../../constants";
 
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
@@ -129,8 +130,13 @@ export async function getRoundById(
                 }
               }
               payoutStrategy {
-                ...on MerklePayout {
-                  id
+                id
+                strategyName
+                type: __typename
+                ... on DirectPayout {
+                  vaultAddress
+                }
+                ... on MerklePayout {
                   isReadyForPayout
                 }
               }
@@ -230,14 +236,13 @@ export async function getRoundById(
     );
 
     const DENOMINATOR = 100000;
-
-    const protocolFeePercentage = res.data.alloSettings
-      ? res.data.alloSettings.protocolFeePercentage / DENOMINATOR
-      : 0;
+    const protocolFeePercentage =
+      res.data.alloSettings && res.data.alloSettings[0]
+        ? res.data.alloSettings[0].protocolFeePercentage / DENOMINATOR
+        : 0;
 
     const roundFeePercentage =
       res.data.rounds[0].roundFeePercentage / DENOMINATOR;
-
     return {
       id: round.id,
       chainId: chainId,
@@ -246,9 +251,15 @@ export async function getRoundById(
       applicationsStartTime: new Date(
         Number(round.applicationsStartTime) * 1000
       ),
-      applicationsEndTime: new Date(Number(round.applicationsEndTime) * 1000),
+      applicationsEndTime:
+        round.applicationsEndTime == ethers.constants.MaxUint256.toString()
+          ? maxDateForUint256
+          : new Date(Number(round.applicationsEndTime) * 1000),
       roundStartTime: new Date(Number(round.roundStartTime) * 1000),
-      roundEndTime: new Date(Number(round.roundEndTime) * 1000),
+      roundEndTime:
+        round.applicationsEndTime == ethers.constants.MaxUint256.toString()
+          ? maxDateForUint256
+          : new Date(Number(round.roundEndTime) * 1000),
       protocolFeePercentage: protocolFeePercentage,
       roundFeePercentage: roundFeePercentage,
       token: round.token,
@@ -295,6 +306,10 @@ export async function listRounds(
               program {
                 id
               }
+              payoutStrategy {
+                id
+                strategyName
+              }
               roundMetaPtr {
                 protocol
                 pointer
@@ -339,12 +354,22 @@ export async function listRounds(
         roundMetadata,
         applicationMetadata,
         applicationsStartTime: new Date(round.applicationsStartTime * 1000),
-        applicationsEndTime: new Date(round.applicationsEndTime * 1000),
+        applicationsEndTime:
+          round.applicationsEndTime === ethers.constants.MaxUint256.toString()
+            ? maxDateForUint256
+            : new Date(round.applicationsEndTime * 1000),
         roundStartTime: new Date(round.roundStartTime * 1000),
-        roundEndTime: new Date(round.roundEndTime * 1000),
+        roundEndTime:
+          round.roundEndTime === ethers.constants.MaxUint256.toString()
+            ? maxDateForUint256
+            : new Date(round.roundEndTime * 1000),
         token: round.token,
         votingStrategy: round.votingStrategy,
-        payoutStrategy: res.data.rounds[0].payoutStrategy,
+        payoutStrategy: {
+          id: round.payoutStrategy?.id || "",
+          isReadyForPayout: false,
+          strategyName: round.payoutStrategy?.strategyName || "unknown",
+        },
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
         finalized: false,
@@ -367,14 +392,17 @@ export async function listRounds(
  */
 export async function deployRoundContract(
   round: Round,
-  signerOrProvider: Signer
+  signerOrProvider: Signer,
+  isQF: boolean
 ): Promise<{ transactionBlockNumber: number }> {
   try {
     const chainId = await signerOrProvider.getChainId();
 
-    /* Validate and prepare round data*/
-    if (!round.applicationsEndTime) {
-      round.applicationsEndTime = round.roundStartTime;
+    if (isQF) {
+      /* Validate and prepare round data*/
+      if (!round.applicationsEndTime) {
+        round.applicationsEndTime = round.roundStartTime;
+      }
     }
     round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
 
@@ -388,12 +416,38 @@ export async function deployRoundContract(
 
     const initAddresses = [round.votingStrategy, round.payoutStrategy.id];
 
-    const initRoundTimes = [
-      new Date(round.applicationsStartTime).getTime() / 1000,
-      new Date(round.applicationsEndTime).getTime() / 1000,
-      new Date(round.roundStartTime).getTime() / 1000,
-      new Date(round.roundEndTime).getTime() / 1000,
-    ];
+    let initRoundTimes: string[] = [];
+    const formatDate = (date: Date) => (date.getTime() / 1000).toString();
+    if (isQF) {
+      if (round.applicationsEndTime === undefined) {
+        round.applicationsEndTime = round.roundStartTime;
+      }
+      initRoundTimes = [
+        formatDate(round.applicationsStartTime),
+        formatDate(round.applicationsEndTime),
+        formatDate(round.roundStartTime),
+        formatDate(round.roundEndTime),
+      ];
+    } else {
+      // note: DirectRounds does not set application dates.
+      // in those cases, we set:
+      // application start time with the round start time
+      // application end time with MaxUint256.
+      // if the round has not end time, we set it with MaxUint256.
+
+      initRoundTimes = [
+        formatDate(round.applicationsStartTime ?? round.roundStartTime),
+        round.applicationsEndTime
+          ? formatDate(round.applicationsEndTime)
+          : round.roundEndTime
+          ? formatDate(round.roundEndTime)
+          : ethers.constants.MaxUint256.toString(),
+        formatDate(round.roundStartTime),
+        round.roundEndTime
+          ? formatDate(round.roundEndTime)
+          : ethers.constants.MaxUint256.toString(),
+      ];
+    }
 
     const initMetaPtr = [round.store, round.applicationStore];
 
@@ -402,23 +456,28 @@ export async function deployRoundContract(
       round.operatorWallets,
     ];
 
-    // Ensure tokenAmount is normalized to token decimals
-    const tokenAmount =
-      round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable || 0;
-    const token = payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
-    )[0];
-    const parsedTokenAmount = utils.parseUnits(
-      tokenAmount.toString(),
-      token.decimal
-    );
+    const token = ethers.constants.AddressZero;
+    let parsedTokenAmount = ethers.constants.Zero;
+
+    if (isQF) {
+      // Ensure tokenAmount is normalized to token decimals
+      const tokenAmount =
+        round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable ?? 0;
+      const pyToken = payoutTokens.filter(
+        (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
+      )[0];
+      parsedTokenAmount = utils.parseUnits(
+        tokenAmount.toString(),
+        pyToken.decimal
+      );
+    }
 
     // encode input parameters
     const params = [
       initAddresses,
       initRoundTimes,
       parsedTokenAmount,
-      round.token,
+      isQF ? round.token : token,
       round.feesPercentage || 0,
       round.feesAddress || ethers.constants.AddressZero,
       initMetaPtr,

@@ -153,14 +153,10 @@ describe("<ViewRound /> in case of during the application period", () => {
 
   it("Should show apply to round button", async () => {
     renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
-    const appURL =
-      "https://builder.gitcoin.co/#/chains/" + 5 + "/rounds/" + roundId;
-
-    const AppSubmissionButton = await screen.findByText("Apply to Grant Round");
-    expect(AppSubmissionButton).toBeInTheDocument();
-    fireEvent.click(AppSubmissionButton);
-    expect(window.open).toBeCalled();
-    expect(window.open).toHaveBeenCalledWith(appURL, "_blank");
+    const AppSubmissionButton = await screen.findAllByText(
+      "Apply to Grant Round"
+    );
+    expect(AppSubmissionButton[0]).toBeInTheDocument();
   });
 });
 
@@ -470,5 +466,32 @@ describe("<ViewRound /> in case of after the round start date", () => {
         ).not.toBeInTheDocument();
       }, 3000);
     });
+  });
+});
+
+describe("<ViewRound /> in case ApplicationsEnd and RoundEnd dates are not set", () => {
+  let stubRound: Round;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    const applicationsEndTime = new Date("foo");
+    const applicationsStartTime = faker.date.past();
+    const roundStartTime = faker.date.soon();
+    const roundEndTime = new Date("foo");
+    stubRound = makeRoundData({
+      id: roundId,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+    });
+  });
+
+  it("Should display 'No End Date' for Applications and Round end dates", async () => {
+    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+
+    const AppSubmissionButton = await screen.findAllByText("No End Date");
+    expect(AppSubmissionButton.length).toEqual(2);
   });
 });

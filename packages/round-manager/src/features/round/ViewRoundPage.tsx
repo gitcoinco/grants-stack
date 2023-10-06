@@ -12,7 +12,6 @@ import {
   InboxIcon,
   UserGroupIcon,
 } from "@heroicons/react/solid";
-import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { Button } from "common/src/styles";
 import { Link, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
@@ -33,9 +32,14 @@ import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
-import { horizontalTabStyles, verticalTabStyles } from "../common/Utils";
+import {
+  ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE,
+  getPayoutRoundDescription,
+  horizontalTabStyles,
+  verticalTabStyles,
+} from "../common/Utils";
 import ApplicationsApproved from "./ApplicationsApproved";
-import ApplicationsReceived from "./ApplicationsReceived";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
@@ -43,6 +47,13 @@ import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundResults from "./ViewRoundResults/ViewRoundResults";
 import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
+import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
+import moment from "moment";
+import DGApplicationsToApproveReject from "./DGApplicationsToApproveReject";
+import ApplicationsToReview from "./ApplicationsToReview";
+
+export const isDirectRound = (round: Round) =>
+  round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -87,20 +98,29 @@ export default function ViewRoundPage() {
                 <Link to={`/round/${id}`}>
                   <span>{"Round Details"}</span>
                 </Link>
+                <RoundBadgeStatus round={round} />
               </div>
-              <div className="flex flex-row mb-4 mt-4 items-center">
+              {/* Round type */}
+              {getPayoutRoundDescription(
+                round.payoutStrategy.strategyName || ""
+              ) && (
+                <div
+                  className={`text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mt-4`}
+                  style={{ borderRadius: "20px" }}
+                >
+                  {getPayoutRoundDescription(
+                    round.payoutStrategy.strategyName || ""
+                  )}
+                </div>
+              )}
+              <div className="flex flex-row mb-1 items-center">
                 <RoundName round={round} />
               </div>
-
-              <div className="flex flex-row flex-wrap relative">
-                <ApplicationOpenDateRange
-                  startTime={round?.applicationsStartTime}
-                  endTime={round?.applicationsEndTime}
-                />
-                <RoundOpenDateRange
-                  startTime={round?.roundStartTime}
-                  endTime={round?.roundEndTime}
-                />
+              <div className="flex flex-row flex-wrap relative gap-2 md:gap-8 xl:gap-36 pr-44">
+                {!isDirectRound(round) && (
+                  <ApplicationOpenDateRange round={round} />
+                )}
+                <RoundOpenDateRange round={round} />
                 <div className="absolute right-0">
                   <ViewGrantsExplorerButton
                     iconStyle="h-4 w-4"
@@ -110,7 +130,6 @@ export default function ViewRoundPage() {
                 </div>
               </div>
             </header>
-
             <main className="px-3 md:px-20 pt-6">
               <Tab.Group vertical>
                 <div className="flex flex-row">
@@ -142,30 +161,31 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
-                            }
-                          >
-                            <DocumentTextIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="fund-contract"
+                      {!isDirectRound(round) && (
+                        <Tab
+                          className={({ selected }) =>
+                            verticalTabStyles(selected)
+                          }
+                        >
+                          {({ selected }) => (
+                            <div
+                              className={
+                                selected
+                                  ? "text-black-500 flex flex-row"
+                                  : "flex flex-row"
+                              }
                             >
-                              Fund Contract
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
-
+                              <DocumentTextIcon className="h-6 w-6 mr-2" />
+                              <span
+                                className="mt-0.5"
+                                data-testid="fund-contract"
+                              >
+                                Fund Contract
+                              </span>
+                            </div>
+                          )}
+                        </Tab>
+                      )}
                       <Tab
                         className={({ selected }) =>
                           verticalTabStyles(selected)
@@ -189,101 +209,113 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
-                            }
-                          >
-                            <ChartBarIcon className="h-6 w-6 mr-2" />
-                            <span className="mt-0.5" data-testid="round-stats">
-                              Round Stats
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
-                            }
-                          >
-                            <DocumentReportIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="round-results"
+                      {!isDirectRound(round) && (
+                        <Tab
+                          className={({ selected }) =>
+                            verticalTabStyles(selected)
+                          }
+                        >
+                          {({ selected }) => (
+                            <div
+                              className={
+                                selected
+                                  ? "text-black-500 flex flex-row"
+                                  : "flex flex-row"
+                              }
                             >
-                              Round Results
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
+                              <ChartBarIcon className="h-6 w-6 mr-2" />
+                              <span
+                                className="mt-0.5"
+                                data-testid="round-stats"
+                              >
+                                Round Stats
+                              </span>
+                            </div>
+                          )}
+                        </Tab>
+                      )}
+                      {!isDirectRound(round) && (
+                        <>
+                          <Tab
+                            className={({ selected }) =>
+                              verticalTabStyles(selected)
                             }
                           >
-                            <UserGroupIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="fund-grantees"
-                            >
-                              Fund Grantees
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          verticalTabStyles(selected)
-                        }
-                      >
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "text-black-500 flex flex-row"
-                                : "flex flex-row"
+                            {({ selected }) => (
+                              <div
+                                className={
+                                  selected
+                                    ? "text-black-500 flex flex-row"
+                                    : "flex flex-row"
+                                }
+                              >
+                                <DocumentReportIcon className="h-6 w-6 mr-2" />
+                                <span
+                                  className="mt-0.5"
+                                  data-testid="round-results"
+                                >
+                                  Round Results
+                                </span>
+                              </div>
+                            )}
+                          </Tab>
+                          <Tab
+                            className={({ selected }) =>
+                              verticalTabStyles(selected)
                             }
                           >
-                            <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="reclaim-funds"
-                            >
-                              Reclaim Funds
-                            </span>
-                          </div>
-                        )}
-                      </Tab>
+                            {({ selected }) => (
+                              <div
+                                className={
+                                  selected
+                                    ? "text-black-500 flex flex-row"
+                                    : "flex flex-row"
+                                }
+                              >
+                                <UserGroupIcon className="h-6 w-6 mr-2" />
+                                <span
+                                  className="mt-0.5"
+                                  data-testid="fund-grantees"
+                                >
+                                  Fund Grantees
+                                </span>
+                              </div>
+                            )}
+                          </Tab>
+                          <Tab
+                            className={({ selected }) =>
+                              verticalTabStyles(selected)
+                            }
+                          >
+                            {({ selected }) => (
+                              <div
+                                className={
+                                  selected
+                                    ? "text-black-500 flex flex-row"
+                                    : "flex flex-row"
+                                }
+                              >
+                                <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
+                                <span
+                                  className="mt-0.5"
+                                  data-testid="reclaim-funds"
+                                >
+                                  Reclaim Funds
+                                </span>
+                              </div>
+                            )}
+                          </Tab>
+                        </>
+                      )}
                     </Tab.List>
                   </div>
                   <Tab.Panels className="basis-5/6 ml-6">
                     <Tab.Panel>
                       <GrantApplications
+                        isDirectRound={
+                          round.payoutStrategy.strategyName ==
+                          ROUND_PAYOUT_DIRECT
+                        }
                         applications={applications}
                         isRoundsFetched={isRoundFetched}
                         fetchRoundStatus={fetchRoundStatus}
@@ -291,33 +323,40 @@ export default function ViewRoundPage() {
                         roundId={id}
                       />
                     </Tab.Panel>
-                    <Tab.Panel>
-                      <FundContract round={round} roundId={id} />
-                    </Tab.Panel>
+                    {!isDirectRound(round) && (
+                      <Tab.Panel>
+                        <FundContract round={round} roundId={id} />
+                      </Tab.Panel>
+                    )}
                     <Tab.Panel>
                       <ViewRoundSettings id={round?.id} />
                     </Tab.Panel>
-                    <Tab.Panel>
-                      <ViewRoundStats />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                      <ViewRoundResults />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                      <ViewFundGrantees
-                        isRoundFinalized={
-                          round?.payoutStrategy?.isReadyForPayout ?? undefined
-                        }
-                        round={round}
-                      />
-                    </Tab.Panel>
-                    <Tab.Panel>
-                      <ReclaimFunds
-                        round={round}
-                        chainId={`${chain.id}`}
-                        roundId={id}
-                      />
-                    </Tab.Panel>
+                    {!isDirectRound(round) && (
+                      <>
+                        <Tab.Panel>
+                          <ViewRoundStats />
+                        </Tab.Panel>
+                        <Tab.Panel>
+                          <ViewRoundResults />
+                        </Tab.Panel>
+                        <Tab.Panel>
+                          <ViewFundGrantees
+                            isRoundFinalized={
+                              round?.payoutStrategy?.isReadyForPayout ??
+                              undefined
+                            }
+                            round={round}
+                          />
+                        </Tab.Panel>
+                        <Tab.Panel>
+                          <ReclaimFunds
+                            round={round}
+                            chainId={`${chain.id}`}
+                            roundId={id}
+                          />
+                        </Tab.Panel>
+                      </>
+                    )}
                   </Tab.Panels>
                 </div>
               </Tab.Group>
@@ -331,24 +370,28 @@ export default function ViewRoundPage() {
 }
 
 function GrantApplications(props: {
+  isDirectRound?: boolean;
   applications: GrantApplication[] | undefined;
   isRoundsFetched: boolean;
   fetchRoundStatus: ProgressStatus;
   chainId: string;
   roundId: string | undefined;
 }) {
-  const pendingApplications =
-    props.applications?.filter(
-      (a) => a.status === ApplicationStatus.PENDING.toString()
-    ) || [];
-  const approvedApplications =
-    props.applications?.filter(
-      (a) => a.status === ApplicationStatus.APPROVED.toString()
-    ) || [];
-  const rejectedApplications =
-    props.applications?.filter(
-      (a) => a.status === ApplicationStatus.REJECTED.toString()
-    ) || [];
+  const pendingApplications = (props.applications || [])
+    .filter((a) => a.status === ApplicationStatus.PENDING.toString())
+    .filter((a) => (props.isDirectRound ? !a.inReview : true));
+
+  const approvedApplications = (props.applications || []).filter(
+    (a) => a.status === ApplicationStatus.APPROVED.toString()
+  );
+  const rejectedApplications = (props.applications || []).filter(
+    (a) => a.status === ApplicationStatus.REJECTED.toString()
+  );
+  const inReviewApplications = (props.applications || []).filter((a) =>
+    props.isDirectRound ? a.inReview : true
+  );
+
+  const builderLink = process.env.REACT_APP_BUILDER_URL;
 
   const TabApplicationCounter = tw.div`
   rounded-md
@@ -388,6 +431,27 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
+                    {props.isDirectRound && (
+                      <Tab
+                        className={({ selected }) =>
+                          horizontalTabStyles(selected)
+                        }
+                      >
+                        {({ selected }) => (
+                          <div className={selected ? "text-violet-500" : ""}>
+                            In Review
+                            <TabApplicationCounter
+                              className={
+                                selected ? "bg-violet-100" : "bg-grey-150"
+                              }
+                              data-testid="received-application-counter"
+                            >
+                              {inReviewApplications?.length || 0}
+                            </TabApplicationCounter>
+                          </div>
+                        )}
+                      </Tab>
+                    )}
                     <Tab
                       className={({ selected }) =>
                         horizontalTabStyles(selected)
@@ -430,7 +494,7 @@ function GrantApplications(props: {
                 </Tab.List>
                 <div className="text-right absolute ml-24 bottom-4 left-3/4">
                   <CopyToClipboardButton
-                    textToCopy={`https://builder.gitcoin.co/#/chains/${props.chainId}/rounds/${props.roundId}`}
+                    textToCopy={`${builderLink}/#/chains/${props.chainId}/rounds/${props.roundId}`}
                     styles="text-xs p-2"
                     iconStyle="h-4 w-4 mr-1"
                   />
@@ -438,8 +502,21 @@ function GrantApplications(props: {
               </div>
               <Tab.Panels>
                 <Tab.Panel>
-                  <ApplicationsReceived />
+                  {props.isDirectRound ? (
+                    <DGApplicationsToApproveReject
+                      isDirectRound={Boolean(props.isDirectRound)}
+                    />
+                  ) : (
+                    <ApplicationsToReview />
+                  )}
                 </Tab.Panel>
+                {props.isDirectRound && (
+                  <Tab.Panel>
+                    <DGApplicationsToApproveReject
+                      isDirectRound={Boolean(props.isDirectRound)}
+                    />
+                  </Tab.Panel>
+                )}
                 <Tab.Panel>
                   <ApplicationsApproved />
                 </Tab.Panel>
@@ -451,7 +528,6 @@ function GrantApplications(props: {
           </div>
         </div>
       )}
-
       {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
         <Spinner text="We're fetching your Round." />
       )}
@@ -466,7 +542,7 @@ type ViewGrantsExplorerButtonType = {
   roundId: string | undefined;
 };
 
-function RoundName(props: { round?: Round }) {
+export function RoundName(props: { round?: Round }) {
   return (
     <h1 className="text-3xl sm:text-[32px] my-2">
       {props.round?.roundMetadata?.name || "Round Details"}
@@ -499,52 +575,87 @@ function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
   }, 1000);
 }
 
-function ApplicationOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
-  const { startTime, endTime } = props;
+export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
+  const res = parseRoundDates(round);
 
   return (
-    <div className="flex mr-8 lg:mr-36">
-      <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
-      <p className="text-sm mr-2 text-grey-400">Applications:</p>
-      <div>
-        <p className="text-sm">
-          <span>
-            {(startTime && formatUTCDateAsISOString(startTime)) || "..."}
+    <div className="flex gap-2 text-sm">
+      <CalendarIcon className="h-5 w-5 text-grey-400" />
+      <span className="text-grey-400 mr-2">Applications:</span>
+      <div className="flex flex-row gap-2">
+        <p className="flex flex-col">
+          <span>{res.application.iso.start}</span>
+          <span className="text-grey-400 text-xs">
+            ({res.application.utc.start})
           </span>
-          <span className="mx-2">-</span>
-          <span>{(endTime && formatUTCDateAsISOString(endTime)) || "..."}</span>
         </p>
-        <p className="flex justify-center items-center text-sm text-grey-400">
-          <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
-          <span className="mx-2">-</span>
-          <span>({(endTime && getUTCTime(endTime)) || "..."})</span>
+        <p className="flex flex-col">
+          <span className="mx-1">-</span>
+        </p>
+        <p className="flex flex-col">
+          <span className="[&>*]:flex [&>*]:flex-col">
+            {res.application.iso.end}
+          </span>
+          {res.application.utc.end && (
+            <span className="text-grey-400 text-xs">
+              {res.application.utc.end}
+            </span>
+          )}
         </p>
       </div>
     </div>
   );
 }
 
-function RoundOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
-  const { startTime, endTime } = props;
+export function RoundOpenDateRange({ round }: { round: RoundDates }) {
+  const res = parseRoundDates(round);
 
   return (
-    <div className="flex">
-      <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />
-      <p className="text-sm mr-2 text-grey-400">Round:</p>
-      <div>
-        <p className="flex justify-center items-center text-sm">
-          <span>
-            {(startTime && formatUTCDateAsISOString(startTime)) || "..."}
-          </span>
-          <span className="mx-2">-</span>
-          <span>{(endTime && formatUTCDateAsISOString(endTime)) || "..."}</span>
+    <div className="flex gap-2 text-sm">
+      <ClockIcon className="h-5 w-5 text-grey-400" />
+      <span className="text-grey-400 mr-2">Round:</span>
+      <div className="flex flex-row gap-2">
+        <p className="flex flex-col">
+          <span>{res.round.iso.start}</span>
+          <span className="text-grey-400 text-xs">{res.round.utc.start}</span>
         </p>
-        <p className="flex justify-center items-center text-sm text-grey-400">
-          <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
-          <span className="mx-2">-</span>
-          <span>({(endTime && getUTCTime(endTime)) || "..."})</span>
+        <p className="flex flex-col">
+          <span className="mx-1">-</span>
+        </p>
+        <p className="flex flex-col">
+          <span className="[&>*]:flex [&>*]:flex-col">{res.round.iso.end}</span>
+          {res.round.utc.end && (
+            <span className="text-grey-400 text-xs">{res.round.utc.end}</span>
+          )}
         </p>
       </div>
     </div>
   );
+}
+
+export function RoundBadgeStatus({ round }: { round: Round }) {
+  const applicationEnds = round.applicationsEndTime;
+  const roundEnds = round.roundEndTime;
+  const now = moment();
+
+  if (
+    (round.payoutStrategy.strategyName == ROUND_PAYOUT_MERKLE &&
+      now.isBefore(applicationEnds)) ||
+    (round.payoutStrategy.strategyName == ROUND_PAYOUT_DIRECT &&
+      now.isBefore(roundEnds))
+  ) {
+    return (
+      <div
+        style={{
+          borderRadius: "24px",
+          lineHeight: "1.2",
+        }}
+        className={`text-sm h-[24px] inline-flex flex-col justify-center px-4 ml-auto bg-violet-500 text-white font-normal`}
+      >
+        Applications in progress
+      </div>
+    );
+  }
+
+  return null;
 }

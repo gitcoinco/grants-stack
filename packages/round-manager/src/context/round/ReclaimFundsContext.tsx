@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { useSigner } from "wagmi";
-import { reclaimFundsFromContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
+import { reclaimFundsFromContract } from "../../features/api/payoutStrategy/payoutStrategy";
 import { ProgressStatus } from "../../features/api/types";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;

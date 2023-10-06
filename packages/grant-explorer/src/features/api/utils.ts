@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CartProject, IPFSObject, VotingToken } from "./types";
+import { CartProject, IPFSObject, VotingToken, Round } from "./types";
 import { ChainId, graphQlEndpoints, RedstoneTokenIds } from "common";
 import { useSearchParams } from "react-router-dom";
+import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "../../constants";
 import { zeroAddress } from "viem";
 import { ethers } from "ethers";
 
@@ -643,6 +644,25 @@ export function getChainIds(): number[] {
       .filter((id) => !isNaN(id));
   }
 }
+
+export const isDirectRound = (round: Round) =>
+  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+export const isInfiniteDate = (roundTime: Date) =>
+  roundTime.toString() === "Invalid Date";
+
+export const getRoundType = (payoutStrategyName: string) => {
+  switch (payoutStrategyName) {
+    case ROUND_PAYOUT_MERKLE:
+      return "Quadratic Funding";
+      break;
+    case ROUND_PAYOUT_DIRECT:
+      return "Direct Grants";
+      break;
+    default:
+      return payoutStrategyName;
+      break;
+  }
+};
 
 type GroupedCartProjects = {
   [chainId: number]: {

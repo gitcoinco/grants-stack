@@ -4,7 +4,7 @@ import { fetchFromIPFS, generateApplicationSchema, pinToIPFS } from "../utils";
 import { ChainId } from "common";
 
 import {
-  initialQuestions,
+  initialQuestionsQF,
   initialRequirements,
 } from "../../round/RoundApplicationForm";
 import { checkGrantApplicationStatus } from "../application";
@@ -352,15 +352,17 @@ describe("graphql_fetch", () => {
 describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
     const expectedSchema = {
-      questions: initialQuestions.map((question) => ({
-        title: question.title,
-        type: question.type,
-        required: question.required,
-        hidden: question.hidden,
-        info: "", // TODO: is grant hub using this???
-        choices: undefined, // TODO: is grant hub using this???
-        encrypted: question.encrypted,
-      })),
+      questions: initialQuestionsQF
+        .filter((q) => !q.metadataExcluded)
+        .map((question) => ({
+          title: question.title,
+          type: question.type,
+          required: question.required,
+          hidden: question.hidden,
+          info: "", // TODO: is grant hub using this???
+          choices: undefined, // TODO: is grant hub using this???
+          encrypted: question.encrypted,
+        })),
       requirements: {
         twitter: {
           required: false,
@@ -374,7 +376,7 @@ describe("generateApplicationSchema", () => {
     };
 
     const schema = generateApplicationSchema(
-      initialQuestions,
+      initialQuestionsQF,
       initialRequirements
     );
 

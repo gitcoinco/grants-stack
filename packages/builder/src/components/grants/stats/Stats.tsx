@@ -8,6 +8,7 @@ import { RootState } from "../../../reducers";
 import { ProjectStats } from "../../../reducers/projects";
 import RoundDetailsCard from "./RoundDetailsCard";
 import StatCard from "./StatCard";
+import { ROUND_PAYOUT_MERKLE } from "../../../utils/utils";
 
 export default function RoundStats() {
   const NA = -1;
@@ -28,27 +29,35 @@ export default function RoundStats() {
     return {
       projectID: params.id!,
       stats,
-      projectApplications: state.projects.applications[params.id!],
+      projectApplications: state.projects?.applications[params.id!],
       rounds: state.rounds,
     };
   });
 
   useEffect(() => {
-    if (props.projectApplications?.length > 0) {
-      const applications =
-        props.projectApplications?.filter((app) => app.status === "APPROVED") ||
-        [];
+    // TODO: Remove DIRECT ROUND filter condition after Stats view rework #11
+    const applications = props.projectApplications?.filter(
+      (app) => app.status === "APPROVED"
+    );
 
-      if (applications.length > 0) setNoStats(false);
-
-      const rounds: Array<{ roundId: string; chainId: ChainId }> = [];
+    if (applications?.length > 0) {
+      setNoStats(false);
+      const rounds: Array<{
+        roundId: string;
+        chainId: ChainId;
+        roundType: string;
+      }> = [];
       applications.forEach((app) => {
-        rounds.push({
-          roundId: app.roundID,
-          chainId: app.chainId,
-        });
+        const roundType =
+          props.rounds[app.roundID]?.round?.payoutStrategy || "";
+        if (roundType !== "" && roundType === ROUND_PAYOUT_MERKLE) {
+          rounds.push({
+            roundId: app.roundID,
+            chainId: app.chainId,
+            roundType,
+          });
+        }
       });
-
       dispatch(
         loadProjectStats(
           params.id!,
@@ -60,7 +69,7 @@ export default function RoundStats() {
     } else {
       setNoStats(true);
     }
-  }, [props.projectApplications]);
+  }, [props.projectApplications, props.rounds]);
 
   useEffect(() => {
     const detailsTmp: any[] = [];
@@ -87,11 +96,12 @@ export default function RoundStats() {
           if (newStat.avgContribution === 0) newStat.avgContribution = NA;
         }
 
-        if (props.rounds[stat.roundId]?.round?.programName)
+        if (props.rounds[stat.roundId]?.round?.programName) {
           detailsTmp.push({
             round: props.rounds[stat.roundId].round,
             stats: { ...newStat },
           });
+        }
       });
     }
 
