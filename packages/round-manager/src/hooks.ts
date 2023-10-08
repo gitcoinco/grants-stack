@@ -34,8 +34,27 @@ export function useRoundMatchingFunds(
   const client = useAlloIndexerClient();
   return useSWR(
     [roundId, "/matches", overrides, ignoreSaturation],
-    ([roundId]) => {
-      return client.getRoundMatchingFunds(roundId, overrides, ignoreSaturation);
+    async ([roundId]) => {
+      console.log(roundId, client);
+
+      return fetch(
+        "https://raw.githubusercontent.com/ufkhan97/gg18_payouts/main/CurrentRoundMatching.json"
+      )
+        .then((r) => r.json())
+        .then((list) =>
+          // eslint-disable-next-line
+          list.map((matchItem: any) => ({
+            totalReceived: BigInt(matchItem.totalReceived),
+            sumOfSqrt: BigInt(matchItem.sumOfSqrt),
+            matched: BigInt(matchItem.matched),
+            matchedUSD: matchItem.matchedUSD,
+            projectName: matchItem.projectName,
+            payoutAddress: matchItem.payoutAddress,
+            contributionsCount: matchItem.contributionsCount,
+            projectId: matchItem.projectId,
+            applicationId: matchItem.applicationId,
+          }))
+        );
     }
   );
 }
