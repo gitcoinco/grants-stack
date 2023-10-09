@@ -58,7 +58,7 @@ Since all the data is decentralized stored, there might be PII (Personally ident
 
 ### Development
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)
+To contribute to this project, fork the repo and follow the instructions at [DEV.md](../../docs/DEV.md)
 
 ### Monitoring
 
