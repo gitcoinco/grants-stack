@@ -6,20 +6,22 @@ and ensure your pull request has fulfilled all requirements outlined in the targ
 ## PR checklist
 
 For every PR, make sure that these statements are true:
-- [ ] Includes only changes relevant to the original ticket. Significant refactoring or formatting needs to be separated.
-- [ ] Doesn't contain unnecessary type casts and non-null asserts
-- [ ] Doesn't add `@ts-ignore`
-- [ ] Doesn't disable lints, particularly `no-any` lints
-- [ ] Doesn't use `useState` just for computation - use plain variables instead
+- [ ] Includes only changes relevant to the original ticket. Significant refactoring needs to be separated.
+- [ ] Doesn't contain type casts and non-null assertions.
+- [ ] Doesn't add `@ts-ignore`.
+- [ ] Doesn't disable lints.
+- [ ] Doesn't use `useState` just for computation - use plain variables instead.
 - [ ] Splits components into pure components that don't depend on external state or hooks.
-- [ ] Doesn't add components inside of components that depend on variables in the parent scope - separate them out
-- [ ] Doesn't propagate optional values without good reason, doesn't mark property values as optional if that doesn't represent reality
-- [ ] Doesn't duplicate existing code
-- [ ] Parses out-of-domain data
-- [ ] Does things as simple as possible, but not simpler.
-- [ ] Doesn't reinvent the wheel or create premature abstractions.
+- [ ] Doesn't add components inside of components that depend on variables in the parent scope - separate them out.
+- [ ] Doesn't propagate optional values without good reason, doesn't mark property values as optional if that doesn't represent reality.
+- [ ] Doesn't duplicate existing code.
+- [ ] Parses out-of-domain data - this includes user input, API respones, on-chain data etc.
 - [ ] Doesn't contain commented out code.
 - [ ] Doesn't contain skipped or empty tests.
+
+Subjective - at the discretion of the reviewers
+- Does things as simply as possible, but not simpler.
+- Doesn't reinvent the wheel or create premature abstractions.
 
 ##### Description
 
