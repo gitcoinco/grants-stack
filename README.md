@@ -21,17 +21,17 @@ Package manager         : `pnpm`
 ```
 .
 ├── .github                     # github specific configuration
-├── packages
-│
+├── packages                    # individual frontends and related packages
 ├── package.json                # root package configuration
+├── docs                        # documentation
 └── README.md
 ```
 
 ##### Development
 
-We welcome external contributions. Please make sure to familiarize yourself with the [Contribution Guide](CONTRIBUTING.md).
+We welcome external contributions. Please make sure to familiarize yourself with the [Contribution Guidelines](CONTRIBUTING.md).
 
-To contribute to this project, fork the repo and follow the instructions at [DEV.md](packages/grant-explorer/docs/DEV.md)
+To contribute to this project, fork the repo and follow the instructions at [DEV.md](docs/DEV.md)
 
 ##### Hosting
 
