@@ -12,7 +12,7 @@ For every PR, make sure that these statements are true:
 - [ ] Doesn't disable lints.
 - [ ] Doesn't use `useState` just for computation - use plain variables instead.
 - [ ] Splits components into pure components that don't depend on external state or hooks.
-- [ ] Doesn't add components inside of components that depend on variables in the parent scope - separate them out.
+- [ ] Avoid embedding components within other components
 - [ ] Doesn't propagate optional values without good reason, doesn't mark property values as optional if that doesn't represent reality.
 - [ ] Doesn't duplicate existing code.
 - [ ] Parses out-of-domain data - this includes user input, API respones, on-chain data etc.
