@@ -132,19 +132,16 @@ export function usePayout() {
     let txBlockNumber: number;
     try {
       setContractUpdatingStatus(ProgressStatus.IN_PROGRESS);
-      const payoutReceipt = await directPayout.payout(
-        {
-          vault: payoutVault,
-          token: token.address,
-          amount: payoutAmount,
-          grantAddress: payoutWallet,
-          projectId: projectId,
-          applicationIndex: applicationIndex,
-          allowanceModule: ethers.constants.AddressZero,
-          allowanceSignature: ethers.constants.HashZero,
-        },
-        { gasLimit: "5000000" }
-      );
+      const payoutReceipt = await directPayout.payout({
+        vault: payoutVault,
+        token: token.address,
+        amount: payoutAmount,
+        grantAddress: payoutWallet,
+        projectId: projectId,
+        applicationIndex: applicationIndex,
+        allowanceModule: ethers.constants.AddressZero,
+        allowanceSignature: ethers.constants.HashZero,
+      });
       const res = await payoutReceipt.wait();
       txBlockNumber = res.blockNumber;
       setContractUpdatingStatus(ProgressStatus.IS_SUCCESS);
