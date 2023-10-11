@@ -6,6 +6,9 @@ import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
 import gnosisABI from "../contracts/abis/gnosis.json";
 
+export const ROUND_PAYOUT_MERKLE = "MERKLE";
+export const ROUND_PAYOUT_DIRECT = "DIRECT";
+
 export const parseRoundToApply = (
   s?: string
 ): { chainID?: string; roundAddress?: string } => {

@@ -27,11 +27,13 @@ export type AppStatus =
   | "APPROVED"
   | "REJECTED"
   | "APPEAL"
-  | "FRAUD";
+  | "FRAUD"
+  | "RECEIVED";
 
 export type Application = {
   roundID: string;
   status: AppStatus;
+  inReview: boolean;
   chainId: ChainId;
 };
 

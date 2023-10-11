@@ -1,14 +1,20 @@
 import { createContext, useState } from "react";
 
 import { FormStepper } from "./FormStepper";
+import { RoundCategory } from "../api/types";
 
 export interface FormWizardProps {
   initialCurrentStep?: number;
   // eslint-disable-next-line @typescript-eslint/ban-types
   initialData?: object;
+  configuration?: { roundCategory?: RoundCategory };
   steps: Array<
     // eslint-disable-next-line @typescript-eslint/ban-types
-    (props: { stepper: typeof FormStepper; initialData: object }) => JSX.Element
+    (props: {
+      stepper: typeof FormStepper;
+      initialData: object;
+      configuration: object;
+    }) => JSX.Element
   >;
 }
 
@@ -29,6 +35,7 @@ export const FormContext = createContext<FormContextType>(
 export function FormWizard({
   initialCurrentStep = 1,
   initialData = {},
+  configuration = {},
   steps,
 }: FormWizardProps) {
   const [currentStep, setCurrentStep] = useState(initialCurrentStep);
@@ -46,7 +53,11 @@ export function FormWizard({
         setFormData,
       }}
     >
-      <Content stepper={FormStepper} initialData={initialData} />
+      <Content
+        stepper={FormStepper}
+        initialData={initialData}
+        configuration={configuration}
+      />
     </FormContext.Provider>
   );
 }

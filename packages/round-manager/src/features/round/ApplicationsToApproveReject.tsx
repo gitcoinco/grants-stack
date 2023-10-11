@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { utils } from "ethers";
 import {
-  InboxInIcon as NoApplicationsForRoundIcon,
   DownloadIcon,
+  InboxInIcon as NoApplicationsForRoundIcon,
 } from "@heroicons/react/outline";
-import { Spinner, LoadingRing } from "../common/Spinner";
+import { LoadingRing, Spinner } from "../common/Spinner";
 import {
   BasicCard,
   CardContent,
@@ -38,8 +37,9 @@ import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
-import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
+import { utils } from "ethers";
+import { useWallet } from "../common/Auth";
 
 async function exportAndDownloadCSV(
   roundId: string,
@@ -67,16 +67,25 @@ async function exportAndDownloadCSV(
   }
 }
 
-export default function ApplicationsReceived() {
+type Props = {
+  isDirectRound?: boolean;
+};
+
+// Approve or reject applications received in bulk, both in QF & direct grants
+
+export default function ApplicationsToApproveReject({
+  isDirectRound = false,
+}: Props) {
   const { id } = useParams();
   const { chain } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
-  const pendingApplications =
-    applications?.filter(
-      (a) => a.status == ApplicationStatus.PENDING.toString()
-    ) || [];
+  const filteredApplications = (applications || []).filter((a) =>
+    isDirectRound
+      ? a.inReview
+      : a.status == ApplicationStatus.PENDING.toString()
+  );
 
   const [bulkSelect, setBulkSelect] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -118,7 +127,7 @@ export default function ApplicationsReceived() {
   useEffect(() => {
     if (!isLoading || !bulkSelect) {
       setSelected(
-        (pendingApplications || []).map((application) => {
+        (filteredApplications || []).map((application) => {
           return {
             id: application.id,
             round: application.round,
@@ -233,7 +242,7 @@ export default function ApplicationsReceived() {
             )}
           </Button>
         )}
-        {pendingApplications && pendingApplications.length > 0 && (
+        {filteredApplications && filteredApplications.length > 0 && (
           <div className="flex items-center justify-end ml-auto">
             <span className="text-grey-400 text-sm mr-6">
               Save in gas fees by approving/rejecting multiple applications at
@@ -249,7 +258,7 @@ export default function ApplicationsReceived() {
       </div>
       <CardsContainer>
         {!isLoading &&
-          pendingApplications?.map((application, index) => (
+          filteredApplications?.map((application, index) => (
             <BasicCard
               key={index}
               className="application-card"
@@ -281,50 +290,49 @@ export default function ApplicationsReceived() {
         {isLoading && (
           <Spinner text="We're fetching your Grant Applications." />
         )}
-        {!isLoading && pendingApplications?.length === 0 && (
+        {!isLoading && filteredApplications?.length === 0 && (
           <NoApplicationsContent />
         )}
       </CardsContainer>
-      {selected &&
-        selected?.filter((obj) => obj.status !== "PENDING").length > 0 && (
-          <>
-            <div className="fixed w-full left-0 bottom-0 bg-white">
-              <hr />
-              <div className="flex justify-end items-center py-5 pr-20">
-                <NumberOfApplicationsSelectedMessage
-                  grantApplications={selected}
-                  predicate={(selected) => selected.status !== "PENDING"}
-                />
-                <Continue onClick={() => setOpenModal(true)} />
-              </div>
+      {selected?.filter((obj) => obj.status !== "PENDING").length > 0 && (
+        <>
+          <div className="fixed w-full left-0 bottom-0 bg-white">
+            <hr />
+            <div className="flex justify-end items-center py-5 pr-20">
+              <NumberOfApplicationsSelectedMessage
+                grantApplications={selected}
+                predicate={(selected) => selected.status !== "PENDING"}
+              />
+              <Continue onClick={() => setOpenModal(true)} />
             </div>
-            <ConfirmationModal
-              title={"Confirm Decision"}
-              confirmButtonText={
-                isBulkUpdateLoading ? "Confirming..." : "Confirm"
-              }
-              body={
-                <>
-                  <p className="text-sm text-grey-400">
-                    {
-                      "You have selected multiple Grant Applications to approve and/or reject."
-                    }
-                  </p>
-                  <div className="flex my-8 gap-16 justify-center items-center text-center">
-                    <ApprovedApplicationsCount grantApplications={selected} />
-                    <span className="text-4xl font-thin">|</span>
-                    <RejectedApplicationsCount grantApplications={selected} />
-                  </div>
-                  <AdditionalGasFeesNote />
-                </>
-              }
-              confirmButtonAction={handleBulkReview}
-              cancelButtonAction={() => setOpenModal(false)}
-              isOpen={openModal}
-              setIsOpen={setOpenModal}
-            />
-          </>
-        )}
+          </div>
+          <ConfirmationModal
+            title={"Confirm Decision"}
+            confirmButtonText={
+              isBulkUpdateLoading ? "Confirming..." : "Confirm"
+            }
+            body={
+              <>
+                <p className="text-sm text-grey-400">
+                  {
+                    "You have selected multiple Grant Applications to approve and/or reject."
+                  }
+                </p>
+                <div className="flex my-8 gap-16 justify-center items-center text-center">
+                  <ApprovedApplicationsCount grantApplications={selected} />
+                  <span className="text-4xl font-thin">|</span>
+                  <RejectedApplicationsCount grantApplications={selected} />
+                </div>
+                <AdditionalGasFeesNote />
+              </>
+            }
+            confirmButtonAction={handleBulkReview}
+            cancelButtonAction={() => setOpenModal(false)}
+            isOpen={openModal}
+            setIsOpen={setOpenModal}
+          />
+        </>
+      )}
       <ProgressModal
         isOpen={openProgressModal}
         subheading={"Please hold while we update the grant applications."}

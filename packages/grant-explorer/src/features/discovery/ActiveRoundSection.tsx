@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dispatch, SetStateAction, useState } from "react";
 import { RoundOverview } from "../api/rounds";
-import SearchInput, { SortFilterDropdown } from "../common/SearchInput";
+import SearchInput, {
+  GrantRoundTypeFilterDropdown,
+  SortFilterDropdown,
+} from "../common/SearchInput";
 import { Spinner } from "../common/Spinner";
 import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
@@ -9,6 +12,7 @@ import RoundCard from "./RoundCard";
 type ActiveRounds = {
   isLoading: boolean;
   setSearchQuery: Dispatch<SetStateAction<string>>;
+  setRoundType: Dispatch<SetStateAction<string>>;
   roundOverview?: RoundOverview[];
   searchQuery: string;
 };
@@ -54,8 +58,13 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
               searchQuery={props.searchQuery}
               onChange={props.setSearchQuery}
             />
+            <GrantRoundTypeFilterDropdown
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                props.setRoundType(e.target.value);
+              }}
+            />
             <SortFilterDropdown
-              onChange={(e: { target: { value: any } }) =>
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setOrder(e.target.value)
               }
             />
@@ -77,7 +86,7 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
             )}
           </div>
         ) : (
-          !props.isLoading && <NoRounds type={"active"} />
+          <NoRounds type={"active"} />
         )}
       </div>
     </div>

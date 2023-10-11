@@ -25,6 +25,7 @@ import {
   updateApplicationStatuses,
 } from "../../api/application";
 import { ProgressStatus } from "../../api/types";
+import { errorModalDelayMs } from "../../../constants";
 
 jest.mock("../../api/application");
 jest.mock("../../api/subgraph");
@@ -409,7 +410,11 @@ describe("<ApplicationsApproved />", () => {
         fireEvent.click(confirmationModalConfirmButton);
       });
 
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
     });
 
     it("choosing try again restarts the action and closes the error modal", async () => {
@@ -422,7 +427,11 @@ describe("<ApplicationsApproved />", () => {
         fireEvent.click(confirmationModalConfirmButton);
       });
 
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      await waitFor(
+        async () =>
+          expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
+        { timeout: errorModalDelayMs + 1000 }
+      );
 
       const tryAgain = await screen.findByTestId("tryAgain");
       await act(() => {

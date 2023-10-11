@@ -19,6 +19,7 @@ import {
   ProgressStatus,
   ProjectRequirements,
   Round,
+  RoundCategory,
 } from "../api/types";
 import {
   generateApplicationSchema,
@@ -35,16 +36,17 @@ import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
 import _ from "lodash";
 
-const payoutQuestion: SchemaQuestion = {
-  id: 0,
-  title: "Payout Wallet Address",
-  required: true,
-  encrypted: false,
-  hidden: true,
-  type: "address",
-};
-
-export const initialQuestions: SchemaQuestion[] = [
+export const initialQuestionsQF: SchemaQuestion[] = [
+  {
+    id: 0,
+    title: "Payout Wallet Address",
+    required: true,
+    encrypted: false,
+    hidden: true,
+    type: "address",
+    fixed: true,
+    metadataExcluded: true,
+  },
   {
     id: 1,
     title: "Email Address",
@@ -63,6 +65,80 @@ export const initialQuestions: SchemaQuestion[] = [
   },
   {
     id: 3,
+    title: "Team Size",
+    required: true,
+    encrypted: false,
+    hidden: false,
+    type: "number",
+  },
+];
+
+export const initialQuestionsDirect: SchemaQuestion[] = [
+  {
+    id: 1,
+    title: "Email Address",
+    required: true,
+    encrypted: true,
+    hidden: true,
+    type: "email",
+    fixed: true,
+  },
+  {
+    id: 2,
+    title: "Application detail",
+    required: true,
+    encrypted: false,
+    hidden: false,
+    type: "paragraph",
+    fixed: true,
+  },
+  {
+    id: 3,
+    title: "Amount requested",
+    required: true,
+    encrypted: false,
+    hidden: true,
+    type: "number",
+    fixed: true,
+  },
+  {
+    id: 4,
+    title: "Payout token",
+    required: true,
+    encrypted: false,
+    hidden: true,
+    type: "dropdown",
+    choices: ["DAI"], // ETH is not supported.
+    fixed: false,
+  },
+  {
+    id: 5,
+    title: "Payout wallet address",
+    required: true,
+    encrypted: false,
+    hidden: true,
+    type: "address",
+    fixed: true,
+    metadataExcluded: true,
+  },
+  {
+    id: 6,
+    title: "Milestones",
+    required: true,
+    encrypted: false,
+    hidden: false,
+    type: "paragraph",
+  },
+  {
+    id: 7,
+    title: "Funding Sources",
+    required: true,
+    encrypted: false,
+    hidden: false,
+    type: "short-answer",
+  },
+  {
+    id: 8,
     title: "Team Size",
     required: true,
     encrypted: false,
@@ -95,6 +171,7 @@ export function RoundApplicationForm(props: {
     program: Program;
   };
   stepper: typeof FS;
+  configuration?: { roundCategory?: RoundCategory };
 }) {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
@@ -112,9 +189,16 @@ export function RoundApplicationForm(props: {
 
   const navigate = useNavigate();
 
-  const defaultQuestions: ApplicationMetadata["questions"] =
-    // @ts-expect-error TODO: either fix this or refactor the whole formstepper
-    formData?.applicationMetadata?.questions ?? initialQuestions;
+  const roundCategory =
+    props.configuration?.roundCategory ?? RoundCategory.QuadraticFunding;
+
+  // @ts-expect-error TODO: either fix this or refactor the whole formstepper
+  const questionsArg = formData?.applicationMetadata?.questions;
+  const defaultQuestions: ApplicationMetadata["questions"] = questionsArg
+    ? questionsArg
+    : roundCategory === RoundCategory.QuadraticFunding
+    ? initialQuestionsQF
+    : initialQuestionsDirect;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { control, handleSubmit, register, getValues } = useForm<Round>({
@@ -163,6 +247,7 @@ export function RoundApplicationForm(props: {
     indexingStatus,
     programId,
     navigate,
+    roundCategory,
   ]);
 
   useEffect(() => {
@@ -221,16 +306,17 @@ export function RoundApplicationForm(props: {
         roundMetadataWithProgramContractAddress,
         applicationQuestions,
         round,
+        roundCategory,
       });
     } catch (error) {
       datadogLogs.logger.error(
-        `error: RoundApplcationForm next - ${error}, programId - ${programId}`
+        `error: RoundApplicationForm next - ${error}, programId - ${programId}`
       );
-      console.error("RoundApplcationForm", error);
+      console.error("RoundApplicationForm", error);
     }
   };
 
-  const progressSteps = [
+  const progressStepsQF = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
@@ -238,7 +324,7 @@ export function RoundApplicationForm(props: {
     },
     {
       name: "Deploying",
-      description: "The quadratic funding contract is being deployed.",
+      description: "The voting contract is being deployed.",
       status: votingContractDeploymentStatus,
     },
     {
@@ -301,7 +387,7 @@ export function RoundApplicationForm(props: {
     <ProgressModal
       isOpen={openProgressModal}
       subheading={"Please hold while we create your Grant Round."}
-      steps={progressSteps}
+      steps={progressStepsQF}
     >
       <ErrorModal
         isOpen={openErrorModal}
@@ -381,12 +467,13 @@ export function RoundApplicationForm(props: {
   );
 
   const ApplicationQuestions = () => {
-    const lockedQuestion = singleQuestion(payoutQuestion, -1);
-    const f = fields.map((field, i) => singleQuestion(field, i));
+    const f = fields.map((field, i) =>
+      singleQuestion(field, field.fixed ? -1 : i)
+    );
 
     return (
       <div>
-        {[lockedQuestion, ...f]}
+        {[...f]}
         <Button
           type="button"
           $variant="outline"

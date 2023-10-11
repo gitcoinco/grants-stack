@@ -106,6 +106,7 @@ export const TokenNamesAndLogos = {
   GTC: "/logos/gtc.svg",
   AVAX: "/logos/avax-logo.svg",
   MATIC: "/logos/pol-logo.svg",
+  CVP: "/logos/power-pool.png", // PowerPool
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -124,6 +125,14 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "CVP",
+    chainId: ChainId.MAINNET,
+    address: "0x38e4adB44ef08F22F5B5b76A8f0c2d0dCbE7DcA1",
+    decimal: 18,
+    logo: TokenNamesAndLogos["CVP"],
+    redstoneTokenId: RedstoneTokenIds["CVP"],
   },
 ];
 
@@ -404,6 +413,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           logo: TokenNamesAndLogos["ETH"],
           decimal: 18,
         },
+        {
+          name: "CVP",
+          chainId: ChainId.MAINNET,
+          address: "0x38e4adB44ef08F22F5B5b76A8f0c2d0dCbE7DcA1",
+          decimal: 18,
+          logo: TokenNamesAndLogos["CVP"],
+          redstoneTokenId: RedstoneTokenIds["CVP"],
+        },
       ];
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
@@ -626,6 +643,8 @@ export interface SchemaQuestion {
   hidden: boolean;
   choices?: string[];
   encrypted: boolean;
+  fixed?: boolean;
+  metadataExcluded?: boolean;
 }
 
 export interface ProjectRequirementsSchema {
@@ -658,18 +677,20 @@ export const generateApplicationSchema = (
   const schema = { questions: new Array<SchemaQuestion>(), requirements };
   if (!questions) return schema;
 
-  schema.questions = questions.map((question, index) => {
-    return {
-      id: index,
-      title: question.title,
-      type: question.type,
-      required: question.required,
-      info: "",
-      choices: question.choices,
-      hidden: question.hidden,
-      encrypted: question.encrypted,
-    };
-  });
+  schema.questions = questions
+    .filter((q) => !q.metadataExcluded)
+    .map((question, index) => {
+      return {
+        id: index,
+        title: question.title,
+        type: question.type,
+        required: question.required,
+        info: "",
+        choices: question.choices,
+        hidden: question.hidden,
+        encrypted: question.encrypted,
+      };
+    });
 
   return schema;
 };

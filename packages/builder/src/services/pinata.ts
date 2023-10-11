@@ -21,13 +21,13 @@ export default class PinataClient {
       );
     }
     this.jwt = JWT!;
-    this.gateway = GATEWAY!;
+    this.gateway = GATEWAY.replace(/\/$/, "");
     this.pinJSONToIPFSURL = PIN_JSON_TO_IPFS_URL;
     this.pinFileToIPFSURL = PIN_FILE_TO_IPFS_URL;
   }
 
   fileURL(cid: string) {
-    return `${GATEWAY}/ipfs/${cid}`;
+    return `${this.gateway}/ipfs/${cid}`;
   }
 
   fetchText(cid: string) {

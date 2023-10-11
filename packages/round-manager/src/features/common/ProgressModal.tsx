@@ -80,6 +80,7 @@ export default function ProgressModal({
                         className={`relative ${
                           stepIdx !== props.steps.length - 1 && "pb-10"
                         }`}
+                        data-testid={`${step.name}-${step.status}`}
                       >
                         {step.status === ProgressStatus.IS_SUCCESS ? (
                           <ModalStep

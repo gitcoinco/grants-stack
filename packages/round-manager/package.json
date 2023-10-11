@@ -14,11 +14,12 @@
     "test:dev": "craco test --watchAll=true",
     "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
-    "format": "prettier . --write",
-    "lint:ci": "pnpm lint:fix --max-warnings=0",
+    "lint:local": "eslint",
+    "lint": "eslint ./src --cache",
+    "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit",
-    "typechain": "typechain --target=ethers-v5 ./src/features/api/abi/**/*.json --out-dir ./src/types/generated/typechain/",
+    "typechain": "typechain --target=ethers-v5 ./src/features/**/*.json --out-dir ./src/types/generated/typechain/",
     "postinstall": "pnpm typechain"
   },
   "dependencies": {
@@ -128,7 +129,6 @@
     "craco-esbuild": "^0.5.2",
     "husky": "^8.0.1",
     "postcss": "^8.4.14",
-    "prettier": "^2.7.1",
     "resize-observer-polyfill": "^1.5.1",
     "tailwind-styled-components": "2.1.6",
     "tailwindcss": "^3.0.24",
