@@ -195,7 +195,7 @@ export default function VerificationForm({
           dataTrackEvent={
             !props.formMetaData.userGithub &&
             !props.formMetaData.projectGithub &&
-            +!props.formMetaData.projectTwitter
+            !props.formMetaData.projectTwitter
               ? "project-create-social-skip"
               : "project-create-social-next"
           }
