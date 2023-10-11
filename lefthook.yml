@@ -5,12 +5,34 @@ pre-commit:
   parallel: true
   commands:
     prettier:
-      glob: "*.{js,ts,jsx,tsx}"
-      run: pnpm prettier --write {staged_files}
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm format {staged_files}
+      stage_fixed: true
+
+    lint-ge:
+      root: "packages/builder"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "builder" lint:local {staged_files}
+      stage_fixed: true
+
+    lint-rm:
+      root: "packages/round-manager"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "round-manager" lint:local {staged_files}
+      stage_fixed: true
+
+    lint-builder:
+      root: "packages/grant-explorer"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "grant-explorer" lint:local {staged_files}
+      stage_fixed: true
 
 pre-push:
   parallel: true
   commands:
-    eslint:
-      glob: "*.{js,ts,jsx,tsx}"
-      run: turbo lint:ci
+    typecheck:
+      run: turbo run typecheck
+    build:
+      run: turbo run build
+    test:
+      run: turbo run test

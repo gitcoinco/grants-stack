@@ -318,6 +318,7 @@ export const RedstoneTokenIds = {
   GTC: "GTC",
   MATIC: "MATIC",
   AVAX: "AVAX",
+  CVP: "CVP",
 } as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {

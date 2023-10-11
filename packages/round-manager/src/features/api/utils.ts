@@ -106,6 +106,7 @@ export const TokenNamesAndLogos = {
   GTC: "/logos/gtc.svg",
   AVAX: "/logos/avax-logo.svg",
   MATIC: "/logos/pol-logo.svg",
+  CVP: "/logos/power-pool.png", // PowerPool
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -124,6 +125,14 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "CVP",
+    chainId: ChainId.MAINNET,
+    address: "0x38e4adB44ef08F22F5B5b76A8f0c2d0dCbE7DcA1",
+    decimal: 18,
+    logo: TokenNamesAndLogos["CVP"],
+    redstoneTokenId: RedstoneTokenIds["CVP"],
   },
 ];
 
@@ -403,6 +412,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
           decimal: 18,
+        },
+        {
+          name: "CVP",
+          chainId: ChainId.MAINNET,
+          address: "0x38e4adB44ef08F22F5B5b76A8f0c2d0dCbE7DcA1",
+          decimal: 18,
+          logo: TokenNamesAndLogos["CVP"],
+          redstoneTokenId: RedstoneTokenIds["CVP"],
         },
       ];
     }
