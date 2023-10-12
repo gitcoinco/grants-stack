@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/solid";
 import { RefreshIcon } from "@heroicons/react/outline";
 
-import QuadraticFunding from "../../assets/quadratic-funding.svg";
+import QuadraticFundingSVG from "../../assets/quadratic-funding.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
 import Close from "../../assets/close.svg";
 
@@ -287,7 +287,7 @@ export default function ViewProgram() {
                 </p>
               </div>
               <img
-                src={QuadraticFunding}
+                src={QuadraticFundingSVG}
                 alt="Quadratic Funding"
                 className="object-cover pl-6 pr-4"
               />

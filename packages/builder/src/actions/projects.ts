@@ -470,15 +470,14 @@ export const fetchProjectApplications =
             throw response.errors;
           }
 
-          const applications = response.data.roundApplications.map(
-            (application: any) => ({
+          const applications: Application[] =
+            response.data.roundApplications.map((application: any) => ({
               status: convertStatusToText(application.status),
               roundID: application.round.id,
               inReview: application.inReview,
               chainId: chain.id,
               metaPtr: application.metaPtr,
-            })
-          );
+            }));
 
           if (applications.length === 0) {
             return [];

@@ -49,14 +49,15 @@ export default function RoundListItem({
     };
   });
 
-  const renderApplicationDate = () => (
-    <>
-      {formatDateFromSecs(roundData?.applicationsStartTime!)} -{" "}
-      {!isInfinite(roundData?.applicationsEndTime!)
-        ? formatDateFromSecs(roundData?.applicationsEndTime!)
-        : "No End Date"}
-    </>
-  );
+  const renderApplicationDate = () =>
+    roundData && (
+      <>
+        {formatDateFromSecs(roundData.applicationsStartTime)} -{" "}
+        {!isInfinite(roundData.applicationsEndTime)
+          ? formatDateFromSecs(roundData.applicationsEndTime)
+          : "No End Date"}
+      </>
+    );
 
   const renderRoundBadge = () => {
     let colorScheme:

@@ -28,7 +28,7 @@ export default function RoundStats() {
     return {
       projectID: params.id!,
       stats,
-      projectApplications: state.projects?.applications[params.id!],
+      projectApplications: state.projects?.applications[params.id!] ?? [],
       rounds: state.rounds,
     };
   });

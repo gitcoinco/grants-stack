@@ -35,8 +35,11 @@ import ErrorModal from "../common/ErrorModal";
 export default function ApplicationsApproved() {
   const { id } = useParams();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { applications, isLoading } = useApplicationByRoundId(id!);
+  if (id === undefined) {
+    throw new Error("id is undefined");
+  }
+
+  const { applications, isLoading } = useApplicationByRoundId(id);
   const approvedApplications =
     applications?.filter(
       (a: GrantApplication) =>

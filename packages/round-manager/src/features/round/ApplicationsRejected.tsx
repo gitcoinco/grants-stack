@@ -35,8 +35,11 @@ import { errorModalDelayMs } from "../../constants";
 export default function ApplicationsRejected() {
   const { id } = useParams();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { applications, isLoading } = useApplicationByRoundId(id!);
+  if (id === undefined) {
+    throw new Error("id is undefined");
+  }
+
+  const { applications, isLoading } = useApplicationByRoundId(id);
   const rejectedApplications =
     applications?.filter(
       (a) => a.status == ApplicationStatus.REJECTED.toString()
