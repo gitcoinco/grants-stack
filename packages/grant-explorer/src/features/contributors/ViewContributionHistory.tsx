@@ -109,7 +109,8 @@ export function ViewContributionHistory(props: {
       props.contributions.forEach((chainContribution) => {
         const { data } = chainContribution;
         data.forEach((contribution) => {
-          const tokenId = contribution.token + "-" + chainContribution.chainId;
+          const tokenId =
+            contribution.token.toLowerCase() + "-" + chainContribution.chainId;
           const token = props.tokens[tokenId];
           if (token) {
             totalDonations += contribution.amountUSD;
