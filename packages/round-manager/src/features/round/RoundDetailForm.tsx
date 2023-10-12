@@ -682,7 +682,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 <p className="text-sm mt-0.5">
                   <a
                     className="text-violet-400 mr-1"
-                    href="https://grant-explorer.gitcoin.co/"
+                    href="https://explorer.gitcoin.co/"
                     target="_blank"
                   >
                     Gitcoin Explorer
@@ -1052,7 +1052,6 @@ function RoundType(props: {
 }) {
   const { field: roundTypeField } = useController({
     name: "roundMetadata.roundType",
-    defaultValue: "public",
     control: props.control,
     rules: {
       required: true,
