@@ -55,7 +55,7 @@ export function DonationsTable(props: {
           props.contributions.map((chainContribution) => {
             const { chainId, data } = chainContribution;
             return data.map((contribution) => {
-              const tokenId = contribution.token + "-" + chainId;
+              const tokenId = contribution.token.toLowerCase() + "-" + chainId;
               const token = props.tokens[tokenId];
 
               let formattedAmount = "N/A";

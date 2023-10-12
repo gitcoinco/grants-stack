@@ -62,7 +62,10 @@ function ViewContributionHistoryFetcher(props: {
 
   // tokens is a map of token address + chainId to token
   const tokens = Object.fromEntries(
-    votingTokens.map((token) => [token.address + "-" + token.chainId, token])
+    votingTokens.map((token) => [
+      token.address.toLowerCase() + "-" + token.chainId,
+      token,
+    ])
   );
 
   if (contributionHistory.type === "loading") {
