@@ -295,11 +295,14 @@ export function SummaryContainer() {
             proj.amount ?? "0",
             getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
           ),
-          recipient: proj.recipient,
-          contributor: address as Address,
+          grantAddress: proj.recipient,
+          voter: address as Address,
           token: getVotingTokenForChain(
             parseChainId(proj.chainId)
           ).address.toLowerCase(),
+          projectId: proj.projectRegistryId,
+          applicationId: proj.grantApplicationId,
+          roundId: getAddress(round.id ?? ""),
         })),
       };
     }) ?? [];

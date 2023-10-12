@@ -45,13 +45,16 @@ export function RoundInCart(
       roundId: getAddress(round?.id ?? zeroAddress),
       chainId: props.roundCart[0].chainId,
       potentialVotes: props.roundCart.map((proj) => ({
+        roundId: getAddress(round?.id ?? zeroAddress),
+        projectId: proj.projectRegistryId,
         amount: parseUnits(
           proj.amount ?? "0",
           votingTokenForChain.decimal ?? 18
         ),
-        recipient: proj.recipient,
-        contributor: address ?? zeroAddress,
+        grantAddress: proj.recipient,
+        voter: address ?? zeroAddress,
         token: votingTokenForChain.address.toLowerCase(),
+        applicationId: proj.grantApplicationId,
       })),
     },
   ]);

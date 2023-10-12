@@ -21,10 +21,13 @@ type UseMatchingEstimatesParams = {
   roundId: Address;
   chainId: ChainId;
   potentialVotes: {
-    contributor: string;
-    recipient: string;
-    amount: bigint;
+    projectId: string;
+    roundId: string;
+    applicationId: string;
     token: string;
+    voter: string;
+    grantAddress: string;
+    amount: bigint;
   }[];
 };
 
@@ -35,10 +38,18 @@ interface JSONObject {
 }
 
 function getMatchingEstimates(
-  params: UseMatchingEstimatesParams,
+  params: UseMatchingEstimatesParams
 ): Promise<MatchingEstimateResult[]> {
   const replacer = (_key: string, value: JSONValue) =>
     typeof value === "bigint" ? value.toString() : value;
+
+  /* The indexer wants just the application id number, not the whole application */
+  const fixedApplicationId = params.potentialVotes.map((vote) => ({
+    ...vote,
+    applicationId: vote.applicationId.includes("-")
+      ? vote.applicationId.split("-")[1]
+      : vote.applicationId,
+  }));
 
   return fetch(
     `${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${params.chainId}/rounds/${params.roundId}/estimate`,
@@ -47,9 +58,9 @@ function getMatchingEstimates(
         Accept: "application/json",
         "content-type": "application/json",
       },
-      body: JSON.stringify({ potentialVotes: params.potentialVotes }, replacer),
+      body: JSON.stringify({ potentialVotes: fixedApplicationId }, replacer),
       method: "POST",
-    },
+    }
   ).then((r) => r.json());
 }
 
@@ -59,12 +70,12 @@ function getMatchingEstimates(
  */
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
   return useSWR(params, (params) =>
-    Promise.all(params.map((params) => getMatchingEstimates(params))),
+    Promise.all(params.map((params) => getMatchingEstimates(params)))
   );
 }
 
 export function matchingEstimatesToText(
-  matchingEstimates?: MatchingEstimateResult[][],
+  matchingEstimates?: MatchingEstimateResult[][]
 ) {
   return matchingEstimates
     ?.flat()
