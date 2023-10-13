@@ -20,7 +20,13 @@ import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { Address, formatUnits, getAddress, parseUnits } from "viem";
+import {
+  Address,
+  formatUnits,
+  getAddress,
+  parseUnits,
+  zeroAddress,
+} from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   matchingEstimatesToText,
@@ -288,7 +294,7 @@ export function SummaryContainer() {
     rounds?.map((round) => {
       const projs = projects.find((project) => project.roundId === round.id);
       return {
-        roundId: getAddress(round.id ?? ""),
+        roundId: getAddress(round.id ?? zeroAddress),
         chainId: projs?.chainId ?? ChainId.MAINNET,
         potentialVotes: projects.map((proj) => ({
           amount: parseUnits(
@@ -296,13 +302,13 @@ export function SummaryContainer() {
             getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
           ),
           grantAddress: proj.recipient,
-          voter: address as Address,
+          voter: address ?? zeroAddress,
           token: getVotingTokenForChain(
             parseChainId(proj.chainId)
           ).address.toLowerCase(),
           projectId: proj.projectRegistryId,
           applicationId: proj.grantApplicationId,
-          roundId: getAddress(round.id ?? ""),
+          roundId: getAddress(round.id ?? zeroAddress),
         })),
       };
     }) ?? [];
