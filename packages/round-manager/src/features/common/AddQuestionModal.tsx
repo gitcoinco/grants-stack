@@ -163,9 +163,7 @@ function AddQuestionModal({
 
     if (
       renderOptions.length === 0 ||
-      ((selectedQuestion === "multiple-choice" ||
-        selectedQuestion === "dropdown") &&
-        renderOptions.length === 1)
+      (selectedQuestion === "multiple-choice" && renderOptions.length === 1)
     ) {
       renderOptions.push("");
       setQuestionOptions({
@@ -308,13 +306,20 @@ function AddQuestionModal({
       errors.push("Please provide at least 1 option.");
     }
     if (
-      (questionOptions.type === "multiple-choice" ||
-        questionOptions.type === "dropdown") &&
+      questionOptions.type === "multiple-choice" &&
       (!questionOptions.choices ||
         questionOptions.choices?.length < 2 ||
         questionOptions.choices?.[1] === "")
     ) {
       errors.push("Please provide at least 2 options.");
+    }
+    if (
+      questionOptions.type === "dropdown" &&
+      (!questionOptions.choices ||
+        questionOptions.choices?.length < 1 ||
+        questionOptions.choices?.[0] === "")
+    ) {
+      errors.push("Please provide at least 1 option.");
     }
     if (questionOptions.encrypted && !questionOptions.hidden) {
       errors.push(

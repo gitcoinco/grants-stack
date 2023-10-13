@@ -78,6 +78,7 @@ export default function ApplicationDirectPayout({
   const tokenInfo = tokensByChainInfo.find(
     (t) => t.name.toLowerCase() == payoutTokenAnswer.answer?.toLowerCase()
   );
+
   if (!tokenInfo) {
     throw Error(
       `Token info not found for chain id: ${chain.id} and token ${payoutTokenAnswer}!`
@@ -297,7 +298,9 @@ export default function ApplicationDirectPayout({
               </label>
               <div className="relative mt-2 rounded-md shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <span className="text-gray-400 sm:text-sm">DAI</span>
+                  <span className="text-gray-400 sm:text-sm">
+                    {tokenInfo.name}
+                  </span>
                 </div>
                 <Input
                   {...register("amount")}
@@ -306,7 +309,7 @@ export default function ApplicationDirectPayout({
                   }
                   type="number"
                   placeholder="Enter payout amount"
-                  aria-describedby="DAI-symbol"
+                  aria-describedby="token-symbol"
                   $hasError={errors.amount !== undefined}
                   step="any"
                   data-testid="payout-amount-input"
@@ -424,15 +427,14 @@ export default function ApplicationDirectPayout({
                 <strong>Important:</strong>
                 <p>
                   Make sure the vault address has a balance of at least{" "}
-                  {getAmountWithFee()}
-                  DAI.
+                  {getAmountWithFee()} {tokenInfo.name}.
                 </p>
                 {allInputs.address &&
                   address.toLowerCase() !== allInputs.address.toLowerCase() && (
                     <p>
                       Make sure the vault address has allowed the payout
                       contract with address {round.payoutStrategy.id} to spend{" "}
-                      {getAmountWithFee()} DAI.
+                      {getAmountWithFee()} {tokenInfo.name}.
                     </p>
                   )}
               </span>
