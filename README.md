@@ -10,9 +10,9 @@ Package manager         : `pnpm`
 
 ## Packages
 
-- round-manager: react-frontend for round-manager
-- grant-explorer: react-frontend for grant-explorer
-- builder: react-frontend for builder
+- round-manager: React application for managing rounds
+- grant-explorer: React application for exploring the grants ecosystem
+- builder: React application for managing projects
 - common: components and functionality that is shared between projects
 - eslint-config-gitcoin: common eslint config for all grants stack projects
 - verify-env: a utility package and a webpack plugin for verifying the environment of an app during build

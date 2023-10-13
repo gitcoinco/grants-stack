@@ -72,6 +72,13 @@ component route
 
 Find more information about routing [here](https://reactrouter.com/docs/en/v6).
 
-## Submitting for review
+## Submitting a PR
 
-We have git hook
+Please always submit draft PRs at first, and make sure they pass the following conditions before you mark them as Ready for review.
+
+We utilize git hooks for pre-commit
+formatting and pre-push checks, which should help you catch issues early, before they fail the CI.
+
+Before submitting a PR for review, ensure that it passes all the checks of the PR checklist. Also consider doing a self-review of the changes to reduce back-and-forth. 
+
+When the CI is green, PR checklist is ticked off and the PR is in good shape, submit it for review by clicking the "Ready for review" button.
