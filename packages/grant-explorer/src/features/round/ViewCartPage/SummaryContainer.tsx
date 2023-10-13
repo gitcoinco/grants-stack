@@ -286,24 +286,28 @@ export function SummaryContainer() {
   /* Matching estimates are calculated per-round */
   const matchingEstimateParamsPerRound =
     rounds?.map((round) => {
-      const projs = projects.find((project) => project.roundId === round.id);
+      const projectFromRound = projects.find(
+        (project) => project.roundId === round.id
+      );
       return {
         roundId: getAddress(round.id ?? zeroAddress),
-        chainId: projs?.chainId ?? ChainId.MAINNET,
-        potentialVotes: projects.map((proj) => ({
-          amount: parseUnits(
-            proj.amount ?? "0",
-            getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
-          ),
-          grantAddress: proj.recipient,
-          voter: address ?? zeroAddress,
-          token: getVotingTokenForChain(
-            parseChainId(proj.chainId)
-          ).address.toLowerCase(),
-          projectId: proj.projectRegistryId,
-          applicationId: proj.grantApplicationId,
-          roundId: getAddress(round.id ?? zeroAddress),
-        })),
+        chainId: projectFromRound?.chainId ?? ChainId.MAINNET,
+        potentialVotes: projects
+          .filter((proj) => proj.roundId === round.id)
+          .map((proj) => ({
+            amount: parseUnits(
+              proj.amount ?? "0",
+              getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
+            ),
+            grantAddress: proj.recipient,
+            voter: address ?? zeroAddress,
+            token: getVotingTokenForChain(
+              parseChainId(proj.chainId)
+            ).address.toLowerCase(),
+            projectId: proj.projectRegistryId,
+            applicationId: proj.grantApplicationId,
+            roundId: getAddress(round.id ?? zeroAddress),
+          })),
       };
     }) ?? [];
 

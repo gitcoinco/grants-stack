@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { Address } from "viem";
+import { Address, zeroAddress } from "viem";
 import { ChainId } from "common";
 
 /* TODO: Rename some of the types to hungarian-style notation once we have shared types between indexer and frontends */
@@ -51,6 +51,13 @@ function getMatchingEstimates(
       : vote.applicationId,
   }));
 
+  console.log(
+    "estimating token ",
+    params.potentialVotes.map((v) => v.token),
+    "for chain ",
+    params.chainId
+  );
+
   return fetch(
     `${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${params.chainId}/rounds/${params.roundId}/estimate`,
     {
@@ -69,7 +76,8 @@ function getMatchingEstimates(
  * For a single round, pass in an array with a single element
  */
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
-  return useSWR(params, (params) =>
+  const shouldFetch = params.every((param) => param.roundId !== zeroAddress);
+  return useSWR(shouldFetch ? params : null, (params) =>
     Promise.all(params.map((params) => getMatchingEstimates(params)))
   );
 }
