@@ -245,7 +245,7 @@ export function SummaryContainer() {
     }
   }
 
-  const { passportState, passport } = usePassport({
+  const { passportState } = usePassport({
     address: address ?? "",
   });
 
@@ -323,16 +323,14 @@ export function SummaryContainer() {
     return null;
   }
 
-  const isNotEligibleForMatching =
-    passportState === PassportState.NOT_CONNECTED ||
-    (passport?.score !== undefined && Number(passport.score) < 1);
+  const isEligibleForMatching = passportState === PassportState.MATCH_ELIGIBLE;
 
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
       <div
         className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${
-          isNotEligibleForMatching ? "text-red-400" : "text-teal-500"
+          isEligibleForMatching ? "text-teal-500" : "text-red-400"
         }`}
       >
         {matchingEstimateError === undefined &&
@@ -340,9 +338,7 @@ export function SummaryContainer() {
             <>
               <div className="flex flex-row mt-4 items-center">
                 <p>Estimated match</p>
-                <MatchingEstimateTooltip
-                  isEligible={!isNotEligibleForMatching}
-                />
+                <MatchingEstimateTooltip isEligible={isEligibleForMatching} />
               </div>
               <div className="flex justify-end mt-4">
                 <Skeleton isLoaded={!matchingEstimateLoading}>

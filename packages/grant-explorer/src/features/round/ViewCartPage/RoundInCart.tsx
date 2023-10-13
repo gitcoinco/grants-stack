@@ -60,20 +60,25 @@ export function RoundInCart(
 
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
-  const { passportState, passport } = usePassport({
+  const { passportState } = usePassport({
     address: address ?? "",
   });
+  console.log(passportState);
 
-  const isNotEligibleForMatching =
-    passportState === PassportState.NOT_CONNECTED ||
-    (passport?.score !== undefined && Number(passport.score) < 1);
+  const isEligibleForMatching = passportState === PassportState.MATCH_ELIGIBLE;
 
   return (
     <div className="my-4 bg-grey-50 rounded-xl">
       <div className="flex flex-row items-end pt-4 sm:px-4 px-2 justify-between">
-        <div className={"flex flex-wrap"}>
-          <p className="text-xl font-semibold">{round?.roundMetadata?.name}</p>
-          <p className="text-lg font-bold ml-2">({props.roundCart.length})</p>
+        <div className={"flex flex-col"}>
+          <div>
+            <p className="text-xl font-semibold inline">
+              {round?.roundMetadata?.name}
+            </p>
+            <p className="text-lg font-bold ml-2 inline">
+              ({props.roundCart.length})
+            </p>
+          </div>
           {minDonationThresholdAmount && (
             <div>
               <p className="text-sm pt-2">
@@ -87,7 +92,7 @@ export function RoundInCart(
 
         <div
           className={`flex flex-row gap-4 items-center justify-between font-semibold italic ${
-            isNotEligibleForMatching ? "text-red-400" : "text-teal-500"
+            isEligibleForMatching ? "text-teal-500" : "text-red-400"
           }`}
         >
           {matchingEstimateError === undefined &&

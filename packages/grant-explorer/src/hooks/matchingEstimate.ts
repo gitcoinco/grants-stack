@@ -51,13 +51,6 @@ function getMatchingEstimates(
       : vote.applicationId,
   }));
 
-  console.log(
-    "estimating token ",
-    params.potentialVotes.map((v) => v.token),
-    "for chain ",
-    params.chainId
-  );
-
   return fetch(
     `${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${params.chainId}/rounds/${params.roundId}/estimate`,
     {
