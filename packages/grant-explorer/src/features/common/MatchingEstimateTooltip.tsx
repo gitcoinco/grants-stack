@@ -17,7 +17,11 @@ export function MatchingEstimateTooltip(props: { isEligible: boolean }) {
                 subject to change as the round progresses. Your match may start
                 at $0, but can change as the project receives more donations.
                 Read more about how quadratic funding works{" "}
-                <a href="https://wtfisqf.com" target={"_blank"}>
+                <a
+                  href="https://wtfisqf.com"
+                  className={"underline"}
+                  target={"_blank"}
+                >
                   here
                 </a>
                 .
@@ -26,8 +30,12 @@ export function MatchingEstimateTooltip(props: { isEligible: boolean }) {
               <>
                 Keep in mind that this is a potential match. By connecting to
                 Gitcoin Passport, you can update your score before or after
-                submitting your donation.
-                <a href="https://passport.gitcoin.co" target="_blank">
+                submitting your donation.{" "}
+                <a
+                  href="https://passport.gitcoin.co"
+                  className={"underline"}
+                  target="_blank"
+                >
                   Click here
                 </a>{" "}
                 to configure your score.

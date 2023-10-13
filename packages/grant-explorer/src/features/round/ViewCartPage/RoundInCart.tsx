@@ -12,7 +12,6 @@ import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { PassportState, usePassport } from "../../api/passport";
-import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {
@@ -71,11 +70,21 @@ export function RoundInCart(
 
   return (
     <div className="my-4 bg-grey-50 rounded-xl">
-      <div className="flex flex-row items-center pt-4 sm:px-4 px-2 justify-between">
-        <div className={"flex"}>
-          <p className="text-xl  font-semibold">{round?.roundMetadata?.name}</p>
+      <div className="flex flex-row items-end pt-4 sm:px-4 px-2 justify-between">
+        <div className={"flex flex-wrap"}>
+          <p className="text-xl font-semibold">{round?.roundMetadata?.name}</p>
           <p className="text-lg font-bold ml-2">({props.roundCart.length})</p>
+          {minDonationThresholdAmount && (
+            <div>
+              <p className="text-sm pt-2">
+                Your donation to each project must be valued at{" "}
+                {minDonationThresholdAmount} USD or more to be eligible for
+                matching.
+              </p>
+            </div>
+          )}
         </div>
+
         <div
           className={`flex flex-row gap-4 items-center justify-between font-semibold italic ${
             isNotEligibleForMatching ? "text-red-400" : "text-teal-500"
@@ -83,35 +92,18 @@ export function RoundInCart(
         >
           {matchingEstimateError === undefined &&
             matchingEstimates !== undefined && (
-              <>
-                <div className="flex flex-row  items-center">
-                  <p>Estimated match</p>
-                  <MatchingEstimateTooltip
-                    isEligible={!isNotEligibleForMatching}
-                  />
-                </div>
-                <div className="flex justify-end ">
-                  <Skeleton isLoaded={!matchingEstimateLoading}>
-                    <p>
-                      <BoltIcon className={"w-4 h-4 inline"} />
-                      ~$
-                      {estimateText}
-                    </p>
-                  </Skeleton>
-                </div>
-              </>
+              <div className="flex justify-end flex-nowrap">
+                <Skeleton isLoaded={!matchingEstimateLoading}>
+                  <p className={"flex flex-nowrap items-center"}>
+                    <BoltIcon className={"w-4 h-4 inline"} />
+                    ~$
+                    {estimateText}
+                  </p>
+                </Skeleton>
+              </div>
             )}
         </div>
       </div>
-      {minDonationThresholdAmount && (
-        <div>
-          <p className="text-sm pt-2 pb-4 sm:px-4 px-2">
-            Your donation to each project must be valued at{" "}
-            {minDonationThresholdAmount} USD or more to be eligible for
-            matching.
-          </p>
-        </div>
-      )}
       {props.roundCart.map((project, key) => {
         const matchingEstimateUSD = matchingEstimates
           ?.flat()
