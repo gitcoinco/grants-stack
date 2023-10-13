@@ -90,7 +90,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     encrypted: false,
     hidden: false,
     type: "paragraph",
-    fixed: true,
+    fixed: false,
   },
   {
     id: 3,
@@ -99,7 +99,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     encrypted: false,
     hidden: true,
     type: "number",
-    fixed: true,
+    fixed: false,
   },
   {
     id: 4,
