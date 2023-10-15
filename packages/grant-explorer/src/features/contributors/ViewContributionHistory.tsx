@@ -60,8 +60,12 @@ function ViewContributionHistoryFetcher(props: {
     return blockies.create({ seed: props.address.toLowerCase() }).toDataURL();
   }, [props.address]);
 
+  // tokens is a map of token address + chainId to token
   const tokens = Object.fromEntries(
-    votingTokens.map((token) => [token.address, token])
+    votingTokens.map((token) => [
+      token.address.toLowerCase() + "-" + token.chainId,
+      token,
+    ])
   );
 
   if (contributionHistory.type === "loading") {
@@ -105,7 +109,9 @@ export function ViewContributionHistory(props: {
       props.contributions.forEach((chainContribution) => {
         const { data } = chainContribution;
         data.forEach((contribution) => {
-          const token = props.tokens[contribution.token];
+          const tokenId =
+            contribution.token.toLowerCase() + "-" + chainContribution.chainId;
+          const token = props.tokens[tokenId];
           if (token) {
             totalDonations += contribution.amountUSD;
             totalUniqueContributions += 1;
