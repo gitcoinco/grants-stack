@@ -86,10 +86,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
         </CardHeader>
 
         <CardContent>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium">by</span>
-            <Badge rounded="full">GITCOIN</Badge>
-          </div>
           <CardDescription
             data-testid="round-description"
             className="min-h-[96px]"
