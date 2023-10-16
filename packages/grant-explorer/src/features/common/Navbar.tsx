@@ -1,15 +1,15 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-logo.svg";
 import { useNavigate } from "react-router-dom";
 import { RoundsSubNav } from "../discovery/RoundsSubNav";
 import NavbarCart from "./NavbarCart";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
+import { PassportWidget } from "./PassportWidget";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -39,8 +39,6 @@ export default function Navbar(props: NavbarProps) {
 
   const { address: walletAddress } = useAccount();
 
-  const [passportWidgetOpen, setPassportWidgetOpen] = useState(false);
-
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
@@ -59,9 +57,11 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
-            <div onClick={() => setPassportWidgetOpen(!open)}>
-              <GitcoinPassportLogo className="h-8 w-8" />
-            </div>
+            {walletAddress && (
+              <div>
+                <PassportWidget />
+              </div>
+            )}
             {showWalletInteraction && (
               <div>
                 <div
