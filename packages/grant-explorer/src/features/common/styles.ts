@@ -69,6 +69,7 @@ const colorMap = {
   blue: "bg-blue-100",
   green: "bg-green-100",
   grey: "bg-grey-100",
+  yellow: "bg-yellow-100",
 } as const;
 
 const roundedMap = {
