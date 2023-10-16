@@ -67,6 +67,7 @@ export const CardFooterContent = tw.div`
 
 const colorMap = {
   blue: "bg-blue-100",
+  green: "bg-green-100",
   grey: "bg-grey-100",
 } as const;
 

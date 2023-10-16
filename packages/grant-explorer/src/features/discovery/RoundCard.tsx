@@ -32,11 +32,18 @@ const RoundCard = ({ round }: RoundCardProps) => {
     payoutStrategy,
     roundMetadata,
     roundEndTime,
+    applicationsEndTime,
     token,
   } = round;
   const daysLeft = getDaysLeft(Number(roundEndTime));
+  const daysLeftToApply = Math.round(getDaysLeft(Number(applicationsEndTime)));
+
+  // Can we simplify this? Would `days < 1000` do the same thing?
+  const isValidRoundEndTime = !isInfiniteDate(
+    new Date(parseInt(roundEndTime, 10) * 1000)
+  );
+
   const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
-  console.log(round);
   const { data } = useToken({
     address: getAddress(token),
     chainId: Number(chainId),
@@ -52,7 +59,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
   };
 
   const approvedApplicationsCount = projects?.length ?? 0;
-
   return (
     <BasicCard className="w-full">
       <a
@@ -62,6 +68,15 @@ const RoundCard = ({ round }: RoundCardProps) => {
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
+          {daysLeftToApply > 0 ? (
+            <Badge
+              color="green"
+              rounded="full"
+              className="absolute top-3 right-3"
+            >
+              Apply!
+            </Badge>
+          ) : null}
           <CardTitle
             data-testid="round-name"
             className="absolute bottom-3 left-3"
@@ -85,15 +100,11 @@ const RoundCard = ({ round }: RoundCardProps) => {
             )}
           </CardDescription>
           <div className="flex gap-2 justfy-between items-center">
-            <p className="text-xs w-full font-mono" data-testid="days-left">
-              {!isInfiniteDate(new Date(parseInt(roundEndTime, 10) * 1000)) ? (
-                <span>
-                  {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
-                </span>
-              ) : (
-                <span>No end time</span>
-              )}
-            </p>
+            <RoundDaysLeft
+              daysLeft={daysLeft}
+              daysLeftToApply={daysLeftToApply}
+              isValidRoundEndTime={isValidRoundEndTime}
+            />
 
             <Badge color="blue" data-testid="round-badge">
               {getRoundType(payoutStrategy.strategyName)}
@@ -110,6 +121,34 @@ const RoundCard = ({ round }: RoundCardProps) => {
         </CardContent>
       </a>
     </BasicCard>
+  );
+};
+
+const RoundDaysLeft = ({
+  daysLeft = 0,
+  daysLeftToApply = 0,
+  isValidRoundEndTime = true,
+}) => {
+  return (
+    <div className="flex-1">
+      {daysLeftToApply > 0 ? (
+        <span
+          className="text-xs w-full font-mono"
+          data-testid="apply-days-left"
+        >
+          {daysLeftToApply} days left to apply
+        </span>
+      ) : null}
+      <p className="text-xs w-full font-mono" data-testid="days-left">
+        {isValidRoundEndTime ? (
+          <span>
+            {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
+          </span>
+        ) : (
+          <span>No end time</span>
+        )}
+      </p>
+    </div>
   );
 };
 

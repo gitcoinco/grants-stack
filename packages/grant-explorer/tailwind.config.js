@@ -25,6 +25,10 @@ module.exports = {
           ...colors.blue,
           100: "#D3EDFE",
         },
+        green: {
+          ...colors.green,
+          100: "#ADEDE5",
+        },
         violet: {
           100: "#F0EBFF",
           200: "#C9B8FF",
