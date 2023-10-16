@@ -187,7 +187,11 @@ function ProjectsList() {
                       Learn More.
                     </a>
                   </p>
-                  <Link to={newGrantPath()} className="mt-6">
+                  <Link
+                    to={newGrantPath()}
+                    className="mt-6"
+                    data-track-event="project-create-center-next"
+                  >
                     <Button variant={ButtonVariants.outline}>
                       Create a Project
                     </Button>
