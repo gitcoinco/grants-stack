@@ -129,6 +129,7 @@ const RoundDaysLeft = ({
   daysLeftToApply = 0,
   isValidRoundEndTime = true,
 }) => {
+  const days = pluralize(["day", "days"]);
   return (
     <div className="flex-1">
       {daysLeftToApply > 0 ? (
@@ -136,13 +137,13 @@ const RoundDaysLeft = ({
           className="text-xs w-full font-mono"
           data-testid="apply-days-left"
         >
-          {daysLeftToApply} days left to apply
+          {daysLeftToApply} {days(daysLeftToApply)} left to apply
         </span>
       ) : null}
       <p className="text-xs w-full font-mono" data-testid="days-left">
         {isValidRoundEndTime ? (
           <span>
-            {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
+            {daysLeft} {days(daysLeft)} left in round
           </span>
         ) : (
           <span>No end time</span>
@@ -151,5 +152,11 @@ const RoundDaysLeft = ({
     </div>
   );
 };
+
+// If we need something more advanced or to use in another place in codebase, we can pull in a library
+const pluralize =
+  ([singular = "", plural = ""]) =>
+  (num = 0) =>
+    num ? (num === 1 ? singular : plural) : "";
 
 export default RoundCard;
