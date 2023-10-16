@@ -3,6 +3,7 @@ import { RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { fetchFromIPFS } from "./utils";
 import { ethers } from "ethers";
+import { allChains } from "../../app/chainConfig";
 
 interface GetRoundOverviewResult {
   data: {
@@ -10,12 +11,14 @@ interface GetRoundOverviewResult {
   };
 }
 
+/*TODO: what is this */
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004",
   "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc",
   "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38",
 ];
 
+/* TODO: what is this*/
 const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"];
 
 export type RoundOverview = {
@@ -40,7 +43,7 @@ export type RoundOverview = {
 async function fetchRoundsByTimestamp(
   query: string,
   chainId: string,
-  debugModeEnabled: boolean
+  debugModeEnabled: boolean,
 ): Promise<RoundOverview[]> {
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
@@ -50,7 +53,7 @@ async function fetchRoundsByTimestamp(
     const res: GetRoundOverviewResult = await graphql_fetch(
       query,
       chainIdEnumValue,
-      { currentTimestamp, infiniteTimestamp }
+      { currentTimestamp, infiniteTimestamp },
     );
 
     if (!res.data || !res.data.rounds) {
@@ -62,7 +65,7 @@ async function fetchRoundsByTimestamp(
 
     for (const round of rounds) {
       const roundMetadata: RoundMetadata = await fetchFromIPFS(
-        round.roundMetaPtr.pointer
+        round.roundMetaPtr.pointer,
       );
       round.roundMetadata = roundMetadata;
       round.chainId = chainId;
@@ -93,31 +96,29 @@ async function fetchRoundsByTimestamp(
   }
 }
 
-function getActiveChainIds() {
-  const activeChainIds: string[] = [];
-  const isProduction = process.env.REACT_APP_ENV === "production";
+/**
+ * Filters out testnet chainIds in production, otherwise returns all active chainIds
+ * */
+const getActiveChainIds = () =>
+  Object.keys(ChainId).filter((chainId) => {
+    const chainDefinition = allChains.find(
+      (chain) => chain.id === Number(chainId),
+    );
 
-  for (const chainId of Object.values(ChainId)) {
-    if (!isNaN(+chainId)) {
-      continue;
-    }
+    /* This part could be made shorter, but is intentionally verbose to ease
+     * underestanding */
     if (
-      isProduction &&
-      [
-        ChainId.GOERLI_CHAIN_ID,
-        ChainId.FANTOM_MAINNET_CHAIN_ID,
-        ChainId.FANTOM_TESTNET_CHAIN_ID,
-      ].includes(ChainId[chainId as keyof typeof ChainId])
+      process.env.REACT_APP_ENV === "production" &&
+      chainDefinition?.testnet
     ) {
-      continue;
+      return false;
     }
-    activeChainIds.push(chainId.toString());
-  }
-  return activeChainIds;
-}
+
+    return true;
+  });
 
 export async function getRoundsInApplicationPhase(
-  debugModeEnabled: boolean
+  debugModeEnabled: boolean,
 ): Promise<RoundOverview[]> {
   const chainIds = getActiveChainIds();
 
@@ -159,15 +160,15 @@ export async function getRoundsInApplicationPhase(
 
   const rounds = await Promise.all(
     chainIds.map((chainId) =>
-      fetchRoundsByTimestamp(query, chainId, debugModeEnabled)
-    )
+      fetchRoundsByTimestamp(query, chainId, debugModeEnabled),
+    ),
   );
 
   return rounds.flat();
 }
 
 export async function getActiveRounds(
-  debugModeEnabled: boolean
+  debugModeEnabled: boolean,
 ): Promise<RoundOverview[]> {
   const chainIds = getActiveChainIds();
 
@@ -204,8 +205,8 @@ export async function getActiveRounds(
 
   const rounds = await Promise.all(
     chainIds.map((chainId) =>
-      fetchRoundsByTimestamp(query, chainId, debugModeEnabled)
-    )
+      fetchRoundsByTimestamp(query, chainId, debugModeEnabled),
+    ),
   );
 
   return rounds.flat();
