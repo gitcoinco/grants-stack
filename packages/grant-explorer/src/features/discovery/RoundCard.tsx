@@ -7,6 +7,7 @@ import {
   votingTokens,
 } from "../api/utils";
 import {
+  Badge,
   BasicCard,
   CardContent,
   CardDescription,
@@ -22,19 +23,27 @@ type RoundCardProps = {
   round: RoundOverview;
 };
 
-const RoundCard = (props: RoundCardProps) => {
-  const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
-  const chainIdEnumValue = ChainId[props.round.chainId as keyof typeof ChainId];
-
+const RoundCard = ({ round }: RoundCardProps) => {
+  const {
+    id,
+    chainId,
+    matchAmount,
+    projects,
+    payoutStrategy,
+    roundMetadata,
+    roundEndTime,
+    token,
+  } = round;
+  const daysLeft = getDaysLeft(Number(roundEndTime));
+  const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
+  console.log(round);
   const { data } = useToken({
-    address: getAddress(props.round.token),
-    chainId: Number(props.round.chainId),
+    address: getAddress(token),
+    chainId: Number(chainId),
   });
 
   const nativePayoutToken = votingTokens.find(
-    (t) =>
-      t.chainId === chainIdEnumValue &&
-      t.address === getAddress(props.round.token)
+    (t) => t.chainId === chainIdEnumValue && t.address === getAddress(token)
   );
 
   const tokenData = data ?? {
@@ -42,64 +51,64 @@ const RoundCard = (props: RoundCardProps) => {
     symbol: nativePayoutToken?.name ?? "ETH",
   };
 
-  const approvedApplicationsCount = props.round.projects?.length ?? 0;
+  const approvedApplicationsCount = projects?.length ?? 0;
 
   return (
     <BasicCard className="w-full">
       <a
         target="_blank"
-        href={`/#/round/${chainIdEnumValue}/${props.round.id}`}
+        href={`/#/round/${chainIdEnumValue}/${id}`}
         data-testid="round-card"
       >
-        <CardHeader>
-          <RoundBanner roundId={props.round.id} />
+        <CardHeader className="relative">
+          <RoundBanner roundId={id} />
+          <CardTitle
+            data-testid="round-name"
+            className="absolute bottom-3 left-3"
+          >
+            {roundMetadata?.name}
+          </CardTitle>
         </CardHeader>
 
         <CardContent>
-          <CardTitle data-testid="round-name">
-            {props.round.roundMetadata?.name}
-          </CardTitle>
-          <CardDescription data-testid="round-description" className="h-[90px]">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-medium">by</span>
+            <Badge rounded="full">GITCOIN</Badge>
+          </div>
+          <CardDescription
+            data-testid="round-description"
+            className="min-h-[96px]"
+          >
             {truncateDescription(
-              renderToPlainText(
-                props.round.roundMetadata?.eligibility.description ?? ""
-              ),
+              renderToPlainText(roundMetadata?.eligibility.description ?? ""),
               240
             )}
           </CardDescription>
-          <p
-            data-testid="round-badge"
-            className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mt-4"
-            style={{ borderRadius: "20px" }}
-          >
-            {props.round.payoutStrategy?.strategyName &&
-              getRoundType(props.round.payoutStrategy.strategyName)}
-          </p>
-          <p className="mt-4 text-xs" data-testid="days-left">
-            {!isInfiniteDate(
-              new Date(parseInt(props.round.roundEndTime, 10) * 1000)
-            ) ? (
-              <span>
-                {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
-              </span>
-            ) : (
-              <span>No end time</span>
-            )}
-          </p>
-        </CardContent>
-      </a>
+          <div className="flex gap-2 justfy-between items-center">
+            <p className="text-xs w-full font-mono" data-testid="days-left">
+              {!isInfiniteDate(new Date(parseInt(roundEndTime, 10) * 1000)) ? (
+                <span>
+                  {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
+                </span>
+              ) : (
+                <span>No end time</span>
+              )}
+            </p>
 
-      <div className="bg-white">
-        <div className="border-t w-11/12 ml-4" />
-        <CardContent className="text-xs mt-3 pb-0">
+            <Badge color="blue" data-testid="round-badge">
+              {getRoundType(payoutStrategy.strategyName)}
+            </Badge>
+          </div>
+          <div className="border-t" />
+
           <RoundCardStat
             chainId={Number(chainIdEnumValue)}
-            matchAmount={props.round.matchAmount}
+            matchAmount={matchAmount}
             token={tokenData?.symbol ?? "..."}
             approvedApplicationsCount={approvedApplicationsCount}
           />
         </CardContent>
-      </div>
+      </a>
     </BasicCard>
   );
 };
