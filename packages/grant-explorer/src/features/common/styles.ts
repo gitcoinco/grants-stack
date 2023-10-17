@@ -12,8 +12,6 @@ export const CardsContainer = tw.div`
 
 export const BasicCard = tw.div`
   w-[343px]
-  ml-0
-  mx-0
   my-3
   rounded-3xl
   bg-white
@@ -34,8 +32,7 @@ export const CardTitle = tw.p`
   w-full
   text-[24px]
   font-medium
-  text-ellipsis
-  line-clamp-1
+  truncate
   text-white
 `;
 

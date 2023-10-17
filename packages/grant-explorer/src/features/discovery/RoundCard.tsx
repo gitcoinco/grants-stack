@@ -81,7 +81,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
           )}
           <CardTitle
             data-testid="round-name"
-            className="absolute bottom-3 left-3"
+            className="absolute bottom-3 px-2"
           >
             {roundMetadata?.name}
           </CardTitle>
