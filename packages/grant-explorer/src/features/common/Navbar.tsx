@@ -1,8 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { useNavigate } from "react-router-dom";
-import { RoundsSubNav } from "../discovery/RoundsSubNav";
 import NavbarCart from "./NavbarCart";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
@@ -19,7 +17,6 @@ export interface NavbarProps {
 export default function Navbar(props: NavbarProps) {
   /** This part keeps the store in sync between tabs */
   const store = useCartStorage();
-  const navigate = useNavigate();
 
   const updateStore = () => {
     useCartStorage.persist.rehydrate();
@@ -94,11 +91,6 @@ export default function Navbar(props: NavbarProps) {
           </div>
         </div>
       </div>
-      <RoundsSubNav
-        onClick={(round) => {
-          navigate(`/round/${round.chainId}/${round.id}`);
-        }}
-      />
     </nav>
   );
 }
