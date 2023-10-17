@@ -69,7 +69,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
-          {daysLeftToApply > 0 || (
+          {daysLeftToApply > 0 && (
             <Badge
               color="green"
               rounded="full"
@@ -135,7 +135,7 @@ const RoundDaysLeft = ({
   const days = pluralize(["day", "days"]);
   return (
     <div className="flex-1">
-      {daysLeftToApply > 0 || (
+      {daysLeftToApply > 0 && (
         <span
           className="text-xs w-full font-mono"
           data-testid="apply-days-left"
