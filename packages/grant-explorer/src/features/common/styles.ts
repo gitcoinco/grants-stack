@@ -18,11 +18,11 @@ export const BasicCard = tw.div`
   rounded-3xl
   bg-white
   shadow-lg
+  overflow-hidden
   `;
 
 export const CardHeader = tw.div`
   w-full
-  rounded-t-3xl
 `;
 
 export const CardContent = tw.div`

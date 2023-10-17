@@ -62,10 +62,12 @@ function RoundBanner(props: { roundId: string }) {
   const stockImage = stockImages[stockId];
 
   return (
-    <div
-      className="bg-black h-[137px] brightness-50 w-full object-cover rounded-t-3xl"
-      style={{ backgroundImage: `url(${stockImage})` }}
-    ></div>
+    <div className="overflow-hidden h-[137px]">
+      <div
+        className="bg-black blur w-[120%] h-[120%] -mt-4 -ml-4 brightness-[40%] object-cover"
+        style={{ backgroundImage: `url(${stockImage})` }}
+      />
+    </div>
   );
 }
 
