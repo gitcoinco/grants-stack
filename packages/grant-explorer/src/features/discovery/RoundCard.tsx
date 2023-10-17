@@ -36,7 +36,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
     token,
   } = round;
   const daysLeft = getDaysLeft(Number(roundEndTime));
-  const daysLeftToApply = Math.round(getDaysLeft(Number(applicationsEndTime)));
+  const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
 
   // Can we simplify this? Would `days < 1000` do the same thing?
   const isValidRoundEndTime = !isInfiniteDate(
@@ -59,6 +59,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
   };
 
   const approvedApplicationsCount = projects?.length ?? 0;
+
   return (
     <BasicCard className="w-full">
       <a
@@ -68,7 +69,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
-          {daysLeftToApply > 0 ? (
+          {daysLeftToApply > 0 || (
             <Badge
               color="green"
               rounded="full"
@@ -76,7 +77,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             >
               Apply!
             </Badge>
-          ) : null}
+          )}
           <CardTitle
             data-testid="round-name"
             className="absolute bottom-3 left-3"
@@ -84,7 +85,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
             {roundMetadata?.name}
           </CardTitle>
         </CardHeader>
-
         <CardContent>
           <CardDescription
             data-testid="round-description"
@@ -135,14 +135,14 @@ const RoundDaysLeft = ({
   const days = pluralize(["day", "days"]);
   return (
     <div className="flex-1">
-      {daysLeftToApply > 0 ? (
+      {daysLeftToApply > 0 || (
         <span
           className="text-xs w-full font-mono"
           data-testid="apply-days-left"
         >
           {daysLeftToApply} {days(daysLeftToApply)} left to apply
         </span>
-      ) : null}
+      )}
       <p className="text-xs w-full font-mono" data-testid="days-left">
         {isValidRoundEndTime ? (
           <span>
