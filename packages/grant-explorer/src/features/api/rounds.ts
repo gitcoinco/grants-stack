@@ -96,32 +96,13 @@ async function fetchRoundsByTimestamp(
   }
 }
 
-/**
- * Filters out testnet chainIds in production, otherwise returns all active chainIds
- * */
-const getActiveChainIds = () =>
-  Object.keys(ChainId).filter((chainId) => {
-    const chainDefinition = allChains.find(
-      (chain) => chain.id === Number(chainId),
-    );
-
-    /* This part could be made shorter, but is intentionally verbose to ease
-     * underestanding */
-    if (
-      process.env.REACT_APP_ENV === "production" &&
-      chainDefinition?.testnet
-    ) {
-      return false;
-    }
-
-    return true;
-  });
+const activeChainIds = allChains
+  .map((chain) => chain.id)
+  .map((chainId) => chainId.toString());
 
 export async function getRoundsInApplicationPhase(
   debugModeEnabled: boolean,
 ): Promise<RoundOverview[]> {
-  const chainIds = getActiveChainIds();
-
   const query = `
       query GetRoundsInApplicationPhase($currentTimestamp: String, $infiniteTimestamp: String) {
         rounds(where:
@@ -159,7 +140,7 @@ export async function getRoundsInApplicationPhase(
     `;
 
   const rounds = await Promise.all(
-    chainIds.map((chainId) =>
+    activeChainIds.map((chainId) =>
       fetchRoundsByTimestamp(query, chainId, debugModeEnabled),
     ),
   );
@@ -170,8 +151,6 @@ export async function getRoundsInApplicationPhase(
 export async function getActiveRounds(
   debugModeEnabled: boolean,
 ): Promise<RoundOverview[]> {
-  const chainIds = getActiveChainIds();
-
   const query = `
       query GetActiveRounds($currentTimestamp: String) {
         rounds(where: {
@@ -204,7 +183,7 @@ export async function getActiveRounds(
     `;
 
   const rounds = await Promise.all(
-    chainIds.map((chainId) =>
+    activeChainIds.map((chainId) =>
       fetchRoundsByTimestamp(query, chainId, debugModeEnabled),
     ),
   );
