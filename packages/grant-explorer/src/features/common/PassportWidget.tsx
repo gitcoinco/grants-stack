@@ -117,7 +117,7 @@ export function PassportWidget() {
         />
       </div>
       <div
-        className={`absolute left-1/3 top-16 mt-1 w-96 ml-16 bg-grey-150 bg-opacity-80 py-4 px-6 rounded-xl ${
+        className={`absolute left-1/3 top-16 mt-1 w-96 ml-16 bg-grey-150 bg-opacity-80 py-4 px-6 rounded-xl shadow-md ${
           open ? "block" : "hidden"
         }`}
       >
