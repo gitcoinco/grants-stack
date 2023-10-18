@@ -185,10 +185,21 @@ export default function VerificationForm({
         <Button
           variant={ButtonVariants.outline}
           onClick={() => setVerifying(ProjectFormStatus.Metadata)}
+          dataTrackEvent="project-create-social-back"
         >
           Back
         </Button>
-        <Button variant={ButtonVariants.primary} onClick={saveAndPreview}>
+        <Button
+          variant={ButtonVariants.primary}
+          onClick={saveAndPreview}
+          dataTrackEvent={
+            !props.formMetaData.userGithub &&
+            !props.formMetaData.projectGithub &&
+            !props.formMetaData.projectTwitter
+              ? "project-create-social-skip"
+              : "project-create-social-next"
+          }
+        >
           {!props.formMetaData.userGithub &&
           !props.formMetaData.projectGithub &&
           !props.formMetaData.projectTwitter

@@ -42,7 +42,10 @@ export default function Header() {
           id="example-navbar-danger"
         >
           <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
-            <Link to={newGrantPath()}>
+            <Link
+              to={newGrantPath()}
+              data-track-event="project-create-topnav-next"
+            >
               <Button colorScheme="purple" className="mt-2 mr-2 mb-2">
                 <i className="icon">
                   <Plus color={colors["quaternary-text"]} />
