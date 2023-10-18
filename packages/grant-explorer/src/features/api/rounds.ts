@@ -11,15 +11,13 @@ interface GetRoundOverviewResult {
   };
 }
 
-/*TODO: what is this */
 const validRounds = [
-  "0x35c9d05558da3a3f3cddbf34a8e364e59b857004",
-  "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc",
-  "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38",
+  "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
+  "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc", // Gitcoin Citizens Round #1
+  "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38", // Greenpill Q2 2023
 ];
 
-/* TODO: what is this*/
-const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"];
+const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"]; // Meg hello
 
 export type RoundOverview = {
   id: string;
@@ -96,9 +94,8 @@ async function fetchRoundsByTimestamp(
   }
 }
 
-const activeChainIds = allChains
-  .map((chain) => chain.id)
-  .map((chainId) => chainId.toString());
+const activeChainIds = () =>
+  allChains.map((chain) => chain.id).map((chainId) => chainId.toString());
 
 export async function getRoundsInApplicationPhase(
   debugModeEnabled: boolean,
@@ -140,7 +137,7 @@ export async function getRoundsInApplicationPhase(
     `;
 
   const rounds = await Promise.all(
-    activeChainIds.map((chainId) =>
+    activeChainIds().map((chainId) =>
       fetchRoundsByTimestamp(query, chainId, debugModeEnabled),
     ),
   );
@@ -183,7 +180,7 @@ export async function getActiveRounds(
     `;
 
   const rounds = await Promise.all(
-    activeChainIds.map((chainId) =>
+    activeChainIds().map((chainId) =>
       fetchRoundsByTimestamp(query, chainId, debugModeEnabled),
     ),
   );
