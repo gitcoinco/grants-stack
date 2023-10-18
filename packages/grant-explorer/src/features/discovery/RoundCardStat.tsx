@@ -26,7 +26,7 @@ function RoundCardStat(props: RoundCardStatProps) {
           <span className="mr-1" data-testid="match-amount">
             {matchAmountNormalized.toLocaleString()}
           </span>
-          <span data-testid="match-token">{token} match amount</span>
+          <span data-testid="match-token">{token} match</span>
         </Badge>
       </div>
       <div>
