@@ -23,6 +23,17 @@ import { addAlert } from "./ui";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 
+export type SubgraphApplication = {
+  round: { id: string };
+  status: AppStatus;
+  inReview: boolean;
+  chainId: ChainId;
+  metaPtr?: {
+    protocol: string;
+    pointer: string;
+  };
+};
+
 interface ProjectsLoadingAction {
   payload: number;
   type: typeof PROJECTS_LOADING;
@@ -471,13 +482,15 @@ export const fetchProjectApplications =
           }
 
           const applications: Application[] =
-            response.data.roundApplications.map((application: any) => ({
-              status: convertStatusToText(application.status),
-              roundID: application.round.id,
-              inReview: application.inReview,
-              chainId: chain.id,
-              metaPtr: application.metaPtr,
-            }));
+            response.data.roundApplications.map(
+              (application: SubgraphApplication) => ({
+                status: convertStatusToText(application.status),
+                roundID: application.round.id,
+                inReview: application.inReview,
+                chainId: chain.id,
+                metaPtr: application.metaPtr,
+              })
+            );
 
           if (applications.length === 0) {
             return [];
