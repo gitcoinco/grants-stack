@@ -15,6 +15,14 @@ import Stock21 from "../../assets/landing/stock21.jpg";
 import Stock22 from "../../assets/landing/stock22.jpg";
 import Stock23 from "../../assets/landing/stock23.jpg";
 import Stock24 from "../../assets/landing/stock24.jpg";
+import Stock25 from "../../assets/landing/stock25.jpg";
+import Stock26 from "../../assets/landing/stock26.jpg";
+import Stock27 from "../../assets/landing/stock27.jpg";
+import Stock28 from "../../assets/landing/stock28.jpg";
+import Stock29 from "../../assets/landing/stock29.jpg";
+import Stock30 from "../../assets/landing/stock30.jpg";
+import Stock31 from "../../assets/landing/stock31.jpg";
+import Stock32 from "../../assets/landing/stock32.jpg";
 import Stock3 from "../../assets/landing/stock3.jpg";
 import Stock4 from "../../assets/landing/stock4.jpg";
 import Stock5 from "../../assets/landing/stock5.jpg";
@@ -48,12 +56,20 @@ const stockImages = [
   Stock22,
   Stock23,
   Stock24,
+  Stock25,
+  Stock26,
+  Stock27,
+  Stock28,
+  Stock29,
+  Stock30,
+  Stock31,
+  Stock32,
 ];
 
 function generateRandomNumber(address: string) {
   const hash = keccak256(toBytes(address));
   const randomByte = parseInt(hash.slice(2, 4), 16);
-  const randomNumber = randomByte % 24;
+  const randomNumber = randomByte % stockImages.length;
   return randomNumber;
 }
 
