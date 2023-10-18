@@ -1,6 +1,7 @@
 <!-- 
 Thank you for your pull request! Please review the requirements below 
 and ensure your pull request has fulfilled all requirements outlined in the target package.
+Before submitting a PR for review, please make sure that all the CI checks are passing.
 -->
 
 ## PR checklist
