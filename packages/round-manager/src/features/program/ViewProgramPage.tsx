@@ -53,8 +53,8 @@ export default function ViewProgram() {
   const [programExists, setProgramExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
   const [grantType, setGrantType] = useState<
-    "quadraticFunding" | "directGrant" | undefined
-  >();
+    "quadraticFunding" | "directGrant" | null
+  >(null);
   const debugModeEnabled = useDebugMode();
 
   useEffect(() => {
@@ -259,15 +259,9 @@ export default function ViewProgram() {
               onClick={() => setGrantType("quadraticFunding")}
               className={`flex w-full mb-4 rounded border  ${
                 grantType === "quadraticFunding"
-                  ? "border-violet-400"
+                  ? "border-violet-400 shadow-lg"
                   : "border-grey-100"
               } bg-white p-6 cursor-pointer`}
-              style={{
-                boxShadow:
-                  grantType === "quadraticFunding"
-                    ? " 0px 10px 15px -3px #0000001A"
-                    : "none",
-              }}
             >
               <div className="flex pr-6 m-auto">
                 <div
@@ -302,15 +296,9 @@ export default function ViewProgram() {
               onClick={() => setGrantType("directGrant")}
               className={`flex w-full rounded border  ${
                 grantType === "directGrant"
-                  ? "border-violet-400"
+                  ? "border-violet-400 shadow-lg"
                   : "border-grey-100"
               } bg-white p-6 cursor-pointer`}
-              style={{
-                boxShadow:
-                  grantType === "directGrant"
-                    ? " 0px 10px 15px -3px #0000001A"
-                    : "none",
-              }}
             >
               <div className="flex pr-6 m-auto">
                 <div
@@ -322,7 +310,7 @@ export default function ViewProgram() {
                   style={{
                     borderWidth: grantType === "directGrant" ? "6px" : "2px",
                   }}
-                ></div>
+                />
               </div>
               <div className="pr-6 flex-grow text-left mt-auto mb-auto">
                 <h3 className="text-xl mb-2">Direct Grants</h3>
