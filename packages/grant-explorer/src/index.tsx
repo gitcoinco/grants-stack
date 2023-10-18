@@ -60,9 +60,9 @@ root.render(
                 <Route path="/apply-now" element={<ApplyNowPage />} />
 
                 {/* Collection */}
-                  <Route path="/collection" element={<ViewCollection />} />
+                <Route path="/collection" element={<ViewCollection />} />
 
-                  {/* Round Routes */}
+                {/* Round Routes */}
                 <Route
                   path="/round/:chainId/:roundId"
                   element={<ViewRound />}

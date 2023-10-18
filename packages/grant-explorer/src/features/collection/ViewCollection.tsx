@@ -1,35 +1,48 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Collection, getCollectionById } from "../api/collections";
 import { ProjectsWithRoundData, getProjects } from "../api/round";
-import { ReactComponent as ArrowUpRight } from "../../assets/icons/arrow-up-right.svg"
+import { ReactComponent as ArrowUpRight } from "../../assets/icons/arrow-up-right.svg";
 import Navbar from "../common/Navbar";
 import { ProjectList } from "../round/ViewRoundPage";
+import { useRoundById } from "../../context/RoundContext";
+import { Project } from "../api/types";
+import { ChainId } from "common";
 
-type CollectionWithProjects = Collection & ProjectsWithRoundData & {
-  chainId: string
-  roundId: string
-  isBeforeRoundEndDate: boolean
-}
+type CollectionWithProjects = Collection &
+  ProjectsWithRoundData & {
+    chainId: string;
+    roundId: string;
+    isBeforeRoundEndDate: boolean;
+  };
 
 const ViewCollection = () => {
-  const [collection, setCollection] = useState<CollectionWithProjects>()
-  const [, setLoading] = useState<boolean>(true)
-  const [searchParams] = useSearchParams()
+  const [collection, setCollection] = useState<CollectionWithProjects>();
+  const [, setLoading] = useState<boolean>(true);
+  const [searchParams] = useSearchParams();
+  const { chainId, roundId } = useParams();
+  const round = useRoundById(chainId as string, roundId as string);
+  const [, setShowCartNotification] = useState(false);
+  const [, setCurrentProjectAddedToCart] = useState<Project>({} as Project);
 
   const loadCollection = useCallback(async (id: string) => {
-    setLoading(true)
-    const collectionData = await getCollectionById(id)
-    const [chainId, roundId] = collectionData.round.split(':')
+    setLoading(true);
+    const collectionData = await getCollectionById(id);
+    const [chainId, roundId] = collectionData.round.split(":");
 
-    const projectsId = collectionData.projects || []
+    const projectsId = collectionData.projects || [];
 
     if (projectsId.length === 0) {
-      console.log('No projects in this collection')
-      return
+      console.log("No projects in this collection");
+      return;
     }
 
-    const collectionRoundData = await getProjects(chainId, roundId, projectsId, true) as ProjectsWithRoundData
+    const collectionRoundData = (await getProjects(
+      chainId,
+      roundId,
+      projectsId,
+      true
+    )) as ProjectsWithRoundData;
 
     const isBeforeRoundEndDate = collectionRoundData.roundEndTime > new Date();
 
@@ -38,55 +51,68 @@ const ViewCollection = () => {
       chainId,
       roundId,
       isBeforeRoundEndDate,
-      ...collectionRoundData
-    } as CollectionWithProjects)
+      ...collectionRoundData,
+    } as CollectionWithProjects);
 
-    setLoading(false)
-
-  }, [])
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    const collectionData = decodeURIComponent(searchParams.get('data') || "")
+    const collectionData = decodeURIComponent(searchParams.get("data") || "");
 
     if (collectionData && collectionData.length > 0) {
-      loadCollection(collectionData)
+      loadCollection(collectionData);
     }
-  }, [searchParams, loadCollection])
+  }, [searchParams, loadCollection]);
 
   if (!collection) {
-    return <div>Loading</div>
+    return <div>Loading</div>;
   }
 
-  return <div>
-    <Navbar
-      roundUrlPath={`/round/${collection.chainId}/${collection.roundId}`}
-      isBeforeRoundEndDate={collection.isBeforeRoundEndDate}
-    />
-    <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
-      <main>
-        <div className="flex flex-1 justify-between items-end">
-          <div>
-            <div className="text-3xl my-5">{collection?.title} Grants Collection</div>
-            <div className="text-xl mt-3 flex flex-row items-center">
-              <span>
-                {collection.roundMeta?.name}
-              </span>
-              <Link className="ml-2" to={`/round/${collection.chainId}/${collection.roundId}`} target="_blank">
-                <span>
-                  <ArrowUpRight />
-                </span>
-              </Link>
+  return (
+    <div>
+      <Navbar />
+      <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
+        <main>
+          <div className="flex flex-1 justify-between items-end">
+            <div>
+              <div className="text-3xl my-5">
+                {collection?.title} Grants Collection
+              </div>
+              <div className="text-xl mt-3 flex flex-row items-center">
+                <span>{collection.roundMeta?.name}</span>
+                <Link
+                  className="ml-2"
+                  to={`/round/${collection.chainId}/${collection.roundId}`}
+                  target="_blank"
+                >
+                  <span>
+                    <ArrowUpRight />
+                  </span>
+                </Link>
+              </div>
             </div>
+            {/* <div>Add all to cart</div> */}
           </div>
-          {/* <div>Add all to cart</div> */}
-        </div>
 
-        <hr className="my-8" />
+          <hr className="my-8" />
 
-        <ProjectList projects={collection.projectsMeta} roundRoutePath={`/round/${collection.chainId}/${collection.roundId}`} isBeforeRoundEndDate={collection.isBeforeRoundEndDate} roundId={collection.roundId} isInCollection />
-      </main>
+          <ProjectList
+            projects={collection.projectsMeta}
+            roundRoutePath={`/round/${collection.chainId}/${collection.roundId}`}
+            isBeforeRoundEndDate={collection.isBeforeRoundEndDate}
+            roundId={collection.roundId}
+            isInCollection
+            round={round.round!}
+            canUseCollections={true}
+            setShowCartNotification={setShowCartNotification}
+            setCurrentProjectAddedToCart={setCurrentProjectAddedToCart}
+            chainId={chainId as unknown as ChainId}
+          />
+        </main>
+      </div>
     </div>
-  </div>
-}
+  );
+};
 
-export default ViewCollection
+export default ViewCollection;

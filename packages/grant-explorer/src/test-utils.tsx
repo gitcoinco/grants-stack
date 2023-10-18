@@ -59,7 +59,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     token: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: "some-id",
-      strategyName: "MERKLE"
+      strategyName: "MERKLE",
     },
     votingStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),

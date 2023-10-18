@@ -50,7 +50,7 @@ import { useCartStorage } from "../../store";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
 import { ReactComponent as BookmarkIcon } from "../../assets/icons/star.svg";
-import useCollections from '../collection/useCollections';
+import useCollections from "../collection/useCollections";
 import { Tab } from "@headlessui/react";
 import AllCollectionsView from "../collection/AllCollections";
 import { getAllCollectionsForRound } from "../api/collections";
@@ -151,7 +151,7 @@ function AfterRoundStart(props: {
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
   const [activeTab, setActiveTab] = useState<number>(0);
-  const [collections, setCollections] = useState<string[]>([])
+  const [collections, setCollections] = useState<string[]>([]);
   const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
 
   const [showCartNotification, setShowCartNotification] = useState(false);
@@ -199,10 +199,12 @@ function AfterRoundStart(props: {
   });
 
   useEffect(() => {
-    setCollections(getAllCollectionsForRound(`${chainId}:${roundId}`))
+    setCollections(getAllCollectionsForRound(`${chainId}:${roundId}`));
 
-    document.addEventListener('collectionsUpdated', () => setCollections(getAllCollectionsForRound(`${chainId}:${roundId}`)))
-  }, [chainId, roundId])
+    document.addEventListener("collectionsUpdated", () =>
+      setCollections(getAllCollectionsForRound(`${chainId}:${roundId}`))
+    );
+  }, [chainId, roundId]);
 
   const filterProjectsByTitle = (query: string) => {
     // filter by exact title matches first
@@ -220,7 +222,7 @@ function AfterRoundStart(props: {
           .toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         project.projectMetadata.title.toLocaleLowerCase() !==
-        query.toLocaleLowerCase()
+          query.toLocaleLowerCase()
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setProjects([...exactMatches!, ...nonExactMatches!]);
@@ -261,9 +263,15 @@ function AfterRoundStart(props: {
       round.applicationsEndTime >= currentTime);
 
   const tabs = [
-    { title: `All Projects (${projects ? projects.length : 0})`, key: 'projects' },
-    { title: `My Lists (${collections ? collections.length : 0})`, key: 'collections' }
-  ]
+    {
+      title: `All Projects (${projects ? projects.length : 0})`,
+      key: "projects",
+    },
+    {
+      title: `My Lists (${collections ? collections.length : 0})`,
+      key: "collections",
+    },
+  ];
 
   return (
     <>
@@ -350,71 +358,83 @@ function AfterRoundStart(props: {
           <Tab.Group onChange={(index) => setActiveTab(index)}>
             <div className="flex flex-col lg:flex-row mb-2 w-full justify-between items-center">
               <Tab.List className="flex space-x-1 rounded-xl bg-gray-400/20 p-1">
-                {tabs.map((tab) => <Tab
-                  key={tab.key}
-                  className={({ selected }) =>
-                    classNames(
-                      'w-full rounded-lg py-2.5 text-md font-medium leading-5',
-                      'ring-white ring-opacity-60 ring-offset-2 ring-offset-gray-800 focus:outline-none focus:ring-2',
-                      selected
-                        ? 'bg-white shadow'
-                        : 'text-gray-800 hover:bg-white/[0.12] hover:text-gray-600'
-                    )
-                  }
-                >
-                  <div className="whitespace-nowrap mx-6">{tab.title}</div>
-                </Tab>)}
+                {tabs.map((tab) => (
+                  <Tab
+                    key={tab.key}
+                    className={({ selected }) =>
+                      classNames(
+                        "w-full rounded-lg py-2.5 text-md font-medium leading-5",
+                        "ring-white ring-opacity-60 ring-offset-2 ring-offset-gray-800 focus:outline-none focus:ring-2",
+                        selected
+                          ? "bg-white shadow"
+                          : "text-gray-800 hover:bg-white/[0.12] hover:text-gray-600"
+                      )
+                    }
+                  >
+                    <div className="whitespace-nowrap mx-6">{tab.title}</div>
+                  </Tab>
+                ))}
               </Tab.List>
-              {activeTab === 0 && <div className="relative">
-                <Search className="absolute h-4 w-4 mt-3 ml-3" />
-                <Input
-                  className="w-full lg:w-64 h-8 rounded-full pl-10"
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>}
+              {activeTab === 0 && (
+                <div className="relative">
+                  <Search className="absolute h-4 w-4 mt-3 ml-3" />
+                  <Input
+                    className="w-full lg:w-64 h-8 rounded-full pl-10"
+                    type="text"
+                    placeholder="Search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              )}
 
-          {isDirectRound(round) && isBeforeApplicationEndDate && (
-            <ApplyButton applicationURL={applicationURL} />
-          )}
-          <hr className="mt-4 mb-4" />
-          <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
-            <p className="text-2xl mb-4">
-              {isDirectRound(round) ? "Approved Projects" : "All Projects"} (
-              {projects ? projects.length : 0})
-            </p>
-            <div className="relative">
-              <Search className="absolute h-4 w-4 mt-3 ml-3" />
-              <Input
-                className="w-full lg:w-64 h-8 rounded-full pl-10"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+              {isDirectRound(round) && isBeforeApplicationEndDate && (
+                <ApplyButton applicationURL={applicationURL} />
+              )}
+              <hr className="mt-4 mb-4" />
+              <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
+                <p className="text-2xl mb-4">
+                  {isDirectRound(round) ? "Approved Projects" : "All Projects"}{" "}
+                  ({projects ? projects.length : 0})
+                </p>
+                <div className="relative">
+                  <Search className="absolute h-4 w-4 mt-3 ml-3" />
+                  <Input
+                    className="w-full lg:w-64 h-8 rounded-full pl-10"
+                    type="text"
+                    placeholder="Search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
 
-            <div className="w-full mt-4">
-              <Tab.Panel
-                key="0"
-              >
-                {projects && (
-                  <ProjectList
-                    projects={projects}
-                    roundRoutePath={`/round/${chainId}/${roundId}`}
-                    roundId={roundId}
-                    isBeforeRoundEndDate={props.isBeforeRoundEndDate}
-                    canUseCollections
-                   chainId={chainId} round={round}/>
-                )}
-              </Tab.Panel>
-              <Tab.Panel>
-                <AllCollectionsView projects={projects} isActiveRound={props.isBeforeRoundEndDate ?? false} />
-              </Tab.Panel>
-            </div>
-          </div>
+                <div className="w-full mt-4">
+                  <Tab.Panel key="0">
+                    {projects && (
+                      <ProjectList
+                        setCurrentProjectAddedToCart={
+                          setCurrentProjectAddedToCart
+                        }
+                        setShowCartNotification={setShowCartNotification}
+                        isInCollection={true}
+                        projects={projects}
+                        roundRoutePath={`/round/${chainId}/${roundId}`}
+                        roundId={roundId}
+                        isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+                        canUseCollections
+                        chainId={chainId}
+                        round={round}
+                      />
+                    )}
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    <AllCollectionsView
+                      projects={projects}
+                      isActiveRound={props.isBeforeRoundEndDate ?? false}
+                    />
+                  </Tab.Panel>
+                </div>
+              </div>
             </div>
           </Tab.Group>
           {projects && (
@@ -432,7 +452,7 @@ function AfterRoundStart(props: {
         </main>
         <div className="my-11">
           <Footer />
-        </div >
+        </div>
       </div>
     </>
   );
@@ -442,7 +462,7 @@ export const ProjectList = (props: {
   projects: Project[];
   roundRoutePath: string;
   isBeforeRoundEndDate?: boolean;
-  canUseCollections?: boolean
+  canUseCollections?: boolean;
   isInCollection?: boolean;
   roundId: string;
   round: Round;
@@ -463,7 +483,11 @@ export const ProjectList = (props: {
             roundRoutePath={roundRoutePath}
             isBeforeRoundEndDate={props.isBeforeRoundEndDate}
             isInCollection={props.isInCollection}
-            addToCollection={props.canUseCollections ? () => setActiveProject(project) : undefined}
+            addToCollection={
+              props.canUseCollections
+                ? () => setActiveProject(project)
+                : undefined
+            }
             roundId={props.roundId}
             round={props.round}
             chainId={props.chainId}
@@ -511,15 +535,27 @@ export const ProjectCard = (props: {
         data-testid="project-detail-link"
       >
         <CardHeader>
-          {(props.addToCollection || props.isInCollection) && <div className={`inline-flex absolute right-2 top-3 bg-grey-150 rounded-full p-2 ${props.isInCollection ? "text-gray-900" : "text-gray-500"}`} onClick={async (e) => {
-            e.preventDefault()
-            e.stopPropagation()
+          {(props.addToCollection || props.isInCollection) && (
+            <div
+              className={`inline-flex absolute right-2 top-3 bg-grey-150 rounded-full p-2 ${
+                props.isInCollection ? "text-gray-900" : "text-gray-500"
+              }`}
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
 
-            // handle bookmarking here
-            props.addToCollection && props.addToCollection()
-          }} role="button">
-            <BookmarkIcon fill={props.isInCollection ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} />
-          </div>}
+                // handle bookmarking here
+                props.addToCollection && props.addToCollection();
+              }}
+              role="button"
+            >
+              <BookmarkIcon
+                fill={props.isInCollection ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth={2}
+              />
+            </div>
+          )}
           <ProjectBanner
             projectMetadata={project.projectMetadata}
             classNameOverride={
@@ -570,7 +606,7 @@ export const ProjectCard = (props: {
       )}
     </BasicCard>
   );
-}
+};
 
 function CartButton(props: {
   project: Project;

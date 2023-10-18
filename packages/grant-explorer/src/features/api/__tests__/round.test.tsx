@@ -56,7 +56,7 @@ describe("getRoundById", () => {
               expectedRoundData.roundEndTime
             ),
             token: expectedRoundData.token,
-            payoutStrategy: { 
+            payoutStrategy: {
               id: "some-id",
               strategyName: "MERKLE",
             },

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -20,12 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "sourceMap": true,
-    "types": [
-      "vitest/globals",
-      "@testing-library/jest-dom"
-    ]
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
