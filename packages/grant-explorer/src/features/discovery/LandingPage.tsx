@@ -88,6 +88,57 @@ const LandingPage = () => {
     } else {
       filterGrantRoundByType();
     }
+
+    const exactMatches = activeRounds?.filter(
+      (round) =>
+        round.roundMetadata?.name?.toLocaleLowerCase() ===
+        searchQuery.toLocaleLowerCase()
+    );
+
+    const nonExactMatches = activeRounds?.filter(
+      (round) =>
+        round.roundMetadata?.name
+          ?.toLocaleLowerCase()
+          .includes(searchQuery.toLocaleLowerCase()) &&
+        round.roundMetadata?.name?.toLocaleLowerCase() !==
+        searchQuery.toLocaleLowerCase()
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    setActiveRounds([...exactMatches!, ...nonExactMatches!]);
+  };
+
+  // Fetch active rounds
+  useEffect(() => {
+    const fetchActiveRounds = async () => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { isLoading, error, rounds } = await getActiveRounds();
+        setActiveRounds(rounds);
+        setAllActiveRounds(rounds);
+        setActiveRoundsLoading(isLoading);
+      } catch (error) {
+        setActiveRoundsLoading(false);
+      }
+    };
+    fetchActiveRounds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fetch rounds in application phase
+  useEffect(() => {
+    const fetchRoundsInApplicationPhase = async () => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { isLoading, error, rounds } =
+          await getRoundsInApplicationPhase();
+        setRoundsInApplicationPhase(rounds);
+        setApplyRoundsLoading(isLoading);
+      } catch (error) {
+        setApplyRoundsLoading(false);
+      }
+    };
+    fetchRoundsInApplicationPhase();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 

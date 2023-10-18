@@ -27,6 +27,7 @@ import ViewRound from "./features/round/ViewRoundPage";
 import ViewContributionHistory from "./features/contributors/ViewContributionHistory";
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import { ChakraProvider } from "@chakra-ui/react";
+import ViewCollection from "./features/collection/ViewCollection";
 
 // Initialize sentry
 initSentry();
@@ -58,7 +59,10 @@ root.render(
                 {/* Apply Now Page */}
                 <Route path="/apply-now" element={<ApplyNowPage />} />
 
-                {/* Round Routes */}
+                {/* Collection */}
+                  <Route path="/collection" element={<ViewCollection />} />
+
+                  {/* Round Routes */}
                 <Route
                   path="/round/:chainId/:roundId"
                   element={<ViewRound />}

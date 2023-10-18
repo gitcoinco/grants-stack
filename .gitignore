@@ -4,6 +4,5 @@ node_modules
 .DS_Store
 /lerna-debug.log
 .turbo
-.husky/
 .vercel
 /packages/verify-env/dist/

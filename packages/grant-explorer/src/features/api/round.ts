@@ -1,4 +1,3 @@
-import { fetchFromIPFS, graphql_fetch } from "./utils";
 import {
   ApplicationStatus,
   Eligibility,
@@ -13,59 +12,129 @@ import {
 } from "allo-indexer-client";
 import { useEffect, useState } from "react";
 import { getAddress } from "viem";
+import { ethers } from 'ethers'
+import { fetchFromIPFS, graphql_fetch } from './utils'
 
 /**
  * Shape of subgraph response
  */
 export interface GetRoundByIdResult {
   data: {
-    rounds: RoundResult[];
-  };
+    rounds: RoundResult[]
+  }
 }
 
 /**
  * Shape of subgraph response of Round
  */
 export interface RoundResult {
-  id: string;
+  id: string
   program: {
-    id: string;
-  };
-  roundMetaPtr: MetadataPointer;
-  applicationMetaPtr: MetadataPointer;
-  applicationsStartTime: string;
-  applicationsEndTime: string;
-  roundStartTime: string;
-  roundEndTime: string;
-  token: string;
+    id: string
+  }
+  roundMetaPtr: MetadataPointer
+  applicationMetaPtr: MetadataPointer
+  applicationsStartTime: string
+  applicationsEndTime: string
+  roundStartTime: string
+  roundEndTime: string
+  token: string
   payoutStrategy: PayoutStrategy;
-  votingStrategy: string;
-  projectsMetaPtr?: MetadataPointer | null;
-  projects: RoundProjectResult[];
+  votingStrategy: string
+  projectsMetaPtr?: MetadataPointer | null
+  projects: RoundProjectResult[]
 }
 interface RoundProjectResult {
-  id: string;
-  project: string;
-  status: string | number;
-  applicationIndex: number;
-  metaPtr: MetadataPointer;
+  id: string
+  project: string
+  status: string | number
+  applicationIndex: number
+  metaPtr: MetadataPointer
 }
 
 /**
  * Shape of IPFS content of Round RoundMetaPtr
  */
 export type RoundMetadata = {
-  name: string;
+  name: string
   roundType: string;
-  eligibility: Eligibility;
-  programContractAddress: string;
-};
+  eligibility: Eligibility
+  programContractAddress: string
+}
 
 export type RoundProject = {
-  id: string;
-  status: ApplicationStatus;
-  payoutAddress: string;
-};
+  id: string
+  status: ApplicationStatus
+  payoutAddress: string
+}
+
+export type ProjectsWithRoundData = {
+  roundMeta: RoundMetadata
+  roundEndTime: Date
+  projectsMeta: Project[]
+}
+
+export async function getProjects(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chainId: any,
+  roundId: string,
+  projectId: number[],
+  withRoundMeta?: boolean
+): Promise<Project[] | ProjectsWithRoundData> {
+  const res = await graphql_fetch(
+    `
+      query GetProjectByIndex($roundId: String, $projectId: [Int]) {
+        round(id: $roundId) {
+          roundMetaPtr {
+            pointer
+          }
+          roundEndTime
+          projects(where: {applicationIndex_in: $projectId}) {
+            id
+            project
+            status
+            applicationIndex
+            metaPtr {
+              protocol
+              pointer
+            }
+          }
+        }
+      }
+    `,
+    chainId,
+    { roundId, projectId }
+  )
+
+  const projectsRes = res.data.round.projects as RoundProjectResult[]
+
+  const approvedProjects = projectsRes.map((project) => {
+    return {
+      ...project,
+      status: convertStatus(project.status),
+    }
+  })
+
+  const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map((project: RoundProjectResult) =>
+    fetchMetadataAndMapProject(project, chainId)
+  )
+
+  const projectsMetadata = await Promise.all(fetchApprovedProjectMetadata)
+
+  if (withRoundMeta) {
+    const round: RoundResult = res.data.round
+
+    const roundMetadata: RoundMetadata = await fetchFromIPFS(round.roundMetaPtr.pointer)
+
+    return {
+      roundMeta: roundMetadata,
+      roundEndTime: new Date(parseInt(round.roundEndTime) * 1000),
+      projectsMeta: projectsMetadata,
+    }
+  } else {
+    return projectsMetadata
+  }
+}
 
 export type ContributionHistoryState =
   | { type: "loading" }
@@ -133,32 +202,25 @@ export async function getRoundById(
       `,
       chainId,
       { roundId }
-    );
+    )
 
-    const round: RoundResult = res.data.rounds[0];
+    const round: RoundResult = res.data.rounds[0]
 
-    const roundMetadata: RoundMetadata = await fetchFromIPFS(
-      round.roundMetaPtr.pointer
-    );
+    const roundMetadata: RoundMetadata = await fetchFromIPFS(round.roundMetaPtr.pointer)
 
     round.projects = round.projects.map((project) => {
       return {
         ...project,
         status: convertStatus(project.status),
-      };
-    });
+      }
+    })
 
-    const approvedProjectsWithMetadata = await loadApprovedProjectsMetadata(
-      round,
-      chainId
-    );
+    const approvedProjectsWithMetadata = await loadApprovedProjectsMetadata(round, chainId)
 
     return {
       id: roundId,
       roundMetadata,
-      applicationsStartTime: new Date(
-        parseInt(round.applicationsStartTime) * 1000
-      ),
+      applicationsStartTime: new Date(parseInt(round.applicationsStartTime) * 1000),
       applicationsEndTime: new Date(parseInt(round.applicationsEndTime) * 1000),
       roundStartTime: new Date(parseInt(round.roundStartTime) * 1000),
       roundEndTime: new Date(parseInt(round.roundEndTime) * 1000),
@@ -167,25 +229,25 @@ export async function getRoundById(
       votingStrategy: round.votingStrategy,
       ownedBy: round.program.id,
       approvedProjects: approvedProjectsWithMetadata,
-    };
+    }
   } catch (error) {
-    console.error("getRoundById", error);
-    throw Error("Unable to fetch round");
+    console.error('getRoundById', error)
+    throw Error('Unable to fetch round')
   }
 }
 
 export function convertStatus(status: string | number) {
   switch (status) {
     case 0:
-      return "PENDING";
+      return 'PENDING'
     case 1:
-      return "APPROVED";
+      return 'APPROVED'
     case 2:
-      return "REJECTED";
+      return 'REJECTED'
     case 3:
-      return "CANCELLED";
+      return 'CANCELLED'
     default:
-      return "PENDING";
+      return 'PENDING'
   }
 }
 
@@ -195,17 +257,16 @@ async function loadApprovedProjectsMetadata(
   chainId: any
 ): Promise<Project[]> {
   if (round.projects.length === 0) {
-    return [];
+    return []
   }
 
-  const approvedProjects = round.projects;
+  const approvedProjects = round.projects
 
-  const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map(
-    (project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId)
-  );
+  const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map((project: RoundProjectResult) =>
+    fetchMetadataAndMapProject(project, chainId)
+  )
 
-  return Promise.all(fetchApprovedProjectMetadata);
+  return Promise.all(fetchApprovedProjectMetadata)
 }
 
 async function fetchMetadataAndMapProject(
@@ -213,14 +274,14 @@ async function fetchMetadataAndMapProject(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
 ): Promise<Project> {
-  const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
+  const applicationData = await fetchFromIPFS(project.metaPtr.pointer)
   // NB: applicationData can be in two formats:
   // old format: { round, project, ... }
   // new format: { signature: "...", application: { round, project, ... } }
-  const application = applicationData.application || applicationData;
-  const projectMetadataFromApplication = application.project;
-  const projectRegistryId = `0x${projectMetadataFromApplication.id}`;
-  const projectOwners = await getProjectOwners(chainId, projectRegistryId);
+  const application = applicationData.application || applicationData
+  const projectMetadataFromApplication = application.project
+  const projectRegistryId = `0x${projectMetadataFromApplication.id}`
+  const projectOwners = await getProjectOwners(chainId, projectRegistryId)
 
   return {
     grantApplicationId: project.id,
@@ -233,7 +294,7 @@ async function fetchMetadataAndMapProject(
     },
     status: ApplicationStatus.APPROVED,
     applicationIndex: project.applicationIndex,
-  };
+  }
 }
 
 export async function getProjectOwners(
@@ -261,17 +322,16 @@ export async function getProjectOwners(
       chainId,
       { projectRegistryId },
       true
-    );
+    )
 
     return (
-      res.data?.projects[0]?.accounts.map(
-        (account: { account: { address: string } }) =>
-          getAddress(account.account.address)
+      res.data?.projects[0]?.accounts.map((account: { account: { address: string } }) =>
+        getAddress(account.account.address)
       ) || []
-    );
+    )
   } catch (error) {
-    console.log("getProjectOwners", error);
-    throw Error("Unable to fetch project owners");
+    console.log('getProjectOwners', error)
+    throw Error('Unable to fetch project owners')
   }
 }
 
