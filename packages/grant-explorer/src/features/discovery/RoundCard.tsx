@@ -60,7 +60,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
   };
 
   const approvedApplicationsCount = projects?.length ?? 0;
-
   return (
     <BasicCard className="w-full">
       <a

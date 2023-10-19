@@ -12,6 +12,8 @@ import useSWR, { mutate } from "swr";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
+import RoundCard from "./RoundCard";
+import { mock } from "../../mock/rounds";
 
 export function useActiveRounds() {
   const debugModeEnabled = useDebugMode();
@@ -101,19 +103,52 @@ const LandingPage = () => {
         title="Donate now"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
-        Donate now
+        <div className="grid grid-cols-3 gap-x-6">
+          {mock.rounds?.slice(0, 4).map((round, i) => (
+            <div
+              key={round.id}
+              className={`${i % 3 === 0 ? "col-span-2" : ""}`}
+            >
+              <RoundCard round={round} />
+            </div>
+          ))}
+        </div>
       </LandingSection>
       <LandingSection
         title="Apply for funding"
         action={<ViewAllLink to="/apply-now">View all</ViewAllLink>}
       >
-        Apply for funding
+        <div className="flex gap-8 items-center">
+          <div className="w-1/3 space-y-8">
+            <p className="text-lg">
+              Bring your project to life with Gitcoin's vibrant ecosystem of
+              public goods funding opportunities.
+            </p>
+            <p className="text-lg">
+              Discover new grant rounds currently accepting applications, and
+              apply for funding today!
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-x-6 w-2/3">
+            {mock.rounds?.slice(0, 4).map((round) => (
+              <div key={round.id}>
+                <RoundCard round={round} />
+              </div>
+            ))}
+          </div>
+        </div>
       </LandingSection>
       <LandingSection
         title="Rounds ending soon"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
-        Rounds ending soon
+        <div className="grid grid-cols-3 gap-x-6">
+          {mock.rounds?.slice(0, 3).map((round) => (
+            <div key={round.id}>
+              <RoundCard round={round} />
+            </div>
+          ))}
+        </div>
       </LandingSection>
 
       <div className="container px-4 md:px-0 md:mx-auto">

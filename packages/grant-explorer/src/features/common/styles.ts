@@ -100,9 +100,11 @@ flex
 text-2xl
 border-b-4
 border-blue-100
+gap-8
 `;
 export const Tab = tw(Link)<{ active?: boolean }>`
-p-4
+py-4
+px-8
 border-b-4
 border-blue-100
 rounded-t-2xl
