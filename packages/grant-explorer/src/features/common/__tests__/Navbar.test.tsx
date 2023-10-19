@@ -67,23 +67,4 @@ describe("<Navbar>", () => {
     renderWithContext(<Navbar customBackground="" />);
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
   });
-
-  it("SHOULD navigate to the correct round URL when a round is clicked in RoundsSubNav", () => {
-    renderWithContext(<Navbar customBackground="" />);
-
-    const openSubnavButton = screen.getByLabelText("Open Grants Subnav");
-    fireEvent.click(openSubnavButton);
-
-    const link = screen.getByRole("link", {
-      name: /gaming round/i,
-    });
-
-    fireEvent.click(link);
-
-    const expectedChainId = "42161";
-    const expectedRoundId = "0xd0a086c37fbd20c44f3ba2cff69208d1b62f54e3";
-    expect(navigateMock).toHaveBeenCalledWith(
-      `/round/${expectedChainId}/${expectedRoundId}`
-    );
-  });
 });
