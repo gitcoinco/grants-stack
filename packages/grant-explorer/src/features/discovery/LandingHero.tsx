@@ -1,11 +1,15 @@
 import { ReactComponent as Logo } from "../../assets/landing-banner.svg";
 import { ReactComponent as Check } from "../../assets/icons/by-the-numbers-check.svg";
+import LandingTabs from "./LandingTabs";
 
 export default function LandingHero() {
   return (
-    <div className="flex items-center gap-16">
-      <ByTheNumbers />
-      <Logo />
+    <div>
+      <div className="flex items-center gap-16 mb-16">
+        <ByTheNumbers />
+        <Logo />
+      </div>
+      <LandingTabs />
     </div>
   );
 }

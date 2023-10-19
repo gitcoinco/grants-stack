@@ -35,6 +35,10 @@ module.exports = {
           100: "#ADEDE5",
           300: "rgba(0, 67, 59, 1)",
         },
+        orange: {
+          ...colors.orange,
+          100: "#FFD9CD",
+        },
         violet: {
           100: "#F0EBFF",
           200: "#C9B8FF",

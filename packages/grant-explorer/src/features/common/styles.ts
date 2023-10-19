@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 export const CardsContainer = tw.div`
@@ -93,3 +94,25 @@ export const Badge = tw.div<{
   ${(p) => roundedMap[p.rounded ?? "lg"]}
   ${(p) => (p.disabled ? "opacity-50" : "")}
   `;
+
+export const Tabs = tw.ul`
+flex
+text-2xl
+border-b-4
+border-blue-100
+`;
+export const Tab = tw(Link)<{ active?: boolean }>`
+p-4
+border-b-4
+border-blue-100
+rounded-t-2xl
+-mb-1
+${(props) =>
+  props.active
+    ? `
+font-bold
+bg-blue-100
+border-orange-100
+`
+    : ""}
+`;
