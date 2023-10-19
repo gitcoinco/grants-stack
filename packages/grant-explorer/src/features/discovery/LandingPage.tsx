@@ -1,4 +1,3 @@
-import Footer from "common/src/components/Footer";
 import { lazy, Suspense, useState, useEffect } from "react";
 import {
   getActiveRounds,
@@ -6,11 +5,11 @@ import {
   RoundOverview,
 } from "../api/rounds";
 import { useDebugMode } from "../api/utils";
-import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
 import useSWR, { mutate } from "swr";
+import { DefaultLayout } from "../common/DefaultLayout";
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 
 export function useActiveRounds() {
@@ -92,47 +91,36 @@ const LandingPage = () => {
   }, [searchQuery]);
 
   return (
-    <>
-      <Navbar showWalletInteraction={true} />
-      <div className=" mx-auto pt-8">
-        <main>
-          <Suspense
-            fallback={
-              <div
-                style={{
-                  width: "100%",
-                  height: "582px",
-                }}
-              />
-            }
-          >
-            <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
-          </Suspense>
-          <div className="container px-4 md:px-0 md:mx-auto">
-            <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
-              Browse through active rounds
-            </h1>
-            <ApplyNowSection
-              isLoading={applyRoundsLoading}
-              roundOverview={roundsInApplicationPhase}
-            />
-            <ActiveRoundsSection
-              isLoading={activeRoundsLoading}
-              setSearchQuery={setSearchQuery}
-              setRoundType={setType}
-              roundOverview={filterProjectsByTitle(
-                activeRounds ?? [],
-                searchQuery
-              )}
-              searchQuery={searchQuery}
-            />
-          </div>
-        </main>
-        <div className="my-11">
-          <Footer />
-        </div>
+    <DefaultLayout showWalletInteraction>
+      <Suspense
+        fallback={
+          <div
+            style={{
+              width: "100%",
+              height: "582px",
+            }}
+          />
+        }
+      >
+        <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
+      </Suspense>
+      <div className="container px-4 md:px-0 md:mx-auto">
+        <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
+          Browse through active rounds
+        </h1>
+        <ApplyNowSection
+          isLoading={applyRoundsLoading}
+          roundOverview={roundsInApplicationPhase}
+        />
+        <ActiveRoundsSection
+          isLoading={activeRoundsLoading}
+          setSearchQuery={setSearchQuery}
+          setRoundType={setType}
+          roundOverview={filterProjectsByTitle(activeRounds ?? [], searchQuery)}
+          searchQuery={searchQuery}
+        />
       </div>
-    </>
+    </DefaultLayout>
   );
 };
 
