@@ -29,6 +29,10 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
+import {
+  passportColorTextClass,
+  usePassportScore,
+} from "../../common/Passport";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -245,9 +249,11 @@ export function SummaryContainer() {
     }
   }
 
-  const { passportState } = usePassport({
+  const { passportState, passport } = usePassport({
     address: address ?? "",
   });
+
+  const passportScore = usePassportScore(passport);
 
   const [totalDonationAcrossChainsInUSD, setTotalDonationAcrossChainsInUSD] =
     useState<number | undefined>();
@@ -323,22 +329,24 @@ export function SummaryContainer() {
     return null;
   }
 
-  const isEligibleForMatching = passportState === PassportState.MATCH_ELIGIBLE;
-
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
       <div
-        className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${
-          isEligibleForMatching ? "text-teal-500" : "text-red-400"
-        }`}
+        className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${passportColorTextClass(
+          passportScore.color
+        )}`}
       >
         {matchingEstimateError === undefined &&
           matchingEstimates !== undefined && (
             <>
               <div className="flex flex-row mt-4 items-center">
                 <p>Estimated match</p>
-                <MatchingEstimateTooltip isEligible={isEligibleForMatching} />
+                <MatchingEstimateTooltip
+                  isEligible={
+                    passportScore.score !== null && passportScore.score >= 15
+                  }
+                />
               </div>
               <div className="flex justify-end mt-4">
                 <Skeleton isLoaded={!matchingEstimateLoading}>

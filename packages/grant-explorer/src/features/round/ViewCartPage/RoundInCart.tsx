@@ -11,7 +11,11 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
-import { PassportState, usePassport } from "../../api/passport";
+import { usePassport } from "../../api/passport";
+import {
+  passportColorTextClass,
+  usePassportScore,
+} from "../../common/Passport";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {
@@ -60,12 +64,11 @@ export function RoundInCart(
 
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
-  const { passportState } = usePassport({
+  const { passport } = usePassport({
     address: address ?? "",
   });
-  console.log(passportState);
 
-  const isEligibleForMatching = passportState === PassportState.MATCH_ELIGIBLE;
+  const passportScore = usePassportScore(passport);
 
   return (
     <div className="my-4 bg-grey-50 rounded-xl">
@@ -91,9 +94,9 @@ export function RoundInCart(
         </div>
 
         <div
-          className={`flex flex-row gap-4 items-center justify-between font-semibold italic ${
-            isEligibleForMatching ? "text-teal-500" : "text-red-400"
-          }`}
+          className={`flex flex-row gap-4 items-center justify-between font-semibold italic ${passportColorTextClass(
+            passportScore.color
+          )}`}
         >
           {matchingEstimateError === undefined &&
             matchingEstimates !== undefined && (
