@@ -16,7 +16,7 @@ const ByTheNumbers = () => {
   const fundingDistributed = "$50,000,000+";
 
   return (
-    <div className="w-[520px] h-[609px] flex-shrink-0 flex-col justify-around bg-white/50 hidden md:flex rounded-b-3xl p-8">
+    <div className="w-[520px] h-[609px] flex-shrink-0 flex-col justify-between bg-white/50 hidden md:flex rounded-b-3xl px-8 py-12">
       <div className="flex items-center gap-4">
         <Check />
         <div className="font-medium text-3xl">By the numbers…</div>
