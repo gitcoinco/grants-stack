@@ -334,8 +334,14 @@ export const loadRound =
             }) {
               id
               payoutStrategy {
-                id
-                strategyName
+                ...on MerklePayout {
+                  id
+                  strategyName
+                }
+                ...on DirectPayout {
+                  id
+                  strategyName
+                }
               }
             }
           }
