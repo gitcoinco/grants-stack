@@ -104,7 +104,10 @@ export function PassportWidget() {
   }, [address, isConnected]);
   return (
     <>
-      <div className="flex flex-row gap-2 mt-1" onClick={() => handleClick()}>
+      <div
+        className="flex flex-row gap-2 mt-1 relative"
+        onClick={() => handleClick()}
+      >
         <GitcoinPassportLogo className="h-8 w-8" />
         {passportState === PassportState.SCORE_AVAILABLE && (
           <div className={`text-lg font-semibold text-${textColor}-400`}>
@@ -115,58 +118,58 @@ export function PassportWidget() {
           className="inline mt-3"
           direction={open ? "up" : "down"}
         />
-      </div>
-      <div
-        className={`absolute left-1/3 top-16 mt-1 w-96 ml-16 bg-grey-150 bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
-          open ? "block" : "hidden"
-        }`}
-      >
-        <div className="flex flex-col gap-4 mt-1">
-          <GitcoinPassportLogoFull />
-          {passportState === PassportState.SCORE_AVAILABLE ? (
-            <>
-              <div className="flex flex-row gap-2 w-full justify-center">
-                <div
-                  className={`bg-${textColor}-100 w-40 p-4 justify-start rounded-2xl`}
-                >
-                  <p className="mb-2">Passport Score</p>
-                  <p>{passportScore}</p>
+        <div
+          className={`absolute top-16 right-0 mt-1 mr-[-20px] w-96 bg-grey-150 bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
+            open ? "block" : "hidden"
+          }`}
+        >
+          <div className="flex flex-col gap-4 mt-1">
+            <GitcoinPassportLogoFull />
+            {passportState === PassportState.SCORE_AVAILABLE ? (
+              <>
+                <div className="flex flex-row gap-2 w-full justify-center">
+                  <div
+                    className={`bg-${textColor}-100 w-40 p-4 justify-start rounded-2xl`}
+                  >
+                    <p className="mb-2">Passport Score</p>
+                    <p>{passportScore}</p>
+                  </div>
+                  <div
+                    className={`bg-${textColor}-100 w-40 p-4 justify-start rounded-2xl`}
+                  >
+                    <p className="mb-2">Donation Impact</p>
+                    <p>+{donationImpact}%</p>
+                  </div>
                 </div>
-                <div
-                  className={`bg-${textColor}-100 w-40 p-4 justify-start rounded-2xl`}
-                >
-                  <p className="mb-2">Donation Impact</p>
-                  <p>+{donationImpact}%</p>
-                </div>
-              </div>
-              <p className="text-left text-sm">
-                Your donation impact is a reflection of your Passport score.
-                This percentage ensures a fair and proportional match. You can
-                always update your score by heading over to Passport.
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-center text-lg">
-                Passport score not detected.
-              </p>
-              <p className="text-left text-sm">
-                You either do not have a Passport or no stamps added to your
-                Passport yet. Please head over to Passport to configure your
-                score.
-              </p>
-            </>
-          )}
-          <div className="flex justify-center">
-            <button
-              className="flex flex-row gap-2 bg-gray-800 w-1/2 p-2 rounded-xl text-white"
-              onClick={() =>
-                window.open("https://passport.gitcoin.co", "_blank")
-              }
-            >
-              <GitcoinPassportLogo className="h-6 w-6" />
-              Open Passport
-            </button>
+                <p className="text-left text-sm">
+                  Your donation impact is a reflection of your Passport score.
+                  This percentage ensures a fair and proportional match. You can
+                  always update your score by heading over to Passport.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-center text-lg">
+                  Passport score not detected.
+                </p>
+                <p className="text-left text-sm">
+                  You either do not have a Passport or no stamps added to your
+                  Passport yet. Please head over to Passport to configure your
+                  score.
+                </p>
+              </>
+            )}
+            <div className="flex justify-center">
+              <button
+                className="flex flex-row gap-2 bg-gray-800 w-1/2 p-2 rounded-xl text-white"
+                onClick={() =>
+                  window.open("https://passport.gitcoin.co", "_blank")
+                }
+              >
+                <GitcoinPassportLogo className="h-6 w-6" />
+                Open Passport
+              </button>
+            </div>
           </div>
         </div>
       </div>
