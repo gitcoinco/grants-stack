@@ -375,3 +375,8 @@ export async function getTokenPrice(tokenId: string) {
   const data = await resp.json();
   return data[0].value;
 }
+
+export const ROUND_PAYOUT_MERKLE = "MERKLE";
+export const ROUND_PAYOUT_DIRECT = "DIRECT";
+export type RoundPayoutType = "MERKLE" | "DIRECT";
+export type RoundVisibilityType = "public" | "private";

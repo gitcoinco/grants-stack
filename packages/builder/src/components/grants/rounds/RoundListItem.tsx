@@ -2,17 +2,14 @@
 import { Badge, Box, Spinner } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { RootState } from "../../../reducers";
 import { Application, AppStatus } from "../../../reducers/projects";
 import { roundApplicationPathForProject } from "../../../routes";
-import { RoundDisplayType } from "../../../types";
+import { Round, RoundDisplayType } from "../../../types";
 import { formatDateFromSecs, isInfinite } from "../../../utils/components";
 import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
-import {
-  ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE,
-  getProjectURIComponents,
-} from "../../../utils/utils";
+import { getProjectURIComponents } from "../../../utils/utils";
 import LinkManager from "./LinkManager";
 import { PayoutStrategy } from "../../../reducers/rounds";
 
@@ -25,7 +22,7 @@ export default function RoundListItem({
   displayType?: RoundDisplayType;
   projectId: string;
 }) {
-  const [roundData, setRoundData] = useState<any>();
+  const [roundData, setRoundData] = useState<Round>();
   const props = useSelector((state: RootState) => {
     const { roundID: roundId, chainId: projectChainId } = applicationData!;
     const roundState = state.rounds[roundId];
@@ -52,14 +49,15 @@ export default function RoundListItem({
     };
   });
 
-  const renderApplicationDate = () => (
-    <>
-      {formatDateFromSecs(roundData?.applicationsStartTime!)} -{" "}
-      {!isInfinite(roundData?.applicationsEndTime!)
-        ? formatDateFromSecs(roundData?.applicationsEndTime!)
-        : "No End Date"}
-    </>
-  );
+  const renderApplicationDate = () =>
+    roundData && (
+      <>
+        {formatDateFromSecs(roundData.applicationsStartTime)} -{" "}
+        {!isInfinite(roundData.applicationsEndTime)
+          ? formatDateFromSecs(roundData.applicationsEndTime)
+          : "No End Date"}
+      </>
+    );
 
   const renderRoundBadge = () => {
     let colorScheme:

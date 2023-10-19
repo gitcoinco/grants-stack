@@ -48,7 +48,8 @@ export default function ApplicationDirectPayout({
 }: Props) {
   const { chain, address, signer } = useWallet();
   const { triggerPayout, progressSteps: payoutProgressSteps } = usePayout();
-  const [openPayoutProgressModal, setOpenPayoutProgressModal] = useState(false);
+  const [isPayoutProgressModelOpen, setIsPayoutProgressModelOpen] =
+    useState(false);
   const [payoutError, setPayoutError] = useState<
     { message: string; retry?: () => void } | undefined
   >();
@@ -68,7 +69,7 @@ export default function ApplicationDirectPayout({
   const payouts = application.payoutStrategy?.payouts ?? [];
   // find answer with question "Payout token"
   const payoutTokenAnswer = answerBlocks?.find(
-    (a) => a.question == "Payout token"
+    (a) => a.question === "Payout token"
   );
   if (payoutTokenAnswer === undefined) {
     throw Error('"Payout token" not found in answers!');
@@ -76,7 +77,7 @@ export default function ApplicationDirectPayout({
   // find token info based on payoutTokenAnswer
   const tokensByChainInfo = getPayoutTokenOptions(chain.id);
   const tokenInfo = tokensByChainInfo.find(
-    (t) => t.name.toLowerCase() == payoutTokenAnswer.answer?.toLowerCase()
+    (t) => t.name.toLowerCase() === payoutTokenAnswer.answer?.toLowerCase()
   );
 
   if (!tokenInfo) {
@@ -134,7 +135,7 @@ export default function ApplicationDirectPayout({
       return;
     }
 
-    setOpenPayoutProgressModal(true);
+    setIsPayoutProgressModelOpen(true);
 
     if (payoutWalletAddress === undefined) {
       throw Error("Payout wallet address not found in answers!");
@@ -158,7 +159,7 @@ export default function ApplicationDirectPayout({
     } catch (error) {
       console.error(error);
       setTimeout(() => {
-        setOpenPayoutProgressModal(false);
+        setIsPayoutProgressModelOpen(false);
       }, errorModalDelayMs);
       setPayoutError({
         message: "There was an error trying to trigger the payout.",
@@ -452,7 +453,7 @@ export default function ApplicationDirectPayout({
         </form>
       </section>
       <ProgressModal
-        isOpen={openPayoutProgressModal}
+        isOpen={isPayoutProgressModelOpen}
         subheading={"Please hold while we update the grant application."}
         steps={payoutProgressSteps}
       />

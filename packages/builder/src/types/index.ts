@@ -2,6 +2,7 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
 import { ReactNode } from "react";
 import { RoundApplicationMetadata } from "./roundApplication";
+import { Application } from "../reducers/projects";
 
 export type Images = {
   bannerImg?: Blob;
@@ -159,6 +160,12 @@ export enum RoundDisplayType {
   Current = "current",
   Past = "past",
 }
+
+export type ApplicationCardType = {
+  application: Application;
+  roundID: string;
+  chainId: ChainId;
+};
 
 export type ProjectOption = {
   id: string | undefined;

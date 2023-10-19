@@ -33,12 +33,11 @@ import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import {
-  ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE,
   getPayoutRoundDescription,
   horizontalTabStyles,
   verticalTabStyles,
 } from "../common/Utils";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";

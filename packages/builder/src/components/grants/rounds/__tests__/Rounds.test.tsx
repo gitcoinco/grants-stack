@@ -133,7 +133,6 @@ describe("<Rounds />", () => {
         applications,
         projectID: "2",
       });
-      console.log("STORE ", store);
 
       await act(async () => {
         renderWrapped(<Rounds />, store);

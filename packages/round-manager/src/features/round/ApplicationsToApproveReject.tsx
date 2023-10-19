@@ -79,12 +79,15 @@ export default function ApplicationsToApproveReject({
   const { id } = useParams();
   const { chain } = useWallet();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { applications, isLoading } = useApplicationByRoundId(id!);
+  if (id === undefined) {
+    throw new Error("id is undefined");
+  }
+
+  const { applications, isLoading } = useApplicationByRoundId(id);
   const filteredApplications = (applications || []).filter((a) =>
     isDirectRound
       ? a.inReview
-      : a.status == ApplicationStatus.PENDING.toString()
+      : a.status === ApplicationStatus.PENDING.toString()
   );
 
   const [bulkSelect, setBulkSelect] = useState(false);
