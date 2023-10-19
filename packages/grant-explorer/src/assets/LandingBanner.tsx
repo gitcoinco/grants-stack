@@ -32,10 +32,12 @@ const ByTheNumbers = () => {
 const Stat = ({ value = "", label = "" }) => {
   return (
     <div>
-      <div className="font-mono text-5xl text-green-300 font-medium tracking-tight mb-1">
+      <div className="font-mono text-5xl text-green-300 font-medium tracking-tighter mb-1">
         {value}
       </div>
-      <div className="uppercase text-xl tracking-wider">{label}</div>
+      <div className="uppercase text-xl tracking-widest font-medium">
+        {label}
+      </div>
     </div>
   );
 };

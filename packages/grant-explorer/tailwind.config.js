@@ -1,8 +1,13 @@
 const colors = require("tailwindcss/colors");
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "../common/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    fontFamily: {
+      sans: ['"Modern Era"', ...defaultTheme.fontFamily.sans],
+      mono: ['"DM Mono"', ...defaultTheme.fontFamily.mono],
+    },
     extend: {
       animation: {
         "pulse-scale": "pulse-scale 2s ease-in-out infinite",

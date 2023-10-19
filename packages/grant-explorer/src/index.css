@@ -1,4 +1,26 @@
-@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Miriam+Libre:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+
+@font-face {
+  font-family: "Modern Era"; 
+  font-weight: 400;
+  src: local("ModernEraRegular"),
+  url("../public/fonts/Modern Era Regular/ModernEra-Regular.otf") format('opentype');
+}
+
+@font-face {
+  font-family: "Modern Era"; 
+  font-weight: 500;
+  src: local("ModernEraMedium"),
+  url("../public/fonts/Modern Era Medium/ModernEra-Medium.otf") format('opentype');
+}
+
+@font-face {
+  font-family: "Modern Era"; 
+  font-weight: 600;
+  src: local("ModernEraBold"),
+    url("../public/fonts/Modern Era Bold/ModernEra-Bold.otf") format('opentype');
+}
+
 
 @tailwind base;
 @tailwind components;
@@ -7,37 +29,30 @@
 @layer base {
   html {
     @apply text-grey-500;
-    font-family: "Libre Franklin", serif !important;
   }
 
   h1 {
     @apply text-7xl;
-    font-family: Miriam Libre;
   }
 
   h2 {
     @apply text-5xl;
-    font-family: Miriam Libre;
   }
 
   h3 {
     @apply text-3xl;
-    font-family: Miriam Libre;
   }
 
   h4 {
     @apply text-2xl;
-    font-family: Miriam Libre;
   }
 
   h5 {
     @apply text-base;
-    font-family: Miriam Libre;
   }
 
   h6 {
     @apply text-sm;
-    font-family: Miriam Libre;
   }
 
   p {
