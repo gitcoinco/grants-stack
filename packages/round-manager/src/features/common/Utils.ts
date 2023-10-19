@@ -1,3 +1,5 @@
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+
 export const verticalTabStyles = (selected: boolean) =>
   selected
     ? "whitespace-nowrap py-4 px-1 text-sm outline-none"
@@ -8,8 +10,6 @@ export const horizontalTabStyles = (selected: boolean) =>
     ? "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none"
     : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
-export const ROUND_PAYOUT_MERKLE = "MERKLE";
-export const ROUND_PAYOUT_DIRECT = "DIRECT";
 export const getPayoutRoundDescription = (key: string) => {
   switch (key) {
     case ROUND_PAYOUT_MERKLE:

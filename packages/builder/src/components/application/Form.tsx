@@ -328,11 +328,12 @@ export default function Form({
   const haveProjectRequirementsBeenMet = projectRequirementsResult.length === 0;
 
   const isDirectRound =
-    round.payoutStrategy && round.payoutStrategy === ROUND_PAYOUT_DIRECT;
+    round.payoutStrategy !== null &&
+    round.payoutStrategy === ROUND_PAYOUT_DIRECT;
   // todo: ensure that the applications are made by a project owner
   const isValidProjectSelected =
     (isDirectRound || !hasExistingApplication) &&
-    !!selectedProjectID &&
+    selectedProjectID !== null &&
     publishedApplication === undefined;
 
   const needsProject = !schema.questions.find((q) => q.type === "project");
@@ -878,7 +879,7 @@ export default function Form({
               Please note that once you submit this application, you will NOT be
               able to edit
               {!isDirectRound &&
-                "or re-apply with the same project to this round."}
+                " or re-apply with the same project to this round."}
             </p>
           </>
         </CallbackModal>

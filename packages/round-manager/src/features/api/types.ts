@@ -6,6 +6,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
+import { RoundVisibilityType } from "common";
 
 export type Network = "goerli" | "optimism" | "fantom" | "pgn";
 
@@ -155,7 +156,7 @@ export interface Round {
   roundMetadata: {
     name: string;
     programContractAddress: string;
-    roundType: string;
+    roundType: RoundVisibilityType;
     eligibility?: {
       description: string;
       requirements: { requirement: string }[];

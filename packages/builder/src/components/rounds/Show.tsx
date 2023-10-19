@@ -175,24 +175,26 @@ function ShowRound() {
     };
   }, shallowEqual);
 
-  const renderApplicationDate = () => (
-    <>
-      {formatTimeUTC(roundData?.applicationsStartTime)} -{" "}
-      {isInfinite(roundData?.applicationsEndTime)
-        ? "No End Date"
-        : formatTimeUTC(roundData?.applicationsEndTime)}
-    </>
-  );
+  const renderApplicationDate = () =>
+    roundData && (
+      <>
+        {formatTimeUTC(roundData.applicationsStartTime)} -{" "}
+        {isInfinite(roundData.applicationsEndTime)
+          ? "No End Date"
+          : formatTimeUTC(roundData.applicationsEndTime)}
+      </>
+    );
 
-  const renderRoundDate = () => (
-    <>
-      {formatTimeUTC(roundData?.roundStartTime)} -{" "}
-      {isInfinite(roundData?.roundEndTime)
-        ? "No End Date"
-        : formatTimeUTC(roundData?.roundEndTime)}
-      {}
-    </>
-  );
+  const renderRoundDate = () =>
+    roundData && (
+      <>
+        {formatTimeUTC(roundData.roundStartTime)} -{" "}
+        {isInfinite(roundData.roundEndTime)
+          ? "No End Date"
+          : formatTimeUTC(roundData.roundEndTime)}
+        {}
+      </>
+    );
 
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [roundApplicationModal, setToggleRoundApplicationModal] =

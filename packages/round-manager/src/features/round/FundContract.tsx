@@ -92,7 +92,7 @@ export default function FundContract(props: {
     props.round &&
     payoutTokens.filter(
       (t) =>
-        t.address.toLocaleLowerCase() === props.round?.token?.toLowerCase() &&
+        t.address.toLowerCase() === props.round?.token?.toLowerCase() &&
         t.chainId === props.round?.chainId
     )[0];
 

@@ -35,6 +35,10 @@ export type Application = {
   status: AppStatus;
   inReview: boolean;
   chainId: ChainId;
+  metaPtr?: {
+    protocol: string;
+    pointer: string;
+  };
 };
 
 export type ProjectOwners = { [projectID: string]: string[] };

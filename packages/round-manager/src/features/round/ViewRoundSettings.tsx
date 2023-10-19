@@ -2,7 +2,13 @@
 import { Listbox, RadioGroup, Tab, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ChainId, classNames, getUTCDate, getUTCTime } from "common";
+import {
+  ChainId,
+  RoundVisibilityType,
+  classNames,
+  getUTCDate,
+  getUTCTime,
+} from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
 import moment from "moment";
@@ -1018,7 +1024,7 @@ function RoundType(props: {
 }) {
   const { field: roundTypeField } = useController({
     name: "roundMetadata.roundType",
-    defaultValue: "",
+    defaultValue: "public",
     control: props.control,
     rules: {
       required: true,
@@ -1039,7 +1045,7 @@ function RoundType(props: {
     },
   ];
 
-  const setType = (type: string) => {
+  const setType = (type: RoundVisibilityType) => {
     roundTypeField.onChange(type);
     props.setEditedRound({
       ...props.editedRound,

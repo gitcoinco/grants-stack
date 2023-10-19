@@ -10,7 +10,7 @@ import {
 import { faker } from "@faker-js/faker";
 import { Program, ProgressStatus } from "../../api/types";
 import { formatUTCDateAsISOString } from "common";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../common/Utils";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });

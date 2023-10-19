@@ -6,7 +6,7 @@ import { loadRound } from "../../actions/rounds";
 import { RootState } from "../../reducers";
 import { AppStatus } from "../../reducers/projects";
 import { roundApplicationViewPath } from "../../routes";
-import { RoundSupport } from "../../types";
+import { Round, RoundSupport, ApplicationCardType } from "../../types";
 import { formatDateFromSecs, isInfinite } from "../../utils/components";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import { PayoutStrategy } from "../../reducers/rounds";
@@ -15,9 +15,9 @@ import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 export default function ApplicationCard({
   applicationData,
 }: {
-  applicationData: any;
+  applicationData: ApplicationCardType;
 }) {
-  const [roundData, setRoundData] = useState<any>();
+  const [roundData, setRoundData] = useState<Round>();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const roundState = state.rounds[applicationData.roundID];
@@ -42,14 +42,15 @@ export default function ApplicationCard({
     };
   });
 
-  const renderApplicationDate = () => (
-    <>
-      {formatDateFromSecs(roundData?.applicationsStartTime!)} -{" "}
-      {!isInfinite(roundData?.applicationsEndTime!)
-        ? formatDateFromSecs(roundData?.applicationsEndTime!)
-        : "No End Date"}
-    </>
-  );
+  const renderApplicationDate = () =>
+    roundData && (
+      <>
+        {formatDateFromSecs(roundData.applicationsStartTime)} -{" "}
+        {!isInfinite(roundData.applicationsEndTime)
+          ? formatDateFromSecs(roundData.applicationsEndTime)
+          : "No End Date"}
+      </>
+    );
 
   useEffect(() => {
     if (applicationData.roundID !== undefined) {
@@ -122,7 +123,7 @@ export default function ApplicationCard({
           text: string;
         }
       | undefined;
-    switch (applicationData?.application.status as AppStatus) {
+    switch (applicationData.application.status as AppStatus) {
       case "APPROVED":
         colorScheme = {
           bg: "#E6FFF9",
@@ -152,9 +153,9 @@ export default function ApplicationCard({
         break;
     }
 
-    const applicationStatus = applicationData?.application.status;
+    const applicationStatus = applicationData.application.status;
     const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
-    const applicationInReview = applicationData?.application.inReview;
+    const applicationInReview = applicationData.application.inReview;
 
     return (
       <Badge
@@ -184,8 +185,8 @@ export default function ApplicationCard({
   };
 
   const hasProperStatus =
-    applicationData?.application.inReview ||
-    applicationData?.application.status === "APPROVED";
+    applicationData.application.inReview ||
+    applicationData.application.status === "APPROVED";
 
   return (
     <Box
@@ -234,9 +235,9 @@ export default function ApplicationCard({
           )}
           <Link
             to={roundApplicationViewPath(
-              applicationData.chainId,
+              applicationData.chainId.toString(),
               applicationData.roundID,
-              applicationData.application.metaPtr.pointer
+              applicationData.application.metaPtr?.pointer || ""
             )}
           >
             <Button

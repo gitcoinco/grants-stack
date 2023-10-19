@@ -1,6 +1,11 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
-import { ChainId, convertStatusToText } from "common";
+import {
+  ChainId,
+  convertStatusToText,
+  ROUND_PAYOUT_MERKLE,
+  RoundPayoutType,
+} from "common";
 import { ethers, utils } from "ethers";
 import { Dispatch } from "redux";
 import { addressesByChainID } from "../contracts/deployments";
@@ -11,16 +16,23 @@ import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
 import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import {
-  ROUND_PAYOUT_MERKLE,
-  getProjectURIComponents,
-  getProviderByChainId,
-} from "../utils/utils";
+import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
 import { chains } from "../utils/wagmi";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
+
+export type SubgraphApplication = {
+  round: { id: string };
+  status: AppStatus;
+  inReview: boolean;
+  chainId: ChainId;
+  metaPtr?: {
+    protocol: string;
+    pointer: string;
+  };
+};
 
 interface ProjectsLoadingAction {
   payload: number;
@@ -469,15 +481,16 @@ export const fetchProjectApplications =
             throw response.errors;
           }
 
-          const applications = response.data.roundApplications.map(
-            (application: any) => ({
-              status: convertStatusToText(application.status),
-              roundID: application.round.id,
-              inReview: application.inReview,
-              chainId: chain.id,
-              metaPtr: application.metaPtr,
-            })
-          );
+          const applications: Application[] =
+            response.data.roundApplications.map(
+              (application: SubgraphApplication) => ({
+                status: convertStatusToText(application.status),
+                roundID: application.round.id,
+                inReview: application.inReview,
+                chainId: chain.id,
+                metaPtr: application.metaPtr,
+              })
+            );
 
           if (applications.length === 0) {
             return [];
@@ -517,7 +530,11 @@ export const loadProjectStats =
     projectID: string,
     projectRegistryAddress: string,
     projectChainId: string,
-    rounds: Array<{ roundId: string; chainId: ChainId; roundType: string }>
+    rounds: Array<{
+      roundId: string;
+      chainId: ChainId;
+      roundType: RoundPayoutType;
+    }>
   ) =>
   async (dispatch: Dispatch) => {
     const uniqueProjectID = generateUniqueRoundApplicationID(
@@ -572,8 +589,7 @@ export const loadProjectStats =
         (app) =>
           app.projectId === uniqueProjectID &&
           app.status === "APPROVED" &&
-          !!round.roundType &&
-          round?.roundType === ROUND_PAYOUT_MERKLE
+          round.roundType === ROUND_PAYOUT_MERKLE
       );
 
       if (project) {

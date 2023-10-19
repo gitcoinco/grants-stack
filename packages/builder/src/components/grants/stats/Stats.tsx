@@ -1,5 +1,5 @@
 import { Spinner } from "@chakra-ui/react";
-import { ChainId } from "common";
+import { ChainId, RoundPayoutType, ROUND_PAYOUT_MERKLE } from "common";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -8,7 +8,6 @@ import { RootState } from "../../../reducers";
 import { ProjectStats } from "../../../reducers/projects";
 import RoundDetailsCard from "./RoundDetailsCard";
 import StatCard from "./StatCard";
-import { ROUND_PAYOUT_MERKLE } from "../../../utils/utils";
 
 export default function RoundStats() {
   const NA = -1;
@@ -29,7 +28,7 @@ export default function RoundStats() {
     return {
       projectID: params.id!,
       stats,
-      projectApplications: state.projects?.applications[params.id!],
+      projectApplications: state.projects?.applications[params.id!] ?? [],
       rounds: state.rounds,
     };
   });
@@ -45,7 +44,7 @@ export default function RoundStats() {
       const rounds: Array<{
         roundId: string;
         chainId: ChainId;
-        roundType: string;
+        roundType: RoundPayoutType;
       }> = [];
       applications.forEach((app) => {
         const roundType =

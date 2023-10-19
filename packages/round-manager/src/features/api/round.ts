@@ -464,7 +464,7 @@ export async function deployRoundContract(
       const tokenAmount =
         round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable ?? 0;
       const pyToken = payoutTokens.filter(
-        (t) => t.address.toLocaleLowerCase() === round.token.toLocaleLowerCase()
+        (t) => t.address.toLowerCase() === round.token.toLowerCase()
       )[0];
       parsedTokenAmount = utils.parseUnits(
         tokenAmount.toString(),
