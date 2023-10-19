@@ -1,4 +1,9 @@
-import { ChainId, renderToPlainText, truncateDescription } from "common";
+import {
+  ChainId,
+  renderToPlainText,
+  RoundPayoutType,
+  truncateDescription,
+} from "common";
 import { RoundOverview } from "../api/rounds";
 import {
   getDaysLeft,
@@ -119,7 +124,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
   );
 };
 
-const RoundBadge = ({ strategyName = "" }) => {
+const RoundBadge = ({ strategyName }: { strategyName: RoundPayoutType }) => {
   const color = ({ MERKLE: "blue", DIRECT: "yellow" } as const)[strategyName];
   return (
     <Badge color={color} data-testid="round-badge">
