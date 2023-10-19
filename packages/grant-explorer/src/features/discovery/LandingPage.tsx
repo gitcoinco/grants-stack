@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   getActiveRounds,
   getRoundsInApplicationPhase,
@@ -10,7 +10,7 @@ import ApplyNowSection from "./ApplyNowSection";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
 import useSWR, { mutate } from "swr";
 import { DefaultLayout } from "../common/DefaultLayout";
-const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
+import LandingHero from "./LandingHero";
 
 export function useActiveRounds() {
   const debugModeEnabled = useDebugMode();
@@ -92,18 +92,7 @@ const LandingPage = () => {
 
   return (
     <DefaultLayout showWalletInteraction>
-      <Suspense
-        fallback={
-          <div
-            style={{
-              width: "100%",
-              height: "582px",
-            }}
-          />
-        }
-      >
-        <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
-      </Suspense>
+      <LandingHero />
       <div className="container px-4 md:px-0 md:mx-auto">
         <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
           Browse through active rounds

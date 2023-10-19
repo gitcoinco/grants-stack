@@ -1,13 +1,14 @@
-import { ReactComponent as LandingBannerLogo } from "./landing-banner.svg";
-import { ReactComponent as Check } from "./icons/by-the-numbers-check.svg";
-import { ComponentProps } from "react";
+import { ReactComponent as Logo } from "../../assets/landing-banner.svg";
+import { ReactComponent as Check } from "../../assets/icons/by-the-numbers-check.svg";
 
-export default (props: ComponentProps<"svg">) => (
-  <div className="flex items-center gap-16">
-    <ByTheNumbers />
-    <LandingBannerLogo {...props} />
-  </div>
-);
+export default function LandingHero() {
+  return (
+    <div className="flex items-center gap-16">
+      <ByTheNumbers />
+      <Logo />
+    </div>
+  );
+}
 
 const ByTheNumbers = () => {
   // TODO: fetch data (where to get this?)

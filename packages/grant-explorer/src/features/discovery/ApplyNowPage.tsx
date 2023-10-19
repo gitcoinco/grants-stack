@@ -1,5 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
-const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
+import { useEffect, useState } from "react";
 import { RoundOverview, getRoundsInApplicationPhase } from "../api/rounds";
 import Breadcrumb from "../common/Breadcrumb";
 import Navbar from "../common/Navbar";
@@ -13,6 +12,7 @@ import RoundCard from "./RoundCard";
 import { useDebugMode } from "../api/utils";
 import Footer from "common/src/components/Footer";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
+import LandingHero from "./LandingHero";
 
 const ApplyNowPage = () => {
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
@@ -159,18 +159,7 @@ const ApplyNowPage = () => {
   return (
     <>
       <Navbar showWalletInteraction={false} />
-      <Suspense
-        fallback={
-          <div
-            style={{
-              width: "100%",
-              height: "560px",
-            }}
-          />
-        }
-      >
-        <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
-      </Suspense>
+      <LandingHero />
       <div className="container px-4 md:px-0 md:mx-auto mt-4">
         <div className="my-4">
           <Breadcrumb items={breadcrumbItems} />
