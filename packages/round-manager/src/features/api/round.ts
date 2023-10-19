@@ -200,8 +200,15 @@ export async function getRoundById(
                 }
               }
               payoutStrategy {
+                ...on DirectPayout {
                   id
+                  strategyName
+                }
+                ...on MerklePayout {
+                  id
+                  strategyName
                   isReadyForPayout
+                }
               }
             }
           }
@@ -307,8 +314,14 @@ export async function listRounds(
                 id
               }
               payoutStrategy {
-                id
-                strategyName
+                ...on DirectPayout {
+                  id
+                  strategyName
+                }
+                ...on MerklePayout {
+                  id
+                  strategyName
+                }
               }
               roundMetaPtr {
                 protocol
