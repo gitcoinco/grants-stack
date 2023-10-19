@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PassportResponse, fetchPassport } from "../api/passport";
 import { useAccount } from "wagmi";
 import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-logo.svg";
+import { ReactComponent as GitcoinPassportBWLogo } from "../../assets/passport-logo-bw.svg";
 import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport-logo-full.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
 
@@ -108,18 +109,29 @@ export function PassportWidget() {
         className="flex flex-row gap-2 mt-1 relative"
         onClick={() => handleClick()}
       >
-        <GitcoinPassportLogo className="h-8 w-8" />
+        {passportState === PassportState.SCORE_AVAILABLE ? (
+          <div className="relative">
+            <GitcoinPassportLogo className="h-8 w-8" />
+            <div
+              className={`absolute bottom-0.5 right-0 w-3 h-3 bg-${textColor}-500 rounded-full sm:block md:hidden`}
+            ></div>
+          </div>
+        ) : (
+          <GitcoinPassportBWLogo className="h-8 w-8" />
+        )}
         {passportState === PassportState.SCORE_AVAILABLE && (
-          <div className={`text-lg font-semibold text-${textColor}-400`}>
+          <div
+            className={`text-lg font-semibold text-${textColor}-400 hidden md:block`}
+          >
             {passportScore}
           </div>
         )}
         <DropdownIcon
-          className="inline mt-3"
+          className="inline mt-3 hidden md:block"
           direction={open ? "up" : "down"}
         />
         <div
-          className={`absolute top-16 right-0 mt-1 mr-[-20px] w-96 bg-grey-150 bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
+          className={`absolute top-24 mt-1 ml-[-75px] md:top-16 md:right-0 md:ml-0 md:mr-[-20px] w-96 bg-grey-150 bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
             open ? "block" : "hidden"
           }`}
         >
