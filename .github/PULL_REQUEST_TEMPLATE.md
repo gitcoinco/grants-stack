@@ -19,6 +19,7 @@ For every PR, make sure that these statements are true:
 - [ ] Parses out-of-domain data - this includes user input, API respones, on-chain data etc.
 - [ ] Doesn't contain commented out code.
 - [ ] Doesn't contain skipped or empty tests.
+- [ ] If this PR adds/update any feature, it adds/updates its test script
 
 Subjective - at the discretion of the reviewers
 - Does things as simply as possible, but not simpler.
