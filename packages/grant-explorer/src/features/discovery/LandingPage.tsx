@@ -11,6 +11,7 @@ import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
 import useSWR, { mutate } from "swr";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
+import { LandingSection, ViewAllLink } from "./LandingSection";
 
 export function useActiveRounds() {
   const debugModeEnabled = useDebugMode();
@@ -93,6 +94,28 @@ const LandingPage = () => {
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
+      <LandingSection title="Community curation">
+        Community curation
+      </LandingSection>
+      <LandingSection
+        title="Donate now"
+        action={<ViewAllLink to="#">View all</ViewAllLink>}
+      >
+        Donate now
+      </LandingSection>
+      <LandingSection
+        title="Apply for funding"
+        action={<ViewAllLink to="/apply-now">View all</ViewAllLink>}
+      >
+        Apply for funding
+      </LandingSection>
+      <LandingSection
+        title="Rounds ending soon"
+        action={<ViewAllLink to="#">View all</ViewAllLink>}
+      >
+        Rounds ending soon
+      </LandingSection>
+
       <div className="container px-4 md:px-0 md:mx-auto">
         <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
           Browse through active rounds
