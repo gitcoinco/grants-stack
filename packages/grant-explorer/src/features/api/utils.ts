@@ -615,15 +615,15 @@ export const pinToIPFS = (obj: IPFSObject) => {
   }
 };
 
-export const getDaysLeft = (epochTime: number) => {
+export const getDaysLeft = (fromTimestamp: number) => {
   // Invalid date
-  if (epochTime > Number.MAX_SAFE_INTEGER) {
+  if (fromTimestamp > Number.MAX_SAFE_INTEGER) {
     return 0;
   }
   const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day
 
-  const differenceInSeconds = epochTime - currentTimestamp;
+  const differenceInSeconds = fromTimestamp - currentTimestamp;
   const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
 
   return differenceInDays;
