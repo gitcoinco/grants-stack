@@ -14,6 +14,7 @@ import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import RoundCard from "./RoundCard";
 import { mock } from "../../mock/rounds";
+import { useLocation } from "react-router-dom";
 
 export function useActiveRounds() {
   const debugModeEnabled = useDebugMode();
@@ -28,8 +29,12 @@ export function useRoundsInApplicationPhase() {
 }
 
 const LandingPage = () => {
+  const location = useLocation();
   useEffect(() => {
-    if (process.env.REACT_APP_ENV === "production") {
+    if (
+      process.env.REACT_APP_ENV === "production" &&
+      !location.search.includes("skip_redirect")
+    ) {
       window.location.replace("https://grants.gitcoin.co");
     }
   }, []);
