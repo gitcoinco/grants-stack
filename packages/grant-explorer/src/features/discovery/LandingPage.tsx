@@ -13,6 +13,7 @@ import { LandingSection, ViewAllLink } from "./LandingSection";
 import RoundCard from "./RoundCard";
 import { mock } from "../../mock/rounds";
 import { useLocation } from "react-router-dom";
+import CollectionCard from "./CollectionCard";
 
 export function useActiveRounds() {
   const debugModeEnabled = useDebugMode();
@@ -99,14 +100,23 @@ const LandingPage = () => {
     <DefaultLayout showWalletInteraction>
       <LandingHero />
       <LandingSection title="Community curation">
-        Community curation
+        <div className="grid md:grid-cols-3 gap-x-6">
+          {mock.collections?.slice(0, 4).map((collection, i) => (
+            <div
+              key={collection.id}
+              className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
+            >
+              <CollectionCard collection={collection} />
+            </div>
+          ))}
+        </div>
       </LandingSection>
       <LandingSection
         title="Donate now"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {mock.rounds?.slice(0, 4).map((round, i) => (
+          {activeRounds?.slice(0, 4).map((round, i) => (
             <div
               key={round.id}
               className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
@@ -132,7 +142,7 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-x-6 md:w-2/3">
-            {mock.rounds?.slice(0, 4).map((round) => (
+            {activeRounds?.slice(0, 4).map((round) => (
               <div key={round.id}>
                 <RoundCard round={round} />
               </div>
@@ -145,7 +155,7 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {mock.rounds?.slice(0, 3).map((round) => (
+          {activeRounds?.slice(0, 3).map((round) => (
             <div key={round.id}>
               <RoundCard round={round} />
             </div>

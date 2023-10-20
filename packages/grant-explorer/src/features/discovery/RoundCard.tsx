@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../common/styles";
-import RoundBanner from "./RoundBanner";
+import RoundBanner from "./CardBanner";
 import RoundCardStat from "./RoundCardStat";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
@@ -80,7 +80,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
           )}
           <CardTitle
             data-testid="round-name"
-            className="absolute bottom-3 px-2"
+            className="absolute bottom-3 px-2 text-white"
           >
             {roundMetadata?.name}
           </CardTitle>

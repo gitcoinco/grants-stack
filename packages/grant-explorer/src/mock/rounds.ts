@@ -1,5 +1,23 @@
 // Temporary mock data to load faster than waiting for api server response
+
+function randomAddress(): string {
+  const length: number = 40;
+  const number: string = [...Array(length)]
+    .map(() => {
+      return Math.floor(Math.random() * 16).toString(16);
+    })
+    .join("");
+  return "0x" + number;
+}
 export const mock = {
+  collections: Array.from({ length: 4 }).map((_, i) => ({
+    id: `collection-${i}`,
+    name: `Collection ${i + 1}`,
+    chainId: "PGN",
+    projects: Array.from({ length: 4 }).map(() => ({
+      id: randomAddress(),
+    })),
+  })),
   rounds: [
     {
       id: "0x0111684d6a81d34bb5cf6394c742facf4a372a27",
