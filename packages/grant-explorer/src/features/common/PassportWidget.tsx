@@ -1,32 +1,17 @@
-import { useEffect, useState } from "react";
-import { PassportResponse, fetchPassport } from "../api/passport";
+import { useState } from "react";
+import { PassportState, usePassport } from "../api/passport";
 import { useAccount } from "wagmi";
 import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-logo.svg";
 import { ReactComponent as GitcoinPassportBWLogo } from "../../assets/passport-logo-bw.svg";
 import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport-logo-full.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
 
-export enum PassportState {
-  NOT_CONNECTED,
-  INVALID_PASSPORT,
-  SCORE_AVAILABLE,
-  LOADING,
-  ERROR,
-  INVALID_RESPONSE,
-}
-
 export function PassportWidget() {
-  const [, setPassport] = useState<PassportResponse | undefined>();
-  const [, setError] = useState<Response | undefined>();
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
 
-  const [passportState, setPassportState] = useState<PassportState>(
-    PassportState.LOADING
-  );
+  const { passportState, passportScore, passportColor, donationImpact } =
+    usePassport({ address });
 
-  const [passportScore, setPassportScore] = useState<number>();
-  const [textColor, setTextColor] = useState<string>("gray");
-  const [donationImpact, setDonationImpact] = useState<number>(0);
   const [open, setOpen] = useState(false);
 
   function handleClick() {
@@ -38,71 +23,6 @@ export function PassportWidget() {
     }
   }
 
-  useEffect(() => {
-    setPassportState(PassportState.LOADING);
-
-    const PASSPORT_COMMUNITY_ID =
-      process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
-
-    if (isConnected && address && PASSPORT_COMMUNITY_ID) {
-      const callFetchPassport = async () => {
-        const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
-        if (res.ok) {
-          const scoreResponse = await res.json();
-
-          if (scoreResponse.status === "PROCESSING") {
-            console.log("processing, calling again in 3000 ms");
-            setTimeout(async () => {
-              await callFetchPassport();
-            }, 3000);
-            return;
-          }
-
-          if (scoreResponse.status === "ERROR") {
-            // due to error at passport end
-            setPassportState(PassportState.ERROR);
-            return;
-          }
-
-          setPassport(scoreResponse);
-          setPassportScore(Number(scoreResponse.evidence.rawScore));
-          setPassportState(PassportState.SCORE_AVAILABLE);
-          const score = Number(scoreResponse.evidence.rawScore);
-          if (score < 15) {
-            setTextColor("orange");
-            setDonationImpact(0);
-          } else if (score >= 15 && score < 25) {
-            setTextColor("yellow");
-            setDonationImpact(50);
-          } else {
-            setTextColor("green");
-            setDonationImpact(100);
-          }
-        } else {
-          setError(res);
-          switch (res.status) {
-            case 400: // unregistered/nonexistent passport address
-              setPassportState(PassportState.INVALID_PASSPORT);
-              break;
-            case 401: // invalid API key
-              setPassportState(PassportState.ERROR);
-              console.error("invalid API key", res.json());
-              break;
-            default:
-              setPassportState(PassportState.ERROR);
-              console.error("Error fetching passport", res);
-          }
-        }
-      };
-
-      callFetchPassport();
-    } else {
-      setPassportState(PassportState.NOT_CONNECTED);
-    }
-
-    // call fetch passport
-    // check passport
-  }, [address, isConnected]);
   return (
     <>
       <div
@@ -113,7 +33,15 @@ export function PassportWidget() {
           <div className="relative">
             <GitcoinPassportLogo className="h-8 w-8" />
             <div
-              className={`absolute bottom-0.5 right-0 w-3 h-3 bg-${textColor}-500 rounded-full sm:block md:hidden`}
+              className={`
+              ${
+                passportColor === "green"
+                  ? "bg-green-500"
+                  : passportColor === "yellow"
+                  ? "bg-yellow-500"
+                  : "bg-orange-500"
+              }
+              absolute bottom-0.5 right-0 w-3 h-3 rounded-full sm:block md:hidden`}
             ></div>
           </div>
         ) : (
@@ -121,7 +49,14 @@ export function PassportWidget() {
         )}
         {passportState === PassportState.SCORE_AVAILABLE && (
           <div
-            className={`text-lg font-semibold text-${textColor}-400 hidden md:block`}
+            className={`${
+              passportColor === "green"
+                ? "text-green-400"
+                : passportColor === "yellow"
+                ? "text-yellow-400"
+                : "text-orange-400"
+            }
+            text-lg font-semibold hidden md:block`}
           >
             {passportScore}
           </div>
@@ -131,7 +66,7 @@ export function PassportWidget() {
           direction={open ? "up" : "down"}
         />
         <div
-          className={`absolute top-24 mt-1 ml-[-75px] md:top-16 md:right-0 md:ml-0 md:mr-[-20px] w-96 bg-grey-150 bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
+          className={`absolute mt-1 top-12 border-2 z-10 ml-[-75px] md:right-0 md:ml-0 md:mr-[-20px] w-96 bg-grey-150 md:bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
             open ? "block" : "hidden"
           }`}
         >
@@ -141,13 +76,25 @@ export function PassportWidget() {
               <>
                 <div className="flex flex-row gap-2 w-full justify-center">
                   <div
-                    className={`bg-${textColor}-100 w-40 p-4 justify-start rounded-2xl`}
+                    className={`${
+                      passportColor === "green"
+                        ? "bg-green-100"
+                        : passportColor === "yellow"
+                        ? "bg-yellow-100"
+                        : "bg-orange-100"
+                    } w-40 p-4 justify-start rounded-2xl`}
                   >
                     <p className="mb-2">Passport Score</p>
                     <p>{passportScore}</p>
                   </div>
                   <div
-                    className={`bg-${textColor}-100 w-40 p-4 justify-start rounded-2xl`}
+                    className={`${
+                      passportColor === "green"
+                        ? "bg-green-100"
+                        : passportColor === "yellow"
+                        ? "bg-yellow-100"
+                        : "bg-orange-100"
+                    } w-40 p-4 justify-start rounded-2xl`}
                   >
                     <p className="mb-2">Donation Impact</p>
                     <p>+{donationImpact}%</p>
