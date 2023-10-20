@@ -5,8 +5,6 @@ import {
   RoundOverview,
 } from "../api/rounds";
 import { useDebugMode } from "../api/utils";
-import ActiveRoundsSection from "./ActiveRoundSection";
-import ApplyNowSection from "./ApplyNowSection";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
 import useSWR, { mutate } from "swr";
 import { DefaultLayout } from "../common/DefaultLayout";
@@ -44,10 +42,9 @@ const LandingPage = () => {
   const { isLoading: activeRoundsLoading, data: activeRounds } =
     useActiveRounds();
 
-  const { isLoading: applyRoundsLoading, data: roundsInApplicationPhase } =
-    useRoundsInApplicationPhase();
+  console.log(activeRoundsLoading);
 
-  const [type, setType] = useState<string>("round_type_all");
+  const [type] = useState<string>("round_type_all");
   const [allActiveRounds, setAllActiveRounds] = useState<RoundOverview[]>([]);
 
   useEffect(() => {
@@ -108,11 +105,11 @@ const LandingPage = () => {
         title="Donate now"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
-        <div className="grid grid-cols-3 gap-x-6">
+        <div className="grid md:grid-cols-3 gap-x-6">
           {mock.rounds?.slice(0, 4).map((round, i) => (
             <div
               key={round.id}
-              className={`${i % 3 === 0 ? "col-span-2" : ""}`}
+              className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
             >
               <RoundCard round={round} />
             </div>
@@ -124,7 +121,7 @@ const LandingPage = () => {
         action={<ViewAllLink to="/apply-now">View all</ViewAllLink>}
       >
         <div className="flex gap-8 items-center">
-          <div className="w-1/3 space-y-8">
+          <div className="hidden md:block w-1/3 space-y-8">
             <p className="text-lg">
               Bring your project to life with Gitcoin's vibrant ecosystem of
               public goods funding opportunities.
@@ -134,7 +131,7 @@ const LandingPage = () => {
               apply for funding today!
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-x-6 w-2/3">
+          <div className="grid md:grid-cols-2 gap-x-6 md:w-2/3">
             {mock.rounds?.slice(0, 4).map((round) => (
               <div key={round.id}>
                 <RoundCard round={round} />
@@ -147,7 +144,7 @@ const LandingPage = () => {
         title="Rounds ending soon"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
-        <div className="grid grid-cols-3 gap-x-6">
+        <div className="grid md:grid-cols-3 gap-x-6">
           {mock.rounds?.slice(0, 3).map((round) => (
             <div key={round.id}>
               <RoundCard round={round} />
@@ -155,23 +152,6 @@ const LandingPage = () => {
           ))}
         </div>
       </LandingSection>
-
-      <div className="container px-4 md:px-0 md:mx-auto">
-        <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
-          Browse through active rounds
-        </h1>
-        <ApplyNowSection
-          isLoading={applyRoundsLoading}
-          roundOverview={roundsInApplicationPhase}
-        />
-        <ActiveRoundsSection
-          isLoading={activeRoundsLoading}
-          setSearchQuery={setSearchQuery}
-          setRoundType={setType}
-          roundOverview={filterProjectsByTitle(activeRounds ?? [], searchQuery)}
-          searchQuery={searchQuery}
-        />
-      </div>
     </DefaultLayout>
   );
 };

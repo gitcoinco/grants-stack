@@ -97,14 +97,15 @@ export const Badge = tw.div<{
 
 export const Tabs = tw.ul`
 flex
-text-2xl
+text-lg
+md:text-2xl
 border-b-4
 border-blue-100
 gap-8
 `;
 export const Tab = tw(Link)<{ active?: boolean }>`
 py-4
-px-8
+px-6
 border-b-4
 border-blue-100
 rounded-t-2xl

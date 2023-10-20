@@ -15,7 +15,9 @@ export function LandingSection({
   return (
     <section className="py-8">
       <div className="flex justify-between items-center">
-        <h3 className="text-4xl font-medium tracking-tight">{title}</h3>
+        <h3 className="text-2xl md:text-4xl font-medium tracking-tight">
+          {title}
+        </h3>
         <div>{action}</div>
       </div>
       <div>{children}</div>

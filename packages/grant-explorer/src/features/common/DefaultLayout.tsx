@@ -9,7 +9,7 @@ export function DefaultLayout({
   return (
     <main className="font-sans bg-gradient-to-b from-[#D3EDFE] to-[#FFD9CD]">
       <Navbar showWalletInteraction={showWalletInteraction} />
-      <div className="container mx-auto max-w-screen-xl pt-16 relative z-10">
+      <div className="container mx-auto max-w-screen-xl pt-16 relative z-10 p-4">
         {children}
       </div>
 

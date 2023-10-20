@@ -1087,39 +1087,28 @@ export const mock = {
       },
       projects: [],
     },
-  ].map((r) => ({
-    ...r,
-    chainId: "PGN",
-    applicationMetaPtr: { protocol: 1, pointer: "" },
-    projects: undefined,
-    roundMetadata: {
-      feesPercentage: 0,
-      feesAddress: "",
-      name: "Round Name",
-      support: {
-        info: "https://docs.space.id/getting-started/programs/space-id-grant-program",
-        type: "Website",
+  ]
+    .filter((r) => r.payoutStrategy?.strategyName)
+    .map((r) => ({
+      ...r,
+      chainId: "PGN",
+      applicationMetaPtr: { protocol: 1, pointer: "" },
+      projects: undefined,
+      roundMetadata: {
+        feesPercentage: 0,
+        feesAddress: "",
+        name: "Round Name",
+        support: {
+          info: "https://docs.space.id/getting-started/programs/space-id-grant-program",
+          type: "Website",
+        },
+        roundType: "public",
+        eligibility: {
+          description:
+            "SPACE ID Grant Program Season 3 is distributing grants for SPACE ID Web3 Name SDK integrations and apps built on the SPACE ID ecosystem.",
+          requirements: [],
+        },
+        programContractAddress: "0xed62028a65c983a89cf4a8abc8ad6342eb2b6730",
       },
-      roundType: "public",
-      eligibility: {
-        description:
-          "SPACE ID Grant Program Season 3 is distributing grants for SPACE ID Web3 Name SDK integrations and apps built on the SPACE ID ecosystem.",
-        requirements: [
-          {
-            requirement:
-              "Be based on / supports either BNB Chain or Arbitrum One / Nova",
-          },
-          {
-            requirement:
-              "Have integrated SPACE ID domains (.bnb / .arb), or build on top of SPACE ID ecosystem",
-          },
-          {
-            requirement:
-              "Have a fully functional mainnet version that is publicly available for everyone to use",
-          },
-        ],
-      },
-      programContractAddress: "0xed62028a65c983a89cf4a8abc8ad6342eb2b6730",
-    },
-  })),
+    })),
 };
