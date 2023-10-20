@@ -13,6 +13,7 @@ import {
 } from "allo-indexer-client";
 import { useEffect, useState } from "react";
 import { getAddress } from "viem";
+import { RoundVisibilityType } from "common";
 
 /**
  * Shape of subgraph response
@@ -56,7 +57,7 @@ interface RoundProjectResult {
  */
 export type RoundMetadata = {
   name: string;
-  roundType: string;
+  roundType: RoundVisibilityType;
   eligibility: Eligibility;
   programContractAddress: string;
 };

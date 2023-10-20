@@ -7,7 +7,6 @@ import { graphqlFetch } from "../utils/graphql";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { RootState } from "../reducers";
-// import { Status } from "../reducers/rounds";
 import { PayoutStrategy, Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
 import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";

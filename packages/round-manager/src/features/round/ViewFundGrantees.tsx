@@ -8,8 +8,17 @@ import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
-import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/payoutStrategy";
-import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
+import {
+  batchDistributeFunds,
+  useGroupProjectsByPaymentStatus,
+} from "../api/payoutStrategy/payoutStrategy";
+import {
+  MatchingStatsData,
+  ProgressStatus,
+  ProgressStep,
+  Round,
+  TransactionBlock,
+} from "../api/types";
 import { formatCurrency, PayoutToken, payoutTokens } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
@@ -90,10 +99,8 @@ function FinalizedRoundContent(props: { round: Round }) {
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);
 
-  const matchingFundPayoutToken: PayoutToken =
-    payoutTokens.filter(
-    (t) =>
-      t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
+  const matchingFundPayoutToken: PayoutToken = payoutTokens.filter(
+    (t) => t.address.toLowerCase() == props.round.token.toLowerCase()
   )[0];
 
   const { data, error, loading } = useTokenPrice(
@@ -104,12 +111,8 @@ function FinalizedRoundContent(props: { round: Round }) {
     if (data && !error && !loading) {
       setPrice(Number(data));
     }
-    setPaidProjects(
-      projects['paid']
-    );
-    setUnpaidProjects(
-      projects['unpaid']
-    );
+    setPaidProjects(projects["paid"]);
+    setUnpaidProjects(projects["unpaid"]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects]);
 
@@ -277,9 +280,11 @@ export function PayProjectsTable(props: {
           </p>
         </div>
       </div>
-      <div className="text-gray-400 text-sm px-4 py-2 italic font-['Libre_Franklin']">Changes could be subject to additional gas fees.</div>
+      <div className="text-gray-400 text-sm px-4 py-2 italic font-['Libre_Franklin']">
+        Changes could be subject to additional gas fees.
       </div>
-  )
+    </div>
+  );
 
   const handleFundGrantees = async () => {
     setShowConfirmationModal(false);
@@ -399,7 +404,8 @@ export function PayProjectsTable(props: {
                                 ? [...selectedProjects, project]
                                 : selectedProjects.filter(
                                     (p) =>
-                                    p.projectPayoutAddress !== project.projectPayoutAddress
+                                      p.projectPayoutAddress !==
+                                      project.projectPayoutAddress
                                   )
                             );
                           }}
@@ -427,11 +433,16 @@ export function PayProjectsTable(props: {
                           props.token.decimal
                         )}
                         {" " + props.token.name.toUpperCase()}
-                        {Boolean(props.price) && " ($" +
+                        {Boolean(props.price) &&
+                          " ($" +
                             formatCurrency(
-                            project.matchAmountInToken.mul(Math.trunc(props.price * 10000)).div(10000),
-                            props.token.decimal, 2)
-                          + " USD) "}
+                              project.matchAmountInToken
+                                .mul(Math.trunc(props.price * 10000))
+                                .div(10000),
+                              props.token.decimal,
+                              2
+                            ) +
+                            " USD) "}
                       </td>
                     </tr>
                   ))}
