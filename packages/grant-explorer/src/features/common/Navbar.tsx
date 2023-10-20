@@ -55,6 +55,9 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
+            <Link to="/apply-now" className="font-medium hover:underline">
+              Explore rounds
+            </Link>
             {showWalletInteraction && (
               <div>
                 <div

@@ -36,7 +36,7 @@ const LandingPage = () => {
     ) {
       window.location.replace("https://grants.gitcoin.co");
     }
-  }, []);
+  }, [location]);
 
   const [searchQuery, setSearchQuery] = useState("");
 
