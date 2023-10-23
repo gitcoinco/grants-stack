@@ -20,16 +20,18 @@
     "rm-lint": "turbo run lint:ci --filter=round-manager",
     "rm-typecheck": "turbo run typecheck --filter=round-manager",
     "// grant explorer script": "====== packages/grant-explorer specific ======",
-    "re-build": "turbo run build --filter=grant-explorer",
-    "re-test": "turbo run test --filter=grant-explorer",
-    "re-start": "pnpm --filter grant-explorer run start",
-    "re-typecheck": "turbo run typecheck --filter=grant-explorer",
-    "re-lint": "turbo run lint:ci --filter=grant-explorer",
+    "ge-build": "turbo run build --filter=grant-explorer",
+    "ge-test": "turbo run test --filter=grant-explorer",
+    "ge-start": "pnpm --filter grant-explorer run start",
+    "ge-typecheck": "turbo run typecheck --filter=grant-explorer",
+    "ge-lint": "turbo run lint:ci --filter=grant-explorer",
     "// builder script": "====== packages/builder specific ======",
     "b-start": "pnpm --filter builder run start",
     "b-lint": "turbo run lint:ci --filter=builder",
     "b-test": "pnpm test --filter=builder",
-    "b-typecheck": "turbo run typecheck --filter=builder"
+    "b-typecheck": "turbo run typecheck --filter=builder",
+    "c-test": "turbo run test --filter=common",
+    "ve-test": "turbo run test --filter=verify-env"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.3",
@@ -37,7 +39,7 @@
   },
   "dependencies": {
     "prettier": "^3.0.3",
-    "turbo": "^1.10.9"
+    "turbo": "^1.10.15"
   },
   "pnpm": {
     "overrides": {

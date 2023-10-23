@@ -7,6 +7,9 @@
   "author": "Josef Vacek",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "test": "vitest --run"
+  },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@rainbow-me/rainbowkit": "^0.12.16",
@@ -28,6 +31,7 @@
     "@types/markdown-it": "^12.2.3",
     "@types/node": "^18.15.5",
     "@types/react": "^18.0.31",
-    "@types/react-dom": "^18.0.11"
+    "@types/react-dom": "^18.0.11",
+    "vitest": "^0.34.6"
   }
 }
