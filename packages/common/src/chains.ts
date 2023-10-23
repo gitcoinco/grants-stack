@@ -69,3 +69,24 @@ export const pgn: Chain = {
     },
   },
 };
+
+export function parseChainId(input: string | number): ChainId {
+  if (typeof input === "string") {
+    // If the input is a string, try to parse it as a number
+    const parsedInput = parseInt(input, 10);
+    if (!isNaN(parsedInput)) {
+      // If parsing is successful, check if it's a valid enum value
+      if (Object.values(ChainId).includes(parsedInput)) {
+        return parsedInput as ChainId;
+      }
+    }
+  } else if (typeof input === "number") {
+    // If the input is a number, check if it's a valid enum value
+    if (Object.values(ChainId).includes(input)) {
+      return input as ChainId;
+    }
+  }
+
+  // If the input is not a valid enum value, return undefined
+  throw "Invalid chainId " + input;
+}
