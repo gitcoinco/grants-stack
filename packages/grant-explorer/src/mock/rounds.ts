@@ -1,5 +1,7 @@
 // Temporary mock data to load faster than waiting for api server response
 
+import { ChainId } from "common";
+
 function randomAddress(): string {
   const length: number = 40;
   const number: string = [...Array(length)]
@@ -13,7 +15,7 @@ export const mock = {
   collections: Array.from({ length: 4 }).map((_, i) => ({
     id: `collection-${i}`,
     name: `Collection ${i + 1}`,
-    chainId: "PGN",
+    chainId: "PGN" as unknown as ChainId,
     projects: Array.from({ length: 4 }).map(() => ({
       id: randomAddress(),
     })),

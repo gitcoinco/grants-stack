@@ -11,7 +11,7 @@ import { CollectionBanner } from "./CardBanner";
 type CollectionCardProps = {
   collection: {
     id: string;
-    chainId: string;
+    chainId: ChainId;
     name: string;
     projects: { id: string }[];
   };
@@ -19,7 +19,7 @@ type CollectionCardProps = {
 
 const CollectionCard = ({ collection }: CollectionCardProps) => {
   const { id, chainId, projects } = collection;
-  const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
+  const chainIdEnumValue = ChainId[chainId];
   return (
     <BasicCard className="w-full">
       <a
