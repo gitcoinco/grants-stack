@@ -107,7 +107,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
               isValidRoundEndTime={isValidRoundEndTime}
             />
 
-            <RoundBadge strategyName={payoutStrategy.strategyName} />
+            <RoundBadge strategyName={payoutStrategy?.strategyName} />
           </div>
           <div className="border-t" />
 
@@ -127,7 +127,7 @@ const RoundBadge = ({ strategyName }: { strategyName: RoundPayoutType }) => {
   const color = ({ MERKLE: "blue", DIRECT: "yellow" } as const)[strategyName];
   return (
     <Badge color={color} data-testid="round-badge">
-      {getRoundType(strategyName)}
+      {getRoundType(strategyName) ?? "Unknown"}
     </Badge>
   );
 };
