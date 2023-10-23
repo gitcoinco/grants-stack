@@ -105,86 +105,88 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
   const selected = getLabel({ status, type, network });
   return (
     <Dropdown label={selected?.label}>
-      {filterOptions.map((item) => (
-        <>
-          {!item.children.length ? (
-            <DropdownItem $as={Link} to={`/rounds`}>
-              {item.label}
-            </DropdownItem>
-          ) : (
-            <Listbox value={selected} onChange={console.log}>
-              <div className="relative mt-1">
-                <Listbox.Button className="relative w-[340px] py-2 pl-3 pr-10 text-left hover:bg-grey-100">
-                  {({ open }) => {
-                    const Icon = open ? ChevronUpIcon : ChevronDownIcon;
-                    return (
-                      <>
-                        <span className="block truncate">{item.label}</span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                          <Icon
-                            className="h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </>
+      {filterOptions.map((item) =>
+        !item.children.length ? (
+          <DropdownItem $as={Link} to={`/rounds`}>
+            {item.label}
+          </DropdownItem>
+        ) : (
+          <Listbox value={selected} onChange={console.log}>
+            <div className="relative mt-1">
+              <Listbox.Button className="relative w-[340px] py-2 pl-3 pr-10 text-left hover:bg-grey-100">
+                {({ open }) => {
+                  const Icon = open ? ChevronUpIcon : ChevronDownIcon;
+                  return (
+                    <>
+                      <span className="block truncate">{item.label}</span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                        <Icon
+                          className="h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </>
+                  );
+                }}
+              </Listbox.Button>
+
+              <Transition
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Listbox.Options className=" mt-1 w-full overflow-auto p-2">
+                  {item.children.map((child, j) => {
+                    const checked = Boolean(
+                      item.value &&
+                        child.value === { status, type, network }[item.value]
                     );
-                  }}
-                </Listbox.Button>
 
-                <Transition
-                  as={Fragment}
-                  leave="transition ease-in duration-100"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <Listbox.Options className=" mt-1 w-full overflow-auto p-2">
-                    {item.children.map((child, j) => {
-                      const checked = Boolean(
-                        item.value &&
-                          child.value === { status, type, network }[item.value]
-                      );
-
-                      return (
-                        <Listbox.Option key={j} value={child}>
-                          {({ active, selected }) => (
-                            <DropdownItem
-                              $as={Link}
-                              to={`/rounds?${toURL({
-                                ...params,
-                                [item.value]: child.value,
-                              })}`}
-                              active={active}
-                            >
-                              <div className="flex gap-2">
-                                <input type="checkbox" checked={checked} />
-                                <span
-                                  className={`block truncate ${
-                                    selected ? "font-medium" : "font-normal"
-                                  }`}
-                                >
-                                  {child.label}
+                    return (
+                      <Listbox.Option key={j} value={child}>
+                        {({ active, selected }) => (
+                          <DropdownItem
+                            $as={Link}
+                            to={`/rounds?${toURL({
+                              ...params,
+                              [item.value]: child.value,
+                            })}`}
+                            active={active}
+                          >
+                            <div className="flex gap-2">
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={console.log}
+                              />
+                              <span
+                                className={`block truncate ${
+                                  selected ? "font-medium" : "font-normal"
+                                }`}
+                              >
+                                {child.label}
+                              </span>
+                              {selected ? (
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                                  <CheckIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
                                 </span>
-                                {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                    <CheckIcon
-                                      className="h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                  </span>
-                                ) : null}
-                              </div>
-                            </DropdownItem>
-                          )}
-                        </Listbox.Option>
-                      );
-                    })}
-                  </Listbox.Options>
-                </Transition>
-              </div>
-            </Listbox>
-          )}
-        </>
-      ))}
+                              ) : null}
+                            </div>
+                          </DropdownItem>
+                        )}
+                      </Listbox.Option>
+                    );
+                  })}
+                </Listbox.Options>
+              </Transition>
+            </div>
+          </Listbox>
+        )
+      )}
     </Dropdown>
   );
 }

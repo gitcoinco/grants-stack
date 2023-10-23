@@ -16,8 +16,8 @@ export function Dropdown({
   return (
     <Menu as="div" className="md:relative inline-block text-left z-20">
       <div>
-        <Menu.Button className="inline-flex gap-2">
-          <span className="text-white">{label}</span>
+        <Menu.Button className="inline-flex gap-2 items-center">
+          <span className="text-white py-2">{label}</span>
           <ChevronDownIcon className="h-5 w-5 text-black" aria-hidden="true" />
         </Menu.Button>
       </div>
@@ -32,7 +32,7 @@ export function Dropdown({
       >
         <Menu.Items className="absolute w-full md:w-auto p-2 right-0 mt-2 origin-top-right rounded-2xl bg-white shadow-lg">
           {Children.map(children, (child, i) => (
-            <Menu.Item key={i} as="div">
+            <Menu.Item key={i} as={Fragment}>
               {({ active }) => cloneElement(child as ReactElement, { active })}
             </Menu.Item>
           ))}
