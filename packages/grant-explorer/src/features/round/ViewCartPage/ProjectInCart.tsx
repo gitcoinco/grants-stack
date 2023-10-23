@@ -18,6 +18,7 @@ export function ProjectInCart(
     selectedPayoutToken: VotingToken;
     payoutTokenPrice: number;
     removeProjectFromCart: (grantApplicationId: string) => void;
+    matchingEstimateUSD: number | undefined;
   }
 ) {
   const { project, roundRoutePath } = props;
