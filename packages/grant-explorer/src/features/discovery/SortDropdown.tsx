@@ -58,8 +58,7 @@ const sortOptions = [
     sortBy: "matchAmount",
     orderBy: "desc",
   },
-] as const;
-
+];
 type SortOption = (typeof sortOptions)[number];
 
 export type SortProps = {
@@ -68,22 +67,29 @@ export type SortProps = {
 };
 
 export function SortDropdown({ sortBy, orderBy }: SortProps) {
-  // Get existing search params
-  const params = Object.fromEntries(useSearchParams()[0]);
+  const [params] = useSearchParams();
+
   const selected = sortOptions.find(
     (item) => item.sortBy === sortBy && item.orderBy === orderBy
   );
   return (
-    <Dropdown label={selected?.label}>
-      {sortOptions.map(({ label, sortBy, orderBy }) => (
+    <Dropdown<SortOption>
+      label={selected?.label}
+      options={sortOptions}
+      renderItem={({ active, label, sortBy, orderBy }) => (
         <DropdownItem
+          active={active}
           $as={Link}
           // Merge search params
-          to={`/rounds?${toURL({ ...params, sortBy, orderBy })}`}
+          to={`/rounds?${toURL({
+            ...Object.fromEntries(params),
+            sortBy,
+            orderBy,
+          })}`}
         >
           {label}
         </DropdownItem>
-      ))}
-    </Dropdown>
+      )}
+    ></Dropdown>
   );
 }

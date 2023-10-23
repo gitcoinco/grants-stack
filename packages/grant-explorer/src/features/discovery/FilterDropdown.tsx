@@ -99,18 +99,22 @@ function getLabel(filter: FilterProps) {
   );
 }
 export function FilterDropdown({ status, type, network }: FilterProps) {
-  // Get existing search params
-  const params = Object.fromEntries(useSearchParams()[0]);
+  const [params] = useSearchParams();
 
   const selected = getLabel({ status, type, network });
   return (
-    <Dropdown label={selected?.label}>
-      {filterOptions.map((item) =>
-        !item.children.length ? (
-          <DropdownItem $as={Link} to={`/rounds`}>
-            {item.label}
-          </DropdownItem>
-        ) : (
+    <Dropdown
+      label={selected?.label}
+      options={filterOptions}
+      renderItem={({ active, label, value, children }) => {
+        if (!children.length) {
+          return (
+            <DropdownItem active={active} $as={Link} to={`/rounds`}>
+              {label}
+            </DropdownItem>
+          );
+        }
+        return (
           <Listbox value={selected} onChange={console.log}>
             <div className="relative mt-1">
               <Listbox.Button className="relative w-[340px] py-2 pl-3 pr-10 text-left hover:bg-grey-100">
@@ -118,7 +122,7 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
                   const Icon = open ? ChevronUpIcon : ChevronDownIcon;
                   return (
                     <>
-                      <span className="block truncate">{item.label}</span>
+                      <span className="block truncate">{label}</span>
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                         <Icon
                           className="h-5 w-5 text-gray-400"
@@ -137,10 +141,9 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
                 leaveTo="opacity-0"
               >
                 <Listbox.Options className=" mt-1 w-full overflow-auto p-2">
-                  {item.children.map((child, j) => {
+                  {children.map((child, j) => {
                     const checked = Boolean(
-                      item.value &&
-                        child.value === { status, type, network }[item.value]
+                      value && child.value === { status, type, network }[value]
                     );
 
                     return (
@@ -149,8 +152,9 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
                           <DropdownItem
                             $as={Link}
                             to={`/rounds?${toURL({
-                              ...params,
-                              [item.value]: child.value,
+                              // Merge existing search params (so it doesn't reset sorting or the other selections)
+                              ...Object.fromEntries(params),
+                              [value]: child.value,
                             })}`}
                             active={active}
                           >
@@ -185,8 +189,8 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
               </Transition>
             </div>
           </Listbox>
-        )
-      )}
-    </Dropdown>
+        );
+      }}
+    ></Dropdown>
   );
 }

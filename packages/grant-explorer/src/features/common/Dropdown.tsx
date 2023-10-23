@@ -1,18 +1,15 @@
 import { Menu, Transition } from "@headlessui/react";
-import {
-  Children,
-  cloneElement,
-  Fragment,
-  PropsWithChildren,
-  ReactElement,
-} from "react";
+import { Fragment, PropsWithChildren, ReactElement } from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import tw from "tailwind-styled-components";
 
-export function Dropdown({
-  label,
-  children,
-}: { label?: string } & PropsWithChildren) {
+type DropdownProps<T> = {
+  label?: string;
+  options: T[];
+  renderItem: (p: { active: boolean } & T) => ReactElement;
+} & PropsWithChildren;
+
+export function Dropdown<T>({ label, options, renderItem }: DropdownProps<T>) {
   return (
     <Menu as="div" className="md:relative inline-block text-left z-20">
       <div>
@@ -31,9 +28,9 @@ export function Dropdown({
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items className="absolute w-full md:w-auto p-2 right-0 mt-2 origin-top-right rounded-2xl bg-white shadow-lg">
-          {Children.map(children, (child, i) => (
+          {options.map((option, i) => (
             <Menu.Item key={i} as={Fragment}>
-              {({ active }) => cloneElement(child as ReactElement, { active })}
+              {({ active }) => renderItem({ active, ...option })}
             </Menu.Item>
           ))}
         </Menu.Items>
