@@ -95,7 +95,7 @@ async function fetchRoundsByTimestamp(
 }
 
 const activeChainIds = () =>
-  allChains.map((chain) => chain.id).map((chainId) => chainId.toString());
+  allChains.map((chain) => chain.id.toString());
 
 export async function getRoundsInApplicationPhase(
   debugModeEnabled: boolean,
