@@ -12,39 +12,34 @@ export const CardsContainer = tw.div`
 
 export const BasicCard = tw.div`
   w-[343px]
-  ml-0
-  mx-0
   my-3
-  rounded
+  rounded-3xl
   bg-white
-  shadow-md
+  shadow-lg
+  overflow-hidden
   `;
 
 export const CardHeader = tw.div`
   w-full
-  rounded-t
 `;
 
 export const CardContent = tw.div`
   p-4
-  pt-0
+  space-y-4
 `;
 
 export const CardTitle = tw.p`
   w-full
-  mt-[10px]
-  md:mt-[16px]
-  2xl:mt-[10px]
-  text-[16px]
-  font-normal
-  text-ellipsis
-  line-clamp-2
+  text-[24px]
+  font-medium
+  truncate
+  text-white
+  pb-1
 `;
 
 export const CardDescription = tw.p`
-  md:mt-2
-  text-[12px]
-  md:text-[14px]
+  text-sm
+  md:text-base
   text-ellipsis
   line-clamp-4
   text-grey-400
@@ -66,4 +61,36 @@ export const CardFooterContent = tw.div`
   items-center
   h-full
   w-full
+  `;
+
+const colorMap = {
+  blue: "bg-blue-100",
+  green: "bg-green-100",
+  grey: "bg-grey-100",
+  yellow: "bg-yellow-100",
+} as const;
+
+const roundedMap = {
+  full: "rounded-full",
+  lg: "rounded-lg",
+} as const;
+
+export const Badge = tw.div<{
+  color?: keyof typeof colorMap;
+  rounded?: keyof typeof roundedMap;
+  disabled?: boolean;
+}>`
+  font-mono
+  text-xs
+  text-gray-900
+  bg-gray-100
+  whitespace-nowrap
+  inline-flex
+  items-center
+  justify-center
+  px-2
+  py-1.5
+  ${(p) => colorMap[p.color ?? "grey"]}
+  ${(p) => roundedMap[p.rounded ?? "lg"]}
+  ${(p) => (p.disabled ? "opacity-50" : "")}
   `;
