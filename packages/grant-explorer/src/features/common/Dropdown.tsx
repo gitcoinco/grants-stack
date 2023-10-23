@@ -14,7 +14,7 @@ export function Dropdown({
   children,
 }: { label?: string } & PropsWithChildren) {
   return (
-    <Menu as="div" className="relative inline-block text-left z-20">
+    <Menu as="div" className="md:relative inline-block text-left z-20">
       <div>
         <Menu.Button className="inline-flex gap-2">
           <span className="text-white">{label}</span>
@@ -30,7 +30,7 @@ export function Dropdown({
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute p-2  right-0 mt-2 origin-top-right rounded-2xl bg-white shadow-lg">
+        <Menu.Items className="absolute w-full md:w-auto p-2 right-0 mt-2 origin-top-right rounded-2xl bg-white shadow-lg">
           {Children.map(children, (child, i) => (
             <Menu.Item key={i} as="div">
               {({ active }) => cloneElement(child as ReactElement, { active })}

@@ -29,7 +29,11 @@ const ExploreRoundsPage = () => {
     <DefaultLayout showWalletInteraction>
       <LandingHero />
 
-      <LandingSection title="Rounds ending soon" action={<RoundsFilter />}>
+      <LandingSection
+        title="Rounds ending soon"
+        className="flex-wrap"
+        action={<RoundsFilter />}
+      >
         <div className="grid md:grid-cols-3 gap-x-6">
           {activeRounds?.slice(0, 3).map((round) => (
             <div key={round.id}>
