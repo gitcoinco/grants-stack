@@ -17,20 +17,20 @@ export enum PassportState {
 }
 
 const PassportEvidenceSchema = z.object({
-  type: z.string(),
-  rawScore: z.string(),
-  threshold: z.string(),
+  type: z.string().nullish(),
+  rawScore: z.string().nullish(),
+  threshold: z.string().nullish(),
 });
 
 export type PassportResponse = z.infer<typeof PassportResponseSchema>;
 
 export const PassportResponseSchema = z.object({
-  address: z.string().optional(),
-  score: z.string().optional(),
-  status: z.string().optional(),
-  evidence: PassportEvidenceSchema,
-  error: z.string().optional(),
-  detail: z.string().optional(),
+  address: z.string().nullish(),
+  score: z.string().nullish(),
+  status: z.string().nullish(),
+  evidence: PassportEvidenceSchema.nullish(),
+  error: z.string().nullish(),
+  detail: z.string().nullish(),
 });
 
 /**
