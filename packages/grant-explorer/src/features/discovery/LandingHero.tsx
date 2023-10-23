@@ -21,10 +21,10 @@ const ByTheNumbers = () => {
   const fundingDistributed = "$50,000,000+";
 
   return (
-    <div className="w-[520px] h-[609px] flex-shrink-0 flex-col justify-between bg-white/50 hidden md:flex rounded-b-3xl px-8 py-12">
+    <div className="lg:w-[520px] h-[609px] flex-shrink-0 flex-col justify-between bg-white/50 hidden md:flex rounded-b-3xl px-8 py-12">
       <div className="flex items-center gap-4">
         <Check />
-        <div className="font-medium text-3xl">By the numbers…</div>
+        <div className="font-medium text-2xl lg:text-3xl">By the numbers…</div>
       </div>
 
       <Stat value={uniqueDonations} label="Unique donations" />
@@ -37,10 +37,10 @@ const ByTheNumbers = () => {
 const Stat = ({ value = "", label = "" }) => {
   return (
     <div>
-      <div className="font-mono text-5xl text-green-300 font-medium tracking-tighter mb-1">
+      <div className="font-mono text-4xl lg:text-5xl text-green-300 font-medium tracking-tighter mb-1">
         {value}
       </div>
-      <div className="uppercase text-xl tracking-widest font-medium">
+      <div className="uppercase text-lg lg:text-xl tracking-widest font-medium">
         {label}
       </div>
     </div>

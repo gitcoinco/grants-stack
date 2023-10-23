@@ -7,7 +7,7 @@ const tabs = [
     children: "Home",
   },
   {
-    to: "/apply-now",
+    to: "/rounds",
     children: "Explore rounds",
   },
 ];

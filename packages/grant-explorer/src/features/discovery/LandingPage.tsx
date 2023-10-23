@@ -128,7 +128,7 @@ const LandingPage = () => {
       </LandingSection>
       <LandingSection
         title="Apply for funding"
-        action={<ViewAllLink to="/apply-now">View all</ViewAllLink>}
+        action={<ViewAllLink to="/rounds?status=apply">View all</ViewAllLink>}
       >
         <div className="flex gap-8 items-center">
           <div className="hidden md:block w-1/3 space-y-8">
