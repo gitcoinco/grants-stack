@@ -6,6 +6,9 @@ import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import RoundCard from "./RoundCard";
 import { RoundsFilter } from "./RoundsFilter";
+import { FilterProps, FilterStatus, getLabel } from "./FilterDropdown";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { useSearchParams } from "react-router-dom";
 
 export function useActiveRounds() {
   const debugModeEnabled = useDebugMode();
@@ -19,23 +22,35 @@ export function useRoundsInApplicationPhase() {
   );
 }
 
+const pageTitles = {
+  "": "All active rounds",
+  [ROUND_PAYOUT_MERKLE]: "Quadratic Funding rounds",
+  [ROUND_PAYOUT_DIRECT]: "Direct Grants rounds",
+  [FilterStatus.apply]: "Rounds taking applications",
+  [FilterStatus.finished]: "Rounds finished",
+};
+
+function getSectionTitle(filter: FilterProps) {
+  const title = getLabel(filter);
+  return pageTitles[title.value as keyof typeof pageTitles] ?? title.label;
+}
 const ExploreRoundsPage = () => {
+  const [params] = useSearchParams();
   const { data: activeRounds } = useActiveRounds();
+  const { type, status, network } = Object.fromEntries(params);
 
-  // All active rounds
-  // Rounds taking applications
-
+  const sectionTitle = getSectionTitle({ type, status, network });
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
 
       <LandingSection
-        title="Rounds ending soon"
+        title={`${sectionTitle} (${activeRounds?.length ?? 0})`}
         className="flex-wrap"
         action={<RoundsFilter />}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {activeRounds?.slice(0, 3).map((round) => (
+          {activeRounds?.map((round) => (
             <div key={round.id}>
               <RoundCard round={round} />
             </div>

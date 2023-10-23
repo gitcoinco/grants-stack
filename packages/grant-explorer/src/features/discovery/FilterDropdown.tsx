@@ -10,12 +10,18 @@ import {
 import { CHAINS } from "../api/utils";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toURL } from "./RoundsFilter";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 
 type Option = {
   label: string;
   value: string;
   children: Option[];
 };
+
+export enum FilterStatus {
+  apply = "apply",
+  finished = "finished",
+}
 const filterOptions = [
   {
     label: "All",
@@ -28,11 +34,11 @@ const filterOptions = [
     children: [
       {
         label: "Quadratic funding",
-        value: "MERKLE",
+        value: ROUND_PAYOUT_MERKLE,
       },
       {
         label: "Direct grants",
-        value: "DIRECT",
+        value: ROUND_PAYOUT_DIRECT,
       },
     ],
   },
@@ -46,11 +52,11 @@ const filterOptions = [
       },
       {
         label: "Taking applications",
-        value: "apply",
+        value: FilterStatus.apply,
       },
       {
         label: "Finished",
-        value: "finished",
+        value: FilterStatus.finished,
       },
     ],
   },
@@ -76,7 +82,7 @@ Find the label to display from the current filter.
 - Multiple - more than 1 selected
 - Selected - 1 selected
 */
-function getLabel(filter: FilterProps) {
+export function getLabel(filter: FilterProps) {
   return (
     // Convert { key: val } to [[key, val]] and remove empty values
     Object.entries(filter)
