@@ -33,7 +33,6 @@ export const CardTitle = tw.p`
   text-[24px]
   font-medium
   truncate
-  text-white
   pb-1
 `;
 
