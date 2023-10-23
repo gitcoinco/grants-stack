@@ -73,7 +73,7 @@ export function SortDropdown({ sortBy, orderBy }: SortProps) {
     (item) => item.sortBy === sortBy && item.orderBy === orderBy
   );
   return (
-    <Dropdown<SortOption>
+    <Dropdown
       label={selected?.label}
       options={sortOptions}
       renderItem={({ active, label, sortBy, orderBy }) => (
