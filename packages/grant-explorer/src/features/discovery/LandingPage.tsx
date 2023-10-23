@@ -9,7 +9,7 @@ import { useDebugMode } from "../api/utils";
 import Navbar from "../common/Navbar";
 import ActiveRoundsSection from "./ActiveRoundSection";
 import ApplyNowSection from "./ApplyNowSection";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import useSWR, { mutate } from "swr";
 const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
 

@@ -1,3 +1,5 @@
+const colors = require("tailwindcss/colors");
+
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "../common/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
@@ -18,6 +20,14 @@ module.exports = {
           300: "#A7A2B6",
           400: "#757087",
           500: "#0E0333",
+        },
+        blue: {
+          ...colors.blue,
+          100: "#D3EDFE",
+        },
+        green: {
+          ...colors.green,
+          100: "#ADEDE5",
         },
         violet: {
           100: "#F0EBFF",

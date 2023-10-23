@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CartProject, IPFSObject, VotingToken, Round } from "./types";
-import { ChainId, graphQlEndpoints, RedstoneTokenIds } from "common";
+import {
+  ChainId,
+  graphQlEndpoints,
+  RedstoneTokenIds,
+  RoundPayoutType,
+} from "common";
 import { useSearchParams } from "react-router-dom";
-import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "../../constants";
+import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "common";
 import { zeroAddress } from "viem";
 import { ethers } from "ethers";
 
@@ -616,6 +621,10 @@ export const pinToIPFS = (obj: IPFSObject) => {
 };
 
 export const getDaysLeft = (epochTime: number) => {
+  // Invalid date
+  if (epochTime > Number.MAX_SAFE_INTEGER) {
+    return 0;
+  }
   const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day
 
@@ -650,7 +659,7 @@ export const isDirectRound = (round: Round) =>
 export const isInfiniteDate = (roundTime: Date) =>
   roundTime.toString() === "Invalid Date";
 
-export const getRoundType = (payoutStrategyName: string) => {
+export const getRoundType = (payoutStrategyName: RoundPayoutType) => {
   switch (payoutStrategyName) {
     case ROUND_PAYOUT_MERKLE:
       return "Quadratic Funding";

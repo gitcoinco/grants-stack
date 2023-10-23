@@ -63,12 +63,9 @@ import {
   getUTCTime,
   VerifiedCredentialState,
 } from "common";
-import { renderToHTML } from "common";
+import { renderToHTML, ROUND_PAYOUT_DIRECT } from "common";
 import { useDebugMode } from "../../hooks";
-import {
-  ROUND_PAYOUT_DIRECT,
-  getPayoutRoundDescription,
-} from "../common/Utils";
+import { getPayoutRoundDescription } from "../common/Utils";
 import moment from "moment";
 import ApplicationDirectPayout from "./ApplicationDirectPayout";
 

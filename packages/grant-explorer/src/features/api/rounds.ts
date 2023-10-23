@@ -1,4 +1,4 @@
-import { ChainId, graphql_fetch } from "common";
+import { ChainId, RoundPayoutType, graphql_fetch } from "common";
 import { RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { fetchFromIPFS } from "./utils";
@@ -34,7 +34,7 @@ export type RoundOverview = {
   projects?: [];
   payoutStrategy: {
     id: string;
-    strategyName: string;
+    strategyName: RoundPayoutType;
   };
 };
 
