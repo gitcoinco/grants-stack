@@ -5,7 +5,8 @@ import {
   RoundOverview,
 } from "../api/rounds";
 import { useDebugMode } from "../api/utils";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
+
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import useSWR, { mutate } from "swr";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";

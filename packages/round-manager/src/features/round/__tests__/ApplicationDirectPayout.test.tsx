@@ -9,7 +9,7 @@ import {
 import "@testing-library/jest-dom/extend-expect";
 import ApplicationDirectPayout from "../ApplicationDirectPayout";
 import { makeGrantApplicationData, makeRoundData } from "../../../test-utils";
-import { ROUND_PAYOUT_DIRECT } from "../../common/Utils";
+import { ROUND_PAYOUT_DIRECT } from "common";
 
 import { useWallet } from "../../common/Auth";
 import { useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
@@ -18,7 +18,6 @@ import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
 import { parseUnits } from "ethers/lib/utils.js";
 import { usePayout } from "../../../context/application/usePayout";
-// import * as usePayout from "../../../context/application/usePayout";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");

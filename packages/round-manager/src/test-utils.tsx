@@ -43,10 +43,7 @@ import {
 } from "./features/api/types";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
 import moment from "moment";
-import {
-  ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE,
-} from "./features/common/Utils";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 
 export const mockedOperatorWallet = faker.finance.ethereumAddress();
 

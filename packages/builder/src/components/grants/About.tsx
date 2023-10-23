@@ -6,7 +6,12 @@ import { GithubLogo, TwitterLogo } from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
-import { FormInputs, Metadata, Project } from "../../types";
+import {
+  ApplicationCardType,
+  FormInputs,
+  Metadata,
+  Project,
+} from "../../types";
 import { formatDateFromMs } from "../../utils/components";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
@@ -58,7 +63,7 @@ export default function About({
       <Box>
         {props.applications.map((application, index) => {
           const roundID = application?.roundID;
-          const cardData = {
+          const cardData: ApplicationCardType = {
             application,
             roundID,
             chainId: application.chainId,

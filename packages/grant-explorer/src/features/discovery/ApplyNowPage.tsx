@@ -11,7 +11,7 @@ import NoRounds from "./NoRounds";
 import RoundCard from "./RoundCard";
 import { useDebugMode } from "../api/utils";
 import Footer from "common/src/components/Footer";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "../../constants";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import LandingHero from "./LandingHero";
 
 const ApplyNowPage = () => {
