@@ -1,9 +1,10 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import {
-  submitPassport,
   fetchPassport,
   PassportResponse,
+  PassportResponseSchema,
   PassportState,
+  submitPassport,
 } from "common";
 import { useEffect, useState } from "react";
 
@@ -18,7 +19,9 @@ export function usePassport({ address }: { address: string | undefined }) {
   );
 
   const [passportScore, setPassportScore] = useState<number>();
-  const [passportColor, setPassportColor] = useState<string>("");
+  const [passportColor, setPassportColor] = useState<
+    "orange" | "green" | "yellow"
+  >();
   const [donationImpact, setDonationImpact] = useState<number>(0);
 
   useEffect(() => {
@@ -45,7 +48,7 @@ export function usePassport({ address }: { address: string | undefined }) {
         }
 
         if (res.ok) {
-          const scoreResponse: PassportResponse = await res.json();
+          const scoreResponse = PassportResponseSchema.parse(await res.json());
 
           if (scoreResponse.status === "PROCESSING") {
             console.log("processing, calling again in 3000 ms");
@@ -76,7 +79,7 @@ export function usePassport({ address }: { address: string | undefined }) {
             setDonationImpact(0);
           } else if (score >= 15 && score < 25) {
             setPassportColor("yellow");
-            setDonationImpact(50);
+            setDonationImpact(10 * (score - 15));
           } else {
             setPassportColor("green");
             setDonationImpact(100);
@@ -93,7 +96,7 @@ export function usePassport({ address }: { address: string | undefined }) {
               break;
             case 401: // invalid API key
               setPassportState(PassportState.ERROR);
-              console.error("invalid API key", res.json());
+              console.error("invalid API key", await res.json());
               break;
             default:
               setPassportState(PassportState.ERROR);
@@ -114,4 +117,19 @@ export function usePassport({ address }: { address: string | undefined }) {
     passportColor,
     donationImpact,
   };
+}
+
+export type PassportColor = "gray" | "orange" | "yellow" | "green";
+
+export function passportColorTextClass(color: PassportColor): string {
+  switch (color) {
+    case "gray":
+      return "text-gray-400";
+    case "orange":
+      return "text-orange-400";
+    case "yellow":
+      return "text-yellow-400";
+    case "green":
+      return "text-green-400";
+  }
 }
