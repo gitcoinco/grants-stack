@@ -433,12 +433,7 @@ function ViewRoundResults({
     useFinalizeRound();
 
   const onFinalizeResults = async () => {
-    if (
-      !matches ||
-      !round ||
-      !signer ||
-      !oldRoundFromGraph?.payoutStrategy.id
-    ) {
+    if (!matches || !signer || !oldRoundFromGraph?.payoutStrategy.id) {
       return;
     }
 
@@ -646,8 +641,7 @@ function ViewRoundResults({
                             </tr>
                           </thead>
                           <tbody>
-                            {round &&
-                              matches &&
+                            {matches &&
                               matches.map((match) => {
                                 const percentage =
                                   Number(
