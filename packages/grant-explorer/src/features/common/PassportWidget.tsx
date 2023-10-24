@@ -66,7 +66,7 @@ export function PassportWidget() {
           direction={open ? "up" : "down"}
         />
         <div
-          className={`backdrop-blur-sm cursor-auto absolute mt-1 top-12 border-2 z-10 ml-[-75px] md:right-0 md:ml-0 md:mr-[-20px] w-96 bg-grey-150 md:bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
+          className={`backdrop-blur-sm cursor-auto absolute mt-1 top-12 border-2 z-10 ml-[-75px] font-modern-era-medium md:right-0 md:ml-0 md:mr-[-20px] w-96 bg-grey-150 md:bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
             open ? "block" : "hidden"
           }`}
         >
@@ -85,7 +85,7 @@ export function PassportWidget() {
                     } w-40 p-4 justify-start rounded-2xl`}
                   >
                     <p className="mb-2">Passport Score</p>
-                    <p>{passportScore}</p>
+                    <p className={"font-modern-era-regular"}>{passportScore}</p>
                   </div>
                   <div
                     className={`${
@@ -97,13 +97,17 @@ export function PassportWidget() {
                     } w-40 p-4 justify-start rounded-2xl`}
                   >
                     <p className="mb-2">Donation Impact</p>
-                    <p>+{donationImpact.toFixed(2)}%</p>
+                    <p className={"font-modern-era-regular"}>
+                      +{donationImpact.toFixed(2)}%
+                    </p>
                   </div>
                 </div>
-                <p className="text-left text-sm">
-                  Your donation impact is a reflection of your Passport score.
-                  This percentage ensures a fair and proportional match. You can
-                  always update your score by heading over to Passport.
+                <p className="text-left text-sm font-dm-mono">
+                  Your donation impact is calculated based on your Passport
+                  score. Scores higher than 15 will begin to be eligible for
+                  matching, and your donation impact scales as your Passport
+                  score increases. You can update your score by heading over to
+                  <a href={"https://passport.gitcoin.co"}>Passport</a>.
                 </p>
               </>
             ) : (
