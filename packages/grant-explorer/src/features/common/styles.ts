@@ -34,6 +34,7 @@ export const CardTitle = tw.p`
   text-[24px]
   font-medium
   truncate
+  pb-1
 `;
 
 export const CardDescription = tw.p`
