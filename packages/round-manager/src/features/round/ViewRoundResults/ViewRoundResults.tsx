@@ -16,11 +16,12 @@ import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
+  Round as GraphRound,
 } from "../../api/types";
 import { LoadingRing, Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
-import { useNetwork, useSigner } from "wagmi";
+import { Address, useBalance, useNetwork, useSigner } from "wagmi";
 import InfoModal from "../../common/InfoModal";
 import ProgressModal from "../../common/ProgressModal";
 import ErrorModal from "../../common/ErrorModal";
@@ -28,9 +29,10 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
-import { payoutTokens, fetchFromIPFS } from "../../api/utils";
+import { payoutTokens, fetchFromIPFS, PayoutToken } from "../../api/utils";
 import { roundApplicationsToCSV } from "../../api/exports";
 import { Signer } from "@ethersproject/abstract-signer";
+import { Round } from "allo-indexer-client";
 import {
   merklePayoutStrategyImplementationContract,
   roundImplementationContract,
@@ -62,6 +64,34 @@ const distributionOptions = [
   { value: "keep", label: "Keep distribution as is" },
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
+
+function useIsRoundFullyFunded({
+  roundId,
+  matchAmount,
+  matchTokenAddress,
+}: {
+  roundId: Address;
+  matchAmount: bigint;
+  matchTokenAddress: Address;
+}) {
+  const balanceOptions =
+    matchTokenAddress == ethers.constants.AddressZero
+      ? { address: roundId }
+      : {
+          address: roundId,
+          token: matchTokenAddress,
+        };
+
+  const roundBalance = useBalance(balanceOptions);
+
+  if (roundBalance.isLoading === true || roundBalance.data === undefined) {
+    return false;
+  }
+
+  const roundBalanceValue = roundBalance.data.value.toBigInt();
+
+  return roundBalanceValue >= matchAmount;
+}
 
 type FinalizedMatches = {
   readyForPayoutTransactionHash: string;
@@ -259,11 +289,79 @@ function useRevisedMatchingFunds(
   };
 }
 
-export default function ViewRoundResults() {
+export default function ViewRoundResultsWrapper() {
+  const { id } = useParams();
+
+  let roundId: Address | null = null;
+
+  if (id !== undefined) {
+    try {
+      roundId = utils.getAddress(id);
+    } catch (e) {
+      // ethers failed to parse the address
+    }
+  }
+
+  if (roundId === null) {
+    return <div>Invalid round address</div>;
+  }
+
+  return <ViewRoundResultsWithId id={roundId} />;
+}
+
+function ViewRoundResultsWithId({ id }: { id: Address }) {
+  const round = useRound(id);
+  const roundFromGraph = useRoundById(id.toLowerCase());
+
+  if (
+    round.isLoading ||
+    roundFromGraph.fetchRoundStatus === ProgressStatus.IN_PROGRESS
+  ) {
+    return <Spinner text="We're fetching the matching data." />;
+  }
+
+  if (
+    round.error ||
+    roundFromGraph.fetchRoundStatus === ProgressStatus.IS_ERROR ||
+    round.data === undefined ||
+    roundFromGraph.round === undefined
+  ) {
+    return <div>Failed to load the round</div>;
+  }
+
+  const matchTokenAddress = round.data.token;
+
+  const matchToken = payoutTokens.find(
+    (t) => t.address.toLowerCase() == matchTokenAddress.toLowerCase()
+  );
+
+  if (matchToken === undefined) {
+    return <div>Invalid round token</div>;
+  }
+
+  return (
+    <ViewRoundResults
+      roundId={id}
+      round={round.data}
+      oldRoundFromGraph={roundFromGraph.round}
+      matchToken={matchToken}
+    />
+  );
+}
+
+function ViewRoundResults({
+  roundId,
+  round,
+  oldRoundFromGraph,
+  matchToken,
+}: {
+  roundId: Address;
+  round: Round;
+  oldRoundFromGraph: GraphRound;
+  matchToken: PayoutToken;
+}) {
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
-  const { id } = useParams();
-  const roundId = utils.getAddress(id as string);
   const debugModeEnabled = useDebugMode();
   const network = useNetwork();
 
@@ -294,19 +392,15 @@ export default function ViewRoundResults() {
   const shouldShowRevisedTable =
     areMatchingFundsRevised || Boolean(readyForPayoutTransactionHash);
 
-  const { data: round, isLoading: isLoadingRound } = useRound(roundId);
-  const { round: oldRoundFromGraph } = useRoundById(
-    (id as string).toLowerCase()
-  );
-
   const isReadyForPayout = Boolean(
     oldRoundFromGraph?.payoutStrategy.isReadyForPayout
   );
-  const matchToken =
-    round &&
-    payoutTokens.find(
-      (t) => t.address.toLowerCase() == round.token.toLowerCase()
-    );
+
+  const isRoundFullyFunded = useIsRoundFullyFunded({
+    roundId,
+    matchAmount: round.matchAmount,
+    matchTokenAddress: matchToken.address,
+  });
 
   const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
     useState(false);
@@ -421,10 +515,6 @@ export default function ViewRoundResults() {
 
   if (!chain || (isBeforeRoundEndDate && !debugModeEnabled)) {
     return <NoInformationContent />;
-  }
-
-  if (isLoadingRound || !round) {
-    return <Spinner text="We're fetching the matching data." />;
   }
 
   const roundSaturation =
@@ -756,6 +846,7 @@ export default function ViewRoundResults() {
                             onClick={() => {
                               setWarningModalOpen(true);
                             }}
+                            disabled={!isRoundFullyFunded}
                             className="self-end w-fit bg-violet-400 text-white py-2
                            mt-2 px-3 rounded"
                           >

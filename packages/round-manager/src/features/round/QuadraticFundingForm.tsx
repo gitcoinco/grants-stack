@@ -99,7 +99,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
     {
       name: "Choose Payout Token",
       chainId: chain.id,
-      address: "",
+      address: "0x0",
       default: true,
       decimal: 0,
     },
