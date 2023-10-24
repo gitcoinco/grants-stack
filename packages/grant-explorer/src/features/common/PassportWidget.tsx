@@ -12,14 +12,14 @@ export function PassportWidget() {
   const { passportState, passportScore, passportColor, donationImpact } =
     usePassport({ address });
 
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   function handleClick() {
     if (
       passportState === PassportState.SCORE_AVAILABLE ||
       passportState === PassportState.INVALID_PASSPORT
     ) {
-      setOpen(!open);
+      setIsOpen(!isOpen);
     }
   }
 
@@ -41,7 +41,7 @@ export function PassportWidget() {
                   ? "bg-yellow-500"
                   : "bg-orange-500"
               }
-              absolute bottom-0.5 right-0 w-3 h-3 rounded-full sm:block md:hidden`}
+              absolute bottom-0.5 right-0 w-3 h-3 rounded-2xl sm:block md:hidden`}
             ></div>
           </div>
         ) : (
@@ -63,12 +63,13 @@ export function PassportWidget() {
         )}
         <DropdownIcon
           className="inline mt-3 md:block"
-          direction={open ? "up" : "down"}
+          direction={isOpen ? "up" : "down"}
         />
         <div
-          className={`backdrop-blur-sm cursor-auto absolute mt-1 top-12 border-2 z-10 ml-[-75px] font-modern-era-medium md:right-0 md:ml-0 md:mr-[-20px] w-96 bg-grey-150 md:bg-opacity-80 py-4 px-6 rounded-xl shadow-lg ${
-            open ? "block" : "hidden"
-          }`}
+          className={`backdrop-blur-sm cursor-auto absolute mt-1 top-12 border-2
+           z-10 ml-[-75px] font-modern-era-medium md:right-0
+            md:ml-0 md:mr-[-20px] w-96 bg-grey-150 md:bg-opacity-80 py-4 px-6
+             rounded-3xl shadow-lg ${isOpen ? "block" : "hidden"}`}
         >
           <div className="flex flex-col gap-4 mt-1">
             <GitcoinPassportLogoFull />
@@ -102,12 +103,18 @@ export function PassportWidget() {
                     </p>
                   </div>
                 </div>
-                <p className="text-left text-sm font-dm-mono">
+                <p className="text-left text-xs font-dm-mono">
                   Your donation impact is calculated based on your Passport
                   score. Scores higher than 15 will begin to be eligible for
                   matching, and your donation impact scales as your Passport
                   score increases. You can update your score by heading over to{" "}
-                  <a href={"https://passport.gitcoin.co"}>Passport</a>.
+                  <a
+                    href={"https://passport.gitcoin.co"}
+                    className={"underline"}
+                  >
+                    Passport
+                  </a>
+                  .
                 </p>
               </>
             ) : (
@@ -117,8 +124,14 @@ export function PassportWidget() {
                 </p>
                 <p className="text-left text-sm">
                   You either do not have a Passport or no stamps added to your
-                  Passport yet. Please head over to Passport to configure your
-                  score.
+                  Passport yet. Please head over to{" "}
+                  <a
+                    href={"https://passport.gitcoin.co"}
+                    className={"underline"}
+                  >
+                    Passport
+                  </a>{" "}
+                  to configure your score.
                 </p>
               </>
             )}

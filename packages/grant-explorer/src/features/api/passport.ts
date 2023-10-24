@@ -72,7 +72,7 @@ export function usePassport({ address }: { address: string | undefined }) {
 
   const passportScore = useMemo(() => {
     if (swr.data?.evidence) {
-      return Number(swr.data.evidence.rawScore);
+      return swr.data.evidence.rawScore;
     }
     return 0;
   }, [swr.data]);
@@ -118,15 +118,12 @@ export function usePassport({ address }: { address: string | undefined }) {
 
 export type PassportColor = "gray" | "orange" | "yellow" | "green";
 
-export function passportColorTextClass(color: PassportColor): string {
-  switch (color) {
-    case "gray":
-      return "text-gray-400";
-    case "orange":
-      return "text-orange-400";
-    case "yellow":
-      return "text-yellow-400";
-    case "green":
-      return "text-green-400";
-  }
-}
+const passportColorToClassName: Record<PassportColor, string> = {
+  gray: "text-gray-400",
+  orange: "text-orange-400",
+  yellow: "text-yellow-400",
+  green: "text-green-400",
+};
+
+export const getClassForPassportColor = (color: PassportColor) =>
+  passportColorToClassName[color];

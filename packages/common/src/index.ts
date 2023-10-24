@@ -18,7 +18,7 @@ export enum PassportState {
 
 const PassportEvidenceSchema = z.object({
   type: z.string().nullish(),
-  rawScore: z.string().nullish(),
+  rawScore: z.coerce.number(),
   threshold: z.string().nullish(),
 });
 

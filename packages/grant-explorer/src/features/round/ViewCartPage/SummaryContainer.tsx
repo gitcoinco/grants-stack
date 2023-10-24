@@ -13,7 +13,7 @@ import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
 
-import { passportColorTextClass, usePassport } from "../../api/passport";
+import { getClassForPassportColor, usePassport } from "../../api/passport";
 import useSWR from "swr";
 import { groupBy, uniqBy } from "lodash-es";
 import { getRoundById } from "../../api/round";
@@ -249,7 +249,7 @@ export function SummaryContainer() {
     address: address ?? "",
   });
 
-  const passportTextClass = passportColorTextClass(passportColor ?? "gray");
+  const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
 
   const [totalDonationAcrossChainsInUSD, setTotalDonationAcrossChainsInUSD] =
     useState<number | undefined>();

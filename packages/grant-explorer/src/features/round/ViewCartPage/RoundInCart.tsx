@@ -11,7 +11,7 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
-import { passportColorTextClass, usePassport } from "../../api/passport";
+import { getClassForPassportColor, usePassport } from "../../api/passport";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {
@@ -61,10 +61,10 @@ export function RoundInCart(
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
   const { passportColor } = usePassport({
-    address: address ?? "",
+    address,
   });
 
-  const passportTextClass = passportColorTextClass(passportColor ?? "gray");
+  const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
 
   return (
     <div className="my-4 bg-grey-50 rounded-xl">
