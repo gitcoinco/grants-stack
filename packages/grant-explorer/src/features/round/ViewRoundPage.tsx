@@ -271,8 +271,8 @@ function AfterRoundStart(props: {
             className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4"
             style={{ borderRadius: "20px" }}
           >
-            {round.payoutStrategy.strategyName &&
-              getRoundType(round.payoutStrategy.strategyName)}
+            {round.payoutStrategy?.strategyName &&
+              getRoundType(round.payoutStrategy?.strategyName)}
           </p>
           <div className="flex text-grey-400 mb-1">
             <p className="mr-4 text-sm">
