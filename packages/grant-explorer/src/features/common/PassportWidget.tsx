@@ -106,7 +106,7 @@ export function PassportWidget() {
                   Your donation impact is calculated based on your Passport
                   score. Scores higher than 15 will begin to be eligible for
                   matching, and your donation impact scales as your Passport
-                  score increases. You can update your score by heading over to
+                  score increases. You can update your score by heading over to{" "}
                   <a href={"https://passport.gitcoin.co"}>Passport</a>.
                 </p>
               </>

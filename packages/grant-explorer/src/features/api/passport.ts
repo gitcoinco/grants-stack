@@ -6,110 +6,107 @@ import {
   PassportState,
   submitPassport,
 } from "common";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
+import useSWR from "swr";
 
 export { submitPassport, fetchPassport, PassportState };
 export type { PassportResponse };
 
-export function usePassport({ address }: { address: string | undefined }) {
-  const [, setError] = useState<Response | undefined>();
+const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
 
-  const [passportState, setPassportState] = useState<PassportState>(
-    PassportState.LOADING
+export function usePassport({ address }: { address: string | undefined }) {
+  const swr = useSWR<PassportResponse, Response, () => [string, string] | null>(
+    () =>
+      address && PASSPORT_COMMUNITY_ID
+        ? [address, PASSPORT_COMMUNITY_ID]
+        : null,
+    async (args) => {
+      const res = await fetchPassport(...args);
+
+      if (res.ok) {
+        return PassportResponseSchema.parse(await res.json());
+      } else {
+        throw res;
+      }
+    }
   );
 
-  const [passportScore, setPassportScore] = useState<number>();
-  const [passportColor, setPassportColor] = useState<
-    "orange" | "green" | "yellow"
-  >();
-  const [donationImpact, setDonationImpact] = useState<number>(0);
+  const passportState = useMemo(() => {
+    if (swr.error) {
+      switch (swr.error.status) {
+        case 400: // unregistered/nonexistent passport address
+          return PassportState.INVALID_PASSPORT;
+        case 401: // invalid API key
+          swr.error.json().then((json) => {
+            console.error("invalid API key", json);
+          });
+          return PassportState.ERROR;
+        default:
+          console.error("Error fetching passport", swr.error);
+          return PassportState.ERROR;
+      }
+    }
 
+    if (swr.data) {
+      if (
+        !swr.data.score ||
+        !swr.data.evidence ||
+        swr.data.status === "ERROR"
+      ) {
+        datadogLogs.logger.error(
+          `error: callFetchPassport - invalid score response`,
+          swr.data
+        );
+        return PassportState.INVALID_RESPONSE;
+      }
+
+      return PassportState.SCORE_AVAILABLE;
+    }
+
+    if (!address) {
+      return PassportState.NOT_CONNECTED;
+    }
+
+    return PassportState.LOADING;
+  }, [swr.error, swr.data, address]);
+
+  const passportScore = useMemo(() => {
+    if (swr.data?.evidence) {
+      return Number(swr.data.evidence.rawScore);
+    }
+    return 0;
+  }, [swr.data]);
+
+  const PROCESSING_REFETCH_INTERVAL_MS = 3000;
+  /** If passport is still processing, refetch it every PROCESSING_REFETCH_INTERVAL_MS */
   useEffect(() => {
-    setPassportState(PassportState.LOADING);
-
-    const PASSPORT_COMMUNITY_ID =
-      process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
-
-    if (PASSPORT_COMMUNITY_ID === undefined) {
-      throw new Error("passport community id not set");
+    if (swr.data?.status === "PROCESSING") {
+      setTimeout(() => {
+        /* Revalidate */
+        swr.mutate();
+      }, PROCESSING_REFETCH_INTERVAL_MS);
     }
+  }, [swr]);
 
-    if (address && PASSPORT_COMMUNITY_ID) {
-      const callFetchPassport = async () => {
-        const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
-
-        if (!res) {
-          datadogLogs.logger.error(
-            `error: callFetchPassport - fetch failed`,
-            res
-          );
-          setPassportState(PassportState.ERROR);
-          return;
-        }
-
-        if (res.ok) {
-          const scoreResponse = PassportResponseSchema.parse(await res.json());
-
-          if (scoreResponse.status === "PROCESSING") {
-            console.log("processing, calling again in 3000 ms");
-            setTimeout(async () => {
-              await callFetchPassport();
-            }, 3000);
-            return;
-          }
-
-          if (
-            !scoreResponse.score ||
-            !scoreResponse.evidence ||
-            scoreResponse.status === "ERROR"
-          ) {
-            datadogLogs.logger.error(
-              `error: callFetchPassport - invalid score response`,
-              scoreResponse
-            );
-            setPassportState(PassportState.INVALID_RESPONSE);
-            return;
-          }
-
-          const score = Number(scoreResponse.evidence.rawScore);
-          setPassportScore(score);
-          setPassportState(PassportState.SCORE_AVAILABLE);
-          if (score < 15) {
-            setPassportColor("orange");
-            setDonationImpact(0);
-          } else if (score >= 15 && score < 25) {
-            setPassportColor("yellow");
-            setDonationImpact(10 * (score - 15));
-          } else {
-            setPassportColor("green");
-            setDonationImpact(100);
-          }
-        } else {
-          setError(res);
-          datadogLogs.logger.error(
-            `error: callFetchPassport - passport NOT OK`,
-            res
-          );
-          switch (res.status) {
-            case 400: // unregistered/nonexistent passport address
-              setPassportState(PassportState.INVALID_PASSPORT);
-              break;
-            case 401: // invalid API key
-              setPassportState(PassportState.ERROR);
-              console.error("invalid API key", await res.json());
-              break;
-            default:
-              setPassportState(PassportState.ERROR);
-              console.error("Error fetching passport", res);
-          }
-        }
-      };
-
-      callFetchPassport();
+  const passportColor = useMemo<PassportColor>(() => {
+    if (passportScore < 15) {
+      return "orange";
+    } else if (passportScore >= 15 && passportScore < 25) {
+      return "yellow";
     } else {
-      setPassportState(PassportState.NOT_CONNECTED);
+      return "green";
     }
-  }, [address]);
+  }, [passportScore]);
+
+  const donationImpact = useMemo(() => {
+    if (passportScore < 15) {
+      return 0;
+    } else if (passportScore >= 15 && passportScore < 25) {
+      return 10 * (passportScore - 15);
+    } else {
+      return 100;
+    }
+  }, [passportScore]);
 
   return {
     passportState,
