@@ -1,35 +1,20 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
-  getActiveRounds,
-  getRoundsInApplicationPhase,
-  RoundOverview,
+  useActiveRounds,
+  usePrefetchRoundsMetadata,
+  useRoundsEndingSoon,
+  useRoundsTakingApplications,
+  useSearchRounds,
 } from "../api/rounds";
-import { useDebugMode } from "../api/utils";
-
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
-import useSWR, { mutate } from "swr";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import RoundCard from "./RoundCard";
-import { mock } from "../../mock/rounds";
 import { useLocation } from "react-router-dom";
-import CollectionCard from "./CollectionCard";
-
-export function useActiveRounds() {
-  const debugModeEnabled = useDebugMode();
-  return useSWR(`activeRounds`, () => getActiveRounds(debugModeEnabled));
-}
-
-export function useRoundsInApplicationPhase() {
-  const debugModeEnabled = useDebugMode();
-  return useSWR(`applicationRounds`, () =>
-    getRoundsInApplicationPhase(debugModeEnabled)
-  );
-}
 
 const LandingPage = () => {
   const location = useLocation();
+  console.log(useSearchRounds("Gitcoin"));
   useEffect(() => {
     if (
       process.env.REACT_APP_ENV === "production" &&
@@ -39,68 +24,17 @@ const LandingPage = () => {
     }
   }, [location]);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  usePrefetchRoundsMetadata();
 
-  const { isLoading: activeRoundsLoading, data: activeRounds } =
-    useActiveRounds();
+  const { data: roundsTakingApplications } = useRoundsTakingApplications();
+  const { data: activeRounds } = useActiveRounds();
+  const { data: roundsEndingSoon } = useRoundsEndingSoon();
 
-  console.log(activeRoundsLoading);
-
-  const [type] = useState<string>("round_type_all");
-  const [allActiveRounds, setAllActiveRounds] = useState<RoundOverview[]>([]);
-
-  useEffect(() => {
-    if (activeRounds) {
-      setAllActiveRounds(activeRounds);
-    }
-  }, [activeRounds]);
-
-  useEffect(() => {
-    if (type) {
-      filterGrantRoundByType();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
-
-  const filterGrantRoundByType = () => {
-    const getGrantRoundType = (type: string) => {
-      return type === "round_type_direct"
-        ? ROUND_PAYOUT_DIRECT
-        : ROUND_PAYOUT_MERKLE;
-    };
-    if (type === "round_type_all") {
-      mutate("activeRounds", allActiveRounds, false);
-    }
-    if (type !== "round_type_all") {
-      const filterType = getGrantRoundType(type);
-      const filteredRounds = allActiveRounds.filter((round: RoundOverview) => {
-        return (
-          round.payoutStrategy &&
-          round.payoutStrategy.strategyName === filterType
-        );
-      });
-      mutate("activeRounds", filteredRounds, false);
-      if (searchQuery) setSearchQuery("");
-    }
-  };
-
-  useEffect(() => {
-    if (searchQuery) {
-      const timeOutId = setTimeout(
-        () => filterProjectsByTitle(activeRounds ?? [], searchQuery),
-        300
-      );
-      return () => clearTimeout(timeOutId);
-    } else {
-      filterGrantRoundByType();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
-
+  console.log("applyNowRounds", roundsTakingApplications);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
-      <LandingSection title="Community curation">
+      {/* <LandingSection title="Community curation">
         <div className="grid md:grid-cols-3 gap-x-6">
           {mock.collections?.slice(0, 4).map((collection, i) => (
             <div
@@ -111,7 +45,7 @@ const LandingPage = () => {
             </div>
           ))}
         </div>
-      </LandingSection>
+      </LandingSection> */}
       <LandingSection
         title="Donate now"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
@@ -143,7 +77,7 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-x-6 md:w-2/3">
-            {activeRounds?.slice(0, 4).map((round) => (
+            {roundsTakingApplications?.slice(0, 4)?.map((round) => (
               <div key={round.id}>
                 <RoundCard round={round} />
               </div>
@@ -156,7 +90,7 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {activeRounds?.slice(0, 3).map((round) => (
+          {roundsEndingSoon?.slice(0, 3).map((round) => (
             <div key={round.id}>
               <RoundCard round={round} />
             </div>
@@ -165,32 +99,6 @@ const LandingPage = () => {
       </LandingSection>
     </DefaultLayout>
   );
-};
-
-const filterProjectsByTitle = (rounds: RoundOverview[], query: string) => {
-  // filter by exact title matches first
-  // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
-
-  if (query.trim() === "") {
-    return rounds;
-  }
-
-  const exactMatches = rounds.filter(
-    (round) =>
-      round.roundMetadata?.name?.toLocaleLowerCase() ===
-      query.toLocaleLowerCase()
-  );
-
-  const nonExactMatches = rounds.filter(
-    (round) =>
-      round.roundMetadata?.name
-        ?.toLocaleLowerCase()
-        .includes(query.toLocaleLowerCase()) &&
-      round.roundMetadata?.name?.toLocaleLowerCase() !==
-        query.toLocaleLowerCase()
-  );
-
-  return [...exactMatches, ...nonExactMatches];
 };
 
 export default LandingPage;

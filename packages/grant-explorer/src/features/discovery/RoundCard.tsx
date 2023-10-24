@@ -4,7 +4,7 @@ import {
   RoundPayoutType,
   truncateDescription,
 } from "common";
-import { RoundOverview } from "../api/rounds";
+import { RoundOverview, useMetadata } from "../api/rounds";
 import {
   getDaysLeft,
   getRoundType,
@@ -36,14 +36,18 @@ const RoundCard = ({ round }: RoundCardProps) => {
     matchAmount,
     projects,
     payoutStrategy,
-    roundMetadata,
     roundEndTime,
+    roundMetaPtr,
     applicationsEndTime,
     token,
   } = round;
+
+  const { data: metadata } = useMetadata(roundMetaPtr.pointer);
+
   const daysLeft = getDaysLeft(Number(roundEndTime));
   const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
 
+  // console.log("daysLeftToApply", daysLeftToApply, applicationsEndTime);
   // Can we simplify this? Would `days < 1000` do the same thing?
   const isValidRoundEndTime = !isInfiniteDate(
     new Date(parseInt(roundEndTime, 10) * 1000)
@@ -87,7 +91,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             data-testid="round-name"
             className="absolute bottom-3 px-2 text-white"
           >
-            {roundMetadata?.name}
+            {metadata?.name}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -96,7 +100,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             className="min-h-[96px]"
           >
             {truncateDescription(
-              renderToPlainText(roundMetadata?.eligibility.description ?? ""),
+              renderToPlainText(metadata?.eligibility.description ?? ""),
               240
             )}
           </CardDescription>

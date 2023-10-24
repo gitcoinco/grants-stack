@@ -19,7 +19,8 @@ type Option = {
 };
 
 export enum FilterStatus {
-  apply = "apply",
+  active = "active",
+  taking_applications = "taking_applications",
   finished = "finished",
 }
 const filterOptions = [
@@ -48,11 +49,11 @@ const filterOptions = [
     children: [
       {
         label: "Active",
-        value: "",
+        value: FilterStatus.active,
       },
       {
         label: "Taking applications",
-        value: FilterStatus.apply,
+        value: FilterStatus.taking_applications,
       },
       {
         label: "Finished",
@@ -72,7 +73,7 @@ const filterOptions = [
 
 export type FilterProps = {
   type: string;
-  status: string;
+  status: FilterStatus;
   network: string;
 };
 

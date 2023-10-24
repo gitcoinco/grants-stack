@@ -9,7 +9,7 @@ export function RoundsFilter() {
   const {
     sortBy = "",
     orderBy = "",
-    status = "",
+    status,
     type = "",
     network = "",
   } = params as Filter;
