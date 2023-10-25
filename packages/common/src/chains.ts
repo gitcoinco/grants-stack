@@ -20,7 +20,9 @@ export enum ChainId {
 /**
  * Attempts to parse a numerical or string chainId to the Enum.
  * returns null if the chainid is invalid */
-export function tryParseChainIdToEnum(chainId: string | number) {
+export function tryParseChainIdToEnum(
+  chainId: string | number
+): ChainId | null {
   const chains = Object.keys(ChainId)
     .map(Number)
     .filter((item) => {

@@ -5,6 +5,7 @@ import { fetchFromIPFS } from "./utils";
 import { ethers } from "ethers";
 import { allChains } from "../../app/chainConfig";
 import { tryParseChainIdToEnum } from "common/src/chains";
+import { isPresent } from "ts-is-present";
 
 interface GetRoundOverviewResult {
   data: {
@@ -65,7 +66,7 @@ async function fetchRoundsByTimestamp(
         round.roundMetaPtr.pointer
       );
       round.roundMetadata = roundMetadata;
-      round.chainId = chainId.toFixed(0).toString();
+      round.chainId = chainId.toFixed(0);
 
       // check if roundType is public & if so, add to filteredRounds
       if (round.roundMetadata?.roundType === "public") {
@@ -97,7 +98,7 @@ const getActiveChainIds = (): ChainId[] =>
   allChains
     .map((chain) => chain.id)
     .map(tryParseChainIdToEnum)
-    .filter((chainId): chainId is ChainId => chainId !== null)
+    .filter(isPresent)
     .map((chainId) => chainId);
 
 export async function getRoundsInApplicationPhase(
