@@ -167,23 +167,26 @@ export function useRounds(variables: RoundsVariables) {
   const debugModeEnabled = useDebugMode();
   const chainIds = getActiveChainIds();
 
-  const query = useSWR(["rounds", variables, chainIds], () =>
-    Promise.all(
-      chainIds.flatMap((chainId) => {
-        const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
-        return graphql_fetch(ROUNDS_QUERY, chainIdEnumValue, variables).then(
-          (r) =>
-            r.data?.rounds?.map((round: RoundOverview) => ({
-              ...round,
-              chainId,
-            })) ?? []
-        );
-      })
-    )
-      .then((res) => res.flat())
-      .then(cleanRoundData)
-      // We need to do another sort because of results from many chains
-      .then((rounds) => sortRounds(rounds, variables))
+  const query = useSWR(
+    ["rounds", variables, chainIds],
+    () =>
+      Promise.all(
+        chainIds.flatMap((chainId) => {
+          const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
+          return graphql_fetch(ROUNDS_QUERY, chainIdEnumValue, variables).then(
+            (r) =>
+              r.data?.rounds?.map((round: RoundOverview) => ({
+                ...round,
+                chainId,
+              })) ?? []
+          );
+        })
+      )
+        .then((res) => res.flat())
+        .then(cleanRoundData)
+        // We need to do another sort because of results from many chains
+        .then((rounds) => sortRounds(rounds, variables)),
+    { keepPreviousData: true }
   );
 
   return {
