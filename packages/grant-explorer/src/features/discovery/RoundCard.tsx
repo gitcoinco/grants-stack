@@ -24,6 +24,7 @@ import RoundCardStat from "./RoundCardStat";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
 import { RoundDaysLeft } from "./RoundDaysLeft";
+import { PropsWithChildren } from "react";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -40,9 +41,9 @@ const RoundCard = ({ round }: RoundCardProps) => {
     roundMetaPtr,
     applicationsEndTime,
     token,
-  } = round;
+  } = round ?? {};
 
-  const { data: metadata } = useMetadata(roundMetaPtr.pointer);
+  const { data: metadata } = useMetadata(roundMetaPtr?.pointer);
 
   const daysLeft = getDaysLeft(Number(roundEndTime));
   const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
@@ -134,4 +135,11 @@ const RoundBadge = ({ strategyName }: { strategyName: RoundPayoutType }) => {
     </Badge>
   );
 };
-export default RoundCard;
+
+export const RoundCardLoading = () => (
+  <BasicCard className="w-full h-[378px] animate-pulse"></BasicCard>
+);
+
+export default function Round(props: { isLoading?: boolean } & RoundCardProps) {
+  return props.isLoading ? <RoundCardLoading /> : <RoundCard {...props} />;
+}

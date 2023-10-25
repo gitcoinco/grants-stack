@@ -36,14 +36,16 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {activeRounds.data?.slice(0, 4).map((round, i) => (
-            <div
-              key={round.id}
-              className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
-            >
-              <RoundCard round={round} />
-            </div>
-          ))}
+          {(activeRounds.data ?? Array.from({ length: 4 }))
+            ?.slice(0, 4)
+            .map((round, i) => (
+              <div
+                key={round?.id ?? i}
+                className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
+              >
+                <RoundCard round={round} isLoading={activeRounds.isLoading} />
+              </div>
+            ))}
         </div>
       </LandingSection>
       <LandingSection
@@ -62,11 +64,16 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-x-6 md:w-2/3">
-            {roundsTakingApplications.data?.slice(0, 4)?.map((round) => (
-              <div key={round.id}>
-                <RoundCard round={round} />
-              </div>
-            ))}
+            {(roundsTakingApplications.data ?? Array.from({ length: 4 }))
+              .slice(0, 4)
+              ?.map((round, i) => (
+                <div key={round?.id ?? i}>
+                  <RoundCard
+                    round={round}
+                    isLoading={roundsTakingApplications.isLoading}
+                  />
+                </div>
+              ))}
           </div>
         </div>
       </LandingSection>
@@ -75,9 +82,9 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {activeRounds.data?.map((round) => (
-            <div key={round.id}>
-              <RoundCard round={round} />
+          {(activeRounds.data ?? Array.from({ length: 6 }))?.map((round, i) => (
+            <div key={round?.id ?? i}>
+              <RoundCard round={round} isLoading={activeRounds.isLoading} />
             </div>
           ))}
         </div>
