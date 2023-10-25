@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import {
   useActiveRounds,
   usePrefetchRoundsMetadata,
-  useRoundsEndingSoon,
+  // useRoundsEndingSoon,
   useRoundsTakingApplications,
 } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
@@ -26,7 +26,7 @@ const LandingPage = () => {
 
   const activeRounds = useActiveRounds();
   const roundsTakingApplications = useRoundsTakingApplications();
-  const roundsEndingSoon = useRoundsEndingSoon();
+  // const roundsEndingSoon = useRoundsEndingSoon();
 
   return (
     <DefaultLayout showWalletInteraction>
@@ -87,7 +87,7 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {roundsEndingSoon.data?.map((round) => (
+          {activeRounds.data?.map((round) => (
             <div key={round.id}>
               <RoundCard round={round} />
             </div>

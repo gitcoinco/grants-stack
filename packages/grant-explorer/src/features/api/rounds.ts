@@ -45,12 +45,14 @@ type RoundsVariables = {
   };
 };
 type TimestampVariables = {
-  applicationsEndTime_gt?: string;
   applicationsStartTime_lte?: string;
+  applicationsEndTime_gt?: string;
   applicationsEndTime_lt?: string;
-  roundEndTime_gt?: string;
   applicationsEndTime?: string;
   applicationsEndTime_gte?: string;
+  roundStartTime_lt?: string;
+  roundEndTime_gt?: string;
+  roundEndTime_lt?: string;
 };
 
 function getActiveChainIds() {
@@ -135,11 +137,18 @@ export function useRoundsTakingApplications() {
 // What filters for active rounds?
 export function useActiveRounds() {
   const currentTimestamp = Math.floor(Date.now() / 1000).toString();
+  const futureTimestamp = Math.floor(
+    (Date.now() + 3600 * 24 * 365 * 10 * 1000) / 1000
+  ).toString();
+
   return useRounds({
+    orderBy: "roundEndTime",
     orderDirection: "desc",
     where: {
       // Must be after current time
+      roundStartTime_lt: currentTimestamp,
       roundEndTime_gt: currentTimestamp,
+      roundEndTime_lt: futureTimestamp,
     },
   });
 }

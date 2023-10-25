@@ -621,6 +621,7 @@ export const pinToIPFS = (obj: IPFSObject) => {
 };
 
 export const getDaysLeft = (fromTimestamp: number) => {
+  // This should be fixed with the cleanRoundData function in features/api/rounds.ts
   // Invalid date
   if (fromTimestamp > Number.MAX_SAFE_INTEGER) {
     return 0;
