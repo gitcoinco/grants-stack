@@ -4,6 +4,7 @@ import { MetadataPointer } from "./types";
 import { fetchFromIPFS } from "./utils";
 import { ethers } from "ethers";
 import { allChains } from "../../app/chainConfig";
+import { tryParseChainIdToEnum } from "common/src/chains";
 
 interface GetRoundOverviewResult {
   data: {
@@ -40,19 +41,17 @@ export type RoundOverview = {
 
 async function fetchRoundsByTimestamp(
   query: string,
-  chainId: string,
+  chainId: ChainId,
   debugModeEnabled: boolean
 ): Promise<RoundOverview[]> {
   try {
-    const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
     const currentTimestamp = Math.floor(Date.now() / 1000).toString();
     const infiniteTimestamp = ethers.constants.MaxUint256.toString();
 
-    const res: GetRoundOverviewResult = await graphql_fetch(
-      query,
-      chainIdEnumValue,
-      { currentTimestamp, infiniteTimestamp }
-    );
+    const res: GetRoundOverviewResult = await graphql_fetch(query, chainId, {
+      currentTimestamp,
+      infiniteTimestamp,
+    });
 
     if (!res.data || !res.data.rounds) {
       return [];
@@ -66,7 +65,7 @@ async function fetchRoundsByTimestamp(
         round.roundMetaPtr.pointer
       );
       round.roundMetadata = roundMetadata;
-      round.chainId = chainId;
+      round.chainId = chainId.toFixed(0).toString();
 
       // check if roundType is public & if so, add to filteredRounds
       if (round.roundMetadata?.roundType === "public") {
@@ -94,7 +93,12 @@ async function fetchRoundsByTimestamp(
   }
 }
 
-const getActiveChainIds = () => allChains.map((chain) => chain.id.toString());
+const getActiveChainIds = (): ChainId[] =>
+  allChains
+    .map((chain) => chain.id)
+    .map(tryParseChainIdToEnum)
+    .filter((chainId): chainId is ChainId => chainId !== null)
+    .map((chainId) => chainId);
 
 export async function getRoundsInApplicationPhase(
   debugModeEnabled: boolean

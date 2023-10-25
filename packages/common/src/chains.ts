@@ -17,6 +17,22 @@ export enum ChainId {
   POLYGON_MUMBAI = 80001,
 }
 
+/**
+ * Attempts to parse a numerical or string chainId to the Enum.
+ * returns null if the chainid is invalid */
+export function tryParseChainIdToEnum(chainId: string | number) {
+  const chains = Object.keys(ChainId)
+    .map(Number)
+    .filter((item) => {
+      return !isNaN(item);
+    });
+  const chainIdEnumValue = chains.find((chain) => chain === chainId);
+  if (chainIdEnumValue === undefined) {
+    return null;
+  }
+  return chainIdEnumValue as ChainId;
+}
+
 export const pgnTestnet: Chain = {
   id: 58008,
   name: "PGN Testnet",
