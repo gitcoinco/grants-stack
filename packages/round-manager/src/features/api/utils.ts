@@ -278,6 +278,14 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["GTC"],
     redstoneTokenId: RedstoneTokenIds["GTC"],
   },
+  {
+    name: "DAI",
+    chainId: ChainId.PGN,
+    address: "0x6C121674ba6736644A7e73A8741407fE8a5eE5BA",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
 ];
 
 const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
