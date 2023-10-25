@@ -1,4 +1,4 @@
-import { ChainId, PassportState, getTokenPrice } from "common";
+import { ChainId, getTokenPrice, PassportState } from "common";
 import { useCartStorage } from "../../../store";
 import React, { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -8,18 +8,31 @@ import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useWalletClient, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import { BoltIcon } from "@heroicons/react/24/outline";
+
 import { usePassport } from "../../api/passport";
 import useSWR from "swr";
-import { round, groupBy, uniqBy } from "lodash-es";
+import { groupBy, uniqBy } from "lodash-es";
 import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { formatUnits, parseUnits } from "viem";
+import { formatUnits, getAddress, parseUnits, zeroAddress } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import {
+  matchingEstimatesToText,
+  useMatchingEstimates,
+} from "../../../hooks/matchingEstimate";
+import { Skeleton } from "@chakra-ui/react";
+import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
+import { parseChainId } from "common/src/chains";
+import {
+  passportColorTextClass,
+  usePassportScore,
+} from "../../common/Passport";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -76,7 +89,7 @@ export function SummaryContainer() {
   const totalDonationsPerChain = useMemo(() => {
     return Object.fromEntries(
       Object.entries(projectsByChain).map(([key, value]) => [
-        Number(key) as ChainId,
+        parseChainId(key),
         value
           .map((project) => project.amount)
           .reduce(
@@ -84,7 +97,7 @@ export function SummaryContainer() {
               acc +
               parseUnits(
                 amount ? amount : "0",
-                getVotingTokenForChain(Number(key) as ChainId).decimal
+                getVotingTokenForChain(parseChainId(key)).decimal
               ),
             0n
           ),
@@ -214,7 +227,7 @@ export function SummaryContainer() {
 
   async function handleSubmitDonation() {
     try {
-      if (!round || !walletClient) {
+      if (!walletClient) {
         return;
       }
 
@@ -236,9 +249,11 @@ export function SummaryContainer() {
     }
   }
 
-  const { passportState } = usePassport({
+  const { passportState, passport } = usePassport({
     address: address ?? "",
   });
+
+  const passportScore = usePassportScore(passport);
 
   const [totalDonationAcrossChainsInUSD, setTotalDonationAcrossChainsInUSD] =
     useState<number | undefined>();
@@ -249,14 +264,13 @@ export function SummaryContainer() {
       return Promise.all(
         Object.keys(totalDonationsPerChain).map((chainId) =>
           getTokenPrice(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            getVotingTokenForChain(Number(chainId) as ChainId).redstoneTokenId!
+            getVotingTokenForChain(parseChainId(chainId)).redstoneTokenId
           ).then((price) => {
             return (
               Number(
                 formatUnits(
                   totalDonationsPerChain[chainId],
-                  getVotingTokenForChain(Number(chainId) as ChainId).decimal
+                  getVotingTokenForChain(parseChainId(chainId)).decimal
                 )
               ) * Number(price)
             );
@@ -275,6 +289,42 @@ export function SummaryContainer() {
     }
   }, [totalDonationAcrossChainsInUSDData]);
 
+  /* Matching estimates are calculated per-round */
+  const matchingEstimateParamsPerRound =
+    rounds?.map((round) => {
+      const projectFromRound = projects.find(
+        (project) => project.roundId === round.id
+      );
+      return {
+        roundId: getAddress(round.id ?? zeroAddress),
+        chainId: projectFromRound?.chainId ?? ChainId.MAINNET,
+        potentialVotes: projects
+          .filter((proj) => proj.roundId === round.id)
+          .map((proj) => ({
+            amount: parseUnits(
+              proj.amount ?? "0",
+              getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
+            ),
+            grantAddress: proj.recipient,
+            voter: address ?? zeroAddress,
+            token: getVotingTokenForChain(
+              parseChainId(proj.chainId)
+            ).address.toLowerCase(),
+            projectId: proj.projectRegistryId,
+            applicationId: proj.grantApplicationId,
+            roundId: getAddress(round.id ?? zeroAddress),
+          })),
+      };
+    }) ?? [];
+
+  const {
+    data: matchingEstimates,
+    error: matchingEstimateError,
+    isLoading: matchingEstimateLoading,
+  } = useMatchingEstimates(matchingEstimateParamsPerRound);
+
+  const estimateText = matchingEstimatesToText(matchingEstimates);
+
   if (projects.length === 0) {
     return null;
   }
@@ -282,14 +332,40 @@ export function SummaryContainer() {
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
+      <div
+        className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${passportColorTextClass(
+          passportScore.color
+        )}`}
+      >
+        {matchingEstimateError === undefined &&
+          matchingEstimates !== undefined && (
+            <>
+              <div className="flex flex-row mt-4 items-center">
+                <p>Estimated match</p>
+                <MatchingEstimateTooltip
+                  isEligible={
+                    passportScore.score !== null && passportScore.score >= 15
+                  }
+                />
+              </div>
+              <div className="flex justify-end mt-4">
+                <Skeleton isLoaded={!matchingEstimateLoading}>
+                  <p>
+                    <BoltIcon className={"w-4 h-4 inline"} />
+                    ~$
+                    {estimateText}
+                  </p>
+                </Skeleton>
+              </div>
+            </>
+          )}
+      </div>
       <div>
         {Object.keys(projectsByChain).map((chainId) => (
           <Summary
             key={chainId}
-            chainId={Number(chainId) as ChainId}
-            selectedPayoutToken={getVotingTokenForChain(
-              Number(chainId) as ChainId
-            )}
+            chainId={parseChainId(chainId)}
+            selectedPayoutToken={getVotingTokenForChain(parseChainId(chainId))}
             totalDonation={totalDonationsPerChain[chainId]}
           />
         ))}
