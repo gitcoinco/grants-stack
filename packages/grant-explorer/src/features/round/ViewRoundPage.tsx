@@ -28,7 +28,6 @@ import {
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
-import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Spinner } from "../common/Spinner";
@@ -250,9 +249,6 @@ function AfterRoundStart(props: {
     <>
       {showCartNotification && renderCartNotification()}
       <Navbar />
-      {round && !isDirectRound(round) && props.isBeforeRoundEndDate && (
-        <PassportBanner chainId={chainId} round={round} />
-      )}
       {props.isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />

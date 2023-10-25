@@ -1,8 +1,30 @@
 @import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Miriam+Libre:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono&display=swap');
+
+@font-face {
+  font-family: ModernEraMedium;
+  src: url(../public/modern-era-medium.otf);
+}
+
+@font-face {
+  font-family: ModernEraRegular;
+  src: url(../public/modern-era-regular.otf);
+}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.font-dm-mono {
+  font-family: 'DM Mono', monospace;
+}
+
+.font-modern-era-medium {
+  font-family: 'ModernEraMedium', serif;
+}
+.font-modern-era-regular {
+  font-family: 'ModernEraRegular', serif;
+}
 
 @layer base {
   html {
