@@ -31,18 +31,6 @@ const LandingPage = () => {
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
-      {/* <LandingSection title="Community curation">
-        <div className="grid md:grid-cols-3 gap-x-6">
-          {mock.collections?.slice(0, 4).map((collection, i) => (
-            <div
-              key={collection.id}
-              className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
-            >
-              <CollectionCard collection={collection} />
-            </div>
-          ))}
-        </div>
-      </LandingSection> */}
       <LandingSection
         title="Donate now"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
