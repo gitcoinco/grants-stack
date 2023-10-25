@@ -41,7 +41,7 @@ export type RoundOverview = {
 async function fetchRoundsByTimestamp(
   query: string,
   chainId: string,
-  debugModeEnabled: boolean,
+  debugModeEnabled: boolean
 ): Promise<RoundOverview[]> {
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
@@ -51,7 +51,7 @@ async function fetchRoundsByTimestamp(
     const res: GetRoundOverviewResult = await graphql_fetch(
       query,
       chainIdEnumValue,
-      { currentTimestamp, infiniteTimestamp },
+      { currentTimestamp, infiniteTimestamp }
     );
 
     if (!res.data || !res.data.rounds) {
@@ -63,7 +63,7 @@ async function fetchRoundsByTimestamp(
 
     for (const round of rounds) {
       const roundMetadata: RoundMetadata = await fetchFromIPFS(
-        round.roundMetaPtr.pointer,
+        round.roundMetaPtr.pointer
       );
       round.roundMetadata = roundMetadata;
       round.chainId = chainId;
@@ -94,11 +94,10 @@ async function fetchRoundsByTimestamp(
   }
 }
 
-const activeChainIds = () =>
-  allChains.map((chain) => chain.id.toString());
+const getActiveChainIds = () => allChains.map((chain) => chain.id.toString());
 
 export async function getRoundsInApplicationPhase(
-  debugModeEnabled: boolean,
+  debugModeEnabled: boolean
 ): Promise<RoundOverview[]> {
   const query = `
       query GetRoundsInApplicationPhase($currentTimestamp: String, $infiniteTimestamp: String) {
@@ -137,16 +136,16 @@ export async function getRoundsInApplicationPhase(
     `;
 
   const rounds = await Promise.all(
-    activeChainIds().map((chainId) =>
-      fetchRoundsByTimestamp(query, chainId, debugModeEnabled),
-    ),
+    getActiveChainIds().map((chainId) =>
+      fetchRoundsByTimestamp(query, chainId, debugModeEnabled)
+    )
   );
 
   return rounds.flat();
 }
 
 export async function getActiveRounds(
-  debugModeEnabled: boolean,
+  debugModeEnabled: boolean
 ): Promise<RoundOverview[]> {
   const query = `
       query GetActiveRounds($currentTimestamp: String) {
@@ -180,9 +179,9 @@ export async function getActiveRounds(
     `;
 
   const rounds = await Promise.all(
-    activeChainIds().map((chainId) =>
-      fetchRoundsByTimestamp(query, chainId, debugModeEnabled),
-    ),
+    getActiveChainIds().map((chainId) =>
+      fetchRoundsByTimestamp(query, chainId, debugModeEnabled)
+    )
   );
 
   return rounds.flat();
