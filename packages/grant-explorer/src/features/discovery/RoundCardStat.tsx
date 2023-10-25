@@ -1,5 +1,6 @@
 import { ChainId } from "common";
 import { CHAINS } from "../api/utils";
+import { Badge } from "../common/styles";
 
 type RoundCardStatProps = {
   chainId: ChainId;
@@ -9,26 +10,29 @@ type RoundCardStatProps = {
 };
 
 function RoundCardStat(props: RoundCardStatProps) {
-  const matchAmount = BigInt(props.matchAmount);
-  const matchAmountNormalized = matchAmount / 1000000000000000000n;
+  const { approvedApplicationsCount, chainId, matchAmount, token } = props;
+  const matchAmountNormalized = BigInt(matchAmount) / 1000000000000000000n;
 
   return (
-    <div className="flex justify-between mb-4">
-      <div className="flex text-xs my-auto">
-        <span data-testid="approved-applications-count">
-          {props.approvedApplicationsCount} projects
-        </span>
-        <span className="mx-1">|</span>
-        <span className="mr-1" data-testid="match-amount">
-          {matchAmountNormalized.toLocaleString()}
-        </span>
-        <span data-testid="match-token">{props.token} match amount</span>
+    <div className="flex justify-between">
+      <div className="flex gap-2">
+        <Badge
+          disabled={!approvedApplicationsCount}
+          data-testid="approved-applications-count"
+        >
+          {approvedApplicationsCount} projects
+        </Badge>
+        <Badge disabled={!matchAmountNormalized}>
+          <span className="mr-1" data-testid="match-amount">
+            {matchAmountNormalized.toLocaleString()}
+          </span>
+          <span data-testid="match-token">{token} match</span>
+        </Badge>
       </div>
-
       <div>
         <img
           className="w-8"
-          src={CHAINS[props.chainId]?.logo}
+          src={CHAINS[chainId]?.logo}
           alt="Round Chain Logo"
         />
       </div>

@@ -369,8 +369,6 @@ export const updateApplicationStatuses = async (
     signer
   );
 
-  console.log("Updating application statuses...", statuses);
-
   const tx = await roundImplementation.setApplicationStatuses(statuses);
 
   const receipt = await tx.wait();
@@ -393,8 +391,6 @@ export const updatePayoutApplicationStatuses = async (
     payoutStrategyAddress,
     signer
   );
-
-  console.log("Updating application statuses...", statuses);
 
   const tx = await payout.setApplicationsInReview(statuses);
 

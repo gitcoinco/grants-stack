@@ -15,6 +15,7 @@ interface ButtonProps {
   variant: ButtonVariants;
   disabled?: boolean;
   styles?: string[];
+  dataTrackEvent?: string;
 }
 
 function Button({
@@ -24,6 +25,7 @@ function Button({
   variant,
   disabled,
   styles,
+  dataTrackEvent,
 }: ButtonProps) {
   const navigate = useNavigate();
 
@@ -40,6 +42,7 @@ function Button({
       onClick={clickHandler}
       className={`base-btn ${variant} ${styles?.join(" ")}`}
       type="button"
+      data-track-event={dataTrackEvent}
     >
       {children}
     </button>

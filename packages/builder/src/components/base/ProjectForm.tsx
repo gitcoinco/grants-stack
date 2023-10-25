@@ -235,6 +235,7 @@ function ProjectForm({
           <Button
             variant={ButtonVariants.outline}
             onClick={() => toggleModal(true)}
+            dataTrackEvent="project-create-details-cancel"
           >
             Cancel
           </Button>
@@ -242,6 +243,7 @@ function ProjectForm({
             disabled={!formValidation.valid && submitted}
             variant={ButtonVariants.primary}
             onClick={nextStep}
+            dataTrackEvent="project-create-details-next"
           >
             Next
           </Button>

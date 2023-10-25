@@ -42,7 +42,7 @@ export const RoundValidationSchema = yup.object().shape({
         .required("You must select a support type.")
         .notOneOf(
           ["Select what type of input."],
-          "You must select a support type.",
+          "You must select a support type."
         ),
       info: yup
         .string()
@@ -61,7 +61,7 @@ export const RoundValidationSchema = yup.object().shape({
             /*Matches www.example.com, example.com, http and https prefixes, but not www.invalid */
             .matches(
               /^(http:\/\/|https:\/\/|ipfs:\/\/)?\S+\.\S+$|^(ipfs:\/\/)\S+$/,
-              "Must be a valid URL",
+              "Must be a valid URL"
             )
             .required("You must provide a valid URL."),
         }),
@@ -682,7 +682,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 <p className="text-sm mt-0.5">
                   <a
                     className="text-violet-400 mr-1"
-                    href="https://grant-explorer.gitcoin.co/"
+                    href="https://explorer.gitcoin.co/"
                     target="_blank"
                   >
                     Gitcoin Explorer
@@ -883,7 +883,7 @@ function SupportTypeDropdown(props: {
               <SupportTypeButton
                 errors={props.errors}
                 supportType={props.supportTypes.find(
-                  (supportType) => supportType.name === field.value,
+                  (supportType) => supportType.name === field.value
                 )}
               />
               <Transition
@@ -904,7 +904,7 @@ function SupportTypeDropdown(props: {
                               active
                                 ? "text-white bg-indigo-600"
                                 : "text-gray-900",
-                              "relative cursor-default select-none py-2 pl-3 pr-9",
+                              "relative cursor-default select-none py-2 pl-3 pr-9"
                             )
                           }
                           value={type.name}
@@ -916,7 +916,7 @@ function SupportTypeDropdown(props: {
                                 <span
                                   className={classNames(
                                     selected ? "font-semibold" : "font-normal",
-                                    "ml-3 block truncate",
+                                    "ml-3 block truncate"
                                   )}
                                 >
                                   {type.name}
@@ -927,7 +927,7 @@ function SupportTypeDropdown(props: {
                                 <span
                                   className={classNames(
                                     active ? "text-white" : "text-indigo-600",
-                                    "absolute inset-y-0 right-0 flex items-center pr-4",
+                                    "absolute inset-y-0 right-0 flex items-center pr-4"
                                   )}
                                 >
                                   <CheckIcon
@@ -939,7 +939,7 @@ function SupportTypeDropdown(props: {
                             </>
                           )}
                         </Listbox.Option>
-                      ),
+                      )
                   )}
                 </Listbox.Options>
               </Transition>
@@ -1007,7 +1007,7 @@ function Support(props: {
     <div className="mt-2 mb-2">
       <div className="flex justify-between">
         <label htmlFor="roundMetadata.support.info" className="text-sm">
-          Suppport Input
+          Support Input
         </label>
         <span className="text-right text-violet-400 float-right text-xs mt-1">
           *Required
@@ -1052,7 +1052,6 @@ function RoundType(props: {
 }) {
   const { field: roundTypeField } = useController({
     name: "roundMetadata.roundType",
-    defaultValue: "",
     control: props.control,
     rules: {
       required: true,
@@ -1074,7 +1073,7 @@ function RoundType(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 mt-1 rounded-full border flex items-center justify-center",
+                      "h-4 w-4 mt-1 rounded-full border flex items-center justify-center"
                     )}
                     aria-hidden="true"
                   >
@@ -1103,7 +1102,7 @@ function RoundType(props: {
                         ? "bg-indigo-600 border-transparent"
                         : "bg-white border-gray-300",
                       active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 mt-1 rounded-full border flex items-center justify-center",
+                      "h-4 w-4 mt-1 rounded-full border flex items-center justify-center"
                     )}
                     aria-hidden="true"
                   >

@@ -1,6 +1,7 @@
 <!-- 
 Thank you for your pull request! Please review the requirements below 
 and ensure your pull request has fulfilled all requirements outlined in the target package.
+Before submitting a PR for review, please make sure that all the CI checks are passing.
 -->
 
 ## PR checklist
@@ -18,6 +19,7 @@ For every PR, make sure that these statements are true:
 - [ ] Parses out-of-domain data - this includes user input, API respones, on-chain data etc.
 - [ ] Doesn't contain commented out code.
 - [ ] Doesn't contain skipped or empty tests.
+- [ ] If this PR adds/updates any feature, it adds/updates its test script
 
 Subjective - at the discretion of the reviewers
 - Does things as simply as possible, but not simpler.

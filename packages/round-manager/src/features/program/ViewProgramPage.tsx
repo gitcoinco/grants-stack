@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/solid";
 import { RefreshIcon } from "@heroicons/react/outline";
 
-import QuadraticFunding from "../../assets/quadratic-funding.svg";
+import QuadraticFundingSVG from "../../assets/quadratic-funding.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
 import Close from "../../assets/close.svg";
 
@@ -39,8 +39,6 @@ export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  const navigate = useNavigate();
-
   const { id: programId } = useParams();
 
   const { address } = useWallet();
@@ -55,10 +53,8 @@ export default function ViewProgram() {
   const [programExists, setProgramExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
   const [grantType, setGrantType] = useState<
-    "quadraticFunding" | "directGrant" | undefined
-  >(
-    process.env.REACT_APP_DIRECT_GRANT_ENABLED ? undefined : "quadraticFunding"
-  );
+    "quadraticFunding" | "directGrant" | null
+  >(null);
   const debugModeEnabled = useDebugMode();
 
   useEffect(() => {
@@ -94,7 +90,7 @@ export default function ViewProgram() {
               <div className="flex-1 min-w-0">
                 {/* Round type */}
                 {getPayoutRoundDescription(
-                  round.payoutStrategy.strategyName || ""
+                  round.payoutStrategy.strategyName || "",
                 ) && (
                   <div
                     className={`text-xs text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-3`}
@@ -102,7 +98,7 @@ export default function ViewProgram() {
                     data-testid="round-payout-strategy-type"
                   >
                     {getPayoutRoundDescription(
-                      round.payoutStrategy.strategyName || ""
+                      round.payoutStrategy.strategyName || "",
                     )}
                   </div>
                 )}
@@ -263,15 +259,9 @@ export default function ViewProgram() {
               onClick={() => setGrantType("quadraticFunding")}
               className={`flex w-full mb-4 rounded border  ${
                 grantType === "quadraticFunding"
-                  ? "border-violet-400"
+                  ? "border-violet-400 shadow-lg"
                   : "border-grey-100"
               } bg-white p-6 cursor-pointer`}
-              style={{
-                boxShadow:
-                  grantType === "quadraticFunding"
-                    ? " 0px 10px 15px -3px #0000001A"
-                    : "none",
-              }}
             >
               <div className="flex pr-6 m-auto">
                 <div
@@ -297,55 +287,47 @@ export default function ViewProgram() {
                 </p>
               </div>
               <img
-                src={QuadraticFunding}
+                src={QuadraticFundingSVG}
                 alt="Quadratic Funding"
                 className="object-cover pl-6 pr-4"
               />
             </button>
-            {process.env.REACT_APP_DIRECT_GRANT_ENABLED && (
-              <button
-                onClick={() => setGrantType("directGrant")}
-                className={`flex w-full rounded border  ${
-                  grantType === "directGrant"
-                    ? "border-violet-400"
-                    : "border-grey-100"
-                } bg-white p-6 cursor-pointer`}
-                style={{
-                  boxShadow:
+            <button
+              onClick={() => setGrantType("directGrant")}
+              className={`flex w-full rounded border  ${
+                grantType === "directGrant"
+                  ? "border-violet-400 shadow-lg"
+                  : "border-grey-100"
+              } bg-white p-6 cursor-pointer`}
+            >
+              <div className="flex pr-6 m-auto">
+                <div
+                  className={`rounded-full border ${
                     grantType === "directGrant"
-                      ? " 0px 10px 15px -3px #0000001A"
-                      : "none",
-                }}
-              >
-                <div className="flex pr-6 m-auto">
-                  <div
-                    className={`rounded-full border ${
-                      grantType === "directGrant"
-                        ? "border-violet-400"
-                        : "border-grey-100"
-                    } h-[24px] w-[24px]`}
-                    style={{
-                      borderWidth: grantType === "directGrant" ? "6px" : "2px",
-                    }}
-                  ></div>
-                </div>
-                <div className="pr-6 flex-grow text-left mt-auto mb-auto">
-                  <h3 className="text-xl mb-2">Direct Grants</h3>
-                  <p
-                    className="text-grey-400 text-sm pr-4"
-                    data-testid="program-details-intro"
-                  >
-                    Choose this type of round to directly allocate funds to
-                    selected projects yourself.
-                  </p>
-                </div>
-                <img
-                  src={DirectGrants}
-                  alt="Direct Grants"
-                  className="object-cover pl-6 pr-4"
+                      ? "border-violet-400"
+                      : "border-grey-100"
+                  } h-[24px] w-[24px]`}
+                  style={{
+                    borderWidth: grantType === "directGrant" ? "6px" : "2px",
+                  }}
                 />
-              </button>
-            )}
+              </div>
+              <div className="pr-6 flex-grow text-left mt-auto mb-auto">
+                <h3 className="text-xl mb-2">Direct Grants</h3>
+                <p
+                  className="text-grey-400 text-sm pr-4"
+                  data-testid="program-details-intro"
+                >
+                  Choose this type of round to directly allocate funds to
+                  selected projects yourself.
+                </p>
+              </div>
+              <img
+                src={DirectGrants}
+                alt="Direct Grants"
+                className="object-cover pl-6 pr-4"
+              />
+            </button>
           </div>
           <div className="w-full px-12">
             <div className="border-t border-grey-100 h-[1px] mt-6 mb-6" />
@@ -360,20 +342,19 @@ export default function ViewProgram() {
                 </Button>
               </Link>
             )}
-            {grantType === "directGrant" &&
-              process.env.REACT_APP_DIRECT_GRANT_ENABLED && (
-                <Link
-                  to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
-                >
-                  <Button className="px-4 w-full h-[48px]">
-                    <PlusIcon
-                      className="h-4 w-4 inline-flex -translate-y-0.5"
-                      aria-hidden="true"
-                    />
-                    &nbsp;Create round
-                  </Button>
-                </Link>
-              )}
+            {grantType === "directGrant" && (
+              <Link
+                to={`/round/create?programId=${programToRender?.id}&roundCategory=direct`}
+              >
+                <Button className="px-4 w-full h-[48px]">
+                  <PlusIcon
+                    className="h-4 w-4 inline-flex -translate-y-0.5"
+                    aria-hidden="true"
+                  />
+                  &nbsp;Create round
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -424,11 +405,7 @@ export default function ViewProgram() {
                       <p className="font-bold">My Rounds</p>
                       <span
                         onClick={() => {
-                          process.env.REACT_APP_DIRECT_GRANT_ENABLED
-                            ? setIsModalOpen(true)
-                            : navigate(
-                                `/round/create?programId=${programToRender?.id}`
-                              );
+                          setIsModalOpen(true);
                         }}
                         className="text-violet-400 font-thin ml-auto mr-4 cursor-pointer"
                         data-testid="create-round-small-link"

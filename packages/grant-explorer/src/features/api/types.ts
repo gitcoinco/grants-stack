@@ -1,5 +1,5 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { ChainId } from "common";
+import { ChainId, RoundPayoutType, RoundVisibilityType } from "common";
 import { Hex } from "viem";
 import { WalletClient } from "wagmi";
 
@@ -69,7 +69,7 @@ export interface PayoutStrategy {
    * MERKLE for QF
    * DIRECT for DG
    */
-  strategyName: string;
+  strategyName: RoundPayoutType;
 }
 
 export interface Round {
@@ -82,7 +82,7 @@ export interface Round {
    */
   roundMetadata?: {
     name: string;
-    roundType: string;
+    roundType: RoundVisibilityType;
     eligibility: Eligibility;
     programContractAddress: string;
     quadraticFundingConfig?: {
@@ -212,7 +212,7 @@ export type VotingToken = {
   decimal: number;
   logo?: string;
   default?: boolean;
-  redstoneTokenId?: string;
+  redstoneTokenId: string;
   permitVersion?: string;
   //TODO: remove if the previous default was intended to be used as defaultForVoting
   defaultForVoting: boolean;
