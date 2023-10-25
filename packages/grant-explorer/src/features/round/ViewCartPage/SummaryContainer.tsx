@@ -204,7 +204,7 @@ export function SummaryContainer() {
           tryAgainText={"Go to Passport"}
           doneText={"Donate without matching"}
           onTryAgain={() => {
-            navigate(`/round/passport/connect`);
+            window.location.href = "https://passport.gitcoin.co";
           }}
           heading={`Don’t miss out on getting your donations matched!`}
           subheading={
