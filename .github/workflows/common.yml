@@ -9,7 +9,7 @@ on:
       - "**"
 jobs:
   lint-test-typecheck:
-    concurrency: ci-round-manager-${{ github.head_ref || github.run_id }}
+    concurrency: ci-common-${{ github.head_ref || github.run_id }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
