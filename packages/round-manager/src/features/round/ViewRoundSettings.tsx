@@ -184,7 +184,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 .number()
                 .typeError("Invalid value.")
                 .positive()
-                .integer()
                 .required("This field is required.")
                 .moreThan(0.001, "Must be greater than zero (0).")
                 .lessThan(101, "Must be equal or less than 100."),
@@ -198,7 +197,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   .number()
                   .typeError("Invalid value.")
                   .positive()
-                  .integer()
                   .required("This field is required.")
                   .moreThan(0, "Must be greater than 0."),
                 otherwise: yup.number().notRequired(),
@@ -338,7 +336,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const confirmationModalBody = (
     <p className="text-md text-center font-normal mb-4">
-      You will need to sign 1 transaction to update your round with the latest
+      You will need to sign a transaction to update your round with the latest
       changes. Please note that once the round starts, you will not be able to
       make any more changes to your round settings.
     </p>
@@ -1849,6 +1847,7 @@ function Funding(props: {
                   )}
                   value={field.value}
                   type="number"
+                  step="any"
                   className={classNames(
                     "w-[88%] rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
                     !props.editMode.canEdit ||
