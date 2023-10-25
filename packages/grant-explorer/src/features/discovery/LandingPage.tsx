@@ -87,7 +87,7 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {roundsEndingSoon.data?.slice(0, 3).map((round) => (
+          {roundsEndingSoon.data?.map((round) => (
             <div key={round.id}>
               <RoundCard round={round} />
             </div>
