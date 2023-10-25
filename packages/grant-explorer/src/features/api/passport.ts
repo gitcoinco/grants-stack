@@ -1,81 +1,129 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import {
-  submitPassport,
   fetchPassport,
   PassportResponse,
+  PassportResponseSchema,
   PassportState,
+  submitPassport,
 } from "common";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
+import useSWR from "swr";
 
 export { submitPassport, fetchPassport, PassportState };
 export type { PassportResponse };
 
-export function usePassport({ address }: { address: string }) {
-  const [passport, setPassport] = useState<PassportResponse | undefined>();
-  const [, setError] = useState<Response | undefined>();
+const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
 
-  const [passportState, setPassportState] = useState<PassportState>(
-    PassportState.LOADING
+export function usePassport({ address }: { address: string | undefined }) {
+  const swr = useSWR<PassportResponse, Response, () => [string, string] | null>(
+    () =>
+      address && PASSPORT_COMMUNITY_ID
+        ? [address, PASSPORT_COMMUNITY_ID]
+        : null,
+    async (args) => {
+      const res = await fetchPassport(...args);
+
+      if (res.ok) {
+        return PassportResponseSchema.parse(await res.json());
+      } else {
+        throw res;
+      }
+    }
   );
 
+  const passportState = useMemo(() => {
+    if (swr.error) {
+      switch (swr.error.status) {
+        case 400: // unregistered/nonexistent passport address
+          return PassportState.INVALID_PASSPORT;
+        case 401: // invalid API key
+          swr.error.json().then((json) => {
+            console.error("invalid API key", json);
+          });
+          return PassportState.ERROR;
+        default:
+          console.error("Error fetching passport", swr.error);
+          return PassportState.ERROR;
+      }
+    }
+
+    if (swr.data) {
+      if (
+        !swr.data.score ||
+        !swr.data.evidence ||
+        swr.data.status === "ERROR"
+      ) {
+        datadogLogs.logger.error(
+          `error: callFetchPassport - invalid score response`,
+          swr.data
+        );
+        return PassportState.INVALID_RESPONSE;
+      }
+
+      return PassportState.SCORE_AVAILABLE;
+    }
+
+    if (!address) {
+      return PassportState.NOT_CONNECTED;
+    }
+
+    return PassportState.LOADING;
+  }, [swr.error, swr.data, address]);
+
+  const passportScore = useMemo(() => {
+    if (swr.data?.evidence) {
+      return swr.data.evidence.rawScore;
+    }
+    return 0;
+  }, [swr.data]);
+
+  const PROCESSING_REFETCH_INTERVAL_MS = 3000;
+  /** If passport is still processing, refetch it every PROCESSING_REFETCH_INTERVAL_MS */
   useEffect(() => {
-    setPassportState(PassportState.LOADING);
-
-    const PASSPORT_COMMUNITY_ID =
-      process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
-    if (PASSPORT_COMMUNITY_ID === undefined) {
-      throw new Error("passport community id not set");
+    if (swr.data?.status === "PROCESSING") {
+      setTimeout(() => {
+        /* Revalidate */
+        swr.mutate();
+      }, PROCESSING_REFETCH_INTERVAL_MS);
     }
-    const PASSPORT_THRESHOLD = 0;
+  }, [swr]);
 
-    if (address && PASSPORT_COMMUNITY_ID) {
-      const callFetchPassport = async () => {
-        const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
-        if (res.ok) {
-          const json = await res.json();
-
-          if (json.status === "PROCESSING") {
-            console.log("processing, calling again in 3000 ms");
-            setTimeout(async () => {
-              await callFetchPassport();
-            }, 3000);
-            return;
-          } else if (json.status === "ERROR") {
-            // due to error at passport end
-            setPassportState(PassportState.ERROR);
-            return;
-          }
-
-          setPassport(json);
-          setPassportState(
-            json.score >= PASSPORT_THRESHOLD
-              ? PassportState.MATCH_ELIGIBLE
-              : PassportState.MATCH_INELIGIBLE
-          );
-        } else {
-          setError(res);
-          switch (res.status) {
-            case 400: // unregistered/nonexistent passport address
-              setPassportState(PassportState.INVALID_PASSPORT);
-              break;
-            case 401: // invalid API key
-              setPassportState(PassportState.ERROR);
-              console.error("invalid API key", res.json());
-              break;
-            default:
-              setPassportState(PassportState.ERROR);
-              console.error("Error fetching passport", res);
-          }
-        }
-      };
-
-      callFetchPassport();
+  const passportColor = useMemo<PassportColor>(() => {
+    if (passportScore < 15) {
+      return "orange";
+    } else if (passportScore >= 15 && passportScore < 25) {
+      return "yellow";
     } else {
-      setPassportState(PassportState.NOT_CONNECTED);
+      return "green";
     }
-  }, [address]);
+  }, [passportScore]);
+
+  const donationImpact = useMemo(() => {
+    if (passportScore < 15) {
+      return 0;
+    } else if (passportScore >= 15 && passportScore < 25) {
+      return 10 * (passportScore - 15);
+    } else {
+      return 100;
+    }
+  }, [passportScore]);
 
   return {
     passportState,
-    passport,
+    passportScore,
+    passportColor,
+    donationImpact,
   };
 }
+
+export type PassportColor = "gray" | "orange" | "yellow" | "green";
+
+const passportColorToClassName: Record<PassportColor, string> = {
+  gray: "text-gray-400",
+  orange: "text-orange-400",
+  yellow: "text-yellow-400",
+  green: "text-green-400",
+};
+
+export const getClassForPassportColor = (color: PassportColor) =>
+  passportColorToClassName[color];
