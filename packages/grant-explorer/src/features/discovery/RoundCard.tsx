@@ -24,7 +24,6 @@ import RoundCardStat from "./RoundCardStat";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
 import { RoundDaysLeft } from "./RoundDaysLeft";
-import { PropsWithChildren } from "react";
 
 type RoundCardProps = {
   round: RoundOverview;
