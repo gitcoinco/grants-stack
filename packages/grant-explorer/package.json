@@ -95,6 +95,7 @@
     "viem": "^1.5.3",
     "wagmi": "1.4.1",
     "web-vitals": "^2.1.0",
+    "zod": "^3.22.4",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
