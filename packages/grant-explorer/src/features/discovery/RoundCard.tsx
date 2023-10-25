@@ -108,7 +108,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
               isValidRoundEndTime={isValidRoundEndTime}
             />
 
-            <RoundBadge strategyName={payoutStrategy.strategyName} />
+            <RoundBadge strategyName={payoutStrategy?.strategyName} />
           </div>
           <div className="border-t" />
 

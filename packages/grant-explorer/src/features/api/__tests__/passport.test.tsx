@@ -31,6 +31,7 @@ describe("fetchPassport", () => {
     vi.clearAllMocks();
   });
 
+  /* TODO: this doesn't test anything */
   it("should return a response", async () => {
     (fetchPassport as Mock).mockResolvedValue({
       ok: true,
@@ -48,6 +49,7 @@ describe("submitPassport", () => {
     vi.clearAllMocks();
   });
 
+  /* TODO: again, this doesn't test anything */
   it("should return a response", async () => {
     (submitPassport as Mock).mockResolvedValue({
       ok: true,
