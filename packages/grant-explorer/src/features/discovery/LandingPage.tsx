@@ -4,7 +4,6 @@ import {
   usePrefetchRoundsMetadata,
   useRoundsEndingSoon,
   useRoundsTakingApplications,
-  useSearchRounds,
 } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
@@ -14,7 +13,6 @@ import { useLocation } from "react-router-dom";
 
 const LandingPage = () => {
   const location = useLocation();
-  console.log(useSearchRounds("Gitcoin"));
   useEffect(() => {
     if (
       process.env.REACT_APP_ENV === "production" &&
@@ -26,11 +24,10 @@ const LandingPage = () => {
 
   usePrefetchRoundsMetadata();
 
-  const { data: roundsTakingApplications } = useRoundsTakingApplications();
-  const { data: activeRounds } = useActiveRounds();
-  const { data: roundsEndingSoon } = useRoundsEndingSoon();
+  const activeRounds = useActiveRounds();
+  const roundsTakingApplications = useRoundsTakingApplications();
+  const roundsEndingSoon = useRoundsEndingSoon();
 
-  console.log("applyNowRounds", roundsTakingApplications);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
@@ -51,7 +48,7 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {activeRounds?.slice(0, 4).map((round, i) => (
+          {activeRounds.data?.slice(0, 4).map((round, i) => (
             <div
               key={round.id}
               className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
@@ -77,7 +74,7 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-x-6 md:w-2/3">
-            {roundsTakingApplications?.slice(0, 4)?.map((round) => (
+            {roundsTakingApplications.data?.slice(0, 4)?.map((round) => (
               <div key={round.id}>
                 <RoundCard round={round} />
               </div>
@@ -90,7 +87,7 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {roundsEndingSoon?.slice(0, 3).map((round) => (
+          {roundsEndingSoon.data?.slice(0, 3).map((round) => (
             <div key={round.id}>
               <RoundCard round={round} />
             </div>

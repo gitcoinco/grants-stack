@@ -33,20 +33,24 @@ export type RoundOverview = {
 };
 
 type RoundsVariables = {
-  where?: {
+  orderBy?:
+    | "roundStartTime"
+    | "roundEndTime"
+    | "applicationsStartTime"
+    | "applicationsEndTime";
+  orderDirection?: "asc" | "desc";
+  where?: TimestampVariables & {
     payoutStrategy?: { strategyName_in: string[] };
-    roundStartTime_lt?: string;
-    roundEndTime_gt?: string;
-    roundEndTime_lt?: string;
-    applicationsStartTime_lte?: string;
-    and?: {
-      applicationsStartTime_lte?: string;
-      or?: {
-        applicationsEndTime?: string;
-        applicationsEndTime_gte?: string;
-      }[];
-    }[];
+    and?: (TimestampVariables & { or?: TimestampVariables[] })[];
   };
+};
+type TimestampVariables = {
+  applicationsEndTime_gt?: string;
+  applicationsStartTime_lte?: string;
+  applicationsEndTime_lt?: string;
+  roundEndTime_gt?: string;
+  applicationsEndTime?: string;
+  applicationsEndTime_gte?: string;
 };
 
 function getActiveChainIds() {
@@ -130,12 +134,26 @@ export function useRoundsTakingApplications() {
 
 // What filters for active rounds?
 export function useActiveRounds() {
-  return useRounds({});
+  const currentTimestamp = Math.floor(Date.now() / 1000).toString();
+  return useRounds({
+    orderDirection: "desc",
+    where: {
+      // Must be after current time
+      roundEndTime_gt: currentTimestamp,
+    },
+  });
 }
 
-// What filters for ending soon? roundEndTime <= today - 14 days?
 export function useRoundsEndingSoon() {
-  return useRounds({});
+  const currentTimestamp = Math.floor(Date.now() / 1000).toString();
+  return useRounds({
+    orderBy: "roundEndTime",
+    orderDirection: "asc",
+    where: {
+      // Must be after current time
+      roundEndTime_gt: currentTimestamp,
+    },
+  });
 }
 
 // TODO: Filter + sort rounds (status, network, sort)
@@ -149,7 +167,7 @@ export function useRounds(variables: RoundsVariables) {
   const debugModeEnabled = useDebugMode();
   const chainIds = getActiveChainIds();
 
-  const query = useSWR(["rounds", { variables, chainIds }], () =>
+  const query = useSWR(["rounds", variables, chainIds], () =>
     Promise.all(
       chainIds.flatMap((chainId) => {
         const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
@@ -161,13 +179,53 @@ export function useRounds(variables: RoundsVariables) {
             })) ?? []
         );
       })
-    ).then((res) => res.flat())
+    )
+      .then((res) => res.flat())
+      .then(cleanRoundData)
+      // We need to do another sort because of results from many chains
+      .then((rounds) => sortRounds(rounds, variables))
   );
 
   return {
     ...query,
     data: debugModeEnabled ? query.data : filterRounds(cache, query.data),
   };
+}
+
+function sortRounds(
+  rounds: RoundOverview[],
+  { orderBy = "roundEndTime", orderDirection = "asc" }: RoundsVariables
+) {
+  const dir = { asc: 1, desc: -1 };
+  return rounds.sort((a, b) =>
+    a[orderBy] > b[orderBy] ? dir[orderDirection] : -dir[orderDirection]
+  );
+}
+/* 
+Some timestamps are in milliseconds and others in overflowed values (115792089237316195423570985008687907853269984665640564039457584007913129639935)
+See this query: https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet/graphql?query=query+%7B%0A+++rounds%28first%3A+3%2C%0A++++++orderBy%3A+roundEndTime%2C%0A++++++orderDirection%3A+asc%0A++++%29+%7B%0A++++++id%0A++++++roundEndTime%0A+++++%0A++++%7D%0A%7D
+
+*/
+function cleanRoundData(rounds: RoundOverview[]) {
+  const timestampKeys = [
+    "roundStartTime",
+    "roundEndTime",
+    "applicationsStartTime",
+    "applicationsEndTime",
+  ] as const;
+  return rounds.map((round) => ({
+    ...round,
+    ...timestampKeys.reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]:
+          round[key].length > 10 // This timestamp is in milliseconds, convert to seconds
+            ? Math.round(Number(round.roundEndTime) / 1000).toString()
+            : round.roundEndTime,
+      }),
+      {}
+    ),
+  }));
 }
 
 function filterRounds(

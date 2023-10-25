@@ -47,7 +47,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
   const daysLeft = getDaysLeft(Number(roundEndTime));
   const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
 
-  // console.log("daysLeftToApply", daysLeftToApply, applicationsEndTime);
   // Can we simplify this? Would `days < 1000` do the same thing?
   const isValidRoundEndTime = !isInfiniteDate(
     new Date(parseInt(roundEndTime, 10) * 1000)
