@@ -77,7 +77,8 @@
     "verify-env": "*",
     "wagmi": "^0.12.19",
     "web-vitals": "^2.1.4",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "zod": "^3.22.4"
   },
   "scripts": {
     "start": "craco start",

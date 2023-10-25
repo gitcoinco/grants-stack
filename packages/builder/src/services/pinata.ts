@@ -1,42 +1,48 @@
-// eslint-disable-next-line
-const JWT = process.env.REACT_APP_PINATA_JWT;
-// eslint-disable-next-line
-const GATEWAY = process.env.REACT_APP_PINATA_GATEWAY;
-const PIN_JSON_TO_IPFS_URL = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
-const PIN_FILE_TO_IPFS_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
+import { z } from "zod";
 
 export default class PinataClient {
   private jwt: string;
 
   private gateway: string;
 
-  private pinJSONToIPFSURL: string;
+  private pinataBaseUrl: string;
 
-  private pinFileToIPFSURL: string;
+  private pinJSONToIPFSUrl: string;
+
+  private pinFileToIPFSUrl: string;
 
   constructor() {
-    if (JWT === undefined || GATEWAY === undefined) {
-      throw new Error(
-        "remember to set the REACT_APP_PINATA_JWT and REACT_APP_PINATA_GATEWAY env vars"
-      );
-    }
-    this.jwt = JWT!;
-    this.gateway = GATEWAY.replace(/\/$/, "");
-    this.pinJSONToIPFSURL = PIN_JSON_TO_IPFS_URL;
-    this.pinFileToIPFSURL = PIN_FILE_TO_IPFS_URL;
+    this.jwt = z
+      .string({
+        required_error: "REACT_APP_PINATA_JWT is required",
+      })
+      .parse(process.env.REACT_APP_PINATA_JWT);
+    this.gateway = z
+      .string({ required_error: "REACT_APP_IPFS_BASE_URL is required" })
+      .url()
+      .parse(process.env.REACT_APP_IPFS_BASE_URL)
+      .replace(/\/$/, "");
+    this.pinataBaseUrl = z
+      .string({ required_error: "REACT_APP_PINATA_BASE_URL" })
+      .url()
+      .parse(process.env.REACT_APP_PINATA_BASE_URL)
+      .replace(/\/$/, "");
+
+    this.pinJSONToIPFSUrl = `${this.pinataBaseUrl}/pinning/pinJSONToIPFS`;
+    this.pinFileToIPFSUrl = `${this.pinataBaseUrl}/pinning/pinFileToIPFS`;
   }
 
-  fileURL(cid: string) {
+  fileUrl(cid: string) {
     return `${this.gateway}/ipfs/${cid}`;
   }
 
   fetchText(cid: string) {
-    const url = this.fileURL(cid);
+    const url = this.fileUrl(cid);
     return fetch(url).then((resp) => resp.text());
   }
 
   fetchJson(cid: string) {
-    const url = this.fileURL(cid);
+    const url = this.fileUrl(cid);
     return fetch(url).then((resp) => resp.json());
   }
 
@@ -60,7 +66,7 @@ export default class PinataClient {
       pinataContent: object,
     };
 
-    return fetch(this.pinJSONToIPFSURL, {
+    return fetch(this.pinJSONToIPFSUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,7 +90,7 @@ export default class PinataClient {
     fd.append("pinataOptions", JSON.stringify(requestData.pinataOptions));
     fd.append("pinataMetadata", JSON.stringify(requestData.pinataMetadata));
 
-    return fetch(this.pinFileToIPFSURL, {
+    return fetch(this.pinFileToIPFSUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.jwt}`,

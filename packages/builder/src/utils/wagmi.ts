@@ -13,14 +13,13 @@ import {
   optimism,
   goerli,
   arbitrumGoerli,
-  hardhat,
   avalancheFuji as avalancheFujiChain,
   avalanche as avalancheChain,
 } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import PublicGoodsNetworkIcon from "common/src/icons/PublicGoodsNetwork.svg";
+import { pgn, pgnTestnet, devChain1, devChain2 } from "common/src/chains";
 import { polygon, polygonMumbai } from "@wagmi/core/chains";
 import { FantomFTMLogo } from "../assets";
 
@@ -82,56 +81,7 @@ export const fantomTestnet: Chain = {
   iconUrl: FantomFTMLogo,
 };
 
-export const pgn: Chain = {
-  id: 424,
-  name: "PGN",
-  network: "pgn",
-  iconUrl: PublicGoodsNetworkIcon,
-  nativeCurrency: {
-    decimals: 18,
-    name: "Ether",
-    symbol: "ETH",
-  },
-  rpcUrls: {
-    default: { http: ["https://rpc.publicgoods.network"] },
-    public: { http: ["https://rpc.publicgoods.network"] },
-  },
-  blockExplorers: {
-    default: {
-      name: "pgnscan",
-      url: "https://explorer.publicgoods.network",
-    },
-  },
-};
-
 const chainsAvailable: Chain[] = [];
-export const pgnTestnet: Chain = {
-  id: 58008,
-  name: "PGN Testnet",
-  network: "pgn testnet",
-  iconUrl: PublicGoodsNetworkIcon,
-  nativeCurrency: {
-    decimals: 18,
-    name: "Ether",
-    symbol: "ETH",
-  },
-  rpcUrls: {
-    default: { http: ["https://sepolia.publicgoods.network"] },
-    public: { http: ["https://sepolia.publicgoods.network"] },
-  },
-  blockExplorers: {
-    default: {
-      name: "pgnscan",
-      url: "https://explorer.sepolia.publicgoods.network",
-    },
-  },
-  testnet: true,
-};
-
-// todo: fix for rpc issue is with hardhat local chain calling rpc
-if (process.env.REACT_APP_LOCALCHAIN === "true") {
-  chainsAvailable.push(hardhat);
-}
 
 if (process.env.REACT_APP_ENV === "production") {
   chainsAvailable.push(
@@ -145,6 +95,8 @@ if (process.env.REACT_APP_ENV === "production") {
   );
 } else {
   chainsAvailable.push(
+    devChain1,
+    devChain2,
     optimism,
     goerli,
     fantomTestnet,

@@ -15,6 +15,7 @@ export enum ChainId {
   FUJI = 43113,
   POLYGON = 137,
   POLYGON_MUMBAI = 80001,
+  DEV = 313371,
 }
 
 /**
@@ -108,3 +109,47 @@ export function parseChainId(input: string | number): ChainId {
   // If the input is not a valid enum value, return undefined
   throw "Invalid chainId " + input;
 }
+
+export const devChain1: Chain = {
+  id: 313371,
+  name: "Development 1",
+  network: "dev1",
+  iconUrl: PublicGoodsNetworkIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: { http: ["http://localhost:3005"] },
+    public: { http: ["http://localhost:3005"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "dev1",
+      url: "",
+    },
+  },
+};
+
+export const devChain2: Chain = {
+  id: 313372,
+  name: "Development 2",
+  network: "dev2",
+  iconUrl: PublicGoodsNetworkIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: { http: ["http://localhost:3007"] },
+    public: { http: ["http://localhost:3007"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "dev2",
+      url: "",
+    },
+  },
+};

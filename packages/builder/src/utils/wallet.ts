@@ -29,6 +29,8 @@ export function shortAddress(address: string): string {
 }
 
 export const networkPrettyNames: { [key in ChainName]: string } = {
+  dev1: "Development 1",
+  dev2: "Development 2",
   mainnet: "Mainnet",
   goerli: "Goerli",
   fantomTestnet: "Fantom Testnet",
@@ -46,6 +48,8 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
+  dev1: EthDiamondGlyph,
+  dev2: EthDiamondGlyph,
   mainnet: EthDiamondGlyph,
   goerli: EthDiamondGlyph,
   fantomTestnet: FTMTestnet,
@@ -63,6 +67,8 @@ export const networkIcon: { [key in ChainName]: string } = {
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
+  dev1: WhiteEthIconFilledCircle,
+  dev2: WhiteEthIconFilledCircle,
   mainnet: WhiteEthIconFilledCircle,
   goerli: WhiteEthIconFilledCircle,
   fantomTestnet: FTMTestnet,

@@ -24,7 +24,7 @@ export const getProjectImage = (
   }
 
   const pinataClient = new PinataClient();
-  return pinataClient.fileURL(img);
+  return pinataClient.fileUrl(img);
 };
 
 export const formatDateFromMs = (ts: number) => {
