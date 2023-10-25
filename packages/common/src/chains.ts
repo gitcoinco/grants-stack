@@ -1,5 +1,38 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
+import {
+  avalanche as avalancheOriginal,
+  avalancheFuji as avalancheFujiOriginal,
+  fantom as fantomOriginal,
+  fantomTestnet as fantomTestnetOriginal,
+} from "wagmi/chains";
+import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
+
+export const fantom: Chain = {
+  ...fantomOriginal,
+  rpcUrls: {
+    default: {
+      http: ["https://rpcapi.fantom.network/"],
+    },
+    public: {
+      http: ["https://rpcapi.fantom.network/"],
+    },
+  },
+  iconUrl: FantomFTMLogo,
+};
+
+export const fantomTestnet: Chain = {
+  ...fantomTestnetOriginal,
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.testnet.fantom.network/"],
+    },
+    public: {
+      http: ["https://rpc.testnet.fantom.network/"],
+    },
+  },
+  iconUrl: FantomFTMLogo,
+};
 
 export enum ChainId {
   MAINNET = 1,
@@ -15,7 +48,8 @@ export enum ChainId {
   FUJI = 43113,
   POLYGON = 137,
   POLYGON_MUMBAI = 80001,
-  DEV = 313371,
+  DEV1 = 313371,
+  DEV2 = 313372,
 }
 
 /**
@@ -35,6 +69,34 @@ export function tryParseChainIdToEnum(
   }
   return chainIdEnumValue as ChainId;
 }
+
+export const avalancheFuji: Chain = {
+  ...avalancheFujiOriginal,
+  rpcUrls: {
+    default: {
+      http: [
+        "https://avalanche-fuji.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
+      ],
+    },
+    public: {
+      http: ["https://api.avax-test.network/ext/bc/C/rpc"],
+    },
+  },
+};
+
+export const avalanche: Chain = {
+  ...avalancheOriginal,
+  rpcUrls: {
+    default: {
+      http: [
+        "https://avalanche-mainnet.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
+      ],
+    },
+    public: {
+      http: ["https://api.avax.network/ext/bc/C/rpc"],
+    },
+  },
+};
 
 export const pgnTestnet: Chain = {
   id: 58008,

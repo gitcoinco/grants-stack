@@ -6,85 +6,72 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createClient } from "wagmi";
 import {
-  fantom as fantomChain,
-  fantomTestnet as fantomTestnetChain,
   mainnet,
   arbitrum,
   optimism,
   goerli,
   arbitrumGoerli,
-  avalancheFuji as avalancheFujiChain,
-  avalanche as avalancheChain,
 } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import { pgn, pgnTestnet, devChain1, devChain2 } from "common/src/chains";
+import {
+  pgn,
+  pgnTestnet,
+  devChain1,
+  devChain2,
+  avalanche,
+  avalancheFuji,
+  fantom,
+  fantomTestnet,
+} from "common/src/chains";
 import { polygon, polygonMumbai } from "@wagmi/core/chains";
-import { FantomFTMLogo } from "../assets";
 
 // RPC keys
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID!;
 const infuraId = process.env.REACT_APP_INFURA_ID!;
 
-export const avalanche: Chain = {
-  ...avalancheChain,
-  rpcUrls: {
-    default: {
-      http: [
-        "https://avalanche-mainnet.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
-      ],
-    },
-    public: {
-      http: ["https://api.avax.network/ext/bc/C/rpc"],
-    },
-  },
+const availableChains: { [key: string]: Chain } = {
+  dev1: devChain1,
+  dev2: devChain2,
+  mainnet,
+  fantom,
+  optimism,
+  pgn,
+  arbitrum,
+  avalanche,
+  polygon,
+  goerli,
+  fantomTestnet,
+  pgnTestnet,
+  arbitrumGoerli,
+  polygonMumbai,
+  avalancheFuji,
 };
 
-export const avalancheFuji: Chain = {
-  ...avalancheFujiChain,
-  rpcUrls: {
-    default: {
-      http: [
-        "https://avalanche-fuji.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
-      ],
-    },
-    public: {
-      http: ["https://api.avax-test.network/ext/bc/C/rpc"],
-    },
-  },
-};
+const enabledChains: Chain[] = [];
+const chainsConfig = process.env.REACT_APP_CHAINS;
+const selectedChainsNames =
+  chainsConfig !== undefined
+    ? chainsConfig.split(",").map((name) => name.trim())
+    : [];
 
-export const fantom: Chain = {
-  ...fantomChain,
-  rpcUrls: {
-    default: {
-      http: ["https://rpcapi.fantom.network/"],
-    },
-    public: {
-      http: ["https://rpcapi.fantom.network/"],
-    },
-  },
-  iconUrl: FantomFTMLogo,
-};
+if (selectedChainsNames.length > 0) {
+  // if REACT_APP_CHAINS is specified we use those
+  selectedChainsNames.forEach((name) => {
+    const chain = availableChains[name];
+    if (chain === undefined) {
+      throw new Error(
+        `availableChains doesn't contain a chain called "${name}"`
+      );
+    }
 
-export const fantomTestnet: Chain = {
-  ...fantomTestnetChain,
-  rpcUrls: {
-    default: {
-      http: ["https://rpc.testnet.fantom.network/"],
-    },
-    public: {
-      http: ["https://rpc.testnet.fantom.network/"],
-    },
-  },
-  iconUrl: FantomFTMLogo,
-};
-
-const chainsAvailable: Chain[] = [];
-
-if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(
+    enabledChains.push(chain);
+  });
+} else if (process.env.REACT_APP_ENV === "production") {
+  // if REACT_APP_CHAINS is not specified  ans we are in production
+  // we use the default chains for production environments
+  enabledChains.push(
     mainnet,
     fantom,
     optimism,
@@ -94,7 +81,9 @@ if (process.env.REACT_APP_ENV === "production") {
     polygon
   );
 } else {
-  chainsAvailable.push(
+  // if REACT_APP_CHAINS is not specified we use the
+  // default chains for staging
+  enabledChains.push(
     devChain1,
     devChain2,
     optimism,
@@ -113,7 +102,7 @@ if (process.env.REACT_APP_ENV === "production") {
   );
 }
 
-export const { chains, provider } = configureChains(chainsAvailable, [
+export const { chains, provider } = configureChains(enabledChains, [
   infuraProvider({ apiKey: infuraId, priority: 0 }),
   alchemyProvider({ apiKey: alchemyId, priority: 1 }),
   publicProvider({ priority: 2 }),

@@ -5,9 +5,9 @@ import { ethers } from "ethers";
 import PGNIcon from "common/src/icons/PublicGoodsNetwork.svg";
 import AVAXIcon from "common/src/icons/AVAX.svg";
 import POLIcon from "common/src/icons/pol-logo.svg";
+import FantomFTMLogo from "common/src/assets/fantom-ftm-logo.png";
 import {
   EthDiamondGlyph,
-  FantomFTMLogo,
   FTMTestnet,
   OPIcon,
   WhiteEthIconFilledCircle,
