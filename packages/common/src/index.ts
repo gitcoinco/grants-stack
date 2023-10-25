@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { useMemo, useState } from "react";
 import { ChainId } from "./chains";
-
+import z from "zod";
 export * from "./icons";
 export * from "./markdown";
 
@@ -10,27 +10,28 @@ export { ChainId };
 export enum PassportState {
   NOT_CONNECTED,
   INVALID_PASSPORT,
-  MATCH_ELIGIBLE,
-  MATCH_INELIGIBLE,
+  SCORE_AVAILABLE,
   LOADING,
   ERROR,
   INVALID_RESPONSE,
 }
 
-type PassportEvidence = {
-  type: string;
-  rawScore: string;
-  threshold: string;
-};
+const PassportEvidenceSchema = z.object({
+  type: z.string().nullish(),
+  rawScore: z.coerce.number(),
+  threshold: z.string().nullish(),
+});
 
-export type PassportResponse = {
-  address?: string;
-  score?: string;
-  status?: string;
-  evidence?: PassportEvidence;
-  error?: string;
-  detail?: string;
-};
+export type PassportResponse = z.infer<typeof PassportResponseSchema>;
+
+export const PassportResponseSchema = z.object({
+  address: z.string().nullish(),
+  score: z.string().nullish(),
+  status: z.string().nullish(),
+  evidence: PassportEvidenceSchema.nullish(),
+  error: z.string().nullish(),
+  detail: z.string().nullish(),
+});
 
 /**
  * Endpoint used to fetch the passport score for a given address
