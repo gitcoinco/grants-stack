@@ -15,7 +15,7 @@ import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 type Option = {
   label: string;
   value: string;
-  children: Option[];
+  children?: Option[];
 };
 
 export enum FilterStatus {
@@ -23,7 +23,7 @@ export enum FilterStatus {
   taking_applications = "taking_applications",
   finished = "finished",
 }
-const filterOptions = [
+const filterOptions: Option[] = [
   {
     label: "All",
     value: "",
@@ -97,11 +97,12 @@ export function getLabel(filter: FilterProps) {
           const selected =
             filterOptions
               .find((opt) => opt.value === key)
-              ?.children.find((c) => c.value === val) || acc;
+              ?.children?.find((c) => c.value === val) || acc;
 
           return selected;
         },
-        filterOptions[0] // Initialize with label: All
+        // Initialize with label: All
+        filterOptions[0]
       )
   );
 }
@@ -114,7 +115,7 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
       label={selected?.label}
       options={filterOptions}
       renderItem={({ active, label, value, children }) => {
-        if (!children.length) {
+        if (!children?.length) {
           return (
             <DropdownItem active={active} $as={Link} to={`/rounds`}>
               {label}
@@ -148,7 +149,7 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
                 leaveTo="opacity-0"
               >
                 <Listbox.Options className=" mt-1 w-full overflow-auto p-2">
-                  {children.map((child, j) => {
+                  {children?.map((child, j) => {
                     const checked = Boolean(
                       value && child.value === { status, type, network }[value]
                     );
