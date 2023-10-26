@@ -1777,12 +1777,7 @@ function Funding(props: {
             </span>
           </div>
 
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <input
               type="text"
               className="text-grey-400 disabled:bg-gray-50 w-[12%] rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -1803,15 +1798,11 @@ function Funding(props: {
                   step="any"
                   className={classNames(
                     "w-[88%] rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
-                    !props.editMode.canEdit ||
-                      props.editMode.canEditOnlyRoundEndDate
+                    !props.editMode.canEdit
                       ? "disabled:bg-gray-50"
                       : "bg-red"
                   )}
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                  disabled={!props.editMode.canEdit}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1878,12 +1869,7 @@ function Funding(props: {
               </p>
             </ReactTooltip>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.matchingCap"
@@ -1898,7 +1884,6 @@ function Funding(props: {
                   value={"yes"}
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCap
                   }
@@ -1907,8 +1892,7 @@ function Funding(props: {
                       ?.matchingCap ?? true
                   }
                   readOnly={
-                    !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate
+                    !props.editMode.canEdit
                   }
                   onChange={(e) => {
                     props.resetField(
@@ -1945,7 +1929,6 @@ function Funding(props: {
                   value={"no"}
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCap !== true
                   }
@@ -1983,12 +1966,7 @@ function Funding(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <input
               type="text"
               className="text-gray-400 disabled:bg-gray-50 w-[12%] text-center rounded-l-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -2007,16 +1985,14 @@ function Funding(props: {
                   type="number"
                   className={classNames(
                     "w-[88%] rounded-r-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
-                    (!props.editMode.canEdit &&
-                      !props.editMode.canEditOnlyRoundEndDate) ||
+                    (!props.editMode.canEdit) ||
                       !props.editedRound?.roundMetadata.quadraticFundingConfig
                         .matchingCap
                       ? "disabled:bg-gray-50"
                       : "bg-red"
                   )}
                   disabled={
-                    (!props.editMode.canEdit &&
-                      !props.editMode.canEditOnlyRoundEndDate) ||
+                    (!props.editMode.canEdit) ||
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
                       .matchingCap
                   }
@@ -2085,12 +2061,7 @@ function Funding(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
@@ -2105,7 +2076,6 @@ function Funding(props: {
                   value={"yes"}
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
                   }
@@ -2114,8 +2084,7 @@ function Funding(props: {
                       ?.minDonationThreshold
                   }
                   readOnly={
-                    !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate
+                    !props.editMode.canEdit
                   }
                   onChange={(e) => {
                     props.resetField(
@@ -2156,7 +2125,6 @@ function Funding(props: {
                   }
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
                   }
@@ -2190,12 +2158,7 @@ function Funding(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <input
               type="text"
               className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
@@ -2214,8 +2177,7 @@ function Funding(props: {
                   type="number"
                   className={classNames(
                     "w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
-                    (!props.editMode.canEdit &&
-                      !props.editMode.canEditOnlyRoundEndDate) ||
+                    (!props.editMode.canEdit) ||
                       !props.editedRound?.roundMetadata.quadraticFundingConfig
                         .minDonationThreshold
                       ? "disabled:bg-gray-50"
@@ -2223,8 +2185,7 @@ function Funding(props: {
                   )}
                   value={field.value}
                   disabled={
-                    (!props.editMode.canEdit &&
-                      !props.editMode.canEditOnlyRoundEndDate) ||
+                    (!props.editMode.canEdit) ||
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
                       .minDonationThreshold
                   }
@@ -2306,7 +2267,6 @@ function Funding(props: {
                   value="yes"
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.sybilDefense
                   }
@@ -2356,7 +2316,6 @@ function Funding(props: {
                   }
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.sybilDefense
                   }
