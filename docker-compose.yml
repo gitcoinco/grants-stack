@@ -13,7 +13,7 @@ version: '3.8'
 
 services:
   pinata:
-    image: ghcr.io/gitcoinco/pina:init
+    image: ghcr.io/gitcoinco/pina:main
     ports:
       - '127.0.0.1:3003:8000'
 
@@ -24,7 +24,7 @@ services:
     environment:
       - DEV_CHAIN_ID=313371
 
-  localchain-1-init:
+  localchain-1-inititalizer:
     image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
     depends_on:
       - pinata
@@ -44,7 +44,7 @@ services:
     environment:
       - DEV_CHAIN_ID=313372
 
-  localchain-2-init:
+  localchain-2-initializer:
     image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
     depends_on:
       - pinata
