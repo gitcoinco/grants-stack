@@ -86,7 +86,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
           )}
           <CardTitle
             data-testid="round-name"
-            className="absolute bottom-1 px-2"
+            className="absolute bottom-1 px-2 text-white"
           >
             {roundMetadata?.name}
           </CardTitle>
@@ -108,7 +108,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
               isValidRoundEndTime={isValidRoundEndTime}
             />
 
-            <RoundBadge strategyName={payoutStrategy.strategyName} />
+            <RoundBadge strategyName={payoutStrategy?.strategyName} />
           </div>
           <div className="border-t" />
 

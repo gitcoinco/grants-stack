@@ -20,7 +20,6 @@ import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
 import ApplyNowPage from "./features/discovery/ApplyNowPage";
 import LandingPage from "./features/discovery/LandingPage";
-import PassportConnect from "./features/round/PassportConnect";
 import ThankYou from "./features/round/ThankYou";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
@@ -71,12 +70,6 @@ root.render(
                 <Route path="/cart" element={<ViewCart />} />
 
                 <Route path="/thankyou" element={<ThankYou />} />
-
-                {/* Passport Connect */}
-                <Route
-                  path="/round/:chainId/:roundId/passport/connect"
-                  element={<PassportConnect />}
-                />
 
                 <Route
                   path="/contributors/:address"

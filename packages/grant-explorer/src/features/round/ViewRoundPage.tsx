@@ -28,7 +28,6 @@ import {
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
-import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Spinner } from "../common/Spinner";
@@ -250,9 +249,6 @@ function AfterRoundStart(props: {
     <>
       {showCartNotification && renderCartNotification()}
       <Navbar />
-      {round && !isDirectRound(round) && props.isBeforeRoundEndDate && (
-        <PassportBanner chainId={chainId} round={round} />
-      )}
       {props.isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />
@@ -271,8 +267,8 @@ function AfterRoundStart(props: {
             className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4"
             style={{ borderRadius: "20px" }}
           >
-            {round.payoutStrategy.strategyName &&
-              getRoundType(round.payoutStrategy.strategyName)}
+            {round.payoutStrategy?.strategyName &&
+              getRoundType(round.payoutStrategy?.strategyName)}
           </p>
           <div className="flex text-grey-400 mb-1">
             <p className="mr-4 text-sm">

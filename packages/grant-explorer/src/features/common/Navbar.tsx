@@ -1,14 +1,15 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { useNavigate } from "react-router-dom";
-import { RoundsSubNav } from "../discovery/RoundsSubNav";
 import NavbarCart from "./NavbarCart";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
+import { PassportWidget } from "./PassportWidget";
+import { useNavigate } from "react-router-dom";
+import { RoundsSubNav } from "../discovery/RoundsSubNav";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -56,6 +57,11 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
+            {walletAddress && (
+              <div data-testid="passport-widget">
+                <PassportWidget />
+              </div>
+            )}
             {showWalletInteraction && (
               <div>
                 <div

@@ -88,6 +88,7 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "swr": "^2.0.0",
+    "ts-is-present": "^1.2.2",
     "typescript": "^5.1.6",
     "url": "^0.11.0",
     "util": "^0.12.4",
@@ -95,6 +96,7 @@
     "viem": "^1.5.3",
     "wagmi": "1.4.1",
     "web-vitals": "^2.1.0",
+    "zod": "^3.22.4",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
