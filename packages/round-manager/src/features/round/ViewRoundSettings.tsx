@@ -622,12 +622,7 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <Controller
               name="roundMetadata.name"
               control={props.control}
@@ -637,10 +632,7 @@ function DetailsPage(props: {
                   {...props.register("roundMetadata.name")}
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                  disabled={!props.editMode.canEdit}
                   data-testid={"round-name-input"}
                   onChange={(e) => {
                     field.onChange(e);
@@ -697,12 +689,7 @@ function DetailsPage(props: {
           *Required
         </span>
       </div>
-      <div
-        className={`leading-8 font-normal ${
-          !props.editMode.canEdit ||
-          (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-        }`}
-      >
+      <div className="leading-8 font-normal">
         <Controller
           name="roundMetadata.eligibility.description"
           control={props.control}
@@ -712,10 +699,7 @@ function DetailsPage(props: {
               {...props.register("roundMetadata.eligibility.description")}
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-              disabled={
-                !props.editMode.canEdit ||
-                props.editMode.canEditOnlyRoundEndDate
-              }
+              disabled={!props.editMode.canEdit}
               onChange={(e) => {
                 field.onChange(e);
                 props.setEditedRound({
@@ -754,22 +738,13 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
-            {!props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate ? (
+          <div className="leading-8 font-normal">
+            {!props.editMode.canEdit ? (
               <input
                 type="text"
                 className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                 defaultValue={props.editedRound?.roundMetadata.support?.type}
-                disabled={
-                  !props.editMode.canEdit ||
-                  props.editMode.canEditOnlyRoundEndDate
-                }
+                disabled={!props.editMode.canEdit}
               />
             ) : (
               <Controller
@@ -784,10 +759,7 @@ function DetailsPage(props: {
                     editedRound={props.editedRound}
                     setEditedRound={props.setEditedRound}
                     field={field}
-                    disabled={
-                      !props.editMode.canEdit ||
-                      props.editMode.canEditOnlyRoundEndDate
-                    }
+                    disabled={!props.editMode.canEdit}
                   />
                 )}
               />
@@ -809,12 +781,7 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <Controller
               name="roundMetadata.support.info"
               control={props.control}
@@ -824,10 +791,7 @@ function DetailsPage(props: {
                   {...props.register("roundMetadata.support.info")}
                   type="text"
                   className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                  disabled={!props.editMode.canEdit}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -886,12 +850,7 @@ function DetailsPage(props: {
                   Optional
                 </span>
               </div>
-              <div
-                className={`leading-8 font-normal ${
-                  !props.editMode.canEdit ||
-                  (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-                }`}
-              >
+              <div className="leading-8 font-normal">
                 <Controller
                   control={props.control}
                   name={`roundMetadata.eligibility.requirements.${i}.requirement`}
@@ -904,10 +863,7 @@ function DetailsPage(props: {
                         )}
                         type="text"
                         className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                        disabled={
-                          !props.editMode.canEdit ||
-                          props.editMode.canEditOnlyRoundEndDate
-                        }
+                        disabled={!props.editMode.canEdit}
                         onChange={(e) => {
                           field.onChange(e);
                           const updatedRequirements = [
@@ -932,8 +888,7 @@ function DetailsPage(props: {
                           });
                         }}
                       />
-                      {props.editMode.canEdit &&
-                        !props.editMode.canEditOnlyRoundEndDate && (
+                      {props.editMode.canEdit && (
                           <button
                             data-testid="remove-requirement-button"
                             className="ml-4"
@@ -989,13 +944,11 @@ function DetailsPage(props: {
       <Button
         type="button"
         disabled={
-          (!props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate) ||
-          !isValidLastRequirement
+          !props.editMode.canEdit || !isValidLastRequirement
         }
         $variant="secondary"
         $hidden={
-          !props.editMode.canEdit && !props.editMode.canEditOnlyRoundEndDate
+          !props.editMode.canEdit
         }
         className="mb-4"
         data-testid="add-requirement-button"
