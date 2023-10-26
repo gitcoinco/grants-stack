@@ -24,7 +24,8 @@
     "swr": "^2.0.1",
     "tailwind-styled-components": "^2.2.0",
     "typescript": "latest",
-    "wagmi": "0.12.19"
+    "wagmi": "0.12.19",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/dompurify": "^2.4.0",

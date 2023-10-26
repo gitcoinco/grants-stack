@@ -13,7 +13,7 @@ import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
 
-import { usePassport } from "../../api/passport";
+import { getClassForPassportColor, usePassport } from "../../api/passport";
 import useSWR from "swr";
 import { groupBy, uniqBy } from "lodash-es";
 import { getRoundById } from "../../api/round";
@@ -29,10 +29,6 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
-import {
-  passportColorTextClass,
-  usePassportScore,
-} from "../../common/Passport";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -204,7 +200,7 @@ export function SummaryContainer() {
           tryAgainText={"Go to Passport"}
           doneText={"Donate without matching"}
           onTryAgain={() => {
-            navigate(`/round/passport/connect`);
+            window.location.href = "https://passport.gitcoin.co";
           }}
           heading={`Don’t miss out on getting your donations matched!`}
           subheading={
@@ -249,11 +245,11 @@ export function SummaryContainer() {
     }
   }
 
-  const { passportState, passport } = usePassport({
+  const { passportColor, passportScore, passportState } = usePassport({
     address: address ?? "",
   });
 
-  const passportScore = usePassportScore(passport);
+  const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
 
   const [totalDonationAcrossChainsInUSD, setTotalDonationAcrossChainsInUSD] =
     useState<number | undefined>();
@@ -333,9 +329,7 @@ export function SummaryContainer() {
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
       <div
-        className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${passportColorTextClass(
-          passportScore.color
-        )}`}
+        className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${passportTextClass}`}
       >
         {matchingEstimateError === undefined &&
           matchingEstimates !== undefined && (
@@ -344,7 +338,7 @@ export function SummaryContainer() {
                 <p>Estimated match</p>
                 <MatchingEstimateTooltip
                   isEligible={
-                    passportScore.score !== null && passportScore.score >= 15
+                    passportScore !== undefined && passportScore >= 15
                   }
                 />
               </div>
