@@ -24,6 +24,7 @@ services:
     environment:
       - DEV_CHAIN_ID=313371
 
+  # initializes localchain deploying contracts and populating with test data
   localchain-1-inititalizer:
     image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
     depends_on:
@@ -44,6 +45,7 @@ services:
     environment:
       - DEV_CHAIN_ID=313372
 
+  # initializes localchain deploying contracts and populating with test data
   localchain-2-initializer:
     image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
     depends_on:
