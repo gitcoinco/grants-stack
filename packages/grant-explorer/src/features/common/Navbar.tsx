@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
+import { PassportWidget } from "./PassportWidget";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -58,6 +59,11 @@ export default function Navbar(props: NavbarProps) {
             <Link to="/rounds" className="font-medium hover:underline">
               Explore rounds
             </Link>
+            {walletAddress && (
+              <div data-testid="passport-widget">
+                <PassportWidget />
+              </div>
+            )}
             {showWalletInteraction && (
               <div>
                 <div

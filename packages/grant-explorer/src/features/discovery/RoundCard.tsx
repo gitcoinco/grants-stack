@@ -1,5 +1,4 @@
 import {
-  ChainId,
   renderToPlainText,
   RoundPayoutType,
   truncateDescription,
@@ -52,14 +51,14 @@ const RoundCard = ({ round }: RoundCardProps) => {
     new Date(parseInt(roundEndTime, 10) * 1000)
   );
 
-  const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
   const { data } = useToken({
     address: getAddress(token),
     chainId: Number(chainId),
+    enabled: !!token,
   });
 
   const nativePayoutToken = votingTokens.find(
-    (t) => t.chainId === chainIdEnumValue && t.address === getAddress(token)
+    (t) => t.chainId === Number(chainId) && t.address === getAddress(token)
   );
 
   const tokenData = data ?? {
@@ -72,7 +71,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
     <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
       <a
         target="_blank"
-        href={`/#/round/${chainIdEnumValue}/${id}`}
+        href={`/#/round/${chainId}/${id}`}
         data-testid="round-card"
       >
         <CardHeader className="relative">
@@ -115,7 +114,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
           <div className="border-t" />
 
           <RoundCardStat
-            chainId={Number(chainIdEnumValue)}
+            chainId={Number(chainId)}
             matchAmount={matchAmount}
             token={tokenData?.symbol ?? "..."}
             approvedApplicationsCount={approvedApplicationsCount}

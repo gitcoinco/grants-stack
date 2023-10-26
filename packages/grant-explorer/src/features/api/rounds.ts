@@ -4,14 +4,17 @@ import { RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { fetchFromIPFS, useDebugMode } from "./utils";
 import { ethers } from "ethers";
+import { allChains } from "../../app/chainConfig";
+import { tryParseChainIdToEnum } from "common/src/chains";
+import { isPresent } from "ts-is-present";
 
 const validRounds = [
-  "0x35c9d05558da3a3f3cddbf34a8e364e59b857004",
-  "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc",
-  "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38",
+  "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
+  "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc", // Gitcoin Citizens Round #1
+  "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38", // Greenpill Q2 2023
 ];
 
-const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"];
+const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"]; // Meg hello
 
 export type RoundOverview = {
   id: string;
@@ -55,28 +58,12 @@ type TimestampVariables = {
   roundEndTime_lt?: string;
 };
 
-function getActiveChainIds() {
-  const activeChainIds: string[] = [];
-  const isProduction = process.env.REACT_APP_ENV === "production";
-
-  for (const chainId of Object.values(ChainId)) {
-    if (!isNaN(+chainId)) {
-      continue;
-    }
-    if (
-      isProduction &&
-      [
-        ChainId.GOERLI_CHAIN_ID,
-        ChainId.FANTOM_MAINNET_CHAIN_ID,
-        ChainId.FANTOM_TESTNET_CHAIN_ID,
-      ].includes(ChainId[chainId as keyof typeof ChainId])
-    ) {
-      continue;
-    }
-    activeChainIds.push(chainId.toString());
-  }
-  return activeChainIds;
-}
+const getActiveChainIds = (): ChainId[] =>
+  allChains
+    .map((chain) => chain.id)
+    .map(tryParseChainIdToEnum)
+    .filter(isPresent)
+    .map((chainId) => chainId);
 
 const ROUNDS_QUERY = `
 query GetRounds(
@@ -180,9 +167,8 @@ export function useRounds(variables: RoundsVariables) {
     ["rounds", variables, chainIds],
     () =>
       Promise.all(
-        chainIds.flatMap((chainId) => {
-          const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
-          return graphql_fetch(ROUNDS_QUERY, chainIdEnumValue, variables).then(
+        getActiveChainIds().flatMap((chainId) => {
+          return graphql_fetch(ROUNDS_QUERY, chainId, variables).then(
             (r) =>
               r.data?.rounds?.map((round: RoundOverview) => ({
                 ...round,
@@ -195,6 +181,7 @@ export function useRounds(variables: RoundsVariables) {
         .then(cleanRoundData)
         // We need to do another sort because of results from many chains
         .then((rounds) => sortRounds(rounds, variables)),
+
     { keepPreviousData: true }
   );
 
@@ -258,6 +245,7 @@ function filterRounds(
     if (invalidRounds.includes(round.id)) {
       return false;
     }
+    return true;
   });
 }
 
@@ -274,9 +262,7 @@ export function usePrefetchRoundsMetadata() {
   const { mutate } = useSWRConfig();
 
   return useSWR(["rounds-list", { chainIds }], () => {
-    return chainIds.flatMap((chainId) => {
-      const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
-
+    return getActiveChainIds().flatMap((chainId) => {
       // Only fetch metadata pointer to lower response size
       return graphql_fetch(
         `
@@ -293,7 +279,7 @@ export function usePrefetchRoundsMetadata() {
         }
       }
       `,
-        chainIdEnumValue,
+        chainId,
         { currentTimestamp }
       )
         .then((r) => r.data?.rounds ?? [])
