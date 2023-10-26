@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
-import { toURL } from "./RoundsFilter";
+import { toQueryString } from "./RoundsFilter";
 
 const sortOptions = [
   {
@@ -81,7 +81,7 @@ export function SortDropdown({ sortBy, orderBy }: SortProps) {
           active={active}
           $as={Link}
           // Merge search params
-          to={`/rounds?${toURL({
+          to={`/rounds?${toQueryString({
             ...Object.fromEntries(params),
             sortBy,
             orderBy,

@@ -9,7 +9,7 @@ import {
 
 import { CHAINS } from "../api/utils";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
-import { toURL } from "./RoundsFilter";
+import { toQueryString } from "./RoundsFilter";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 
 type Option = {
@@ -159,7 +159,7 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
                         {({ active, selected }) => (
                           <DropdownItem
                             $as={Link}
-                            to={`/rounds?${toURL({
+                            to={`/rounds?${toQueryString({
                               // Merge existing search params (so it doesn't reset sorting or the other selections)
                               ...Object.fromEntries(params),
                               [value]: child.value,
