@@ -3,6 +3,9 @@ import { RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { fetchFromIPFS } from "./utils";
 import { ethers } from "ethers";
+import { allChains } from "../../app/chainConfig";
+import { tryParseChainIdToEnum } from "common/src/chains";
+import { isPresent } from "ts-is-present";
 
 interface GetRoundOverviewResult {
   data: {
@@ -11,12 +14,12 @@ interface GetRoundOverviewResult {
 }
 
 const validRounds = [
-  "0x35c9d05558da3a3f3cddbf34a8e364e59b857004",
-  "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc",
-  "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38",
+  "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
+  "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc", // Gitcoin Citizens Round #1
+  "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38", // Greenpill Q2 2023
 ];
 
-const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"];
+const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"]; // Meg hello
 
 export type RoundOverview = {
   id: string;
@@ -39,19 +42,17 @@ export type RoundOverview = {
 
 async function fetchRoundsByTimestamp(
   query: string,
-  chainId: string,
+  chainId: ChainId,
   debugModeEnabled: boolean
 ): Promise<RoundOverview[]> {
   try {
-    const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
     const currentTimestamp = Math.floor(Date.now() / 1000).toString();
     const infiniteTimestamp = ethers.constants.MaxUint256.toString();
 
-    const res: GetRoundOverviewResult = await graphql_fetch(
-      query,
-      chainIdEnumValue,
-      { currentTimestamp, infiniteTimestamp }
-    );
+    const res: GetRoundOverviewResult = await graphql_fetch(query, chainId, {
+      currentTimestamp,
+      infiniteTimestamp,
+    });
 
     if (!res.data || !res.data.rounds) {
       return [];
@@ -65,7 +66,7 @@ async function fetchRoundsByTimestamp(
         round.roundMetaPtr.pointer
       );
       round.roundMetadata = roundMetadata;
-      round.chainId = chainId;
+      round.chainId = chainId.toFixed(0);
 
       // check if roundType is public & if so, add to filteredRounds
       if (round.roundMetadata?.roundType === "public") {
@@ -93,34 +94,16 @@ async function fetchRoundsByTimestamp(
   }
 }
 
-function getActiveChainIds() {
-  const activeChainIds: string[] = [];
-  const isProduction = process.env.REACT_APP_ENV === "production";
-
-  for (const chainId of Object.values(ChainId)) {
-    if (!isNaN(+chainId)) {
-      continue;
-    }
-    if (
-      isProduction &&
-      [
-        ChainId.GOERLI_CHAIN_ID,
-        ChainId.FANTOM_MAINNET_CHAIN_ID,
-        ChainId.FANTOM_TESTNET_CHAIN_ID,
-      ].includes(ChainId[chainId as keyof typeof ChainId])
-    ) {
-      continue;
-    }
-    activeChainIds.push(chainId.toString());
-  }
-  return activeChainIds;
-}
+const getActiveChainIds = (): ChainId[] =>
+  allChains
+    .map((chain) => chain.id)
+    .map(tryParseChainIdToEnum)
+    .filter(isPresent)
+    .map((chainId) => chainId);
 
 export async function getRoundsInApplicationPhase(
   debugModeEnabled: boolean
 ): Promise<RoundOverview[]> {
-  const chainIds = getActiveChainIds();
-
   const query = `
       query GetRoundsInApplicationPhase($currentTimestamp: String, $infiniteTimestamp: String) {
         rounds(where:
@@ -158,7 +141,7 @@ export async function getRoundsInApplicationPhase(
     `;
 
   const rounds = await Promise.all(
-    chainIds.map((chainId) =>
+    getActiveChainIds().map((chainId) =>
       fetchRoundsByTimestamp(query, chainId, debugModeEnabled)
     )
   );
@@ -169,8 +152,6 @@ export async function getRoundsInApplicationPhase(
 export async function getActiveRounds(
   debugModeEnabled: boolean
 ): Promise<RoundOverview[]> {
-  const chainIds = getActiveChainIds();
-
   const query = `
       query GetActiveRounds($currentTimestamp: String) {
         rounds(where: {
@@ -203,7 +184,7 @@ export async function getActiveRounds(
     `;
 
   const rounds = await Promise.all(
-    chainIds.map((chainId) =>
+    getActiveChainIds().map((chainId) =>
       fetchRoundsByTimestamp(query, chainId, debugModeEnabled)
     )
   );
