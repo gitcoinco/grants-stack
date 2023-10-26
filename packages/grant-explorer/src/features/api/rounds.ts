@@ -36,6 +36,7 @@ export type RoundOverview = {
 };
 
 type RoundsVariables = {
+  first?: number;
   orderBy?:
     | "roundStartTime"
     | "roundEndTime"
@@ -154,7 +155,7 @@ export function useRoundsEndingSoon() {
 
 // TODO: Filter + sort rounds (status, network, sort)
 export function useFilterRounds() {
-  return useRounds({});
+  return useRounds({ first: 10 });
 }
 
 //

@@ -28,5 +28,5 @@ export function RoundsFilter() {
   );
 }
 
-export const toURL = (filterParams: Partial<Filter> = {}) =>
+export const toQueryString = (filterParams: Partial<Filter> = {}) =>
   new URLSearchParams(filterParams).toString();
