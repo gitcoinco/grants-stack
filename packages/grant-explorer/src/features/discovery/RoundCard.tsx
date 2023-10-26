@@ -59,10 +59,12 @@ const RoundCard = ({ round }: RoundCardProps) => {
   const nativePayoutToken = votingTokens.find(
     (t) => t.chainId === Number(chainId) && t.address === getAddress(token)
   );
+  const { decimals = 18 } = data ?? {};
 
   const tokenData = data ?? {
     ...nativePayoutToken,
     symbol: nativePayoutToken?.name ?? "ETH",
+    decimals,
   };
 
   const approvedApplicationsCount = projects?.length ?? 0;
@@ -97,7 +99,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             className="min-h-[96px]"
           >
             {truncateDescription(
-              renderToPlainText(metadata?.eligibility.description ?? ""),
+              renderToPlainText(metadata?.eligibility?.description ?? ""),
               240
             )}
           </CardDescription>
@@ -116,6 +118,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             chainId={Number(chainId)}
             matchAmount={matchAmount}
             token={tokenData?.symbol ?? "..."}
+            decimals={tokenData?.decimals}
             approvedApplicationsCount={approvedApplicationsCount}
           />
         </CardContent>
