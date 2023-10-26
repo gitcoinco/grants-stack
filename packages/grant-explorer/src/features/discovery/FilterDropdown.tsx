@@ -69,7 +69,7 @@ const filterOptions = [
       value,
     })),
   },
-] as Option[];
+];
 
 export type FilterProps = {
   type: string;
