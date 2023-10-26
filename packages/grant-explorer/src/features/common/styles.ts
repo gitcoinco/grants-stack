@@ -95,7 +95,7 @@ export const Badge = tw.div<{
   ${(p) => (p.disabled ? "opacity-50" : "")}
   `;
 
-export const Tabs = tw.ul`
+export const Tabs = tw.div`
 flex
 text-lg
 md:text-2xl

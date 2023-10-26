@@ -53,9 +53,11 @@ const RoundCard = ({ round }: RoundCardProps) => {
   );
 
   const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
+
   const { data } = useToken({
     address: getAddress(token),
     chainId: Number(chainId),
+    enabled: !!token,
   });
 
   const nativePayoutToken = votingTokens.find(

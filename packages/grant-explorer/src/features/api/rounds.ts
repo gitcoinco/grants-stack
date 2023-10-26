@@ -195,6 +195,7 @@ export function useRounds(variables: RoundsVariables) {
         .then(cleanRoundData)
         // We need to do another sort because of results from many chains
         .then((rounds) => sortRounds(rounds, variables)),
+
     { keepPreviousData: true }
   );
 
@@ -258,6 +259,7 @@ function filterRounds(
     if (invalidRounds.includes(round.id)) {
       return false;
     }
+    return true;
   });
 }
 
