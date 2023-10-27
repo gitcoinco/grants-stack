@@ -1239,15 +1239,8 @@ function RoundApplicationPeriod(props: {
               >
                 Applications
               </div>
-              <div
-                className={`leading-8 font-normal ${
-                  !props.editMode.canEdit &&
-                  props.editMode.canEditOnlyRoundEndDate &&
-                  "text-grey-400"
-                }`}
-              >
+              <div className="leading-8 font-normal">
                 {props.editMode.canEdit &&
-                !props.editMode.canEditOnlyRoundEndDate &&
                 !moment(editedRound.applicationsStartTime).isBefore(
                   new Date()
                 ) ? (
@@ -1366,14 +1359,8 @@ function RoundApplicationPeriod(props: {
               >
                 &nbsp;
               </div>
-              <div
-                className={`leading-8 font-normal ${
-                  !props.editMode.canEdit ||
-                  (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-                }`}
-              >
+              <div className="leading-8 font-normal">
                 {props.editMode.canEdit &&
-                !props.editMode.canEditOnlyRoundEndDate &&
                 !moment(editedRound.applicationsEndTime).isBefore(
                   new Date()
                 ) ? (
@@ -1487,14 +1474,8 @@ function RoundApplicationPeriod(props: {
           >
             Round
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             {props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate &&
             !moment(editedRound.roundStartTime).isBefore(new Date()) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
@@ -1600,15 +1581,9 @@ function RoundApplicationPeriod(props: {
           >
             &nbsp;
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             {props.editMode.canEdit ||
-            (props.editMode.canEditOnlyRoundEndDate &&
-              !moment(editedRound.roundEndTime).isBefore(new Date())) ? (
+            (!moment(editedRound.roundEndTime).isBefore(new Date())) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`${
