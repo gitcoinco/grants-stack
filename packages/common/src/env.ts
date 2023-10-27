@@ -1,0 +1,31 @@
+import { z } from "zod";
+
+interface Options {
+  required: boolean;
+  defaultValue?: string;
+}
+
+const defaultOptions = {
+  required: true,
+  defaultValue: undefined,
+};
+
+export function getEnv(
+  name: string,
+  options: Options = defaultOptions
+): string | undefined {
+  const zValue = z.string({
+    required_error: `env var ${name} is required`,
+  });
+
+  const result = zValue.safeParse(process.env[name]);
+  if (result.success) {
+    return result.data;
+  }
+
+  if (options.required) {
+    throw new Error(`required env var not set: ${name}`);
+  }
+
+  return options.defaultValue;
+}

@@ -67,11 +67,6 @@ And reset the wallet every time you restart the local chains:
 `Menu -> Settings -> Advance -> CLear activity tab data`
 ⚠️⚠️⚠️
 
-
-
-
-
-
 ### Run local services
 
 Clone the repo:
@@ -93,7 +88,7 @@ To kill the containers run:
 docker-compose kill
 ```
 
-### Setup the dapps dependencies
+### Setup root project dependencies
 
 ```sh
 cd grants-stack
