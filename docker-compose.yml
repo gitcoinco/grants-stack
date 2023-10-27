@@ -25,7 +25,7 @@ services:
       - DEV_CHAIN_ID=313371
 
   # initializes localchain deploying contracts and populates with test data
-  dev-setup-2:
+  dev-setup-1:
     image: ghcr.io/gitcoinco/allo-contracts-v1:main
     depends_on:
       - pinata
