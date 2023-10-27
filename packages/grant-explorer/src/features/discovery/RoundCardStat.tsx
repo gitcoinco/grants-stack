@@ -7,14 +7,19 @@ type RoundCardStatProps = {
   chainId: ChainId;
   matchAmount: string;
   token: string;
-  decimals: number;
+  tokenDecimals: number;
   approvedApplicationsCount: number;
 };
 
 function RoundCardStat(props: RoundCardStatProps) {
-  const { approvedApplicationsCount, chainId, matchAmount, token, decimals } =
-    props;
-  const matchAmountNormalized = formatUnits(BigInt(matchAmount), decimals);
+  const {
+    approvedApplicationsCount,
+    chainId,
+    matchAmount,
+    token,
+    tokenDecimals,
+  } = props;
+  const matchAmountNormalized = formatUnits(BigInt(matchAmount), tokenDecimals);
   return (
     <div className="flex justify-between">
       <div className="flex gap-2">

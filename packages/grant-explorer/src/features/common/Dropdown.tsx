@@ -3,11 +3,11 @@ import { Fragment, PropsWithChildren, ReactElement } from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import tw from "tailwind-styled-components";
 
-type DropdownProps<T> = {
+type DropdownProps<T> = PropsWithChildren<{
   label?: string;
   options: T[];
   renderItem: (p: { active: boolean } & T) => ReactElement;
-} & PropsWithChildren;
+}>;
 
 export function Dropdown<T>({ label, options, renderItem }: DropdownProps<T>) {
   return (

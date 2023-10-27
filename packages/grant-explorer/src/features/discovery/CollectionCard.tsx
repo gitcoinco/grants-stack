@@ -19,12 +19,11 @@ type CollectionCardProps = {
 
 const CollectionCard = ({ collection }: CollectionCardProps) => {
   const { id, chainId, projects } = collection;
-  const chainIdEnumValue = ChainId[chainId];
   return (
     <BasicCard className="w-full">
       <a
         target="_blank"
-        href={`/#/collection/${chainIdEnumValue}/${id}`}
+        href={`/#/collection/${chainId}/${id}`}
         data-testid="round-card"
       >
         <CardHeader>

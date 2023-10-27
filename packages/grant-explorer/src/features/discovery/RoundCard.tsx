@@ -6,9 +6,9 @@ import {
 import { RoundOverview, useMetadata } from "../api/rounds";
 import {
   getDaysLeft,
+  getPayoutToken,
   getRoundType,
   isInfiniteDate,
-  votingTokens,
 } from "../api/utils";
 import {
   Badge,
@@ -57,9 +57,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
     enabled: !!token,
   });
 
-  const nativePayoutToken = votingTokens.find(
-    (t) => t.chainId === Number(chainId) && t.address === getAddress(token)
-  );
+  const nativePayoutToken = getPayoutToken(token, chainId);
   const { decimals = 18 } = data ?? {};
 
   const tokenData = data ?? {
@@ -120,7 +118,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             chainId={Number(chainId)}
             matchAmount={matchAmount}
             token={tokenData?.symbol ?? "..."}
-            decimals={tokenData?.decimals}
+            tokenDecimals={tokenData?.decimals}
             approvedApplicationsCount={approvedApplicationsCount}
           />
         </CardContent>

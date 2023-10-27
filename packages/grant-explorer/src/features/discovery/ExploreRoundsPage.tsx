@@ -8,22 +8,27 @@ import { FilterProps, FilterStatus, getLabel } from "./FilterDropdown";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { useSearchParams } from "react-router-dom";
 
-const pageTitles = {
-  "": "All active rounds",
-  [ROUND_PAYOUT_MERKLE]: "Quadratic Funding rounds",
-  [ROUND_PAYOUT_DIRECT]: "Direct Grants rounds",
-  [FilterStatus.taking_applications]: "Rounds taking applications",
-  [FilterStatus.finished]: "Rounds finished",
-};
-
 function getSectionTitle(filter: FilterProps) {
   const title = getLabel(filter);
-  return pageTitles[title.value as keyof typeof pageTitles] ?? title.label;
+  switch (title.value) {
+    case "":
+      return "All active rounds";
+    case ROUND_PAYOUT_MERKLE:
+      return "Quadratic Funding rounds";
+    case ROUND_PAYOUT_DIRECT:
+      return "Direct Grants rounds";
+    case FilterStatus.taking_applications:
+      return "Rounds taking applications";
+    case FilterStatus.finished:
+      return "Rounds finished";
+    default:
+      return title.label;
+  }
 }
 const ExploreRoundsPage = () => {
   usePrefetchRoundsMetadata();
   const [params] = useSearchParams();
-  const { type, status, network } = Object.fromEntries(params) as FilterProps;
+  const { type, status, network } = Object.fromEntries(params);
 
   // TODO: pass the filter from the search params and build the graphql query
   const rounds = useFilterRounds();

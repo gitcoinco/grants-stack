@@ -73,7 +73,7 @@ const filterOptions: Option[] = [
 
 export type FilterProps = {
   type: string;
-  status: FilterStatus;
+  status: string;
   network: string;
 };
 
@@ -83,7 +83,7 @@ Find the label to display from the current filter.
 - Multiple - more than 1 selected
 - Selected - 1 selected
 */
-export function getLabel(filter: FilterProps) {
+export function getLabel(filter: FilterProps): Option {
   return (
     // Convert { key: val } to [[key, val]] and remove empty values
     Object.entries(filter)
@@ -91,7 +91,7 @@ export function getLabel(filter: FilterProps) {
       .reduce(
         (acc, [key, val], _, arr) => {
           // More than 1 filter is selected
-          if (arr.length > 1) return { label: "Multiple" } as Option;
+          if (arr.length > 1) return { label: "Multiple", value: "" };
 
           // Find the selected option
           const selected =
@@ -123,7 +123,7 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
           );
         }
         return (
-          <Listbox value={selected} onChange={console.log}>
+          <Listbox value={selected}>
             <div className="relative mt-1">
               <Listbox.Button className="relative w-[340px] py-2 pl-3 pr-10 text-left hover:bg-grey-100">
                 {({ open }) => {
@@ -150,9 +150,8 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
               >
                 <Listbox.Options className=" mt-1 w-full overflow-auto p-2">
                   {children?.map((child, j) => {
-                    const checked = Boolean(
-                      value && child.value === { status, type, network }[value]
-                    );
+                    const selectedFilter = { status, type, network }[value];
+                    const isChecked = child.value === selectedFilter;
 
                     return (
                       <Listbox.Option key={j} value={child}>
@@ -169,7 +168,7 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
                             <div className="flex gap-2">
                               <input
                                 type="checkbox"
-                                checked={checked}
+                                checked={isChecked}
                                 onChange={console.log}
                               />
                               <span

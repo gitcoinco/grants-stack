@@ -1,7 +1,11 @@
 import { useLocation } from "react-router-dom";
 import { Tab, Tabs } from "../common/styles";
 
-const tabs = [
+type Tab = {
+  to: string;
+  children: string;
+};
+const tabs: Tab[] = [
   {
     to: "/",
     children: "Home",

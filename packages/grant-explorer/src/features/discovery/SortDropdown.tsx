@@ -2,7 +2,12 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toQueryString } from "./RoundsFilter";
 
-const sortOptions = [
+type Option = {
+  label: string;
+  sortBy: string;
+  orderBy: string;
+};
+const sortOptions: Option[] = [
   {
     label: "All",
     sortBy: "",
