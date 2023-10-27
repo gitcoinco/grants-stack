@@ -73,7 +73,7 @@ const filterOptions: Option[] = [
 
 export type FilterProps = {
   type: string;
-  status: FilterStatus;
+  status: string;
   network: string;
 };
 
@@ -91,7 +91,7 @@ export function getLabel(filter: FilterProps) {
       .reduce(
         (acc, [key, val], _, arr) => {
           // More than 1 filter is selected
-          if (arr.length > 1) return { label: "Multiple" } as Option;
+          if (arr.length > 1) return { label: "Multiple", value: "" };
 
           // Find the selected option
           const selected =
