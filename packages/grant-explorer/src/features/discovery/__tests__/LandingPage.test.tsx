@@ -21,7 +21,7 @@ const { graphql_fetch, fetchFromIPFS } = vi.hoisted(() => ({
 }));
 
 vi.mock("common", async () => {
-  const actual = (await vi.importActual("common")) as object;
+  const actual = await vi.importActual<typeof import("common")>("common");
   return {
     ...actual,
     renderToPlainText: vi.fn().mockReturnValue((str = "") => str),
@@ -30,7 +30,8 @@ vi.mock("common", async () => {
 });
 
 vi.mock("../../api/utils", async () => {
-  const actual = (await vi.importActual("../../api/utils")) as object;
+  const actual =
+    await vi.importActual<typeof import("../../api/utils")>("../../api/utils");
   return { ...actual, fetchFromIPFS };
 });
 
@@ -51,14 +52,14 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
 }));
 
 vi.mock("viem", async () => {
-  const actual = (await vi.importActual("viem")) as object;
+  const actual = await vi.importActual<typeof import("viem")>("viem");
   return {
     ...actual,
     getAddress: vi.fn().mockImplementation((addr) => addr),
   };
 });
 vi.mock("wagmi", async () => {
-  const actual = (await vi.importActual("wagmi")) as object;
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
   return {
     ...actual,
     useAccount: () => mockAccount,
