@@ -1,6 +1,6 @@
 import { PlusSmIcon, XIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Input } from "common/src/styles";
+import { Button, TextArea } from "common/src/styles";
 import _ from "lodash";
 import { useContext } from "react";
 import {
@@ -149,9 +149,8 @@ function RoundInput(props: {
         </label>
         <span className="text-xs text-violet-400">*Required</span>
       </div>
-      <Input
+      <TextArea
         {...props.register}
-        type="text"
         id={props.inputId}
         placeholder={props.inputPlaceholder}
         $hasError={Boolean(props.error)}
@@ -202,11 +201,10 @@ function DynamicRequirementsForm(props: {
               <span className="text-xs text-grey-400">Optional</span>
             </div>
             <div className="flex flex-row items-center">
-              <Input
+              <TextArea
                 {...register(
                   `roundMetadata.eligibility.requirements.${index}.requirement`
                 )}
-                type="text"
                 placeholder="Enter an eligibility requirement."
                 data-testid="requirement-input"
               />

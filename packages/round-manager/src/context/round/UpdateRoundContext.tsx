@@ -7,6 +7,7 @@ import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { EditedGroups, ProgressStatus, Round } from "../../features/api/types";
 import { getPayoutTokenOptions } from "../../features/api/utils";
 import { useWallet } from "../../features/common/Auth";
+import subSeconds from "date-fns/subSeconds";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
@@ -157,13 +158,23 @@ const _updateRound = async ({
       transactionBuilder.add(UpdateAction.UPDATE_ROUND_FEE_PERCENTAGE, [arg]);
     }
 
+    /* Special case - if the round has already started, and we are editing times,
+     * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
+     * This won't actually update the values, it's done just to pass the checks in the contract
+     * (and to confuse the developer). 
+     *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1 */
+    if (Date.now() > round.roundStartTime.getTime()) {
+      round.applicationsStartTime = subSeconds(round.applicationsEndTime, 1);
+      round.roundStartTime = subSeconds(round.applicationsEndTime, 1);
+    }
+
     if (editedGroups.StartAndEndTimes) {
-      console.log("updating start and end times")
+      console.log("updating start and end times");
       transactionBuilder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
-        Date.parse(round?.applicationsStartTime.toString()) / 1000,
-        Date.parse(round?.applicationsEndTime.toString()) / 1000,
-        Date.parse(round?.roundStartTime.toString()) / 1000,
-        Date.parse(round?.roundEndTime.toString()) / 1000,
+        round?.applicationsStartTime.getTime() / 1000,
+        round?.applicationsEndTime.getTime() / 1000,
+        round?.roundStartTime.getTime() / 1000,
+        round?.roundEndTime.getTime() / 1000,
       ]);
     }
 
