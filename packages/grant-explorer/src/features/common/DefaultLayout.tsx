@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 export function DefaultLayout({
   showWalletInteraction = true,
   children,
-}: { showWalletInteraction: boolean } & PropsWithChildren) {
+}: PropsWithChildren<{ showWalletInteraction: boolean }>) {
   return (
     <main className="font-sans bg-gradient-to-b from-[#D3EDFE] to-[#FFD9CD]">
       <Navbar showWalletInteraction={showWalletInteraction} />
