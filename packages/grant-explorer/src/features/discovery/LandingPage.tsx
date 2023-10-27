@@ -28,8 +28,6 @@ const LandingPage = () => {
   const roundsTakingApplications = useRoundsTakingApplications();
   // const roundsEndingSoon = useRoundsEndingSoon();
 
-  console.log("activeRounds", activeRounds.data);
-  console.log("roundsTakingApplications", roundsTakingApplications.data);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
