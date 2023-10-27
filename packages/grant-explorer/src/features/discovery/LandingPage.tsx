@@ -3,7 +3,7 @@ import {
   useActiveRounds,
   usePrefetchRoundsMetadata,
   // useRoundsEndingSoon,
-  useRoundsTakingApplications,
+  // useRoundsTakingApplications,
 } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
@@ -25,9 +25,12 @@ const LandingPage = () => {
   usePrefetchRoundsMetadata();
 
   const activeRounds = useActiveRounds();
-  const roundsTakingApplications = useRoundsTakingApplications();
+  const roundsTakingApplications = activeRounds;
+  // const roundsTakingApplications = useRoundsTakingApplications();
   // const roundsEndingSoon = useRoundsEndingSoon();
 
+  console.log("activeRounds", activeRounds.data);
+  console.log("roundsTakingApplications", roundsTakingApplications.data);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
