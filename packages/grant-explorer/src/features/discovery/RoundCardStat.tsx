@@ -1,4 +1,5 @@
 import { ChainId } from "common";
+import { formatUnits } from "viem";
 import { CHAINS } from "../api/utils";
 import { Badge } from "../common/styles";
 
@@ -6,13 +7,19 @@ type RoundCardStatProps = {
   chainId: ChainId;
   matchAmount: string;
   token: string;
+  tokenDecimals: number;
   approvedApplicationsCount: number;
 };
 
 function RoundCardStat(props: RoundCardStatProps) {
-  const { approvedApplicationsCount, chainId, matchAmount, token } = props;
-  const matchAmountNormalized = BigInt(matchAmount) / 1000000000000000000n;
-
+  const {
+    approvedApplicationsCount,
+    chainId,
+    matchAmount,
+    token,
+    tokenDecimals,
+  } = props;
+  const matchAmountNormalized = formatUnits(BigInt(matchAmount), tokenDecimals);
   return (
     <div className="flex justify-between">
       <div className="flex gap-2">

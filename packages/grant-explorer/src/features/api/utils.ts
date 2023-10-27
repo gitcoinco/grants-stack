@@ -8,7 +8,7 @@ import {
 } from "common";
 import { useSearchParams } from "react-router-dom";
 import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "common";
-import { zeroAddress } from "viem";
+import { getAddress, zeroAddress } from "viem";
 import { ethers } from "ethers";
 
 export function useDebugMode(): boolean {
@@ -620,15 +620,16 @@ export const pinToIPFS = (obj: IPFSObject) => {
   }
 };
 
-export const getDaysLeft = (epochTime: number) => {
+export const getDaysLeft = (fromTimestamp: number) => {
+  // This should be fixed with the cleanRoundData function in features/api/rounds.ts
   // Invalid date
-  if (epochTime > Number.MAX_SAFE_INTEGER) {
+  if (fromTimestamp > Number.MAX_SAFE_INTEGER) {
     return 0;
   }
   const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day
 
-  const differenceInSeconds = epochTime - currentTimestamp;
+  const differenceInSeconds = fromTimestamp - currentTimestamp;
   const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
 
   return differenceInDays;
@@ -709,3 +710,15 @@ export const groupProjectsInCart = (
 
   return groupedCartProjects;
 };
+
+export function getPayoutToken(
+  token: string,
+  chainId: string
+): VotingToken | undefined {
+  if (!ChainId[Number(chainId)]) {
+    throw new Error(`Couldn't find chainId: ${chainId}`);
+  }
+  return votingTokens.find(
+    (t) => t.chainId === Number(chainId) && t.address === getAddress(token)
+  );
+}

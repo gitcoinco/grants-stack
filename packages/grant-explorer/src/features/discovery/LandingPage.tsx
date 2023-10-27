@@ -1,165 +1,89 @@
-import Footer from "common/src/components/Footer";
-import { lazy, Suspense, useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
-  getActiveRounds,
-  getRoundsInApplicationPhase,
-  RoundOverview,
+  useActiveRounds,
+  usePrefetchRoundsMetadata,
+  // useRoundsEndingSoon,
+  useRoundsTakingApplications,
 } from "../api/rounds";
-import { useDebugMode } from "../api/utils";
-import Navbar from "../common/Navbar";
-import ActiveRoundsSection from "./ActiveRoundSection";
-import ApplyNowSection from "./ApplyNowSection";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
-import useSWR, { mutate } from "swr";
-const LandingBannerLogo = lazy(() => import("../../assets/LandingBanner"));
-
-export function useActiveRounds() {
-  const debugModeEnabled = useDebugMode();
-  return useSWR(`activeRounds`, () => getActiveRounds(debugModeEnabled));
-}
-
-export function useRoundsInApplicationPhase() {
-  const debugModeEnabled = useDebugMode();
-  return useSWR(`applicationRounds`, () =>
-    getRoundsInApplicationPhase(debugModeEnabled)
-  );
-}
+import { DefaultLayout } from "../common/DefaultLayout";
+import LandingHero from "./LandingHero";
+import { LandingSection, ViewAllLink } from "./LandingSection";
+import RoundCard from "./RoundCard";
+import { useLocation } from "react-router-dom";
 
 const LandingPage = () => {
+  const location = useLocation();
   useEffect(() => {
-    if (process.env.REACT_APP_ENV === "production") {
+    if (
+      process.env.REACT_APP_ENV === "production" &&
+      !location.search.includes("skip_redirect")
+    ) {
       window.location.replace("https://grants.gitcoin.co");
     }
-  }, []);
+  }, [location]);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  usePrefetchRoundsMetadata();
 
-  const { isLoading: activeRoundsLoading, data: activeRounds } =
-    useActiveRounds();
-
-  const { isLoading: applyRoundsLoading, data: roundsInApplicationPhase } =
-    useRoundsInApplicationPhase();
-
-  const [type, setType] = useState<string>("round_type_all");
-  const [allActiveRounds, setAllActiveRounds] = useState<RoundOverview[]>([]);
-
-  useEffect(() => {
-    if (activeRounds) {
-      setAllActiveRounds(activeRounds);
-    }
-  }, [activeRounds]);
-
-  useEffect(() => {
-    if (type) {
-      filterGrantRoundByType();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
-
-  const filterGrantRoundByType = () => {
-    const getGrantRoundType = (type: string) => {
-      return type === "round_type_direct"
-        ? ROUND_PAYOUT_DIRECT
-        : ROUND_PAYOUT_MERKLE;
-    };
-    if (type === "round_type_all") {
-      mutate("activeRounds", allActiveRounds, false);
-    }
-    if (type !== "round_type_all") {
-      const filterType = getGrantRoundType(type);
-      const filteredRounds = allActiveRounds.filter((round: RoundOverview) => {
-        return (
-          round.payoutStrategy &&
-          round.payoutStrategy.strategyName === filterType
-        );
-      });
-      mutate("activeRounds", filteredRounds, false);
-      if (searchQuery) setSearchQuery("");
-    }
-  };
-
-  useEffect(() => {
-    if (searchQuery) {
-      const timeOutId = setTimeout(
-        () => filterProjectsByTitle(activeRounds ?? [], searchQuery),
-        300
-      );
-      return () => clearTimeout(timeOutId);
-    } else {
-      filterGrantRoundByType();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
+  const activeRounds = useActiveRounds();
+  const roundsTakingApplications = useRoundsTakingApplications();
+  // const roundsEndingSoon = useRoundsEndingSoon();
 
   return (
-    <>
-      <Navbar showWalletInteraction={true} />
-      <div className=" mx-auto pt-8">
-        <main>
-          <Suspense
-            fallback={
-              <div
-                style={{
-                  width: "100%",
-                  height: "582px",
-                }}
-              />
-            }
-          >
-            <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
-          </Suspense>
-          <div className="container px-4 md:px-0 md:mx-auto">
-            <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
-              Browse through active rounds
-            </h1>
-            <ApplyNowSection
-              isLoading={applyRoundsLoading}
-              roundOverview={roundsInApplicationPhase}
-            />
-            <ActiveRoundsSection
-              isLoading={activeRoundsLoading}
-              setSearchQuery={setSearchQuery}
-              setRoundType={setType}
-              roundOverview={filterProjectsByTitle(
-                activeRounds ?? [],
-                searchQuery
-              )}
-              searchQuery={searchQuery}
-            />
-          </div>
-        </main>
-        <div className="my-11">
-          <Footer />
+    <DefaultLayout showWalletInteraction>
+      <LandingHero />
+      <LandingSection
+        title="Donate now"
+        action={<ViewAllLink to="#">View all</ViewAllLink>}
+      >
+        <div className="grid md:grid-cols-3 gap-x-6">
+          {activeRounds.data?.slice(0, 4).map((round, i) => (
+            <div
+              key={round.id}
+              className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
+            >
+              <RoundCard round={round} />
+            </div>
+          ))}
         </div>
-      </div>
-    </>
+      </LandingSection>
+      <LandingSection
+        title="Apply for funding"
+        action={<ViewAllLink to="/rounds?status=apply">View all</ViewAllLink>}
+      >
+        <div className="flex gap-8 items-center">
+          <div className="hidden md:block w-1/3 space-y-8">
+            <p className="text-lg">
+              Bring your project to life with Gitcoin's vibrant ecosystem of
+              public goods funding opportunities.
+            </p>
+            <p className="text-lg">
+              Discover new grant rounds currently accepting applications, and
+              apply for funding today!
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-x-6 md:w-2/3">
+            {roundsTakingApplications.data?.slice(0, 4)?.map((round) => (
+              <div key={round.id}>
+                <RoundCard round={round} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </LandingSection>
+      <LandingSection
+        title="Rounds ending soon"
+        action={<ViewAllLink to="#">View all</ViewAllLink>}
+      >
+        <div className="grid md:grid-cols-3 gap-x-6">
+          {activeRounds.data?.map((round) => (
+            <div key={round.id}>
+              <RoundCard round={round} />
+            </div>
+          ))}
+        </div>
+      </LandingSection>
+    </DefaultLayout>
   );
-};
-
-const filterProjectsByTitle = (rounds: RoundOverview[], query: string) => {
-  // filter by exact title matches first
-  // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
-
-  if (query.trim() === "") {
-    return rounds;
-  }
-
-  const exactMatches = rounds.filter(
-    (round) =>
-      round.roundMetadata?.name?.toLocaleLowerCase() ===
-      query.toLocaleLowerCase()
-  );
-
-  const nonExactMatches = rounds.filter(
-    (round) =>
-      round.roundMetadata?.name
-        ?.toLocaleLowerCase()
-        .includes(query.toLocaleLowerCase()) &&
-      round.roundMetadata?.name?.toLocaleLowerCase() !==
-        query.toLocaleLowerCase()
-  );
-
-  return [...exactMatches, ...nonExactMatches];
 };
 
 export default LandingPage;

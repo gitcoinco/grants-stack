@@ -1,15 +1,14 @@
 import {
-  ChainId,
   renderToPlainText,
   RoundPayoutType,
   truncateDescription,
 } from "common";
-import { RoundOverview } from "../api/rounds";
+import { RoundOverview, useMetadata } from "../api/rounds";
 import {
   getDaysLeft,
+  getPayoutToken,
   getRoundType,
   isInfiniteDate,
-  votingTokens,
 } from "../api/utils";
 import {
   Badge,
@@ -19,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../common/styles";
-import RoundBanner from "./RoundBanner";
+import RoundBanner from "./CardBanner";
 import RoundCardStat from "./RoundCardStat";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
@@ -36,11 +35,13 @@ const RoundCard = ({ round }: RoundCardProps) => {
     matchAmount,
     projects,
     payoutStrategy,
-    roundMetadata,
     roundEndTime,
+    roundMetaPtr,
     applicationsEndTime,
     token,
   } = round;
+
+  const { data: metadata } = useMetadata(roundMetaPtr.pointer);
   const daysLeft = getDaysLeft(Number(roundEndTime));
   const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
 
@@ -49,28 +50,27 @@ const RoundCard = ({ round }: RoundCardProps) => {
     new Date(parseInt(roundEndTime, 10) * 1000)
   );
 
-  const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
   const { data } = useToken({
     address: getAddress(token),
     chainId: Number(chainId),
+    enabled: !!token,
   });
 
-  const nativePayoutToken = votingTokens.find(
-    (t) => t.chainId === chainIdEnumValue && t.address === getAddress(token)
-  );
+  const nativePayoutToken = getPayoutToken(token, chainId);
+  const { decimals = 18 } = data ?? {};
 
   const tokenData = data ?? {
     ...nativePayoutToken,
     symbol: nativePayoutToken?.name ?? "ETH",
+    decimals,
   };
 
   const approvedApplicationsCount = projects?.length ?? 0;
-
   return (
     <BasicCard className="w-full">
       <a
         target="_blank"
-        href={`/#/round/${chainIdEnumValue}/${id}`}
+        href={`/#/round/${chainId}/${id}`}
         data-testid="round-card"
       >
         <CardHeader className="relative">
@@ -86,9 +86,9 @@ const RoundCard = ({ round }: RoundCardProps) => {
           )}
           <CardTitle
             data-testid="round-name"
-            className="absolute bottom-1 px-2 text-white"
+            className="absolute bottom-3 px-2 text-white"
           >
-            {roundMetadata?.name}
+            {metadata?.name}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -97,7 +97,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             className="min-h-[96px]"
           >
             {truncateDescription(
-              renderToPlainText(roundMetadata?.eligibility.description ?? ""),
+              renderToPlainText(metadata?.eligibility?.description ?? ""),
               240
             )}
           </CardDescription>
@@ -113,9 +113,10 @@ const RoundCard = ({ round }: RoundCardProps) => {
           <div className="border-t" />
 
           <RoundCardStat
-            chainId={Number(chainIdEnumValue)}
+            chainId={Number(chainId)}
             matchAmount={matchAmount}
             token={tokenData?.symbol ?? "..."}
+            tokenDecimals={tokenData?.decimals}
             approvedApplicationsCount={approvedApplicationsCount}
           />
         </CardContent>
@@ -128,7 +129,7 @@ const RoundBadge = ({ strategyName }: { strategyName: RoundPayoutType }) => {
   const color = ({ MERKLE: "blue", DIRECT: "yellow" } as const)[strategyName];
   return (
     <Badge color={color} data-testid="round-badge">
-      {getRoundType(strategyName)}
+      {getRoundType(strategyName) ?? "Unknown"}
     </Badge>
   );
 };
