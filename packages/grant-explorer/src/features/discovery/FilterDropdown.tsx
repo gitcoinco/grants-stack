@@ -123,7 +123,7 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
           );
         }
         return (
-          <Listbox value={selected} onChange={console.log}>
+          <Listbox value={selected}>
             <div className="relative mt-1">
               <Listbox.Button className="relative w-[340px] py-2 pl-3 pr-10 text-left hover:bg-grey-100">
                 {({ open }) => {
