@@ -1,5 +1,3 @@
-import { getEnv } from "common/src/env";
-
 interface PinataClientOptions {
   jwt: string;
   gateway: string;

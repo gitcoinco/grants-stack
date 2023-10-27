@@ -2,6 +2,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
+import { loadPinataConfig } from "common/src/config";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
@@ -10,7 +11,6 @@ import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
 import { getProjectURIComponents } from "../utils/utils";
-import { loadPinataConfig } from "common/src/config";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {

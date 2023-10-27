@@ -3,6 +3,7 @@ import { Dispatch } from "redux";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
+import { loadPinataConfig } from "common/src/config";
 import { graphqlFetch } from "../utils/graphql";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
@@ -13,7 +14,6 @@ import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
 import { getProviderByChainId } from "../utils/utils";
 import { RoundApplicationMetadata } from "../types/roundApplication";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
-import { loadPinataConfig } from "common/src/config";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {

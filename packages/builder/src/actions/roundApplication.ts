@@ -3,6 +3,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ChainId } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
+import { loadPinataConfig } from "common/src/config";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { chains } from "../contracts/deployments";
 import { global } from "../global";
@@ -17,7 +18,6 @@ import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
 import { fetchProjectApplications } from "./projects";
 import { graphqlFetch } from "../utils/graphql";
-import { loadPinataConfig } from "common/src/config";
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";

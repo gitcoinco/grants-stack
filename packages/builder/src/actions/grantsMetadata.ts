@@ -1,13 +1,13 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
+import { loadPinataConfig } from "common/src/config";
 import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import PinataClient from "../services/pinata";
 import { LocalStorage } from "../services/Storage";
 import { Metadata, ProjectRegistryMetadata } from "../types";
 import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
-import { loadPinataConfig } from "common/src/config";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {

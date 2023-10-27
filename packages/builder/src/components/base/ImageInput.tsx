@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { loadPinataConfig } from "common/src/config";
 import PinataClient from "../../services/pinata";
 import colors from "../../styles/colors";
 import CloudUpload from "../icons/CloudUpload";
 import ImageCrop from "./images/ImageCrop";
 import Toast from "./Toast";
-import { loadPinataConfig } from "common/src/config";
 
 export type Dimensions = {
   width: number;
