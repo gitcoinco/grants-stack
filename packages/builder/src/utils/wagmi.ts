@@ -90,7 +90,7 @@ function enabledChainsAndProviders() {
 
   const chainsConfig = getEnv("REACT_APP_CHAINS");
   const selectedChainsNames =
-    chainsConfig !== undefined
+    chainsConfig !== undefined && chainsConfig !== ""
       ? chainsConfig.split(",").map((name) => name.trim())
       : [];
 
