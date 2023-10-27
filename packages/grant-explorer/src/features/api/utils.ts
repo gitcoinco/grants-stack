@@ -8,7 +8,7 @@ import {
 } from "common";
 import { useSearchParams } from "react-router-dom";
 import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "common";
-import { zeroAddress } from "viem";
+import { getAddress, zeroAddress } from "viem";
 import { ethers } from "ethers";
 
 export function useDebugMode(): boolean {
@@ -710,3 +710,15 @@ export const groupProjectsInCart = (
 
   return groupedCartProjects;
 };
+
+export function getPayoutToken(
+  token: string,
+  chainId: string
+): VotingToken | undefined {
+  if (!ChainId[Number(chainId)]) {
+    throw new Error(`Couldn't find chainId: ${chainId}`);
+  }
+  return votingTokens.find(
+    (t) => t.chainId === Number(chainId) && t.address === getAddress(token)
+  );
+}
