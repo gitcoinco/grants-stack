@@ -118,7 +118,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             chainId={Number(chainId)}
             matchAmount={matchAmount}
             token={tokenData?.symbol ?? "..."}
-            decimals={tokenData?.decimals}
+            tokenDecimals={tokenData?.decimals}
             approvedApplicationsCount={approvedApplicationsCount}
           />
         </CardContent>
