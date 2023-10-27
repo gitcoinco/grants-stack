@@ -23,6 +23,7 @@ import RoundCardStat from "./RoundCardStat";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
 import { RoundDaysLeft } from "./RoundDaysLeft";
+import { Skeleton, SkeletonText } from "@chakra-ui/react";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -41,8 +42,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
     token,
   } = round ?? {};
 
-  const { data: metadata } = useMetadata(roundMetaPtr?.pointer);
-
+  const { data: metadata, isLoading } = useMetadata(roundMetaPtr?.pointer);
   const daysLeft = getDaysLeft(Number(roundEndTime));
   const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
 
@@ -91,7 +91,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
             data-testid="round-name"
             className="absolute bottom-3 px-2 text-white"
           >
-            {metadata?.name}
+            <Skeleton isLoaded={!isLoading}>{metadata?.name}</Skeleton>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -99,10 +99,12 @@ const RoundCard = ({ round }: RoundCardProps) => {
             data-testid="round-description"
             className="min-h-[96px]"
           >
-            {truncateDescription(
-              renderToPlainText(metadata?.eligibility?.description ?? ""),
-              240
-            )}
+            <SkeletonText isLoaded={!isLoading}>
+              {truncateDescription(
+                renderToPlainText(metadata?.eligibility?.description ?? ""),
+                240
+              )}
+            </SkeletonText>
           </CardDescription>
           <div className="flex gap-2 justfy-between items-center">
             <RoundDaysLeft
@@ -114,7 +116,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
             <RoundBadge strategyName={payoutStrategy?.strategyName} />
           </div>
           <div className="border-t" />
-
           <RoundCardStat
             chainId={Number(chainId)}
             matchAmount={matchAmount}
