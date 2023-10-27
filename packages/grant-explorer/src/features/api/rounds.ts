@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 import { allChains } from "../../app/chainConfig";
 import { tryParseChainIdToEnum } from "common/src/chains";
 import { isPresent } from "ts-is-present";
+import { useState } from "react";
 
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
@@ -103,17 +104,22 @@ query GetRounds(
 }
 `;
 
-export function useRoundsTakingApplications() {
-  const currentTimestamp = Math.floor(Date.now() / 1000).toString();
-  const infiniteTimestamp = ethers.constants.MaxUint256.toString();
+const NOW_IN_SECONDS = Date.now() / 1000;
+const ONE_YEAR = 3600 * 24 * 365;
+const INFINITE_TIMESTAMP = ethers.constants.MaxUint256.toString();
+const createTimestamp = (timestamp = 0) =>
+  Math.floor(NOW_IN_SECONDS + timestamp).toString();
 
+export function useRoundsTakingApplications() {
+  // Only create the timestamp once, otherwise the SWR cache will be unique on every hook render
+  const [currentTimestamp] = useState(createTimestamp());
   return useRounds({
     where: {
       and: [
         { applicationsStartTime_lte: currentTimestamp },
         {
           or: [
-            { applicationsEndTime: infiniteTimestamp },
+            { applicationsEndTime: INFINITE_TIMESTAMP },
             { applicationsEndTime_gte: currentTimestamp },
           ],
         },
@@ -124,16 +130,13 @@ export function useRoundsTakingApplications() {
 
 // What filters for active rounds?
 export function useActiveRounds() {
-  const currentTimestamp = Math.floor(Date.now() / 1000).toString();
-  const futureTimestamp = Math.floor(
-    (Date.now() + 3600 * 24 * 365 * 10 * 1000) / 1000
-  ).toString();
-
+  const [currentTimestamp] = useState(createTimestamp());
+  const [futureTimestamp] = useState(createTimestamp(ONE_YEAR * 10));
   return useRounds({
     orderBy: "roundEndTime",
     orderDirection: "desc",
     where: {
-      // Must be after current time
+      // Round must have started and not ended yet
       roundStartTime_lt: currentTimestamp,
       roundEndTime_gt: currentTimestamp,
       roundEndTime_lt: futureTimestamp,
@@ -142,12 +145,11 @@ export function useActiveRounds() {
 }
 
 export function useRoundsEndingSoon() {
-  const currentTimestamp = Math.floor(Date.now() / 1000).toString();
+  const [currentTimestamp] = useState(createTimestamp());
   return useRounds({
     orderBy: "roundEndTime",
     orderDirection: "asc",
     where: {
-      // Must be after current time
       roundEndTime_gt: currentTimestamp,
     },
   });
@@ -155,7 +157,7 @@ export function useRoundsEndingSoon() {
 
 // TODO: Filter + sort rounds (status, network, sort)
 export function useFilterRounds() {
-  return useRounds({ first: 10 });
+  return useRounds({});
 }
 
 //
@@ -165,7 +167,8 @@ export function useRounds(variables: RoundsVariables) {
   const chainIds = getActiveChainIds();
 
   const query = useSWR(
-    ["rounds", variables, chainIds],
+    // Cache requests on chainIds and variables as keys (when these are the same, cache will be used instead of new requests)
+    ["rounds", chainIds, variables],
     () =>
       Promise.all(
         getActiveChainIds().flatMap((chainId) => {
@@ -185,7 +188,6 @@ export function useRounds(variables: RoundsVariables) {
 
     { keepPreviousData: true }
   );
-
   return {
     ...query,
     data: debugModeEnabled ? query.data : filterRounds(cache, query.data),
@@ -259,14 +261,16 @@ This enables two things:
 */
 export function usePrefetchRoundsMetadata() {
   const chainIds = getActiveChainIds();
-  const currentTimestamp = Math.floor(Date.now() / 1000).toString();
+  const [currentTimestamp] = useState(createTimestamp());
   const { mutate } = useSWRConfig();
 
-  return useSWR(["rounds-list", { chainIds }], () => {
-    return getActiveChainIds().flatMap((chainId) => {
-      // Only fetch metadata pointer to lower response size
-      return graphql_fetch(
-        `
+  return useSWR(
+    ["rounds-list", { chainIds }],
+    () => {
+      return getActiveChainIds().flatMap((chainId) => {
+        // Only fetch metadata pointer to lower response size
+        return graphql_fetch(
+          `
       query GetAllRounds($currentTimestamp: String) {
         rounds(where: {
           roundStartTime_lt: $currentTimestamp
@@ -280,19 +284,21 @@ export function usePrefetchRoundsMetadata() {
         }
       }
       `,
-        chainId,
-        { currentTimestamp }
-      )
-        .then((r) => r.data?.rounds ?? [])
-        .then(async (rounds) => {
-          for (const round of rounds) {
-            const cid = round.roundMetaPtr.pointer;
-            // Fetch metadata for each round and update cache
-            mutate(["metadata", cid], await fetchFromIPFS(cid));
-          }
-        });
-    });
-  });
+          chainId,
+          { currentTimestamp }
+        )
+          .then((r) => r.data?.rounds ?? [])
+          .then(async (rounds) => {
+            for (const round of rounds) {
+              const cid = round.roundMetaPtr.pointer;
+              // Fetch metadata for each round and update cache
+              mutate(["metadata", cid], await fetchFromIPFS(cid));
+            }
+          });
+      });
+    },
+    { keepPreviousData: true }
+  );
 }
 // Will only make a request if metadata doesn't exist yet
 export function useMetadata(cid: string) {

@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { fireEvent, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import {
   mockBalance,
   mockNetwork,
