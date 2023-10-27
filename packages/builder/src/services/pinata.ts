@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { getEnv } from "common/src/env";
 
 export default class PinataClient {
   private jwt: string;
@@ -12,21 +12,9 @@ export default class PinataClient {
   private pinFileToIPFSUrl: string;
 
   constructor() {
-    this.jwt = z
-      .string({
-        required_error: "REACT_APP_PINATA_JWT is required",
-      })
-      .parse(process.env.REACT_APP_PINATA_JWT);
-    this.gateway = z
-      .string({ required_error: "REACT_APP_IPFS_BASE_URL is required" })
-      .url()
-      .parse(process.env.REACT_APP_IPFS_BASE_URL)
-      .replace(/\/$/, "");
-    this.pinataBaseUrl = z
-      .string({ required_error: "REACT_APP_PINATA_BASE_URL" })
-      .url()
-      .parse(process.env.REACT_APP_PINATA_BASE_URL)
-      .replace(/\/$/, "");
+    this.jwt = getEnv("REACT_APP_PINATA_JWT")!;
+    this.gateway = getEnv("REACT_APP_IPFS_BASE_URL")!;
+    this.pinataBaseUrl = getEnv("REACT_APP_PINATA_BASE_URL")!;
 
     this.pinJSONToIPFSUrl = `${this.pinataBaseUrl}/pinning/pinJSONToIPFS`;
     this.pinFileToIPFSUrl = `${this.pinataBaseUrl}/pinning/pinFileToIPFS`;

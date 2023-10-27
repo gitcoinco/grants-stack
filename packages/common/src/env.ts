@@ -14,9 +14,11 @@ export function getEnv(
   name: string,
   options: Options = defaultOptions
 ): string | undefined {
-  const zValue = z.string({
-    required_error: `env var ${name} is required`,
-  });
+  const zValue = z
+    .string({
+      required_error: `env var ${name} is required`,
+    })
+    .min(1);
 
   const result = zValue.safeParse(process.env[name]);
   if (result.success) {
