@@ -6,13 +6,7 @@ type Filter = SortProps & FilterProps;
 
 export function RoundsFilter() {
   const params = Object.fromEntries(useSearchParams()[0]);
-  const {
-    sortBy = "",
-    orderBy = "",
-    status,
-    type = "",
-    network = "",
-  } = params as Filter;
+  const { sortBy = "", orderBy = "", status, type = "", network = "" } = params;
 
   return (
     <div className="flex gap-4 font-mono text-sm">
