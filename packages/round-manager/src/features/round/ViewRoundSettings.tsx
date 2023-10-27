@@ -1831,7 +1831,7 @@ function Funding(props: {
             }`}
           >
             <input
-              size={matchingFundPayoutToken.name.length ?? 3}
+              size={matchingFundPayoutToken?.name?.length ?? 3}
               type="text"
               className="text-grey-400 disabled:bg-gray-50 rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={matchingFundPayoutToken.name}
