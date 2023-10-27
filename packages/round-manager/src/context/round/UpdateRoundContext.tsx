@@ -161,7 +161,8 @@ const _updateRound = async ({
     /* Special case - if the round has already started, and we are editing times,
      * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
      * This won't actually update the values, it's done just to pass the checks in the contract
-     * (and to confuse the developer). */
+     * (and to confuse the developer). 
+     *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1 */
     if (Date.now() > round.roundStartTime.getTime()) {
       round.applicationsStartTime = subSeconds(round.applicationsEndTime, 1);
       round.roundStartTime = subSeconds(round.applicationsEndTime, 1);
