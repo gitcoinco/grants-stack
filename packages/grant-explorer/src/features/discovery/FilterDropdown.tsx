@@ -150,9 +150,8 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
               >
                 <Listbox.Options className=" mt-1 w-full overflow-auto p-2">
                   {children?.map((child, j) => {
-                    const checked = Boolean(
-                      value && child.value === { status, type, network }[value]
-                    );
+                    const selectedFilter = { status, type, network }[value];
+                    const isChecked = child.value === selectedFilter;
 
                     return (
                       <Listbox.Option key={j} value={child}>
@@ -169,7 +168,7 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
                             <div className="flex gap-2">
                               <input
                                 type="checkbox"
-                                checked={checked}
+                                checked={isChecked}
                                 onChange={console.log}
                               />
                               <span
