@@ -83,7 +83,7 @@ Find the label to display from the current filter.
 - Multiple - more than 1 selected
 - Selected - 1 selected
 */
-export function getLabel(filter: FilterProps) {
+export function getLabel(filter: FilterProps): Option {
   return (
     // Convert { key: val } to [[key, val]] and remove empty values
     Object.entries(filter)
