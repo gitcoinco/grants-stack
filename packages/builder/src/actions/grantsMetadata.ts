@@ -7,6 +7,7 @@ import PinataClient from "../services/pinata";
 import { LocalStorage } from "../services/Storage";
 import { Metadata, ProjectRegistryMetadata } from "../types";
 import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
+import { loadPinataConfig } from "common/src/config";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -156,7 +157,7 @@ const getMetadata = async (
   let content;
   try {
     // FIXME: fetch from pinata gateway
-    const pinataClient = new PinataClient();
+    const pinataClient = new PinataClient(loadPinataConfig());
     content = await pinataClient.fetchText(project.metadata.pointer);
   } catch (e) {
     // FIXME: dispatch "ipfs error"

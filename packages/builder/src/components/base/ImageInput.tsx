@@ -4,6 +4,7 @@ import colors from "../../styles/colors";
 import CloudUpload from "../icons/CloudUpload";
 import ImageCrop from "./images/ImageCrop";
 import Toast from "./Toast";
+import { loadPinataConfig } from "common/src/config";
 
 export type Dimensions = {
   width: number;
@@ -99,7 +100,7 @@ export default function ImageInput({
     }
 
     // Fetch existing img path from Pinata for display
-    const pinataClient = new PinataClient();
+    const pinataClient = new PinataClient(loadPinataConfig());
     const imgUrl = pinataClient.fileUrl(ipfsCID);
 
     blobExistingImg(imgUrl);

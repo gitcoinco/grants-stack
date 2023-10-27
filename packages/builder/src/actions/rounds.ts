@@ -13,6 +13,7 @@ import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
 import { getProviderByChainId } from "../utils/utils";
 import { RoundApplicationMetadata } from "../types/roundApplication";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
+import { loadPinataConfig } from "common/src/config";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -89,7 +90,7 @@ export const loadRound =
     const appProvider = getProviderByChainId(chainId!);
 
     const contract = new ethers.Contract(address, RoundABI, appProvider);
-    const pinataClient = new PinataClient();
+    const pinataClient = new PinataClient(loadPinataConfig());
 
     dispatch({
       type: ROUNDS_LOADING_ROUND,

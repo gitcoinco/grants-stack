@@ -10,6 +10,7 @@ import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
 import { getProjectURIComponents } from "../utils/utils";
+import { loadPinataConfig } from "common/src/config";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
@@ -85,7 +86,7 @@ export const publishGrant =
       ...formMetaData,
     } as Project;
 
-    const pinataClient = new PinataClient();
+    const pinataClient = new PinataClient(loadPinataConfig());
     dispatch(grantStatus(Status.UploadingImages));
     if (formMetaData?.bannerImgData !== undefined) {
       try {

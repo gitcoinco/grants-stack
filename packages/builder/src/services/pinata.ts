@@ -1,5 +1,11 @@
 import { getEnv } from "common/src/env";
 
+interface PinataClientOptions {
+  jwt: string;
+  gateway: string;
+  pinataBaseUrl: string;
+}
+
 export default class PinataClient {
   private jwt: string;
 
@@ -11,10 +17,10 @@ export default class PinataClient {
 
   private pinFileToIPFSUrl: string;
 
-  constructor() {
-    this.jwt = getEnv("REACT_APP_PINATA_JWT")!;
-    this.gateway = getEnv("REACT_APP_IPFS_BASE_URL")!;
-    this.pinataBaseUrl = getEnv("REACT_APP_PINATA_BASE_URL")!;
+  constructor(options: PinataClientOptions) {
+    this.jwt = options.jwt;
+    this.gateway = options.gateway;
+    this.pinataBaseUrl = options.pinataBaseUrl.replace(/\/$/, "");
 
     this.pinJSONToIPFSUrl = `${this.pinataBaseUrl}/pinning/pinJSONToIPFS`;
     this.pinFileToIPFSUrl = `${this.pinataBaseUrl}/pinning/pinFileToIPFS`;

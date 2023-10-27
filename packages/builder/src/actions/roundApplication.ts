@@ -17,6 +17,7 @@ import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
 import { fetchProjectApplications } from "./projects";
 import { graphqlFetch } from "../utils/graphql";
+import { loadPinataConfig } from "common/src/config";
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
@@ -284,7 +285,7 @@ export const submitApplication =
       application,
     };
 
-    const pinataClient = new PinataClient();
+    const pinataClient = new PinataClient(loadPinataConfig());
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
@@ -401,7 +402,7 @@ export const checkRoundApplications =
 export const fetchApplicationData =
   (ipfsHash: string, roundAddress: string, chainId: string) =>
   async (dispatch: Dispatch) => {
-    const pinataClient = new PinataClient();
+    const pinataClient = new PinataClient(loadPinataConfig());
     try {
       // FETCH roundApplication DATA
       const resp = await pinataClient.fetchJson(ipfsHash);
@@ -417,7 +418,7 @@ export const fetchApplicationData =
               where: {
                 round_: {
                   id: $roundId
-                }, 
+                },
                 metaPtr_: {
                   pointer: $ipfsHash
                 }
