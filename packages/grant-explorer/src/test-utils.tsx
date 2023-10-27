@@ -59,7 +59,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     token: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: "some-id",
-      strategyName: "MERKLE"
+      strategyName: "MERKLE",
     },
     votingStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),
@@ -96,6 +96,25 @@ export const makeApprovedProjectData = (
   };
 };
 
+const makeTimestamp = (days?: number) =>
+  Math.floor(Number(faker.date.soon(days)) / 1000).toString();
+
+export const makeRoundMetadata = (
+  overrides?: Partial<RoundMetadata>
+): RoundMetadata => ({
+  name: faker.company.name(),
+  roundType: "private",
+  eligibility: {
+    description: faker.lorem.sentence(),
+    requirements: [
+      { requirement: faker.lorem.sentence() },
+      { requirement: faker.lorem.sentence() },
+    ],
+  },
+  programContractAddress: faker.finance.ethereumAddress(),
+  ...overrides,
+});
+
 export const makeRoundOverviewData = (
   overrides?: Partial<RoundOverview>,
   roundMetadataOverrides?: Partial<RoundMetadata>
@@ -111,25 +130,14 @@ export const makeRoundOverviewData = (
       protocol: 1,
       pointer: generateIpfsCid(),
     },
-    applicationsStartTime: faker.date.soon().toString(),
-    applicationsEndTime: faker.date.soon(10).toString(),
-    roundStartTime: faker.date.soon(20).toString(),
-    roundEndTime: faker.date.soon(30).toString(),
+    applicationsStartTime: makeTimestamp(),
+    applicationsEndTime: makeTimestamp(10),
+    roundStartTime: makeTimestamp(20),
+    roundEndTime: makeTimestamp(30),
     matchAmount: "1000000000000000000000000",
     token: faker.finance.ethereumAddress(),
-    roundMetadata: {
-      name: faker.company.name(),
-      roundType: "private",
-      eligibility: {
-        description: faker.lorem.sentence(),
-        requirements: [
-          { requirement: faker.lorem.sentence() },
-          { requirement: faker.lorem.sentence() },
-        ],
-      },
-      programContractAddress: faker.finance.ethereumAddress(),
-      ...roundMetadataOverrides,
-    },
+    roundMetadata: makeRoundMetadata(roundMetadataOverrides),
+
     payoutStrategy: {
       id: "someid",
       strategyName: "MERKLE",

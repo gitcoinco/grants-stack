@@ -73,7 +73,7 @@ function generateRandomNumber(address: string) {
   return randomNumber;
 }
 
-function RoundBanner(props: { roundId: string }) {
+export function RoundBanner(props: { roundId: string }) {
   const stockId = generateRandomNumber(props.roundId);
   const stockImage = stockImages[stockId];
 
@@ -83,6 +83,25 @@ function RoundBanner(props: { roundId: string }) {
         className="bg-black blur w-[120%] h-[120%] -mt-4 -ml-4 brightness-[40%] object-cover"
         style={{ backgroundImage: `url(${stockImage})` }}
       />
+    </div>
+  );
+}
+
+export function CollectionBanner({ projects }: { projects: { id: string }[] }) {
+  return (
+    <div className="overflow-hidden h-[192px]">
+      {projects.map((project) => {
+        const stockId = generateRandomNumber(project.id);
+        const stockImage = stockImages[stockId];
+        return (
+          <div
+            className={`bg-grey-100 h-[48px] bg-no-repeat w-full bg-cover`}
+            style={{
+              backgroundImage: `url(${stockImage})`,
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
