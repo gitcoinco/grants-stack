@@ -95,6 +95,10 @@ function enabledChainsAndProviders() {
       : [];
 
   let usingDevOnlyChains = true;
+  const appEnv = getEnv("REACT_APP_ENV", {
+    required: false,
+    defaultValue: "development",
+  })!;
 
   if (selectedChainsNames.length > 0) {
     // if REACT_APP_CHAINS is specified we use those
@@ -114,7 +118,7 @@ function enabledChainsAndProviders() {
 
       chains.push(chain);
     });
-  } else if (getEnv("REACT_APP_ENV") === "production") {
+  } else if (appEnv === "production") {
     // if REACT_APP_CHAINS is not specified  ans we are in production
     // we use the default chains for production environments
     usingDevOnlyChains = false;
