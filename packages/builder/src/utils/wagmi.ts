@@ -88,7 +88,7 @@ function enabledChainsAndProviders() {
   const chains: Chain[] = [];
   const providers = [publicProvider({ priority: 2 })];
 
-  const chainsConfig = getEnv("REACT_APP_CHAINS");
+  const chainsConfig = getEnv("REACT_APP_CHAINS", { required: false });
   const selectedChainsNames =
     chainsConfig !== undefined && chainsConfig !== ""
       ? chainsConfig.split(",").map((name) => name.trim())
