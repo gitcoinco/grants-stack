@@ -13,6 +13,8 @@ type ChainIdToStringMap = Record<ChainId, string>;
 /************************/
 
 const projectRegistryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  [ChainId.DEV2]: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
   [ChainId.MAINNET]: "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
   [ChainId.GOERLI_CHAIN_ID]: "0xa71864fAd36439C50924359ECfF23Bb185FFDf21",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
@@ -48,6 +50,8 @@ export const ERC20Contract: Contract = {
 /* ===== Program ====== */
 /************************/
 const programFactoryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+  [ChainId.DEV2]: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
   [ChainId.MAINNET]: "0x56296242CA408bA36393f3981879fF9692F193cC",
   [ChainId.GOERLI_CHAIN_ID]: "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
@@ -77,6 +81,8 @@ export const programFactoryContract = (chainId: ChainId): Contract => {
 /* ====== Round ======= */
 /************************/
 const roundFactoryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+  [ChainId.DEV2]: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
   [ChainId.MAINNET]: "0x9Cb7f434aD3250d1656854A9eC7A71EceC6eE1EF",
   [ChainId.GOERLI_CHAIN_ID]: "0x24F9EBFAdf095e0afe3d98635ee83CD72e49B5B0",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
@@ -113,6 +119,8 @@ export const roundImplementationContract: Contract = {
 /* == VotingStrategy == */
 /************************/
 const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+  [ChainId.DEV2]: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
   [ChainId.MAINNET]: "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F",
   [ChainId.GOERLI_CHAIN_ID]: "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
@@ -145,6 +153,15 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
   let address;
 
   switch (chainId) {
+    // FIXME: set the real addresses when we have a full local env
+    case ChainId.DEV1: {
+      address = "TODO";
+      break;
+    }
+    case ChainId.DEV2: {
+      address = "TODO";
+      break;
+    }
     case ChainId.MAINNET: {
       address = "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e";
       break;
@@ -206,6 +223,8 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
 /* == PayoutStrategy == */
 /************************/
 const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+  [ChainId.DEV2]: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
   [ChainId.MAINNET]: "0x8F8d78f119Aa722453d33d6881f4D400D67D054F",
   [ChainId.GOERLI_CHAIN_ID]: "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
@@ -240,6 +259,8 @@ export const merklePayoutStrategyImplementationContract: Contract = {
 /* AlloSettings contract  */
 
 const alloSettingsContractMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0x59b670e9fA9D0A427751Af201D676719a970857b",
+  [ChainId.DEV2]: "0x59b670e9fA9D0A427751Af201D676719a970857b",
   [ChainId.MAINNET]: "",
   [ChainId.GOERLI_CHAIN_ID]: "0x991cd65cb6AE183F06a489857775D7aE14794055",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "",
@@ -268,6 +289,9 @@ export const alloSettingsContract = (
 /* DirectPayoutStrategyFactoryContract contract  */
 
 const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
+  // FIXME: set the real addresses when we have a full local env
+  [ChainId.DEV1]: "TODO",
+  [ChainId.DEV2]: "TODO",
   [ChainId.MAINNET]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
   [ChainId.GOERLI_CHAIN_ID]: "0x0077551e24bfB910aBABedC4336246e34B5fB0A2",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:

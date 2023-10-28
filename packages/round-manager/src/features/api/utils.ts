@@ -11,6 +11,21 @@ import { ChainId, RedstoneTokenIds } from "common";
 
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<ChainId, Program["chain"]> = {
+  [ChainId.DEV1]: {
+    id: ChainId.DEV1,
+    name: "DEV1",
+    logo: "/logos/ethereum-eth-logo.svg",
+  },
+  [ChainId.DEV2]: {
+    id: ChainId.DEV2,
+    name: "DEV2",
+    logo: "/logos/ethereum-eth-logo.svg",
+  },
+  [ChainId.MAINNET]: {
+    id: ChainId.MAINNET,
+    name: "Mainnet", // TODO get canonical network names
+    logo: "/logos/ethereum-eth-logo.svg",
+  },
   [ChainId.MAINNET]: {
     id: ChainId.MAINNET,
     name: "Mainnet", // TODO get canonical network names
