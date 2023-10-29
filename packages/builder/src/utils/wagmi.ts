@@ -131,7 +131,10 @@ function enabledChainsAndProviders() {
   }
 
   if (!usingDevOnlyChains) {
-    if (infuraId === "" || alchemyId === "") {
+    if (
+      process.env.NODE_ENV !== "test" &&
+      (infuraId === "" || alchemyId === "")
+    ) {
       throw new Error(
         "REACT_APP_INFURA_ID and REACT_APP_ALCHEMY_ID must be set to use non-local chains"
       );
