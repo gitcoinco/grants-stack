@@ -17,6 +17,7 @@ export default defineConfig({
       ["**/round.test.tsx", "happy-dom"],
       ["**/ViewRoundPage.test.tsx", "happy-dom"],
       ["**/ApplyNowSection.test.tsx", "happy-dom"],
+      ["**/LandingPage.test.tsx", "happy-dom"],
       // most component tests need to be tsx and run in jsdom
       ["**/*.tsx", "jsdom"],
       // everything else runs in node
