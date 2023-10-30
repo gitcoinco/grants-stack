@@ -2,7 +2,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { loadPinataConfig } from "common/src/config";
+import { getConfig } from "common/src/config";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
@@ -86,7 +86,12 @@ export const publishGrant =
       ...formMetaData,
     } as Project;
 
-    const pinataClient = new PinataClient(loadPinataConfig());
+    const config = getConfig();
+    const pinataClient = new PinataClient({
+      jwt: config.pinata.jwt,
+      gateway: config.ipfs.baseUrl,
+      pinataBaseUrl: config.pinata.baseUrl,
+    });
     dispatch(grantStatus(Status.UploadingImages));
     if (formMetaData?.bannerImgData !== undefined) {
       try {

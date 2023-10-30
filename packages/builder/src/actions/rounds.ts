@@ -3,7 +3,7 @@ import { Dispatch } from "redux";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
-import { loadPinataConfig } from "common/src/config";
+import { getConfig } from "common/src/config";
 import { graphqlFetch } from "../utils/graphql";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
@@ -90,7 +90,12 @@ export const loadRound =
     const appProvider = getProviderByChainId(chainId!);
 
     const contract = new ethers.Contract(address, RoundABI, appProvider);
-    const pinataClient = new PinataClient(loadPinataConfig());
+    const config = getConfig();
+    const pinataClient = new PinataClient({
+      jwt: config.pinata.jwt,
+      gateway: config.ipfs.baseUrl,
+      pinataBaseUrl: config.pinata.baseUrl,
+    });
 
     dispatch({
       type: ROUNDS_LOADING_ROUND,

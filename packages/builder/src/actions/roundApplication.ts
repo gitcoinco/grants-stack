@@ -3,7 +3,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ChainId } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { loadPinataConfig } from "common/src/config";
+import { getConfig } from "common/src/config";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { chains } from "../contracts/deployments";
 import { global } from "../global";
@@ -285,7 +285,12 @@ export const submitApplication =
       application,
     };
 
-    const pinataClient = new PinataClient(loadPinataConfig());
+    const config = getConfig();
+    const pinataClient = new PinataClient({
+      jwt: config.pinata.jwt,
+      gateway: config.ipfs.baseUrl,
+      pinataBaseUrl: config.pinata.baseUrl,
+    });
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
@@ -402,7 +407,12 @@ export const checkRoundApplications =
 export const fetchApplicationData =
   (ipfsHash: string, roundAddress: string, chainId: string) =>
   async (dispatch: Dispatch) => {
-    const pinataClient = new PinataClient(loadPinataConfig());
+    const config = getConfig();
+    const pinataClient = new PinataClient({
+      jwt: config.pinata.jwt,
+      gateway: config.ipfs.baseUrl,
+      pinataBaseUrl: config.pinata.baseUrl,
+    });
     try {
       // FETCH roundApplication DATA
       const resp = await pinataClient.fetchJson(ipfsHash);

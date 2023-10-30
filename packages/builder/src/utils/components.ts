@@ -1,4 +1,4 @@
-import { loadPinataConfig } from "common/src/config";
+import { getConfig } from "common/src/config";
 import { Metadata, Project } from "../types";
 import PinataClient from "../services/pinata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../assets";
@@ -24,7 +24,13 @@ export const getProjectImage = (
     return defaultImgs[imgType];
   }
 
-  const pinataClient = new PinataClient(loadPinataConfig());
+  const config = getConfig();
+  const pinataClient = new PinataClient({
+    jwt: config.pinata.jwt,
+    gateway: config.ipfs.baseUrl,
+    pinataBaseUrl: config.pinata.baseUrl,
+  });
+
   return pinataClient.fileUrl(img);
 };
 

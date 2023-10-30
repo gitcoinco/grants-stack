@@ -1,17 +1,44 @@
-import { getEnv } from "./env";
+import { z } from "zod";
 
-type PinataConfig = {
-  jwt: string;
-  gateway: string;
-  pinataBaseUrl: string;
+type Config = {
+  ipfs: {
+    baseUrl: string;
+  };
+  pinata: {
+    jwt: string;
+    baseUrl: string;
+  };
 };
 
-export function loadPinataConfig(): PinataConfig {
-  // we use ! since they these vars are required by default
-  // and an exception will be thrown inside getEnv if they are empty
-  return {
-    jwt: getEnv("REACT_APP_PINATA_JWT")!,
-    gateway: getEnv("REACT_APP_IPFS_BASE_URL")!,
-    pinataBaseUrl: getEnv("REACT_APP_PINATA_BASE_URL")!,
+var config: Config | null = null;
+
+function getEnv(
+  name: string,
+  opts: { allowEmpty: boolean } = { allowEmpty: false }
+) {
+  const min = opts.allowEmpty ? 0 : 1;
+  return z
+    .string({
+      required_error: `env var ${name} is required`,
+    })
+    .min(min)
+    .parse(name);
+}
+
+export function getConfig(): Config {
+  if (config !== null) {
+    return config;
+  }
+
+  config = {
+    ipfs: {
+      baseUrl: getEnv("REACT_APP_IPFS_BASE_URL"),
+    },
+    pinata: {
+      jwt: getEnv("REACT_APP_PINATA_JWT"),
+      baseUrl: getEnv("REACT_APP_PINATA_BASE_URL"),
+    },
   };
+
+  return config;
 }

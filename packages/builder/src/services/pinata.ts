@@ -1,8 +1,8 @@
-interface PinataClientOptions {
+type PinataClientOptions = {
   jwt: string;
   gateway: string;
   pinataBaseUrl: string;
-}
+};
 
 export default class PinataClient {
   private jwt: string;

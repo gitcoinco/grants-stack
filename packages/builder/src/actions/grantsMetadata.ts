@@ -1,7 +1,7 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { loadPinataConfig } from "common/src/config";
+import { getConfig } from "common/src/config";
 import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import PinataClient from "../services/pinata";
@@ -157,7 +157,12 @@ const getMetadata = async (
   let content;
   try {
     // FIXME: fetch from pinata gateway
-    const pinataClient = new PinataClient(loadPinataConfig());
+    const config = getConfig();
+    const pinataClient = new PinataClient({
+      jwt: config.pinata.jwt,
+      gateway: config.ipfs.baseUrl,
+      pinataBaseUrl: config.pinata.baseUrl,
+    });
     content = await pinataClient.fetchText(project.metadata.pointer);
   } catch (e) {
     // FIXME: dispatch "ipfs error"

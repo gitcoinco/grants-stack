@@ -35,15 +35,6 @@ jest.mock("../../../utils/projects", () => ({
   fetchProjectOwners: jest.fn(),
 }));
 
-jest.mock("common/src/config", () => ({
-  ...jest.requireActual("common/src/config"),
-  loadPinataConfig: () => ({
-    jwt: "TEST_TOOKEN",
-    gateway: "http://local.test",
-    pinataBaseUrl: "http://local.test",
-  }),
-}));
-
 describe("<Show />", () => {
   let store: any;
 

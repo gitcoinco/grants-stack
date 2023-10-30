@@ -84,7 +84,7 @@ const productionChains = [
   polygon,
 ];
 
-function enabledChainsAndProviders() {
+function getEnabledChainsAndProviders() {
   const chains: Chain[] = [];
   const providers = [publicProvider({ priority: 2 })];
 
@@ -150,7 +150,7 @@ function enabledChainsAndProviders() {
 }
 
 const { chains: enabledChains, providers: enabledProviders } =
-  enabledChainsAndProviders();
+  getEnabledChainsAndProviders();
 
 export const { chains, provider } = configureChains(
   enabledChains,
