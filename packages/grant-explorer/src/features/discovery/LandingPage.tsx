@@ -36,14 +36,21 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {activeRounds.data?.slice(0, 4).map((round, i) => (
-            <div
-              key={round.id}
-              className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
-            >
-              <RoundCard round={round} />
-            </div>
-          ))}
+          {activeRounds.data
+            ?.filter(
+              (round) =>
+                round?.projects?.length !== undefined &&
+                round.projects.length > 0
+            )
+            .slice(0, 4)
+            .map((round, i) => (
+              <div
+                key={round.id}
+                className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
+              >
+                <RoundCard round={round} />
+              </div>
+            ))}
         </div>
       </LandingSection>
       <LandingSection
@@ -75,11 +82,17 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {activeRounds.data?.map((round) => (
-            <div key={round.id}>
-              <RoundCard round={round} />
-            </div>
-          ))}
+          {activeRounds.data
+            ?.filter(
+              (round) =>
+                round?.projects?.length !== undefined &&
+                round.projects.length > 0
+            )
+            .map((round) => (
+              <div key={round.id}>
+                <RoundCard round={round} />
+              </div>
+            ))}
         </div>
       </LandingSection>
     </DefaultLayout>
