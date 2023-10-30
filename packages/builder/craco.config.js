@@ -32,6 +32,7 @@ module.exports = {
       experiments: {
         asyncWebAssembly: true,
       },
+      ignoreWarnings: [/Failed to parse source map/],
     },
   },
   plugins: [
