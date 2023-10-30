@@ -8,20 +8,31 @@ import {
   renderWithContext,
 } from "../../../test-utils";
 import { RoundMetadata } from "../../api/round";
-import {
-  RoundOverview,
-  getActiveRounds,
-  getRoundsInApplicationPhase,
-} from "../../api/rounds";
+import { RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
-import { MockedFunction, vi } from "vitest";
+import { vi } from "vitest";
 
 // Mock the API calls
-vi.mock("../../api/rounds", () => {
+
+// Create empty mock functions - we will set these inside the tests.
+const { graphql_fetch, fetchFromIPFS } = vi.hoisted(() => ({
+  graphql_fetch: vi.fn(),
+  fetchFromIPFS: vi.fn(),
+}));
+
+vi.mock("common", async () => {
+  const actual = await vi.importActual<typeof import("common")>("common");
   return {
-    getActiveRounds: vi.fn(),
-    getRoundsInApplicationPhase: vi.fn(),
+    ...actual,
+    renderToPlainText: vi.fn().mockReturnValue((str = "") => str),
+    graphql_fetch,
   };
+});
+
+vi.mock("../../api/utils", async () => {
+  const actual =
+    await vi.importActual<typeof import("../../api/utils")>("../../api/utils");
+  return { ...actual, fetchFromIPFS };
 });
 
 const chainId = faker.datatype.number();
@@ -32,6 +43,7 @@ const mockAccount = {
 const mockSwitchNetwork = {
   chainId: chainId,
 };
+const mockToken = vi.fn();
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
@@ -39,27 +51,31 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: vi.fn(),
 }));
 
-vi.mock("wagmi", () => ({
-  useAccount: () => mockAccount,
-  useBalance: () => mockBalance,
-  useSigner: () => mockSigner,
-  useNetwork: () => mockNetwork,
-  useSwitchNetwork: () => mockSwitchNetwork,
-}));
-
-const mockGetActiveRounds = getActiveRounds as MockedFunction<
-  typeof getActiveRounds
->;
-const mockGetRoundsInApplicationPhase =
-  getRoundsInApplicationPhase as MockedFunction<
-    typeof getRoundsInApplicationPhase
-  >;
+vi.mock("viem", async () => {
+  const actual = await vi.importActual<typeof import("viem")>("viem");
+  return {
+    ...actual,
+    getAddress: vi.fn().mockImplementation((addr) => addr),
+  };
+});
+vi.mock("wagmi", async () => {
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
+  return {
+    ...actual,
+    useAccount: () => mockAccount,
+    useToken: () => mockToken,
+    useBalance: () => mockBalance,
+    useSigner: () => mockSigner,
+    useNetwork: () => mockNetwork,
+    useSwitchNetwork: () => mockSwitchNetwork,
+  };
+});
 
 describe("LandingPage", () => {
   beforeEach(() => {
     // Reset the mocks before each test
-    mockGetActiveRounds.mockReset();
-    mockGetRoundsInApplicationPhase.mockReset();
+    graphql_fetch.mockReset();
+    fetchFromIPFS.mockReset();
   });
 
   it("renders landing page", () => {
@@ -67,31 +83,23 @@ describe("LandingPage", () => {
   });
 
   it("fetches and displays active rounds and rounds in application phase", async () => {
-    const activeRounds: RoundOverview[] = [];
-    const roundsInApplicationPhase: RoundOverview[] = [
-      // Provide your rounds in application phase data
-    ];
-
-    mockGetActiveRounds.mockImplementation(async () => {
-      return activeRounds;
-    });
-
-    mockGetRoundsInApplicationPhase.mockImplementation(async () => {
-      return roundsInApplicationPhase;
-    });
+    const mockedRounds = Array.from({ length: 1 }).map(() =>
+      makeRoundOverviewData()
+    );
+    // Set the mock data
+    graphql_fetch.mockResolvedValue({ data: { rounds: mockedRounds } });
+    // Return the same metadata that was created by the mock
+    fetchFromIPFS.mockImplementation(
+      (cid: string) =>
+        mockedRounds.find((round) => round.roundMetaPtr.pointer === cid)
+          ?.roundMetadata
+    );
 
     renderWithContext(<LandingPage />);
 
     await waitFor(() => {
       // Check if the fetched active rounds are displayed
-      activeRounds.forEach((round) => {
-        expect(
-          screen.getByText(round.roundMetadata?.name ?? "")
-        ).toBeInTheDocument();
-      });
-
-      // Check if the fetched rounds in application phase are displayed
-      roundsInApplicationPhase.forEach((round) => {
+      mockedRounds.forEach((round) => {
         expect(
           screen.getByText(round.roundMetadata?.name ?? "")
         ).toBeInTheDocument();
@@ -121,10 +129,6 @@ describe("LandingPage", () => {
         },
       }),
     ];
-
-    mockGetActiveRounds.mockImplementation(async () => {
-      return activeRounds;
-    });
 
     renderWithContext(<LandingPage />);
 
