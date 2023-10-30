@@ -291,6 +291,16 @@ const PGN_MAINNET_TOKENS: VotingToken[] = [
     defaultForVoting: true,
     canVote: true,
   },
+  {
+    name: "DAI",
+    chainId: ChainId.PGN,
+    address: "0x6C121674ba6736644A7e73A8741407fE8a5eE5BA",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
 ];
 
 const ARBITRUM_TOKENS: VotingToken[] = [
