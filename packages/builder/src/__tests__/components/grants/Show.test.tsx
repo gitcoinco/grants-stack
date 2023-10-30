@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { waitFor } from "@testing-library/react";
-import { loadPinataConfig } from "common/src/config";
 import Show from "../../../components/grants/Show";
 import setupStore from "../../../store";
 import {
