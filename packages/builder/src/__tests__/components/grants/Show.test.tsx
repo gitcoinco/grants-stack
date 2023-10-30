@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { waitFor } from "@testing-library/react";
+import { loadPinataConfig } from "common/src/config";
 import Show from "../../../components/grants/Show";
 import setupStore from "../../../store";
 import {
@@ -33,6 +34,15 @@ jest.mock("../../../actions/grantsMetadata", () => ({
 jest.mock("../../../utils/projects", () => ({
   ...jest.requireActual("../../../utils/projects"),
   fetchProjectOwners: jest.fn(),
+}));
+
+jest.mock("common/src/config", () => ({
+  ...jest.requireActual("common/src/config"),
+  loadPinataConfig: () => ({
+    jwt: "TEST_TOOKEN",
+    gateway: "http://local.test",
+    pinataBaseUrl: "http://local.test",
+  }),
 }));
 
 describe("<Show />", () => {
