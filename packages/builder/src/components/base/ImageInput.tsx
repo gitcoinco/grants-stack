@@ -100,12 +100,7 @@ export default function ImageInput({
     }
 
     // Fetch existing img path from Pinata for display
-    const config = getConfig();
-    const pinataClient = new PinataClient({
-      jwt: config.pinata.jwt,
-      gateway: config.ipfs.baseUrl,
-      pinataBaseUrl: config.pinata.baseUrl,
-    });
+    const pinataClient = new PinataClient(getConfig());
     const imgUrl = pinataClient.fileUrl(ipfsCID);
 
     blobExistingImg(imgUrl);

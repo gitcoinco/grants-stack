@@ -157,12 +157,7 @@ const getMetadata = async (
   let content;
   try {
     // FIXME: fetch from pinata gateway
-    const config = getConfig();
-    const pinataClient = new PinataClient({
-      jwt: config.pinata.jwt,
-      gateway: config.ipfs.baseUrl,
-      pinataBaseUrl: config.pinata.baseUrl,
-    });
+    const pinataClient = new PinataClient(getConfig());
     content = await pinataClient.fetchText(project.metadata.pointer);
   } catch (e) {
     // FIXME: dispatch "ipfs error"

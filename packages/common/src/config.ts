@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-type Config = {
-  env: string;
+export type Config = {
+  appEnv: "development" | "test" | "production";
 
   ipfs: {
     baseUrl: string;
@@ -17,7 +17,7 @@ type Config = {
   };
 };
 
-var config: Config | null = null;
+let config: Config | null = null;
 
 export function getConfig(): Config {
   if (config !== null) {
@@ -25,7 +25,7 @@ export function getConfig(): Config {
   }
 
   config = {
-    env: z
+    appEnv: z
       .enum(["development", "test", "production"])
       .default("development")
       .parse(process.env.REACT_APP_ENV),

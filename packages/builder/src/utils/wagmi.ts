@@ -114,7 +114,7 @@ function getEnabledChainsAndProviders() {
 
       chains.push(chain);
     });
-  } else if (config.env === "production") {
+  } else if (config.appEnv === "production") {
     // if REACT_APP_CHAINS is not specified  ans we are in production
     // we use the default chains for production environments
     usingDevOnlyChains = false;

@@ -285,12 +285,7 @@ export const submitApplication =
       application,
     };
 
-    const config = getConfig();
-    const pinataClient = new PinataClient({
-      jwt: config.pinata.jwt,
-      gateway: config.ipfs.baseUrl,
-      pinataBaseUrl: config.pinata.baseUrl,
-    });
+    const pinataClient = new PinataClient(getConfig());
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
@@ -407,12 +402,7 @@ export const checkRoundApplications =
 export const fetchApplicationData =
   (ipfsHash: string, roundAddress: string, chainId: string) =>
   async (dispatch: Dispatch) => {
-    const config = getConfig();
-    const pinataClient = new PinataClient({
-      jwt: config.pinata.jwt,
-      gateway: config.ipfs.baseUrl,
-      pinataBaseUrl: config.pinata.baseUrl,
-    });
+    const pinataClient = new PinataClient(getConfig());
     try {
       // FETCH roundApplication DATA
       const resp = await pinataClient.fetchJson(ipfsHash);

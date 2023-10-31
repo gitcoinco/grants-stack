@@ -1,8 +1,4 @@
-type PinataClientOptions = {
-  jwt: string;
-  gateway: string;
-  pinataBaseUrl: string;
-};
+import type { Config } from "common/src/config";
 
 export default class PinataClient {
   private jwt: string;
@@ -15,10 +11,10 @@ export default class PinataClient {
 
   private pinFileToIPFSUrl: string;
 
-  constructor(options: PinataClientOptions) {
-    this.jwt = options.jwt;
-    this.gateway = options.gateway;
-    this.pinataBaseUrl = options.pinataBaseUrl.replace(/\/$/, "");
+  constructor(config: Config) {
+    this.jwt = config.pinata.jwt;
+    this.gateway = config.ipfs.baseUrl;
+    this.pinataBaseUrl = config.pinata.baseUrl.replace(/\/$/, "");
 
     this.pinJSONToIPFSUrl = `${this.pinataBaseUrl}/pinning/pinJSONToIPFS`;
     this.pinFileToIPFSUrl = `${this.pinataBaseUrl}/pinning/pinFileToIPFS`;

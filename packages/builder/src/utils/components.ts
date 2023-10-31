@@ -24,12 +24,7 @@ export const getProjectImage = (
     return defaultImgs[imgType];
   }
 
-  const config = getConfig();
-  const pinataClient = new PinataClient({
-    jwt: config.pinata.jwt,
-    gateway: config.ipfs.baseUrl,
-    pinataBaseUrl: config.pinata.baseUrl,
-  });
+  const pinataClient = new PinataClient(getConfig());
 
   return pinataClient.fileUrl(img);
 };

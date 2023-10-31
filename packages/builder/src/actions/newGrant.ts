@@ -86,12 +86,7 @@ export const publishGrant =
       ...formMetaData,
     } as Project;
 
-    const config = getConfig();
-    const pinataClient = new PinataClient({
-      jwt: config.pinata.jwt,
-      gateway: config.ipfs.baseUrl,
-      pinataBaseUrl: config.pinata.baseUrl,
-    });
+    const pinataClient = new PinataClient(getConfig());
     dispatch(grantStatus(Status.UploadingImages));
     if (formMetaData?.bannerImgData !== undefined) {
       try {
