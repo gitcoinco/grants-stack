@@ -87,7 +87,6 @@ describe("LandingPage", () => {
       makeRoundOverviewData()
     );
 
-    console.log(mockedRounds);
     // Set the mock data
     graphql_fetch.mockResolvedValue({ data: { rounds: mockedRounds } });
     // Return the same metadata that was created by the mock
