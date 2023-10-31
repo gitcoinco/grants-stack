@@ -37,4 +37,4 @@ whitespace-nowrap
 const pluralize =
   ([singular = "", plural = ""]) =>
   (num = 0) =>
-    num ? (num === 1 ? singular : plural) : "";
+    num ? (num === 1 ? singular : plural) : plural;

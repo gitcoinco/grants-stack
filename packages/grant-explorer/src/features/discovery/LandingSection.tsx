@@ -15,11 +15,11 @@ export function LandingSection({
   className,
 }: { action?: ReactNode; title: string } & ComponentProps<"div">) {
   return (
-    <section className="py-8">
+    <section className="pt-8 pb-16">
       <div
         className={classNames("flex justify-between items-center", className)}
       >
-        <h3 className="text-2xl md:text-4xl font-medium tracking-tight">
+        <h3 className="text-xl md:text-3xl font-medium tracking-tight">
           {title}
         </h3>
         <div>{action}</div>

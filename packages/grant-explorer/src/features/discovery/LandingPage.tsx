@@ -36,12 +36,12 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {(activeRounds.data ?? Array.from({ length: 4 }))
-            ?.slice(0, 4)
+          {(activeRounds.data ?? Array.from({ length: 6 }))
+            ?.slice(0, 6)
             .map((round, i) => (
               <div
                 key={round?.id ?? i}
-                className={`${i % 3 === 0 ? "md:col-span-2" : ""}`}
+                className={`${i % 3 && i % 4 ? "" : "md:col-span-2"}`}
               >
                 <RoundCard round={round} isLoading={activeRounds.isLoading} />
               </div>
@@ -53,17 +53,17 @@ const LandingPage = () => {
         action={<ViewAllLink to="/rounds?status=apply">View all</ViewAllLink>}
       >
         <div className="flex gap-8 items-center">
-          <div className="hidden md:block w-1/3 space-y-8">
-            <p className="text-lg">
+          <div className="hidden md:block md:w-1/3 space-y-8">
+            <p className="text-2xl">
               Bring your project to life with Gitcoin's vibrant ecosystem of
               public goods funding opportunities.
             </p>
-            <p className="text-lg">
+            <p className="text-2xl">
               Discover new grant rounds currently accepting applications, and
               apply for funding today!
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-x-6 md:w-2/3">
+          <div className="grid md:grid-cols-2 gap-x-6 w-full md:w-2/3">
             {(roundsTakingApplications.data ?? Array.from({ length: 4 }))
               .slice(0, 4)
               ?.map((round, i) => (

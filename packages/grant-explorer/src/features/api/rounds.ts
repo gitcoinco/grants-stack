@@ -131,7 +131,7 @@ export function useRoundsTakingApplications() {
 // What filters for active rounds?
 export function useActiveRounds() {
   const [currentTimestamp] = useState(createTimestamp());
-  const [futureTimestamp] = useState(createTimestamp(ONE_YEAR * 10));
+  const [futureTimestamp] = useState(createTimestamp(ONE_YEAR * 1));
   return useRounds({
     orderBy: "roundEndTime",
     orderDirection: "desc",
