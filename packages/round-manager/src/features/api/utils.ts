@@ -373,6 +373,14 @@ const POLYGON_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["MATIC"],
     redstoneTokenId: RedstoneTokenIds["MATIC"],
   },
+  {
+    name: "USDC",
+    chainId: ChainId.POLYGON,
+    address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+  },
 ];
 
 const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
@@ -383,6 +391,14 @@ const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["MATIC"],
     redstoneTokenId: RedstoneTokenIds["MATIC"],
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.POLYGON_MUMBAI,
+    address: "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
 
