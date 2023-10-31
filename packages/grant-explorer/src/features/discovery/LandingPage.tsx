@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import {
+  RoundOverview,
   useActiveRounds,
   usePrefetchRoundsMetadata,
   // useRoundsEndingSoon,
@@ -36,11 +37,11 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {(activeRounds.data ?? Array.from({ length: 6 }))
+          {(activeRounds.data ?? createRoundLoadingData(6))
             ?.slice(0, 6)
             .map((round, i) => (
               <div
-                key={round?.id ?? i}
+                key={round?.id}
                 className={`${i % 3 && i % 4 ? "" : "md:col-span-2"}`}
               >
                 <RoundCard round={round} isLoading={activeRounds.isLoading} />
@@ -64,10 +65,10 @@ const LandingPage = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-x-6 w-full md:w-2/3">
-            {(roundsTakingApplications.data ?? Array.from({ length: 4 }))
+            {(roundsTakingApplications.data ?? createRoundLoadingData(4))
               .slice(0, 4)
-              ?.map((round, i) => (
-                <div key={round?.id ?? i}>
+              ?.map((round) => (
+                <div key={round?.id}>
                   <RoundCard
                     round={round}
                     isLoading={roundsTakingApplications.isLoading}
@@ -82,7 +83,7 @@ const LandingPage = () => {
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {(activeRounds.data ?? Array.from({ length: 6 }))?.map((round, i) => (
+          {(activeRounds.data ?? createRoundLoadingData(6))?.map((round, i) => (
             <div key={round?.id ?? i}>
               <RoundCard round={round} isLoading={activeRounds.isLoading} />
             </div>
@@ -92,5 +93,30 @@ const LandingPage = () => {
     </DefaultLayout>
   );
 };
+
+function createRoundLoadingData(length = 4): RoundOverview[] {
+  return Array.from({ length }).map((_, i) => ({
+    id: String(i),
+    chainId: "1",
+    roundMetaPtr: {
+      protocol: 1,
+      pointer: "",
+    },
+    applicationMetaPtr: {
+      protocol: 1,
+      pointer: "",
+    },
+    applicationsStartTime: "0",
+    applicationsEndTime: "0",
+    roundStartTime: "0",
+    roundEndTime: "0",
+    matchAmount: "",
+    token: "0",
+    payoutStrategy: {
+      id: "someid",
+      strategyName: "MERKLE",
+    },
+  }));
+}
 
 export default LandingPage;

@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
 import {
   RoundContext,
   RoundState,
@@ -157,16 +158,18 @@ export const renderWithContext = (
   dispatch: any = vi.fn()
 ) =>
   render(
-    <MemoryRouter>
-      <RoundContext.Provider
-        value={{
-          state: { ...initialRoundState, ...roundStateOverrides },
-          dispatch,
-        }}
-      >
-        {ui}
-      </RoundContext.Provider>
-    </MemoryRouter>
+    <ChakraProvider>
+      <MemoryRouter>
+        <RoundContext.Provider
+          value={{
+            state: { ...initialRoundState, ...roundStateOverrides },
+            dispatch,
+          }}
+        >
+          {ui}
+        </RoundContext.Provider>
+      </MemoryRouter>
+    </ChakraProvider>
   );
 
 export const mockBalance = {

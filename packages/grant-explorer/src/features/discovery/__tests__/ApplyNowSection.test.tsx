@@ -28,7 +28,8 @@ vi.mock("common", async () => {
   };
 });
 
-describe("<ApplyNowSection />", () => {
+// This component is no longer used
+describe.skip("<ApplyNowSection />", () => {
   test("renders skeletons when isLoading is true", () => {
     render(
       <Router>
