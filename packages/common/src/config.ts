@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 type Config = {
+  env: string;
+
   ipfs: {
     baseUrl: string;
   };
@@ -8,22 +10,14 @@ type Config = {
     jwt: string;
     baseUrl: string;
   };
+  blockchain: {
+    chainsOverride: string | undefined;
+    alchemyId: string | undefined;
+    infuraId: string | undefined;
+  };
 };
 
 var config: Config | null = null;
-
-function getEnv(
-  name: string,
-  opts: { allowEmpty: boolean } = { allowEmpty: false }
-) {
-  const min = opts.allowEmpty ? 0 : 1;
-  return z
-    .string({
-      required_error: `env var ${name} is required`,
-    })
-    .min(min)
-    .parse(name);
-}
 
 export function getConfig(): Config {
   if (config !== null) {
@@ -31,12 +25,24 @@ export function getConfig(): Config {
   }
 
   config = {
+    env: z
+      .enum(["development", "test", "production"])
+      .default("development")
+      .parse(process.env.REACT_APP_ENV),
     ipfs: {
-      baseUrl: getEnv("REACT_APP_IPFS_BASE_URL"),
+      baseUrl: z.string().min(1).parse(process.env.REACT_APP_IPFS_BASE_URL),
     },
     pinata: {
-      jwt: getEnv("REACT_APP_PINATA_JWT"),
-      baseUrl: getEnv("REACT_APP_PINATA_BASE_URL"),
+      jwt: z.string().min(1).parse(process.env.REACT_APP_PINATA_JWT),
+      baseUrl: z.string().min(1).parse(process.env.REACT_APP_PINATA_BASE_URL),
+    },
+    blockchain: {
+      chainsOverride: z
+        .string()
+        .optional()
+        .parse(process.env.REACT_APP_CHAINS_OVERRIDE),
+      alchemyId: z.string().optional().parse(process.env.REACT_APP_ALCHEMY_ID),
+      infuraId: z.string().optional().parse(process.env.REACT_APP_INFURA_ID),
     },
   };
 

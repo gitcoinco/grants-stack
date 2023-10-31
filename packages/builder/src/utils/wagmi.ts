@@ -25,18 +25,8 @@ import {
   fantom,
   fantomTestnet,
 } from "common/src/chains";
-import { getEnv } from "common/src/env";
+import { getConfig } from "common/src/config";
 import { polygon, polygonMumbai } from "@wagmi/core/chains";
-
-// RPC keys
-const alchemyId = getEnv("REACT_APP_ALCHEMY_ID", {
-  required: false,
-  defaultValue: "",
-});
-const infuraId = getEnv("REACT_APP_INFURA_ID", {
-  required: false,
-  defaultValue: "",
-});
 
 const availableChains: { [key: string]: Chain } = {
   dev1: devChain1,
@@ -85,20 +75,19 @@ const productionChains = [
 ];
 
 function getEnabledChainsAndProviders() {
+  const config = getConfig();
   const chains: Chain[] = [];
   const providers = [publicProvider({ priority: 2 })];
 
-  const chainsConfig = getEnv("REACT_APP_CHAINS", { required: false });
+  const {
+    blockchain: { chainsOverride },
+  } = config;
   const selectedChainsNames =
-    chainsConfig !== undefined && chainsConfig !== ""
-      ? chainsConfig.split(",").map((name) => name.trim())
+    chainsOverride !== undefined && chainsOverride !== ""
+      ? chainsOverride.split(",").map((name) => name.trim())
       : [];
 
   let usingDevOnlyChains = true;
-  const appEnv = getEnv("REACT_APP_ENV", {
-    required: false,
-    defaultValue: "development",
-  })!;
 
   if (selectedChainsNames.length > 0) {
     // if REACT_APP_CHAINS is specified we use those
@@ -118,7 +107,7 @@ function getEnabledChainsAndProviders() {
 
       chains.push(chain);
     });
-  } else if (appEnv === "production") {
+  } else if (config.env === "production") {
     // if REACT_APP_CHAINS is not specified  ans we are in production
     // we use the default chains for production environments
     usingDevOnlyChains = false;
@@ -133,7 +122,8 @@ function getEnabledChainsAndProviders() {
   if (!usingDevOnlyChains) {
     if (
       process.env.NODE_ENV !== "test" &&
-      (infuraId === "" || alchemyId === "")
+      (config.blockchain.infuraId === undefined ||
+        config.blockchain.alchemyId === undefined)
     ) {
       throw new Error(
         "REACT_APP_INFURA_ID and REACT_APP_ALCHEMY_ID must be set to use non-local chains"
@@ -141,8 +131,8 @@ function getEnabledChainsAndProviders() {
     }
 
     providers.push(
-      infuraProvider({ apiKey: infuraId!, priority: 0 }),
-      alchemyProvider({ apiKey: alchemyId!, priority: 1 })
+      infuraProvider({ apiKey: config.blockchain.infuraId!, priority: 0 }),
+      alchemyProvider({ apiKey: config.blockchain.alchemyId!, priority: 1 })
     );
   }
 
