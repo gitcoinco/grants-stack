@@ -83,7 +83,7 @@ function getEnabledChainsAndProviders() {
     blockchain: { chainsOverride },
   } = config;
   const selectedChainsNames =
-    chainsOverride !== undefined && chainsOverride !== ""
+    chainsOverride !== undefined && chainsOverride.trim() !== ""
       ? chainsOverride.split(",").map((name) => name.trim())
       : [];
 

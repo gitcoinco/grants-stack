@@ -30,11 +30,11 @@ export function getConfig(): Config {
       .default("development")
       .parse(process.env.REACT_APP_ENV),
     ipfs: {
-      baseUrl: z.string().min(1).parse(process.env.REACT_APP_IPFS_BASE_URL),
+      baseUrl: z.string().url().parse(process.env.REACT_APP_IPFS_BASE_URL),
     },
     pinata: {
       jwt: z.string().min(1).parse(process.env.REACT_APP_PINATA_JWT),
-      baseUrl: z.string().min(1).parse(process.env.REACT_APP_PINATA_BASE_URL),
+      baseUrl: z.string().url().parse(process.env.REACT_APP_PINATA_BASE_URL),
     },
     blockchain: {
       chainsOverride: z
