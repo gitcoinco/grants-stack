@@ -83,7 +83,14 @@ function getEnabledChainsAndProviders() {
     blockchain: { chainsOverride },
   } = config;
   const selectedChainsNames =
-    chainsOverride !== undefined && chainsOverride.trim() !== ""
+    chainsOverride !== undefined &&
+    chainsOverride.trim() !== "" &&
+    // FIXME: now that we are validating config vars with zod, we allow optional vars.
+    // Until we finalize the global configuration we leave chainsOverride in prod set as "-"
+    // to make the verify-env task passing.
+    // When we finish the refactoring to use the global config everywhere, we can change the way we
+    // verify the env vars
+    chainsOverride !== "-"
       ? chainsOverride.split(",").map((name) => name.trim())
       : [];
 
