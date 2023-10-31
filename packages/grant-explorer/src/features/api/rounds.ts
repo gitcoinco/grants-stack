@@ -105,7 +105,7 @@ query GetRounds(
 `;
 
 const NOW_IN_SECONDS = Date.now() / 1000;
-const ONE_YEAR = 3600 * 24 * 365;
+const ONE_YEAR_IN_SECONDS = 3600 * 24 * 365;
 const INFINITE_TIMESTAMP = ethers.constants.MaxUint256.toString();
 const createTimestamp = (timestamp = 0) =>
   Math.floor(NOW_IN_SECONDS + timestamp).toString();
@@ -131,7 +131,7 @@ export function useRoundsTakingApplications() {
 // What filters for active rounds?
 export function useActiveRounds() {
   const [currentTimestamp] = useState(createTimestamp());
-  const [futureTimestamp] = useState(createTimestamp(ONE_YEAR * 1));
+  const [futureTimestamp] = useState(createTimestamp(ONE_YEAR_IN_SECONDS * 1));
   return useRounds({
     orderBy: "roundEndTime",
     orderDirection: "desc",
