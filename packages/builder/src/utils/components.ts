@@ -1,3 +1,4 @@
+import { getConfig } from "common/src/config";
 import { Metadata, Project } from "../types";
 import PinataClient from "../services/pinata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../assets";
@@ -23,8 +24,9 @@ export const getProjectImage = (
     return defaultImgs[imgType];
   }
 
-  const pinataClient = new PinataClient();
-  return pinataClient.fileURL(img);
+  const pinataClient = new PinataClient(getConfig());
+
+  return pinataClient.fileUrl(img);
 };
 
 export const formatDateFromMs = (ts: number) => {
