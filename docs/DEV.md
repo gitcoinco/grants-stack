@@ -1,32 +1,109 @@
-## Development
+# Development
 
-This section documents the basic instructions on running / developing the frontend apps - round-manager, builder and grant-explorer.
+Welcome to the Grants Stack development repository!
+This repository houses the main three dApps that make up the Grants Stack ecosystem:
 
-### Pre Requisites
 
-Before running any command, make sure to install dependencies. This installs dependencies for the whole monorepo.
+* [Builder](https://builder.gitcoin.co/)
+* [Explorer](https://explorer.gitcoin.co/#/round/424/0x4473725beb9a9d503547d2fe677f4b5aa39b68f6)
+* [Manager](https://manager.gitcoin.co/)
 
-```sh
-$ pnpm install
+Each of these dapps is a single-page React application, and you can find their respective source code under the `/packages` folder.
+
+
+While there is no central backend application, all three dApps rely on various external services for data reading and writing. These dependencies include:
+
+1. **EVM Blockchains**: One or more EVM blockchains are used for reading from and writing to smart contracts.
+
+2. **[allo-indexer](https://github.com/gitcoinco/allo-indexer)**: This indexer is employed to index on-chain data and generate Quadratic Funding (QF) matches.
+
+3. **Subgraph Instances**: There is one subgraph instance for each blockchain to efficiently query blockchain data.
+
+4. **IPFS**: IPFS is utilized for reading metadata files, providing decentralized file storage.
+
+5. **[Pinata](https://www.pinata.cloud/)**: Pinata is used to upload and pin files to IPFS, ensuring the availability of data.
+
+
+
+Depending on the configuration in your local `.env` file, you can choose to use these services directly or opt for a local version of them.
+
+For faster development and a more responsive feedback loop, we recommend setting up a local development environment instead of relying on testnets
+and external services directly.
+We have provided a Docker Compose configuration that allows you to run local instances of the necessary services.
+
+⚠️ Please note that the local development environment is still a work in progress,
+and not all functionality may be available locally.
+We are continuously improving it to make your development experience as seamless as possible.
+
+
+# Dependencies
+
+* node
+* docker
+
+### Setup your wallet
+
+All the contracts and test data in the local chains are owned by accounts derived from the same test mnemonic phrase.
+To avoid confusion with your real accounts, you can create a new profile in your browser, install Metamask or any other wallets
+that manages [hierarchical-deterministic wallets](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki), and import the following test mnemonic to be able to derive all the used accounts:
+
+```
+test test test test test test test test test test test junk
 ```
 
+Contracts are deployed with the default account at derivation path `m/44'/60'/0'/0/0`.
+The same accounts owns some ready to use data, like projects, rounds, etc.
+
+⚠️⚠️⚠️
+When you start your local services, the main account's nonce gets reset,
+so you should reset it manually in your wallet to make sure you don't accidentally send transactions with the wrong nonce.
+
+If you use metamask keep your expanded view open:
+
+`Menu -> Expand view`
+
+And reset the wallet every time you restart the local chains:
+
+`Menu -> Settings -> Advance -> CLear activity tab data`
+⚠️⚠️⚠️
+
+### Run local services
+
+Clone the repo:
+
 ```sh
+git clone git@github.com:gitcoinco/grants-stack.git
+cd grants-stack
+```
+
+Run the services with `docker-compose` and follow the logs:
+
+```sh
+docker-compose up -d && docker-compose logs -f
+```
+
+To kill the containers run:
+
+```sh
+docker-compose kill
+```
+
+### Setup root project dependencies
+
+```sh
+cd grants-stack
+pnpm install
+```
+
+### Setup and run Builder
+
+```sh
+cd packages/builder
 cp .env.example .env
+pnpm start
 ```
 
-The .env file will be prefilled with some static and public variables. For the ones that are empty, please create accounts and fill in your personal API keys for the respective services.
-
-### Run in Development
-
-Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-```sh
-$ pnpm start
-```
 
 ### Linting and formatting
 
@@ -79,6 +156,6 @@ Please always submit draft PRs at first, and make sure they pass the following c
 We utilize git hooks for pre-commit
 formatting and pre-push checks, which should help you catch issues early, before they fail the CI.
 
-Before submitting a PR for review, ensure that it passes all the checks of the PR checklist. Also consider doing a self-review of the changes to reduce back-and-forth. 
+Before submitting a PR for review, ensure that it passes all the checks of the PR checklist. Also consider doing a self-review of the changes to reduce back-and-forth.
 
 When the CI is green, PR checklist is ticked off and the PR is in good shape, submit it for review by clicking the "Ready for review" button.

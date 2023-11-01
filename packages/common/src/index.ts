@@ -98,6 +98,8 @@ export type Payout = {
 };
 
 export const graphQlEndpoints: Record<ChainId, string> = {
+  [ChainId.DEV1]: process.env.REACT_APP_SUBGRAPH_DEV1_API!,
+  [ChainId.DEV2]: process.env.REACT_APP_SUBGRAPH_DEV2_API!,
   [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
   [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_GOERLI_API!,
   [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,

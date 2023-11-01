@@ -29,6 +29,16 @@ export const CHAINS: Record<
     logo: string;
   }
 > = {
+  [ChainId.DEV1]: {
+    id: ChainId.DEV1,
+    name: "DEV1",
+    logo: "./logos/pgn-logo.svg",
+  },
+  [ChainId.DEV2]: {
+    id: ChainId.DEV2,
+    name: "DEV2",
+    logo: "./logos/pgn-logo.svg",
+  },
   [ChainId.PGN]: {
     id: ChainId.PGN,
     name: "PGN",
@@ -464,6 +474,10 @@ export const votingTokens = [
 
 type VotingTokensMap = Record<ChainId, VotingToken[]>;
 export const votingTokensMap: VotingTokensMap = {
+  // FIXME: deploy tokens for local dev chains when we
+  // setup explorer to work fully in local
+  [ChainId.DEV1]: GOERLI_TESTNET_TOKENS,
+  [ChainId.DEV2]: GOERLI_TESTNET_TOKENS,
   [ChainId.GOERLI_CHAIN_ID]: GOERLI_TESTNET_TOKENS,
   [ChainId.MAINNET]: MAINNET_TOKENS,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
@@ -493,6 +507,8 @@ export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
 const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
 
 export const txExplorerLinks: Record<ChainId, string> = {
+  [ChainId.DEV1]: "",
+  [ChainId.DEV2]: "",
   [ChainId.MAINNET]: "https://etherscan.io/tx/",
   [ChainId.GOERLI_CHAIN_ID]: "https://goerli.etherscan.io/tx/",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "https://optimistic.etherscan.io/tx/",

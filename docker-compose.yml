@@ -1,0 +1,60 @@
+version: '3.8'
+
+# Ports
+# Builder: 3000
+# Explorer: 3001
+# Manager: 3002
+# Pinata: 3003
+# Indexer: 3004
+# Dev chain 1: 3005
+# Subgraph dev chain 1: 3006
+# Dev chain 2: 3007
+# Subgraph dev chain 2: 3008
+
+services:
+  pinata:
+    image: ghcr.io/gitcoinco/pina:main
+    ports:
+      - '127.0.0.1:3003:8000'
+
+  localchain-1:
+    image: ghcr.io/gitcoinco/allo-contracts-v1:main
+    ports:
+      - '127.0.0.1:3005:8545'
+    environment:
+      - DEV_CHAIN_ID=313371
+
+  # initializes localchain deploying contracts and populates with test data
+  dev-setup-1:
+    image: ghcr.io/gitcoinco/allo-contracts-v1:main
+    depends_on:
+      - pinata
+      - localchain-1
+    environment:
+      - PINATA_HOST=pinata
+      - PINATA_PORT=8000
+      - DEV_CHAIN_HOST=localchain-1
+      - DEV_CHAIN_ID=313371
+    restart: "no"
+    entrypoint: [ "bash", "-c", "sleep 2 && corepack enable && exec ./docker/deploy-contracts.sh"]
+
+  localchain-2:
+    image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
+    ports:
+      - '127.0.0.1:3007:8545'
+    environment:
+      - DEV_CHAIN_ID=313372
+
+  # initializes localchain deploying contracts and populates with test data
+  dev-setup-2:
+    image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
+    depends_on:
+      - pinata
+      - localchain-2
+    environment:
+      - PINATA_HOST=pinata
+      - PINATA_PORT=8000
+      - DEV_CHAIN_HOST=localchain-2
+      - DEV_CHAIN_ID=313372
+    restart: "no"
+    entrypoint: [ "bash", "-c", "sleep 2 && corepack enable && exec ./docker/deploy-contracts.sh"]

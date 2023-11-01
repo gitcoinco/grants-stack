@@ -8,6 +8,8 @@ export const chains = {
   424: "pgn",
   4002: "fantomTestnet",
   31337: "localhost",
+  313371: "dev1",
+  313372: "dev2",
   58008: "pgnTestnet",
   42161: "arbitrum",
   421613: "arbitrumGoerli",
@@ -34,6 +36,12 @@ export type DeploymentAddressesMap = {
 };
 
 export const addresses: DeploymentAddressesMap = {
+  dev1: {
+    projectRegistry: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  },
+  dev2: {
+    projectRegistry: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  },
   localhost: {
     projectRegistry: "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5",
   },
