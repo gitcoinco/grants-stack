@@ -78,7 +78,7 @@ export function RoundBanner(props: { roundId: string }) {
   const stockImage = stockImages[stockId];
 
   return (
-    <div className="overflow-hidden h-[137px]">
+    <div className="overflow-hidden h-32">
       <div
         className="bg-black blur w-[120%] h-[120%] -mt-4 -ml-4 brightness-[40%] object-cover"
         style={{ backgroundImage: `url(${stockImage})` }}

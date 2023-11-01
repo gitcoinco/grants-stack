@@ -23,6 +23,7 @@ import RoundCardStat from "./RoundCardStat";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
 import { RoundDaysLeft } from "./RoundDaysLeft";
+import { Skeleton, SkeletonText } from "@chakra-ui/react";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -39,9 +40,9 @@ const RoundCard = ({ round }: RoundCardProps) => {
     roundMetaPtr,
     applicationsEndTime,
     token,
-  } = round;
+  } = round ?? {};
 
-  const { data: metadata } = useMetadata(roundMetaPtr.pointer);
+  const { data: metadata, isLoading } = useMetadata(roundMetaPtr?.pointer);
   const daysLeft = getDaysLeft(Number(roundEndTime));
   const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
 
@@ -67,7 +68,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
 
   const approvedApplicationsCount = projects?.length ?? 0;
   return (
-    <BasicCard className="w-full">
+    <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
       <a
         target="_blank"
         href={`/#/round/${chainId}/${id}`}
@@ -86,9 +87,9 @@ const RoundCard = ({ round }: RoundCardProps) => {
           )}
           <CardTitle
             data-testid="round-name"
-            className="absolute bottom-3 px-2 text-white"
+            className="absolute bottom-1 px-2 text-white"
           >
-            {metadata?.name}
+            <Skeleton isLoaded={!isLoading}>{metadata?.name}</Skeleton>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -96,10 +97,12 @@ const RoundCard = ({ round }: RoundCardProps) => {
             data-testid="round-description"
             className="min-h-[96px]"
           >
-            {truncateDescription(
-              renderToPlainText(metadata?.eligibility?.description ?? ""),
-              240
-            )}
+            <SkeletonText isLoaded={!isLoading}>
+              {truncateDescription(
+                renderToPlainText(metadata?.eligibility?.description ?? ""),
+                240
+              )}
+            </SkeletonText>
           </CardDescription>
           <div className="flex gap-2 justfy-between items-center">
             <RoundDaysLeft
@@ -111,7 +114,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
             <RoundBadge strategyName={payoutStrategy?.strategyName} />
           </div>
           <div className="border-t" />
-
           <RoundCardStat
             chainId={Number(chainId)}
             matchAmount={matchAmount}
@@ -133,4 +135,11 @@ const RoundBadge = ({ strategyName }: { strategyName: RoundPayoutType }) => {
     </Badge>
   );
 };
-export default RoundCard;
+
+export const RoundCardLoading = () => (
+  <BasicCard className="w-full h-[378px] animate-pulse"></BasicCard>
+);
+
+export default function Round(props: { isLoading?: boolean } & RoundCardProps) {
+  return props.isLoading ? <RoundCardLoading /> : <RoundCard {...props} />;
+}
