@@ -48,7 +48,7 @@ export type RoundsVariables = {
     | "applicationsEndTime";
   orderDirection?: "asc" | "desc";
   where?: TimestampVariables & {
-    payoutStrategy?: { strategyName_in: string[] };
+    payoutStrategy_?: { strategyName_in: string[] };
     and?: (TimestampVariables & { or?: TimestampVariables[] })[];
   };
 };
@@ -59,6 +59,7 @@ type TimestampVariables = {
   applicationsEndTime?: string;
   applicationsEndTime_gte?: string;
   roundStartTime_lt?: string;
+  roundStartTime_gt?: string;
   roundEndTime_gt?: string;
   roundEndTime_lt?: string;
 };
@@ -109,7 +110,7 @@ query GetRounds(
 const NOW_IN_SECONDS = Date.now() / 1000;
 const ONE_YEAR_IN_SECONDS = 3600 * 24 * 365;
 const INFINITE_TIMESTAMP = ethers.constants.MaxUint256.toString();
-const createTimestamp = (timestamp = 0) =>
+export const createTimestamp = (timestamp = 0) =>
   Math.floor(NOW_IN_SECONDS + timestamp).toString();
 
 export function useRoundsTakingApplications() {
@@ -165,13 +166,19 @@ export function useRounds(
   const { cache } = useSWRConfig();
   const debugModeEnabled = useDebugMode();
 
+  const defaultVariables: RoundsVariables = {
+    first: 3 * 12,
+  };
+
+  const mergedVariables = { ...defaultVariables, ...variables };
+
   const query = useSWR(
     // Cache requests on chainIds and variables as keys (when these are the same, cache will be used instead of new requests)
     ["rounds", chainIds, variables],
     () =>
       Promise.all(
         chainIds.flatMap((chainId) => {
-          return graphql_fetch(ROUNDS_QUERY, chainId, variables).then(
+          return graphql_fetch(ROUNDS_QUERY, chainId, mergedVariables).then(
             (r) =>
               r.data?.rounds?.map((round: RoundOverview) => ({
                 ...round,
@@ -183,9 +190,11 @@ export function useRounds(
         .then((res) => res.flat())
         .then(cleanRoundData)
         // We need to do another sort because of results from many chains
-        .then((rounds) => sortRounds(rounds, variables)),
+        .then((rounds) => sortRounds(rounds, mergedVariables))
+        .then((rounds) => rounds.slice(0, mergedVariables.first)),
     { keepPreviousData: true }
   );
+
   return {
     ...query,
     data: debugModeEnabled ? query.data : filterRounds(cache, query.data),
