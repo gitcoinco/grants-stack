@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { getConfig } from "common/src/config";
 import PinataClient from "../../services/pinata";
 import colors from "../../styles/colors";
 import CloudUpload from "../icons/CloudUpload";
@@ -99,8 +100,8 @@ export default function ImageInput({
     }
 
     // Fetch existing img path from Pinata for display
-    const pinataClient = new PinataClient();
-    const imgUrl = pinataClient.fileURL(ipfsCID);
+    const pinataClient = new PinataClient(getConfig());
+    const imgUrl = pinataClient.fileUrl(ipfsCID);
 
     blobExistingImg(imgUrl);
     return imgUrl;
