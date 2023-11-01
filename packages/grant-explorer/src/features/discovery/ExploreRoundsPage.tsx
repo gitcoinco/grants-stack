@@ -8,6 +8,7 @@ import { FilterProps, FilterStatus, getLabel } from "./FilterDropdown";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { useSearchParams } from "react-router-dom";
 import { parseFilterParams, useFilterRounds } from "./hooks/useFilterRounds";
+import { createRoundLoadingData } from "./utils/createRoundLoadingData";
 
 function getSectionTitle(filter: FilterProps) {
   const title = getLabel(filter);
@@ -46,9 +47,9 @@ const ExploreRoundsPage = () => {
         action={<RoundsFilter />}
       >
         <div className="grid md:grid-cols-3 gap-x-6">
-          {rounds.data?.map((round) => (
+          {(rounds.data ?? createRoundLoadingData(6))?.map((round) => (
             <div key={round.id}>
-              <RoundCard round={round} />
+              <RoundCard round={round} isLoading={rounds.isLoading} />
             </div>
           ))}
         </div>

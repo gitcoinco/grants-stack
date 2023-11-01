@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import {
-  RoundOverview,
   useActiveRounds,
   usePrefetchRoundsMetadata,
   // useRoundsEndingSoon,
@@ -11,6 +10,7 @@ import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import RoundCard from "./RoundCard";
 import { useLocation } from "react-router-dom";
+import { createRoundLoadingData } from "./utils/createRoundLoadingData";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -93,31 +93,5 @@ const LandingPage = () => {
     </DefaultLayout>
   );
 };
-
-function createRoundLoadingData(length = 4): RoundOverview[] {
-  return Array.from({ length }).map((_, i) => ({
-    id: String(i),
-    chainId: "1",
-    createdAt: "0",
-    roundMetaPtr: {
-      protocol: 1,
-      pointer: "",
-    },
-    applicationMetaPtr: {
-      protocol: 1,
-      pointer: "",
-    },
-    applicationsStartTime: "0",
-    applicationsEndTime: "0",
-    roundStartTime: "0",
-    roundEndTime: "0",
-    matchAmount: "",
-    token: "0",
-    payoutStrategy: {
-      id: "someid",
-      strategyName: "MERKLE",
-    },
-  }));
-}
 
 export default LandingPage;

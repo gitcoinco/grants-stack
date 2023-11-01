@@ -191,8 +191,8 @@ export function useRounds(
         .then(cleanRoundData)
         // We need to do another sort because of results from many chains
         .then((rounds) => sortRounds(rounds, mergedVariables))
-        .then((rounds) => rounds.slice(0, mergedVariables.first)),
-    { keepPreviousData: true }
+        // Limit results
+        .then((rounds) => rounds.slice(0, mergedVariables.first))
   );
 
   return {
