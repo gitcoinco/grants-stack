@@ -1,4 +1,4 @@
-import { useFilterRounds, usePrefetchRoundsMetadata } from "../api/rounds";
+import { usePrefetchRoundsMetadata } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
@@ -7,6 +7,7 @@ import { RoundsFilter } from "./RoundsFilter";
 import { FilterProps, FilterStatus, getLabel } from "./FilterDropdown";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { useSearchParams } from "react-router-dom";
+import { parseFilterParams, useFilterRounds } from "./hooks/useFilterRounds";
 
 function getSectionTitle(filter: FilterProps) {
   const title = getLabel(filter);
@@ -25,15 +26,16 @@ function getSectionTitle(filter: FilterProps) {
       return title.label;
   }
 }
+
 const ExploreRoundsPage = () => {
   usePrefetchRoundsMetadata();
   const [params] = useSearchParams();
-  const { type, status, network } = Object.fromEntries(params);
+  const filter = parseFilterParams(params);
 
-  // TODO: pass the filter from the search params and build the graphql query
-  const rounds = useFilterRounds();
+  // Pass the filter from the search params and build the graphql query
+  const rounds = useFilterRounds(filter);
 
-  const sectionTitle = getSectionTitle({ type, status, network });
+  const sectionTitle = getSectionTitle(filter);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />

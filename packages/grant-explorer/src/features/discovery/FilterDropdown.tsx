@@ -10,6 +10,7 @@ import {
 import { CHAINS } from "../api/utils";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toQueryString } from "./RoundsFilter";
+import { parseFilterParams } from "./hooks/useFilterRounds";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 
 type Option = {
@@ -43,6 +44,7 @@ const filterOptions: Option[] = [
       },
     ],
   },
+
   {
     label: "Status",
     value: "status",
@@ -106,15 +108,19 @@ export function getLabel(filter: FilterProps): Option {
       )
   );
 }
-export function FilterDropdown({ status, type, network }: FilterProps) {
+export function FilterDropdown() {
   const [params] = useSearchParams();
 
-  const selected = getLabel({ status, type, network });
+  const filter = parseFilterParams(params);
+  const selected = getLabel(filter);
+
+  const { status, type, network } = filter;
+
   return (
     <Dropdown
       label={selected?.label}
       options={filterOptions}
-      renderItem={({ active, label, value, children }) => {
+      renderItem={({ active, label, value: filterKey, children }) => {
         if (!children?.length) {
           return (
             <DropdownItem active={active} $as={Link} to={`/rounds`}>
@@ -150,9 +156,16 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
               >
                 <Listbox.Options className=" mt-1 w-full overflow-auto p-2">
                   {children?.map((child, j) => {
-                    const selectedFilter = { status, type, network }[value];
-                    const isChecked = child.value === selectedFilter;
+                    // Filters can be multi selected (ie many networks)
+                    const selectedFilter =
+                      { status, type, network }[filterKey]?.split(",") ?? [];
 
+                    const isChecked = selectedFilter?.includes(child.value);
+
+                    const nextValue = isChecked
+                      ? // Remove or add the value
+                        selectedFilter?.filter((f) => f !== child.value)
+                      : selectedFilter?.concat(child.value);
                     return (
                       <Listbox.Option key={j} value={child}>
                         {({ active, selected }) => (
@@ -160,17 +173,13 @@ export function FilterDropdown({ status, type, network }: FilterProps) {
                             $as={Link}
                             to={`/rounds?${toQueryString({
                               // Merge existing search params (so it doesn't reset sorting or the other selections)
-                              ...Object.fromEntries(params),
-                              [value]: child.value,
+                              ...filter,
+                              [filterKey]: nextValue.join(","),
                             })}`}
                             active={active}
                           >
                             <div className="flex gap-2">
-                              <input
-                                type="checkbox"
-                                checked={isChecked}
-                                onChange={console.log}
-                              />
+                              <input type="checkbox" checked={isChecked} />
                               <span
                                 className={`block truncate ${
                                   selected ? "font-medium" : "font-normal"

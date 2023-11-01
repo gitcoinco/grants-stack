@@ -20,6 +20,7 @@ const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"]; // Meg hel
 export type RoundOverview = {
   id: string;
   chainId: string;
+  createdAt: string;
   roundMetaPtr: MetadataPointer;
   applicationMetaPtr: MetadataPointer;
   applicationsStartTime: string;
@@ -36,9 +37,11 @@ export type RoundOverview = {
   };
 };
 
-type RoundsVariables = {
+export type RoundsVariables = {
   first?: number;
   orderBy?:
+    | "createdAt"
+    | "matchAmount"
     | "roundStartTime"
     | "roundEndTime"
     | "applicationsStartTime"
@@ -60,12 +63,11 @@ type TimestampVariables = {
   roundEndTime_lt?: string;
 };
 
-const getActiveChainIds = (): ChainId[] =>
+export const getActiveChainIds = (): ChainId[] =>
   allChains
     .map((chain) => chain.id)
     .map(tryParseChainIdToEnum)
-    .filter(isPresent)
-    .map((chainId) => chainId);
+    .filter(isPresent);
 
 const ROUNDS_QUERY = `
 query GetRounds(
@@ -155,23 +157,20 @@ export function useRoundsEndingSoon() {
   });
 }
 
-// TODO: Filter + sort rounds (status, network, sort)
-export function useFilterRounds() {
-  return useRounds({});
-}
-
 //
-export function useRounds(variables: RoundsVariables) {
+export function useRounds(
+  variables: RoundsVariables,
+  chainIds: ChainId[] = getActiveChainIds()
+) {
   const { cache } = useSWRConfig();
   const debugModeEnabled = useDebugMode();
-  const chainIds = getActiveChainIds();
 
   const query = useSWR(
     // Cache requests on chainIds and variables as keys (when these are the same, cache will be used instead of new requests)
     ["rounds", chainIds, variables],
     () =>
       Promise.all(
-        getActiveChainIds().flatMap((chainId) => {
+        chainIds.flatMap((chainId) => {
           return graphql_fetch(ROUNDS_QUERY, chainId, variables).then(
             (r) =>
               r.data?.rounds?.map((round: RoundOverview) => ({
@@ -205,7 +204,6 @@ function sortRounds(
 /* 
 Some timestamps are in milliseconds and others in overflowed values (115792089237316195423570985008687907853269984665640564039457584007913129639935)
 See this query: https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet/graphql?query=query+%7B%0A+++rounds%28first%3A+3%2C%0A++++++orderBy%3A+roundEndTime%2C%0A++++++orderDirection%3A+asc%0A++++%29+%7B%0A++++++id%0A++++++roundEndTime%0A+++++%0A++++%7D%0A%7D
-
 */
 function cleanRoundData(rounds: RoundOverview[]) {
   const timestampKeys = [

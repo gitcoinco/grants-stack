@@ -98,6 +98,7 @@ function createRoundLoadingData(length = 4): RoundOverview[] {
   return Array.from({ length }).map((_, i) => ({
     id: String(i),
     chainId: "1",
+    createdAt: "0",
     roundMetaPtr: {
       protocol: 1,
       pointer: "",

@@ -1,95 +1,98 @@
 import { Link, useSearchParams } from "react-router-dom";
+import { RoundsVariables } from "../api/rounds";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
+import { parseFilterParams } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
 
 type Option = {
   label: string;
-  sortBy: string;
-  orderBy: string;
+  orderBy: RoundsVariables["orderBy"] | "";
+  orderDirection: RoundsVariables["orderDirection"] | "";
 };
 const sortOptions: Option[] = [
   {
     label: "All",
-    sortBy: "",
     orderBy: "",
+    orderDirection: "",
   },
   {
     label: "Newest",
-    sortBy: "createdAt",
-    orderBy: "desc",
+    orderBy: "createdAt",
+    orderDirection: "desc",
   },
   {
     label: "Oldest",
-    sortBy: "createdAt",
-    orderBy: "asc",
+    orderBy: "createdAt",
+    orderDirection: "asc",
   },
   {
     label: "Round end (earliest)",
-    sortBy: "roundEndTime",
-    orderBy: "asc",
+    orderBy: "roundEndTime",
+    orderDirection: "asc",
   },
   {
     label: "Round end (latest)",
-    sortBy: "roundEndTime",
-    orderBy: "desc",
-  },
+    orderBy: "roundEndTime",
+    orderDirection: "desc",
+  } /*
   {
     label: "Highest contributor count",
-    sortBy: "<unknown>",
-    orderBy: "asc",
+    orderBy: "<unknown>",
+    orderDirection: "asc",
   },
   {
     label: "Lowest contributor count",
-    sortBy: "<unknown>",
-    orderBy: "desc",
+    orderBy: "<unknown>",
+    orderDirection: "desc",
   },
   {
     label: "Highest project count",
-    sortBy: "projects",
-    orderBy: "asc",
+    orderBy: "projects",
+    orderDirection: "asc",
   },
   {
     label: "Lowest project count",
-    sortBy: "projects",
-    orderBy: "desc",
-  },
+    orderBy: "projects",
+    orderDirection: "desc",
+  },*/,
   {
     label: "Matching funds: high to low",
-    sortBy: "matchAmount",
-    orderBy: "asc",
+    orderBy: "matchAmount",
+    orderDirection: "desc",
   },
   {
     label: "Matching funds: low to high",
-    sortBy: "matchAmount",
-    orderBy: "desc",
+    orderBy: "matchAmount",
+    orderDirection: "asc",
   },
 ];
 type SortOption = (typeof sortOptions)[number];
 
 export type SortProps = {
-  sortBy: SortOption["sortBy"];
   orderBy: SortOption["orderBy"];
+  orderDirection: SortOption["orderDirection"];
 };
 
-export function SortDropdown({ sortBy, orderBy }: SortProps) {
+export function SortDropdown() {
   const [params] = useSearchParams();
-
+  const { orderBy = "", orderDirection = "" } = parseFilterParams(params);
   const selected = sortOptions.find(
-    (item) => item.sortBy === sortBy && item.orderBy === orderBy
+    (item) => item.orderBy === orderBy && item.orderDirection === orderDirection
   );
+
   return (
     <Dropdown
       label={selected?.label}
       options={sortOptions}
-      renderItem={({ active, label, sortBy, orderBy }) => (
+      renderItem={({ active, label, orderBy, orderDirection }) => (
         <DropdownItem
           active={active}
           $as={Link}
           // Merge search params
           to={`/rounds?${toQueryString({
             ...Object.fromEntries(params),
-            sortBy,
             orderBy,
+            orderDirection,
           })}`}
         >
           {label}
