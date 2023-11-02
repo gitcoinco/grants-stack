@@ -397,7 +397,7 @@ const POLYGON_MUMBAI_TOKENS: VotingToken[] = [
   },
   {
     name: "USDC",
-    chainId: ChainId.POLYGON,
+    chainId: ChainId.POLYGON_MUMBAI,
     address: "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97",
     decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
