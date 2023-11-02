@@ -184,13 +184,20 @@ export function useRounds(variables: RoundsVariables) {
         .then((res) => res.flat())
         .then(cleanRoundData)
         // We need to do another sort because of results from many chains
-        .then((rounds) => sortRounds(rounds, variables)),
+        .then((rounds) => sortRounds(rounds, variables))
+        .then((rounds) => filterRoundsWithProjects(rounds)),
     { keepPreviousData: true }
   );
   return {
     ...query,
     data: debugModeEnabled ? query.data : filterRounds(cache, query.data),
   };
+}
+
+function filterRoundsWithProjects(rounds: RoundOverview[]) {
+  return rounds.filter((round) => {
+    return round?.projects?.length !== undefined && round.projects?.length > 0;
+  });
 }
 
 function sortRounds(
