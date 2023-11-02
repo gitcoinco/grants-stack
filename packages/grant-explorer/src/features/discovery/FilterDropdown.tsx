@@ -12,11 +12,12 @@ import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toQueryString } from "./RoundsFilter";
 import { parseFilterParams } from "./hooks/useFilterRounds";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { getFilterLabel } from "./utils/getFilterLabel";
 
-type Option = {
+export type FilterOption = {
   label: string;
   value: string;
-  children?: Option[];
+  children?: FilterOption[];
 };
 
 export enum FilterStatus {
@@ -24,7 +25,7 @@ export enum FilterStatus {
   taking_applications = "taking_applications",
   finished = "finished",
 }
-const filterOptions: Option[] = [
+export const filterOptions: FilterOption[] = [
   {
     label: "All",
     value: "",
@@ -79,43 +80,13 @@ export type FilterProps = {
   network: string;
 };
 
-/* 
-Find the label to display from the current filter.
-- All - nothing selected
-- Multiple - more than 1 selected
-- Selected - 1 selected
-*/
-export function getLabel(filter: FilterProps): Option {
-  return (
-    // Convert { key: val } to [[key, val]] and remove empty values
-    Object.entries(filter)
-      .filter(([, val]) => Boolean(val))
-      .reduce(
-        (acc, [key, val], _, arr) => {
-          // More than 1 filter is selected
-          if (arr.length > 1) return { label: "Multiple", value: "" };
-
-          // Find the selected option
-          const selected =
-            filterOptions
-              .find((opt) => opt.value === key)
-              ?.children?.find((c) => c.value === val) || acc;
-
-          return selected;
-        },
-        // Initialize with label: All
-        filterOptions[0]
-      )
-  );
-}
 export function FilterDropdown() {
   const [params] = useSearchParams();
 
   const filter = parseFilterParams(params);
-  const selected = getLabel(filter);
-
   const { status, type, network } = filter;
 
+  const selected = getFilterLabel({ status, type, network });
   return (
     <Dropdown
       label={selected?.label}
@@ -174,7 +145,7 @@ export function FilterDropdown() {
                             to={`/rounds?${toQueryString({
                               // Merge existing search params (so it doesn't reset sorting or the other selections)
                               ...filter,
-                              [filterKey]: nextValue.join(","),
+                              [filterKey]: nextValue.filter(Boolean).join(","),
                             })}`}
                             active={active}
                           >
