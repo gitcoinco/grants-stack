@@ -236,6 +236,43 @@ export const customPolygon = {
   },
 };
 
+export const customMainnet = {
+  id: 1,
+  network: "homestead",
+  name: "Ethereum",
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    alchemy: {
+      http: ["https://eth-mainnet.g.alchemy.com/v2"],
+      webSocket: ["wss://eth-mainnet.g.alchemy.com/v2"],
+    },
+    infura: {
+      http: ["https://mainnet.infura.io/v3"],
+      webSocket: ["wss://mainnet.infura.io/ws/v3"],
+    },
+    default: {
+      http: [`https://mainnet.infura.io/v3/${config.blockchain.infuraId}`],
+    },
+    public: {
+      http: [`https://mainnet.infura.io/v3/${config.blockchain.infuraId}`],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Etherscan",
+      url: "https://etherscan.io",
+    },
+    default: {
+      name: "Etherscan",
+      url: "https://etherscan.io",
+    },
+  },
+};
+
 export function parseChainId(input: string | number): ChainId {
   if (typeof input === "string") {
     // If the input is a string, try to parse it as a number

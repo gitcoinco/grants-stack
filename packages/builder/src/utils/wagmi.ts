@@ -5,7 +5,7 @@ import {
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createClient } from "wagmi";
-import { mainnet, arbitrum, goerli, arbitrumGoerli } from "wagmi/chains";
+import { arbitrum, goerli, arbitrumGoerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
@@ -20,6 +20,7 @@ import {
   fantomTestnet,
   customOptimism,
   customPolygon,
+  customMainnet,
 } from "common/src/chains";
 import { getConfig } from "common/src/config";
 import { polygonMumbai } from "@wagmi/core/chains";
@@ -27,7 +28,7 @@ import { polygonMumbai } from "@wagmi/core/chains";
 const availableChains: { [key: string]: Chain } = {
   dev1: devChain1,
   dev2: devChain2,
-  mainnet,
+  mainnet: customMainnet,
   fantom,
   optimism: customOptimism,
   pgn,
@@ -49,7 +50,7 @@ const stagingChains = [
   goerli,
   fantomTestnet,
   fantom,
-  mainnet,
+  customMainnet,
   pgnTestnet,
   pgn,
   arbitrum,
@@ -61,7 +62,7 @@ const stagingChains = [
 ];
 
 const productionChains = [
-  mainnet,
+  customMainnet,
   fantom,
   customOptimism,
   pgn,
