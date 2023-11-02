@@ -168,11 +168,8 @@ export function useRounds(
         )
       )
         .then((res) => res.flat())
+        .then(filterRoundsWithProjects)
         .then(cleanRoundData)
-        // We need to do another sort because of results from many chains
-        .then((rounds) => sortRounds(rounds, mergedVariables))
-
-        // .then((rounds) => rounds.slice(0, mergedVariables.first))
         .then(async (rounds) => {
           // Load the metadata for the rounds
           fetchRoundsMetadata(rounds);
@@ -199,9 +196,9 @@ export function useRounds(
             });
           }
         })
+        // We need to do another sort because of results from many chains
         .then((rounds) => sortRounds(rounds, variables))
-        .then((rounds) => filterRoundsWithProjects(rounds)),
-    { keepPreviousData: true }
+        .then((rounds) => rounds.slice(0, mergedVariables.first))
   );
 
   const data = (debugModeEnabled ? query.data : filterRounds(cache, query.data))
