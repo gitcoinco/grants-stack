@@ -20,6 +20,7 @@ export enum FilterStatus {
   active = "active",
   taking_applications = "taking_applications",
   finished = "finished",
+  ending_soon = "ending_soon",
 }
 export const filterOptions: FilterOption[] = [
   {

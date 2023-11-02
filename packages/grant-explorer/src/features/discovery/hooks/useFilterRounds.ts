@@ -12,8 +12,8 @@ const NOW_IN_SECONDS = Date.now() / 1000;
 const createTimestamp = (timestamp = 0) =>
   Math.floor(NOW_IN_SECONDS + timestamp).toString();
 
-// const NOW_IN_SECONDS = Date.now() / 1000;
-const ONE_YEAR_IN_SECONDS = 3600 * 24 * 365;
+const ONE_DAY_IN_SECONDS = 3600 * 24;
+const ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365;
 
 export function createRoundsStatusFilter(status: string) {
   const currentTimestamp = createTimestamp();
@@ -22,8 +22,7 @@ export function createRoundsStatusFilter(status: string) {
     case FilterStatus.active:
       return {
         // Round must have started and not ended yet
-        roundStartTime_lt: currentTimestamp,
-        roundEndTime_gt: currentTimestamp,
+        roundStartTime_gt: currentTimestamp,
         roundEndTime_lt: futureTimestamp,
       };
     case FilterStatus.taking_applications:
@@ -42,12 +41,18 @@ export function createRoundsStatusFilter(status: string) {
       return {
         roundEndTime_gt: currentTimestamp,
       };
-    case "ending_soon":
+    case FilterStatus.ending_soon:
       return {
-        roundEndTime_gt: currentTimestamp, // + some threshold value
+        roundEndTime_gt: currentTimestamp,
+        roundEndTime_lt: String(
+          Number(currentTimestamp) + ONE_DAY_IN_SECONDS * 30
+        ),
       };
     default:
-      return {};
+      return {
+        roundStartTime_gt: currentTimestamp,
+        roundEndTime_lt: futureTimestamp,
+      };
   }
 }
 

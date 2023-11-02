@@ -127,8 +127,12 @@ export function useActiveRounds() {
 }
 
 export function useRoundsEndingSoon() {
-  const [endingSoonFilter] = useState(createRoundsStatusFilter("ending_soon"));
+  const [endingSoonFilter] = useState(
+    createRoundsStatusFilter(FilterStatus.ending_soon)
+  );
+
   return useRounds({
+    first: 3,
     orderBy: "roundEndTime",
     orderDirection: "asc",
     where: endingSoonFilter,
@@ -142,33 +146,33 @@ export function useRounds(
   const { cache, mutate } = useSWRConfig();
   const debugModeEnabled = useDebugMode();
 
-  const defaultVariables: RoundsVariables = {
-    first: 3 * 12, // Number of rounds to fetch for each chain
+  const mergedVariables = {
+    ...variables,
+    // We need to overfetch these because many will be filtered out from the metadata.roundType === "public"
+    first: 50,
   };
-
-  const mergedVariables = { ...defaultVariables, ...variables };
 
   const query = useSWR(
     // Cache requests on chainIds and variables as keys (when these are the same, cache will be used instead of new requests)
     ["rounds", chainIds, variables],
     () =>
       Promise.all(
-        chainIds.flatMap((chainId) => {
-          return graphql_fetch(ROUNDS_QUERY, chainId, mergedVariables).then(
+        chainIds.flatMap((chainId) =>
+          graphql_fetch(ROUNDS_QUERY, chainId, mergedVariables).then(
             (r) =>
               r.data?.rounds?.map((round: RoundOverview) => ({
                 ...round,
                 chainId,
               })) ?? []
-          );
-        })
+          )
+        )
       )
         .then((res) => res.flat())
         .then(cleanRoundData)
         // We need to do another sort because of results from many chains
         .then((rounds) => sortRounds(rounds, mergedVariables))
-        // Limit results
-        .then((rounds) => rounds.slice(0, mergedVariables.first))
+
+        // .then((rounds) => rounds.slice(0, mergedVariables.first))
         .then(async (rounds) => {
           // Load the metadata for the rounds
           fetchRoundsMetadata(rounds);
@@ -197,9 +201,13 @@ export function useRounds(
         })
   );
 
+  const data = (debugModeEnabled ? query.data : filterRounds(cache, query.data))
+    // Limit final results returned
+    ?.slice(0, variables.first ?? mergedVariables.first);
+
   return {
     ...query,
-    data: debugModeEnabled ? query.data : filterRounds(cache, query.data),
+    data,
   };
 }
 
@@ -256,7 +264,6 @@ function filterRounds(
     if (invalidRounds.includes(round.id)) {
       return false;
     }
-    // return true;
   });
 }
 
