@@ -170,15 +170,30 @@ export function useRounds(
         // Limit results
         .then((rounds) => rounds.slice(0, mergedVariables.first))
         .then(async (rounds) => {
-          for (const round of rounds) {
-            const cid = round.roundMetaPtr.pointer;
-            // Check if cache exist (we only need to fetch this once)
-            if (!cache.get(`@"metadata","${cid}",`)) {
-              // Fetch metadata and update cache
-              mutate(["metadata", cid], await fetchFromIPFS(cid));
-            }
-          }
+          // Load the metadata for the rounds
+          fetchRoundsMetadata(rounds);
+
+          // Return the rounds immediately
           return rounds;
+
+          function fetchRoundsMetadata(rounds: RoundOverview[]): void {
+            Promise.all(
+              rounds.map(async (round) => {
+                // Check if cache exist (we only need to fetch this once)
+                const cid = round.roundMetaPtr.pointer;
+                if (!cache.get(`@"metadata","${cid}",`)) {
+                  // Fetch metadata and update cache
+                  mutate(["metadata", cid], await fetchFromIPFS(cid));
+                  return round;
+                }
+              })
+            ).then((roundsWithMetadata) => {
+              // Reset the cache
+              if (roundsWithMetadata.filter(Boolean).length) {
+                mutate(["rounds", chainIds, variables]);
+              }
+            });
+          }
         })
   );
 
