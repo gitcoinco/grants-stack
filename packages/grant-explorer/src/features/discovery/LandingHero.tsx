@@ -5,7 +5,7 @@ import LandingTabs from "./LandingTabs";
 export default function LandingHero() {
   return (
     <div>
-      <div className="flex items-center gap-16 mb-8">
+      <div className="flex items-center gap-12 lg:gap-24 mb-16">
         <ByTheNumbers />
         <Logo />
       </div>
@@ -21,7 +21,7 @@ const ByTheNumbers = () => {
   const fundingDistributed = "$50,000,000+";
 
   return (
-    <div className="lg:w-[420px] h-[500px] flex-shrink-0 flex-col justify-between bg-white/50 hidden md:flex rounded-b-3xl px-6 py-8">
+    <div className="w-[300px] lg:w-[380px] h-[460px] flex-shrink-0 flex-col justify-between bg-white/50 hidden md:flex rounded-b-3xl px-6 py-8">
       <div className="flex items-center gap-4">
         <Check />
         <div className="font-medium text-xl lg:text-2xl">By the numbers…</div>

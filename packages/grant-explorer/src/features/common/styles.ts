@@ -13,7 +13,6 @@ export const CardsContainer = tw.div`
 
 export const BasicCard = tw.div`
   w-[343px]
-  my-3
   rounded-3xl
   bg-white
   shadow-lg

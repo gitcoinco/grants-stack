@@ -1,5 +1,9 @@
 import { useEffect } from "react";
-import { useActiveRounds, useRoundsTakingApplications } from "../api/rounds";
+import {
+  useActiveRounds,
+  useRoundsEndingSoon,
+  useRoundsTakingApplications,
+} from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
@@ -20,8 +24,9 @@ const LandingPage = () => {
 
   const activeRounds = useActiveRounds();
   const roundsTakingApplications = useRoundsTakingApplications();
-  // const roundsEndingSoon = useRoundsEndingSoon();
+  const roundsEndingSoon = useRoundsEndingSoon();
 
+  console.log("ending soon", roundsEndingSoon.data);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
@@ -29,7 +34,7 @@ const LandingPage = () => {
         title="Donate now"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
-        <div className="grid md:grid-cols-3 gap-x-6">
+        <div className="grid md:grid-cols-3 gap-6">
           {(activeRounds.data ?? createRoundLoadingData(6))
             ?.slice(0, 6)
             .map((round, i) => (
@@ -57,7 +62,7 @@ const LandingPage = () => {
               apply for funding today!
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-x-6 w-full md:w-2/3">
+          <div className="grid md:grid-cols-2 gap-6 w-full md:w-2/3">
             {(roundsTakingApplications.data ?? createRoundLoadingData(4))
               .slice(0, 4)
               ?.map((round) => (
@@ -75,12 +80,17 @@ const LandingPage = () => {
         title="Rounds ending soon"
         action={<ViewAllLink to="#">View all</ViewAllLink>}
       >
-        <div className="grid md:grid-cols-3 gap-x-6">
-          {(activeRounds.data ?? createRoundLoadingData(6))?.map((round, i) => (
-            <div key={round?.id ?? i}>
-              <RoundCard round={round} isLoading={activeRounds.isLoading} />
-            </div>
-          ))}
+        <div className="grid md:grid-cols-3 gap-6">
+          {(roundsEndingSoon.data ?? createRoundLoadingData(3))?.map(
+            (round, i) => (
+              <div key={round?.id ?? i}>
+                <RoundCard
+                  round={round}
+                  isLoading={roundsEndingSoon.isLoading}
+                />
+              </div>
+            )
+          )}
         </div>
       </LandingSection>
     </DefaultLayout>
