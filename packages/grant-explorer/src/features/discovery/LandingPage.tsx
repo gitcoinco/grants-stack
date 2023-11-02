@@ -1,10 +1,5 @@
 import { useEffect } from "react";
-import {
-  useActiveRounds,
-  usePrefetchRoundsMetadata,
-  // useRoundsEndingSoon,
-  useRoundsTakingApplications,
-} from "../api/rounds";
+import { useActiveRounds, useRoundsTakingApplications } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
@@ -22,8 +17,6 @@ const LandingPage = () => {
       window.location.replace("https://grants.gitcoin.co");
     }
   }, [location]);
-
-  usePrefetchRoundsMetadata();
 
   const activeRounds = useActiveRounds();
   const roundsTakingApplications = useRoundsTakingApplications();

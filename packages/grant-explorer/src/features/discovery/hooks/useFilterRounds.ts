@@ -1,17 +1,62 @@
-import { useState } from "react";
-import {
-  createTimestamp,
-  getActiveChainIds,
-  useRounds,
-} from "../../api/rounds";
-import { FilterProps } from "../FilterDropdown";
+import { ethers } from "ethers";
+import { useMemo } from "react";
+import { getActiveChainIds, useRounds } from "../../api/rounds";
+import { FilterProps, FilterStatus } from "../FilterDropdown";
 import { SortProps } from "../SortDropdown";
 
 type Filter = SortProps & FilterProps;
 
+const INFINITE_TIMESTAMP = ethers.constants.MaxUint256.toString();
+const NOW_IN_SECONDS = Date.now() / 1000;
+
+const createTimestamp = (timestamp = 0) =>
+  Math.floor(NOW_IN_SECONDS + timestamp).toString();
+
+// const NOW_IN_SECONDS = Date.now() / 1000;
+const ONE_YEAR_IN_SECONDS = 3600 * 24 * 365;
+
+export function createRoundsStatusFilter(status: string) {
+  const currentTimestamp = createTimestamp();
+  const futureTimestamp = createTimestamp(ONE_YEAR_IN_SECONDS);
+  switch (status) {
+    case FilterStatus.active:
+      return {
+        // Round must have started and not ended yet
+        roundStartTime_lt: currentTimestamp,
+        roundEndTime_gt: currentTimestamp,
+        roundEndTime_lt: futureTimestamp,
+      };
+    case FilterStatus.taking_applications:
+      return {
+        and: [
+          { applicationsStartTime_lte: currentTimestamp },
+          {
+            or: [
+              { applicationsEndTime: INFINITE_TIMESTAMP },
+              { applicationsEndTime_gte: currentTimestamp },
+            ],
+          },
+        ],
+      };
+    case FilterStatus.finished:
+      return {
+        roundEndTime_gt: currentTimestamp,
+      };
+    case "ending_soon":
+      return {
+        roundEndTime_gt: currentTimestamp, // + some threshold value
+      };
+    default:
+      return {};
+  }
+}
+
 export function useFilterRounds(filter: Filter) {
-  const [currentTimestamp] = useState(createTimestamp());
   const chainIds = getActiveChainIds();
+  const statusFilter = useMemo(
+    () => createRoundsStatusFilter(filter.status),
+    [filter.status]
+  );
   const filterChains = filter.network?.split(",").filter(Boolean) ?? [];
   const strategyNames = filter.type?.split(",").filter(Boolean) ?? [];
 
@@ -20,7 +65,7 @@ export function useFilterRounds(filter: Filter) {
       orderBy: filter.orderBy || "createdAt",
       orderDirection: filter.orderDirection || "desc",
       where: {
-        roundStartTime_gt: currentTimestamp,
+        ...statusFilter,
         payoutStrategy_: strategyNames.length
           ? { strategyName_in: strategyNames }
           : undefined,

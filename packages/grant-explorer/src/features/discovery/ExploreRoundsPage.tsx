@@ -1,4 +1,3 @@
-import { usePrefetchRoundsMetadata } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
@@ -10,7 +9,6 @@ import { createRoundLoadingData } from "./utils/createRoundLoadingData";
 import { getExplorerPageTitle } from "./utils/getExplorerPageTitle";
 
 const ExploreRoundsPage = () => {
-  usePrefetchRoundsMetadata();
   const [params] = useSearchParams();
   const filter = parseFilterParams(params);
 
@@ -18,6 +16,7 @@ const ExploreRoundsPage = () => {
   const rounds = useFilterRounds(filter);
 
   const sectionTitle = getExplorerPageTitle(filter);
+
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />

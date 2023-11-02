@@ -3,11 +3,12 @@ import { ChainId, RoundPayoutType, graphql_fetch } from "common";
 import { RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { fetchFromIPFS, useDebugMode } from "./utils";
-import { ethers } from "ethers";
 import { allChains } from "../../app/chainConfig";
 import { tryParseChainIdToEnum } from "common/src/chains";
 import { isPresent } from "ts-is-present";
 import { useState } from "react";
+import { createRoundsStatusFilter } from "../discovery/hooks/useFilterRounds";
+import { FilterStatus } from "../discovery/FilterDropdown";
 
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
@@ -107,67 +108,42 @@ query GetRounds(
 }
 `;
 
-const NOW_IN_SECONDS = Date.now() / 1000;
-const ONE_YEAR_IN_SECONDS = 3600 * 24 * 365;
-const INFINITE_TIMESTAMP = ethers.constants.MaxUint256.toString();
-export const createTimestamp = (timestamp = 0) =>
-  Math.floor(NOW_IN_SECONDS + timestamp).toString();
-
 export function useRoundsTakingApplications() {
-  // Only create the timestamp once, otherwise the SWR cache will be unique on every hook render
-  const [currentTimestamp] = useState(createTimestamp());
-  return useRounds({
-    where: {
-      and: [
-        { applicationsStartTime_lte: currentTimestamp },
-        {
-          or: [
-            { applicationsEndTime: INFINITE_TIMESTAMP },
-            { applicationsEndTime_gte: currentTimestamp },
-          ],
-        },
-      ],
-    },
-  });
+  const [takingApplicationsFilter] = useState(
+    createRoundsStatusFilter(FilterStatus.taking_applications)
+  );
+  return useRounds({ where: takingApplicationsFilter });
 }
 
-// What filters for active rounds?
 export function useActiveRounds() {
-  const [currentTimestamp] = useState(createTimestamp());
-  const [futureTimestamp] = useState(createTimestamp(ONE_YEAR_IN_SECONDS * 1));
+  const [activeFilter] = useState(
+    createRoundsStatusFilter(FilterStatus.active)
+  );
   return useRounds({
     orderBy: "roundEndTime",
     orderDirection: "desc",
-    where: {
-      // Round must have started and not ended yet
-      roundStartTime_lt: currentTimestamp,
-      roundEndTime_gt: currentTimestamp,
-      roundEndTime_lt: futureTimestamp,
-    },
+    where: activeFilter,
   });
 }
 
 export function useRoundsEndingSoon() {
-  const [currentTimestamp] = useState(createTimestamp());
+  const [endingSoonFilter] = useState(createRoundsStatusFilter("ending_soon"));
   return useRounds({
     orderBy: "roundEndTime",
     orderDirection: "asc",
-    where: {
-      roundEndTime_gt: currentTimestamp,
-    },
+    where: endingSoonFilter,
   });
 }
 
-//
 export function useRounds(
   variables: RoundsVariables,
   chainIds: ChainId[] = getActiveChainIds()
 ) {
-  const { cache } = useSWRConfig();
+  const { cache, mutate } = useSWRConfig();
   const debugModeEnabled = useDebugMode();
 
   const defaultVariables: RoundsVariables = {
-    first: 3 * 12,
+    first: 3 * 12, // Number of rounds to fetch for each chain
   };
 
   const mergedVariables = { ...defaultVariables, ...variables };
@@ -193,6 +169,17 @@ export function useRounds(
         .then((rounds) => sortRounds(rounds, mergedVariables))
         // Limit results
         .then((rounds) => rounds.slice(0, mergedVariables.first))
+        .then(async (rounds) => {
+          for (const round of rounds) {
+            const cid = round.roundMetaPtr.pointer;
+            // Check if cache exist (we only need to fetch this once)
+            if (!cache.get(`@"metadata","${cid}",`)) {
+              // Fetch metadata and update cache
+              mutate(["metadata", cid], await fetchFromIPFS(cid));
+            }
+          }
+          return rounds;
+        })
   );
 
   return {
@@ -254,58 +241,10 @@ function filterRounds(
     if (invalidRounds.includes(round.id)) {
       return false;
     }
-    return true;
+    // return true;
   });
 }
 
-/* 
-Fetch all rounds in the background and get all the metadata.
-This enables two things:
-- Rendering of Round Cards can start after the graphql request is done (doesn't need to wait for all metadata)
-- We can search for Round metadata in the cached results (see useSearchRounds)
-
-*/
-export function usePrefetchRoundsMetadata() {
-  const chainIds = getActiveChainIds();
-  const [currentTimestamp] = useState(createTimestamp());
-  const { mutate } = useSWRConfig();
-
-  return useSWR(
-    ["rounds-list", { chainIds }],
-    () => {
-      return getActiveChainIds().flatMap((chainId) => {
-        // Only fetch metadata pointer to lower response size
-        return graphql_fetch(
-          `
-      query GetAllRounds($currentTimestamp: String) {
-        rounds(where: {
-          roundStartTime_lt: $currentTimestamp
-          roundEndTime_gt: $currentTimestamp
-        }) {
-          id
-          roundMetaPtr {
-            protocol
-            pointer
-          }
-        }
-      }
-      `,
-          chainId,
-          { currentTimestamp }
-        )
-          .then((r) => r.data?.rounds ?? [])
-          .then(async (rounds) => {
-            for (const round of rounds) {
-              const cid = round.roundMetaPtr.pointer;
-              // Fetch metadata for each round and update cache
-              mutate(["metadata", cid], await fetchFromIPFS(cid));
-            }
-          });
-      });
-    },
-    { keepPreviousData: true }
-  );
-}
 // Will only make a request if metadata doesn't exist yet
 export function useMetadata(cid: string) {
   return useSWR(["metadata", cid], () => fetchFromIPFS(cid));

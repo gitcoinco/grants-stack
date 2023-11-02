@@ -1,11 +1,7 @@
 import { Fragment } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Transition, Listbox } from "@headlessui/react";
-import {
-  ChevronDownIcon,
-  CheckIcon,
-  ChevronUpIcon,
-} from "@heroicons/react/20/solid";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 import { CHAINS } from "../api/utils";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
@@ -158,14 +154,6 @@ export function FilterDropdown() {
                               >
                                 {child.label}
                               </span>
-                              {selected ? (
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                  <CheckIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                              ) : null}
                             </div>
                           </DropdownItem>
                         )}
