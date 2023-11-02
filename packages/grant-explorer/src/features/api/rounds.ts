@@ -199,6 +199,9 @@ export function useRounds(
             });
           }
         })
+        .then((rounds) => sortRounds(rounds, variables))
+        .then((rounds) => filterRoundsWithProjects(rounds)),
+    { keepPreviousData: true }
   );
 
   const data = (debugModeEnabled ? query.data : filterRounds(cache, query.data))
@@ -209,6 +212,10 @@ export function useRounds(
     ...query,
     data,
   };
+}
+
+function filterRoundsWithProjects(rounds: RoundOverview[]) {
+  return rounds.filter((round) => round?.projects?.length);
 }
 
 function sortRounds(

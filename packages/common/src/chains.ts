@@ -7,6 +7,7 @@ import {
   fantomTestnet as fantomTestnetOriginal,
 } from "wagmi/chains";
 import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
+import { getConfig } from "./config";
 
 export const fantom: Chain = {
   ...fantomOriginal,
@@ -147,6 +148,127 @@ export const pgn: Chain = {
     default: {
       name: "pgnscan",
       url: "https://explorer.publicgoods.network",
+    },
+  },
+};
+
+const config = getConfig();
+
+export const customOptimism = {
+  id: 10,
+  name: "Optimism",
+  network: "optimism",
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    alchemy: {
+      http: ["https://opt-mainnet.g.alchemy.com/v2/"],
+      webSocket: ["wss://opt-mainnet.g.alchemy.com/v2/"],
+    },
+    infura: {
+      http: ["https://optimism-mainnet.infura.io/v3/"],
+      webSocket: ["wss://optimism-mainnet.infura.io/ws/v3"],
+    },
+    default: {
+      http: [
+        `https://optimism-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
+      ],
+    },
+    public: {
+      http: [
+        `https://optimism-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
+      ],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Etherscan",
+      url: "https://optimistic.etherscan.io",
+    },
+    default: {
+      name: "Optimism Explorer",
+      url: "https://explorer.optimism.io",
+    },
+  },
+};
+
+export const customPolygon = {
+  id: 137,
+  name: "Polygon",
+  network: "matic",
+  nativeCurrency: {
+    name: "MATIC",
+    symbol: "MATIC",
+    decimals: 18,
+  },
+  rpcUrls: {
+    alchemy: {
+      http: ["https://polygon-mainnet.g.alchemy.com/v2"],
+      webSocket: ["wss://polygon-mainnet.g.alchemy.com/v2"],
+    },
+    infura: {
+      http: ["https://polygon-mainnet.infura.io/v3"],
+      webSocket: ["wss://polygon-mainnet.infura.io/ws/v3"],
+    },
+    default: {
+      http: [
+        `https://polygon-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
+      ],
+    },
+    public: {
+      http: [
+        `https://polygon-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
+      ],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "PolygonScan",
+      url: "https://polygonscan.com",
+    },
+    default: {
+      name: "PolygonScan",
+      url: "https://polygonscan.com",
+    },
+  },
+};
+
+export const customMainnet = {
+  id: 1,
+  network: "homestead",
+  name: "Ethereum",
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    alchemy: {
+      http: ["https://eth-mainnet.g.alchemy.com/v2"],
+      webSocket: ["wss://eth-mainnet.g.alchemy.com/v2"],
+    },
+    infura: {
+      http: ["https://mainnet.infura.io/v3"],
+      webSocket: ["wss://mainnet.infura.io/ws/v3"],
+    },
+    default: {
+      http: [`https://mainnet.infura.io/v3/${config.blockchain.infuraId}`],
+    },
+    public: {
+      http: [`https://mainnet.infura.io/v3/${config.blockchain.infuraId}`],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Etherscan",
+      url: "https://etherscan.io",
+    },
+    default: {
+      name: "Etherscan",
+      url: "https://etherscan.io",
     },
   },
 };
