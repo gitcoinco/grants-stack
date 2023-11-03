@@ -31,7 +31,7 @@ export type RoundOverview = {
   matchAmount: string;
   token: string;
   roundMetadata?: RoundMetadata;
-  projects?: [];
+  projects?: { id: string }[];
   payoutStrategy: {
     id: string;
     strategyName: RoundPayoutType;

@@ -139,7 +139,7 @@ export const makeRoundOverviewData = (
     matchAmount: "1000000000000000000000000",
     token: faker.finance.ethereumAddress(),
     roundMetadata: makeRoundMetadata(roundMetadataOverrides),
-
+    projects: Array.from({ length: 2 }).map((_, i) => ({ id: String(i) })),
     payoutStrategy: {
       id: "someid",
       strategyName: "MERKLE",
