@@ -120,7 +120,7 @@ export function useActiveRounds() {
     createRoundsStatusFilter(FilterStatus.active)
   );
   return useRounds({
-    orderBy: "roundEndTime",
+    orderBy: "matchAmount",
     orderDirection: "desc",
     where: activeFilter,
   });
