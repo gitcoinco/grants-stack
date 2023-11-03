@@ -27,7 +27,11 @@ const LandingPage = () => {
       <LandingHero />
       <LandingSection
         title="Donate now"
-        action={<ViewAllLink to="#">View all</ViewAllLink>}
+        action={
+          <ViewAllLink to="/rounds?status=active&type=MERKLE">
+            View all
+          </ViewAllLink>
+        }
       >
         <div className="grid md:grid-cols-3 gap-6">
           {(activeRounds.data ?? createRoundLoadingData(6))
@@ -44,7 +48,11 @@ const LandingPage = () => {
       </LandingSection>
       <LandingSection
         title="Rounds ending soon"
-        action={<ViewAllLink to="#">View all</ViewAllLink>}
+        action={
+          <ViewAllLink to="/rounds?orderBy=roundEndTime&orderDirection=asc">
+            View all
+          </ViewAllLink>
+        }
       >
         <div className="grid md:grid-cols-3 gap-6">
           {(roundsEndingSoon.data ?? createRoundLoadingData(3))?.map(
