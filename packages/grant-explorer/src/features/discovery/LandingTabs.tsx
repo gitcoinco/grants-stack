@@ -18,12 +18,12 @@ const tabs: Tab[] = [
 
 export default function LandingTabs() {
   const { pathname } = useLocation();
-
   return (
     <Tabs>
-      {tabs.map((tab) => (
-        <Tab key={tab.to} active={pathname === tab.to} {...tab} />
-      ))}
+      {tabs.map((tab) => {
+        const match = tab.to.split("?")[0];
+        return <Tab key={tab.to} active={pathname === match} {...tab} />;
+      })}
     </Tabs>
   );
 }
