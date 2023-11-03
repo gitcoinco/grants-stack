@@ -198,7 +198,6 @@ export function useRounds(
         })
         // We need to do another sort because of results from many chains
         .then((rounds) => sortRounds(rounds, variables))
-        .then((rounds) => rounds.slice(0, mergedVariables.first))
   );
 
   const data = (debugModeEnabled ? query.data : filterRounds(cache, query.data))

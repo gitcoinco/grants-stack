@@ -11,7 +11,7 @@ const tabs: Tab[] = [
     children: "Home",
   },
   {
-    to: "/rounds",
+    to: "/rounds?orderBy=matchAmount&orderDirection=desc",
     children: "Explore rounds",
   },
 ];
