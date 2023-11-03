@@ -26,7 +26,7 @@ const ExploreRoundsPage = () => {
         className="flex-wrap"
         action={<RoundsFilter />}
       >
-        <div className="grid md:grid-cols-3 gap-x-6">
+        <div className="grid md:grid-cols-3 gap-6">
           {(rounds.data ?? createRoundLoadingData(6))?.map((round) => (
             <div key={round.id}>
               <RoundCard round={round} isLoading={rounds.isLoading} />
