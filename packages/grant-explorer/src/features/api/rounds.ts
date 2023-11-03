@@ -149,6 +149,7 @@ export function useRounds(
   const mergedVariables = {
     ...variables,
     // We need to overfetch these because many will be filtered out from the metadata.roundType === "public"
+    // The `first` param in the arguments will instead be used last to limit the results returned
     first: 50,
   };
 
