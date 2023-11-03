@@ -7,7 +7,7 @@ export function DefaultLayout({
   children,
 }: PropsWithChildren<{ showWalletInteraction: boolean }>) {
   return (
-    <main className="font-sans bg-gradient-to-b from-[#D3EDFE] to-[#FFD9CD]">
+    <main className="font-sans bg-gradient-to-b from-[#D3EDFE] to-[#FFD9CD] min-h-screen">
       <Navbar showWalletInteraction={showWalletInteraction} />
       <div className="container mx-auto max-w-screen-xl pt-16 relative z-10 p-4">
         {children}
@@ -15,7 +15,7 @@ export function DefaultLayout({
 
       <Footer />
       <div
-        className="h-[1301px] absolute inset-0"
+        className="min-h-screen absolute inset-0"
         style={{
           background:
             "linear-gradient(180deg, #ADEDE5 -13.57%, rgba(21, 184, 220, 0.47) 45.05%, rgba(0,0,0,0) 92.61%)",
