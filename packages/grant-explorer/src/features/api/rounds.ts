@@ -212,6 +212,7 @@ export function useRounds(
 }
 
 function filterRoundsWithProjects(rounds: RoundOverview[]) {
+  return rounds;
   return rounds.filter((round) => round?.projects?.length);
 }
 
