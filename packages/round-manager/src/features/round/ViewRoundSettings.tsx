@@ -1620,8 +1620,10 @@ function RoundApplicationPeriod(props: {
                             id: "roundEndTime",
                             placeholder: "",
                             className: `${
-                              !props.editMode.canEdit ? "bg-grey-50" : ""
-                            } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
+                              !props.editMode.canEdit
+                                ? "bg-grey-50"
+                                : "text-gray-900"
+                            } block w-full border-0 p-0 placeholder-grey-400 focus:ring-0 text-sm`,
                           }}
                         />
                         <div className="absolute inset-y-2 right-0 pr-3 flex items-center pointer-events-none">
