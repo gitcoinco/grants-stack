@@ -282,8 +282,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
   if (!round) {
     return <></>;
   }
-  const roundStartDateTime = round.roundStartTime
-    ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(round.roundStartTime)}`
+  const roundEndDateTime = round.roundEndTime
+    ? `${getUTCDate(round.roundEndTime)} ${getUTCTime(round.roundEndTime)}`
     : "...";
 
   const hasRoundEnded = moment().isAfter(moment(round.roundEndTime));
@@ -445,12 +445,12 @@ export default function ViewRoundSettings(props: { id?: string }) {
         </div>
         <div className="mb-8">
           <p className="text-sm text-gray-400">
-            Changes can be made up until the round starts ({roundStartDateTime}
+            Changes can be made up until the round ends ({roundEndDateTime}
             ).
           </p>
           <p className="text-sm text-gray-400">
-            Once the round starts, you’ll only be able to change the Round End
-            Date.
+            The round will be locked after the round ends, so be sure to make
+            any edits before then.
           </p>
         </div>
         <FormValidationErrorList errors={errors} />
