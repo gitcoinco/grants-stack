@@ -1,12 +1,11 @@
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
-import RoundCard from "./RoundCard";
 import { RoundsFilter } from "./RoundsFilter";
 import { useSearchParams } from "react-router-dom";
 import { parseFilterParams, useFilterRounds } from "./hooks/useFilterRounds";
-import { createRoundLoadingData } from "./utils/createRoundLoadingData";
 import { getExplorerPageTitle } from "./utils/getExplorerPageTitle";
+import { RoundsGrid } from "./RoundsGrid";
 
 const ExploreRoundsPage = () => {
   const [params] = useSearchParams();
@@ -26,13 +25,7 @@ const ExploreRoundsPage = () => {
         className="flex-wrap"
         action={<RoundsFilter />}
       >
-        <div className="grid md:grid-cols-3 gap-6">
-          {(rounds.data ?? createRoundLoadingData(6))?.map((round) => (
-            <div key={round.id}>
-              <RoundCard round={round} isLoading={rounds.isLoading} />
-            </div>
-          ))}
-        </div>
+        <RoundsGrid {...rounds} loadingCount={6} />
       </LandingSection>
     </DefaultLayout>
   );

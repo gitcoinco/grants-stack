@@ -1,11 +1,11 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
 import { useActiveRounds, useRoundsEndingSoon } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
-import RoundCard from "./RoundCard";
-import { useLocation } from "react-router-dom";
-import { createRoundLoadingData } from "./utils/createRoundLoadingData";
+import { RoundsGrid } from "./RoundsGrid";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -21,7 +21,6 @@ const LandingPage = () => {
   const activeRounds = useActiveRounds();
   const roundsEndingSoon = useRoundsEndingSoon();
 
-  console.log("ending soon", roundsEndingSoon.data);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
@@ -33,18 +32,11 @@ const LandingPage = () => {
           </ViewAllLink>
         }
       >
-        <div className="grid md:grid-cols-3 gap-6">
-          {(activeRounds.data ?? createRoundLoadingData(6))
-            ?.slice(0, 6)
-            .map((round, i) => (
-              <div
-                key={round?.id}
-                className={`${i % 3 && i % 4 ? "" : "md:col-span-2"}`}
-              >
-                <RoundCard round={round} isLoading={activeRounds.isLoading} />
-              </div>
-            ))}
-        </div>
+        <RoundsGrid
+          {...activeRounds}
+          loadingCount={4}
+          itemClassName={(_, i) => `${i % 3 && i % 4 ? "" : "md:col-span-2"}`}
+        />
       </LandingSection>
       <LandingSection
         title="Rounds ending soon"
@@ -54,18 +46,7 @@ const LandingPage = () => {
           </ViewAllLink>
         }
       >
-        <div className="grid md:grid-cols-3 gap-6">
-          {(roundsEndingSoon.data ?? createRoundLoadingData(3))?.map(
-            (round, i) => (
-              <div key={round?.id ?? i}>
-                <RoundCard
-                  round={round}
-                  isLoading={roundsEndingSoon.isLoading}
-                />
-              </div>
-            )
-          )}
-        </div>
+        <RoundsGrid {...roundsEndingSoon} loadingCount={3} />
       </LandingSection>
     </DefaultLayout>
   );
