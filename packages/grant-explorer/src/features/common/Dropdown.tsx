@@ -39,7 +39,7 @@ export function Dropdown<T>({
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items
-              className="absolute w-full md:w-auto p-2 right-0 mt-2 origin-top-right rounded-2xl bg-white shadow-lg"
+              className="absolute  max-h-[400px] overflow-y-auto w-full md:w-auto p-2 right-0 mt-2 origin-top-right rounded-2xl bg-white shadow-lg"
               static
             >
               {options.map((option, i) => (

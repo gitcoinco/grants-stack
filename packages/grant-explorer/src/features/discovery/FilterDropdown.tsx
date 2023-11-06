@@ -81,7 +81,7 @@ export function FilterDropdown() {
   const [params] = useSearchParams();
 
   const filter = parseFilterParams(params);
-  const { status, type, network } = filter;
+  const { status = "", type = "", network = "" } = filter;
 
   const selected = getFilterLabel({ status, type, network });
   return (
