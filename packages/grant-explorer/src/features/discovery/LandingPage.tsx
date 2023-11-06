@@ -41,7 +41,7 @@ const LandingPage = () => {
       <LandingSection
         title="Rounds ending soon"
         action={
-          <ViewAllLink to="/rounds?orderBy=roundEndTime&orderDirection=asc">
+          <ViewAllLink to="/rounds?orderBy=roundEndTime&orderDirection=asc&status=ending_soon">
             View all
           </ViewAllLink>
         }

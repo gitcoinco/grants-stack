@@ -56,6 +56,10 @@ export const filterOptions: FilterOption[] = [
         value: FilterStatus.taking_applications,
       },
       {
+        label: "Ending soon",
+        value: FilterStatus.ending_soon,
+      },
+      {
         label: "Finished",
         value: FilterStatus.finished,
       },
