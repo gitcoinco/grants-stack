@@ -30,6 +30,13 @@ describe("getExplorerPageTitle", () => {
         network: "",
       })
     ).toEqual("Rounds taking applications");
+    expect(
+      getExplorerPageTitle({
+        status: FilterStatus.active,
+        type: "",
+        network: "",
+      })
+    ).toEqual("Active rounds");
   });
   it("Returns multiple if many are selected", () => {
     expect(

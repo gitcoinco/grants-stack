@@ -11,8 +11,14 @@ Find the label to display from the current filter.
 - Selected - 1 selected
 */
 
-export function getFilterLabel(filter?: FilterProps): FilterOption {
-  const selectedFilters = Object.values(filter || {}).filter(Boolean);
+export function getFilterLabel({
+  status = "",
+  network = "",
+  type = "",
+}: Partial<FilterProps> = {}): FilterOption {
+  const selectedFilters = Object.values({ status, network, type }).filter(
+    Boolean
+  );
 
   // First check if many selections have been made in the filter.
   // This can be either in same category or across several.

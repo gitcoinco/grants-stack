@@ -4,6 +4,7 @@ import { getFilterLabel } from "./getFilterLabel";
 
 export function getExplorerPageTitle(filter: FilterProps) {
   const { value } = getFilterLabel(filter);
+
   switch (value) {
     case "":
       return "All active rounds";
@@ -11,6 +12,8 @@ export function getExplorerPageTitle(filter: FilterProps) {
       return "Quadratic Funding rounds";
     case ROUND_PAYOUT_DIRECT:
       return "Direct Grants rounds";
+    case FilterStatus.active:
+      return "Active rounds";
     case FilterStatus.taking_applications:
       return "Rounds taking applications";
     case FilterStatus.finished:
