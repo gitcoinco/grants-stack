@@ -95,7 +95,6 @@ export function FilterDropdown() {
           { status, type, network }[filterKey]?.split(",").filter(Boolean) ??
           [];
 
-        console.log({ selectedFilter });
         if (!children?.length) {
           return (
             <DropdownItem $as={Link} to={`/rounds`} onClick={() => close()}>
