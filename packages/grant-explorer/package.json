@@ -11,8 +11,8 @@
     "lint": "eslint ./src --cache",
     "typecheck": "tsc --noEmit",
     "start": "craco start",
-    "test": "TZ=UTC vitest run",
-    "test:coverage": "TZ=UTC vitest --coverage"
+    "test": "vitest run",
+    "test:coverage": "vitest --coverage"
   },
   "browserslist": {
     "production": [
