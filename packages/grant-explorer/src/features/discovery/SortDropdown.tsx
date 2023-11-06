@@ -93,6 +93,7 @@ export function SortDropdown() {
             orderBy,
             orderDirection,
           })}`}
+          preventScrollReset
           onClick={close}
         >
           {label}

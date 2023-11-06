@@ -97,7 +97,17 @@ export function FilterDropdown() {
 
         if (!children?.length) {
           return (
-            <DropdownItem $as={Link} to={`/rounds`} onClick={() => close()}>
+            <DropdownItem
+              $as={Link}
+              to={`/rounds?${toQueryString({
+                ...Object.fromEntries(params),
+                network: "",
+                status: "",
+                type: "",
+              })}`}
+              preventScrollReset
+              onClick={() => close()}
+            >
               {label}
             </DropdownItem>
           );
