@@ -1210,6 +1210,15 @@ function RoundApplicationPeriod(props: {
     return inputTime.isBefore(moment());
   };
 
+  const [rollingApplications, setRollingApplications] = useState(false);
+
+  // useEffect(() => {
+  //   if (rollingApplications && roundEndDate !== "") {
+  //     setValue("applicationsEndTime", roundEndDate.toDate());
+  //     setApplicationEndDate(roundEndDate);
+  //   }
+  // }, [rollingApplications, roundEndDate, setValue]);
+
   useEffect(() => {
     setNoRoundEndDate(
       moment(editedRound.roundEndTime).isSame(maxDateForUint256)
@@ -1310,38 +1319,109 @@ function RoundApplicationPeriod(props: {
                         {props.errors.applicationsStartTime?.message}
                       </p>
                     )}
+                    <div className="flex items-center mt-2">
+                      <input
+                        id="rollingApplications"
+                        name="rollingApplications"
+                        type="checkbox"
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        checked={rollingApplications}
+                        onChange={(e) =>
+                          setRollingApplications(e.target.checked)
+                        }
+                      />
+                      <label
+                        htmlFor="rollingApplications"
+                        className="ml-2 block text-sm text-grey-400"
+                      >
+                        Enable rolling applications
+                      </label>
+                      <InformationCircleIcon
+                        data-tip
+                        data-for="rollingApplicationsTooltip"
+                        className="h-4 w-4 ml-1 text-grey-400"
+                      />
+                      <ReactTooltip
+                        id="rollingApplicationsTooltip"
+                        place="top"
+                        effect="solid"
+                        className="text-grey-400"
+                      >
+                        <span>
+                          If enabled, applications will be accepted until the
+                          round ends.
+                        </span>
+                      </ReactTooltip>
+                    </div>
                   </div>
                 ) : (
-                  <div
-                    className={`${
-                      !props.editMode.canEdit ||
-                      timeHasPassed(
-                        moment(props.editedRound.applicationsStartTime)
-                      )
-                        ? "bg-grey-50"
-                        : ""
-                    } relative border rounded-md shadow-sm focus-within:ring-1 ${
-                      props.errors.applicationsStartTime
-                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    }`}
-                  >
-                    <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
-                    <input
-                      type="text"
-                      className={`border-0 pt-0 ml-2 pl-0 -mt-2 text-sm ${
+                  <div className="col-span-6 sm:col-span-3">
+                    <div
+                      className={`${
                         !props.editMode.canEdit ||
                         timeHasPassed(
                           moment(props.editedRound.applicationsStartTime)
                         )
-                          ? "bg-grey-50 text-gray-400"
+                          ? "bg-grey-50"
                           : ""
+                      } relative border rounded-md shadow-sm focus-within:ring-1 ${
+                        props.errors.applicationsStartTime
+                          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                          : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
                       }`}
-                      defaultValue={`${getUTCDate(
-                        editedRound.applicationsStartTime
-                      )} ${getUTCTime(editedRound.applicationsStartTime)}`}
-                      disabled
-                    />
+                    >
+                      <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
+                      <input
+                        type="text"
+                        className={`border-0 pt-0 ml-2 pl-0 -mt-2 text-sm ${
+                          !props.editMode.canEdit ||
+                          timeHasPassed(
+                            moment(props.editedRound.applicationsStartTime)
+                          )
+                            ? "bg-grey-50 text-gray-400"
+                            : ""
+                        }`}
+                        defaultValue={`${getUTCDate(
+                          editedRound.applicationsStartTime
+                        )} ${getUTCTime(editedRound.applicationsStartTime)}`}
+                        disabled
+                      />
+                    </div>
+                    <div className="flex items-center mt-2">
+                      <input
+                        id="rollingApplications"
+                        name="rollingApplications"
+                        type="checkbox"
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        checked={rollingApplications}
+                        onChange={(e) =>
+                          setRollingApplications(e.target.checked)
+                        }
+                        disabled
+                      />
+                      <label
+                        htmlFor="rollingApplications"
+                        className="ml-2 block text-sm text-grey-400"
+                      >
+                        Enable rolling applications
+                      </label>
+                      <InformationCircleIcon
+                        data-tip
+                        data-for="rollingApplicationsTooltip"
+                        className="h-4 w-4 ml-1 text-grey-400"
+                      />
+                      <ReactTooltip
+                        id="rollingApplicationsTooltip"
+                        place="top"
+                        effect="solid"
+                        className="text-grey-400"
+                      >
+                        <span>
+                          If enabled, applications will be accepted until the
+                          round ends.
+                        </span>
+                      </ReactTooltip>
+                    </div>
                   </div>
                 )}
               </div>
