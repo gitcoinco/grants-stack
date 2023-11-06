@@ -7,8 +7,8 @@ import { allChains } from "../../app/chainConfig";
 import { tryParseChainIdToEnum } from "common/src/chains";
 import { isPresent } from "ts-is-present";
 import { useState } from "react";
-import { createRoundsStatusFilter } from "../discovery/hooks/useFilterRounds";
 import { FilterStatus } from "../discovery/FilterDropdown";
+import { createRoundsStatusFilter } from "../discovery/utils/createRoundsStatusFilter";
 
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL

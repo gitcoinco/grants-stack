@@ -1,4 +1,4 @@
-import { createRoundsStatusFilter } from "../../hooks/useFilterRounds";
+import { createRoundsStatusFilter } from "../createRoundsStatusFilter";
 
 describe("createRoundsStatusFilter", () => {
   beforeEach(() => {
