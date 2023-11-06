@@ -150,7 +150,7 @@ export function useRounds(
     ...variables,
     // We need to overfetch these because many will be filtered out from the metadata.roundType === "public"
     // The `first` param in the arguments will instead be used last to limit the results returned
-    first: 50,
+    first: 100,
   };
 
   const query = useSWR(
@@ -203,7 +203,7 @@ export function useRounds(
 
   const data = (debugModeEnabled ? query.data : filterRounds(cache, query.data))
     // Limit final results returned
-    ?.slice(0, variables.first ?? mergedVariables.first);
+    ?.slice(0, variables.first ?? query.data?.length);
 
   return {
     ...query,
