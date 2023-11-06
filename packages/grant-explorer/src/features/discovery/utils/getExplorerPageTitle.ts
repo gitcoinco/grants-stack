@@ -5,7 +5,6 @@ import { getFilterLabel } from "./getFilterLabel";
 export function getExplorerPageTitle(filter: FilterProps) {
   const { value, label } = getFilterLabel(filter);
 
-  console.log(value, label);
   switch (value) {
     case "":
       return "All rounds";
