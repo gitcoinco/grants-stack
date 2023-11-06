@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Transition, Listbox } from "@headlessui/react";
+import { Transition, Disclosure } from "@headlessui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 import { CHAINS } from "../api/utils";
@@ -88,18 +88,25 @@ export function FilterDropdown() {
     <Dropdown
       label={selected?.label}
       options={filterOptions}
-      renderItem={({ active, label, value: filterKey, children }) => {
+      keepOpen
+      renderItem={({ label, value: filterKey, children, close }) => {
+        // Filters can be multi selected (ie many networks)
+        const selectedFilter =
+          { status, type, network }[filterKey]?.split(",").filter(Boolean) ??
+          [];
+
+        console.log({ selectedFilter });
         if (!children?.length) {
           return (
-            <DropdownItem active={active} $as={Link} to={`/rounds`}>
+            <DropdownItem $as={Link} to={`/rounds`} onClick={() => close()}>
               {label}
             </DropdownItem>
           );
         }
         return (
-          <Listbox value={selected}>
+          <Disclosure defaultOpen={Boolean(selectedFilter.length)}>
             <div className="relative mt-1">
-              <Listbox.Button className="relative w-[340px] py-2 pl-3 pr-10 text-left hover:bg-grey-100">
+              <Disclosure.Button className="relative w-[340px] py-2 pl-3 pr-10 text-left hover:bg-grey-100">
                 {({ open }) => {
                   const Icon = open ? ChevronUpIcon : ChevronDownIcon;
                   return (
@@ -114,7 +121,7 @@ export function FilterDropdown() {
                     </>
                   );
                 }}
-              </Listbox.Button>
+              </Disclosure.Button>
 
               <Transition
                 as={Fragment}
@@ -122,12 +129,11 @@ export function FilterDropdown() {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Listbox.Options className=" mt-1 w-full overflow-auto p-2">
+                <Disclosure.Panel
+                  static
+                  className=" mt-1 w-full overflow-auto p-2"
+                >
                   {children?.map((child, j) => {
-                    // Filters can be multi selected (ie many networks)
-                    const selectedFilter =
-                      { status, type, network }[filterKey]?.split(",") ?? [];
-
                     const isChecked = selectedFilter?.includes(child.value);
 
                     const nextValue = isChecked
@@ -135,36 +141,32 @@ export function FilterDropdown() {
                         selectedFilter?.filter((f) => f !== child.value)
                       : selectedFilter?.concat(child.value);
                     return (
-                      <Listbox.Option key={j} value={child}>
-                        {({ active, selected }) => (
-                          <DropdownItem
-                            $as={Link}
-                            to={`/rounds?${toQueryString({
-                              // Merge existing search params (so it doesn't reset sorting or the other selections)
-                              ...filter,
-                              [filterKey]: nextValue.filter(Boolean).join(","),
-                            })}`}
-                            active={active}
+                      <DropdownItem
+                        key={j}
+                        $as={Link}
+                        to={`/rounds?${toQueryString({
+                          // Merge existing search params (so it doesn't reset sorting or the other selections)
+                          ...filter,
+                          [filterKey]: nextValue.join(","),
+                        })}`}
+                      >
+                        <div className="flex gap-2">
+                          <input type="checkbox" checked={isChecked} />
+                          <span
+                            className={`block truncate ${
+                              selected ? "font-medium" : "font-normal"
+                            }`}
                           >
-                            <div className="flex gap-2">
-                              <input type="checkbox" checked={isChecked} />
-                              <span
-                                className={`block truncate ${
-                                  selected ? "font-medium" : "font-normal"
-                                }`}
-                              >
-                                {child.label}
-                              </span>
-                            </div>
-                          </DropdownItem>
-                        )}
-                      </Listbox.Option>
+                            {child.label}
+                          </span>
+                        </div>
+                      </DropdownItem>
                     );
                   })}
-                </Listbox.Options>
+                </Disclosure.Panel>
               </Transition>
             </div>
-          </Listbox>
+          </Disclosure>
         );
       }}
     ></Dropdown>

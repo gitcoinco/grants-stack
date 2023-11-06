@@ -3,13 +3,14 @@ import { RoundsVariables } from "../api/rounds";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { parseFilterParams } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
+import { getSortLabel } from "./utils/getSortLabel";
 
 type Option = {
   label: string;
   orderBy: RoundsVariables["orderBy"] | "";
   orderDirection: RoundsVariables["orderDirection"] | "";
 };
-const sortOptions: Option[] = [
+export const sortOptions: Option[] = [
   {
     label: "All",
     orderBy: "",
@@ -66,7 +67,7 @@ const sortOptions: Option[] = [
     orderDirection: "asc",
   },
 ];
-type SortOption = (typeof sortOptions)[number];
+export type SortOption = (typeof sortOptions)[number];
 
 export type SortProps = {
   orderBy: SortOption["orderBy"];
@@ -76,17 +77,15 @@ export type SortProps = {
 export function SortDropdown() {
   const [params] = useSearchParams();
   const { orderBy = "", orderDirection = "" } = parseFilterParams(params);
-  const selected = sortOptions.find(
-    (item) => item.orderBy === orderBy && item.orderDirection === orderDirection
-  );
+
+  const selected = getSortLabel({ orderBy, orderDirection });
 
   return (
     <Dropdown
       label={selected?.label}
       options={sortOptions}
-      renderItem={({ active, label, orderBy, orderDirection }) => (
+      renderItem={({ label, orderBy, orderDirection, close }) => (
         <DropdownItem
-          active={active}
           $as={Link}
           // Merge search params
           to={`/rounds?${toQueryString({
@@ -94,6 +93,7 @@ export function SortDropdown() {
             orderBy,
             orderDirection,
           })}`}
+          onClick={close}
         >
           {label}
         </DropdownItem>
