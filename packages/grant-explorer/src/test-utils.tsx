@@ -104,7 +104,7 @@ export const makeRoundMetadata = (
   overrides?: Partial<RoundMetadata>
 ): RoundMetadata => ({
   name: faker.company.name(),
-  roundType: "private",
+  roundType: "public",
   eligibility: {
     description: faker.lorem.sentence(),
     requirements: [
@@ -123,6 +123,7 @@ export const makeRoundOverviewData = (
   return {
     id: faker.finance.ethereumAddress(),
     chainId: "1",
+    createdAt: makeTimestamp(),
     roundMetaPtr: {
       protocol: 1,
       pointer: generateIpfsCid(),

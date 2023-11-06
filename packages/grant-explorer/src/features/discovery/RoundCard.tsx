@@ -89,7 +89,9 @@ const RoundCard = ({ round }: RoundCardProps) => {
             data-testid="round-name"
             className="absolute bottom-1 px-2 text-white"
           >
-            <Skeleton isLoaded={!isLoading}>{metadata?.name}</Skeleton>
+            <Skeleton className="truncate" isLoaded={!isLoading}>
+              {metadata?.name}
+            </Skeleton>
           </CardTitle>
         </CardHeader>
         <CardContent>

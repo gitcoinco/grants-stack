@@ -13,7 +13,6 @@ export const CardsContainer = tw.div`
 
 export const BasicCard = tw.div`
   w-[343px]
-  my-3
   rounded-3xl
   bg-white
   shadow-lg
@@ -29,7 +28,7 @@ export const CardContent = tw.div`
   space-y-4
 `;
 
-export const CardTitle = tw.p`
+export const CardTitle = tw.div`
   w-full
   text-[24px]
   font-medium
@@ -37,7 +36,7 @@ export const CardTitle = tw.p`
   pb-1
 `;
 
-export const CardDescription = tw.p`
+export const CardDescription = tw.div`
   text-sm
   md:text-base
   text-ellipsis
