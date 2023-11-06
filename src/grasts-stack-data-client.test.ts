@@ -6,19 +6,18 @@ describe("data client", () => {
     const fetchMock = vi.fn().mockResolvedValue({
       status: 200,
       headers: new Headers({ "content-type": "application/json" }),
-      text: async () =>
-        JSON.stringify({
-          results: [
-            {
-              meta: { searchType: "fulltext" },
-              data: { applicationRef: "1:0x123:0", name: "project #0" },
-            },
-            {
-              meta: { searchType: "semantic" },
-              data: { applicationRef: "1:0x123:1", name: "project #1" },
-            },
-          ],
-        }),
+      json: async () => ({
+        results: [
+          {
+            meta: { searchType: "fulltext" },
+            data: { applicationRef: "1:0x123:0", name: "project #0" },
+          },
+          {
+            meta: { searchType: "semantic" },
+            data: { applicationRef: "1:0x123:1", name: "project #1" },
+          },
+        ],
+      }),
     });
 
     const client = new GrantsStackDataClient({
@@ -43,9 +42,7 @@ describe("data client", () => {
     ]);
     expect(fetchMock).toHaveBeenCalledWith(
       "https://example.com/search?q=open%20source",
-      {
-        headers: { Accept: "application/json" },
-      },
+      { method: "GET", headers: {} },
     );
   });
 
@@ -53,14 +50,13 @@ describe("data client", () => {
     const fetchMock = vi.fn().mockResolvedValue({
       status: 200,
       headers: new Headers({ "content-type": "application/json" }),
-      text: async () =>
-        JSON.stringify({
-          applicationSummaries: [
-            { applicationRef: "1:0x123:0", name: "project #0" },
-            { applicationRef: "1:0x123:1", name: "project #1" },
-            { applicationRef: "1:0x123:2", name: "project #2" },
-          ],
-        }),
+      json: async () => ({
+        applicationSummaries: [
+          { applicationRef: "1:0x123:0", name: "project #0" },
+          { applicationRef: "1:0x123:1", name: "project #1" },
+          { applicationRef: "1:0x123:2", name: "project #2" },
+        ],
+      }),
     });
 
     const client = new GrantsStackDataClient({
@@ -77,7 +73,8 @@ describe("data client", () => {
       { applicationRef: "1:0x123:2", name: "project #2" },
     ]);
     expect(fetchMock).toHaveBeenCalledWith("https://example.com/applications", {
-      headers: { Accept: "application/json" },
+      method: "GET",
+      headers: {},
     });
   });
 
@@ -86,16 +83,15 @@ describe("data client", () => {
       const fetchMock = vi.fn().mockResolvedValue({
         status: 200,
         headers: new Headers({ "content-type": "application/json" }),
-        text: async () =>
-          JSON.stringify({
-            applicationSummaries: [
-              { applicationRef: "1:0x123:0", name: "project #0" },
-              { applicationRef: "1:0x123:1", name: "project #1" },
-              { applicationRef: "1:0x123:2", name: "project #2" },
-              { applicationRef: "1:0x123:3", name: "project #3" },
-              { applicationRef: "1:0x123:4", name: "project #4" },
-            ],
-          }),
+        json: async () => ({
+          applicationSummaries: [
+            { applicationRef: "1:0x123:0", name: "project #0" },
+            { applicationRef: "1:0x123:1", name: "project #1" },
+            { applicationRef: "1:0x123:2", name: "project #2" },
+            { applicationRef: "1:0x123:3", name: "project #3" },
+            { applicationRef: "1:0x123:4", name: "project #4" },
+          ],
+        }),
       });
 
       const client = new GrantsStackDataClient({
@@ -123,16 +119,15 @@ describe("data client", () => {
       const fetchMock = vi.fn().mockResolvedValue({
         status: 200,
         headers: new Headers({ "content-type": "application/json" }),
-        text: async () =>
-          JSON.stringify({
-            applicationSummaries: [
-              { applicationRef: "1:0x123:0", name: "project #0" },
-              { applicationRef: "1:0x123:1", name: "project #1" },
-              { applicationRef: "1:0x123:2", name: "project #2" },
-              { applicationRef: "1:0x123:3", name: "project #3" },
-              { applicationRef: "1:0x123:4", name: "project #4" },
-            ],
-          }),
+        json: async () => ({
+          applicationSummaries: [
+            { applicationRef: "1:0x123:0", name: "project #0" },
+            { applicationRef: "1:0x123:1", name: "project #1" },
+            { applicationRef: "1:0x123:2", name: "project #2" },
+            { applicationRef: "1:0x123:3", name: "project #3" },
+            { applicationRef: "1:0x123:4", name: "project #4" },
+          ],
+        }),
       });
 
       const client = new GrantsStackDataClient({
@@ -159,16 +154,15 @@ describe("data client", () => {
       const fetchMock = vi.fn().mockResolvedValue({
         status: 200,
         headers: new Headers({ "content-type": "application/json" }),
-        text: async () =>
-          JSON.stringify({
-            applicationSummaries: [
-              { applicationRef: "1:0x123:0", name: "project #0" },
-              { applicationRef: "1:0x123:1", name: "project #1" },
-              { applicationRef: "1:0x123:2", name: "project #2" },
-              { applicationRef: "1:0x123:3", name: "project #3" },
-              { applicationRef: "1:0x123:4", name: "project #4" },
-            ],
-          }),
+        json: async () => ({
+          applicationSummaries: [
+            { applicationRef: "1:0x123:0", name: "project #0" },
+            { applicationRef: "1:0x123:1", name: "project #1" },
+            { applicationRef: "1:0x123:2", name: "project #2" },
+            { applicationRef: "1:0x123:3", name: "project #3" },
+            { applicationRef: "1:0x123:4", name: "project #4" },
+          ],
+        }),
       });
 
       const client = new GrantsStackDataClient({
@@ -193,20 +187,19 @@ describe("data client", () => {
       const fetchMock = vi.fn().mockResolvedValue({
         status: 200,
         headers: new Headers({ "content-type": "application/json" }),
-        text: async () =>
-          JSON.stringify({
-            applicationSummaries: [
-              { applicationRef: "1:0x123:0", name: "project #0" },
-              { applicationRef: "1:0x123:1", name: "project #1" },
-              { applicationRef: "1:0x123:2", name: "project #2" },
-              { applicationRef: "1:0x123:3", name: "project #3" },
-              { applicationRef: "1:0x123:4", name: "project #4" },
-              { applicationRef: "1:0x123:5", name: "project #5" },
-              { applicationRef: "1:0x123:6", name: "project #6" },
-              { applicationRef: "1:0x123:7", name: "project #7" },
-              { applicationRef: "1:0x123:7", name: "project #8" },
-            ],
-          }),
+        json: async () => ({
+          applicationSummaries: [
+            { applicationRef: "1:0x123:0", name: "project #0" },
+            { applicationRef: "1:0x123:1", name: "project #1" },
+            { applicationRef: "1:0x123:2", name: "project #2" },
+            { applicationRef: "1:0x123:3", name: "project #3" },
+            { applicationRef: "1:0x123:4", name: "project #4" },
+            { applicationRef: "1:0x123:5", name: "project #5" },
+            { applicationRef: "1:0x123:6", name: "project #6" },
+            { applicationRef: "1:0x123:7", name: "project #7" },
+            { applicationRef: "1:0x123:7", name: "project #8" },
+          ],
+        }),
       });
 
       const client = new GrantsStackDataClient({

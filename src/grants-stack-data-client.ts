@@ -6,12 +6,14 @@ import {
   ExtractQuery,
   ExtractResponse,
 } from "./grants-stack-data-client.types.js";
-import * as searchApi from "./openapi-search.js";
+import {
+  DefaultApi as SearchApi,
+  Configuration as SearchApiConfiguration,
+} from "./openapi-search-client/index.js";
 
 export class GrantsStackDataClient {
-  private fetch: typeof _fetch;
   private pageSize: number;
-  private baseUrl: string;
+  private searchApi: SearchApi;
 
   constructor({
     fetch,
@@ -22,9 +24,13 @@ export class GrantsStackDataClient {
     applications?: { pagination: { pageSize: number } };
     baseUrl: string;
   }) {
+    this.searchApi = new SearchApi(
+      new SearchApiConfiguration({
+        fetchApi: fetch,
+        basePath: baseUrl,
+      }),
+    );
     this.pageSize = applications?.pagination.pageSize ?? 10;
-    this.fetch = fetch ?? _fetch;
-    this.baseUrl = baseUrl;
   }
 
   async query(
@@ -41,9 +47,8 @@ export class GrantsStackDataClient {
   ): Promise<DataClientInteraction["response"]> {
     switch (q.type) {
       case "applications-search": {
-        const { results } = await searchApi.searchSearchGet(q.queryString, {
-          fetch: this.fetch,
-          baseUrl: this.baseUrl,
+        const { results } = await this.searchApi.searchSearchGet({
+          q: q.queryString,
         });
 
         return { results };
@@ -51,10 +56,7 @@ export class GrantsStackDataClient {
 
       case "applications-by-refs": {
         const { applicationSummaries } =
-          await searchApi.getApplicationsApplicationsGet({
-            fetch: this.fetch,
-            baseUrl: this.baseUrl,
-          });
+          await this.searchApi.getApplicationsApplicationsGet();
 
         return {
           applications: applicationSummaries.filter((a) =>
@@ -65,10 +67,7 @@ export class GrantsStackDataClient {
 
       case "applications-paginated": {
         const { applicationSummaries } =
-          await searchApi.getApplicationsApplicationsGet({
-            fetch: this.fetch,
-            baseUrl: this.baseUrl,
-          });
+          await this.searchApi.getApplicationsApplicationsGet();
 
         const pageStart = q.page * this.pageSize;
         const pageEnd = pageStart + this.pageSize;

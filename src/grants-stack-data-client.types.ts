@@ -1,4 +1,7 @@
-import { ApplicationSummary, SearchResult } from "./openapi-search.js";
+import {
+  SearchResult,
+  ApplicationSummary,
+} from "./openapi-search-client/models/index.js";
 
 export type DataClientInteraction =
   | {

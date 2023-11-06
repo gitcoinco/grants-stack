@@ -11,8 +11,8 @@
     "lint": "eslint --cache --max-warnings=0",
     "lint:fix": "eslint --cache --max-warnings=0 --fix",
     "lint:all": "eslint --cache --max-warnings=0 src",
-    "generate:openapi-search": "oazapfts --optimistic https://gitcoin-search-dev.fly.dev/openapi.json >src/openapi-search.ts",
-    "generate:openapi-search:local": "oazapfts --optimistic http://localhost:8000/openapi.json >src/openapi-search.ts",
+    "generate:openapi": "openapi-generator-cli generate -i https://gitcoin-search-dev.fly.dev/openapi.json -o src/openapi-search-client -g typescript-fetch --additional-properties=importFileExtension=.js",
+    "generate:openapi:local": "openapi-generator-cli generate -i http://localhost:8000/openapi.json -o src/openapi-search-client -g typescript-fetch --additional-properties=importFileExtension=.js",
     "format": "prettier --write",
     "lint:unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
     "test": "vitest run --coverage",
@@ -24,6 +24,7 @@
     "prepare": "tsc"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@tsconfig/node18": "^18.2.2",
     "@types/debug": "^4.1.8",
     "@types/knuth-shuffle-seeded": "^1.0.1",
@@ -51,7 +52,6 @@
     "debug": "^4.3.4",
     "dotenv-flow": "^3.3.0",
     "knuth-shuffle-seeded": "^1.0.6",
-    "oazapfts": "^4.10.0",
     "ts-essentials": "^9.4.1",
     "zod": "^3.22.2"
   }

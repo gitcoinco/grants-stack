@@ -9,7 +9,7 @@ pnpm run test:watch
 To update types from the [search service](https://gitcoin-search-dev.fly.dev/docs), run:
 
 ```sh
-pnpm run generate:openapi-search
+pnpm run generate:openapi
 ```
 
 ## Example
