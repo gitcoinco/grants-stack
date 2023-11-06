@@ -26,6 +26,7 @@
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
     "@types/debug": "^4.1.8",
+    "@types/knuth-shuffle-seeded": "^1.0.1",
     "@types/node": "^20.6.2",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
@@ -49,6 +50,7 @@
     "cross-fetch": "^4.0.0",
     "debug": "^4.3.4",
     "dotenv-flow": "^3.3.0",
+    "knuth-shuffle-seeded": "^1.0.6",
     "oazapfts": "^4.10.0",
     "ts-essentials": "^9.4.1",
     "zod": "^3.22.2"

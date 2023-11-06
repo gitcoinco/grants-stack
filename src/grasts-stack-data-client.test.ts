@@ -188,5 +188,50 @@ describe("data client", () => {
       });
       expect(applications).toEqual([]);
     });
+
+    test("can shuffle items based on seed", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        text: async () =>
+          JSON.stringify({
+            applicationSummaries: [
+              { applicationRef: "1:0x123:0", name: "project #0" },
+              { applicationRef: "1:0x123:1", name: "project #1" },
+              { applicationRef: "1:0x123:2", name: "project #2" },
+              { applicationRef: "1:0x123:3", name: "project #3" },
+              { applicationRef: "1:0x123:4", name: "project #4" },
+              { applicationRef: "1:0x123:5", name: "project #5" },
+              { applicationRef: "1:0x123:6", name: "project #6" },
+              { applicationRef: "1:0x123:7", name: "project #7" },
+              { applicationRef: "1:0x123:7", name: "project #8" },
+            ],
+          }),
+      });
+
+      const client = new GrantsStackDataClient({
+        fetch: fetchMock,
+        baseUrl: "https://example.com",
+        applications: { pagination: { pageSize: 2 } },
+      });
+
+      for (let i = 0; i < 10; i++) {
+        const { applications, pagination } = await client.query({
+          type: "applications-paginated",
+          page: 0,
+          shuffle: { seed: 42 },
+        });
+
+        expect(pagination).toEqual({
+          totalItems: 9,
+          totalPages: 5,
+          currentPage: 0,
+        });
+        expect(applications).toEqual([
+          { applicationRef: "1:0x123:5", name: "project #5" },
+          { applicationRef: "1:0x123:7", name: "project #8" },
+        ]);
+      }
+    });
   });
 });

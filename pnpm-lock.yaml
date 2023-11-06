@@ -14,6 +14,9 @@ dependencies:
   dotenv-flow:
     specifier: ^3.3.0
     version: 3.3.0
+  knuth-shuffle-seeded:
+    specifier: ^1.0.6
+    version: 1.0.6
   oazapfts:
     specifier: ^4.10.0
     version: 4.10.0(openapi-types@12.1.3)
@@ -31,6 +34,9 @@ devDependencies:
   '@types/debug':
     specifier: ^4.1.8
     version: 4.1.8
+  '@types/knuth-shuffle-seeded':
+    specifier: ^1.0.1
+    version: 1.0.1
   '@types/node':
     specifier: ^20.6.2
     version: 20.6.2
@@ -521,6 +527,10 @@ packages:
 
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/knuth-shuffle-seeded@1.0.1:
+    resolution: {integrity: sha512-4gP6MXPfTFL2mRA0Hs4rTBzB2NbpoNGXzCUp64jcEacFpRZOtoHN4Y6stTV7KZ1miTW2MCnMo888jhPnK/3GFg==}
     dev: true
 
   /@types/ms@0.7.31:
@@ -2060,6 +2070,12 @@ packages:
       json-buffer: 3.0.1
     dev: true
 
+  /knuth-shuffle-seeded@1.0.6:
+    resolution: {integrity: sha512-9pFH0SplrfyKyojCLxZfMcvkhf5hH0d+UwR9nTVJ/DDQJGuzcXjTwB7TP7sDfehSudlGGaOLblmEWqv04ERVWg==}
+    dependencies:
+      seed-random: 2.2.0
+    dev: false
+
   /leasot@13.3.0:
     resolution: {integrity: sha512-WEAlnIRsUJJv525J9B1i20tFuwj+B8EHPgZjKnfVNkrKbaJgiGXilnS/yHDhitWKy9IpE/iQ7XKTPP/9nL5DoQ==}
     engines: {node: '>=14.13.1'}
@@ -2689,6 +2705,10 @@ packages:
       get-intrinsic: 1.2.1
       is-regex: 1.1.4
     dev: true
+
+  /seed-random@2.2.0:
+    resolution: {integrity: sha512-34EQV6AAHQGhoc0tn/96a9Fsi6v2xdqe/dMUwljGRaFOzR3EgRmECvD0O8vi8X+/uQ50LGHfkNu/Eue5TPKZkQ==}
+    dev: false
 
   /semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}

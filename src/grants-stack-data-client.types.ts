@@ -14,7 +14,11 @@ export type DataClientInteraction =
       };
     }
   | {
-      query: { type: "applications-paginated"; page: number };
+      query: {
+        type: "applications-paginated";
+        page: number;
+        shuffle?: { seed: number };
+      };
       response: {
         applications: ApplicationSummary[];
         pagination: {

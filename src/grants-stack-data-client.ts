@@ -1,3 +1,4 @@
+import shuffle from "knuth-shuffle-seeded";
 import { UnreachableCaseError } from "ts-essentials";
 import _fetch from "cross-fetch";
 import {
@@ -72,8 +73,14 @@ export class GrantsStackDataClient {
         const pageStart = q.page * this.pageSize;
         const pageEnd = pageStart + this.pageSize;
 
+        const page = (
+          q.shuffle === undefined
+            ? applicationSummaries
+            : shuffle(applicationSummaries, q.shuffle.seed)
+        ).slice(pageStart, pageEnd);
+
         return {
-          applications: applicationSummaries.slice(pageStart, pageEnd),
+          applications: page,
           pagination: {
             currentPage: q.page,
             totalPages: Math.ceil(applicationSummaries.length / this.pageSize),
