@@ -1,14 +1,18 @@
 {
-  "name": "starter-node",
+  "name": "grants-stack-data-client",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "dev": "tsx watch -r dotenv-flow/config src/index.ts",
     "start": "node -r dotenv-flow/config dist/index.js",
     "lint": "eslint --cache --max-warnings=0",
     "lint:fix": "eslint --cache --max-warnings=0 --fix",
     "lint:all": "eslint --cache --max-warnings=0 src",
+    "generate:openapi-search": "oazapfts --optimistic https://gitcoin-search-dev.fly.dev/openapi.json >src/openapi-search.ts",
+    "generate:openapi-search:local": "oazapfts --optimistic http://localhost:8000/openapi.json >src/openapi-search.ts",
     "format": "prettier --write",
     "lint:unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
     "test": "vitest run --coverage",
@@ -16,7 +20,8 @@
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
-    "todo": "leasot 'src/**/*.ts'"
+    "todo": "leasot 'src/**/*.ts'",
+    "prepare": "tsc"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
@@ -41,8 +46,11 @@
     "node": ">=18"
   },
   "dependencies": {
+    "cross-fetch": "^4.0.0",
     "debug": "^4.3.4",
     "dotenv-flow": "^3.3.0",
+    "oazapfts": "^4.10.0",
+    "ts-essentials": "^9.4.1",
     "zod": "^3.22.2"
   }
 }
