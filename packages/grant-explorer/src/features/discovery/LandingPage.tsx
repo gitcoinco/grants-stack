@@ -35,6 +35,7 @@ const LandingPage = () => {
         <RoundsGrid
           {...activeRounds}
           loadingCount={4}
+          maxCount={6}
           itemClassName={(_, i) => `${i % 3 && i % 4 ? "" : "md:col-span-2"}`}
         />
       </LandingSection>
@@ -46,7 +47,7 @@ const LandingPage = () => {
           </ViewAllLink>
         }
       >
-        <RoundsGrid {...roundsEndingSoon} loadingCount={3} />
+        <RoundsGrid {...roundsEndingSoon} loadingCount={3} maxCount={3} />
       </LandingSection>
     </DefaultLayout>
   );

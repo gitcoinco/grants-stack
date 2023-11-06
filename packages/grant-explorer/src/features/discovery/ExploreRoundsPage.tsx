@@ -16,6 +16,7 @@ const ExploreRoundsPage = () => {
 
   const sectionTitle = getExplorerPageTitle(filter);
 
+  console.log(rounds.data);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
