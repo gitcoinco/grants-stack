@@ -53,7 +53,7 @@ export type RoundsVariables = {
     and?: (TimestampVariables & { or?: TimestampVariables[] })[];
   };
 };
-type TimestampVariables = {
+export type TimestampVariables = {
   applicationsStartTime_lte?: string;
   applicationsEndTime_gt?: string;
   applicationsEndTime_lt?: string;

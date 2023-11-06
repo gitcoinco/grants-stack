@@ -1,23 +1,26 @@
-import { ethers } from "ethers";
 import { useMemo } from "react";
-import { getActiveChainIds, useRounds } from "../../api/rounds";
+import {
+  TimestampVariables,
+  getActiveChainIds,
+  useRounds,
+} from "../../api/rounds";
 import { FilterProps, FilterStatus } from "../FilterDropdown";
 import { SortProps } from "../SortDropdown";
 
 type Filter = SortProps & FilterProps;
 
-const INFINITE_TIMESTAMP = ethers.constants.MaxUint256.toString();
-const NOW_IN_SECONDS = Date.now() / 1000;
-
-const createTimestamp = (timestamp = 0) =>
-  Math.floor(NOW_IN_SECONDS + timestamp).toString();
+const createTimestamp = (timestamp = 0) => {
+  const NOW_IN_SECONDS = Date.now() / 1000;
+  return Math.floor(NOW_IN_SECONDS + timestamp).toString();
+};
 
 const ONE_DAY_IN_SECONDS = 3600 * 24;
 const ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365;
 
-export function createRoundsStatusFilter(status: string) {
+function getStatusFilter(status: string): TimestampVariables {
   const currentTimestamp = createTimestamp();
   const futureTimestamp = createTimestamp(ONE_YEAR_IN_SECONDS);
+
   switch (status) {
     case FilterStatus.active:
       return {
@@ -27,19 +30,13 @@ export function createRoundsStatusFilter(status: string) {
       };
     case FilterStatus.taking_applications:
       return {
-        and: [
-          { applicationsStartTime_lte: currentTimestamp },
-          {
-            or: [
-              { applicationsEndTime: INFINITE_TIMESTAMP },
-              { applicationsEndTime_gte: currentTimestamp },
-            ],
-          },
-        ],
+        applicationsStartTime_lte: currentTimestamp,
+        applicationsEndTime_gte: currentTimestamp,
       };
+
     case FilterStatus.finished:
       return {
-        roundEndTime_gt: currentTimestamp,
+        roundEndTime_lt: currentTimestamp,
       };
     case FilterStatus.ending_soon:
       return {
@@ -54,6 +51,20 @@ export function createRoundsStatusFilter(status: string) {
         roundEndTime_lt: futureTimestamp,
       };
   }
+}
+export function createRoundsStatusFilter(
+  status: string = FilterStatus.active
+): TimestampVariables {
+  // Merge the status filters
+  return status
+    ?.split(",")
+    .filter(Boolean)
+    .reduce((filters, key) => {
+      return {
+        ...filters,
+        ...getStatusFilter(key),
+      };
+    }, {});
 }
 
 export function useFilterRounds(filter: Filter) {
