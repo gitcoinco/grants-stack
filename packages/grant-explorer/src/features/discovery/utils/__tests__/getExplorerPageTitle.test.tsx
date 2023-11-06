@@ -5,7 +5,7 @@ import { getExplorerPageTitle } from "../getExplorerPageTitle";
 describe("getExplorerPageTitle", () => {
   it("Returns All when none are selected", async () => {
     expect(getExplorerPageTitle({ status: "", type: "", network: "" })).toEqual(
-      "All active rounds"
+      "All rounds"
     );
   });
   it("Returns the correct title", () => {
@@ -37,6 +37,13 @@ describe("getExplorerPageTitle", () => {
         network: "",
       })
     ).toEqual("Active rounds");
+    expect(
+      getExplorerPageTitle({
+        status: "",
+        type: "",
+        network: "1",
+      })
+    ).toEqual("Rounds on Mainnet");
   });
   it("Returns multiple if many are selected", () => {
     expect(
@@ -45,6 +52,6 @@ describe("getExplorerPageTitle", () => {
         type: ROUND_PAYOUT_MERKLE,
         network: "",
       })
-    ).toEqual("Multiple");
+    ).toEqual("Multiple filters");
   });
 });

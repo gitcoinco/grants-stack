@@ -3,11 +3,12 @@ import { FilterProps, FilterStatus } from "../FilterDropdown";
 import { getFilterLabel } from "./getFilterLabel";
 
 export function getExplorerPageTitle(filter: FilterProps) {
-  const { value } = getFilterLabel(filter);
+  const { value, label } = getFilterLabel(filter);
 
+  console.log(value, label);
   switch (value) {
     case "":
-      return "All active rounds";
+      return "All rounds";
     case ROUND_PAYOUT_MERKLE:
       return "Quadratic Funding rounds";
     case ROUND_PAYOUT_DIRECT:
@@ -18,7 +19,9 @@ export function getExplorerPageTitle(filter: FilterProps) {
       return "Rounds taking applications";
     case FilterStatus.finished:
       return "Rounds finished";
+    case "multiple":
+      return "Multiple filters";
     default:
-      return "Multiple";
+      return label;
   }
 }
