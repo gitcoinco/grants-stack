@@ -47,6 +47,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
   const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
 
   // Can we simplify this? Would `days < 1000` do the same thing?
+  // TODO: I think we can remove this
   const isValidRoundEndTime = !isInfiniteDate(
     new Date(parseInt(roundEndTime, 10) * 1000)
   );
@@ -76,15 +77,10 @@ const RoundCard = ({ round }: RoundCardProps) => {
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
-          {daysLeftToApply > 0 && (
-            <Badge
-              color="green"
-              rounded="full"
-              className="absolute top-3 right-3"
-            >
-              Apply!
-            </Badge>
-          )}
+          <RoundTimeBadge
+            daysLeft={daysLeft}
+            daysLeftToApply={daysLeftToApply}
+          />
           <CardTitle
             data-testid="round-name"
             className="absolute bottom-1 px-2 text-white"
@@ -113,7 +109,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
               isValidRoundEndTime={isValidRoundEndTime}
             />
 
-            <RoundBadge strategyName={payoutStrategy?.strategyName} />
+            <RoundStrategyBadge strategyName={payoutStrategy?.strategyName} />
           </div>
           <div className="border-t" />
           <RoundCardStat
@@ -128,8 +124,40 @@ const RoundCard = ({ round }: RoundCardProps) => {
     </BasicCard>
   );
 };
+const RoundTimeBadge = ({
+  daysLeft,
+  daysLeftToApply,
+}: {
+  daysLeft: number;
+  daysLeftToApply: number;
+}) => {
+  const props = {
+    rounded: "full",
+    className: "absolute top-3 right-3",
+  } as const;
 
-const RoundBadge = ({ strategyName }: { strategyName: RoundPayoutType }) => {
+  if (daysLeft < 0) {
+    return (
+      <Badge color="orange" {...props}>
+        Round ended
+      </Badge>
+    );
+  }
+  if (daysLeftToApply > 0) {
+    return (
+      <Badge color="green" {...props}>
+        Apply!
+      </Badge>
+    );
+  }
+  return null;
+};
+
+const RoundStrategyBadge = ({
+  strategyName,
+}: {
+  strategyName: RoundPayoutType;
+}) => {
   const color = ({ MERKLE: "blue", DIRECT: "yellow" } as const)[strategyName];
   return (
     <Badge color={color} data-testid="round-badge">
