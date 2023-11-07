@@ -33,6 +33,9 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { getAddress } from "viem";
+import { Tab, Tabs } from "@chakra-ui/react";
+import { GrantList } from "./GrantList/GrantList";
+import { useGap } from "../api/gap";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -68,6 +71,10 @@ export const IAM_SERVER =
 const verifier = new PassportVerifier();
 
 export default function ViewProjectDetails() {
+  const { getGrantsFor, grants } = useGap();
+
+  const [selectedTab, setSelectedTab] = useState(0);
+
   datadogLogs.logger.info(
     "====> Route: /round/:chainId/:roundId/:applicationId"
   );
@@ -122,6 +129,42 @@ export default function ViewProjectDetails() {
     },
   ] as BreadcrumbItem[];
 
+  const projectDetailsTabs = [
+    {
+      name: "Project details",
+      content: (
+        <>
+          <DescriptionTitle />
+          {!!projectToRender && (
+            <>
+              <Detail
+                text={projectToRender.projectMetadata.description}
+                testID="project-metadata"
+              />
+              <ApplicationFormAnswers
+                answers={projectToRender.grantApplicationFormAnswers}
+              />
+            </>
+          )}
+        </>
+      ),
+    },
+    {
+      name: "Grants",
+      content: <GrantList grants={grants} />,
+    },
+  ];
+
+  useEffect(() => {
+    if (projectToRender?.projectRegistryId) {
+      getGrantsFor(projectToRender.projectRegistryId);
+    }
+  }, [projectToRender]);
+
+  const handleTabChange = (tabIndex: number) => {
+    setSelectedTab(tabIndex);
+  };
+
   return (
     <>
       <Navbar />
@@ -157,17 +200,12 @@ export default function ViewProjectDetails() {
                       projectMetadata={projectToRender.projectMetadata}
                     />
                     <AboutProject projectToRender={projectToRender} />
-                  </div>
-                  <div>
-                    <DescriptionTitle />
-                    <Detail
-                      text={projectToRender.projectMetadata.description}
-                      testID="project-metadata"
-                    />
-                    <ApplicationFormAnswers
-                      answers={projectToRender.grantApplicationFormAnswers}
+                    <ProjectDetailsTabs
+                      onChange={handleTabChange}
+                      tabs={projectDetailsTabs.map((tab) => tab.name)}
                     />
                   </div>
+                  <div>{projectDetailsTabs[selectedTab].content}</div>
                 </div>
                 {round && !isDirectRound(round) && (
                   <div className="md:visible invisible  min-w-fit">
@@ -223,6 +261,23 @@ function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
       <h1 className="text-3xl mt-6 font-thin text-black">
         {props.projectMetadata.title}
       </h1>
+    </div>
+  );
+}
+
+function ProjectDetailsTabs(props: {
+  tabs: string[];
+  onChange?: (tabIndex: number) => void;
+}) {
+  return (
+    <div className="__project-details-tabs relative">
+      {props.tabs.length > 0 && (
+        <Tabs display="flex" onChange={props.onChange}>
+          {props.tabs.map((tab, index) => (
+            <Tab key={index}>{tab}</Tab>
+          ))}
+        </Tabs>
+      )}
     </div>
   );
 }
@@ -299,7 +354,7 @@ function AboutProject(props: { projectToRender: Project }) {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-16">
       {projectRecipient && (
         <span className="flex items-center mt-4 gap-1">
           <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
