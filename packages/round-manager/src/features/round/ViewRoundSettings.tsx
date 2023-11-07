@@ -128,19 +128,23 @@ export default function ViewRoundSettings(props: { id?: string }) {
     useState(false);
 
   useEffect(() => {
-    setNoRoundEndDate(
-      moment(editedRound?.roundEndTime).isSame(maxDateForUint256)
-    );
-  }, [editedRound?.roundEndTime]);
+    setNoRoundEndDate(moment(round?.roundEndTime).isSame(maxDateForUint256));
+  }, [round?.roundEndTime]);
 
   useEffect(() => {
     if (
-      editedRound?.roundEndTime.toDateString() !== "" &&
-      editedRound?.roundStartTime === editedRound?.roundEndTime
+      round?.roundEndTime.toDateString() !== "" &&
+      round?.roundStartTime === round?.roundEndTime
     ) {
       setRollingApplications(true);
     }
-  }, [editedRound?.roundStartTime, editedRound?.roundEndTime]);
+  }, [round?.roundStartTime, round?.roundEndTime]);
+
+  useEffect(() => {
+    if (isDirectRound(round!)) {
+      setEditedRollingApplications(true);
+    }
+  }, [round]);
 
   const ValidationSchema = !isDirectRound(round!)
     ? RoundValidationSchema.shape({
@@ -302,7 +306,9 @@ export default function ViewRoundSettings(props: { id?: string }) {
   if (!round) {
     return <></>;
   }
-  const roundEndDateTime = round.roundEndTime
+  const roundEndDateTime = noRoundEndDate
+    ? ""
+    : round.roundEndTime
     ? `${getUTCDate(round.roundEndTime)} ${getUTCTime(round.roundEndTime)}`
     : "...";
 
@@ -332,7 +338,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
       // @ts-expect-error TS upgrade broke this, TODO fix this
       handleSubmit(submit(editedRound as Round));
       const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
-      console.log("editedGroups", editedGroups);
       setIpfsStep(
         editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer
       );
@@ -466,7 +471,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
         <div className="mb-8">
           <p className="text-sm text-gray-400">
             Changes can be made up until the round ends
-            {noRoundEndDate ? "" : "(" + roundEndDateTime + ")"}.
+            {noRoundEndDate ? "" : " (" + roundEndDateTime + ")"}.
           </p>
           <p className="text-sm text-gray-400">
             The round will be locked after the round ends, so be sure to make
@@ -1690,7 +1695,7 @@ function RoundApplicationPeriod(props: {
             &nbsp;
           </div>
           <div className="leading-8 font-normal">
-            {props.editMode.canEdit ||
+            {props.editMode.canEdit &&
             !moment(editedRound.roundEndTime).isBefore(new Date()) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
