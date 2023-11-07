@@ -6785,7 +6785,7 @@ packages:
       '@tanstack/react-query': ^4.35.0
     dependencies:
       '@tanstack/query-persist-client-core': 4.35.0
-      '@tanstack/react-query': 4.35.0(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-query': 4.35.0(react@18.2.0)
     dev: false
 
   /@tanstack/react-query@4.35.0(react-dom@18.2.0)(react@18.2.0):
