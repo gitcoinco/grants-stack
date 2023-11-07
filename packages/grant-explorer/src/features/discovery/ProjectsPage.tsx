@@ -104,7 +104,7 @@ const ProjectsPage = () => {
             ? `All projects (${applications.applications.length})`
             : "Loading..."
         }
-        className="flex-wrap"
+        className="flex-wrap pb-12"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4">
           {applications?.applications.map((application) => (
@@ -133,16 +133,18 @@ const ProjectsPage = () => {
                   </CardHeader>
                   <CardContent className="relative">
                     <ProjectLogo
-                      className="border-solid border-2 border-white absolute -top-[20px] "
+                      className="border-solid border-2 border-white absolute -top-[24px] "
                       logoImageCid={application.logoImageCid}
-                      size={40}
+                      size={48}
                     />
                     <div>{application.name}</div>
                     <CardDescription className="min-h-[96px]">
                       <div className="text-sm">{application.summaryText}</div>
                     </CardDescription>
 
-                    <Badge color={"grey"}>{"Round name goes here"}</Badge>
+                    <Badge color={"grey"} rounded="3xl">
+                      {"Round name goes here"}
+                    </Badge>
                   </CardContent>
                 </a>
                 <div className="p-2">

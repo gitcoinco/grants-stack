@@ -73,6 +73,7 @@ const colorMap = {
 const roundedMap = {
   full: "rounded-full",
   lg: "rounded-lg",
+  "3xl": "rounded-3xl",
 } as const;
 
 export const Badge = tw.div<{
