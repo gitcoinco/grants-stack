@@ -1,11 +1,25 @@
 import tw from "tailwind-styled-components";
 
+export function getRoundEndedText(daysLeft: number, isValid?: boolean) {
+  if (!isValid) return "No end time";
+
+  const days = pluralize(["day", "days"]);
+
+  return daysLeft === 0
+    ? "Ends today"
+    : daysLeft > 0
+    ? `${daysLeft} ${days(daysLeft)} left in round`
+    : `Ended ${-daysLeft} ${days(-daysLeft)} ago`;
+}
+
 export const RoundDaysLeft = ({
   daysLeft = 0,
   daysLeftToApply = 0,
   isValidRoundEndTime = true,
 }) => {
   const days = pluralize(["day", "days"]);
+
+  const roundEndText = getRoundEndedText(daysLeft, isValidRoundEndTime);
   return (
     <div className="flex-1">
       {daysLeftToApply > 0 && (
@@ -13,15 +27,7 @@ export const RoundDaysLeft = ({
           {daysLeftToApply} {days(daysLeftToApply)} left to apply
         </DaysLeft>
       )}
-      <DaysLeft data-testid="days-left">
-        {isValidRoundEndTime ? (
-          <span>
-            {daysLeft} {days(daysLeft)} left in round
-          </span>
-        ) : (
-          <span>No end time</span>
-        )}
-      </DaysLeft>
+      <DaysLeft data-testid="days-left">{roundEndText}</DaysLeft>
     </div>
   );
 };

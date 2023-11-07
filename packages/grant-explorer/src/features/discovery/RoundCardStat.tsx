@@ -37,11 +37,7 @@ function RoundCardStat(props: RoundCardStatProps) {
         </Badge>
       </div>
       <div>
-        <img
-          className="w-8"
-          src={CHAINS[chainId]?.logo}
-          alt="Round Chain Logo"
-        />
+        <img className="w-8" src={CHAINS[chainId]?.logo} alt="" />
       </div>
     </div>
   );
