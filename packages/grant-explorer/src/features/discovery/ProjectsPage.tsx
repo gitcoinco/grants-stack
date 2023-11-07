@@ -1,54 +1,16 @@
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
-import { GrantsStackDataClient } from "grants-stack-data-client";
 import useSWRInfinite from "swr/infinite";
-import {
-  Badge,
-  BasicCard,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "../common/styles";
-import { getConfig } from "common/src/config";
-import { explorerRoutes } from "common/src/routes";
-import { createIpfsImageUrl } from "common/src/ipfs";
-import { ProjectBanner } from "../common/ProjectBanner";
 import { useCartStorage } from "../../store";
 // TODO: expose item types from grants-stack-data-client
 import { ApplicationSummary } from "grants-stack-data-client/dist/openapi-search-client/models";
 import { ApplicationStatus, CartProject } from "../api/types";
-import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
-import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
-import { getAddress } from "viem";
-import { useMemo } from "react";
-import { useRandomSeed } from "../../hooks/useRandomSeed";
+import { useMemo, useState } from "react";
 import PlusIcon from "@heroicons/react/20/solid/PlusIcon";
 import { LoadingRing } from "../common/Spinner";
-import { Skeleton, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
-import { argv0 } from "process";
-
-const PAGE_SIZE = 50;
-
-function ProjectLogo(props: {
-  className?: string;
-  imageCid: string;
-  size: number;
-}) {
-  const projectBannerImageUrl = createIpfsImageUrl({
-    cid: props.imageCid,
-    height: props.size * 2,
-  });
-
-  return (
-    <img
-      className={`object-cover rounded-full ${props.className ?? ""}`}
-      style={{ height: props.size, width: props.size }}
-      src={projectBannerImageUrl}
-      alt="Project Banner"
-    />
-  );
-}
+import { useGrantsStackDataClient } from "common/src/grantsStackDataClientContext";
+import { ProjectCard, ProjectCardSkeleton } from "../common/ProjectCard";
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -73,87 +35,13 @@ function createCartProjectFromApplication(
   };
 }
 
-function ProjectCardSkeleton() {
-  return (
-    <div className="bg-white rounded-3xl my-3 overflow-hidden p-4 pb-10">
-      <Skeleton height="110px" />
-      <SkeletonCircle size="48px" mt="-24px" ml="10px" />
-      <SkeletonText mt="3" noOfLines={1} spacing="4" skeletonHeight="7" />
-      <SkeletonText mt="10" noOfLines={4} spacing="4" skeletonHeight="2" />
-    </div>
-  );
-}
-
-function ProjectCard(props: {
-  application: ApplicationSummary;
-  inCart: boolean;
-  addToCart: (app: ApplicationSummary) => void;
-  removeFromCart: (app: ApplicationSummary) => void;
-}) {
-  const { application, inCart, addToCart, removeFromCart } = props;
-
-  return (
-    <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
-      <a
-        target="_blank"
-        href={explorerRoutes.applicationPath(
-          application.chainId,
-          getAddress(application.roundId),
-          application.roundApplicationId
-        )}
-      >
-        <CardHeader className="relative">
-          <ProjectBanner
-            bannerImgCid={application.bannerImageCid}
-            classNameOverride={
-              "bg-black h-[120px] w-full object-cover rounded-t"
-            }
-            resizeHeight={120}
-          />
-        </CardHeader>
-        <CardContent className="relative">
-          {application.logoImageCid !== null && (
-            <ProjectLogo
-              className="border-solid border-2 border-white absolute -top-[24px] "
-              imageCid={application.logoImageCid}
-              size={48}
-            />
-          )}
-          <div className="truncate mt-4">{application.name}</div>
-          <CardDescription className=" min-h-[96px]">
-            <div className="text-sm line-clamp-4">
-              {application.summaryText}
-            </div>
-          </CardDescription>
-
-          <Badge color="grey" rounded="3xl">
-            {"Round name goes here"}
-          </Badge>
-        </CardContent>
-      </a>
-      <div className="p-2">
-        <div className="border-t pt-2 flex justify-end">
-          {inCart ? (
-            <button onClick={() => removeFromCart(application)}>
-              <CheckedCircleIcon className="w-10" />
-            </button>
-          ) : (
-            <button onClick={() => addToCart(application)}>
-              <CartCircleIcon className="w-10" />
-            </button>
-          )}
-        </div>
-      </div>
-    </BasicCard>
-  );
-}
-
 function createCompositeRoundApplicationId(application: ApplicationSummary) {
   return `${application.roundId}-${application.roundApplicationId}`;
 }
 
 const ProjectsPage = () => {
-  const seed = useRandomSeed(window.sessionStorage);
+  const [seed] = useState(() => Math.random());
+  const grantsStackDataClient = useGrantsStackDataClient();
 
   const {
     data: pages,
@@ -163,21 +51,16 @@ const ProjectsPage = () => {
   } = useSWRInfinite(
     (pageIndex) => [pageIndex, seed, "/applications"],
     ([pageIndex]) => {
-      const config = getConfig();
-
-      const grantsStackDataClient = new GrantsStackDataClient({
-        baseUrl: config.grantsStackDataClient.baseUrl,
-        applications: {
-          pagination: {
-            pageSize: PAGE_SIZE,
-          },
-        },
+      grantsStackDataClient.query({
+        type: "applications-paginated",
+        page: 1,
       });
 
       return grantsStackDataClient.query({
         type: "applications-paginated",
         page: pageIndex,
-        shuffle: {
+        order: {
+          type: "random",
           seed,
         },
       });

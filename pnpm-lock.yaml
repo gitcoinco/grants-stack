@@ -339,6 +339,9 @@ importers:
       framer-motion:
         specifier: ^10.12.7
         version: 10.16.4(react@18.2.0)
+      grants-stack-data-client:
+        specifier: github:gitcoinco/grants-stack-data-client
+        version: github.com/gitcoinco/grants-stack-data-client/23587f037d38316e80b1909379887cedc7ac589c(typescript@5.2.2)
       markdown-it:
         specifier: ^13.0.1
         version: 13.0.1
@@ -24195,6 +24198,27 @@ packages:
   github.com/gitcoinco/grants-stack-data-client/164a25bbd7cc28b2ebd65123ad21a324430a6325(typescript@5.2.2):
     resolution: {tarball: https://codeload.github.com/gitcoinco/grants-stack-data-client/tar.gz/164a25bbd7cc28b2ebd65123ad21a324430a6325}
     id: github.com/gitcoinco/grants-stack-data-client/164a25bbd7cc28b2ebd65123ad21a324430a6325
+    name: grants-stack-data-client
+    version: 1.0.0
+    engines: {node: '>=18'}
+    prepare: true
+    requiresBuild: true
+    dependencies:
+      cross-fetch: 4.0.0
+      debug: 4.3.4
+      dotenv-flow: 3.3.0
+      knuth-shuffle-seeded: 1.0.6
+      ts-essentials: 9.4.1(typescript@5.2.2)
+      zod: 3.22.4
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+      - typescript
+    dev: false
+
+  github.com/gitcoinco/grants-stack-data-client/23587f037d38316e80b1909379887cedc7ac589c(typescript@5.2.2):
+    resolution: {tarball: https://codeload.github.com/gitcoinco/grants-stack-data-client/tar.gz/23587f037d38316e80b1909379887cedc7ac589c}
+    id: github.com/gitcoinco/grants-stack-data-client/23587f037d38316e80b1909379887cedc7ac589c
     name: grants-stack-data-client
     version: 1.0.0
     engines: {node: '>=18'}

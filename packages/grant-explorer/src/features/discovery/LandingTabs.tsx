@@ -16,7 +16,7 @@ const tabs: Tab[] = [
   },
   {
     to: "/projects",
-    children: "Explore Projects",
+    children: "Explore projects",
   },
 ];
 
