@@ -80,7 +80,7 @@ const ProjectsPage = () => {
   }
 
   function removeApplicationFromCart(application: ApplicationSummary) {
-    remove(application.roundApplicationId);
+    remove(createGrantApplicationId(application));
   }
 
   const createGrantApplicationId = (application: ApplicationSummary) =>
