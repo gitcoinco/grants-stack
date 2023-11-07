@@ -122,6 +122,26 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [ipfsStep, setIpfsStep] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
 
+  const [noRoundEndDate, setNoRoundEndDate] = useState(false);
+  const [rollingApplications, setRollingApplications] = useState(false);
+  const [editedRollingApplications, setEditedRollingApplications] =
+    useState(false);
+
+  useEffect(() => {
+    setNoRoundEndDate(
+      moment(editedRound?.roundEndTime).isSame(maxDateForUint256)
+    );
+  }, [editedRound?.roundEndTime]);
+
+  useEffect(() => {
+    if (
+      editedRound?.roundEndTime.toDateString() !== "" &&
+      editedRound?.roundStartTime === editedRound?.roundEndTime
+    ) {
+      setRollingApplications(true);
+    }
+  }, [editedRound?.roundStartTime, editedRound?.roundEndTime]);
+
   const ValidationSchema = !isDirectRound(round!)
     ? RoundValidationSchema.shape({
         // Overrides for validation schema that was not included in imported schema.
@@ -445,8 +465,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
         </div>
         <div className="mb-8">
           <p className="text-sm text-gray-400">
-            Changes can be made up until the round ends ({roundEndDateTime}
-            ).
+            Changes can be made up until the round ends
+            {noRoundEndDate ? "" : "(" + roundEndDateTime + ")"}.
           </p>
           <p className="text-sm text-gray-400">
             The round will be locked after the round ends, so be sure to make
@@ -512,6 +532,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   editMode={editMode}
                   editedRound={editedRound as Round}
                   setEditedRound={setEditedRound}
+                  noRoundEndDate={noRoundEndDate}
+                  rollingApplications={rollingApplications}
+                  editedRollingApplications={editedRollingApplications}
+                  setEditedRollingApplications={setEditedRollingApplications}
                   control={control}
                   register={register}
                   errors={errors}
@@ -1176,16 +1200,25 @@ function RoundApplicationPeriod(props: {
   editMode: EditMode;
   editedRound: Round;
   setEditedRound: (round: Round) => void;
+  noRoundEndDate: boolean;
+  rollingApplications: boolean;
+  editedRollingApplications: boolean;
+  setEditedRollingApplications: (editedRollingApplications: boolean) => void;
   control: Control<Round, unknown>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
 }) {
-  const { editedRound } = props;
+  const {
+    editedRound,
+    noRoundEndDate,
+    rollingApplications,
+    editedRollingApplications,
+    setEditedRollingApplications,
+  } = props;
 
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
   const [applicationEndDate, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
-  const [noRoundEndDate, setNoRoundEndDate] = useState(false);
 
   const yesterday = moment().subtract(1, "day");
 
@@ -1209,25 +1242,6 @@ function RoundApplicationPeriod(props: {
   const timeHasPassed = (inputTime: moment.Moment) => {
     return inputTime.isBefore(moment());
   };
-
-  const [rollingApplications, setRollingApplications] = useState(false);
-  const [editedRollingApplications, setEditedRollingApplications] =
-    useState(false);
-
-  useEffect(() => {
-    if (
-      editedRound.roundEndTime.toDateString() !== "" &&
-      editedRound.roundStartTime === editedRound.roundEndTime
-    ) {
-      setRollingApplications(true);
-    }
-  }, [editedRound.roundStartTime, editedRound.roundEndTime]);
-
-  useEffect(() => {
-    setNoRoundEndDate(
-      moment(editedRound.roundEndTime).isSame(maxDateForUint256)
-    );
-  }, [editedRound.roundEndTime]);
 
   return (
     <div className="w-full w-10/12">
