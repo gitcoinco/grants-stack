@@ -1,8 +1,9 @@
+import { getAddress } from "viem";
 import { Skeleton, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
+
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
-
-import { ApplicationSummary } from "grants-stack-data-client/dist/openapi-search-client/models";
+import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import {
   Badge,
   BasicCard,
@@ -10,7 +11,6 @@ import {
   CardDescription,
   CardHeader,
 } from "./styles";
-import { getAddress } from "viem";
 import * as Routes from "common/src/routes";
 import { ProjectBanner } from "./ProjectBanner";
 import { createIpfsImageUrl } from "common/src/ipfs";

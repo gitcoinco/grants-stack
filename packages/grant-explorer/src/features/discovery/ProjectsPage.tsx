@@ -4,12 +4,14 @@ import { LandingSection } from "./LandingSection";
 import useSWRInfinite from "swr/infinite";
 import { useCartStorage } from "../../store";
 // TODO: expose item types from grants-stack-data-client
-import { ApplicationSummary } from "grants-stack-data-client/dist/openapi-search-client/models";
 import { ApplicationStatus, CartProject } from "../api/types";
 import { useMemo, useState } from "react";
 import PlusIcon from "@heroicons/react/20/solid/PlusIcon";
 import { LoadingRing } from "../common/Spinner";
-import { useGrantsStackDataClient } from "common/src/grantsStackDataClientContext";
+import {
+  useGrantsStackDataClient,
+  ApplicationSummary,
+} from "common/src/grantsStackDataClientContext";
 import { ProjectCard, ProjectCardSkeleton } from "../common/ProjectCard";
 
 function createCartProjectFromApplication(
