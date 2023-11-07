@@ -1,7 +1,6 @@
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
-models/ApplicationResponse.ts
 models/ApplicationSummary.ts
 models/ApplicationsResponse.ts
 models/HTTPValidationError.ts

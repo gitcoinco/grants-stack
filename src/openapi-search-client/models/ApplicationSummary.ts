@@ -79,6 +79,18 @@ export interface ApplicationSummary {
      * @memberof ApplicationSummary
      */
     summaryText: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ApplicationSummary
+     */
+    payoutWalletAddress: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ApplicationSummary
+     */
+    createdAtBlock: number;
 }
 
 /**
@@ -96,6 +108,8 @@ export function instanceOfApplicationSummary(value: object): boolean {
     isInstance = isInstance && "logoImageCid" in value;
     isInstance = isInstance && "bannerImageCid" in value;
     isInstance = isInstance && "summaryText" in value;
+    isInstance = isInstance && "payoutWalletAddress" in value;
+    isInstance = isInstance && "createdAtBlock" in value;
 
     return isInstance;
 }
@@ -120,6 +134,8 @@ export function ApplicationSummaryFromJSONTyped(json: any, ignoreDiscriminator: 
         'logoImageCid': json['logoImageCid'],
         'bannerImageCid': json['bannerImageCid'],
         'summaryText': json['summaryText'],
+        'payoutWalletAddress': json['payoutWalletAddress'],
+        'createdAtBlock': json['createdAtBlock'],
     };
 }
 
@@ -142,6 +158,8 @@ export function ApplicationSummaryToJSON(value?: ApplicationSummary | null): any
         'logoImageCid': value.logoImageCid,
         'bannerImageCid': value.bannerImageCid,
         'summaryText': value.summaryText,
+        'payoutWalletAddress': value.payoutWalletAddress,
+        'createdAtBlock': value.createdAtBlock,
     };
 }
 

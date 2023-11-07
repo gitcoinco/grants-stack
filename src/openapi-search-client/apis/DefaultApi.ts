@@ -15,14 +15,11 @@
 
 import * as runtime from '../runtime.js';
 import type {
-  ApplicationResponse,
   ApplicationsResponse,
   HTTPValidationError,
   SearchResponse,
 } from '../models/index.js';
 import {
-    ApplicationResponseFromJSON,
-    ApplicationResponseToJSON,
     ApplicationsResponseFromJSON,
     ApplicationsResponseToJSON,
     HTTPValidationErrorFromJSON,
@@ -30,10 +27,6 @@ import {
     SearchResponseFromJSON,
     SearchResponseToJSON,
 } from '../models/index.js';
-
-export interface GetApplicationApplicationsApplicationRefGetRequest {
-    applicationRef: string;
-}
 
 export interface SearchSearchGetRequest {
     q: string;
@@ -43,36 +36,6 @@ export interface SearchSearchGetRequest {
  * 
  */
 export class DefaultApi extends runtime.BaseAPI {
-
-    /**
-     * Get Application
-     */
-    async getApplicationApplicationsApplicationRefGetRaw(requestParameters: GetApplicationApplicationsApplicationRefGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApplicationResponse>> {
-        if (requestParameters.applicationRef === null || requestParameters.applicationRef === undefined) {
-            throw new runtime.RequiredError('applicationRef','Required parameter requestParameters.applicationRef was null or undefined when calling getApplicationApplicationsApplicationRefGet.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/applications/{application_ref}`.replace(`{${"application_ref"}}`, encodeURIComponent(String(requestParameters.applicationRef))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApplicationResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get Application
-     */
-    async getApplicationApplicationsApplicationRefGet(requestParameters: GetApplicationApplicationsApplicationRefGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApplicationResponse> {
-        const response = await this.getApplicationApplicationsApplicationRefGetRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
 
     /**
      * Get Applications
