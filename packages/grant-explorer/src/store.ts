@@ -51,6 +51,9 @@ export const useCartStorage = create<CartState>()(
     (set, get) => ({
       projects: [],
       add: (project: CartProject) => {
+        // TODO: shouldn't we be checking for the applicationId instead?
+        // this might lead to multiple projects being added because the object
+        // is not exactly the same
         if (get().projects.includes(project)) {
           return;
         }
@@ -58,6 +61,7 @@ export const useCartStorage = create<CartState>()(
           projects: [...get().projects, project],
         });
       },
+      /** @param grantApplicationId - ${roundAddress}-${applicationId} */
       remove: (grantApplicationId: string) => {
         set({
           projects: get().projects.filter(

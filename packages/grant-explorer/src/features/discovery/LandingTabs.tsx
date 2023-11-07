@@ -14,6 +14,10 @@ const tabs: Tab[] = [
     to: "/rounds?orderBy=matchAmount&orderDirection=desc",
     children: "Explore rounds",
   },
+  {
+    to: "/projects",
+    children: "Projects",
+  },
 ];
 
 export default function LandingTabs() {
