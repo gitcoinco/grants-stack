@@ -20,7 +20,7 @@ import { ApplicationStatus, CartProject } from "../api/types";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { getAddress } from "viem";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useRandomSeed } from "../../hooks/useRandomSeed";
 
 function ProjectLogo(props: {
