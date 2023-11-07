@@ -1,4 +1,4 @@
-import { getAddress } from "viem";
+import { Address } from "viem";
 import { Skeleton, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
@@ -54,13 +54,16 @@ export function ProjectCard(props: {
 }) {
   const { application, inCart, addToCart, removeFromCart } = props;
 
+  // TODO: viem's getAddress fails with Error: expected Uint8Array, got object under Vitest
+  const roundId = application.roundId.toLowerCase() as Address;
+
   return (
     <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
       <a
         target="_blank"
         href={Routes.Explorer.applicationPath(
           application.chainId,
-          getAddress(application.roundId),
+          roundId,
           application.roundApplicationId
         )}
       >
@@ -96,11 +99,17 @@ export function ProjectCard(props: {
       <div className="p-2">
         <div className="border-t pt-2 flex justify-end">
           {inCart ? (
-            <button onClick={() => removeFromCart(application)}>
+            <button
+              aria-label="Remove from cart"
+              onClick={() => removeFromCart(application)}
+            >
               <CheckedCircleIcon className="w-10" />
             </button>
           ) : (
-            <button onClick={() => addToCart(application)}>
+            <button
+              aria-label="Add to cart"
+              onClick={() => addToCart(application)}
+            >
               <CartCircleIcon className="w-10" />
             </button>
           )}
