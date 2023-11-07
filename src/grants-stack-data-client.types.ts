@@ -20,7 +20,9 @@ export type DataClientInteraction =
       query: {
         type: "applications-paginated";
         page: number;
-        shuffle?: { seed: number };
+        order?:
+          | { type: "createdAtBlock"; direction: "asc" | "desc" }
+          | { type: "random"; seed: number };
       };
       response: {
         applications: ApplicationSummary[];

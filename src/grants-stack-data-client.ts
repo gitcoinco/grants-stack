@@ -7,6 +7,7 @@ import {
   ExtractResponse,
 } from "./grants-stack-data-client.types.js";
 import {
+  ApplicationSummary,
   DefaultApi as SearchApi,
   Configuration as SearchApiConfiguration,
 } from "./openapi-search-client/index.js";
@@ -72,11 +73,27 @@ export class GrantsStackDataClient {
         const pageStart = q.page * this.pageSize;
         const pageEnd = pageStart + this.pageSize;
 
-        const page = (
-          q.shuffle === undefined
-            ? applicationSummaries
-            : shuffle(applicationSummaries, q.shuffle.seed)
-        ).slice(pageStart, pageEnd);
+        let orderedApplicationSummaries: ApplicationSummary[];
+        if (q.order === undefined) {
+          orderedApplicationSummaries = applicationSummaries;
+        } else if (q.order.type === "random") {
+          orderedApplicationSummaries = shuffle(
+            applicationSummaries,
+            q.order.seed,
+          );
+        } else if (q.order.type === "createdAtBlock") {
+          const { direction: order } = q.order;
+          orderedApplicationSummaries = [...applicationSummaries].sort(
+            (a, b) =>
+              order === "asc"
+                ? a.createdAtBlock - b.createdAtBlock
+                : b.createdAtBlock - a.createdAtBlock,
+          );
+        } else {
+          throw new Error(`Invalid sort parameters.`);
+        }
+
+        const page = orderedApplicationSummaries.slice(pageStart, pageEnd);
 
         return {
           applications: page,
