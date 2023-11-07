@@ -21,6 +21,7 @@ import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { getAddress } from "viem";
 import { useMemo, useState } from "react";
+import { useRandomSeed } from "../../hooks/useRandomSeed";
 
 function ProjectLogo(props: {
   className?: string;
@@ -133,7 +134,7 @@ function createGrantApplicationId(application: ApplicationSummary) {
 }
 
 const ProjectsPage = () => {
-  const [seed] = useState(() => Math.random());
+  const seed = useRandomSeed(window.sessionStorage);
   const { projects, add, remove } = useCartStorage();
 
   const { data: applications, isLoading } = useSWR(
