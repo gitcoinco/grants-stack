@@ -110,7 +110,15 @@ const ProjectsPage = () => {
           {applications?.applications.map((application) => (
             <div key={application.applicationRef}>
               <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
-                <a target="_blank">
+                <a
+                  target="_blank"
+                  // TODO: url helper
+                  href={`/#/round/${
+                    application.chainId
+                  }/${application.roundId.toLowerCase()}/${application.roundId.toLowerCase()}-${
+                    application.roundApplicationId
+                  }`}
+                >
                   <CardHeader
                     className="relative"
                     style={{ backgroundImage: "http://placehold.it/300x300" }}
@@ -135,23 +143,23 @@ const ProjectsPage = () => {
                     </CardDescription>
 
                     <Badge color={"grey"}>{"Round name goes here"}</Badge>
-                    <div className="border-t pt-2 flex justify-end">
-                      {applicationExistsInCart(application) ? (
-                        <button
-                          onClick={() => removeApplicationFromCart(application)}
-                        >
-                          <CheckedCircleIcon className="w-10" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => addApplicationToCart(application)}
-                        >
-                          <CartCircleIcon className="w-10" />
-                        </button>
-                      )}
-                    </div>
                   </CardContent>
                 </a>
+                <div className="p-2">
+                  <div className="border-t pt-2 flex justify-end">
+                    {applicationExistsInCart(application) ? (
+                      <button
+                        onClick={() => removeApplicationFromCart(application)}
+                      >
+                        <CheckedCircleIcon className="w-10" />
+                      </button>
+                    ) : (
+                      <button onClick={() => addApplicationToCart(application)}>
+                        <CartCircleIcon className="w-10" />
+                      </button>
+                    )}
+                  </div>
+                </div>
               </BasicCard>
             </div>
           ))}
