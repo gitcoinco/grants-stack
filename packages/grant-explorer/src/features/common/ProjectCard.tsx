@@ -11,7 +11,7 @@ import {
   CardHeader,
 } from "./styles";
 import { getAddress } from "viem";
-import { explorerRoutes } from "common/src/routes";
+import * as Routes from "common/src/routes";
 import { ProjectBanner } from "./ProjectBanner";
 import { createIpfsImageUrl } from "common/src/ipfs";
 
@@ -58,7 +58,7 @@ export function ProjectCard(props: {
     <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
       <a
         target="_blank"
-        href={explorerRoutes.applicationPath(
+        href={Routes.Explorer.applicationPath(
           application.chainId,
           getAddress(application.roundId),
           application.roundApplicationId
