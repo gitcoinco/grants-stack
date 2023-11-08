@@ -60,7 +60,7 @@ const LandingPage = () => {
       <LandingSection
         title="Rounds ending soon"
         action={
-          <ViewAllLink to={`/rounds?${toQueryString(activeFilter)}`}>
+          <ViewAllLink to={`/rounds?${toQueryString(endingSoonFilter)}`}>
             View all
           </ViewAllLink>
         }
