@@ -6,6 +6,7 @@ import { fetchFromIPFS, useDebugMode } from "./utils";
 import { allChains } from "../../app/chainConfig";
 import { tryParseChainIdToEnum } from "common/src/chains";
 import { isPresent } from "ts-is-present";
+import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
@@ -178,7 +179,15 @@ export function useRounds(
 }
 
 function filterRoundsWithProjects(rounds: RoundOverview[]) {
-  return rounds.filter((round) => round?.projects?.length);
+  /*
+0 projects + application period is still open: show 
+0 projects + application period has closed: hide
+  */
+  const currentTimestamp = createTimestamp();
+  return rounds.filter((round) => {
+    if (round.applicationsEndTime > currentTimestamp) return true;
+    return round?.projects?.length;
+  });
 }
 
 const timestampKeys = [

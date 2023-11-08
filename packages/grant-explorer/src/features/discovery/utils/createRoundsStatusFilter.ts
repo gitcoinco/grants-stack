@@ -1,7 +1,7 @@
 import { TimestampVariables } from "../../api/rounds";
 import { FilterStatus } from "../FilterDropdown";
 
-const createTimestamp = (timestamp = 0) => {
+export const createTimestamp = (timestamp = 0) => {
   const NOW_IN_SECONDS = Date.now() / 1000;
   return Math.floor(NOW_IN_SECONDS + timestamp).toString();
 };
