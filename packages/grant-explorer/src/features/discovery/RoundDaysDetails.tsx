@@ -20,21 +20,43 @@ export function getRoundDaysText({
     : `Ended ${-roundEndsIn} ${days(-roundEndsIn)} ago`;
 }
 
+export function getRoundApplicationDaysText({
+  applicationsStartsIn,
+  applicationsEndsIn,
+}: {
+  applicationsStartsIn?: number;
+  applicationsEndsIn?: number;
+}) {
+  const days = pluralize(["day", "days"]);
+
+  // Hide if application date has passed
+  if (applicationsEndsIn === undefined || applicationsEndsIn < 0) return "";
+
+  if (applicationsEndsIn === 0) return "Last day to apply";
+  if (
+    applicationsStartsIn &&
+    applicationsStartsIn > 0 &&
+    applicationsEndsIn > 0
+  ) {
+    return `Apply in ${applicationsStartsIn} ${days(applicationsStartsIn)}`;
+  }
+  return `${applicationsEndsIn} ${days(applicationsEndsIn)} left to apply`;
+}
+
 export const RoundDaysDetails = ({
   roundStartsIn = 0,
   roundEndsIn = 0,
-  applicationsEndIn = 0,
+  applicationsStartsIn = 0,
+  applicationsEndsIn = 0,
 }) => {
-  const days = pluralize(["day", "days"]);
-
   const startsOrEndsIn = getRoundDaysText({ roundStartsIn, roundEndsIn });
+  const applicationsIn = getRoundApplicationDaysText({
+    applicationsStartsIn,
+    applicationsEndsIn,
+  });
   return (
     <div className="flex-1">
-      {applicationsEndIn > 0 && (
-        <Days data-testid="apply-days-left">
-          {applicationsEndIn} {days(applicationsEndIn)} left to apply
-        </Days>
-      )}
+      <Days data-testid="apply-days-left">{applicationsIn}</Days>
       <Days data-testid="days-left">{startsOrEndsIn}</Days>
     </div>
   );

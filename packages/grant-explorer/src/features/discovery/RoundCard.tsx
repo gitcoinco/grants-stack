@@ -34,14 +34,16 @@ const RoundCard = ({ round }: RoundCardProps) => {
     roundStartTime,
     roundEndTime,
     roundMetaPtr,
+    applicationsStartTime,
     applicationsEndTime,
     token,
   } = round ?? {};
 
   const { data: metadata, isLoading } = useMetadata(roundMetaPtr?.pointer);
-  const roundEndsIn = getDaysLeft(Number(roundEndTime));
-  const roundStartsIn = getDaysLeft(Number(roundStartTime));
-  const applicationsEndIn = getDaysLeft(Number(applicationsEndTime));
+  const roundEndsIn = getDaysLeft(roundEndTime);
+  const roundStartsIn = getDaysLeft(roundStartTime);
+  const applicationsStartsIn = getDaysLeft(applicationsStartTime);
+  const applicationsEndsIn = getDaysLeft(applicationsEndTime);
 
   const approvedApplicationsCount = projects?.length ?? 0;
   return (
@@ -55,7 +57,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
           <RoundBanner roundId={id} />
           <RoundTimeBadge
             roundEndsIn={roundEndsIn}
-            applicationsEndIn={applicationsEndIn}
+            applicationsEndsIn={applicationsEndsIn}
           />
           <CardTitle
             data-testid="round-name"
@@ -82,7 +84,8 @@ const RoundCard = ({ round }: RoundCardProps) => {
             <RoundDaysDetails
               roundStartsIn={roundStartsIn}
               roundEndsIn={roundEndsIn}
-              applicationsEndIn={applicationsEndIn}
+              applicationsStartsIn={applicationsStartsIn}
+              applicationsEndsIn={applicationsEndsIn}
             />
 
             <RoundStrategyBadge strategyName={payoutStrategy?.strategyName} />
