@@ -48,6 +48,12 @@ export interface ApplicationSummary {
      * @type {string}
      * @memberof ApplicationSummary
      */
+    roundName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ApplicationSummary
+     */
     projectId: string;
     /**
      * 
@@ -102,6 +108,7 @@ export function instanceOfApplicationSummary(value: object): boolean {
     isInstance = isInstance && "chainId" in value;
     isInstance = isInstance && "roundApplicationId" in value;
     isInstance = isInstance && "roundId" in value;
+    isInstance = isInstance && "roundName" in value;
     isInstance = isInstance && "projectId" in value;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "websiteUrl" in value;
@@ -128,6 +135,7 @@ export function ApplicationSummaryFromJSONTyped(json: any, ignoreDiscriminator: 
         'chainId': json['chainId'],
         'roundApplicationId': json['roundApplicationId'],
         'roundId': json['roundId'],
+        'roundName': json['roundName'],
         'projectId': json['projectId'],
         'name': json['name'],
         'websiteUrl': json['websiteUrl'],
@@ -152,6 +160,7 @@ export function ApplicationSummaryToJSON(value?: ApplicationSummary | null): any
         'chainId': value.chainId,
         'roundApplicationId': value.roundApplicationId,
         'roundId': value.roundId,
+        'roundName': value.roundName,
         'projectId': value.projectId,
         'name': value.name,
         'websiteUrl': value.websiteUrl,
