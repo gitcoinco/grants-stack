@@ -18,6 +18,8 @@ export function getExplorerPageTitle(filter: FilterProps) {
       return "Rounds taking applications";
     case FilterStatus.finished:
       return "Rounds finished";
+    case FilterStatus.ending_soon:
+      return "Ending soon";
     case "multiple":
       return "Multiple filters";
     default:
