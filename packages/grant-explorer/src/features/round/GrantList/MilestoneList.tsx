@@ -21,10 +21,10 @@ const tabs: Record<number, TTabSet> = {
     name: "Pending",
     filter: (milestone: TMilestone) => !milestone.completed,
   },
-  2: {
-    name: "All",
-    filter: () => true,
-  },
+  // 2: {
+  //   name: "All",
+  //   filter: () => true,
+  // },
 };
 
 export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
@@ -58,8 +58,8 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
     };
   };
 
-  return milestones.length > 0 ? (
-    <Box>
+  return (
+    <Box py={3}>
       <Flex gap={5} alignItems="center">
         <Box>
           <Text mt="-5px" fontWeight="semibold">
@@ -93,13 +93,25 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
           </Tabs>
         </Box>
       </Flex>
-      <Flex>
-        {showing.map((milestone, index) => (
-          <MilestoneItem key={+index} milestone={milestone} />
-        ))}
-      </Flex>
+      <Box pt={10}>
+        {showing.length > 0 ? (
+          <Flex gap={5} flexDir="column">
+            {showing.map((milestone, index) => (
+              <MilestoneItem
+                key={+index}
+                milestone={milestone}
+                index={index + 1}
+              />
+            ))}
+          </Flex>
+        ) : (
+          <Box textAlign="center">
+            <Text fontWeight="semibold">
+              There are no {tabs[selectedTab].name.toLowerCase()} milestones.
+            </Text>
+          </Box>
+        )}
+      </Box>
     </Box>
-  ) : (
-    <>No milestones to show</>
   );
 };

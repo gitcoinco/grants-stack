@@ -22,7 +22,7 @@ export const GrantList: React.FC<GrantListProps> = ({ grants }) => {
         <Text>
           No previous grants are being tracked for this project. If you're the
           owner of this project, visit{" "}
-          <Link color="blue.400" href={gapAppUrl}>
+          <Link color="blue.400" target="_blank" href={gapAppUrl}>
             gap.karmahq.xyz
           </Link>{" "}
           to identify your previous grants and milestones!
