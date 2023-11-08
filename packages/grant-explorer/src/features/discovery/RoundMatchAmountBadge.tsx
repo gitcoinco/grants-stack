@@ -1,4 +1,4 @@
-import { formatUnits, getAddress } from "viem";
+import { formatUnits, getAddress, zeroAddress } from "viem";
 import { Badge } from "../common/styles";
 import { useToken } from "wagmi";
 import { getPayoutToken } from "../api/utils";
@@ -18,7 +18,7 @@ export function RoundMatchAmountBadge({
   const { data } = useToken({
     address: getAddress(token),
     chainId: Number(chainId),
-    enabled: !!token,
+    enabled: Boolean(token && token !== zeroAddress),
   });
 
   const nativePayoutToken = getPayoutToken(token, chainId);
