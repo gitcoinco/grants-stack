@@ -651,7 +651,7 @@ export const getDaysLeft = (fromTimestamp: number) => {
   // This should be fixed with the cleanRoundData function in features/api/rounds.ts
   // Invalid date
   if (fromTimestamp > Number.MAX_SAFE_INTEGER) {
-    return 0;
+    return undefined;
   }
   const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day

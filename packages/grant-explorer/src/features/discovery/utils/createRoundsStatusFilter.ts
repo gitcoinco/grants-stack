@@ -17,7 +17,8 @@ function getStatusFilter(status: string): TimestampVariables {
     case FilterStatus.active:
       return {
         // Round must have started and not ended yet
-        roundStartTime_gt: currentTimestamp,
+        roundStartTime_lt: currentTimestamp,
+        roundEndTime_gt: currentTimestamp,
         roundEndTime_lt: futureTimestamp,
       };
     case FilterStatus.taking_applications:

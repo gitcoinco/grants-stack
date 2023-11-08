@@ -4,12 +4,7 @@ import {
   truncateDescription,
 } from "common";
 import { RoundOverview, useMetadata } from "../api/rounds";
-import {
-  getDaysLeft,
-  getPayoutToken,
-  getRoundType,
-  isInfiniteDate,
-} from "../api/utils";
+import { getDaysLeft, getPayoutToken, getRoundType } from "../api/utils";
 import {
   Badge,
   BasicCard,
@@ -22,7 +17,7 @@ import RoundBanner from "./CardBanner";
 import RoundCardStat from "./RoundCardStat";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
-import { RoundDaysLeft } from "./RoundDaysLeft";
+import { RoundDaysDetails } from "./RoundDaysDetails";
 import { Skeleton, SkeletonText } from "@chakra-ui/react";
 
 type RoundCardProps = {
@@ -36,6 +31,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
     matchAmount,
     projects,
     payoutStrategy,
+    roundStartTime,
     roundEndTime,
     roundMetaPtr,
     applicationsEndTime,
@@ -43,14 +39,9 @@ const RoundCard = ({ round }: RoundCardProps) => {
   } = round ?? {};
 
   const { data: metadata, isLoading } = useMetadata(roundMetaPtr?.pointer);
-  const daysLeft = getDaysLeft(Number(roundEndTime));
-  const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
-
-  // Can we simplify this? Would `days < 1000` do the same thing?
-  // TODO: I think we can remove this
-  const isValidRoundEndTime = !isInfiniteDate(
-    new Date(parseInt(roundEndTime, 10) * 1000)
-  );
+  const roundEndsIn = getDaysLeft(Number(roundEndTime));
+  const roundStartsIn = getDaysLeft(Number(roundStartTime));
+  const applicationsEndIn = getDaysLeft(Number(applicationsEndTime));
 
   const { data } = useToken({
     address: getAddress(token),
@@ -78,8 +69,8 @@ const RoundCard = ({ round }: RoundCardProps) => {
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
           <RoundTimeBadge
-            daysLeft={daysLeft}
-            daysLeftToApply={daysLeftToApply}
+            roundEndsIn={roundEndsIn}
+            applicationsEndIn={applicationsEndIn}
           />
           <CardTitle
             data-testid="round-name"
@@ -103,10 +94,10 @@ const RoundCard = ({ round }: RoundCardProps) => {
             </SkeletonText>
           </CardDescription>
           <div className="flex gap-2 justfy-between items-center">
-            <RoundDaysLeft
-              daysLeft={daysLeft}
-              daysLeftToApply={daysLeftToApply}
-              isValidRoundEndTime={isValidRoundEndTime}
+            <RoundDaysDetails
+              roundStartsIn={roundStartsIn}
+              roundEndsIn={roundEndsIn}
+              applicationsEndIn={applicationsEndIn}
             />
 
             <RoundStrategyBadge strategyName={payoutStrategy?.strategyName} />
@@ -125,25 +116,25 @@ const RoundCard = ({ round }: RoundCardProps) => {
   );
 };
 const RoundTimeBadge = ({
-  daysLeft,
-  daysLeftToApply,
+  roundEndsIn,
+  applicationsEndIn,
 }: {
-  daysLeft: number;
-  daysLeftToApply: number;
+  roundEndsIn?: number;
+  applicationsEndIn?: number;
 }) => {
   const props = {
     rounded: "full",
     className: "absolute top-3 right-3",
   } as const;
 
-  if (daysLeft < 0) {
+  if (roundEndsIn && roundEndsIn < 0) {
     return (
       <Badge color="orange" {...props}>
         Round ended
       </Badge>
     );
   }
-  if (daysLeftToApply > 0) {
+  if (applicationsEndIn && applicationsEndIn > 0) {
     return (
       <Badge color="green" {...props}>
         Apply!

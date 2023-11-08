@@ -236,6 +236,7 @@ function cleanRoundData(rounds: RoundOverview[]) {
     "applicationsStartTime",
     "applicationsEndTime",
   ] as const;
+
   return rounds.map((round) => ({
     ...round,
     ...timestampKeys.reduce(
@@ -243,8 +244,8 @@ function cleanRoundData(rounds: RoundOverview[]) {
         ...acc,
         [key]:
           round[key].length > 10 // This timestamp is in milliseconds, convert to seconds
-            ? Math.round(Number(round.roundEndTime) / 1000).toString()
-            : round.roundEndTime,
+            ? Math.round(Number(round[key]) / 1000).toString()
+            : round[key],
       }),
       {}
     ),
