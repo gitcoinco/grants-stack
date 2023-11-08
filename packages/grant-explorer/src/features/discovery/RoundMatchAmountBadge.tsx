@@ -1,24 +1,39 @@
-import { formatUnits } from "viem";
+import { formatUnits, getAddress } from "viem";
 import { Badge } from "../common/styles";
+import { useToken } from "wagmi";
+import { getPayoutToken } from "../api/utils";
+import { ChainId } from "common";
 
 type RoundCardStatProps = {
   matchAmount: string;
   token: string;
-  tokenDecimals: number;
+  chainId: ChainId;
 };
 
 export function RoundMatchAmountBadge({
+  chainId,
   matchAmount,
   token,
-  tokenDecimals,
 }: RoundCardStatProps) {
-  const matchAmountNormalized = formatUnits(BigInt(matchAmount), tokenDecimals);
+  const { data } = useToken({
+    address: getAddress(token),
+    chainId: Number(chainId),
+    enabled: !!token,
+  });
+
+  const nativePayoutToken = getPayoutToken(token, chainId);
+
+  const symbol = data?.symbol ?? nativePayoutToken?.name ?? "ETH";
+  const decimals = data?.decimals ?? nativePayoutToken?.decimal ?? 18;
+
+  const matchAmountNormalized = formatUnits(BigInt(matchAmount), decimals);
+
   return (
     <Badge disabled={!matchAmountNormalized}>
       <span className="mr-1" data-testid="match-amount">
         {matchAmountNormalized.toLocaleString()}
       </span>
-      <span data-testid="match-token">{token} match</span>
+      <span data-testid="match-token">{symbol} match</span>
     </Badge>
   );
 }

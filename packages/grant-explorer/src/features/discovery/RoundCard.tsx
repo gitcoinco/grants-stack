@@ -1,16 +1,10 @@
 import {
   renderToPlainText,
   ROUND_PAYOUT_DIRECT,
-  RoundPayoutType,
   truncateDescription,
 } from "common";
 import { RoundOverview, useMetadata } from "../api/rounds";
-import {
-  CHAINS,
-  getDaysLeft,
-  getPayoutToken,
-  getRoundType,
-} from "../api/utils";
+import { CHAINS, getDaysLeft } from "../api/utils";
 import {
   Badge,
   BasicCard,
@@ -20,11 +14,11 @@ import {
   CardTitle,
 } from "../common/styles";
 import RoundBanner from "./CardBanner";
-import { useToken } from "wagmi";
-import { getAddress } from "viem";
 import { RoundDaysDetails } from "./RoundDaysDetails";
 import { Skeleton, SkeletonText } from "@chakra-ui/react";
 import { RoundMatchAmountBadge } from "./RoundMatchAmountBadge";
+import { RoundStrategyBadge } from "./RoundStrategyBadge";
+import { RoundTimeBadge } from "./RoundTimeBadge";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -48,21 +42,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
   const roundEndsIn = getDaysLeft(Number(roundEndTime));
   const roundStartsIn = getDaysLeft(Number(roundStartTime));
   const applicationsEndIn = getDaysLeft(Number(applicationsEndTime));
-
-  const { data } = useToken({
-    address: getAddress(token),
-    chainId: Number(chainId),
-    enabled: !!token,
-  });
-
-  const nativePayoutToken = getPayoutToken(token, chainId);
-  const { decimals = 18 } = data ?? {};
-
-  const tokenData = data ?? {
-    ...nativePayoutToken,
-    symbol: nativePayoutToken?.name ?? "ETH",
-    decimals,
-  };
 
   const approvedApplicationsCount = projects?.length ?? 0;
   return (
@@ -119,9 +98,9 @@ const RoundCard = ({ round }: RoundCardProps) => {
               </Badge>
               {payoutStrategy?.strategyName !== ROUND_PAYOUT_DIRECT && (
                 <RoundMatchAmountBadge
+                  chainId={chainId}
+                  token={token}
                   matchAmount={matchAmount}
-                  token={tokenData?.symbol ?? "..."}
-                  tokenDecimals={tokenData?.decimals}
                 />
               )}
             </div>
@@ -132,48 +111,6 @@ const RoundCard = ({ round }: RoundCardProps) => {
         </CardContent>
       </a>
     </BasicCard>
-  );
-};
-
-const RoundTimeBadge = ({
-  roundEndsIn,
-  applicationsEndIn,
-}: {
-  roundEndsIn?: number;
-  applicationsEndIn?: number;
-}) => {
-  const props = {
-    rounded: "full",
-    className: "absolute top-3 right-3",
-  } as const;
-
-  if (roundEndsIn && roundEndsIn < 0) {
-    return (
-      <Badge color="orange" {...props}>
-        Round ended
-      </Badge>
-    );
-  }
-  if (applicationsEndIn && applicationsEndIn > 0) {
-    return (
-      <Badge color="green" {...props}>
-        Apply!
-      </Badge>
-    );
-  }
-  return null;
-};
-
-const RoundStrategyBadge = ({
-  strategyName,
-}: {
-  strategyName: RoundPayoutType;
-}) => {
-  const color = ({ MERKLE: "blue", DIRECT: "yellow" } as const)[strategyName];
-  return (
-    <Badge color={color} data-testid="round-badge">
-      {getRoundType(strategyName) ?? "Unknown"}
-    </Badge>
   );
 };
 
