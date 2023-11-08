@@ -71,8 +71,6 @@ export const IAM_SERVER =
 const verifier = new PassportVerifier();
 
 export default function ViewProjectDetails() {
-  const { getGrantsFor, grants } = useGap();
-
   const [selectedTab, setSelectedTab] = useState(0);
 
   datadogLogs.logger.info(
@@ -87,6 +85,8 @@ export default function ViewProjectDetails() {
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
   );
+
+  const { grants } = useGap(projectToRender?.projectRegistryId as string);
 
   const currentTime = new Date();
   const isAfterRoundEndDate =
@@ -154,13 +154,6 @@ export default function ViewProjectDetails() {
       content: <GrantList grants={grants} />,
     },
   ];
-
-  useEffect(() => {
-    if (projectToRender?.projectRegistryId) {
-      console.log("projectToRender?.projectRegistryId", projectToRender);
-      getGrantsFor(projectToRender.projectRegistryId);
-    }
-  }, [projectToRender]);
 
   const handleTabChange = (tabIndex: number) => {
     setSelectedTab(tabIndex);

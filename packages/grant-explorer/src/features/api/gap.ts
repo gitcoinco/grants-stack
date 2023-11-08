@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Hex } from "viem";
 
 const indexerUrl = process.env.REACT_APP_KARMA_GAP_INDEXER_URL;
@@ -28,7 +28,7 @@ export interface IGapGrant {
   updates: IGrantStatus[];
 }
 
-export function useGap() {
+export function useGap(projectId?: string) {
   const [grants, setGrants] = useState<IGapGrant[]>([]);
   const [isGapLoading, setIsGapLoading] = useState(false);
 
@@ -67,6 +67,10 @@ export function useGap() {
       setIsGapLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (projectId) getGrantsFor(projectId);
+  }, [projectId]);
 
   return {
     /**
