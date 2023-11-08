@@ -6,9 +6,6 @@ import { fetchFromIPFS, useDebugMode } from "./utils";
 import { allChains } from "../../app/chainConfig";
 import { tryParseChainIdToEnum } from "common/src/chains";
 import { isPresent } from "ts-is-present";
-import { useState } from "react";
-import { FilterStatus } from "../discovery/FilterDropdown";
-import { createRoundsStatusFilter } from "../discovery/utils/createRoundsStatusFilter";
 
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
@@ -189,8 +186,18 @@ function sortRounds(
   { orderBy = "roundEndTime", orderDirection = "asc" }: RoundsVariables
 ) {
   const dir = { asc: 1, desc: -1 };
+  /*
+  Something to note about sorting by matchAmount is that it doesn't
+  take token decimals into consideration. For example USDC has 6 decimals.
+  */
+  const isNumber = ["matchAmount"].includes(orderBy);
+  const compare = isNumber
+    ? (a: RoundOverview, b: RoundOverview) =>
+        BigInt(a[orderBy]) > BigInt(b[orderBy])
+    : (a: RoundOverview, b: RoundOverview) => a[orderBy] > b[orderBy];
+
   return rounds.sort((a, b) =>
-    a[orderBy] > b[orderBy] ? dir[orderDirection] : -dir[orderDirection]
+    compare(a, b) ? dir[orderDirection] : -dir[orderDirection]
   );
 }
 /* 
