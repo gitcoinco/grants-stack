@@ -37,7 +37,7 @@ function ProjectLogo(props: {
 
 export function ProjectCardSkeleton() {
   return (
-    <div className="bg-white rounded-3xl my-3 overflow-hidden p-4 pb-10">
+    <div className="bg-white rounded-3xl overflow-hidden p-4 pb-10">
       <Skeleton height="110px" />
       <SkeletonCircle size="48px" mt="-24px" ml="10px" />
       <SkeletonText mt="3" noOfLines={1} spacing="4" skeletonHeight="7" />
@@ -91,7 +91,7 @@ export function ProjectCard(props: {
             </div>
           </CardDescription>
 
-          <Badge color="grey" rounded="3xl">
+          <Badge color="grey" rounded="3xl" className="hidden">
             {"Round name goes here"}
           </Badge>
         </CardContent>

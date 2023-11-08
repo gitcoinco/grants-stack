@@ -1,18 +1,15 @@
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
-import useSWRInfinite from "swr/infinite";
 import { useCartStorage } from "../../store";
 // TODO: expose item types from grants-stack-data-client
 import { ApplicationStatus, CartProject } from "../api/types";
 import { useMemo, useState } from "react";
 import PlusIcon from "@heroicons/react/20/solid/PlusIcon";
 import { LoadingRing } from "../common/Spinner";
-import {
-  useGrantsStackDataClient,
-  ApplicationSummary,
-} from "common/src/grantsStackDataClientContext";
+import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import { ProjectCard, ProjectCardSkeleton } from "../common/ProjectCard";
+import { useApplications } from "./hooks/useApplications";
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -43,55 +40,14 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
 
 const ProjectsPage = () => {
   const [seed] = useState(() => Math.random());
-  const grantsStackDataClient = useGrantsStackDataClient();
-
   const {
-    data: pages,
+    applications,
+    totalApplicationsCount,
     isLoading,
-    size: currentPage,
-    setSize: setCurrentPage,
-  } = useSWRInfinite(
-    (pageIndex) => [pageIndex, seed, "/applications"],
-    ([pageIndex]) => {
-      grantsStackDataClient.query({
-        type: "applications-paginated",
-        page: 1,
-      });
-
-      return grantsStackDataClient.query({
-        type: "applications-paginated",
-        page: pageIndex,
-        order: {
-          type: "random",
-          seed,
-        },
-      });
-    }
-  );
-
-  const isLoadingMore =
-    isLoading ||
-    (currentPage > 0 &&
-      pages !== undefined &&
-      typeof pages[currentPage - 1] === "undefined");
-
-  const totalApplicationCount =
-    pages === undefined || pages.length === 0
-      ? 0
-      : pages[0].pagination.totalItems;
-
-  const hasMore = useMemo(() => {
-    if (pages === undefined) {
-      return false;
-    }
-
-    const totalItemsLoaded = pages.reduce(
-      (acc, page) => acc + page.applications.length,
-      0
-    );
-
-    return totalItemsLoaded < totalApplicationCount;
-  }, [pages, totalApplicationCount]);
+    isLoadingMore,
+    loadNextPage,
+    hasMorePages,
+  } = useApplications(seed);
 
   const { projects, add, remove } = useCartStorage();
 
@@ -120,25 +76,21 @@ const ProjectsPage = () => {
 
       <LandingSection
         title={
-          isLoading || pages === undefined
-            ? "Loading..."
-            : `All projects (${totalApplicationCount})`
+          isLoading ? "Loading..." : `All projects (${totalApplicationsCount})`
         }
         className="flex-wrap pb-12"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4">
-          {pages?.map((page) =>
-            page.applications.map((application) => (
-              <div key={application.applicationRef}>
-                <ProjectCard
-                  application={application}
-                  inCart={applicationExistsInCart(application)}
-                  addToCart={addApplicationToCart}
-                  removeFromCart={removeApplicationFromCart}
-                />
-              </div>
-            ))
-          )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {applications.map((application) => (
+            <div key={application.applicationRef}>
+              <ProjectCard
+                application={application}
+                inCart={applicationExistsInCart(application)}
+                addToCart={addApplicationToCart}
+                removeFromCart={removeApplicationFromCart}
+              />
+            </div>
+          ))}
           {isLoadingMore && (
             <>
               <ProjectCardSkeleton />
@@ -148,12 +100,12 @@ const ProjectsPage = () => {
               <ProjectCardSkeleton />
             </>
           )}
-          {isLoading === false && hasMore === true && (
+          {isLoading === false && hasMorePages === true && (
             <div className="flex items-center">
               <button
                 className="rounded-3xl border border-white bg-[#F3F3F5] text-md font-medium px-5 py-3 flex items-center"
                 disabled={isLoadingMore}
-                onClick={() => setCurrentPage(currentPage + 1)}
+                onClick={() => loadNextPage()}
               >
                 {isLoadingMore ? (
                   <LoadingRing className="animate-spin w-5 h-5" />
