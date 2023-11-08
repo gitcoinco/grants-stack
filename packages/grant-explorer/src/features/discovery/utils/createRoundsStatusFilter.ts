@@ -43,9 +43,7 @@ function getStatusFilter(status: string): TimestampVariables {
   }
 }
 
-export function createRoundsStatusFilter(status: string): {
-  or: TimestampVariables[];
-} {
+export function createRoundsStatusFilter(status: string): TimestampVariables[] {
   // Default to all filters
   const selectedFilters =
     status ||
@@ -55,14 +53,6 @@ export function createRoundsStatusFilter(status: string): {
       FilterStatus.finished,
     ].join(",");
 
-  // Build a filter object: { or: [activeFilter, takingApplicationsFilter] }
-  return {
-    or: selectedFilters
-      ?.split(",")
-      .filter(Boolean)
-      .reduce(
-        (filters, key) => filters.concat(getStatusFilter(key)),
-        [] as TimestampVariables[]
-      ),
-  };
+  // Build a filter array: [activeFilter, takingApplicationsFilter]
+  return selectedFilters?.split(",").filter(Boolean).map(getStatusFilter);
 }
