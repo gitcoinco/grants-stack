@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode } from "react";
 import { GrantsStackDataClient } from "grants-stack-data-client";
 
-export type { ApplicationSummary } from "grants-stack-data-client/dist/openapi-search-client/models";
+export * from "grants-stack-data-client";
 
 type GrantsStackDataClientContextType = GrantsStackDataClient | null;
 

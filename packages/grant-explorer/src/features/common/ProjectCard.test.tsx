@@ -1,12 +1,13 @@
 import { vi } from "vitest";
 import { render, fireEvent, screen } from "@testing-library/react";
 import { ProjectCard, ProjectCardSkeleton } from "./ProjectCard";
-import { ApplicationSummary } from "grants-stack-data-client/dist/openapi-search-client/models";
+import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import { zeroAddress } from "viem";
 import { ChakraProvider } from "@chakra-ui/react";
 
 describe("ProjectCard", () => {
   const mockApplication: ApplicationSummary = {
+    roundName: "Round Name",
     applicationRef: "1",
     websiteUrl: "https://example.com",
     payoutWalletAddress: zeroAddress,

@@ -18,7 +18,7 @@ function createCartProjectFromApplication(
     chainId: application.chainId,
     grantApplicationId: createCompositeRoundApplicationId(application),
     // TODO: add recipient when it is available
-    recipient: "0x0000000000000000000000",
+    recipient: application.payoutWalletAddress,
     grantApplicationFormAnswers: [],
     status: ApplicationStatus.APPROVED,
     applicationIndex: Number(application.roundApplicationId),

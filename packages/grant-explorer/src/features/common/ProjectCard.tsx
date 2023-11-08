@@ -20,7 +20,7 @@ function ProjectLogo(props: {
   imageCid: string;
   size: number;
 }) {
-  const projectBannerImageUrl = createIpfsImageUrl({
+  const projectLogoImageUrl = createIpfsImageUrl({
     cid: props.imageCid,
     height: props.size * 2,
   });
@@ -29,7 +29,7 @@ function ProjectLogo(props: {
     <img
       className={`object-cover rounded-full ${props.className ?? ""}`}
       style={{ height: props.size, width: props.size }}
-      src={projectBannerImageUrl}
+      src={projectLogoImageUrl}
       alt="Project Banner"
     />
   );
@@ -91,8 +91,8 @@ export function ProjectCard(props: {
             </div>
           </CardDescription>
 
-          <Badge color="grey" rounded="3xl" className="hidden">
-            {"Round name goes here"}
+          <Badge color="grey" rounded="3xl">
+            {application.roundName}
           </Badge>
         </CardContent>
       </a>
