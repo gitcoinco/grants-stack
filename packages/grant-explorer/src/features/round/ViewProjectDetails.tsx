@@ -33,7 +33,7 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { getAddress } from "viem";
-import { Tab, Tabs } from "@chakra-ui/react";
+import { Box, Tab, Tabs } from "@chakra-ui/react";
 import { GrantList } from "./GrantList/GrantList";
 import { useGap } from "../api/gap";
 
@@ -189,7 +189,7 @@ export default function ViewProjectDetails() {
               </div>
               <div className="flex flex-col md:flex-row xl:max-w-[1800px] w-full">
                 <div className="grow">
-                  <div>
+                  <div className="relative">
                     <ProjectTitle
                       projectMetadata={projectToRender.projectMetadata}
                     />
@@ -264,7 +264,7 @@ function ProjectDetailsTabs(props: {
   onChange?: (tabIndex: number) => void;
 }) {
   return (
-    <div className="__project-details-tabs relative">
+    <Box className="__project-details-tabs absolute" bottom={0.5}>
       {props.tabs.length > 0 && (
         <Tabs display="flex" onChange={props.onChange}>
           {props.tabs.map((tab, index) => (
@@ -272,7 +272,7 @@ function ProjectDetailsTabs(props: {
           ))}
         </Tabs>
       )}
-    </div>
+    </Box>
   );
 }
 

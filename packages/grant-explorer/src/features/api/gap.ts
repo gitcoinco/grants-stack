@@ -40,28 +40,29 @@ export function useGap(projectId?: string) {
         `${indexerUrl}/grants/external-id/${projectRegistryId}`
       ).then((res) => res.json());
 
-      const parsedItems = items
-        .filter((grant) => grant.title)
-        .map((grant) => ({
-          ...grant,
-          milestones: grant.milestones
-            .concat(
-              grant.updates.map((update) => ({
-                uid: update.uid,
-                description: update.text,
-                endsAt: update.createdAt,
-                title: update.title,
-                isGrantUpdate: true,
-                completed: update,
-              }))
-            )
-            .sort((a, b) => {
-              const dateToCompareA = a.completed?.createdAt || a.endsAt;
-              const dateToCompareB = b.completed?.createdAt || b.endsAt;
-              return dateToCompareB - dateToCompareA;
-            }),
-        }))
-        .sort((a, b) => b.createdAt - a.createdAt);
+      const parsedItems =
+        items
+          ?.filter((grant) => grant.title)
+          .map((grant) => ({
+            ...grant,
+            milestones: grant.milestones
+              .concat(
+                grant.updates.map((update) => ({
+                  uid: update.uid,
+                  description: update.text,
+                  endsAt: update.createdAt,
+                  title: update.title,
+                  isGrantUpdate: true,
+                  completed: update,
+                }))
+              )
+              .sort((a, b) => {
+                const dateToCompareA = a.completed?.createdAt || a.endsAt;
+                const dateToCompareB = b.completed?.createdAt || b.endsAt;
+                return dateToCompareB - dateToCompareA;
+              }),
+          }))
+          .sort((a, b) => b.createdAt - a.createdAt) || [];
 
       if (Array.isArray(items)) setGrants(parsedItems);
     } catch (e) {
