@@ -1,9 +1,10 @@
+import { ChainId } from "common";
 import { RoundOverview } from "../../api/rounds";
 
 export function createRoundLoadingData(length = 4): RoundOverview[] {
   return Array.from({ length }).map((_, i) => ({
     id: String(i),
-    chainId: "1",
+    chainId: ChainId.MAINNET,
     createdAt: "0",
     roundMetaPtr: {
       protocol: 1,

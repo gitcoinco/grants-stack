@@ -740,7 +740,7 @@ export const groupProjectsInCart = (
 
 export function getPayoutToken(
   token: string,
-  chainId: string
+  chainId: ChainId
 ): VotingToken | undefined {
   if (!ChainId[Number(chainId)]) {
     throw new Error(`Couldn't find chainId: ${chainId}`);

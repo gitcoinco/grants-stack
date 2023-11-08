@@ -1,10 +1,16 @@
 import {
   renderToPlainText,
+  ROUND_PAYOUT_DIRECT,
   RoundPayoutType,
   truncateDescription,
 } from "common";
 import { RoundOverview, useMetadata } from "../api/rounds";
-import { getDaysLeft, getPayoutToken, getRoundType } from "../api/utils";
+import {
+  CHAINS,
+  getDaysLeft,
+  getPayoutToken,
+  getRoundType,
+} from "../api/utils";
 import {
   Badge,
   BasicCard,
@@ -14,11 +20,11 @@ import {
   CardTitle,
 } from "../common/styles";
 import RoundBanner from "./CardBanner";
-import RoundCardStat from "./RoundCardStat";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
 import { RoundDaysDetails } from "./RoundDaysDetails";
 import { Skeleton, SkeletonText } from "@chakra-ui/react";
+import { RoundMatchAmountBadge } from "./RoundMatchAmountBadge";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -103,18 +109,32 @@ const RoundCard = ({ round }: RoundCardProps) => {
             <RoundStrategyBadge strategyName={payoutStrategy?.strategyName} />
           </div>
           <div className="border-t" />
-          <RoundCardStat
-            chainId={Number(chainId)}
-            matchAmount={matchAmount}
-            token={tokenData?.symbol ?? "..."}
-            tokenDecimals={tokenData?.decimals}
-            approvedApplicationsCount={approvedApplicationsCount}
-          />
+          <div className="flex justify-between">
+            <div className="flex gap-2">
+              <Badge
+                disabled={!approvedApplicationsCount}
+                data-testid="approved-applications-count"
+              >
+                {approvedApplicationsCount} projects
+              </Badge>
+              {payoutStrategy?.strategyName !== ROUND_PAYOUT_DIRECT && (
+                <RoundMatchAmountBadge
+                  matchAmount={matchAmount}
+                  token={tokenData?.symbol ?? "..."}
+                  tokenDecimals={tokenData?.decimals}
+                />
+              )}
+            </div>
+            <div>
+              <img className="w-8" src={CHAINS[chainId]?.logo} alt="" />
+            </div>
+          </div>
         </CardContent>
       </a>
     </BasicCard>
   );
 };
+
 const RoundTimeBadge = ({
   roundEndsIn,
   applicationsEndIn,

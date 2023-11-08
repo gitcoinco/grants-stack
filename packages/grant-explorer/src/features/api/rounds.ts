@@ -20,7 +20,7 @@ const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"]; // Meg hel
 
 export type RoundOverview = {
   id: string;
-  chainId: string;
+  chainId: ChainId;
   createdAt: string;
   roundMetaPtr: MetadataPointer;
   applicationMetaPtr: MetadataPointer;
