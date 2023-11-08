@@ -108,13 +108,6 @@ query GetRounds(
 }
 `;
 
-export function useRoundsTakingApplications() {
-  const [takingApplicationsFilter] = useState(
-    createRoundsStatusFilter(FilterStatus.taking_applications)
-  );
-  return useRounds({ where: takingApplicationsFilter });
-}
-
 export function useRounds(
   variables: RoundsVariables,
   chainIds: ChainId[] = getActiveChainIds()
