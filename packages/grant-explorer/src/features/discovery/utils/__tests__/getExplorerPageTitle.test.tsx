@@ -43,7 +43,7 @@ describe("getExplorerPageTitle", () => {
         type: "",
         network: "1",
       })
-    ).toEqual("Rounds on Mainnet");
+    ).toEqual("Rounds on Ethereum");
   });
   it("Returns multiple if many are selected", () => {
     expect(

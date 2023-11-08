@@ -70,9 +70,9 @@ export const filterOptions: FilterOption[] = [
   {
     label: "Network",
     value: "network",
-    children: Object.entries(allChains).map(([value, { name }]) => ({
+    children: allChains.map(({ id, name }) => ({
       label: `Rounds on ${name}`,
-      value,
+      value: String(id),
     })),
   },
 ];
