@@ -39,23 +39,30 @@ function getStatusFilter(status: string): TimestampVariables {
         ),
       };
     default:
-      return {
-        roundStartTime_gt: currentTimestamp,
-        roundEndTime_lt: futureTimestamp,
-      };
+      return {};
   }
 }
-export function createRoundsStatusFilter(
-  status: string = FilterStatus.active
-): TimestampVariables {
-  // Merge the status filters
-  return status
-    ?.split(",")
-    .filter(Boolean)
-    .reduce((filters, key) => {
-      return {
-        ...filters,
-        ...getStatusFilter(key),
-      };
-    }, {});
+
+export function createRoundsStatusFilter(status: string): {
+  or: TimestampVariables[];
+} {
+  // Default to all filters
+  const selectedFilters =
+    status ||
+    [
+      FilterStatus.active,
+      FilterStatus.taking_applications,
+      FilterStatus.finished,
+    ].join(",");
+
+  // Build a filter object: { or: [activeFilter, takingApplicationsFilter] }
+  return {
+    or: selectedFilters
+      ?.split(",")
+      .filter(Boolean)
+      .reduce(
+        (filters, key) => filters.concat(getStatusFilter(key)),
+        [] as TimestampVariables[]
+      ),
+  };
 }
