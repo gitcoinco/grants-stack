@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-import { useActiveRounds, useRoundsEndingSoon } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
+import { useFilterRounds } from "./hooks/useFilterRounds";
+import { toQueryString } from "./RoundsFilter";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -18,8 +19,25 @@ const LandingPage = () => {
     }
   }, [location]);
 
-  const activeRounds = useActiveRounds();
-  const roundsEndingSoon = useRoundsEndingSoon();
+  const activeFilter = {
+    orderBy: "matchAmount",
+    orderDirection: "desc",
+    status: "active",
+    type: "MERKLE",
+    network: "",
+  } as const;
+
+  const endingSoonFilter = {
+    first: 3,
+    orderBy: "roundEndTime",
+    orderDirection: "asc",
+    type: "",
+    network: "",
+    status: "ending_soon",
+  } as const;
+
+  const activeRounds = useFilterRounds(activeFilter);
+  const roundsEndingSoon = useFilterRounds(endingSoonFilter);
 
   return (
     <DefaultLayout showWalletInteraction>
@@ -27,7 +45,7 @@ const LandingPage = () => {
       <LandingSection
         title="Donate now"
         action={
-          <ViewAllLink to="/rounds?status=active&type=MERKLE">
+          <ViewAllLink to={`/rounds?${toQueryString(activeFilter)}`}>
             View all
           </ViewAllLink>
         }
@@ -42,12 +60,16 @@ const LandingPage = () => {
       <LandingSection
         title="Rounds ending soon"
         action={
-          <ViewAllLink to="/rounds?orderBy=roundEndTime&orderDirection=asc&status=ending_soon">
+          <ViewAllLink to={`/rounds?${toQueryString(activeFilter)}`}>
             View all
           </ViewAllLink>
         }
       >
-        <RoundsGrid {...roundsEndingSoon} loadingCount={3} maxCount={3} />
+        <RoundsGrid
+          {...roundsEndingSoon}
+          loadingCount={endingSoonFilter.first}
+          maxCount={endingSoonFilter.first}
+        />
       </LandingSection>
     </DefaultLayout>
   );

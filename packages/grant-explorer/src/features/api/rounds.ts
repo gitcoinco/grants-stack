@@ -115,30 +115,6 @@ export function useRoundsTakingApplications() {
   return useRounds({ where: takingApplicationsFilter });
 }
 
-export function useActiveRounds() {
-  const [activeFilter] = useState(
-    createRoundsStatusFilter(FilterStatus.active)
-  );
-  return useRounds({
-    orderBy: "matchAmount",
-    orderDirection: "desc",
-    where: activeFilter,
-  });
-}
-
-export function useRoundsEndingSoon() {
-  const [endingSoonFilter] = useState(
-    createRoundsStatusFilter(FilterStatus.ending_soon)
-  );
-
-  return useRounds({
-    first: 3,
-    orderBy: "roundEndTime",
-    orderDirection: "asc",
-    where: endingSoonFilter,
-  });
-}
-
 export function useRounds(
   variables: RoundsVariables,
   chainIds: ChainId[] = getActiveChainIds()
@@ -212,7 +188,6 @@ export function useRounds(
 }
 
 function filterRoundsWithProjects(rounds: RoundOverview[]) {
-  return rounds;
   return rounds.filter((round) => round?.projects?.length);
 }
 
