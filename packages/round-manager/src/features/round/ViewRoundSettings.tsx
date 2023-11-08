@@ -670,7 +670,7 @@ function DetailsPage(props: {
                   {...field}
                   {...props.register("roundMetadata.name")}
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
                   disabled={!props.editMode.canEdit}
                   data-testid={"round-name-input"}
                   onChange={(e) => {
@@ -703,7 +703,7 @@ function DetailsPage(props: {
             Program Chain
           </div>
           <div
-            className={`border pl-2 rounded-lg py-0.5 opacity-50 leading-8 font-normal ${
+            className={`border border-gray-400 bg-gray-50 pl-2 rounded-lg py-0.5 opacity-50 leading-8 font-normal ${
               !props.editMode.canEdit ||
               (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
             }`}
@@ -737,7 +737,7 @@ function DetailsPage(props: {
               {...field}
               {...props.register("roundMetadata.eligibility.description")}
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
               disabled={!props.editMode.canEdit}
               onChange={(e) => {
                 field.onChange(e);
@@ -781,7 +781,7 @@ function DetailsPage(props: {
             {!props.editMode.canEdit ? (
               <input
                 type="text"
-                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
                 defaultValue={props.editedRound?.roundMetadata.support?.type}
                 disabled={!props.editMode.canEdit}
               />
@@ -829,7 +829,7 @@ function DetailsPage(props: {
                   {...field}
                   {...props.register("roundMetadata.support.info")}
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
                   disabled={!props.editMode.canEdit}
                   onChange={(e) => {
                     field.onChange(e.target.value);
@@ -901,7 +901,7 @@ function DetailsPage(props: {
                           `roundMetadata.eligibility.requirements.${i}.requirement`
                         )}
                         type="text"
-                        className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                        className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
                         disabled={!props.editMode.canEdit}
                         onChange={(e) => {
                           field.onChange(e);
@@ -1875,7 +1875,7 @@ function Funding(props: {
           >
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
               defaultValue={matchingFundPayoutToken.name}
               disabled
             />
@@ -1911,7 +1911,9 @@ function Funding(props: {
                   step="any"
                   className={classNames(
                     "w-[88%] rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
-                    !props.editMode.canEdit ? "disabled:bg-gray-50" : "bg-red"
+                    !props.editMode.canEdit
+                      ? "disabled:bg-gray-50 disabled:text-gray-400"
+                      : "bg-red"
                   )}
                   disabled={!props.editMode.canEdit}
                   onChange={(e) => {
@@ -2095,7 +2097,7 @@ function Funding(props: {
                     !props.editMode.canEdit ||
                       !props.editedRound?.roundMetadata.quadraticFundingConfig
                         .matchingCap
-                      ? "disabled:bg-gray-50"
+                      ? "disabled:bg-gray-50 disabled:text-gray-400"
                       : "bg-red"
                   )}
                   disabled={
@@ -2286,7 +2288,7 @@ function Funding(props: {
                     !props.editMode.canEdit ||
                       !props.editedRound?.roundMetadata.quadraticFundingConfig
                         .minDonationThreshold
-                      ? "disabled:bg-gray-50"
+                      ? "disabled:bg-gray-50 disabled:text-gray-400"
                       : "bg-red"
                   )}
                   value={field.value}
