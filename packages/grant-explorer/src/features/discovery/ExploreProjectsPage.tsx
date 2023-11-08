@@ -2,7 +2,6 @@ import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import { useCartStorage } from "../../store";
-// TODO: expose item types from grants-stack-data-client
 import { ApplicationStatus, CartProject } from "../api/types";
 import { useMemo, useState } from "react";
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";

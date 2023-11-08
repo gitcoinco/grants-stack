@@ -7,7 +7,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 
 describe("ProjectCard", () => {
   const mockApplication: ApplicationSummary = {
-    roundName: "Round Name",
+    roundName: "This is a round name!",
     applicationRef: "1",
     websiteUrl: "https://example.com",
     payoutWalletAddress: zeroAddress,
@@ -37,11 +37,9 @@ describe("ProjectCard", () => {
       />
     );
 
-    // Assertions for static elements
     expect(screen.getByText("Project Name")).toBeInTheDocument();
     expect(screen.getByText("Project Summary")).toBeInTheDocument();
-    expect(screen.getByText("Round name goes here")).toBeInTheDocument();
-    // Add more assertions as needed
+    expect(screen.getByText("This is a round name!")).toBeInTheDocument();
   });
 
   it("calls addToCart when add button is clicked", () => {
