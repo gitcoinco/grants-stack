@@ -9,7 +9,7 @@ interface GrantListProps {
 
 export const GrantList: React.FC<GrantListProps> = ({ grants }) => {
   return (
-    <Flex gap={4} flexDir="column" py={6} px={3}>
+    <Flex gap={2} flexDir="column" py={6} px={3}>
       {grants.length > 0 ? (
         <>
           <Text className="text-[18px]">Total grants ({grants.length})</Text>
@@ -20,26 +20,28 @@ export const GrantList: React.FC<GrantListProps> = ({ grants }) => {
               url={getGapProjectUrl(grant.projectUID, grant.uid)}
             />
           ))}
+          <Text fontFamily="DM Mono" textAlign="center">
+            Data provided by Karma via{" "}
+            <Link href={gapAppUrl} target="_blank">
+              <Text as="span" className="text-gitcoin-violet-500">
+                gap.karmahq.xyz
+              </Text>
+            </Link>
+            .
+          </Text>
         </>
       ) : (
         <Text>
           No previous grants are being tracked for this project. If you're the
           owner of this project, visit{" "}
-          <Link color="blue.400" target="_blank" href={gapAppUrl}>
-            gap.karmahq.xyz
+          <Link target="_blank" href={gapAppUrl}>
+            <Text as="span" className="text-gitcoin-violet-500">
+              gap.karmahq.xyz
+            </Text>
           </Link>{" "}
-          to identify your previous grants and milestones!
+          to add your project and post updates.
         </Text>
       )}
-      <Text fontFamily="DM Mono" textAlign="center">
-        Data provided by Karma via{" "}
-        <Link href={gapAppUrl} target="_blank">
-          <Text as="span" className="text-gitcoin-violet-500">
-            gap.karmahq.xyz
-          </Text>
-        </Link>
-        .
-      </Text>
     </Flex>
   );
 };

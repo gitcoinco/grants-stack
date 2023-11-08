@@ -55,8 +55,13 @@ export function useGap(projectId?: string) {
                 completed: update,
               }))
             )
-            .sort((a, b) => a.endsAt - b.endsAt),
-        }));
+            .sort((a, b) => {
+              const dateToCompareA = a.completed?.createdAt || a.endsAt;
+              const dateToCompareB = b.completed?.createdAt || b.endsAt;
+              return dateToCompareB - dateToCompareA;
+            }),
+        }))
+        .sort((a, b) => b.createdAt - a.createdAt);
 
       if (Array.isArray(items)) setGrants(parsedItems);
     } catch (e) {
