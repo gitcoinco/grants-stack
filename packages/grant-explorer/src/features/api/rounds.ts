@@ -181,6 +181,13 @@ function filterRoundsWithProjects(rounds: RoundOverview[]) {
   return rounds.filter((round) => round?.projects?.length);
 }
 
+const timestampKeys = [
+  "roundStartTime",
+  "roundEndTime",
+  "applicationsStartTime",
+  "applicationsEndTime",
+] as const;
+
 function sortRounds(
   rounds: RoundOverview[],
   { orderBy = "roundEndTime", orderDirection = "asc" }: RoundsVariables
@@ -190,11 +197,14 @@ function sortRounds(
   Something to note about sorting by matchAmount is that it doesn't
   take token decimals into consideration. For example USDC has 6 decimals.
   */
-  const isNumber = ["matchAmount"].includes(orderBy);
+  const isNumber = ["matchAmount", ...timestampKeys].includes(orderBy);
+
   const compare = isNumber
     ? (a: RoundOverview, b: RoundOverview) =>
-        BigInt(a[orderBy]) > BigInt(b[orderBy])
-    : (a: RoundOverview, b: RoundOverview) => a[orderBy] > b[orderBy];
+        BigInt(a[orderBy] ?? Number.MAX_SAFE_INTEGER) >
+        BigInt(b[orderBy] ?? Number.MAX_SAFE_INTEGER)
+    : (a: RoundOverview, b: RoundOverview) =>
+        a[orderBy] ?? "" > b[orderBy] ?? "";
 
   return rounds.sort((a, b) =>
     compare(a, b) ? dir[orderDirection] : -dir[orderDirection]
@@ -204,21 +214,18 @@ function sortRounds(
 Some timestamps are in milliseconds and others in overflowed values (115792089237316195423570985008687907853269984665640564039457584007913129639935)
 See this query: https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet/graphql?query=query+%7B%0A+++rounds%28first%3A+3%2C%0A++++++orderBy%3A+roundEndTime%2C%0A++++++orderDirection%3A+asc%0A++++%29+%7B%0A++++++id%0A++++++roundEndTime%0A+++++%0A++++%7D%0A%7D
 */
+const OVERFLOWED_TIMESTAMP =
+  "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 function cleanRoundData(rounds: RoundOverview[]) {
-  const timestampKeys = [
-    "roundStartTime",
-    "roundEndTime",
-    "applicationsStartTime",
-    "applicationsEndTime",
-  ] as const;
-
   return rounds.map((round) => ({
     ...round,
     ...timestampKeys.reduce(
       (acc, key) => ({
         ...acc,
         [key]:
-          round[key].length > 10 // This timestamp is in milliseconds, convert to seconds
+          round[key] === OVERFLOWED_TIMESTAMP
+            ? undefined
+            : round[key].length > 10 // This timestamp is in milliseconds, convert to seconds
             ? Math.round(Number(round[key]) / 1000).toString()
             : round[key],
       }),
