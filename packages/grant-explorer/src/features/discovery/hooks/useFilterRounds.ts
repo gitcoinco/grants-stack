@@ -15,15 +15,17 @@ export function useFilterRounds(filter: Filter) {
   const filterChains = filter.network?.split(",").filter(Boolean) ?? [];
   const strategyNames = filter.type?.split(",").filter(Boolean) ?? [];
 
+  const payoutStrategy = strategyNames.length
+    ? strategyNames.map((strategyName) => ({ strategyName }))
+    : undefined;
+
   return useRounds(
     {
       orderBy: filter.orderBy || "createdAt",
       orderDirection: filter.orderDirection || "desc",
       where: {
         ...statusFilter,
-        payoutStrategy_: strategyNames.length
-          ? { strategyName_in: strategyNames }
-          : undefined,
+        payoutStrategy_: payoutStrategy ? { or: payoutStrategy } : undefined,
       },
     },
     // If no network filters have been set, query all chains

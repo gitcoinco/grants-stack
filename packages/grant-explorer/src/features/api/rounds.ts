@@ -46,7 +46,7 @@ export type RoundsVariables = {
     | "applicationsEndTime";
   orderDirection?: "asc" | "desc";
   where?: TimestampVariables & {
-    payoutStrategy_?: { strategyName_in: string[] };
+    payoutStrategy_?: { or: { strategyName: string }[] };
     and?: (TimestampVariables & { or?: TimestampVariables[] })[];
   };
 };
