@@ -43,6 +43,8 @@ export function getConfig(): Config {
       baseUrl: z
         .string()
         .url()
+        // TODO: fix `env.test` in tests to remove this
+        .default("https://gitcoin-search-dev.fly.dev")
         .parse(process.env.REACT_APP_GRANTS_STACK_DATA_CLIENT_BASE_URL),
     },
     pinata: {
