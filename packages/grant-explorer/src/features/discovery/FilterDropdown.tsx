@@ -3,12 +3,12 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Transition, Disclosure } from "@headlessui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
-import { CHAINS } from "../api/utils";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toQueryString } from "./RoundsFilter";
 import { parseFilterParams } from "./hooks/useFilterRounds";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { getFilterLabel } from "./utils/getFilterLabel";
+import { allChains } from "../../app/chainConfig";
 
 export type FilterOption = {
   label: string;
@@ -68,7 +68,7 @@ export const filterOptions: FilterOption[] = [
   {
     label: "Network",
     value: "network",
-    children: Object.entries(CHAINS).map(([value, { name }]) => ({
+    children: Object.entries(allChains).map(([value, { name }]) => ({
       label: `Rounds on ${name}`,
       value,
     })),
