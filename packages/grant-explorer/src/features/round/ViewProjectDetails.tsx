@@ -157,6 +157,7 @@ export default function ViewProjectDetails() {
 
   useEffect(() => {
     if (projectToRender?.projectRegistryId) {
+      console.log("projectToRender?.projectRegistryId", projectToRender);
       getGrantsFor(projectToRender.projectRegistryId);
     }
   }, [projectToRender]);

@@ -749,3 +749,12 @@ export function getPayoutToken(
     (t) => t.chainId === Number(chainId) && t.address === getAddress(token)
   );
 }
+
+export function dateFromMs(ms: number) {
+  const normalized = String(ms).length < 13 ? ms * 1000 : ms;
+  const date = new Date(normalized);
+
+  return Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+  }).format(date);
+}

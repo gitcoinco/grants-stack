@@ -21,10 +21,6 @@ const tabs: Record<number, TTabSet> = {
     name: "Pending",
     filter: (milestone: TMilestone) => !milestone.completed,
   },
-  // 2: {
-  //   name: "All",
-  //   filter: () => true,
-  // },
 };
 
 export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
@@ -52,55 +48,82 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
   const getTabProps = (index: number) => {
     const isSelected = selectedTab === index;
     return {
+      color: "black",
+      border: "none",
+      rounded: "3xl",
+      py: 1,
+      px: 3,
+      _notFirst: { ml: 2 },
+      mt: "-2px",
       fontWeight: isSelected ? "semibold" : "normal",
       bg: isSelected ? "white" : "transparent",
       shadow: isSelected ? "sm" : "none",
     };
   };
 
+  const getBadgeTitle = (milestone: TMilestone) => {
+    const type = milestone.isGrantUpdate ? "Update" : "Milestone";
+
+    let count = 0;
+    for (const item of showing) {
+      count += item.isGrantUpdate === milestone.isGrantUpdate ? 1 : 0;
+      if (milestone.uid === item.uid) break;
+    }
+    return `${type} ${count}`;
+  };
+
+  const milestoneCount = milestones.filter(
+    (milestone) => !milestone.isGrantUpdate
+  ).length;
+
   return (
     <Box py={3}>
-      <Flex gap={5} alignItems="center">
+      <Flex alignItems="center" justifyContent="space-between">
+        <Flex gap={5} alignItems="center">
+          <Box>
+            <Text mt="-5px" fontWeight="semibold">
+              Milestones
+            </Text>
+          </Box>
+          <Box bg="gray.100" borderRadius="3xl" p={1.5}>
+            <Tabs display="flex" onChange={setSelectedTab} borderRadius="2xl">
+              {Object.keys(tabs).map((key, index) => (
+                <Tab key={+key} {...getTabProps(index)}>
+                  <Flex gap={3} alignItems="center">
+                    <Box mt="-2px">{tabs[+key].name}</Box>
+                    <Flex
+                      {...getAmountTextProps(index)}
+                      px={3}
+                      borderRadius="xl"
+                    >
+                      <Text mt="-2px" fontWeight="semibold">
+                        {amounts[index]}
+                      </Text>
+                    </Flex>
+                  </Flex>
+                </Tab>
+              ))}
+            </Tabs>
+          </Box>
+        </Flex>
         <Box>
-          <Text mt="-5px" fontWeight="semibold">
-            Milestones
+          <Text>
+            <small>
+              {milestoneCount} milestones, {milestones.length - milestoneCount}{" "}
+              updates in this grant.
+            </small>
           </Text>
         </Box>
-        <Box bg="gray.100" borderRadius="3xl" p={1.5}>
-          <Tabs display="flex" onChange={setSelectedTab} borderRadius="2xl">
-            {Object.keys(tabs).map((key, index) => (
-              <Tab
-                key={+key}
-                color="black"
-                border="none"
-                rounded="3xl"
-                py={1}
-                px={3}
-                _notFirst={{ ml: 2 }}
-                mt="-2px"
-                {...getTabProps(index)}
-              >
-                <Flex gap={3} alignItems="center">
-                  <Box mt="-2px">{tabs[+key].name}</Box>
-                  <Flex {...getAmountTextProps(index)} px={3} borderRadius="xl">
-                    <Text mt="-2px" fontWeight="semibold">
-                      {amounts[index]}
-                    </Text>
-                  </Flex>
-                </Flex>
-              </Tab>
-            ))}
-          </Tabs>
-        </Box>
       </Flex>
-      <Box pt={10}>
+
+      <Box pt={7}>
         {showing.length > 0 ? (
           <Flex gap={5} flexDir="column">
             {showing.map((milestone, index) => (
               <MilestoneItem
                 key={+index}
                 milestone={milestone}
-                index={index + 1}
+                badgeTitle={getBadgeTitle(milestone)}
               />
             ))}
           </Flex>

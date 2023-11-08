@@ -1,40 +1,58 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Divider, Flex, Text } from "@chakra-ui/react";
 import { IGapGrant } from "../../api/gap";
 import FlagIcon from "../../../assets/icons/milestone-flag.svg";
 import { renderToHTML } from "common";
+import { MilestoneUpdate } from "./MilestoneUpdate";
+import { MilestoneBadge } from "./MilestoneBadge";
+import { dateFromMs } from "../../api/utils";
+import { useMemo } from "react";
 
 export type TMilestone = IGapGrant["milestones"][0];
 interface MilestoneItemProps {
   milestone: TMilestone;
-  index: number;
+  badgeTitle: string;
 }
 
 export const MilestoneItem: React.FC<MilestoneItemProps> = ({
   milestone,
-  index,
+  badgeTitle,
 }) => {
+  const deadlineText = milestone.completed
+    ? `${milestone.isGrantUpdate ? "Posted" : "Completed"} on ${dateFromMs(
+        milestone.completed.createdAt
+      )}`
+    : `Due on ${dateFromMs(milestone.endsAt)}`;
+
+  const statusBadgeProps = useMemo(() => {
+    if (milestone.endsAt > Date.now() / 1000) {
+      return {
+        title: "Past due",
+        classNames: "bg-red-500 text-white",
+      };
+    }
+
+    return milestone.completed
+      ? {
+          title: "Completed",
+          classNames: "bg-gray-100",
+        }
+      : {
+          title: "Pending",
+          classNames: "bg-gray-500 text-white",
+        };
+  }, [milestone]);
+
   return (
-    <Box
-      mr={5}
-      borderWidth={1}
-      borderColor="gray.200"
-      borderRadius="md"
-      py={4}
-      px={2}
-    >
-      <Flex
-        px={3}
-        pb={0.5}
-        mb={5}
-        gap={1.5}
-        width="fit-content"
-        alignItems="center"
-        justifyContent="center"
-        borderRadius="2xl"
-        className="bg-gitcoin-violet-100 text-gitcoin-violet-400"
-      >
-        <Image src={FlagIcon} alt="flag-icon.svg" boxSize={4} mt={1} />
-        <Text>Milestone {index}</Text>
+    <Box borderWidth={1} borderColor="gray.200" borderRadius="md" py={4} px={2}>
+      <Flex justifyContent="space-between" mb={5}>
+        <MilestoneBadge icon={FlagIcon} title={badgeTitle} />
+        <Flex gap={5} alignItems="center">
+          <Text mt="-2px">
+            <small>{deadlineText}</small>
+          </Text>
+
+          {!milestone.isGrantUpdate && <MilestoneBadge {...statusBadgeProps} />}
+        </Flex>
       </Flex>
       <Flex mb={3}>
         <Text fontWeight="bold">{milestone.title}</Text>
@@ -46,6 +64,12 @@ export const MilestoneItem: React.FC<MilestoneItemProps> = ({
           }}
         />
       </Flex>
+      {!!milestone.completed && !milestone.isGrantUpdate && (
+        <>
+          <Divider my={3} />
+          <MilestoneUpdate {...milestone.completed} />
+        </>
+      )}
     </Box>
   );
 };

@@ -9,13 +9,18 @@ interface CompletionBadgeProps {
 export const GrantCompletionBadge: React.FC<CompletionBadgeProps> = ({
   milestones,
 }) => {
+  const filteredMilestones = milestones.filter(
+    (milestone) => !milestone.isGrantUpdate
+  );
+
+  const completedCount = filteredMilestones.reduce(
+    (acc, cur) => (acc += +!!cur.completed),
+    0
+  );
+
   const percent =
-    milestones.length > 0
-      ? Math.floor(
-          (milestones.reduce((acc, cur) => (acc += +!!cur.completed), 0) /
-            milestones.length) *
-            100
-        )
+    filteredMilestones.length > 0
+      ? Math.floor((completedCount / filteredMilestones.length) * 100)
       : 0;
 
   return (

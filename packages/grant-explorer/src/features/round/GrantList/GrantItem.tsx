@@ -1,10 +1,19 @@
-import { Box, Divider, Flex, Link } from "@chakra-ui/react";
+import {
+  Box,
+  Divider,
+  Flex,
+  Link,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { IGapGrant } from "../../api/gap";
-import { CardTitle } from "../../common/styles";
 import GitcoinLogo from "../../../assets/gitcoinlogo-white.svg";
 import { GrantCompletionBadge } from "./CompletionBadge";
 import { renderToHTML } from "common/src/markdown";
 import { MilestoneList } from "./MilestoneList";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ExpandableGrid } from "../../common/ExpandableGrid";
+import { dateFromMs } from "../../api/utils";
 
 interface GrantItemProps {
   grant: IGapGrant;
@@ -12,11 +21,17 @@ interface GrantItemProps {
 }
 
 export const GrantItem: React.FC<GrantItemProps> = ({ grant, url }) => {
-  const dateFromMs = (ms: number) => {
-    const date = new Date(ms);
-    return Intl.DateTimeFormat("en-US", {
-      dateStyle: "medium",
-    }).format(date);
+  const { isOpen, onToggle } = useDisclosure();
+
+  const grantImageProps = {
+    bg: "green.900",
+    borderRadius: "full",
+    height: 8,
+    width: 8,
+    bgImage: GitcoinLogo,
+    bgRepeat: "no-repeat",
+    bgPosition: "45% 40%",
+    bgSize: "50%",
   };
 
   return (
@@ -24,37 +39,46 @@ export const GrantItem: React.FC<GrantItemProps> = ({ grant, url }) => {
       <Box bg="gray.50" borderRadius={4} p={5}>
         <Flex alignItems="center" justifyContent="space-between">
           <Box>
-            <CardTitle className="flex gap-3">
-              <Box
-                bg="green.900"
-                borderRadius="full"
-                height={8}
-                width={8}
-                bgImage={GitcoinLogo}
-                bgRepeat="no-repeat"
-                bgPosition="45% 40%"
-                bgSize="50%"
-              />
-              <Link href={url} target="_blank">
+            <Text fontWeight="semibold" className="flex gap-3">
+              <Box {...grantImageProps} className="__grant-image" />
+              <Link href={url} target="_blank" mt={0.5}>
                 {grant.title}
               </Link>
-            </CardTitle>
+            </Text>
           </Box>
           <Flex justify="flex-end" gap={5}>
             <Box>
               <small>Issued on: {dateFromMs(grant.createdAt)}</small>
             </Box>
             <GrantCompletionBadge milestones={grant.milestones} />
+            <Box>
+              <ChevronDownIcon
+                className={`cursor-pointer h-5 inline ${
+                  isOpen && "rotate-180"
+                } transition-transform`}
+                onClick={onToggle}
+              />
+            </Box>
           </Flex>
         </Flex>
-        <Divider borderWidth={1} my={4} />
-        <Box
-          dangerouslySetInnerHTML={{ __html: renderToHTML(grant.description) }}
-        />
+        <ExpandableGrid isOpen={isOpen}>
+          {!!grant.description && (
+            <Box overflow="hidden">
+              <Divider borderWidth={1} my={4} />
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: renderToHTML(grant.description),
+                }}
+              />
+            </Box>
+          )}
+        </ExpandableGrid>
       </Box>
-      <Box p={4}>
-        <MilestoneList milestones={grant.milestones} />
-      </Box>
+      <ExpandableGrid classNames="p-4" isOpen={isOpen}>
+        <Box overflow="hidden">
+          <MilestoneList milestones={grant.milestones} />
+        </Box>
+      </ExpandableGrid>
     </Box>
   );
 };

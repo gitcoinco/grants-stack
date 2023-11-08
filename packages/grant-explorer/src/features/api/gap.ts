@@ -3,7 +3,8 @@ import { Hex } from "viem";
 
 const indexerUrl = process.env.REACT_APP_KARMA_GAP_INDEXER_URL;
 
-interface Status {
+export interface IGrantStatus {
+  uid: Hex;
   title: string;
   text: string;
   createdAt: number;
@@ -17,12 +18,14 @@ export interface IGapGrant {
   description: string;
   createdAt: number;
   milestones: {
+    uid: Hex;
     title: string;
     description: string;
     endsAt: number;
-    completed?: Status;
+    completed?: IGrantStatus;
+    isGrantUpdate?: boolean;
   }[];
-  updates: Status[];
+  updates: IGrantStatus[];
 }
 
 export function useGap() {
@@ -37,7 +40,25 @@ export function useGap() {
         `${indexerUrl}/grants/external-id/${projectRegistryId}`
       ).then((res) => res.json());
 
-      if (Array.isArray(items)) setGrants(items.filter((grant) => grant.title));
+      const parsedItems = items
+        .filter((grant) => grant.title)
+        .map((grant) => ({
+          ...grant,
+          milestones: grant.milestones
+            .concat(
+              grant.updates.map((update) => ({
+                uid: update.uid,
+                description: update.text,
+                endsAt: update.createdAt,
+                title: update.title,
+                isGrantUpdate: true,
+                completed: update,
+              }))
+            )
+            .sort((a, b) => a.endsAt - b.endsAt),
+        }));
+
+      if (Array.isArray(items)) setGrants(parsedItems);
     } catch (e) {
       console.error(`No grants found for project: ${projectRegistryId}`);
       console.error(e);
@@ -61,9 +82,9 @@ export function useGap() {
   };
 }
 
-export const gapAppUrl = `${process.env.REACT_APP_KARMA_GAP_APP_URL}/project`;
+export const gapAppUrl = `${process.env.REACT_APP_KARMA_GAP_APP_URL}`;
 
 export const getGapProjectUrl = (projectUID: string, grantUID?: string) =>
-  `${gapAppUrl}/${projectUID}/${
+  `${gapAppUrl}/project/${projectUID}/${
     grantUID ? `?tab=grants&grant=${grantUID}` : ""
   }`;
