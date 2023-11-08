@@ -1311,7 +1311,7 @@ function RoundApplicationPeriod(props: {
                                 });
                               }}
                               utc={true}
-                              dateFormat={"DD/MM/YYYY"}
+                              dateFormat={"YYYY/MM/DD"}
                               timeFormat={"HH:mm UTC"}
                               isValidDate={disablePastDate}
                               inputProps={{
@@ -1507,7 +1507,7 @@ function RoundApplicationPeriod(props: {
                                 });
                               }}
                               utc={true}
-                              dateFormat={"DD/MM/YYYY"}
+                              dateFormat={"YYYY/MM/DD"}
                               timeFormat={"HH:mm UTC"}
                               isValidDate={disableBeforeApplicationStartDate}
                               inputProps={{
@@ -1638,7 +1638,7 @@ function RoundApplicationPeriod(props: {
                             });
                           }}
                           utc={true}
-                          dateFormat={"DD/MM/YYYY"}
+                          dateFormat={"YYYY/MM/DD"}
                           timeFormat={"HH:mm UTC"}
                           isValidDate={disablePastDate}
                           inputProps={{
@@ -1757,7 +1757,7 @@ function RoundApplicationPeriod(props: {
                                 });
                           }}
                           utc={true}
-                          dateFormat={"DD/MM/YYYY"}
+                          dateFormat={"YYYY/MM/DD"}
                           timeFormat={"HH:mm UTC"}
                           isValidDate={disableBeforeRoundStartDate}
                           inputProps={{
