@@ -1,8 +1,13 @@
-import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  Chain,
+  connectorsForWallets,
+  getDefaultWallets,
+} from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   injectedWallet,
   metaMaskWallet,
+  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createClient } from "wagmi";
 import { arbitrum, goerli, arbitrumGoerli } from "wagmi/chains";
@@ -151,18 +156,24 @@ export const { chains, provider } = configureChains(
   enabledProviders
 );
 
-// Custom wallet connectors: more can be added by going here:
-// https://www.rainbowkit.com/docs/custom-wallet-list
+/** We perform environment variable verification at buildtime, so all process.env properties are guaranteed to be strings */
+const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID as string;
+
+const { wallets } = getDefaultWallets({
+  appName: "Gitcoin Builder",
+  projectId,
+  chains,
+});
+
 const connectors = connectorsForWallets([
   {
+    ...wallets,
     groupName: "Recommended",
     wallets: [
       injectedWallet({ chains }),
-      coinbaseWallet({ appName: "Builder", chains }),
-      metaMaskWallet({
-        chains,
-        projectId: "0000000000" /* We don't support walletconnect */,
-      }),
+      walletConnectWallet({ chains, projectId }),
+      coinbaseWallet({ appName: "Gitcoin Builder", chains }),
+      metaMaskWallet({ chains, projectId }),
     ],
   },
 ]);
