@@ -60,3 +60,10 @@ export function useGap() {
     isGapLoading,
   };
 }
+
+export const gapAppUrl = `${process.env.REACT_APP_KARMA_GAP_APP_URL}/project`;
+
+export const getGapProjectUrl = (projectUID: string, grantUID?: string) =>
+  `${gapAppUrl}/${projectUID}/${
+    grantUID ? `?tab=grants&grant=${grantUID}` : ""
+  }`;
