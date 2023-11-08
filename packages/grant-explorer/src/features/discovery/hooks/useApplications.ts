@@ -36,6 +36,6 @@ export function useApplications(seed: number) {
     totalApplicationsCount,
     loadNextPage: () => setSize(size + 1),
     error,
-    hasMorePages: data && totalApplicationsCount > applications.length,
+    hasMorePages: totalApplicationsCount > applications.length,
   };
 }

@@ -5,11 +5,9 @@ import { useCartStorage } from "../../store";
 // TODO: expose item types from grants-stack-data-client
 import { ApplicationStatus, CartProject } from "../api/types";
 import { useMemo, useState } from "react";
-import PlusIcon from "@heroicons/react/20/solid/PlusIcon";
-import { LoadingRing } from "../common/Spinner";
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
-import { ProjectCard, ProjectCardSkeleton } from "../common/ProjectCard";
 import { useApplications } from "./hooks/useApplications";
+import PaginatedProjectsList from "./PaginatedProjectsList";
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -38,7 +36,7 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
   return `${application.roundId}-${application.roundApplicationId}`;
 }
 
-const ProjectsPage = () => {
+const ExploreProjectsPage = () => {
   const [seed] = useState(() => Math.random());
   const {
     applications,
@@ -81,47 +79,20 @@ const ProjectsPage = () => {
         className="flex-wrap pb-12"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {applications.map((application) => (
-            <div key={application.applicationRef}>
-              <ProjectCard
-                application={application}
-                inCart={applicationExistsInCart(application)}
-                addToCart={addApplicationToCart}
-                removeFromCart={removeApplicationFromCart}
-              />
-            </div>
-          ))}
-          {isLoadingMore && (
-            <>
-              <ProjectCardSkeleton />
-              <ProjectCardSkeleton />
-              <ProjectCardSkeleton />
-              <ProjectCardSkeleton />
-              <ProjectCardSkeleton />
-            </>
-          )}
-          {isLoading === false && hasMorePages === true && (
-            <div className="flex items-center">
-              <button
-                className="rounded-3xl border border-white bg-[#F3F3F5] text-md font-medium px-5 py-3 flex items-center"
-                disabled={isLoadingMore}
-                onClick={() => loadNextPage()}
-              >
-                {isLoadingMore ? (
-                  <LoadingRing className="animate-spin w-5 h-5" />
-                ) : (
-                  <>
-                    <PlusIcon className="w-5 h-5 mr-1" />
-                    <span>Load more</span>
-                  </>
-                )}
-              </button>
-            </div>
-          )}
+          <PaginatedProjectsList
+            applications={applications}
+            isLoading={isLoading}
+            isLoadingMore={isLoadingMore}
+            hasMorePages={hasMorePages}
+            loadNextPage={loadNextPage}
+            addApplicationToCart={addApplicationToCart}
+            removeApplicationFromCart={removeApplicationFromCart}
+            applicationExistsInCart={applicationExistsInCart}
+          />
         </div>
       </LandingSection>
     </DefaultLayout>
   );
 };
 
-export default ProjectsPage;
+export default ExploreProjectsPage;
