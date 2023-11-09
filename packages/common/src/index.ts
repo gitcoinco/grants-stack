@@ -299,9 +299,9 @@ export const getUTCTime = (date: Date): string => {
 
 export const getUTCDate = (date: Date): string => {
   const utcDate = [
-    padSingleDigitNumberWithZero(date.getUTCDate()),
-    padSingleDigitNumberWithZero(date.getUTCMonth() + 1),
     padSingleDigitNumberWithZero(date.getUTCFullYear()),
+    padSingleDigitNumberWithZero(date.getUTCMonth() + 1),
+    padSingleDigitNumberWithZero(date.getUTCDate()),
   ];
 
   return utcDate.join("/");
