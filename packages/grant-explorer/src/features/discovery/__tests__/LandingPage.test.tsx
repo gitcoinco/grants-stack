@@ -11,6 +11,7 @@ import { RoundMetadata } from "../../api/round";
 import { RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
 import { vi } from "vitest";
+import { collections } from "../../collections/hooks/useCollections";
 
 // Mock the API calls
 
@@ -106,6 +107,16 @@ describe("LandingPage", () => {
         ).toBeInTheDocument();
       });
     });
+  });
+
+  it("Renders Collections", async () => {
+    renderWithContext(<LandingPage />);
+
+    await waitFor(async () =>
+      collections.forEach((collection) =>
+        expect(screen.getByText(collection.name)).toBeInTheDocument()
+      )
+    );
   });
 
   it.skip("filters active rounds based on search query", async () => {
