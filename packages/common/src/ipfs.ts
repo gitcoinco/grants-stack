@@ -1,12 +1,10 @@
-import { getConfig } from "./config";
-
 export function createIpfsImageUrl(args: {
+  baseUrl: string;
   cid: string;
   height?: number;
 }): string {
-  const config = getConfig();
   return new URL(
     `/ipfs/${args.cid}${args.height ? `?img-height=${args.height}` : ""}`,
-    config.ipfs.baseUrl
+    args.baseUrl
   ).toString();
 }

@@ -14,13 +14,19 @@ import {
 import * as Routes from "common/src/routes";
 import { ProjectBanner } from "./ProjectBanner";
 import { createIpfsImageUrl } from "common/src/ipfs";
+import { getConfig } from "common/src/config";
 
 function ProjectLogo(props: {
   className?: string;
   imageCid: string;
   size: number;
 }) {
+  const {
+    ipfs: { baseUrl: ipfsBaseUrl },
+  } = getConfig();
+
   const projectLogoImageUrl = createIpfsImageUrl({
+    baseUrl: ipfsBaseUrl,
     cid: props.imageCid,
     height: props.size * 2,
   });
