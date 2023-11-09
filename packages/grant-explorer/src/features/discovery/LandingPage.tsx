@@ -31,9 +31,11 @@ const LandingPage = () => {
       <LandingSection title="Community collections">
         <CollectionsGrid
           data={collections}
-          loadingCount={6}
-          maxCount={6}
-          itemClassName={(_, i) => `${i % 5 ? "" : "md:col-span-2"}`}
+          loadingCount={8}
+          maxCount={8}
+          itemClassName={(_, i) =>
+            `${[0, 1, 6, 7].includes(i) ? "md:col-span-2" : ""}`
+          }
         />
       </LandingSection>
       <LandingSection
