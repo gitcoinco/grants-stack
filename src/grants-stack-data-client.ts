@@ -81,16 +81,14 @@ export class GrantsStackDataClient {
             applicationSummaries,
             q.order.seed,
           );
-        } else if (q.order.type === "createdAtBlock") {
-          const { direction: order } = q.order;
+        } else {
+          const { direction, type: property } = q.order;
           orderedApplicationSummaries = [...applicationSummaries].sort(
             (a, b) =>
-              order === "asc"
-                ? a.createdAtBlock - b.createdAtBlock
-                : b.createdAtBlock - a.createdAtBlock,
+              direction === "asc"
+                ? a[property] - b[property]
+                : b[property] - a[property],
           );
-        } else {
-          throw new Error(`Invalid sort parameters.`);
         }
 
         const page = orderedApplicationSummaries.slice(pageStart, pageEnd);

@@ -284,5 +284,63 @@ describe("data client", () => {
         ]);
       }
     });
+
+    test("can sort by contributor count", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({
+          applicationSummaries: [
+            {
+              applicationRef: "1:0x123:0",
+              name: "project #0",
+              contributorCount: 100,
+            },
+            {
+              applicationRef: "1:0x123:1",
+              name: "project #1",
+              contributorCount: 1,
+            },
+            {
+              applicationRef: "1:0x123:2",
+              name: "project #2",
+              contributorCount: 50,
+            },
+          ],
+        }),
+      });
+
+      const client = new GrantsStackDataClient({
+        fetch: fetchMock,
+        baseUrl: "https://example.com",
+        applications: { pagination: { pageSize: 2 } },
+      });
+
+      for (let i = 0; i < 10; i++) {
+        const { applications, pagination } = await client.query({
+          type: "applications-paginated",
+          page: 0,
+          order: { type: "contributorCount", direction: "asc" },
+        });
+
+        expect(pagination).toEqual({
+          totalItems: 3,
+          totalPages: 2,
+          currentPage: 0,
+        });
+        expect(applications).toEqual([
+          {
+            applicationRef: "1:0x123:1",
+            name: "project #1",
+            contributorCount: 1,
+          },
+          {
+            applicationRef: "1:0x123:2",
+            name: "project #2",
+            contributorCount: 50,
+          },
+        ]);
+      }
+    });
   });
 });

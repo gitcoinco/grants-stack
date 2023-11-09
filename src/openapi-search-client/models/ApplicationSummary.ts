@@ -97,6 +97,18 @@ export interface ApplicationSummary {
      * @memberof ApplicationSummary
      */
     createdAtBlock: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ApplicationSummary
+     */
+    contributorCount: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ApplicationSummary
+     */
+    contributionsTotalUsd: number;
 }
 
 /**
@@ -117,6 +129,8 @@ export function instanceOfApplicationSummary(value: object): boolean {
     isInstance = isInstance && "summaryText" in value;
     isInstance = isInstance && "payoutWalletAddress" in value;
     isInstance = isInstance && "createdAtBlock" in value;
+    isInstance = isInstance && "contributorCount" in value;
+    isInstance = isInstance && "contributionsTotalUsd" in value;
 
     return isInstance;
 }
@@ -144,6 +158,8 @@ export function ApplicationSummaryFromJSONTyped(json: any, ignoreDiscriminator: 
         'summaryText': json['summaryText'],
         'payoutWalletAddress': json['payoutWalletAddress'],
         'createdAtBlock': json['createdAtBlock'],
+        'contributorCount': json['contributorCount'],
+        'contributionsTotalUsd': json['contributionsTotalUsd'],
     };
 }
 
@@ -169,6 +185,8 @@ export function ApplicationSummaryToJSON(value?: ApplicationSummary | null): any
         'summaryText': value.summaryText,
         'payoutWalletAddress': value.payoutWalletAddress,
         'createdAtBlock': value.createdAtBlock,
+        'contributorCount': value.contributorCount,
+        'contributionsTotalUsd': value.contributionsTotalUsd,
     };
 }
 

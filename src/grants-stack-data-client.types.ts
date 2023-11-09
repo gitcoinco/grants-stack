@@ -21,7 +21,13 @@ export type DataClientInteraction =
         type: "applications-paginated";
         page: number;
         order?:
-          | { type: "createdAtBlock"; direction: "asc" | "desc" }
+          | {
+              type:
+                | "createdAtBlock"
+                | "contributorCount"
+                | "contributionsTotalUsd";
+              direction: "asc" | "desc";
+            }
           | { type: "random"; seed: number };
       };
       response: {
