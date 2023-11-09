@@ -5,7 +5,7 @@ type Filter = SortProps & FilterProps;
 
 export function RoundsFilter() {
   return (
-    <div className="flex gap-4 font-mono text-sm">
+    <div className="md:flex gap-4 font-mono text-sm">
       <div className="flex gap-2 items-center">
         <div>Sort by</div>
         <SortDropdown />
