@@ -87,11 +87,11 @@ export function RoundBanner(props: { roundId: string }) {
   );
 }
 
-export function CollectionBanner({ projects }: { projects: { id: string }[] }) {
+export function CollectionBanner({ projects }: { projects: string[] }) {
   return (
     <div className="overflow-hidden h-[192px]">
       {projects.map((project) => {
-        const stockId = generateRandomNumber(project.id);
+        const stockId = generateRandomNumber(project);
         const stockImage = stockImages[stockId];
         return (
           <div

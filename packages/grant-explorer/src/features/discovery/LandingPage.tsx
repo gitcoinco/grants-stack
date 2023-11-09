@@ -6,6 +6,8 @@ import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
+import { useCollections } from "../collections/hooks/useCollections";
+import { CollectionsGrid } from "../collections/CollectionsGrid";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -21,9 +23,19 @@ const LandingPage = () => {
   const activeRounds = useActiveRounds();
   const roundsEndingSoon = useRoundsEndingSoon();
 
+  const collections = useCollections();
+
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
+      <LandingSection title="Community collections">
+        <CollectionsGrid
+          data={collections}
+          loadingCount={6}
+          maxCount={6}
+          itemClassName={(_, i) => `${i % 5 ? "" : "md:col-span-2"}`}
+        />
+      </LandingSection>
       <LandingSection
         title="Donate now"
         action={

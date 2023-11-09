@@ -1,4 +1,3 @@
-import { ChainId } from "common";
 import {
   Badge,
   BasicCard,
@@ -6,31 +5,27 @@ import {
   CardHeader,
   CardTitle,
 } from "../common/styles";
-import { CollectionBanner } from "./CardBanner";
+import { CollectionBanner } from "../discovery/CardBanner";
+import { Collection } from "./hooks/useCollections";
 
 type CollectionCardProps = {
-  collection: {
-    id: string;
-    chainId: ChainId;
-    name: string;
-    projects: { id: string }[];
-  };
+  collection: Collection;
+  isLoading?: boolean;
 };
 
-const CollectionCard = ({ collection }: CollectionCardProps) => {
-  const { id, chainId, projects } = collection;
+const CollectionCard = ({ collection, isLoading }: CollectionCardProps) => {
+  if (isLoading) {
+    return <div>...</div>;
+  }
+  const { id, name, projects } = collection;
   return (
     <BasicCard className="w-full">
-      <a
-        target="_blank"
-        href={`/#/collection/${chainId}/${id}`}
-        data-testid="round-card"
-      >
+      <a target="_blank" href={`/#/projects?collectionId=${id}`}>
         <CardHeader>
           <CollectionBanner projects={projects} />
         </CardHeader>
         <CardContent>
-          <CardTitle data-testid="collection-name">{collection.name}</CardTitle>
+          <CardTitle>{name}</CardTitle>
           <div className="flex justify-between items-center">
             <div className="text-grey-400 text-sm">
               {projects.length} projects
