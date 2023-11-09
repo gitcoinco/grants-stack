@@ -12,8 +12,11 @@ const categoryTitles = [
   "NFTs",
   "Open source",
   "Climate",
+  "Education",
+  "Innovation",
   "First-time grantees",
   "Grants Stack veterans",
+  "Category name here",
 ];
 // TODO: Define categories
 const categories: Category[] = Array.from({

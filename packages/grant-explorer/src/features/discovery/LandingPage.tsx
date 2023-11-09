@@ -28,7 +28,7 @@ const LandingPage = () => {
     <DefaultLayout showWalletInteraction>
       <LandingHero />
       <LandingSection title="Categories">
-        <CategoriesGrid data={categories} loadingCount={4} maxCount={5} />
+        <CategoriesGrid data={categories} loadingCount={8} maxCount={8} />
       </LandingSection>
       <LandingSection
         title="Donate now"

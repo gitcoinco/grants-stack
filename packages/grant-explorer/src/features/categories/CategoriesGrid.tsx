@@ -1,34 +1,29 @@
 import CategoryCard from "./CategoryCard";
 import { Category } from "./hooks/useCategories";
 
-export function CategoriesGrid({
-  isLoading,
-  data,
-  maxCount, // itemClassName,
-}: {
+type Props = {
   isLoading?: boolean;
   data?: Category[];
   loadingCount: number;
   maxCount?: number;
-  // itemClassName?: (category: Category, index: number) => string;
-}) {
+};
+
+export function CategoriesGrid({ isLoading, data, maxCount }: Props) {
   if (!isLoading && !data?.length) {
     return <CategoriesEmptyState />;
   }
 
   return (
-    <div className="overflow-x-scroll xl:w-[108%]">
-      <div className="inline-flex flex-1 gap-6 ">
-        {data?.slice(0, maxCount).map((category) => (
-          <div
+    <div className="grid grid-cols-4 gap-6 ">
+      {data
+        ?.slice(0, maxCount)
+        .map((category) => (
+          <CategoryCard
             key={category?.id}
-            //  className={itemClassName?.(category, i)}
-            className="flex-1 w-[300px]"
-          >
-            <CategoryCard category={category} isLoading={isLoading} />
-          </div>
+            category={category}
+            isLoading={isLoading}
+          />
         ))}
-      </div>
     </div>
   );
 }
