@@ -10,6 +10,8 @@ type RoundCardStatProps = {
   chainId: ChainId;
 };
 
+const formatter = new Intl.NumberFormat();
+
 export function RoundMatchAmountBadge({
   chainId,
   matchAmount,
@@ -31,7 +33,7 @@ export function RoundMatchAmountBadge({
   return (
     <Badge disabled={!matchAmountNormalized}>
       <span className="mr-1" data-testid="match-amount">
-        {matchAmountNormalized.toLocaleString()}
+        {formatter.format(Number(matchAmountNormalized))}
       </span>
       <span data-testid="match-token">{symbol} match</span>
     </Badge>
