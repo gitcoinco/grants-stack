@@ -11,8 +11,10 @@ import { initSentry } from "./sentry";
 import { initTagmanager } from "./tagmanager";
 import { chains, config } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
-import { GrantsStackDataProvider } from "common/src/grantsStackDataClientContext";
-import { GrantsStackDataClient } from "grants-stack-data-client";
+import {
+  GrantsStackDataProvider,
+  GrantsStackDataClient,
+} from "common/src/grantsStackDataClientContext";
 import { getConfig } from "common/src/config";
 
 import "./index.css";
