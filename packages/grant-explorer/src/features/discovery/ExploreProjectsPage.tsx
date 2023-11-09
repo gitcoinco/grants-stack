@@ -3,7 +3,7 @@ import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import { useCartStorage } from "../../store";
 import { ApplicationStatus, CartProject } from "../api/types";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import { useApplications } from "./hooks/useApplications";
 import PaginatedProjectsList from "./PaginatedProjectsList";
