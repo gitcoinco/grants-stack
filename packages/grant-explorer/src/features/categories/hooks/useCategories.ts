@@ -19,7 +19,7 @@ const categoryTitles = [
   "Category name here",
 ];
 // TODO: Define categories
-const categories: Category[] = Array.from({
+export const categories: Category[] = Array.from({
   length: categoryTitles.length,
 }).map((_, i) => ({
   id: faker.finance.ethereumAddress(),
