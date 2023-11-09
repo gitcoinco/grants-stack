@@ -19,9 +19,6 @@ export function RoundsGrid({
   if (!isLoading && !data?.length) {
     return <RoundsEmptyState />;
   }
-  if (!isLoading && !data?.length) {
-    return <RoundsEmptyState />;
-  }
   return (
     <div className="grid md:grid-cols-3 gap-6">
       {(data ?? createRoundLoadingData(loadingCount))
