@@ -3,10 +3,15 @@ import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import { useCartStorage } from "../../store";
 import { ApplicationStatus, CartProject } from "../api/types";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
-import { useApplications } from "./hooks/useApplications";
+import {
+  ApplicationFetchOptions,
+  useApplications,
+} from "./hooks/useApplications";
 import { PaginatedProjectsList } from "./PaginatedProjectsList";
+import { useDebounce } from "use-debounce";
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -38,6 +43,15 @@ const PROJECTS_SORTING_SEED = Math.random();
 
 export function ExploreProjectsPage(): JSX.Element {
   const seed = PROJECTS_SORTING_SEED;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 400);
+
+  const applicationsFetchOptions: ApplicationFetchOptions =
+    debouncedSearchQuery.length === 0
+      ? { seed }
+      : {
+          searchQuery: debouncedSearchQuery,
+        };
 
   const {
     applications,
@@ -46,7 +60,7 @@ export function ExploreProjectsPage(): JSX.Element {
     isLoadingMore,
     loadNextPage,
     hasMorePages,
-  } = useApplications(seed);
+  } = useApplications(applicationsFetchOptions);
 
   const { projects, add, remove } = useCartStorage();
 
@@ -76,6 +90,22 @@ export function ExploreProjectsPage(): JSX.Element {
       <LandingSection
         title={
           isLoading ? "Loading..." : `All projects (${totalApplicationsCount})`
+        }
+        action={
+          <form className="relative" onSubmit={(e) => e.preventDefault()}>
+            <MagnifyingGlassIcon
+              width={22}
+              height={22}
+              className="text-white absolute left-[14px] top-[10px]"
+            />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
+            />
+          </form>
         }
         className="flex-wrap"
       >

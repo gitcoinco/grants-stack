@@ -2,20 +2,43 @@ import useSWRInfinite from "swr/infinite";
 import { useGrantsStackDataClient } from "common/src/grantsStackDataClientContext";
 import { useMemo } from "react";
 
-export function useApplications(seed: number) {
+export type ApplicationFetchOptions =
+  | {
+      searchQuery: string;
+    }
+  | {
+      seed: number;
+    };
+
+export function useApplications(options: ApplicationFetchOptions) {
   const grantsStackDataClient = useGrantsStackDataClient();
 
   const { data, error, size, setSize } = useSWRInfinite(
-    (pageIndex) => [pageIndex, seed, "/applications"],
-    ([pageIndex]) =>
-      grantsStackDataClient.query({
-        type: "applications-paginated",
-        page: pageIndex,
-        order: {
-          type: "random",
-          seed,
-        },
-      })
+    (pageIndex) => [pageIndex, options, "/applications"],
+    async ([pageIndex]) => {
+      if ("searchQuery" in options) {
+        const result = await grantsStackDataClient.query({
+          type: "applications-search",
+          queryString: options.searchQuery,
+        });
+
+        const applications = result.results.map((r) => r.data);
+
+        return {
+          applications,
+          pagination: { totalItems: applications.length },
+        };
+      } else {
+        return grantsStackDataClient.query({
+          type: "applications-paginated",
+          page: pageIndex,
+          order: {
+            type: "random",
+            seed: options.seed,
+          },
+        });
+      }
+    }
   );
 
   const applications = useMemo(

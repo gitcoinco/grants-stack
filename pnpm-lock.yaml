@@ -604,6 +604,9 @@ importers:
       url:
         specifier: ^0.11.0
         version: 0.11.1
+      use-debounce:
+        specifier: ^10.0.0
+        version: 10.0.0(react@18.2.0)
       util:
         specifier: ^0.12.4
         version: 0.12.5
@@ -22690,6 +22693,15 @@ packages:
       '@types/react': 18.2.21
       react: 18.2.0
       tslib: 2.6.2
+    dev: false
+
+  /use-debounce@10.0.0(react@18.2.0):
+    resolution: {integrity: sha512-XRjvlvCB46bah9IBXVnq/ACP2lxqXyZj0D9hj4K5OzNroMDpTEBg8Anuh1/UfRTRs7pLhQ+RiNxxwZu9+MVl1A==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /use-sidecar@1.1.2(@types/react@18.2.21)(react@18.2.0):
