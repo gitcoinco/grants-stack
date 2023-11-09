@@ -34,8 +34,11 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
   return `${application.roundId}-${application.roundApplicationId}`;
 }
 
+const PROJECTS_SORTING_SEED = Math.random();
+
 const ExploreProjectsPage = () => {
-  const [seed] = useState(() => Math.random());
+  const seed = PROJECTS_SORTING_SEED;
+
   const {
     applications,
     totalApplicationsCount,
