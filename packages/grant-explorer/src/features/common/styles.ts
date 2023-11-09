@@ -87,11 +87,13 @@ export const Badge = tw.div<{
   text-gray-900
   bg-gray-100
   whitespace-nowrap
+  inline-flex
+  max-w-full
+  w-fit
   items-center
   justify-center
   px-2
   py-1.5
-  ${(p) => (p.flex ?? true ? "inline-flex" : "")}
   ${(p) => colorMap[p.color ?? "grey"]}
   ${(p) => roundedMap[p.rounded ?? "lg"]}
   ${(p) => (p.disabled ? "opacity-50" : "")}

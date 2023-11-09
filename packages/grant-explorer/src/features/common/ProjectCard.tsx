@@ -97,13 +97,8 @@ export function ProjectCard(props: {
             </div>
           </CardDescription>
 
-          <Badge
-            color="grey"
-            rounded="3xl"
-            className="truncate max-w-full w-fit"
-            flex={false}
-          >
-            {application.roundName}
+          <Badge color="grey" rounded="3xl">
+            <span className="truncate">{application.roundName}</span>
           </Badge>
         </CardContent>
       </a>
