@@ -106,4 +106,23 @@ export function CollectionBanner({ projects }: { projects: { id: string }[] }) {
   );
 }
 
+export function CategoryBanner({ projects }: { projects: string[] }) {
+  return (
+    <div className="overflow-hidden grid grid-cols-2">
+      {projects.map((project) => {
+        const stockId = generateRandomNumber(project);
+        const stockImage = stockImages[stockId];
+        return (
+          <div
+            className={`bg-grey-100 aspect-square w-full bg-no-repeat bg-cover`}
+            style={{
+              backgroundImage: `url(${stockImage})`,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 export default RoundBanner;
