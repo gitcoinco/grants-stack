@@ -74,7 +74,7 @@ const ExploreProjectsPage = () => {
         title={
           isLoading ? "Loading..." : `All projects (${totalApplicationsCount})`
         }
-        className="flex-wrap pb-8"
+        className="flex-wrap"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <PaginatedProjectsList
