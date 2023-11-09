@@ -7,6 +7,7 @@ import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
 import { useFilterRounds } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
+import { FilterStatus } from "./FilterDropdown";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -22,7 +23,7 @@ const LandingPage = () => {
   const activeFilter = {
     orderBy: "matchAmount",
     orderDirection: "desc",
-    status: "active",
+    status: FilterStatus.active,
     type: "MERKLE",
     network: "",
   } as const;
@@ -33,7 +34,7 @@ const LandingPage = () => {
     orderDirection: "asc",
     type: "",
     network: "",
-    status: "ending_soon",
+    status: FilterStatus.ending_soon,
   } as const;
 
   const activeRounds = useFilterRounds(activeFilter);
@@ -60,7 +61,13 @@ const LandingPage = () => {
       <LandingSection
         title="Rounds ending soon"
         action={
-          <ViewAllLink to={`/rounds?${toQueryString(endingSoonFilter)}`}>
+          <ViewAllLink
+            to={`/rounds?${toQueryString({
+              orderBy: endingSoonFilter.orderBy,
+              orderDirection: endingSoonFilter.orderDirection,
+              status: FilterStatus.active,
+            })}`}
+          >
             View all
           </ViewAllLink>
         }
