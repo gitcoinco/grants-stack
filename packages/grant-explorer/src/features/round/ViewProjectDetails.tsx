@@ -10,7 +10,7 @@ import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
 import { Button } from "common/src/styles";
 import { formatDistanceToNowStrict } from "date-fns";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { useEnsName } from "wagmi";
@@ -34,7 +34,7 @@ import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { getAddress } from "viem";
 import { Box, Tab, Tabs } from "@chakra-ui/react";
-import { GrantList } from "./GrantList/GrantList";
+import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
@@ -129,31 +129,46 @@ export default function ViewProjectDetails() {
     },
   ] as BreadcrumbItem[];
 
-  const projectDetailsTabs = [
-    {
-      name: "Project details",
-      content: (
-        <>
-          <DescriptionTitle />
-          {!!projectToRender && (
-            <>
-              <Detail
-                text={projectToRender.projectMetadata.description}
-                testID="project-metadata"
-              />
-              <ApplicationFormAnswers
-                answers={projectToRender.grantApplicationFormAnswers}
-              />
-            </>
-          )}
-        </>
-      ),
-    },
-    {
-      name: "Grants",
-      content: <GrantList grants={grants} />,
-    },
-  ];
+  const projectDetailsTabs = useMemo(
+    () => [
+      {
+        name: "Project details",
+        content: (
+          <>
+            <DescriptionTitle />
+            {!!projectToRender && (
+              <>
+                <Detail
+                  text={projectToRender.projectMetadata.description}
+                  testID="project-metadata"
+                />
+                <ApplicationFormAnswers
+                  answers={projectToRender.grantApplicationFormAnswers}
+                />
+              </>
+            )}
+          </>
+        ),
+      },
+      {
+        name: "Grants",
+        content: <GrantList grants={grants} />,
+      },
+    ],
+    [grants, projectToRender]
+  );
+
+  useEffect(() => {
+    const tab = window.location.search.split("=")[1];
+    console.debug("tab", tab);
+    if (tab) {
+      setSelectedTab(
+        projectDetailsTabs.findIndex(
+          (t) => t.name.toLowerCase() === tab.toLowerCase()
+        )
+      );
+    }
+  }, [projectDetailsTabs]);
 
   const handleTabChange = (tabIndex: number) => {
     setSelectedTab(tabIndex);
@@ -195,6 +210,7 @@ export default function ViewProjectDetails() {
                     />
                     <AboutProject projectToRender={projectToRender} />
                     <ProjectDetailsTabs
+                      selected={selectedTab}
                       onChange={handleTabChange}
                       tabs={projectDetailsTabs.map((tab) => tab.name)}
                     />
@@ -262,11 +278,16 @@ function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
 function ProjectDetailsTabs(props: {
   tabs: string[];
   onChange?: (tabIndex: number) => void;
+  selected: number;
 }) {
   return (
     <Box className="__project-details-tabs absolute" bottom={0.5}>
       {props.tabs.length > 0 && (
-        <Tabs display="flex" onChange={props.onChange}>
+        <Tabs
+          display="flex"
+          onChange={props.onChange}
+          defaultIndex={props.selected}
+        >
           {props.tabs.map((tab, index) => (
             <Tab key={index}>{tab}</Tab>
           ))}
