@@ -44,14 +44,27 @@ export const MilestoneItem: React.FC<MilestoneItemProps> = ({
 
   return (
     <Box borderWidth={1} borderColor="gray.200" borderRadius="md" py={4} px={2}>
-      <Flex justifyContent="space-between" mb={5}>
-        <MilestoneBadge icon={FlagIcon} title={badgeTitle} />
+      <Flex justifyContent="space-between" mb={5} flexWrap="wrap">
+        <Flex
+          justifyContent="space-between"
+          w={["full", "full", "full", "fit-content"]}
+        >
+          <MilestoneBadge icon={FlagIcon} title={badgeTitle} />
+          <Box className="initial lg:hidden">
+            {!milestone.isGrantUpdate && (
+              <MilestoneBadge {...statusBadgeProps} />
+            )}
+          </Box>
+        </Flex>
         <Flex gap={5} alignItems="center">
           <Text mt="-2px">
             <small>{deadlineText}</small>
           </Text>
-
-          {!milestone.isGrantUpdate && <MilestoneBadge {...statusBadgeProps} />}
+          <Box className="hidden lg:flex">
+            {!milestone.isGrantUpdate && (
+              <MilestoneBadge {...statusBadgeProps} />
+            )}
+          </Box>
         </Flex>
       </Flex>
       <Flex mb={3}>

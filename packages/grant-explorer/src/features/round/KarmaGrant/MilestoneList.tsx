@@ -78,8 +78,17 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
 
   return (
     <Box py={3}>
-      <Flex alignItems="center" justifyContent="space-between">
-        <Flex gap={5} alignItems="center">
+      <Flex
+        alignItems="center"
+        className="justify-center md:justify-between"
+        flexWrap="wrap"
+      >
+        <Flex
+          gap={5}
+          alignItems="center"
+          className="justify-center md:justify-normal"
+          flexWrap="wrap"
+        >
           <Box>
             <Text mt="-5px" fontWeight="semibold">
               Milestones
@@ -88,7 +97,7 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({ milestones }) => {
           <Box bg="gray.100" borderRadius="3xl" p={1.5}>
             <Tabs display="flex" onChange={setSelectedTab} borderRadius="2xl">
               {Object.keys(tabs).map((key, index) => (
-                <Tab key={+key} {...getTabProps(index)}>
+                <Tab key={+key} {...getTabProps(index)} fontSize={["xs", "sm"]}>
                   <Flex gap={3} alignItems="center">
                     <Box mt="-2px">{tabs[+key].name}</Box>
                     <Flex

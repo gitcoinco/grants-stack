@@ -37,29 +37,39 @@ export const GrantItem: React.FC<GrantItemProps> = ({ grant, url }) => {
   return (
     <Box>
       <Box bg="gray.50" borderRadius={4} p={5}>
-        <Flex alignItems="center" justifyContent="space-between">
-          <Box>
-            <Text fontWeight="semibold" className="flex gap-3">
-              <Box {...grantImageProps} className="__grant-image" />
-              <Link href={url} target="_blank" mt={0.5}>
-                {grant.title}
-              </Link>
-            </Text>
-          </Box>
-          <Flex justify="flex-end" gap={5}>
+        <Flex justifyContent="space-between" alignItems="center" gap={4}>
+          <Flex
+            w="full"
+            alignItems="center"
+            justifyContent="space-between"
+            flexWrap="wrap"
+          >
             <Box>
-              <small>Issued on: {dateFromMs(grant.createdAt)}</small>
+              <Text fontWeight="semibold" className="flex gap-3">
+                <Box {...grantImageProps} className="__grant-image" />
+                <Link href={url} target="_blank" mt={0.5}>
+                  {grant.title}
+                </Link>
+              </Text>
             </Box>
-            <GrantCompletionBadge milestones={grant.milestones} />
-            <Box>
-              <ChevronDownIcon
-                className={`cursor-pointer h-5 inline ${
-                  isOpen && "rotate-180"
-                } transition-transform`}
-                onClick={onToggle}
-              />
-            </Box>
+            <Flex justify="flex-end" gap={5}>
+              <Box>
+                <small>
+                  <span className="hidden md:inline">Issued on: </span>
+                  {dateFromMs(grant.createdAt)}
+                </small>
+              </Box>
+              <GrantCompletionBadge milestones={grant.milestones} />
+            </Flex>
           </Flex>
+          <Box>
+            <ChevronDownIcon
+              className={`cursor-pointer h-5 inline ${
+                isOpen && "rotate-180"
+              } transition-transform`}
+              onClick={onToggle}
+            />
+          </Box>
         </Flex>
         <ExpandableGrid isOpen={isOpen}>
           {!!grant.description && (
