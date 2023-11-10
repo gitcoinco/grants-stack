@@ -16,7 +16,7 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
     <BasicCard className="w-full">
       <a target="_blank" href={`/#/projects?categoryId=${id}`}>
         <CardHeader>
-          <CategoryBanner projects={projects} />
+          <CategoryBanner projectIds={projects} />
         </CardHeader>
         <CardContent>
           <div className="font-medium truncate text-xl">{name}</div>

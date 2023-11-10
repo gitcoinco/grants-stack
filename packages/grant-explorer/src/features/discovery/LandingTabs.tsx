@@ -20,6 +20,10 @@ const tabs: Tab[] = [
     })}`,
     children: "Explore rounds",
   },
+  {
+    to: "/projects",
+    children: "Explore projects",
+  },
 ];
 
 export default function LandingTabs() {
