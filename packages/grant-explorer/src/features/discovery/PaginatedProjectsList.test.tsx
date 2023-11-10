@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import PaginatedProjectsList from "./PaginatedProjectsList"; // Adjust the import path as needed
+import { PaginatedProjectsList } from "./PaginatedProjectsList"; // Adjust the import path as needed
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import { zeroAddress } from "viem";
 
@@ -51,8 +51,8 @@ describe("PaginatedProjectsList", () => {
         isLoadingMore={false}
         hasMorePages={true}
         loadNextPage={mockLoadNextPage}
-        addApplicationToCart={mockAddApplicationToCart}
-        removeApplicationFromCart={mockRemoveApplicationFromCart}
+        onAddApplicationToCart={mockAddApplicationToCart}
+        onRemoveApplicationFromCart={mockRemoveApplicationFromCart}
         applicationExistsInCart={mockApplicationExistsInCart}
       />
     );
@@ -72,8 +72,8 @@ describe("PaginatedProjectsList", () => {
         isLoadingMore={false}
         hasMorePages={true}
         loadNextPage={mockLoadNextPage}
-        addApplicationToCart={mockAddApplicationToCart}
-        removeApplicationFromCart={mockRemoveApplicationFromCart}
+        onAddApplicationToCart={mockAddApplicationToCart}
+        onRemoveApplicationFromCart={mockRemoveApplicationFromCart}
         applicationExistsInCart={mockApplicationExistsInCart}
       />
     );

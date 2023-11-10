@@ -31,7 +31,7 @@ import ViewContributionHistory from "./features/contributors/ViewContributionHis
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import { ChakraProvider } from "@chakra-ui/react";
 import ExploreRoundsPage from "./features/discovery/ExploreRoundsPage";
-import ExploreProjectsPage from "./features/discovery/ExploreProjectsPage";
+import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 
 // Initialize sentry
 initSentry();

@@ -30,8 +30,8 @@ describe("ProjectCard", () => {
       <ProjectCard
         application={mockApplication}
         inCart={false}
-        addToCart={addToCart}
-        removeFromCart={removeFromCart}
+        onAddToCart={addToCart}
+        onRemoveFromCart={removeFromCart}
       />
     );
 
@@ -48,8 +48,8 @@ describe("ProjectCard", () => {
       <ProjectCard
         application={mockApplication}
         inCart={false}
-        addToCart={addToCart}
-        removeFromCart={removeFromCart}
+        onAddToCart={addToCart}
+        onRemoveFromCart={removeFromCart}
       />
     );
 
@@ -65,8 +65,8 @@ describe("ProjectCard", () => {
       <ProjectCard
         application={mockApplication}
         inCart={true}
-        addToCart={addToCart}
-        removeFromCart={removeFromCart}
+        onAddToCart={addToCart}
+        onRemoveFromCart={removeFromCart}
       />
     );
 

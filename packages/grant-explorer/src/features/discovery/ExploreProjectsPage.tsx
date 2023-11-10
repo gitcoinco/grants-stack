@@ -6,7 +6,7 @@ import { ApplicationStatus, CartProject } from "../api/types";
 import { useMemo } from "react";
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import { useApplications } from "./hooks/useApplications";
-import PaginatedProjectsList from "./PaginatedProjectsList";
+import { PaginatedProjectsList } from "./PaginatedProjectsList";
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -36,7 +36,7 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
 
 const PROJECTS_SORTING_SEED = Math.random();
 
-const ExploreProjectsPage = () => {
+export function ExploreProjectsPage(): JSX.Element {
   const seed = PROJECTS_SORTING_SEED;
 
   const {
@@ -86,14 +86,12 @@ const ExploreProjectsPage = () => {
             isLoadingMore={isLoadingMore}
             hasMorePages={hasMorePages}
             loadNextPage={loadNextPage}
-            addApplicationToCart={addApplicationToCart}
-            removeApplicationFromCart={removeApplicationFromCart}
+            onAddApplicationToCart={addApplicationToCart}
+            onRemoveApplicationFromCart={removeApplicationFromCart}
             applicationExistsInCart={applicationExistsInCart}
           />
         </div>
       </LandingSection>
     </DefaultLayout>
   );
-};
-
-export default ExploreProjectsPage;
+}

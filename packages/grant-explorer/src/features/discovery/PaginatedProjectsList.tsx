@@ -9,21 +9,21 @@ interface PaginatedProjectsListProps {
   isLoadingMore: boolean;
   loadNextPage: () => void;
   hasMorePages: boolean;
-  addApplicationToCart: (application: ApplicationSummary) => void;
-  removeApplicationFromCart: (application: ApplicationSummary) => void;
+  onAddApplicationToCart: (application: ApplicationSummary) => void;
+  onRemoveApplicationFromCart: (application: ApplicationSummary) => void;
   applicationExistsInCart: (application: ApplicationSummary) => boolean;
 }
 
-const PaginatedProjectsList: React.FC<PaginatedProjectsListProps> = ({
+export function PaginatedProjectsList({
   applications,
   isLoading,
   isLoadingMore,
   loadNextPage,
   hasMorePages,
-  addApplicationToCart,
-  removeApplicationFromCart,
+  onAddApplicationToCart,
+  onRemoveApplicationFromCart,
   applicationExistsInCart,
-}) => {
+}: PaginatedProjectsListProps): JSX.Element {
   return (
     <>
       {applications.map((application) => (
@@ -31,8 +31,8 @@ const PaginatedProjectsList: React.FC<PaginatedProjectsListProps> = ({
           key={application.applicationRef}
           application={application}
           inCart={applicationExistsInCart(application)}
-          addToCart={() => addApplicationToCart(application)}
-          removeFromCart={() => removeApplicationFromCart(application)}
+          onAddToCart={() => onAddApplicationToCart(application)}
+          onRemoveFromCart={() => onRemoveApplicationFromCart(application)}
         />
       ))}
       {isLoadingMore && (
@@ -64,6 +64,4 @@ const PaginatedProjectsList: React.FC<PaginatedProjectsListProps> = ({
       )}
     </>
   );
-};
-
-export default PaginatedProjectsList;
+}

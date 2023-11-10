@@ -11,7 +11,7 @@ import {
   CardDescription,
   CardHeader,
 } from "./styles";
-import * as Routes from "common/src/routes";
+import { applicationPath } from "common/src/routes/explorer";
 import { ProjectBanner } from "./ProjectBanner";
 import { createIpfsImageUrl } from "common/src/ipfs";
 import { getConfig } from "common/src/config";
@@ -20,7 +20,7 @@ function ProjectLogo(props: {
   className?: string;
   imageCid: string;
   size: number;
-}) {
+}): JSX.Element {
   const {
     ipfs: { baseUrl: ipfsBaseUrl },
   } = getConfig();
@@ -41,7 +41,7 @@ function ProjectLogo(props: {
   );
 }
 
-export function ProjectCardSkeleton() {
+export function ProjectCardSkeleton(): JSX.Element {
   return (
     <div className="bg-white rounded-3xl overflow-hidden p-4 pb-10">
       <Skeleton height="110px" />
@@ -55,10 +55,15 @@ export function ProjectCardSkeleton() {
 export function ProjectCard(props: {
   application: ApplicationSummary;
   inCart: boolean;
-  addToCart: (app: ApplicationSummary) => void;
-  removeFromCart: (app: ApplicationSummary) => void;
-}) {
-  const { application, inCart, addToCart, removeFromCart } = props;
+  onAddToCart: (app: ApplicationSummary) => void;
+  onRemoveFromCart: (app: ApplicationSummary) => void;
+}): JSX.Element {
+  const {
+    application,
+    inCart,
+    onAddToCart: addToCart,
+    onRemoveFromCart: removeFromCart,
+  } = props;
 
   // TODO: viem's getAddress fails with Error: expected Uint8Array, got object under Vitest
   const roundId = application.roundId.toLowerCase() as Address;
@@ -67,11 +72,11 @@ export function ProjectCard(props: {
     <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
       <a
         target="_blank"
-        href={Routes.Explorer.applicationPath(
-          application.chainId,
+        href={applicationPath({
+          chainId: application.chainId,
           roundId,
-          application.roundApplicationId
-        )}
+          applicationId: application.roundApplicationId,
+        })}
       >
         <CardHeader className="relative">
           <ProjectBanner
