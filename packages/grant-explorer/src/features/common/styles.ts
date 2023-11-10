@@ -76,12 +76,14 @@ const colorMap = {
 const roundedMap = {
   full: "rounded-full",
   lg: "rounded-lg",
+  "3xl": "rounded-3xl",
 } as const;
 
 export const Badge = tw.div<{
   color?: keyof typeof colorMap;
   rounded?: keyof typeof roundedMap;
   disabled?: boolean;
+  flex?: boolean;
 }>`
   font-mono
   text-xs
@@ -89,6 +91,8 @@ export const Badge = tw.div<{
   bg-gray-100
   whitespace-nowrap
   inline-flex
+  max-w-full
+  w-fit
   items-center
   justify-center
   px-2
