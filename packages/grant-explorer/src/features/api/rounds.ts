@@ -180,7 +180,7 @@ export function useRounds(
   };
 }
 
-function filterRoundsWithProjects(rounds: RoundOverview[]) {
+export function filterRoundsWithProjects(rounds: RoundOverview[]) {
   /*
 0 projects + application period is still open: show 
 0 projects + application period has closed: hide
@@ -199,7 +199,7 @@ const timestampKeys = [
   "applicationsEndTime",
 ] as const;
 
-function sortRounds(
+export function sortRounds(
   rounds: RoundOverview[],
   { orderBy = "roundEndTime", orderDirection = "asc" }: RoundsVariables
 ) {
@@ -227,7 +227,7 @@ See this query: https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-o
 */
 const OVERFLOWED_TIMESTAMP =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
-function cleanRoundData(rounds: RoundOverview[]) {
+export function cleanRoundData(rounds: RoundOverview[]) {
   return rounds.map((round) => ({
     ...round,
     ...timestampKeys.reduce(
@@ -245,7 +245,7 @@ function cleanRoundData(rounds: RoundOverview[]) {
   }));
 }
 
-function filterRounds(
+export function filterRounds(
   cache: Cache<{ roundType: string }>,
   rounds?: RoundOverview[]
 ) {
