@@ -47,7 +47,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
 
   const approvedApplicationsCount = projects?.length ?? 0;
   return (
-    <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
+    <BasicCard className="w-full">
       <a
         target="_blank"
         href={`/#/round/${chainId}/${id}`}

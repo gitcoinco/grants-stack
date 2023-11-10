@@ -8,6 +8,8 @@ import { RoundsGrid } from "./RoundsGrid";
 import { useFilterRounds } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
 import { FilterStatus } from "./FilterDropdown";
+import { CategoriesGrid } from "../categories/CategoriesGrid";
+import { useCategories } from "../categories/hooks/useCategories";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -40,9 +42,13 @@ const LandingPage = () => {
   const activeRounds = useFilterRounds(activeFilter);
   const roundsEndingSoon = useFilterRounds(endingSoonFilter);
 
+  const categories = useCategories();
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
+      <LandingSection title="Categories">
+        <CategoriesGrid data={categories} loadingCount={8} maxCount={8} />
+      </LandingSection>
       <LandingSection
         title="Donate now"
         action={

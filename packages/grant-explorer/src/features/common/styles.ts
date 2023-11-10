@@ -17,6 +17,9 @@ export const BasicCard = tw.div`
   bg-white
   shadow-lg
   overflow-hidden
+  a > {
+    hover:opacity-90 transition hover:shadow-none
+  }
   `;
 
 export const CardHeader = tw.div`
