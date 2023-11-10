@@ -217,7 +217,7 @@ function sortRounds(
     : (a: RoundOverview, b: RoundOverview) =>
         a[orderBy] ?? "" > b[orderBy] ?? "";
 
-  return rounds.sort((a, b) =>
+  return [...rounds].sort((a, b) =>
     compare(a, b) ? dir[orderDirection] : -dir[orderDirection]
   );
 }
