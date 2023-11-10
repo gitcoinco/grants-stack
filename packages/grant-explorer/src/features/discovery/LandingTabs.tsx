@@ -1,5 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { Tab, Tabs } from "../common/styles";
+import { toQueryString } from "./RoundsFilter";
+import { FilterStatus } from "./hooks/useFilterRounds";
 
 type Tab = {
   to: string;
@@ -11,7 +13,11 @@ const tabs: Tab[] = [
     children: "Home",
   },
   {
-    to: "/rounds?orderBy=matchAmount&orderDirection=desc",
+    to: `/rounds?${toQueryString({
+      orderBy: "matchAmount",
+      orderDirection: "desc",
+      status: [FilterStatus.active, FilterStatus.taking_applications].join(","),
+    })}`,
     children: "Explore rounds",
   },
   {

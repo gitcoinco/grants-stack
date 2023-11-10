@@ -1,6 +1,6 @@
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
-import { FilterStatus } from "../../FilterDropdown";
 import { getExplorerPageTitle } from "../getExplorerPageTitle";
+import { FilterStatus } from "../../hooks/useFilterRounds";
 
 describe("getExplorerPageTitle", () => {
   it("Returns All when none are selected", async () => {
@@ -43,7 +43,7 @@ describe("getExplorerPageTitle", () => {
         type: "",
         network: "1",
       })
-    ).toEqual("Rounds on Mainnet");
+    ).toEqual("Rounds on Ethereum");
   });
   it("Returns multiple if many are selected", () => {
     expect(
