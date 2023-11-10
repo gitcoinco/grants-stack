@@ -199,7 +199,7 @@ function Header(props: { projectMetadata: ProjectMetadata }) {
   return (
     <div className={"w-full xl:max-w-[1800px]"}>
       <ProjectBanner
-        projectMetadata={props.projectMetadata}
+        bannerImgCid={props.projectMetadata.bannerImg ?? null}
         classNameOverride="h-32 w-full object-cover lg:h-80 rounded"
         resizeHeight={320}
       />

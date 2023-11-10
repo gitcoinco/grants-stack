@@ -6,6 +6,9 @@ export type Config = {
   ipfs: {
     baseUrl: string;
   };
+  grantsStackDataClient: {
+    baseUrl: string;
+  };
   pinata: {
     jwt: string;
     baseUrl: string;
@@ -30,11 +33,31 @@ export function getConfig(): Config {
       .default("development")
       .parse(process.env.REACT_APP_ENV),
     ipfs: {
-      baseUrl: z.string().url().parse(process.env.REACT_APP_IPFS_BASE_URL),
+      baseUrl: z
+        .string()
+        .url()
+        .default("https://local-ipfs.dev")
+        .parse(process.env.REACT_APP_IPFS_BASE_URL),
+    },
+    grantsStackDataClient: {
+      baseUrl: z
+        .string()
+        .url()
+        // TODO: fix `env.test` in tests to remove this
+        .default("https://gitcoin-search-dev.fly.dev")
+        .parse(process.env.REACT_APP_GRANTS_STACK_DATA_CLIENT_BASE_URL),
     },
     pinata: {
-      jwt: z.string().min(1).parse(process.env.REACT_APP_PINATA_JWT),
-      baseUrl: z.string().url().parse(process.env.REACT_APP_PINATA_BASE_URL),
+      jwt: z
+        .string()
+        .min(1)
+        .default("test-token")
+        .parse(process.env.REACT_APP_PINATA_JWT),
+      baseUrl: z
+        .string()
+        .url()
+        .default("https://local-pinata.dev")
+        .parse(process.env.REACT_APP_PINATA_BASE_URL),
     },
     blockchain: {
       chainsOverride: z
