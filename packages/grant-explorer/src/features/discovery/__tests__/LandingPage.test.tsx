@@ -12,6 +12,7 @@ import { RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
 import { vi } from "vitest";
 import { collections } from "../../collections/hooks/useCollections";
+import { categories } from "../../categories/hooks/useCategories";
 
 // Mock the API calls
 
@@ -115,6 +116,16 @@ describe("LandingPage", () => {
     await waitFor(async () =>
       collections.forEach((collection) =>
         expect(screen.getByText(collection.name)).toBeInTheDocument()
+      )
+    );
+  });
+
+  it("Renders Categories", async () => {
+    renderWithContext(<LandingPage />);
+
+    await waitFor(async () =>
+      categories.forEach((category) =>
+        expect(screen.getByText(category.name)).toBeInTheDocument()
       )
     );
   });
