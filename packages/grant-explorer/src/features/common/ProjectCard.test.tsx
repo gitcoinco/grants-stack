@@ -22,8 +22,6 @@ describe("ProjectCard", () => {
     logoImageCid: "logoCid",
   };
 
-  vi.stubEnv("REACT_APP_GRANTS_STACK_DATA_CLIENT_BASE_URL", "https:/ipfs.io");
-
   it("renders correctly with required props", () => {
     const addToCart = vi.fn();
     const removeFromCart = vi.fn();
