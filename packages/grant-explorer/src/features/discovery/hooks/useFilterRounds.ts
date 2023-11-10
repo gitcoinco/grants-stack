@@ -5,11 +5,29 @@ import {
   getActiveChainIds,
   useRounds,
 } from "../../api/rounds";
-import { FilterProps } from "../FilterDropdown";
+import { FilterProps, FilterStatus } from "../FilterDropdown";
 import { SortProps } from "../SortDropdown";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
+import { ROUND_PAYOUT_MERKLE } from "common";
 
 type Filter = SortProps & FilterProps;
+
+export const activeFilter = {
+  orderBy: "matchAmount",
+  orderDirection: "desc",
+  status: FilterStatus.active,
+  type: ROUND_PAYOUT_MERKLE,
+  network: "",
+} as const;
+
+export const endingSoonFilter = {
+  first: 3,
+  orderBy: "roundEndTime",
+  orderDirection: "asc",
+  type: "",
+  network: "",
+  status: FilterStatus.ending_soon,
+} as const;
 
 export function useFilterRounds(filter: Filter) {
   const chainIds = getActiveChainIds();

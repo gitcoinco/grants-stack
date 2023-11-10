@@ -5,7 +5,11 @@ import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
-import { useFilterRounds } from "./hooks/useFilterRounds";
+import {
+  activeFilter,
+  endingSoonFilter,
+  useFilterRounds,
+} from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
 import { FilterStatus } from "./FilterDropdown";
 import { CategoriesGrid } from "../categories/CategoriesGrid";
@@ -21,23 +25,6 @@ const LandingPage = () => {
       window.location.replace("https://grants.gitcoin.co");
     }
   }, [location]);
-
-  const activeFilter = {
-    orderBy: "matchAmount",
-    orderDirection: "desc",
-    status: FilterStatus.active,
-    type: "MERKLE",
-    network: "",
-  } as const;
-
-  const endingSoonFilter = {
-    first: 3,
-    orderBy: "roundEndTime",
-    orderDirection: "asc",
-    type: "",
-    network: "",
-    status: FilterStatus.ending_soon,
-  } as const;
 
   const activeRounds = useFilterRounds(activeFilter);
   const roundsEndingSoon = useFilterRounds(endingSoonFilter);
