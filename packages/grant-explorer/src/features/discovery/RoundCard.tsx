@@ -94,7 +94,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
           <div className="flex justify-between">
             <div className="flex gap-2">
               <Badge
-                disabled={!approvedApplicationsCount}
+                disabled={approvedApplicationsCount === 0}
                 data-testid="approved-applications-count"
               >
                 {approvedApplicationsCount} projects
