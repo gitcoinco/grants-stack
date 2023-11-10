@@ -36,7 +36,7 @@ const LandingPage = () => {
           data={collections}
           loadingCount={8}
           maxCount={8}
-          itemClassName={(_, i) =>
+          getItemClassName={(_, i) =>
             `${[0, 1, 6, 7].includes(i) ? "md:col-span-2" : ""}`
           }
         />
@@ -56,7 +56,9 @@ const LandingPage = () => {
           {...activeRounds}
           loadingCount={4}
           maxCount={6}
-          itemClassName={(_, i) => `${i % 3 && i % 4 ? "" : "md:col-span-2"}`}
+          getItemClassName={(_, i) =>
+            `${i % 3 && i % 4 ? "" : "md:col-span-2"}`
+          }
         />
       </LandingSection>
       <LandingSection
