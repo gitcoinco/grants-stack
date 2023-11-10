@@ -29,13 +29,13 @@ const ROUND_OPERATOR =
   "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5";
 
 type LitInit = {
-  chain: string;
+  chainId: number;
   contract: string;
 };
 
 export class Lit {
   /* Lit doesn't provide types as of 12. 9. 2022 */
-  chain: string;
+  chainId: number;
   contract: string;
 
   /**
@@ -43,7 +43,7 @@ export class Lit {
    * @param initConfig {chain, contract, wallet}
    */
   constructor(initConfig: LitInit) {
-    this.chain = initConfig.chain;
+    this.chainId = initConfig.chainId;
     this.contract = initConfig.contract;
   }
 
@@ -68,7 +68,7 @@ export class Lit {
           stateMutability: "view",
           type: "function",
         },
-        chain: this.chain,
+        chain: this.chainIdToChainName(this.chainId),
         returnValueTest: {
           key: "",
           comparator: "=",
@@ -76,6 +76,16 @@ export class Lit {
         },
       },
     ];
+  }
+
+  chainIdToChainName(chainId: number): string {
+    for (const name in LitJsSdk.LIT_CHAINS) {
+      if (LitJsSdk.LIT_CHAINS[name].chainId === chainId) {
+        return name;
+      }
+    }
+
+    throw new Error(`couldn't find LIT chain name for chainId ${chainId}`);
   }
 
   /**
@@ -88,13 +98,12 @@ export class Lit {
     const client = await getClient();
 
     // Obtain Auth Signature to verify signer is wallet owner
-    const chain = this.chain;
+    const chain = this.chainIdToChainName(this.chainId);
     const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
 
     // Encrypting Content and generating symmetric key
-    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(
-      content
-    );
+    const { encryptedString, symmetricKey } =
+      await LitJsSdk.encryptString(content);
 
     // Saving the Encrypted Content to the Lit Nodes
     const encryptedSymmetricKey = await client.saveEncryptionKey({
@@ -127,7 +136,7 @@ export class Lit {
     const client = await getClient();
 
     try {
-      const chain = this.chain;
+      const chain = this.chainIdToChainName(this.chainId);
 
       // Obtain Auth Signature to verify signer is wallet owner
       const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });

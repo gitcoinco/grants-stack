@@ -817,8 +817,7 @@ export default function ViewRoundResults() {
                     round &&
                       (await exportAndDownloadApplicationsCSV(
                         round.id,
-                        chain.id,
-                        chain.name
+                        chain.id
                       ));
                   } finally {
                     setIsExportingApplicationsCSV(false);
@@ -952,10 +951,9 @@ function NoInformationContent() {
 
 async function exportAndDownloadApplicationsCSV(
   roundId: string,
-  chainId: number,
-  chainName: string
+  chainId: number
 ) {
-  const csv = await roundApplicationsToCSV(roundId, chainId, chainName, true);
+  const csv = await roundApplicationsToCSV(roundId, chainId, true);
   // create a download link and click it
   const blob = new Blob([csv], {
     type: "text/csv;charset=utf-8;",
