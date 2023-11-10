@@ -6,7 +6,7 @@ import { ChainId } from "common";
 
 type RoundCardStatProps = {
   matchAmount: string;
-  token: string;
+  tokenAddress: string;
   chainId: ChainId;
 };
 
@@ -15,14 +15,14 @@ const formatter = new Intl.NumberFormat();
 export function RoundMatchAmountBadge({
   chainId,
   matchAmount,
-  token,
+  tokenAddress,
 }: RoundCardStatProps) {
   const { data } = useToken({
-    address: getAddress(token),
+    address: getAddress(tokenAddress),
     chainId: Number(chainId),
-    enabled: token !== zeroAddress,
+    enabled: tokenAddress !== zeroAddress,
   });
-  const nativePayoutToken = getPayoutToken(token, chainId);
+  const nativePayoutToken = getPayoutToken(tokenAddress, chainId);
 
   const symbol = data?.symbol ?? nativePayoutToken?.name ?? "ETH";
   const decimals = data?.decimals ?? nativePayoutToken?.decimal ?? 18;

@@ -102,7 +102,7 @@ const RoundCard = ({ round }: RoundCardProps) => {
               {payoutStrategy?.strategyName !== ROUND_PAYOUT_DIRECT && (
                 <RoundMatchAmountBadge
                   chainId={chainId}
-                  token={token}
+                  tokenAddress={token}
                   matchAmount={matchAmount}
                 />
               )}
