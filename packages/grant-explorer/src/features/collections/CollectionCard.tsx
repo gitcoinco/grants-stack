@@ -22,7 +22,7 @@ const CollectionCard = ({ collection, isLoading }: CollectionCardProps) => {
     <BasicCard className="w-full">
       <a target="_blank" href={`/#/projects?collectionId=${id}`}>
         <CardHeader>
-          <CollectionBanner projects={projects} />
+          <CollectionBanner projectIds={projects} />
         </CardHeader>
         <CardContent>
           <CardTitle>{name}</CardTitle>

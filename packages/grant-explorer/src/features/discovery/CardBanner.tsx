@@ -87,10 +87,10 @@ export function RoundBanner(props: { roundId: string }) {
   );
 }
 
-export function CollectionBanner({ projects }: { projects: string[] }) {
+export function CollectionBanner({ projectIds }: { projectIds: string[] }) {
   return (
     <div className="overflow-hidden h-[192px]">
-      {projects.map((project) => {
+      {projectIds.map((project) => {
         const stockId = generateRandomNumber(project);
         const stockImage = stockImages[stockId];
         return (
@@ -106,10 +106,10 @@ export function CollectionBanner({ projects }: { projects: string[] }) {
   );
 }
 
-export function CategoryBanner({ projects }: { projects: string[] }) {
+export function CategoryBanner({ projectIds }: { projectIds: string[] }) {
   return (
     <div className="overflow-hidden grid grid-cols-2">
-      {projects.map((project) => {
+      {projectIds.map((project) => {
         const stockId = generateRandomNumber(project);
         const stockImage = stockImages[stockId];
         return (
