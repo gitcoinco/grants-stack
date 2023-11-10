@@ -6,6 +6,8 @@ import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
+import { CategoriesGrid } from "../categories/CategoriesGrid";
+import { useCategories } from "../categories/hooks/useCategories";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -21,9 +23,13 @@ const LandingPage = () => {
   const activeRounds = useActiveRounds();
   const roundsEndingSoon = useRoundsEndingSoon();
 
+  const categories = useCategories();
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
+      <LandingSection title="Categories">
+        <CategoriesGrid data={categories} loadingCount={8} maxCount={8} />
+      </LandingSection>
       <LandingSection
         title="Donate now"
         action={
