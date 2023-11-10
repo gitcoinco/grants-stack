@@ -9,11 +9,11 @@ export function getRoundDaysText({
 }) {
   const dayTerm = getSingularPlural(["day", "days"]);
 
-  if (roundStartsIn && roundStartsIn > 0) {
+  if (roundStartsIn !== undefined && roundStartsIn > 0) {
     return `Starts in ${roundStartsIn} ${dayTerm(roundStartsIn)}`;
   }
+  if (roundEndsIn === undefined) return "No round end date";
   if (roundEndsIn === 0) return "Ends today";
-  if (!roundEndsIn) return "No round end date";
 
   return roundEndsIn > 0
     ? `${roundEndsIn} ${dayTerm(roundEndsIn)} left in round`
@@ -34,7 +34,7 @@ export function getRoundApplicationDaysText({
 
   if (applicationsEndsIn === 0) return "Last day to apply";
   if (
-    applicationsStartsIn &&
+    applicationsStartsIn !== undefined &&
     applicationsStartsIn > 0 &&
     applicationsEndsIn > 0
   ) {
