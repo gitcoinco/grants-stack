@@ -16,6 +16,7 @@ import {
   Round,
 } from "./features/api/types";
 import { parseUnits } from "viem";
+import { ChainId } from "common";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -92,7 +93,7 @@ export const makeApprovedProjectData = (
     status: ApplicationStatus.APPROVED,
     applicationIndex: faker.datatype.number(),
     roundId: faker.finance.ethereumAddress(),
-    chainId: 1,
+    chainId: ChainId.MAINNET,
     ...overrides,
   };
 };
@@ -122,7 +123,7 @@ export const makeRoundOverviewData = (
 ): RoundOverview => {
   return {
     id: faker.finance.ethereumAddress(),
-    chainId: "1",
+    chainId: ChainId.MAINNET,
     createdAt: makeTimestamp(),
     roundMetaPtr: {
       protocol: 1,

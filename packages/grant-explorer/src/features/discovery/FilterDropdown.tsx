@@ -3,25 +3,19 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Transition, Disclosure } from "@headlessui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
-import { CHAINS } from "../api/utils";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toQueryString } from "./RoundsFilter";
-import { parseFilterParams } from "./hooks/useFilterRounds";
+import { FilterStatus, parseFilterParams } from "./hooks/useFilterRounds";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { getFilterLabel } from "./utils/getFilterLabel";
+import { allChains } from "../../app/chainConfig";
 
 export type FilterOption = {
   label: string;
   value: string;
+  hide?: boolean;
   children?: FilterOption[];
 };
-
-export enum FilterStatus {
-  active = "active",
-  taking_applications = "taking_applications",
-  finished = "finished",
-  ending_soon = "ending_soon",
-}
 export const filterOptions: FilterOption[] = [
   {
     label: "All",
@@ -56,10 +50,6 @@ export const filterOptions: FilterOption[] = [
         value: FilterStatus.taking_applications,
       },
       {
-        label: "Ending soon",
-        value: FilterStatus.ending_soon,
-      },
-      {
         label: "Finished",
         value: FilterStatus.finished,
       },
@@ -68,9 +58,9 @@ export const filterOptions: FilterOption[] = [
   {
     label: "Network",
     value: "network",
-    children: Object.entries(CHAINS).map(([value, { name }]) => ({
+    children: allChains.map(({ id, name }) => ({
       label: `Rounds on ${name}`,
-      value,
+      value: String(id),
     })),
   },
 ];
@@ -146,36 +136,38 @@ export function FilterDropdown() {
                   static
                   className=" mt-1 w-full overflow-auto p-2"
                 >
-                  {children?.map((child, j) => {
-                    const isChecked = selectedFilter?.includes(child.value);
+                  {children
+                    ?.filter((child) => !child.hide)
+                    .map((child, j) => {
+                      const isChecked = selectedFilter?.includes(child.value);
 
-                    const nextValue = isChecked
-                      ? // Remove or add the value
-                        selectedFilter?.filter((f) => f !== child.value)
-                      : selectedFilter?.concat(child.value);
-                    return (
-                      <DropdownItem
-                        key={j}
-                        $as={Link}
-                        to={`/rounds?${toQueryString({
-                          // Merge existing search params (so it doesn't reset sorting or the other selections)
-                          ...filter,
-                          [filterKey]: nextValue.join(","),
-                        })}`}
-                      >
-                        <div className="flex gap-2">
-                          <input type="checkbox" checked={isChecked} />
-                          <span
-                            className={`block truncate ${
-                              selected ? "font-medium" : "font-normal"
-                            }`}
-                          >
-                            {child.label}
-                          </span>
-                        </div>
-                      </DropdownItem>
-                    );
-                  })}
+                      const nextValue = isChecked
+                        ? // Remove or add the value
+                          selectedFilter?.filter((f) => f !== child.value)
+                        : selectedFilter?.concat(child.value);
+                      return (
+                        <DropdownItem
+                          key={j}
+                          $as={Link}
+                          to={`/rounds?${toQueryString({
+                            // Merge existing search params (so it doesn't reset sorting or the other selections)
+                            ...filter,
+                            [filterKey]: nextValue.join(","),
+                          })}`}
+                        >
+                          <div className="flex gap-2">
+                            <input type="checkbox" checked={isChecked} />
+                            <span
+                              className={`block truncate ${
+                                selected ? "font-medium" : "font-normal"
+                              }`}
+                            >
+                              {child.label}
+                            </span>
+                          </div>
+                        </DropdownItem>
+                      );
+                    })}
                 </Disclosure.Panel>
               </Transition>
             </div>

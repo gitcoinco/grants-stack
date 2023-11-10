@@ -1,11 +1,17 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-import { useActiveRounds, useRoundsEndingSoon } from "../api/rounds";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
+import {
+  FilterStatus,
+  activeFilter,
+  endingSoonFilter,
+  useFilterRounds,
+} from "./hooks/useFilterRounds";
+import { toQueryString } from "./RoundsFilter";
 import { useCollections } from "../collections/hooks/useCollections";
 import { CollectionsGrid } from "../collections/CollectionsGrid";
 import { CategoriesGrid } from "../categories/CategoriesGrid";
@@ -22,8 +28,8 @@ const LandingPage = () => {
     }
   }, [location]);
 
-  const activeRounds = useActiveRounds();
-  const roundsEndingSoon = useRoundsEndingSoon();
+  const activeRounds = useFilterRounds(activeFilter);
+  const roundsEndingSoon = useFilterRounds(endingSoonFilter);
 
   const categories = useCategories();
   const collections = useCollections();
@@ -47,7 +53,7 @@ const LandingPage = () => {
       <LandingSection
         title="Donate now"
         action={
-          <ViewAllLink to="/rounds?status=active&type=MERKLE">
+          <ViewAllLink to={`/rounds?${toQueryString(activeFilter)}`}>
             View all
           </ViewAllLink>
         }
@@ -64,12 +70,22 @@ const LandingPage = () => {
       <LandingSection
         title="Rounds ending soon"
         action={
-          <ViewAllLink to="/rounds?orderBy=roundEndTime&orderDirection=asc&status=ending_soon">
+          <ViewAllLink
+            to={`/rounds?${toQueryString({
+              orderBy: endingSoonFilter.orderBy,
+              orderDirection: endingSoonFilter.orderDirection,
+              status: FilterStatus.active,
+            })}`}
+          >
             View all
           </ViewAllLink>
         }
       >
-        <RoundsGrid {...roundsEndingSoon} loadingCount={3} maxCount={3} />
+        <RoundsGrid
+          {...roundsEndingSoon}
+          loadingCount={endingSoonFilter.first}
+          maxCount={endingSoonFilter.first}
+        />
       </LandingSection>
     </DefaultLayout>
   );
