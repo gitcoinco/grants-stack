@@ -1,9 +1,9 @@
+import { useSearchParams } from "react-router-dom";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
-import { RoundsFilter } from "./RoundsFilter";
-import { useSearchParams } from "react-router-dom";
 import { parseFilterParams, useFilterRounds } from "./hooks/useFilterRounds";
+import { RoundsFilter } from "./RoundsFilter";
 import { getExplorerPageTitle } from "./utils/getExplorerPageTitle";
 import { RoundsGrid } from "./RoundsGrid";
 

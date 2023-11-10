@@ -6,12 +6,12 @@ import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
 import {
+  FilterStatus,
   activeFilter,
   endingSoonFilter,
   useFilterRounds,
 } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
-import { FilterStatus } from "./FilterDropdown";
 import { CategoriesGrid } from "../categories/CategoriesGrid";
 import { useCategories } from "../categories/hooks/useCategories";
 

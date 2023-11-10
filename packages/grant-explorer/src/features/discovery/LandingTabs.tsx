@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { Tab, Tabs } from "../common/styles";
-import { FilterStatus } from "./FilterDropdown";
 import { toQueryString } from "./RoundsFilter";
+import { FilterStatus } from "./hooks/useFilterRounds";
 
 type Tab = {
   to: string;

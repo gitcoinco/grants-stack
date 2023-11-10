@@ -5,7 +5,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toQueryString } from "./RoundsFilter";
-import { parseFilterParams } from "./hooks/useFilterRounds";
+import { FilterStatus, parseFilterParams } from "./hooks/useFilterRounds";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { getFilterLabel } from "./utils/getFilterLabel";
 import { allChains } from "../../app/chainConfig";
@@ -16,13 +16,6 @@ export type FilterOption = {
   hide?: boolean;
   children?: FilterOption[];
 };
-
-export enum FilterStatus {
-  active = "active",
-  taking_applications = "taking_applications",
-  finished = "finished",
-  ending_soon = "ending_soon",
-}
 export const filterOptions: FilterOption[] = [
   {
     label: "All",

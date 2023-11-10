@@ -1,6 +1,7 @@
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
-import { FilterProps, FilterStatus } from "../FilterDropdown";
+import { FilterProps } from "../FilterDropdown";
 import { getFilterLabel } from "./getFilterLabel";
+import { FilterStatus } from "../hooks/useFilterRounds";
 
 export function getExplorerPageTitle(filter: FilterProps) {
   const { value, label } = getFilterLabel(filter);

@@ -5,12 +5,19 @@ import {
   getActiveChainIds,
   useRounds,
 } from "../../api/rounds";
-import { FilterProps, FilterStatus } from "../FilterDropdown";
+import { FilterProps } from "../FilterDropdown";
 import { SortProps } from "../SortDropdown";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
 import { ROUND_PAYOUT_MERKLE } from "common";
 
 type Filter = SortProps & FilterProps;
+
+export enum FilterStatus {
+  active = "active",
+  taking_applications = "taking_applications",
+  finished = "finished",
+  ending_soon = "ending_soon",
+}
 
 export const activeFilter = {
   orderBy: "matchAmount",
