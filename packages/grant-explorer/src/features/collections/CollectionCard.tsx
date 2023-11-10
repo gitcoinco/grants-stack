@@ -10,13 +10,9 @@ import { Collection } from "./hooks/useCollections";
 
 type CollectionCardProps = {
   collection: Collection;
-  isLoading?: boolean;
 };
 
-const CollectionCard = ({ collection, isLoading }: CollectionCardProps) => {
-  if (isLoading) {
-    return <div>...</div>;
-  }
+const CollectionCard = ({ collection }: CollectionCardProps) => {
   const { id, name, projects } = collection;
   return (
     <BasicCard className="w-full">
