@@ -210,7 +210,7 @@ function sortRounds(
   */
   const isNumber = ["matchAmount", ...timestampKeys].includes(orderBy);
 
-  const compare = isNumber
+  const compareFn = isNumber
     ? (a: RoundOverview, b: RoundOverview) =>
         BigInt(a[orderBy] ?? Number.MAX_SAFE_INTEGER) >
         BigInt(b[orderBy] ?? Number.MAX_SAFE_INTEGER)
@@ -218,7 +218,7 @@ function sortRounds(
         a[orderBy] ?? "" > b[orderBy] ?? "";
 
   return [...rounds].sort((a, b) =>
-    compare(a, b) ? dir[orderDirection] : -dir[orderDirection]
+    compareFn(a, b) ? dir[orderDirection] : -dir[orderDirection]
   );
 }
 /* 
