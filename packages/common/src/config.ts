@@ -6,6 +6,9 @@ export type Config = {
   ipfs: {
     baseUrl: string;
   };
+  grantsStackDataClient: {
+    baseUrl: string;
+  };
   pinata: {
     jwt: string;
     baseUrl: string;
@@ -35,6 +38,14 @@ export function getConfig(): Config {
         .url()
         .default("https://local-ipfs.dev")
         .parse(process.env.REACT_APP_IPFS_BASE_URL),
+    },
+    grantsStackDataClient: {
+      baseUrl: z
+        .string()
+        .url()
+        // TODO: fix `env.test` in tests to remove this
+        .default("https://gitcoin-search-dev.fly.dev")
+        .parse(process.env.REACT_APP_GRANTS_STACK_DATA_CLIENT_BASE_URL),
     },
     pinata: {
       jwt: z

@@ -1,34 +1,22 @@
 import { ProjectBanner } from "../ProjectBanner";
 import { render, screen } from "@testing-library/react";
-import { generateIpfsCid, makeApprovedProjectData } from "../../../test-utils";
+import { generateIpfsCid } from "../../../test-utils";
 
 describe("<ProjectBanner>", () => {
   it("should render banner image if provided", function () {
-    const bannerImg = generateIpfsCid();
-    const project = makeApprovedProjectData(
-      {},
-      {
-        bannerImg,
-      }
-    );
+    const bannerImgCid = generateIpfsCid();
 
-    render(<ProjectBanner projectMetadata={project.projectMetadata} />);
+    render(<ProjectBanner bannerImgCid={bannerImgCid} />);
     const img = screen.getByRole("img", {
       name: /project banner/i,
     }) as HTMLImageElement;
 
-    expect(img.src).toContain(bannerImg);
+    expect(img.src).toContain(bannerImgCid);
   });
 
   it("should render fallback banner if that field is undefined", function () {
-    const projectWithoutBannerImage = makeApprovedProjectData();
-    projectWithoutBannerImage.projectMetadata.bannerImg = undefined;
+    render(<ProjectBanner bannerImgCid={null} />);
 
-    render(
-      <ProjectBanner
-        projectMetadata={projectWithoutBannerImage.projectMetadata}
-      />
-    );
     const img = screen.getByRole("img", {
       name: /project banner/i,
     }) as HTMLImageElement;

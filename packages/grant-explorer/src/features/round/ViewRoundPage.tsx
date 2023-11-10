@@ -430,7 +430,7 @@ function ProjectCard(props: {
       >
         <CardHeader>
           <ProjectBanner
-            projectMetadata={project.projectMetadata}
+            bannerImgCid={project.projectMetadata.bannerImg ?? null}
             classNameOverride={
               "bg-black h-[120px] w-full object-cover rounded-t"
             }
@@ -503,7 +503,7 @@ function CartButton(props: {
   );
 }
 
-function CartButtonToggle(props: {
+export function CartButtonToggle(props: {
   project: Project;
   isAlreadyInCart: boolean;
   addToCart: () => void;
