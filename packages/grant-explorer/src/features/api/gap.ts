@@ -7,7 +7,7 @@ export interface IGrantStatus {
   uid: Hex;
   title: string;
   text: string;
-  createdAt: number;
+  createdAtMs: number;
 }
 
 export interface IGapGrant {
@@ -16,12 +16,12 @@ export interface IGapGrant {
   communityUID: Hex;
   title: string;
   description: string;
-  createdAt: number;
+  createdAtMs: number;
   milestones: {
     uid: Hex;
     title: string;
     description: string;
-    endsAt: number;
+    endsAtMs: number;
     completed?: IGrantStatus;
     isGrantUpdate?: boolean;
   }[];
@@ -40,9 +40,14 @@ export function useGap(projectId?: string) {
         `${indexerUrl}/grants/external-id/${projectRegistryId}`
       ).then((res) => res.json());
 
+      if (!Array.isArray(items)) {
+        setGrants([]);
+        return;
+      }
+
       const parsedItems =
         items
-          ?.filter((grant) => grant.title)
+          .filter((grant) => grant.title)
           .map((grant) => ({
             ...grant,
             milestones: grant.milestones
@@ -50,21 +55,21 @@ export function useGap(projectId?: string) {
                 grant.updates.map((update) => ({
                   uid: update.uid,
                   description: update.text,
-                  endsAt: update.createdAt,
+                  endsAtMs: update.createdAtMs,
                   title: update.title,
                   isGrantUpdate: true,
                   completed: update,
                 }))
               )
               .sort((a, b) => {
-                const dateToCompareA = a.completed?.createdAt || a.endsAt;
-                const dateToCompareB = b.completed?.createdAt || b.endsAt;
+                const dateToCompareA = a.completed?.createdAtMs || a.endsAtMs;
+                const dateToCompareB = b.completed?.createdAtMs || b.endsAtMs;
                 return dateToCompareB - dateToCompareA;
               }),
           }))
-          .sort((a, b) => b.createdAt - a.createdAt) || [];
+          .sort((a, b) => b.createdAtMs - a.createdAtMs) || [];
 
-      if (Array.isArray(items)) setGrants(parsedItems);
+      setGrants(parsedItems);
     } catch (e) {
       console.error(`No grants found for project: ${projectRegistryId}`);
       console.error(e);

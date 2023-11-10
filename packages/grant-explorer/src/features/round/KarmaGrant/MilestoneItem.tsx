@@ -19,12 +19,12 @@ export const MilestoneItem: React.FC<MilestoneItemProps> = ({
 }) => {
   const deadlineText = milestone.completed
     ? `${milestone.isGrantUpdate ? "Posted" : "Completed"} on ${dateFromMs(
-        milestone.completed.createdAt
+        milestone.completed.createdAtMs
       )}`
-    : `Due on ${dateFromMs(milestone.endsAt)}`;
+    : `Due on ${dateFromMs(milestone.endsAtMs)}`;
 
   const statusBadgeProps = useMemo(() => {
-    if (milestone.endsAt < Date.now() / 1000) {
+    if (milestone.endsAtMs < Date.now() / 1000) {
       return {
         title: "Past due",
         classNames: "bg-red-500 text-white",

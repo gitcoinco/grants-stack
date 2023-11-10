@@ -56,7 +56,7 @@ export const GrantItem: React.FC<GrantItemProps> = ({ grant, url }) => {
               <Box>
                 <small>
                   <span className="hidden md:inline">Issued on: </span>
-                  {dateFromMs(grant.createdAt)}
+                  {dateFromMs(grant.createdAtMs)}
                 </small>
               </Box>
               <GrantCompletionBadge milestones={grant.milestones} />

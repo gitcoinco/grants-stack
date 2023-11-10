@@ -5,7 +5,7 @@ import { MilestoneBadge } from "./MilestoneBadge";
 import { dateFromMs } from "../../api/utils";
 
 export const MilestoneUpdate: React.FC<IGrantStatus> = ({
-  createdAt,
+  createdAtMs,
   text,
 }) => (
   <Box p={4} ml={5} className="bg-gitcoin-violet-100" borderRadius="md">
@@ -16,7 +16,7 @@ export const MilestoneUpdate: React.FC<IGrantStatus> = ({
         classNames="bg-gitcoin-violet-500 text-white"
       />
       <Box>
-        <small>Posted on {dateFromMs(createdAt)}</small>
+        <small>Posted on {dateFromMs(createdAtMs)}</small>
       </Box>
     </Flex>
     {text}
