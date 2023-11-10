@@ -22,7 +22,6 @@ export function RoundMatchAmountBadge({
     chainId: Number(chainId),
     enabled: token !== zeroAddress,
   });
-  console.log("TOKEN", token, "123");
   const nativePayoutToken = getPayoutToken(token, chainId);
 
   const symbol = data?.symbol ?? nativePayoutToken?.name ?? "ETH";
