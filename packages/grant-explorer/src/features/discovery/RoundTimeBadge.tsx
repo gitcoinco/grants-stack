@@ -8,14 +8,14 @@ type Props = {
 const style = { rounded: "full", className: "absolute top-3 right-3" } as const;
 
 export function RoundTimeBadge({ roundEndsIn, applicationsEndsIn }: Props) {
-  if (roundEndsIn && roundEndsIn < 0) {
+  if (roundEndsIn !== undefined && roundEndsIn < 0) {
     return (
       <Badge color="orange" {...style}>
         Round ended
       </Badge>
     );
   }
-  if (applicationsEndsIn && applicationsEndsIn > 0) {
+  if (applicationsEndsIn !== undefined && applicationsEndsIn > 0) {
     return (
       <Badge color="green" {...style}>
         Apply!
