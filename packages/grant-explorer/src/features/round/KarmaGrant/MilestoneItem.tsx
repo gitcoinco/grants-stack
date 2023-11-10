@@ -24,7 +24,7 @@ export const MilestoneItem: React.FC<MilestoneItemProps> = ({
     : `Due on ${dateFromMs(milestone.endsAt)}`;
 
   const statusBadgeProps = useMemo(() => {
-    if (milestone.endsAt > Date.now() / 1000) {
+    if (milestone.endsAt < Date.now() / 1000) {
       return {
         title: "Past due",
         classNames: "bg-red-500 text-white",
