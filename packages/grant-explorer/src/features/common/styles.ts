@@ -101,13 +101,13 @@ export const Badge = tw.div<{
 export const Tabs = tw.div`
 flex
 text-lg
-md:text-2xl
+md:text-xl
 border-b-4
 border-blue-100
-gap-8
+gap-4
 `;
 export const Tab = tw(Link)<{ active?: boolean }>`
-py-4
+py-3
 px-6
 border-b-4
 border-blue-100
