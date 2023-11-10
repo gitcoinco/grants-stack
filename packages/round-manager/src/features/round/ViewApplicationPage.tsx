@@ -300,7 +300,7 @@ export default function ViewApplicationPage() {
                   break;
               }
               const lit = new Lit({
-                chain: fixedChainName.toLowerCase(),
+                chain: fixedChainName,
                 contract: utils.getAddress(roundId),
               });
 
