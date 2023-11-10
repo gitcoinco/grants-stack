@@ -751,6 +751,7 @@ export function getPayoutToken(
 }
 
 export function dateFromMs(ms: number) {
+  if (!ms) return "Invalid date";
   const normalized = String(ms).length < 13 ? ms * 1000 : ms;
   const date = new Date(normalized);
 
