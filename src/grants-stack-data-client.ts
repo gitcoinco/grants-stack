@@ -19,10 +19,10 @@ export class GrantsStackDataClient {
   constructor({
     fetch,
     baseUrl,
-    applications,
+    pagination,
   }: {
     fetch?: typeof _fetch;
-    applications?: { pagination: { pageSize: number } };
+    pagination?: { pageSize: number };
     baseUrl: string;
   }) {
     this.searchApi = new SearchApi(
@@ -31,7 +31,7 @@ export class GrantsStackDataClient {
         basePath: baseUrl,
       }),
     );
-    this.pageSize = applications?.pagination.pageSize ?? 10;
+    this.pageSize = pagination?.pageSize ?? 10;
   }
 
   async query(
@@ -52,7 +52,19 @@ export class GrantsStackDataClient {
           q: q.queryString,
         });
 
-        return { results };
+        // TODO consider unifying with /applications endpoint
+        const pageStart = q.page * this.pageSize;
+        const pageEnd = pageStart + this.pageSize;
+        const page = results.slice(pageStart, pageEnd);
+
+        return {
+          results: page,
+          pagination: {
+            currentPage: q.page,
+            totalPages: Math.ceil(results.length / this.pageSize),
+            totalItems: results.length,
+          },
+        };
       }
 
       case "applications-by-refs": {

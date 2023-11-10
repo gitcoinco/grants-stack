@@ -2,48 +2,110 @@ import { describe, test, expect, vi } from "vitest";
 import { GrantsStackDataClient } from "./grants-stack-data-client.js";
 
 describe("data client", () => {
-  test("can retrieve multiple applications by search query", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      status: 200,
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => ({
-        results: [
-          {
-            meta: { searchType: "fulltext" },
-            data: { applicationRef: "1:0x123:0", name: "project #0" },
-          },
-          {
-            meta: { searchType: "semantic" },
-            data: { applicationRef: "1:0x123:1", name: "project #1" },
-          },
-        ],
-      }),
+  describe("can retrieve multiple applications by search query", () => {
+    test("reports data and metadata", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({
+          results: [
+            {
+              meta: { searchType: "fulltext" },
+              data: { applicationRef: "1:0x123:0", name: "project #0" },
+            },
+            {
+              meta: { searchType: "semantic" },
+              data: { applicationRef: "1:0x123:1", name: "project #1" },
+            },
+          ],
+        }),
+      });
+
+      const client = new GrantsStackDataClient({
+        fetch: fetchMock,
+        baseUrl: "https://example.com",
+      });
+
+      const { results } = await client.query({
+        type: "applications-search",
+        queryString: "open source",
+        page: 0,
+      });
+
+      expect(results).toEqual([
+        {
+          meta: { searchType: "fulltext" },
+          data: { applicationRef: "1:0x123:0", name: "project #0" },
+        },
+        {
+          meta: { searchType: "semantic" },
+          data: { applicationRef: "1:0x123:1", name: "project #1" },
+        },
+      ]);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://example.com/search?q=open%20source",
+        { method: "GET", headers: {} },
+      );
     });
 
-    const client = new GrantsStackDataClient({
-      fetch: fetchMock,
-      baseUrl: "https://example.com",
-    });
+    test("paginates results", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({
+          results: [
+            {
+              meta: { searchType: "fulltext" },
+              data: { applicationRef: "1:0x123:0", name: "project #0" },
+            },
+            {
+              meta: { searchType: "semantic" },
+              data: { applicationRef: "1:0x123:1", name: "project #1" },
+            },
+            {
+              meta: { searchType: "semantic" },
+              data: { applicationRef: "1:0x123:2", name: "project #2" },
+            },
+            {
+              meta: { searchType: "semantic" },
+              data: { applicationRef: "1:0x123:3", name: "project #3" },
+            },
+          ],
+        }),
+      });
 
-    const { results } = await client.query({
-      type: "applications-search",
-      queryString: "open source",
-    });
+      const client = new GrantsStackDataClient({
+        fetch: fetchMock,
+        baseUrl: "https://example.com",
+        pagination: { pageSize: 2 },
+      });
 
-    expect(results).toEqual([
-      {
-        meta: { searchType: "fulltext" },
-        data: { applicationRef: "1:0x123:0", name: "project #0" },
-      },
-      {
-        meta: { searchType: "semantic" },
-        data: { applicationRef: "1:0x123:1", name: "project #1" },
-      },
-    ]);
-    expect(fetchMock).toHaveBeenCalledWith(
-      "https://example.com/search?q=open%20source",
-      { method: "GET", headers: {} },
-    );
+      const { results, pagination } = await client.query({
+        type: "applications-search",
+        queryString: "open source",
+        page: 0,
+      });
+
+      expect(pagination).toEqual({
+        totalItems: 4,
+        totalPages: 2,
+        currentPage: 0,
+      });
+      expect(results).toEqual([
+        {
+          meta: { searchType: "fulltext" },
+          data: { applicationRef: "1:0x123:0", name: "project #0" },
+        },
+        {
+          meta: { searchType: "semantic" },
+          data: { applicationRef: "1:0x123:1", name: "project #1" },
+        },
+      ]);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://example.com/search?q=open%20source",
+        { method: "GET", headers: {} },
+      );
+    });
   });
 
   test("can retrieve multiple applications by refs", async () => {
@@ -97,7 +159,7 @@ describe("data client", () => {
       const client = new GrantsStackDataClient({
         fetch: fetchMock,
         baseUrl: "https://example.com",
-        applications: { pagination: { pageSize: 2 } },
+        pagination: { pageSize: 2 },
       });
       const { applications, pagination } = await client.query({
         type: "applications-paginated",
@@ -133,7 +195,7 @@ describe("data client", () => {
       const client = new GrantsStackDataClient({
         fetch: fetchMock,
         baseUrl: "https://example.com",
-        applications: { pagination: { pageSize: 2 } },
+        pagination: { pageSize: 2 },
       });
       const { applications, pagination } = await client.query({
         type: "applications-paginated",
@@ -168,7 +230,7 @@ describe("data client", () => {
       const client = new GrantsStackDataClient({
         fetch: fetchMock,
         baseUrl: "https://example.com",
-        applications: { pagination: { pageSize: 2 } },
+        pagination: { pageSize: 2 },
       });
       const { applications, pagination } = await client.query({
         type: "applications-paginated",
@@ -205,7 +267,7 @@ describe("data client", () => {
       const client = new GrantsStackDataClient({
         fetch: fetchMock,
         baseUrl: "https://example.com",
-        applications: { pagination: { pageSize: 2 } },
+        pagination: { pageSize: 2 },
       });
 
       for (let i = 0; i < 10; i++) {
@@ -255,7 +317,7 @@ describe("data client", () => {
       const client = new GrantsStackDataClient({
         fetch: fetchMock,
         baseUrl: "https://example.com",
-        applications: { pagination: { pageSize: 2 } },
+        pagination: { pageSize: 2 },
       });
 
       for (let i = 0; i < 10; i++) {
@@ -313,7 +375,7 @@ describe("data client", () => {
       const client = new GrantsStackDataClient({
         fetch: fetchMock,
         baseUrl: "https://example.com",
-        applications: { pagination: { pageSize: 2 } },
+        pagination: { pageSize: 2 },
       });
 
       for (let i = 0; i < 10; i++) {

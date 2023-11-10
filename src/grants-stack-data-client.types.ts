@@ -5,9 +5,10 @@ import {
 
 export type DataClientInteraction =
   | {
-      query: { type: "applications-search"; queryString: string };
+      query: { type: "applications-search"; queryString: string; page: number };
       response: {
         results: SearchResult[];
+        pagination: PaginationInfo;
       };
     }
   | {
@@ -32,13 +33,15 @@ export type DataClientInteraction =
       };
       response: {
         applications: ApplicationSummary[];
-        pagination: {
-          currentPage: number;
-          totalPages: number;
-          totalItems: number;
-        };
+        pagination: PaginationInfo;
       };
     };
+
+interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}
 
 export type ExtractQuery<I, T> = Extract<I, { query: { type: T } }>["query"];
 
