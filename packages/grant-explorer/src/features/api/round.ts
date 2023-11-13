@@ -332,6 +332,7 @@ export const useContributionHistory = (
             const txTimestamps = await Promise.all(
               data.map(async (contribution) => {
                 const tx = await publicClient.getTransaction({
+                  /* We are casting to Hex here as viem doesn't yet include a getHex parsing method */
                   hash: contribution.transaction as Hex,
                 });
 

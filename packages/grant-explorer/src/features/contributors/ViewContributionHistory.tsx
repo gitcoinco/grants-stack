@@ -25,7 +25,8 @@ export function ViewContributionHistoryPage() {
   const chainIds = getChainIds();
 
   const { data: ensResolvedAddress } = useEnsAddress({
-    name: isAddress(params.address ?? "") ? "" : params.address,
+    /* If params.address is actually an address, don't resolve the ens address for it*/
+    name: isAddress(params.address ?? "") ? undefined : params.address,
   });
 
   if (params.address === undefined) {
@@ -53,7 +54,8 @@ function ViewContributionHistoryFetcher(props: {
   );
 
   const { data: ensName } = useEnsName({
-    address: props.address as Address,
+    /* If props.address is an ENS name, don't pass in anything, as we already have the ens name*/
+    address: isAddress(props.address) ? props.address : undefined,
   });
 
   const { data: ensAvatar } = useEnsAvatar({
