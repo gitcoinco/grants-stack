@@ -266,8 +266,7 @@ function AfterRoundStart(props: {
               </p>
               <p
                 data-testid="round-badge"
-                className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4"
-                style={{ borderRadius: "20px" }}
+                className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4 rounded-[20px]"
               >
                 {round.payoutStrategy?.strategyName &&
                   getRoundType(round.payoutStrategy?.strategyName)}
@@ -305,10 +304,10 @@ function AfterRoundStart(props: {
                 <div className="flex">
                   <img
                     className="w-4 h-4 mt-0.5 mr-1"
-                    src={CHAINS[chainId].logo}
+                    src={CHAINS[chainId]?.logo}
                     alt="Round Chain Logo"
                   />
-                  <span>{CHAINS[chainId].name}</span>
+                  <span>{CHAINS[chainId]?.name}</span>
                 </div>
               </p>
 
@@ -784,10 +783,8 @@ const ReportCard = ({
             <div className="bg-grey-100 w-9 sm:w-12 h-0.5  group-hover:bg-grey-200 transition-all" />
           </div>
         </div>
-        <span className="sm:text-base text-sm">
-          Check out
-          <br /> this round’s
-          <br /> report card!
+        <span className="sm:text-base text-sm sm:max-w-[6rem] max-w-[5rem]">
+          Check out this round’s report card!
         </span>
       </div>
     </a>
