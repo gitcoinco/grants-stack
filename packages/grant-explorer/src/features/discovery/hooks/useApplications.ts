@@ -4,9 +4,16 @@ import { useMemo } from "react";
 
 export type ApplicationFetchOptions =
   | {
+      type: "search";
       searchQuery: string;
     }
   | {
+      type: "category";
+      searchQuery: string;
+      categoryName: string;
+    }
+  | {
+      type: "all";
       seed: number;
     };
 
@@ -17,19 +24,23 @@ export function useApplications(options: ApplicationFetchOptions) {
     (pageIndex) => [pageIndex, options, "/applications"],
     async ([pageIndex]) => {
       if ("searchQuery" in options) {
-        const result = await grantsStackDataClient.query({
+        const { results, pagination } = await grantsStackDataClient.query({
+          page: pageIndex,
           type: "applications-search",
           queryString: options.searchQuery,
         });
 
-        const applications = result.results.map((r) => r.data);
+        // unzip data and meta
+        const applications = results.map((result) => result.data);
+        const applicationMeta = results.map((result) => result.meta);
 
         return {
           applications,
-          pagination: { totalItems: applications.length },
+          applicationMeta,
+          pagination,
         };
       } else {
-        return grantsStackDataClient.query({
+        const { applications, pagination } = await grantsStackDataClient.query({
           type: "applications-paginated",
           page: pageIndex,
           order: {
@@ -37,12 +48,19 @@ export function useApplications(options: ApplicationFetchOptions) {
             seed: options.seed,
           },
         });
+
+        return { applications, pagination, applicationMeta: [] };
       }
     }
   );
 
   const applications = useMemo(
     () => data?.flatMap((page) => page.applications) ?? [],
+    [data]
+  );
+
+  const applicationMeta = useMemo(
+    () => data?.flatMap((page) => page.applicationMeta) ?? [],
     [data]
   );
 
@@ -53,6 +71,7 @@ export function useApplications(options: ApplicationFetchOptions) {
 
   return {
     applications,
+    applicationMeta,
     isLoading: !data && !error,
     isLoadingMore:
       size > 0 && typeof data?.[size - 1] === "undefined" && !error,

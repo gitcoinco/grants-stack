@@ -48,14 +48,25 @@ export function ExploreProjectsPage(): JSX.Element {
   const category = useCategory(params.get("categoryId"));
 
   const seed = PROJECTS_SORTING_SEED;
-  const [searchQuery, setSearchQuery] = useState(category?.searchQuery ?? "");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const applicationsFetchOptions: ApplicationFetchOptions =
-    searchQuery.length === 0
-      ? { seed }
-      : {
-          searchQuery: searchQuery,
-        };
+  let applicationsFetchOptions: ApplicationFetchOptions = {
+    type: "all",
+    seed,
+  };
+
+  if (searchQuery.length > 0) {
+    applicationsFetchOptions = {
+      type: "search",
+      searchQuery: searchQuery,
+    };
+  } else if (category !== undefined) {
+    applicationsFetchOptions = {
+      type: "category",
+      searchQuery: `${category.searchQuery} --strategy=semantic`,
+      categoryName: category.name,
+    };
+  }
 
   const {
     applications,
@@ -87,7 +98,13 @@ export function ExploreProjectsPage(): JSX.Element {
     );
   }
 
-  const pageTitle = category?.name ?? "All projects";
+  let pageTitle = "All projects";
+
+  if (applicationsFetchOptions.type === "search") {
+    pageTitle = "Search results";
+  } else if (applicationsFetchOptions.type === "category") {
+    pageTitle = applicationsFetchOptions.categoryName;
+  }
 
   return (
     <DefaultLayout showWalletInteraction>
@@ -121,6 +138,14 @@ export function ExploreProjectsPage(): JSX.Element {
         }
         className="flex-wrap"
       >
+        {isLoading === false &&
+          isLoadingMore === false &&
+          applications.length === 0 && (
+            <p>
+              Your search did not match any projects. Try again using different
+              keywords.
+            </p>
+          )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <PaginatedProjectsList
             applications={applications}
