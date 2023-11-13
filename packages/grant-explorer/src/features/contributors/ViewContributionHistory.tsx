@@ -1,4 +1,10 @@
-import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useEnsAddress,
+  useEnsAvatar,
+  useEnsName,
+} from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { VotingToken } from "../api/types";
@@ -27,6 +33,7 @@ export function ViewContributionHistoryPage() {
   const { data: ensResolvedAddress } = useEnsAddress({
     /* If params.address is actually an address, don't resolve the ens address for it*/
     name: isAddress(params.address ?? "") ? undefined : params.address,
+    chainId: 1,
   });
 
   if (params.address === undefined) {
@@ -56,10 +63,12 @@ function ViewContributionHistoryFetcher(props: {
   const { data: ensName } = useEnsName({
     /* If props.address is an ENS name, don't pass in anything, as we already have the ens name*/
     address: isAddress(props.address) ? props.address : undefined,
+    chainId: 1,
   });
 
   const { data: ensAvatar } = useEnsAvatar({
     name: ensName,
+    chainId: 1,
   });
 
   const breadCrumbs = [
