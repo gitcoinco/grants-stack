@@ -563,6 +563,9 @@ importers:
       os-browserify:
         specifier: ^0.3.0
         version: 0.3.0
+      posthog-js:
+        specifier: ^1.89.0
+        version: 1.89.2
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -13284,6 +13287,10 @@ packages:
       web-streams-polyfill: 3.2.1
     dev: false
 
+  /fflate@0.4.8:
+    resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
+    dev: false
+
   /figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
     engines: {node: '>=8'}
@@ -19268,6 +19275,12 @@ packages:
       nanoid: 3.3.6
       picocolors: 1.0.0
       source-map-js: 1.0.2
+
+  /posthog-js@1.89.2:
+    resolution: {integrity: sha512-v+HHB4caoxD9LzyOAIqYTLwFdXbTmSE74J95YngFjOdSAD26Wdqfc/KfumbuXBCh1/9KS5hWoSI8VwffrJYluA==}
+    dependencies:
+      fflate: 0.4.8
+    dev: false
 
   /preact@10.17.1:
     resolution: {integrity: sha512-X9BODrvQ4Ekwv9GURm9AKAGaomqXmip7NQTZgY7gcNmr7XE83adOMJvd3N42id1tMFU7ojiynRsYnY6/BRFxLA==}

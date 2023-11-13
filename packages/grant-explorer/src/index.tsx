@@ -9,6 +9,7 @@ import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
 import { initSentry } from "./sentry";
 import { initTagmanager } from "./tagmanager";
+import { initPosthog } from "./posthog";
 import { chains, config } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
 import {
@@ -41,6 +42,8 @@ initDatadog();
 
 // Initialize tagmanager
 initTagmanager();
+
+initPosthog();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
