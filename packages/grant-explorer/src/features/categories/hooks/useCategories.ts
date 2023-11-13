@@ -51,3 +51,7 @@ export const categories: Category[] = [
 export function useCategories() {
   return categories;
 }
+
+export function useCategory(id: string | null) {
+  return categories.find((cat) => cat.id === id);
+}

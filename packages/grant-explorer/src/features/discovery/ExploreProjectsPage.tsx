@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
@@ -12,6 +13,7 @@ import {
 import { PaginatedProjectsList } from "./PaginatedProjectsList";
 import { useDebounce } from "use-debounce";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { useCategory } from "../categories/hooks/useCategories";
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -42,8 +44,12 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
 const PROJECTS_SORTING_SEED = Math.random();
 
 export function ExploreProjectsPage(): JSX.Element {
+  const [params] = useSearchParams();
+
+  const category = useCategory(params.get("categoryId"));
+
   const seed = PROJECTS_SORTING_SEED;
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(category?.searchQuery ?? "");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 400);
 
   const applicationsFetchOptions: ApplicationFetchOptions =
