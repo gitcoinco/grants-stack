@@ -1,10 +1,4 @@
-import {
-  useAccount,
-  useChainId,
-  useEnsAddress,
-  useEnsAvatar,
-  useEnsName,
-} from "wagmi";
+import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { VotingToken } from "../api/types";
@@ -18,6 +12,7 @@ import {
   ContributionWithTimestamp,
   useContributionHistory,
 } from "../api/round";
+π;
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
