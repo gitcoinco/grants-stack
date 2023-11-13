@@ -8,8 +8,6 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
 import { PassportWidget } from "./PassportWidget";
-import { PGN as PGNLogoIcon } from "common/src/icons/PGN";
-import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
 
 export interface NavbarProps {
   customBackground?: string;
