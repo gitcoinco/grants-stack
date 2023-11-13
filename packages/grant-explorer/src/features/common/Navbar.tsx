@@ -8,6 +8,8 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
 import { PassportWidget } from "./PassportWidget";
+import { PGN as PGNLogoIcon } from "common/src/icons/PGN";
+import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -55,7 +57,19 @@ export default function Navbar(props: NavbarProps) {
               </div>
             </Link>
           </div>
+
           <div className="flex items-center gap-6">
+            <div>
+              <a
+                href="https://bridge.gitcoin.co"
+                rel="noreferrer"
+                target="_blank"
+                className="flex-shrink-0 flex items-center"
+              >
+                <PGNLogoIcon className="mr-2" />
+                <PGNTextLogoIcon fill="black" />
+              </a>
+            </div>
             <Link to="/rounds" className="font-medium hover:underline">
               Explore rounds
             </Link>
