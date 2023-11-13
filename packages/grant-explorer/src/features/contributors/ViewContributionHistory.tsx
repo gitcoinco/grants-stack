@@ -14,7 +14,7 @@ import {
 } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
-import { Address, isAddress } from "viem";
+import { isAddress } from "viem";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")
