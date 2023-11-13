@@ -18,11 +18,11 @@ const tabs: Tab[] = [
       orderDirection: "desc",
       status: [FilterStatus.active, FilterStatus.taking_applications].join(","),
     })}`,
-    children: "Explore rounds",
+    children: "Rounds",
   },
   {
     to: "/projects",
-    children: "Explore projects",
+    children: "Projects",
   },
 ];
 
