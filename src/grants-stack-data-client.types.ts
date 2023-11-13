@@ -30,6 +30,15 @@ export type DataClientInteraction =
               direction: "asc" | "desc";
             }
           | { type: "random"; seed: number };
+        filter?:
+          | {
+              type: "chain";
+              chainId: number;
+            }
+          | {
+              type: "example";
+              example: number;
+            };
       };
       response: {
         applications: ApplicationSummary[];

@@ -378,31 +378,85 @@ describe("data client", () => {
         pagination: { pageSize: 2 },
       });
 
-      for (let i = 0; i < 10; i++) {
-        const { applications, pagination } = await client.query({
-          type: "applications-paginated",
-          page: 0,
-          order: { type: "contributorCount", direction: "asc" },
-        });
+      const { applications, pagination } = await client.query({
+        type: "applications-paginated",
+        page: 0,
+        order: { type: "contributorCount", direction: "asc" },
+      });
 
-        expect(pagination).toEqual({
-          totalItems: 3,
-          totalPages: 2,
-          currentPage: 0,
-        });
-        expect(applications).toEqual([
-          {
-            applicationRef: "1:0x123:1",
-            name: "project #1",
-            contributorCount: 1,
-          },
-          {
-            applicationRef: "1:0x123:2",
-            name: "project #2",
-            contributorCount: 50,
-          },
-        ]);
-      }
+      expect(pagination).toEqual({
+        totalItems: 3,
+        totalPages: 2,
+        currentPage: 0,
+      });
+      expect(applications).toEqual([
+        {
+          applicationRef: "1:0x123:1",
+          name: "project #1",
+          contributorCount: 1,
+        },
+        {
+          applicationRef: "1:0x123:2",
+          name: "project #2",
+          contributorCount: 50,
+        },
+      ]);
+    });
+
+    test("can filter by chain", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({
+          applicationSummaries: [
+            {
+              applicationRef: "1:0x123:0",
+              name: "project #0",
+              chainId: 1,
+            },
+            {
+              applicationRef: "1:0x123:1",
+              name: "project #1",
+              chainId: 42,
+            },
+            {
+              applicationRef: "1:0x123:2",
+              name: "project #2",
+              chainId: 1,
+            },
+          ],
+        }),
+      });
+
+      const client = new GrantsStackDataClient({
+        fetch: fetchMock,
+        baseUrl: "https://example.com",
+        pagination: { pageSize: 2 },
+      });
+
+      const { applications, pagination } = await client.query({
+        type: "applications-paginated",
+        page: 0,
+        filter: { type: "chain", chainId: 1 },
+      });
+
+      expect(pagination).toEqual({
+        totalItems: 2,
+        totalPages: 1,
+        currentPage: 0,
+      });
+      expect(applications).toEqual([
+        {
+          applicationRef: "1:0x123:0",
+          name: "project #0",
+          chainId: 1,
+        },
+        {
+          applicationRef: "1:0x123:2",
+          name: "project #2",
+          chainId: 1,
+        },
+      ]);
     });
   });
 });

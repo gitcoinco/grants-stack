@@ -85,17 +85,29 @@ export class GrantsStackDataClient {
         const pageStart = q.page * this.pageSize;
         const pageEnd = pageStart + this.pageSize;
 
+        let filteredApplicationSummaries: ApplicationSummary[];
+        if (q.filter === undefined) {
+          filteredApplicationSummaries = applicationSummaries;
+        } else if (q.filter.type === "chain") {
+          const { chainId } = q.filter;
+          filteredApplicationSummaries = applicationSummaries.filter(
+            (a) => a.chainId === chainId,
+          );
+        } else {
+          throw new Error(`Filter type not implemented: ${q.filter.type}`);
+        }
+
         let orderedApplicationSummaries: ApplicationSummary[];
         if (q.order === undefined) {
-          orderedApplicationSummaries = applicationSummaries;
+          orderedApplicationSummaries = filteredApplicationSummaries;
         } else if (q.order.type === "random") {
           orderedApplicationSummaries = shuffle(
-            applicationSummaries,
+            filteredApplicationSummaries,
             q.order.seed,
           );
         } else {
           const { direction, type: property } = q.order;
-          orderedApplicationSummaries = [...applicationSummaries].sort(
+          orderedApplicationSummaries = [...filteredApplicationSummaries].sort(
             (a, b) =>
               direction === "asc"
                 ? a[property] - b[property]
@@ -109,8 +121,10 @@ export class GrantsStackDataClient {
           applications: page,
           pagination: {
             currentPage: q.page,
-            totalPages: Math.ceil(applicationSummaries.length / this.pageSize),
-            totalItems: applicationSummaries.length,
+            totalPages: Math.ceil(
+              filteredApplicationSummaries.length / this.pageSize,
+            ),
+            totalItems: filteredApplicationSummaries.length,
           },
         };
       }
