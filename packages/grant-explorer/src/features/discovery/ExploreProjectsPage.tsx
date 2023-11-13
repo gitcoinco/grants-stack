@@ -43,12 +43,12 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
 const PROJECTS_SORTING_SEED = Math.random();
 
 export function ExploreProjectsPage(): JSX.Element {
-  const [params] = useSearchParams();
+  const [urlParams, setUrlParams] = useSearchParams();
 
-  const category = useCategory(params.get("categoryId"));
+  const category = useCategory(urlParams.get("categoryId"));
 
   const seed = PROJECTS_SORTING_SEED;
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(urlParams.get("q") ?? "");
 
   let applicationsFetchOptions: ApplicationFetchOptions = {
     type: "all",
@@ -106,6 +106,13 @@ export function ExploreProjectsPage(): JSX.Element {
     pageTitle = applicationsFetchOptions.categoryName;
   }
 
+  function onSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const newSearchQuery = e.currentTarget["query"].value;
+    setSearchQuery(newSearchQuery);
+    setUrlParams(`?q=${newSearchQuery}`);
+  }
+
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
@@ -115,13 +122,7 @@ export function ExploreProjectsPage(): JSX.Element {
           isLoading ? "Loading..." : `${pageTitle} (${totalApplicationsCount})`
         }
         action={
-          <form
-            className="relative"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSearchQuery(e.currentTarget["query"].value);
-            }}
-          >
+          <form className="relative" onSubmit={onSearchSubmit}>
             <MagnifyingGlassIcon
               width={22}
               height={22}
