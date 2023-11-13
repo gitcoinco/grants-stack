@@ -87,15 +87,34 @@ export function RoundBanner(props: { roundId: string }) {
   );
 }
 
-export function CollectionBanner({ projects }: { projects: { id: string }[] }) {
+export function CollectionBanner({ projectIds }: { projectIds: string[] }) {
   return (
     <div className="overflow-hidden h-[192px]">
-      {projects.map((project) => {
-        const stockId = generateRandomNumber(project.id);
+      {projectIds.map((project) => {
+        const stockId = generateRandomNumber(project);
         const stockImage = stockImages[stockId];
         return (
           <div
             className={`bg-grey-100 h-[48px] bg-no-repeat w-full bg-cover`}
+            style={{
+              backgroundImage: `url(${stockImage})`,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+export function CategoryBanner({ projectIds }: { projectIds: string[] }) {
+  return (
+    <div className="overflow-hidden grid grid-cols-2">
+      {projectIds.map((project) => {
+        const stockId = generateRandomNumber(project);
+        const stockImage = stockImages[stockId];
+        return (
+          <div
+            className={`bg-grey-100 aspect-square w-full bg-no-repeat bg-cover`}
             style={{
               backgroundImage: `url(${stockImage})`,
             }}

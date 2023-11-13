@@ -133,7 +133,7 @@ export async function getRoundById(
         }
       `,
       chainId,
-      { roundId }
+      { roundId: roundId.toLowerCase() }
     );
 
     const round: RoundResult = res.data.rounds[0];

@@ -13,11 +13,13 @@ export const CardsContainer = tw.div`
 
 export const BasicCard = tw.div`
   w-[343px]
-  my-3
   rounded-3xl
   bg-white
   shadow-lg
   overflow-hidden
+  a > {
+    hover:opacity-90 transition hover:shadow-none
+  }
   `;
 
 export const CardHeader = tw.div`
@@ -29,7 +31,7 @@ export const CardContent = tw.div`
   space-y-4
 `;
 
-export const CardTitle = tw.p`
+export const CardTitle = tw.div`
   w-full
   text-[24px]
   font-medium
@@ -37,7 +39,7 @@ export const CardTitle = tw.p`
   pb-1
 `;
 
-export const CardDescription = tw.p`
+export const CardDescription = tw.div`
   text-sm
   md:text-base
   text-ellipsis
@@ -68,17 +70,20 @@ const colorMap = {
   green: "bg-green-100",
   grey: "bg-grey-100",
   yellow: "bg-yellow-100",
+  orange: "bg-orange-100",
 } as const;
 
 const roundedMap = {
   full: "rounded-full",
   lg: "rounded-lg",
+  "3xl": "rounded-3xl",
 } as const;
 
 export const Badge = tw.div<{
   color?: keyof typeof colorMap;
   rounded?: keyof typeof roundedMap;
   disabled?: boolean;
+  flex?: boolean;
 }>`
   font-mono
   text-xs
@@ -86,6 +91,8 @@ export const Badge = tw.div<{
   bg-gray-100
   whitespace-nowrap
   inline-flex
+  max-w-full
+  w-fit
   items-center
   justify-center
   px-2
@@ -98,13 +105,13 @@ export const Badge = tw.div<{
 export const Tabs = tw.div`
 flex
 text-lg
-md:text-2xl
+md:text-xl
 border-b-4
 border-blue-100
-gap-8
+gap-4
 `;
 export const Tab = tw(Link)<{ active?: boolean }>`
-py-4
+py-3
 px-6
 border-b-4
 border-blue-100

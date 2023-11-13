@@ -39,12 +39,8 @@ import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
 import { CheckIcon } from "@heroicons/react/solid";
 
-async function exportAndDownloadCSV(
-  roundId: string,
-  chainId: number,
-  chainName: string
-) {
-  const csv = await roundApplicationsToCSV(roundId, chainId, chainName);
+async function exportAndDownloadCSV(roundId: string, chainId: number) {
+  const csv = await roundApplicationsToCSV(roundId, chainId);
 
   // create a download link and click it
   const outputBlob = new Blob([csv], {
@@ -197,14 +193,10 @@ export default function ApplicationsToReview() {
     }
   };
 
-  async function handleExportCsvClick(
-    roundId: string,
-    chainId: number,
-    chainName: string
-  ) {
+  async function handleExportCsvClick(roundId: string, chainId: number) {
     try {
       setIsCsvExportLoading(true);
-      await exportAndDownloadCSV(roundId, chainId, chainName);
+      await exportAndDownloadCSV(roundId, chainId);
     } catch (e) {
       datadogLogs.logger.error(
         `error: exportApplicationCsv - ${e}, id: ${roundId}`
@@ -224,9 +216,7 @@ export default function ApplicationsToReview() {
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
             disabled={isCsvExportLoading}
-            onClick={() =>
-              handleExportCsvClick(utils.getAddress(id), chain.id, chain.name)
-            }
+            onClick={() => handleExportCsvClick(utils.getAddress(id), chain.id)}
           >
             {isCsvExportLoading ? (
               <>

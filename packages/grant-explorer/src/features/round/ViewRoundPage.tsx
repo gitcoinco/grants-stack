@@ -259,65 +259,71 @@ function AfterRoundStart(props: {
           <Breadcrumb items={breadCrumbs} />
         </div>
         <main>
-          <p data-testid="round-title" className="text-3xl mb-5">
-            {round.roundMetadata?.name}
-          </p>
-          <p
-            data-testid="round-badge"
-            className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4"
-            style={{ borderRadius: "20px" }}
-          >
-            {round.payoutStrategy?.strategyName &&
-              getRoundType(round.payoutStrategy?.strategyName)}
-          </p>
-          <div className="flex text-grey-400 mb-1">
-            <p className="mr-4 text-sm">
-              <span className="mr-1">Round starts on:</span>
-              <span className="mr-1">
-                {formatUTCDateAsISOString(round.roundStartTime)}
-              </span>
-              <span>{getUTCTime(round.roundStartTime)}</span>
-            </p>
-            <p className="text-sm">
-              <span className="mr-1">Round ends on:</span>
-
-              {!isInfiniteDate(round.roundEndTime) && (
-                <>
+          <div className="flex flex-col md:items-center md:justify-between md:gap-8 md:flex-row md:mb-0 mb-4">
+            <div>
+              <p data-testid="round-title" className="text-3xl mb-5">
+                {round.roundMetadata?.name}
+              </p>
+              <p
+                data-testid="round-badge"
+                className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4 rounded-[20px]"
+              >
+                {round.payoutStrategy?.strategyName &&
+                  getRoundType(round.payoutStrategy?.strategyName)}
+              </p>
+              <div className="flex text-grey-400 mb-1">
+                <p className="mr-4 text-sm">
+                  <span className="mr-1">Round starts on:</span>
                   <span className="mr-1">
-                    {formatUTCDateAsISOString(round.roundEndTime)}
+                    {formatUTCDateAsISOString(round.roundStartTime)}
                   </span>
+                  <span>{getUTCTime(round.roundStartTime)}</span>
+                </p>
+                <p className="text-sm">
+                  <span className="mr-1">Round ends on:</span>
 
-                  <span>{getUTCTime(round.roundEndTime)}</span>
-                </>
-              )}
-              {isInfiniteDate(round.roundEndTime) && (
-                <>
-                  <span>No End Date</span>
-                </>
-              )}
-            </p>
-          </div>
+                  {!isInfiniteDate(round.roundEndTime) && (
+                    <>
+                      <span className="mr-1">
+                        {formatUTCDateAsISOString(round.roundEndTime)}
+                      </span>
 
-          <p className="text-grey-400 text-sm flex gap-2 mb-4">
-            <span>Deployed on:</span>
-            <div className="flex">
-              <img
-                className="w-4 h-4 mt-0.5 mr-1"
-                src={CHAINS[chainId].logo}
-                alt="Round Chain Logo"
-              />
-              <span>{CHAINS[chainId].name}</span>
+                      <span>{getUTCTime(round.roundEndTime)}</span>
+                    </>
+                  )}
+                  {isInfiniteDate(round.roundEndTime) && (
+                    <>
+                      <span>No End Date</span>
+                    </>
+                  )}
+                </p>
+              </div>
+
+              <p className="text-grey-400 text-sm flex gap-2 mb-4">
+                <span>Deployed on:</span>
+                <div className="flex">
+                  <img
+                    className="w-4 h-4 mt-0.5 mr-1"
+                    src={CHAINS[chainId]?.logo}
+                    alt="Round Chain Logo"
+                  />
+                  <span>{CHAINS[chainId]?.name}</span>
+                </div>
+              </p>
+
+              {!isDirectRound(round) && (
+                <p className="text-1xl mb-4">
+                  Matching funds available: &nbsp;
+                  {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
+                  &nbsp;
+                  {tokenData?.symbol ?? "..."}
+                </p>
+              )}
             </div>
-          </p>
-
-          {!isDirectRound(round) && (
-            <p className="text-1xl mb-4">
-              Matching funds available: &nbsp;
-              {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
-              &nbsp;
-              {tokenData?.symbol ?? "..."}
-            </p>
-          )}
+            {!isDirectRound(round) && (
+              <ReportCard chainId={chainId} roundId={roundId} />
+            )}
+          </div>
 
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
@@ -430,7 +436,7 @@ function ProjectCard(props: {
       >
         <CardHeader>
           <ProjectBanner
-            projectMetadata={project.projectMetadata}
+            bannerImgCid={project.projectMetadata.bannerImg ?? null}
             classNameOverride={
               "bg-black h-[120px] w-full object-cover rounded-t"
             }
@@ -503,7 +509,7 @@ function CartButton(props: {
   );
 }
 
-function CartButtonToggle(props: {
+export function CartButtonToggle(props: {
   project: Project;
   isAlreadyInCart: boolean;
   addToCart: () => void;
@@ -755,5 +761,32 @@ const InactiveButton = (props: { label: string; testid: string }) => {
     >
       {label}
     </Button>
+  );
+};
+
+const ReportCard = ({
+  chainId,
+  roundId,
+}: {
+  chainId: ChainId;
+  roundId: string;
+}) => {
+  const reportCardURL = `https://reportcards.gitcoin.co/${chainId}/${roundId}`;
+
+  return (
+    <a href={reportCardURL} target="_blank" className="group w-fit">
+      <div className="rounded-lg border border-grey-500 p-4 flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <div className="rounded-lg bg-grey-100 group-hover:bg-grey-200 w-8 h-8 transition-all" />
+          <div>
+            <div className="bg-grey-100 w-9 sm:w-12 h-0.5 mb-1  group-hover:bg-grey-200 transition-all" />
+            <div className="bg-grey-100 w-9 sm:w-12 h-0.5  group-hover:bg-grey-200 transition-all" />
+          </div>
+        </div>
+        <span className="sm:text-base text-sm sm:max-w-[6rem] max-w-[5rem]">
+          Check out this round’s report card!
+        </span>
+      </div>
+    </a>
   );
 };

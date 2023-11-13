@@ -1,15 +1,10 @@
 import {
   renderToPlainText,
-  RoundPayoutType,
+  ROUND_PAYOUT_DIRECT,
   truncateDescription,
 } from "common";
 import { RoundOverview, useMetadata } from "../api/rounds";
-import {
-  getDaysLeft,
-  getPayoutToken,
-  getRoundType,
-  isInfiniteDate,
-} from "../api/utils";
+import { CHAINS, getDaysLeft } from "../api/utils";
 import {
   Badge,
   BasicCard,
@@ -19,11 +14,11 @@ import {
   CardTitle,
 } from "../common/styles";
 import RoundBanner from "./CardBanner";
-import RoundCardStat from "./RoundCardStat";
-import { useToken } from "wagmi";
-import { getAddress } from "viem";
-import { RoundDaysLeft } from "./RoundDaysLeft";
+import { RoundDaysDetails } from "./RoundDaysDetails";
 import { Skeleton, SkeletonText } from "@chakra-ui/react";
+import { RoundMatchAmountBadge } from "./RoundMatchAmountBadge";
+import { RoundStrategyBadge } from "./RoundStrategyBadge";
+import { RoundTimeBadge } from "./RoundTimeBadge";
 
 type RoundCardProps = {
   round: RoundOverview;
@@ -36,39 +31,23 @@ const RoundCard = ({ round }: RoundCardProps) => {
     matchAmount,
     projects,
     payoutStrategy,
+    roundStartTime,
     roundEndTime,
     roundMetaPtr,
+    applicationsStartTime,
     applicationsEndTime,
     token,
   } = round ?? {};
 
   const { data: metadata, isLoading } = useMetadata(roundMetaPtr?.pointer);
-  const daysLeft = getDaysLeft(Number(roundEndTime));
-  const daysLeftToApply = getDaysLeft(Number(applicationsEndTime));
-
-  // Can we simplify this? Would `days < 1000` do the same thing?
-  const isValidRoundEndTime = !isInfiniteDate(
-    new Date(parseInt(roundEndTime, 10) * 1000)
-  );
-
-  const { data } = useToken({
-    address: getAddress(token),
-    chainId: Number(chainId),
-    enabled: !!token,
-  });
-
-  const nativePayoutToken = getPayoutToken(token, chainId);
-  const { decimals = 18 } = data ?? {};
-
-  const tokenData = data ?? {
-    ...nativePayoutToken,
-    symbol: nativePayoutToken?.name ?? "ETH",
-    decimals,
-  };
+  const roundEndsIn = getDaysLeft(roundEndTime);
+  const roundStartsIn = getDaysLeft(roundStartTime);
+  const applicationsStartsIn = getDaysLeft(applicationsStartTime);
+  const applicationsEndsIn = getDaysLeft(applicationsEndTime);
 
   const approvedApplicationsCount = projects?.length ?? 0;
   return (
-    <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
+    <BasicCard className="w-full">
       <a
         target="_blank"
         href={`/#/round/${chainId}/${id}`}
@@ -76,20 +55,17 @@ const RoundCard = ({ round }: RoundCardProps) => {
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
-          {daysLeftToApply > 0 && (
-            <Badge
-              color="green"
-              rounded="full"
-              className="absolute top-3 right-3"
-            >
-              Apply!
-            </Badge>
-          )}
+          <RoundTimeBadge
+            roundEndsIn={roundEndsIn}
+            applicationsEndsIn={applicationsEndsIn}
+          />
           <CardTitle
             data-testid="round-name"
             className="absolute bottom-1 px-2 text-white"
           >
-            <Skeleton isLoaded={!isLoading}>{metadata?.name}</Skeleton>
+            <Skeleton className="truncate" isLoaded={!isLoading}>
+              {metadata?.name}
+            </Skeleton>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -105,34 +81,39 @@ const RoundCard = ({ round }: RoundCardProps) => {
             </SkeletonText>
           </CardDescription>
           <div className="flex gap-2 justfy-between items-center">
-            <RoundDaysLeft
-              daysLeft={daysLeft}
-              daysLeftToApply={daysLeftToApply}
-              isValidRoundEndTime={isValidRoundEndTime}
+            <RoundDaysDetails
+              roundStartsIn={roundStartsIn}
+              roundEndsIn={roundEndsIn}
+              applicationsStartsIn={applicationsStartsIn}
+              applicationsEndsIn={applicationsEndsIn}
             />
 
-            <RoundBadge strategyName={payoutStrategy?.strategyName} />
+            <RoundStrategyBadge strategyName={payoutStrategy?.strategyName} />
           </div>
           <div className="border-t" />
-          <RoundCardStat
-            chainId={Number(chainId)}
-            matchAmount={matchAmount}
-            token={tokenData?.symbol ?? "..."}
-            tokenDecimals={tokenData?.decimals}
-            approvedApplicationsCount={approvedApplicationsCount}
-          />
+          <div className="flex justify-between">
+            <div className="flex gap-2">
+              <Badge
+                disabled={approvedApplicationsCount === 0}
+                data-testid="approved-applications-count"
+              >
+                {approvedApplicationsCount} projects
+              </Badge>
+              {payoutStrategy?.strategyName !== ROUND_PAYOUT_DIRECT && (
+                <RoundMatchAmountBadge
+                  chainId={chainId}
+                  tokenAddress={token}
+                  matchAmount={matchAmount}
+                />
+              )}
+            </div>
+            <div>
+              <img className="w-8" src={CHAINS[chainId]?.logo} alt="" />
+            </div>
+          </div>
         </CardContent>
       </a>
     </BasicCard>
-  );
-};
-
-const RoundBadge = ({ strategyName }: { strategyName: RoundPayoutType }) => {
-  const color = ({ MERKLE: "blue", DIRECT: "yellow" } as const)[strategyName];
-  return (
-    <Badge color={color} data-testid="round-badge">
-      {getRoundType(strategyName) ?? "Unknown"}
-    </Badge>
   );
 };
 

@@ -647,16 +647,19 @@ export const pinToIPFS = (obj: IPFSObject) => {
   }
 };
 
-export const getDaysLeft = (fromTimestamp: number) => {
-  // This should be fixed with the cleanRoundData function in features/api/rounds.ts
-  // Invalid date
-  if (fromTimestamp > Number.MAX_SAFE_INTEGER) {
-    return 0;
+export const getDaysLeft = (fromTimestamp?: string) => {
+  // Some timestamps are returned as overflowed (1.15e+77)
+  // We parse these into undefined to show as "No end date" rather than make the date diff calculation
+  if (
+    fromTimestamp === undefined ||
+    Number(fromTimestamp) > Number.MAX_SAFE_INTEGER
+  ) {
+    return undefined;
   }
   const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day
 
-  const differenceInSeconds = fromTimestamp - currentTimestamp;
+  const differenceInSeconds = Number(fromTimestamp) - currentTimestamp;
   const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
 
   return differenceInDays;
@@ -740,7 +743,7 @@ export const groupProjectsInCart = (
 
 export function getPayoutToken(
   token: string,
-  chainId: string
+  chainId: ChainId
 ): VotingToken | undefined {
   if (!ChainId[Number(chainId)]) {
     throw new Error(`Couldn't find chainId: ${chainId}`);
