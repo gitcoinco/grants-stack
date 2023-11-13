@@ -6,9 +6,7 @@ import { fetchFromIPFS, useDebugMode } from "./utils";
 import { allChains } from "../../app/chainConfig";
 import { tryParseChainIdToEnum } from "common/src/chains";
 import { isPresent } from "ts-is-present";
-import { useState } from "react";
-import { FilterStatus } from "../discovery/FilterDropdown";
-import { createRoundsStatusFilter } from "../discovery/utils/createRoundsStatusFilter";
+import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
@@ -20,7 +18,7 @@ const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"]; // Meg hel
 
 export type RoundOverview = {
   id: string;
-  chainId: string;
+  chainId: ChainId;
   createdAt: string;
   roundMetaPtr: MetadataPointer;
   applicationMetaPtr: MetadataPointer;
@@ -48,9 +46,11 @@ export type RoundsVariables = {
     | "applicationsStartTime"
     | "applicationsEndTime";
   orderDirection?: "asc" | "desc";
-  where?: TimestampVariables & {
-    payoutStrategy_?: { strategyName_in: string[] };
-    and?: (TimestampVariables & { or?: TimestampVariables[] })[];
+  where?: {
+    and: [
+      { or: TimestampVariables[] },
+      { payoutStrategy_?: { or: { strategyName: string }[] } },
+    ];
   };
 };
 export type TimestampVariables = {
@@ -107,37 +107,6 @@ query GetRounds(
     }
 }
 `;
-
-export function useRoundsTakingApplications() {
-  const [takingApplicationsFilter] = useState(
-    createRoundsStatusFilter(FilterStatus.taking_applications)
-  );
-  return useRounds({ where: takingApplicationsFilter });
-}
-
-export function useActiveRounds() {
-  const [activeFilter] = useState(
-    createRoundsStatusFilter(FilterStatus.active)
-  );
-  return useRounds({
-    orderBy: "matchAmount",
-    orderDirection: "desc",
-    where: activeFilter,
-  });
-}
-
-export function useRoundsEndingSoon() {
-  const [endingSoonFilter] = useState(
-    createRoundsStatusFilter(FilterStatus.ending_soon)
-  );
-
-  return useRounds({
-    first: 3,
-    orderBy: "roundEndTime",
-    orderDirection: "asc",
-    where: endingSoonFilter,
-  });
-}
 
 export function useRounds(
   variables: RoundsVariables,
@@ -211,47 +180,72 @@ export function useRounds(
   };
 }
 
-function filterRoundsWithProjects(rounds: RoundOverview[]) {
-  return rounds;
-  return rounds.filter((round) => round?.projects?.length);
+export function filterRoundsWithProjects(rounds: RoundOverview[]) {
+  /*
+0 projects + application period is still open: show 
+0 projects + application period has closed: hide
+  */
+  const currentTimestamp = createTimestamp();
+  return rounds.filter((round) => {
+    if (round.applicationsEndTime > currentTimestamp) return true;
+    return round?.projects?.length;
+  });
 }
 
-function sortRounds(
+const timestampKeys = [
+  "roundStartTime",
+  "roundEndTime",
+  "applicationsStartTime",
+  "applicationsEndTime",
+] as const;
+
+export function sortRounds(
   rounds: RoundOverview[],
   { orderBy = "roundEndTime", orderDirection = "asc" }: RoundsVariables
 ) {
   const dir = { asc: 1, desc: -1 };
-  return rounds.sort((a, b) =>
-    a[orderBy] > b[orderBy] ? dir[orderDirection] : -dir[orderDirection]
+  /*
+  Something to note about sorting by matchAmount is that it doesn't
+  take token decimals into consideration. For example USDC has 6 decimals.
+  */
+  const isNumber = ["matchAmount", ...timestampKeys].includes(orderBy);
+
+  const compareFn = isNumber
+    ? (a: RoundOverview, b: RoundOverview) =>
+        BigInt(a[orderBy] ?? Number.MAX_SAFE_INTEGER) >
+        BigInt(b[orderBy] ?? Number.MAX_SAFE_INTEGER)
+    : (a: RoundOverview, b: RoundOverview) =>
+        a[orderBy] ?? "" > b[orderBy] ?? "";
+
+  return [...rounds].sort((a, b) =>
+    compareFn(a, b) ? dir[orderDirection] : -dir[orderDirection]
   );
 }
 /* 
 Some timestamps are in milliseconds and others in overflowed values (115792089237316195423570985008687907853269984665640564039457584007913129639935)
 See this query: https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet/graphql?query=query+%7B%0A+++rounds%28first%3A+3%2C%0A++++++orderBy%3A+roundEndTime%2C%0A++++++orderDirection%3A+asc%0A++++%29+%7B%0A++++++id%0A++++++roundEndTime%0A+++++%0A++++%7D%0A%7D
 */
-function cleanRoundData(rounds: RoundOverview[]) {
-  const timestampKeys = [
-    "roundStartTime",
-    "roundEndTime",
-    "applicationsStartTime",
-    "applicationsEndTime",
-  ] as const;
+const OVERFLOWED_TIMESTAMP =
+  "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+export function cleanRoundData(rounds: RoundOverview[]) {
   return rounds.map((round) => ({
     ...round,
     ...timestampKeys.reduce(
       (acc, key) => ({
         ...acc,
         [key]:
-          round[key].length > 10 // This timestamp is in milliseconds, convert to seconds
-            ? Math.round(Number(round.roundEndTime) / 1000).toString()
-            : round.roundEndTime,
+          round[key] === OVERFLOWED_TIMESTAMP
+            ? undefined
+            : round[key].length > 10 // This timestamp is in milliseconds, convert to seconds
+            ? Math.round(Number(round[key]) / 1000).toString()
+            : round[key],
       }),
       {}
     ),
   }));
 }
 
-function filterRounds(
+export function filterRounds(
   cache: Cache<{ roundType: string }>,
   rounds?: RoundOverview[]
 ) {

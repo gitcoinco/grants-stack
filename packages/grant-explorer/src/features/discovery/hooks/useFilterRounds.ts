@@ -1,10 +1,40 @@
 import { useMemo } from "react";
-import { getActiveChainIds, useRounds } from "../../api/rounds";
+import {
+  RoundsVariables,
+  TimestampVariables,
+  getActiveChainIds,
+  useRounds,
+} from "../../api/rounds";
 import { FilterProps } from "../FilterDropdown";
 import { SortProps } from "../SortDropdown";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
+import { ROUND_PAYOUT_MERKLE } from "common";
 
 type Filter = SortProps & FilterProps;
+
+export enum FilterStatus {
+  active = "active",
+  taking_applications = "taking_applications",
+  finished = "finished",
+  ending_soon = "ending_soon",
+}
+
+export const activeFilter = {
+  orderBy: "matchAmount",
+  orderDirection: "desc",
+  status: FilterStatus.active,
+  type: ROUND_PAYOUT_MERKLE,
+  network: "",
+} as const;
+
+export const endingSoonFilter = {
+  first: 3,
+  orderBy: "roundEndTime",
+  orderDirection: "asc",
+  type: "",
+  network: "",
+  status: FilterStatus.ending_soon,
+} as const;
 
 export function useFilterRounds(filter: Filter) {
   const chainIds = getActiveChainIds();
@@ -19,18 +49,29 @@ export function useFilterRounds(filter: Filter) {
     {
       orderBy: filter.orderBy || "createdAt",
       orderDirection: filter.orderDirection || "desc",
-      where: {
-        ...statusFilter,
-        payoutStrategy_: strategyNames.length
-          ? { strategyName_in: strategyNames }
-          : undefined,
-      },
+      where: createRoundWhereFilter(statusFilter, strategyNames),
     },
     // If no network filters have been set, query all chains
     !filterChains.length
       ? chainIds
       : chainIds.filter((id) => filterChains.includes(String(id)))
   );
+}
+function createRoundWhereFilter(
+  statusFilter: TimestampVariables[],
+  strategyNames: string[]
+): RoundsVariables["where"] {
+  const payoutStrategy = strategyNames.length
+    ? strategyNames.map((strategyName) => ({ strategyName }))
+    : undefined;
+
+  return {
+    and: [
+      // Find rounds that match both statusFilter and round type
+      { or: statusFilter },
+      { payoutStrategy_: payoutStrategy ? { or: payoutStrategy } : undefined },
+    ],
+  };
 }
 
 export function parseFilterParams(

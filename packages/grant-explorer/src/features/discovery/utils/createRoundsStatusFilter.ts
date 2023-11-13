@@ -1,7 +1,7 @@
 import { TimestampVariables } from "../../api/rounds";
-import { FilterStatus } from "../FilterDropdown";
+import { FilterStatus } from "../hooks/useFilterRounds";
 
-const createTimestamp = (timestamp = 0) => {
+export const createTimestamp = (timestamp = 0) => {
   const NOW_IN_SECONDS = Date.now() / 1000;
   return Math.floor(NOW_IN_SECONDS + timestamp).toString();
 };
@@ -17,7 +17,8 @@ function getStatusFilter(status: string): TimestampVariables {
     case FilterStatus.active:
       return {
         // Round must have started and not ended yet
-        roundStartTime_gt: currentTimestamp,
+        roundStartTime_lt: currentTimestamp,
+        roundEndTime_gt: currentTimestamp,
         roundEndTime_lt: futureTimestamp,
       };
     case FilterStatus.taking_applications:
@@ -38,23 +39,20 @@ function getStatusFilter(status: string): TimestampVariables {
         ),
       };
     default:
-      return {
-        roundStartTime_gt: currentTimestamp,
-        roundEndTime_lt: futureTimestamp,
-      };
+      return {};
   }
 }
-export function createRoundsStatusFilter(
-  status: string = FilterStatus.active
-): TimestampVariables {
-  // Merge the status filters
-  return status
-    ?.split(",")
-    .filter(Boolean)
-    .reduce((filters, key) => {
-      return {
-        ...filters,
-        ...getStatusFilter(key),
-      };
-    }, {});
+
+export function createRoundsStatusFilter(status: string): TimestampVariables[] {
+  // Default to all filters
+  const selectedFilters =
+    status ||
+    [
+      FilterStatus.active,
+      FilterStatus.taking_applications,
+      FilterStatus.finished,
+    ].join(",");
+
+  // Build a filter array: [activeFilter, takingApplicationsFilter]
+  return selectedFilters?.split(",").filter(Boolean).map(getStatusFilter);
 }
