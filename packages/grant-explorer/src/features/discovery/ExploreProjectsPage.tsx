@@ -89,13 +89,15 @@ export function ExploreProjectsPage(): JSX.Element {
     );
   }
 
+  const pageTitle = category?.name ?? "All projects";
+
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
 
       <LandingSection
         title={
-          isLoading ? "Loading..." : `All projects (${totalApplicationsCount})`
+          isLoading ? "Loading..." : `${pageTitle} (${totalApplicationsCount})`
         }
         action={
           <form className="relative" onSubmit={(e) => e.preventDefault()}>
