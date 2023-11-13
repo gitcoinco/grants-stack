@@ -33,7 +33,7 @@ Here is an example of the entire flow in action.
 ```javascript
 // Init LIT config
 const lit = new Lit({
-  chain: "goerli",
+  chainId: 5,
   contract: "0x22c0e3EDc90f6A890A259130B416Cd5F3Ee4Aca0",
 });
 

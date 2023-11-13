@@ -17,10 +17,11 @@ import { graphqlFetch } from "../utils/graphql";
 import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
-import { chains } from "../utils/wagmi";
+import { getEnabledChainsAndProviders } from "../utils/chains";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
+const { chains } = getEnabledChainsAndProviders();
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 
 export type SubgraphApplication = {
