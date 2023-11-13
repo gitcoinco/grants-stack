@@ -118,6 +118,7 @@ export const TokenNamesAndLogos = {
   ARB: "./logos/arb-logo.svg",
   AVAX: "./logos/avax-logo.svg",
   MATIC: "./logos/pol-logo.svg",
+  GIST: "./logos/gitcoin-gist-logo.svg",
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -163,6 +164,17 @@ export const OPTIMISM_MAINNET_TOKENS: VotingToken[] = [
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
     defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "GIST",
+    chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+    address: "0xCE47Bd89c342Dab2232652573a64B0A4252a7049",
+    decimal: 0,
+    logo: TokenNamesAndLogos["GIST"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    permitVersion: "2",
+    defaultForVoting: false,
     canVote: true,
   },
 ];
