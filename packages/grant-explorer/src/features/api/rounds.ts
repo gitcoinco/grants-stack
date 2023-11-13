@@ -1,3 +1,4 @@
+import { getAddress } from "viem";
 import useSWR, { useSWRConfig, Cache } from "swr";
 import { ChainId, RoundPayoutType, graphql_fetch } from "common";
 import { RoundMetadata } from "./round";
@@ -12,9 +13,27 @@ const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
   "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc", // Gitcoin Citizens Round #1
   "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38", // Greenpill Q2 2023
-];
+].map((a) => getAddress(a)); // Normalize address
 
-const invalidRounds = ["0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef"]; // Meg hello
+const invalidRounds = [
+  "0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef", // Meg hello
+
+  // https://github.com/gitcoinco/grants-stack/issues/2569
+  "0x7c1104c39e09e7c6114f3d4e30a180a714deac7d",
+  "0x79715bf10dab457e06020ec41efae3484cff59dc",
+  "0x4632ea15ba3c1a7e072996fb316efefb8280381b",
+  "0xfe36ff9c59788a6a9ad7a979f459d69372dad0e6",
+  "0xa7149a073db99cd9ac267daf0c4f7767e50acf3f",
+  "0x4abc6f3322158bcec933f18998709322de7152c2",
+  "0xae53557089a1d771cd5cebeaf6accbe8f064ff4c",
+  "0xee3ed186939af2c55d33d242c4588426e368c8d0",
+  "0x8011e814439b44aa340bc3373df06233f45e3202",
+  "0xf3cd7429e863a39a9ecab60adc4676c1934076f2",
+  "0x88fc9d6695bedd34bbbe4ea0e2510573200713c7",
+  "0xae18f327ce481a7316d28a625d4c378c1f8b03a2",
+  "0x9b3b1e7edf9c5eea07fb3c7270220be1c3fea111",
+  "0x4c19261ff6e5736a2677a06741bf1e68995e7c95",
+].map((a) => getAddress(a)); // Normalize address
 
 export type RoundOverview = {
   id: string;
@@ -250,18 +269,18 @@ export function filterRounds(
   rounds?: RoundOverview[]
 ) {
   return rounds?.filter((round) => {
+    if (validRounds.includes(getAddress(round.id))) {
+      return true;
+    }
+
+    if (invalidRounds.includes(getAddress(round.id))) {
+      return false;
+    }
+
     // Get the round metadata
     const metadata = cache.get(`@"metadata","${round.roundMetaPtr.pointer}",`);
     if (metadata?.data?.roundType === "public") {
       return true;
-    }
-
-    if (validRounds.includes(round.id)) {
-      return true;
-    }
-
-    if (invalidRounds.includes(round.id)) {
-      return false;
     }
   });
 }
