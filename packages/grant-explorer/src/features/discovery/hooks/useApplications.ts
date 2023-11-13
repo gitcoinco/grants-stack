@@ -54,7 +54,8 @@ export function useApplications(options: ApplicationFetchOptions) {
   return {
     applications,
     isLoading: !data && !error,
-    isLoadingMore: size > 0 && typeof data?.[size - 1] === "undefined",
+    isLoadingMore:
+      size > 0 && typeof data?.[size - 1] === "undefined" && !error,
     loadedPageCount: size,
     totalApplicationsCount,
     loadNextPage: () => setSize(size + 1),

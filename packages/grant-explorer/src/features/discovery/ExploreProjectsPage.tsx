@@ -11,7 +11,6 @@ import {
   useApplications,
 } from "./hooks/useApplications";
 import { PaginatedProjectsList } from "./PaginatedProjectsList";
-import { useDebounce } from "use-debounce";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useCategory } from "../categories/hooks/useCategories";
 
@@ -50,13 +49,12 @@ export function ExploreProjectsPage(): JSX.Element {
 
   const seed = PROJECTS_SORTING_SEED;
   const [searchQuery, setSearchQuery] = useState(category?.searchQuery ?? "");
-  const [debouncedSearchQuery] = useDebounce(searchQuery, 400);
 
   const applicationsFetchOptions: ApplicationFetchOptions =
-    debouncedSearchQuery.length === 0
+    searchQuery.length === 0
       ? { seed }
       : {
-          searchQuery: debouncedSearchQuery,
+          searchQuery: searchQuery,
         };
 
   const {
@@ -100,7 +98,13 @@ export function ExploreProjectsPage(): JSX.Element {
           isLoading ? "Loading..." : `${pageTitle} (${totalApplicationsCount})`
         }
         action={
-          <form className="relative" onSubmit={(e) => e.preventDefault()}>
+          <form
+            className="relative"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSearchQuery(e.currentTarget["query"].value);
+            }}
+          >
             <MagnifyingGlassIcon
               width={22}
               height={22}
@@ -108,9 +112,9 @@ export function ExploreProjectsPage(): JSX.Element {
             />
             <input
               type="text"
+              name="query"
               placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              defaultValue={searchQuery}
               className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
             />
           </form>
