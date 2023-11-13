@@ -29,7 +29,6 @@ type ApplicationWithMetadata = Application & {
 export async function roundApplicationsToCSV(
   roundId: string,
   chainId: number,
-  chainName: string,
   approvedOnly?: boolean
 ) {
   const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.json`;
@@ -50,10 +49,7 @@ export async function roundApplicationsToCSV(
   }
 
   const lit = new Lit({
-    chain:
-      chainName.toLowerCase() === "pgn"
-        ? "publicGoodsNetwork"
-        : chainName.toLowerCase(),
+    chainId: chainId,
     contract: roundId,
   });
 
