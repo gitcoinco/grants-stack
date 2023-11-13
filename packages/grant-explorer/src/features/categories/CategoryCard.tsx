@@ -11,12 +11,16 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
   if (isLoading) {
     return <div>...</div>;
   }
-  const { id, name, projects } = category;
+  const { id, name } = category;
+
+  // TODO: Define the category pictures - where do we do this?
+  const projectIds = Array.from({ length: 4 }).map((_, i) => `${id}-${i}`);
+
   return (
     <BasicCard className="w-full">
-      <a target="_blank" href={`/#/projects?categoryId=${id}`}>
+      <a href={`/#/projects?categoryId=${id}`}>
         <CardHeader>
-          <CategoryBanner projectIds={projects} />
+          <CategoryBanner projectIds={projectIds} />
         </CardHeader>
         <CardContent>
           <div className="font-medium truncate text-xl">{name}</div>
