@@ -16,7 +16,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useCategory } from "../categories/hooks/useCategories";
 import { useCollection } from "../collections/hooks/useCollections";
 import { CollectionDetails } from "../collections/CollectionDetails";
-import { FilterDropdown, FilterDropdownOption } from "./FilterDropdown";
+import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
 import { allChains } from "../../app/chainConfig";
 
 type Filter =

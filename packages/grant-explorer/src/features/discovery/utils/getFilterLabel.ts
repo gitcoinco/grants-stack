@@ -1,8 +1,4 @@
-import {
-  FilterOption,
-  filterOptions,
-  FilterProps,
-} from "../RoundFilterDropdown";
+import { FilterOption, filterOptions, FilterProps } from "../FilterDropdown";
 
 const hasManySelections = (arr: string[]) => arr.filter(Boolean).length > 1;
 const findSelection = (value: string, arr: string[]) =>
