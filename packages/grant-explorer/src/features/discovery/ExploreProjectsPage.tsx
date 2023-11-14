@@ -13,6 +13,8 @@ import {
 import { PaginatedProjectsList } from "./PaginatedProjectsList";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useCategory } from "../categories/hooks/useCategories";
+import { useCollection } from "../collections/hooks/useCollections";
+import { CollectionDetails } from "../collections/CollectionDetails";
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -46,6 +48,7 @@ export function ExploreProjectsPage(): JSX.Element {
   const [urlParams, setUrlParams] = useSearchParams();
 
   const category = useCategory(urlParams.get("categoryId"));
+  const collection = useCollection(urlParams.get("collectionId"));
 
   const seed = PROJECTS_SORTING_SEED;
   const [searchQuery, setSearchQuery] = useState(urlParams.get("q") ?? "");
@@ -116,6 +119,8 @@ export function ExploreProjectsPage(): JSX.Element {
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
+
+      {collection && <CollectionDetails collection={collection} />}
 
       <LandingSection
         title={
