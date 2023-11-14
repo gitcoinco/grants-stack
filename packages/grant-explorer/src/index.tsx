@@ -34,15 +34,9 @@ import { ChakraProvider } from "@chakra-ui/react";
 import ExploreRoundsPage from "./features/discovery/ExploreRoundsPage";
 import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 
-// Initialize sentry
 initSentry();
-
-// Initialize datadog
 initDatadog();
-
-// Initialize tagmanager
 initTagmanager();
-
 initPosthog();
 
 const root = ReactDOM.createRoot(
