@@ -90,7 +90,6 @@ export class GrantsStackDataClient {
           filteredApplicationSummaries = applicationSummaries;
         } else if (q.filter.type === "chains") {
           const { chainIds } = q.filter;
-          console.log({ chainIds });
           filteredApplicationSummaries = applicationSummaries.filter((a) =>
             chainIds.includes(a.chainId),
           );
