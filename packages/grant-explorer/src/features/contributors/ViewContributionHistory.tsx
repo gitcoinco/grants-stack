@@ -12,7 +12,6 @@ import {
   ContributionWithTimestamp,
   useContributionHistory,
 } from "../api/round";
-π;
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
