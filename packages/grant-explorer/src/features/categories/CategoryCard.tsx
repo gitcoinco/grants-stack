@@ -17,7 +17,7 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
       <a
         target="_blank"
         href={`/#/projects?categoryId=${id}`}
-        data-track-event="category-card"
+        data-track-event="home-category-card"
       >
         <CardHeader>
           <CategoryBanner projectIds={projects} />

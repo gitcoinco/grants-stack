@@ -21,12 +21,12 @@ const tabs: Tab[] = [
       status: [FilterStatus.active, FilterStatus.taking_applications].join(","),
     })}`,
     children: "Explore rounds",
-    tabName: "rounds-tab",
+    tabName: "home-rounds-tab",
   },
   {
     to: "/projects",
     children: "Explore projects",
-    tabName: "projects-tab",
+    tabName: "home-projects-tab",
   },
 ];
 

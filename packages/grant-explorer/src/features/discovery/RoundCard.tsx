@@ -50,15 +50,15 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
   const approvedApplicationsCount = projects?.length ?? 0;
 
   const trackEventValue = roundType === "all" && "round-card";
-  roundType === "endingSoon" && "ending-soon-round-card";
+  roundType === "endingSoon" && "home-rounds-ending-card";
   roundType === "active" &&
     index % 3 &&
     index % 4 &&
-    "donate-now-round-card-small";
+    "home-donate-now-card-small";
   roundType === "active" &&
     !(index % 3) &&
     !(index % 4) &&
-    "donate-now-round-card-big";
+    "home-donate-now-card-big";
 
   return (
     <BasicCard className="w-full">

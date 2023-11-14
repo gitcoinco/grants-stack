@@ -10,8 +10,8 @@ type CollectionCardProps = {
 const CollectionCard = ({ collection, index }: CollectionCardProps) => {
   const { id, name, projects } = collection;
   const trackEventValue = [0, 1, 6, 7].includes(index)
-    ? "collections-card-big"
-    : "collections-card-small";
+    ? "home-collections-card-big"
+    : "home-collections-card-small";
 
   return (
     <BasicCard className="w-full">
