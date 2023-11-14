@@ -10,7 +10,7 @@ import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
 import { Button } from "common/src/styles";
 import { formatDistanceToNowStrict } from "date-fns";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { useEnsName } from "wagmi";
@@ -33,6 +33,9 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { getAddress } from "viem";
+import { Box, Tab, Tabs } from "@chakra-ui/react";
+import { GrantList } from "./KarmaGrant/GrantList";
+import { useGap } from "../api/gap";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -68,6 +71,8 @@ export const IAM_SERVER =
 const verifier = new PassportVerifier();
 
 export default function ViewProjectDetails() {
+  const [selectedTab, setSelectedTab] = useState(0);
+
   datadogLogs.logger.info(
     "====> Route: /round/:chainId/:roundId/:applicationId"
   );
@@ -80,6 +85,8 @@ export default function ViewProjectDetails() {
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
   );
+
+  const { grants } = useGap(projectToRender?.projectRegistryId as string);
 
   const currentTime = new Date();
   const isAfterRoundEndDate =
@@ -122,6 +129,51 @@ export default function ViewProjectDetails() {
     },
   ] as BreadcrumbItem[];
 
+  const projectDetailsTabs = useMemo(
+    () => [
+      {
+        name: "Project details",
+        content: (
+          <>
+            <DescriptionTitle />
+            {!!projectToRender && (
+              <>
+                <Detail
+                  text={projectToRender.projectMetadata.description}
+                  testID="project-metadata"
+                />
+                <ApplicationFormAnswers
+                  answers={projectToRender.grantApplicationFormAnswers}
+                />
+              </>
+            )}
+          </>
+        ),
+      },
+      {
+        name: "Grants",
+        content: <GrantList grants={grants} />,
+      },
+    ],
+    [grants, projectToRender]
+  );
+
+  useEffect(() => {
+    const tab = window.location.search.split("=")[1];
+    console.debug("tab", tab);
+    if (tab) {
+      setSelectedTab(
+        projectDetailsTabs.findIndex(
+          (t) => t.name.toLowerCase() === tab.toLowerCase()
+        )
+      );
+    }
+  }, [projectDetailsTabs]);
+
+  const handleTabChange = (tabIndex: number) => {
+    setSelectedTab(tabIndex);
+  };
+
   return (
     <>
       <Navbar />
@@ -152,22 +204,18 @@ export default function ViewProjectDetails() {
               </div>
               <div className="flex flex-col md:flex-row xl:max-w-[1800px] w-full">
                 <div className="grow">
-                  <div>
+                  <div className="relative">
                     <ProjectTitle
                       projectMetadata={projectToRender.projectMetadata}
                     />
                     <AboutProject projectToRender={projectToRender} />
-                  </div>
-                  <div>
-                    <DescriptionTitle />
-                    <Detail
-                      text={projectToRender.projectMetadata.description}
-                      testID="project-metadata"
-                    />
-                    <ApplicationFormAnswers
-                      answers={projectToRender.grantApplicationFormAnswers}
+                    <ProjectDetailsTabs
+                      selected={selectedTab}
+                      onChange={handleTabChange}
+                      tabs={projectDetailsTabs.map((tab) => tab.name)}
                     />
                   </div>
+                  <div>{projectDetailsTabs[selectedTab].content}</div>
                 </div>
                 {round && !isDirectRound(round) && (
                   <div className="md:visible invisible  min-w-fit">
@@ -224,6 +272,28 @@ function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
         {props.projectMetadata.title}
       </h1>
     </div>
+  );
+}
+
+function ProjectDetailsTabs(props: {
+  tabs: string[];
+  onChange?: (tabIndex: number) => void;
+  selected: number;
+}) {
+  return (
+    <Box className="__project-details-tabs absolute" bottom={0.5}>
+      {props.tabs.length > 0 && (
+        <Tabs
+          display="flex"
+          onChange={props.onChange}
+          defaultIndex={props.selected}
+        >
+          {props.tabs.map((tab, index) => (
+            <Tab key={index}>{tab}</Tab>
+          ))}
+        </Tabs>
+      )}
+    </Box>
   );
 }
 
@@ -299,7 +369,7 @@ function AboutProject(props: { projectToRender: Project }) {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-16">
       {projectRecipient && (
         <span className="flex items-center mt-4 gap-1">
           <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
