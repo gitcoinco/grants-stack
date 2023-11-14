@@ -19,6 +19,8 @@ const applicationsMock: ApplicationSummary[] = [
     summaryText: "Project Summary 1",
     bannerImageCid: "bannerCid",
     logoImageCid: "logoCid",
+    contributionsTotalUsd: 100,
+    contributorCount: 1,
   },
   {
     roundName: "Round 2",
@@ -34,6 +36,8 @@ const applicationsMock: ApplicationSummary[] = [
     summaryText: "Project Summary 2",
     bannerImageCid: "bannerCid",
     logoImageCid: "logoCid",
+    contributionsTotalUsd: 100,
+    contributorCount: 1,
   },
 ];
 
