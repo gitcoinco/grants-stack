@@ -46,8 +46,17 @@ const RoundCard = ({ round }: RoundCardProps) => {
   const applicationsEndsIn = getDaysLeft(applicationsEndTime);
 
   const approvedApplicationsCount = projects?.length ?? 0;
+  const handleCardClick = () => {
+    // Pushing event to the data layer
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "round_card_click",
+      roundId: id,
+      roundName: metadata?.name,
+    });
+  };
   return (
-    <BasicCard className="w-full">
+    <BasicCard className="w-full" onClick={handleCardClick}>
       <a
         target="_blank"
         href={`/#/round/${chainId}/${id}`}

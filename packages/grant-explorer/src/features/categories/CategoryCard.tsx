@@ -12,8 +12,17 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
     return <div>...</div>;
   }
   const { id, name, projects } = category;
+  const handleCardClick = () => {
+    // Pushing event to the data layer
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "category_card_click",
+      categoryId: id,
+      categoryName: name,
+    });
+  };
   return (
-    <BasicCard className="w-full">
+    <BasicCard className="w-full" onClick={handleCardClick}>
       <a target="_blank" href={`/#/projects?categoryId=${id}`}>
         <CardHeader>
           <CategoryBanner projectIds={projects} />

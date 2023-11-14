@@ -8,8 +8,18 @@ type CollectionCardProps = {
 
 const CollectionCard = ({ collection }: CollectionCardProps) => {
   const { id, name, projects } = collection;
+  const handleCardClick = () => {
+    // Pushing event to the data layer
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "collection_card_click",
+      collectionId: id,
+      collectionName: name,
+    });
+  };
+
   return (
-    <BasicCard className="w-full">
+    <BasicCard className="w-full" onClick={handleCardClick}>
       <a target="_blank" href={`/#/projects?collectionId=${id}`}>
         <CardHeader>
           <CollectionBanner projectIds={projects} />
