@@ -1,0 +1,45 @@
+name: Data client - Lint & Test & Typecheck
+on:
+  push:
+    branches:
+      - main
+      - release
+  pull_request:
+    branches:
+      - "**"
+jobs:
+  lint-test-typecheck:
+    concurrency: ci-data-client-${{ github.head_ref || github.run_id }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: |
+          pnpm install
+
+      # TODO
+      # - name: Lint Data Client
+      #   run: |
+      #     pnpm dc-lint
+
+      - name: Test Data Client
+        run: |
+          pnpm dc-test
+
+      # TODO    
+      # - name: Typecheck Explorer
+      #   run: |
+      #     pnpm ge-typecheck
