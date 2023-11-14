@@ -1,5 +1,5 @@
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
-import { FilterProps } from "../FilterDropdown";
+import { FilterProps } from "../RoundFilterDropdown";
 import { getFilterLabel } from "./getFilterLabel";
 import { FilterStatus } from "../hooks/useFilterRounds";
 

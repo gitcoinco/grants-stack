@@ -5,7 +5,7 @@ import {
   getActiveChainIds,
   useRounds,
 } from "../../api/rounds";
-import { FilterProps } from "../FilterDropdown";
+import { FilterProps } from "../RoundFilterDropdown";
 import { SortProps } from "../SortDropdown";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
 import { ROUND_PAYOUT_MERKLE } from "common";

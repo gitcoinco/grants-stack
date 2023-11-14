@@ -1,5 +1,5 @@
 import { SortDropdown, type SortProps } from "./SortDropdown";
-import { FilterDropdown, type FilterProps } from "./FilterDropdown";
+import { FilterDropdown, type FilterProps } from "./RoundFilterDropdown";
 
 type Filter = SortProps & FilterProps;
 

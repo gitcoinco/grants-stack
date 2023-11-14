@@ -2,6 +2,16 @@ import useSWRInfinite from "swr/infinite";
 import { useGrantsStackDataClient } from "common/src/grantsStackDataClientContext";
 import { useMemo } from "react";
 
+export type ApplicationFilter =
+  | {
+      type: "chain";
+      chainIds: number[];
+    }
+  | {
+      type: "refs";
+      refs: string[];
+    };
+
 export type ApplicationFetchOptions =
   | {
       type: "search";
@@ -15,6 +25,7 @@ export type ApplicationFetchOptions =
   | {
       type: "all";
       seed: number;
+      filter?: ApplicationFilter;
     };
 
 export function useApplications(options: ApplicationFetchOptions) {
