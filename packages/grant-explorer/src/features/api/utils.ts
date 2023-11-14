@@ -169,7 +169,7 @@ export const OPTIMISM_MAINNET_TOKENS: VotingToken[] = [
   {
     name: "GIST",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-    address: "0xCE47Bd89c342Dab2232652573a64B0A4252a7049",
+    address: "0x93a5347036f69bc6f37ed2b59cbcdda927719217",
     decimal: 0,
     logo: TokenNamesAndLogos["GIST"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
