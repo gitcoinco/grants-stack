@@ -27,7 +27,7 @@ vi.mock("swr", async () => {
     useSWRConfig: () => {
       return {
         mutate: () => {},
-        cache: { get: (key: string) => ({ data: { roundType: "public" } }) },
+        cache: { get: () => ({ data: { roundType: "public" } }) },
       };
     },
   };
