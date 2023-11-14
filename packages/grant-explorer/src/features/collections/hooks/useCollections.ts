@@ -9,7 +9,7 @@ export type Collection = {
 };
 
 // TODO: Define collections
-export const collections: Collection[] = Array.from({ length: 8 }).map(() => ({
+export const collections: Collection[] = Array.from({ length: 10 }).map(() => ({
   id: faker.finance.ethereumAddress(),
   author: faker.finance.ethereumAddress(),
   name: faker.animal.bird(),

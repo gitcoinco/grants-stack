@@ -27,10 +27,10 @@ const LandingPage = () => {
       <LandingSection title="Community collections">
         <CollectionsGrid
           data={collections}
-          loadingCount={8}
-          maxCount={8}
+          loadingCount={10}
+          maxCount={10}
           getItemClassName={(_, i) =>
-            `${[0, 1, 6, 7].includes(i) ? "md:col-span-2" : ""}`
+            `${[0, 9].includes(i) ? "md:col-span-2" : ""}`
           }
         />
       </LandingSection>
