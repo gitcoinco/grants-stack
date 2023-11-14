@@ -7,7 +7,7 @@ import { ApplicationStatus, CartProject } from "../api/types";
 import { useMemo, useState } from "react";
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import {
-  ApplicationFetchOptions,
+  createApplicationFetchOptions,
   useApplications,
 } from "./hooks/useApplications";
 import { PaginatedProjectsList } from "./PaginatedProjectsList";
@@ -42,34 +42,19 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
   return `${application.roundId}-${application.roundApplicationId}`;
 }
 
-const PROJECTS_SORTING_SEED = Math.random();
-
 export function ExploreProjectsPage(): JSX.Element {
   const [urlParams, setUrlParams] = useSearchParams();
 
   const category = useCategory(urlParams.get("categoryId"));
   const collection = useCollection(urlParams.get("collectionId"));
 
-  const seed = PROJECTS_SORTING_SEED;
   const [searchQuery, setSearchQuery] = useState(urlParams.get("q") ?? "");
 
-  let applicationsFetchOptions: ApplicationFetchOptions = {
-    type: "all",
-    seed,
-  };
-
-  if (searchQuery.length > 0) {
-    applicationsFetchOptions = {
-      type: "search",
-      searchQuery: searchQuery,
-    };
-  } else if (category !== undefined) {
-    applicationsFetchOptions = {
-      type: "category",
-      searchQuery: `${category.searchQuery} --strategy=semantic`,
-      categoryName: category.name,
-    };
-  }
+  const applicationsFetchOptions = createApplicationFetchOptions({
+    searchQuery,
+    category,
+    collection,
+  });
 
   const {
     applications,
@@ -103,10 +88,12 @@ export function ExploreProjectsPage(): JSX.Element {
 
   let pageTitle = "All projects";
 
-  if (applicationsFetchOptions.type === "search") {
+  if (searchQuery.length > 0) {
     pageTitle = "Search results";
-  } else if (applicationsFetchOptions.type === "category") {
-    pageTitle = applicationsFetchOptions.categoryName;
+  } else if (category) {
+    pageTitle = category?.name;
+  } else if (collection) {
+    pageTitle = collection?.name;
   }
 
   function onSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -116,31 +103,46 @@ export function ExploreProjectsPage(): JSX.Element {
     setUrlParams(`?q=${newSearchQuery}`);
   }
 
+  console.log(applications);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
 
-      {collection && <CollectionDetails collection={collection} />}
+      {collection && (
+        <CollectionDetails
+          collection={collection}
+          onAddAllApplicationsToCart={() => alert("not implemented")}
+        />
+      )}
 
       <LandingSection
         title={
-          isLoading ? "Loading..." : `${pageTitle} (${totalApplicationsCount})`
+          collection
+            ? ""
+            : isLoading
+            ? "Loading..."
+            : `${pageTitle} (${totalApplicationsCount})`
         }
+        // title={
+        //   isLoading ? "Loading..." : `${pageTitle} (${totalApplicationsCount})`
+        // }
         action={
-          <form className="relative" onSubmit={onSearchSubmit}>
-            <MagnifyingGlassIcon
-              width={22}
-              height={22}
-              className="text-white absolute left-[14px] top-[10px]"
-            />
-            <input
-              type="text"
-              name="query"
-              placeholder="Search..."
-              defaultValue={searchQuery}
-              className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
-            />
-          </form>
+          !collection && (
+            <form className="relative" onSubmit={onSearchSubmit}>
+              <MagnifyingGlassIcon
+                width={22}
+                height={22}
+                className="text-white absolute left-[14px] top-[10px]"
+              />
+              <input
+                type="text"
+                name="query"
+                placeholder="Search..."
+                defaultValue={searchQuery}
+                className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
+              />
+            </form>
+          )
         }
         className="flex-wrap"
       >

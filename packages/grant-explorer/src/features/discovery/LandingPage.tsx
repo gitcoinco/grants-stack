@@ -11,16 +11,29 @@ import {
 import { toQueryString } from "./RoundsFilter";
 import { CategoriesGrid } from "../categories/CategoriesGrid";
 import { useCategories } from "../categories/hooks/useCategories";
+import { CollectionsGrid } from "../collections/CollectionsGrid";
+import { useCollections } from "../collections/hooks/useCollections";
 
 const LandingPage = () => {
   const activeRounds = useFilterRounds(activeFilter);
   const roundsEndingSoon = useFilterRounds(endingSoonFilter);
 
   const categories = useCategories();
+  const collections = useCollections();
 
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
+      <LandingSection title="Community collections">
+        <CollectionsGrid
+          data={collections}
+          loadingCount={10}
+          maxCount={10}
+          getItemClassName={(_, i) =>
+            `${[0, 9].includes(i) ? "md:col-span-2" : ""}`
+          }
+        />
+      </LandingSection>
       <LandingSection title="Categories">
         <CategoriesGrid data={categories} loadingCount={8} maxCount={8} />
       </LandingSection>

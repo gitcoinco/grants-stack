@@ -1,20 +1,22 @@
 import useSWRInfinite from "swr/infinite";
 import { useGrantsStackDataClient } from "common/src/grantsStackDataClientContext";
 import { useMemo } from "react";
+import { Category } from "../../categories/hooks/useCategories";
+import { Collection } from "../../collections/hooks/useCollections";
 
 export type ApplicationFetchOptions =
   | {
-      type: "search";
-      searchQuery: string;
+      type: "applications-search";
+      queryString: string;
     }
   | {
-      type: "category";
-      searchQuery: string;
-      categoryName: string;
+      type: "applications-by-refs";
+      refs: string[];
     }
   | {
-      type: "all";
-      seed: number;
+      type: "applications-paginated";
+      page?: number;
+      order?: { type: "random"; seed: number };
     };
 
 export function useApplications(options: ApplicationFetchOptions) {
@@ -23,33 +25,48 @@ export function useApplications(options: ApplicationFetchOptions) {
   const { data, error, size, setSize } = useSWRInfinite(
     (pageIndex) => [pageIndex, options, "/applications"],
     async ([pageIndex]) => {
-      if ("searchQuery" in options) {
-        const { results, pagination } = await grantsStackDataClient.query({
-          page: pageIndex,
-          type: "applications-search",
-          queryString: options.searchQuery,
-        });
+      // TODO: Improve this - would be great if we could query like this without the switch:
+      // const res = await grantsStackDataClient.query({ page, ...options })
+      switch (options.type) {
+        case "applications-search": {
+          const { results, pagination } = await grantsStackDataClient.query({
+            page: pageIndex,
+            ...options,
+          });
 
-        // unzip data and meta
-        const applications = results.map((result) => result.data);
-        const applicationMeta = results.map((result) => result.meta);
+          // unzip data and meta
+          const applications = results.map((result) => result.data);
+          const applicationMeta = results.map((result) => result.meta);
 
-        return {
-          applications,
-          applicationMeta,
-          pagination,
-        };
-      } else {
-        const { applications, pagination } = await grantsStackDataClient.query({
-          type: "applications-paginated",
-          page: pageIndex,
-          order: {
-            type: "random",
-            seed: options.seed,
-          },
-        });
+          return {
+            applications,
+            applicationMeta,
+            pagination,
+          };
+        }
+        case "applications-paginated": {
+          const { applications, pagination } =
+            await grantsStackDataClient.query({
+              page: pageIndex,
+              ...options,
+            });
+          return {
+            applications,
+            pagination,
+            applicationMeta: [],
+          };
+        }
+        case "applications-by-refs": {
+          const res = await grantsStackDataClient.query({
+            ...options,
+          });
 
-        return { applications, pagination, applicationMeta: [] };
+          return {
+            applications: res.applications,
+            pagination: { totalItems: options.refs.length },
+            applicationMeta: [],
+          };
+        }
       }
     }
   );
@@ -81,4 +98,42 @@ export function useApplications(options: ApplicationFetchOptions) {
     error,
     hasMorePages: totalApplicationsCount > applications.length,
   };
+}
+
+const PROJECTS_SORTING_SEED = Math.random();
+
+export function createApplicationFetchOptions({
+  searchQuery = "",
+  category,
+  collection,
+}: {
+  searchQuery?: string;
+  category?: Category;
+  collection?: Collection;
+}): ApplicationFetchOptions {
+  let applicationsFetchOptions: ApplicationFetchOptions = {
+    type: "applications-paginated",
+    order: {
+      type: "random",
+      seed: PROJECTS_SORTING_SEED,
+    },
+  };
+
+  if (searchQuery.length > 0) {
+    applicationsFetchOptions = {
+      type: "applications-search",
+      queryString: searchQuery,
+    };
+  } else if (category !== undefined) {
+    applicationsFetchOptions = {
+      type: "applications-search",
+      queryString: `${category.searchQuery} --strategy=semantic`,
+    };
+  } else if (collection !== undefined) {
+    applicationsFetchOptions = {
+      type: "applications-by-refs",
+      refs: collection.projects,
+    };
+  }
+  return applicationsFetchOptions;
 }
