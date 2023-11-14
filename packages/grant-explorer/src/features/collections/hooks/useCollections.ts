@@ -132,7 +132,6 @@ export const collections: Collection[] = [
       "Culpa tempora quo eveniet atque a iusto harum. Molestiae autem voluptates quasi quod quae voluptate nam sint. Doloribus non ullam maxime tempora molestiae nostrum.",
   },
 ].map((c, i) => ({ ...c, projects: projectRefs.slice(i, 4 + i) }));
-console.log(collections);
 
 export function useCollections() {
   return collections;
