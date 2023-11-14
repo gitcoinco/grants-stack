@@ -68,20 +68,10 @@ export function ProjectCard(props: {
   // TODO: viem's getAddress fails with Error: expected Uint8Array, got object under Vitest
   const roundId = application.roundId.toLowerCase() as Address;
 
-  const handleCardClick = () => {
-    // Pushing event to the data layer
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "project_card_click",
-      applicationId: application.roundApplicationId,
-      applicationName: application.name,
-    });
-  };
-
   return (
     <BasicCard
       className="w-full hover:opacity-90 transition hover:shadow-none"
-      onClick={handleCardClick}
+      data-track-event="project_card_click"
     >
       <a
         target="_blank"
