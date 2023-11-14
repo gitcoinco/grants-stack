@@ -1,5 +1,10 @@
 import { SortDropdown, type SortProps } from "./SortDropdown";
-import { FilterDropdown, type FilterProps } from "./FilterDropdown";
+import {
+  FilterDropdown,
+  roundFilterOptions,
+  projectFilterOptions,
+  type FilterProps,
+} from "./FilterDropdown";
 
 type Filter = SortProps & FilterProps;
 
@@ -12,7 +17,18 @@ export function RoundsFilter() {
       </div>
       <div className="flex gap-2 items-center">
         <div>Filter by</div>
-        <FilterDropdown />
+        <FilterDropdown filterOptions={roundFilterOptions} />
+      </div>
+    </div>
+  );
+}
+
+export function ProjectsFilter() {
+  return (
+    <div className="md:flex gap-4 font-mono text-sm">
+      <div className="flex gap-2 items-center">
+        <div>Filter by</div>
+        <FilterDropdown filterOptions={projectFilterOptions} />
       </div>
     </div>
   );

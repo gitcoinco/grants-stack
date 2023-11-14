@@ -2,7 +2,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { RoundsVariables } from "../api/rounds";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { parseFilterParams } from "./hooks/useFilterRounds";
-import { toQueryString } from "./RoundsFilter";
+import { toQueryString } from "./Filter";
 import { getSortLabel } from "./utils/getSortLabel";
 
 type Option = {

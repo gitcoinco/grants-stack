@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { Tab, Tabs } from "../common/styles";
-import { toQueryString } from "./RoundsFilter";
+import { toQueryString } from "./Filter";
 import { FilterStatus } from "./hooks/useFilterRounds";
 
 type Tab = {

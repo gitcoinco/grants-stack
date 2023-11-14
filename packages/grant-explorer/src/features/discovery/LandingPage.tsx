@@ -8,7 +8,7 @@ import {
   endingSoonFilter,
   useFilterRounds,
 } from "./hooks/useFilterRounds";
-import { toQueryString } from "./RoundsFilter";
+import { toQueryString } from "./Filter";
 import { useCollections } from "../collections/hooks/useCollections";
 import { CollectionsGrid } from "../collections/CollectionsGrid";
 import { CategoriesGrid } from "../categories/CategoriesGrid";

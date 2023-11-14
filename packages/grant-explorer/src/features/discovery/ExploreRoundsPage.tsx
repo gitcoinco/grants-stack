@@ -3,7 +3,7 @@ import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import { parseFilterParams, useFilterRounds } from "./hooks/useFilterRounds";
-import { RoundsFilter } from "./RoundsFilter";
+import { RoundsFilter } from "./Filter";
 import { getExplorerPageTitle } from "./utils/getExplorerPageTitle";
 import { RoundsGrid } from "./RoundsGrid";
 

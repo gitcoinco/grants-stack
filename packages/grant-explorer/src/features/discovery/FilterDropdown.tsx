@@ -4,7 +4,7 @@ import { Transition, Disclosure } from "@headlessui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 import { Dropdown, DropdownItem } from "../common/Dropdown";
-import { toQueryString } from "./RoundsFilter";
+import { toQueryString } from "./Filter";
 import { FilterStatus, parseFilterParams } from "./hooks/useFilterRounds";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { getFilterLabel } from "./utils/getFilterLabel";
@@ -101,7 +101,10 @@ export type FilterProps = {
   network: string;
 };
 
-export function FilterDropdown() {
+export function FilterDropdown(props: {
+  filterOptions: FilterOption[];
+}): JSX.Element {
+  const { filterOptions } = props;
   const [params] = useSearchParams();
 
   const filter = parseFilterParams(params);
@@ -111,7 +114,7 @@ export function FilterDropdown() {
   return (
     <Dropdown
       label={selected?.label}
-      options={roundFilterOptions}
+      options={filterOptions}
       keepOpen
       renderItem={({ label, value: filterKey, children, close }) => {
         // Filters can be multi selected (ie many networks)
