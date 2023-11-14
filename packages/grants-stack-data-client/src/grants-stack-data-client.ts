@@ -93,8 +93,13 @@ export class GrantsStackDataClient {
           filteredApplicationSummaries = applicationSummaries.filter(
             (a) => a.chainId === chainId,
           );
+        } else if (q.filter.type === "refs") {
+          const { refs } = q.filter;
+          filteredApplicationSummaries = applicationSummaries.filter((a) =>
+            refs.includes(a.applicationRef),
+          );
         } else {
-          throw new Error(`Filter type not implemented: ${q.filter.type}`);
+          throw new Error(`Unreachable brank invoked`);
         }
 
         let orderedApplicationSummaries: ApplicationSummary[];

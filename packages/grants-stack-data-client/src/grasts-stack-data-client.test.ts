@@ -458,5 +458,44 @@ describe("data client", () => {
         },
       ]);
     });
+
+    test("can filter by refs", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => ({
+          applicationSummaries: [
+            { applicationRef: "1:0x123:0", name: "project #0" },
+            { applicationRef: "1:0x123:1", name: "project #1" },
+            { applicationRef: "1:0x123:2", name: "project #2" },
+          ],
+        }),
+      });
+
+      const client = new GrantsStackDataClient({
+        fetch: fetchMock,
+        baseUrl: "https://example.com",
+      });
+      const { applications } = await client.query({
+        type: "applications-paginated",
+        page: 0,
+        filter: {
+          type: "refs",
+          refs: ["1:0x123:0", "1:0x123:2"],
+        },
+      });
+
+      expect(applications).toEqual([
+        { applicationRef: "1:0x123:0", name: "project #0" },
+        { applicationRef: "1:0x123:2", name: "project #2" },
+      ]);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://example.com/applications",
+        {
+          method: "GET",
+          headers: {},
+        },
+      );
+    });
   });
 });

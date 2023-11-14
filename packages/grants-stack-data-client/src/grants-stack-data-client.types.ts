@@ -36,8 +36,8 @@ export type DataClientInteraction =
               chainId: number;
             }
           | {
-              type: "example";
-              example: number;
+              type: "refs";
+              refs: string[];
             };
       };
       response: {
