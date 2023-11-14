@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useSWR from "swr";
 import { Hex } from "viem";
 
 const indexerUrl = process.env.REACT_APP_KARMA_GAP_INDEXER_URL;
@@ -30,12 +31,10 @@ export interface IGapGrant {
 
 export function useGap(projectId?: string) {
   const [grants, setGrants] = useState<IGapGrant[]>([]);
-  const [isGapLoading, setIsGapLoading] = useState(false);
 
   const getGrantsFor = async (projectRegistryId: string) => {
     if (!indexerUrl) throw new Error("GAP Indexer url not set.");
     try {
-      setIsGapLoading(true);
       const items: IGapGrant[] = await fetch(
         `${indexerUrl}/grants/external-id/${projectRegistryId}`
       ).then((res) => res.json());
@@ -74,14 +73,15 @@ export function useGap(projectId?: string) {
       console.error(`No grants found for project: ${projectRegistryId}`);
       console.error(e);
       setGrants([]);
-    } finally {
-      setIsGapLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (projectId) getGrantsFor(projectId);
-  }, [projectId]);
+  const { isLoading } = useSWR(
+    `${indexerUrl}/grants/external-id/${projectId}`,
+    {
+      fetcher: async () => projectId && getGrantsFor(projectId),
+    }
+  );
 
   return {
     /**
@@ -93,7 +93,7 @@ export function useGap(projectId?: string) {
      * Grants for a project (loaded from GAP)
      */
     grants,
-    isGapLoading,
+    isGapLoading: isLoading,
   };
 }
 
