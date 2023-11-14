@@ -1,4 +1,8 @@
-import { FilterOption, filterOptions, FilterProps } from "../FilterDropdown";
+import {
+  FilterOption,
+  roundFilterOptions,
+  FilterProps,
+} from "../FilterDropdown";
 
 const hasManySelections = (arr: string[]) => arr.filter(Boolean).length > 1;
 const findSelection = (value: string, arr: string[]) =>
@@ -33,7 +37,7 @@ export function getFilterLabel({
     return { label: "Multiple", value: "multiple" };
   }
 
-  const selected = filterOptions.reduce<FilterOption>(
+  const selected = roundFilterOptions.reduce<FilterOption>(
     (label, { children }) => {
       // Search for a selected filter
       const match = children?.find((child) =>

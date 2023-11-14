@@ -16,7 +16,7 @@ export type FilterOption = {
   hide?: boolean;
   children?: FilterOption[];
 };
-export const filterOptions: FilterOption[] = [
+export const roundFilterOptions: FilterOption[] = [
   {
     label: "All",
     value: "",
@@ -65,6 +65,36 @@ export const filterOptions: FilterOption[] = [
   },
 ];
 
+export const projectFilterOptions: FilterOption[] = [
+  {
+    label: "All",
+    value: "",
+    children: [],
+  },
+  {
+    label: "Status",
+    value: "status",
+    children: [
+      {
+        label: "Active",
+        value: FilterStatus.active,
+      },
+      {
+        label: "Finished",
+        value: FilterStatus.finished,
+      },
+    ],
+  },
+  {
+    label: "Network",
+    value: "network",
+    children: allChains.map(({ id, name }) => ({
+      label: `Rounds on ${name}`,
+      value: String(id),
+    })),
+  },
+];
+
 export type FilterProps = {
   type: string;
   status: string;
@@ -81,7 +111,7 @@ export function FilterDropdown() {
   return (
     <Dropdown
       label={selected?.label}
-      options={filterOptions}
+      options={roundFilterOptions}
       keepOpen
       renderItem={({ label, value: filterKey, children, close }) => {
         // Filters can be multi selected (ie many networks)
