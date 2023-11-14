@@ -20,8 +20,6 @@ describe("ProjectCard", () => {
     summaryText: "Project Summary",
     bannerImageCid: "bannerCid",
     logoImageCid: "logoCid",
-    contributionsTotalUsd: 100,
-    contributorCount: 1,
   };
 
   it("renders correctly with required props", () => {
