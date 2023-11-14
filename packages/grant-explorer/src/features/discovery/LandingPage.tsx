@@ -1,6 +1,3 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-
 import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
@@ -18,16 +15,6 @@ import { CategoriesGrid } from "../categories/CategoriesGrid";
 import { useCategories } from "../categories/hooks/useCategories";
 
 const LandingPage = () => {
-  const location = useLocation();
-  useEffect(() => {
-    if (
-      process.env.REACT_APP_ENV === "production" &&
-      !location.search.includes("skip_redirect")
-    ) {
-      window.location.replace("https://grants.gitcoin.co");
-    }
-  }, [location]);
-
   const activeRounds = useFilterRounds(activeFilter);
   const roundsEndingSoon = useFilterRounds(endingSoonFilter);
 

@@ -1,4 +1,3 @@
-import { DetailedVote as Contribution } from "allo-indexer-client";
 import { VotingToken } from "../api/types";
 import {
   ChevronRightIcon,
@@ -10,9 +9,10 @@ import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
 import { ChainId } from "common";
 import { formatUnits } from "viem";
+import { ContributionWithTimestamp } from "../api/round";
 
 export function DonationsTable(props: {
-  contributions: { chainId: ChainId; data: Contribution[] }[];
+  contributions: { chainId: ChainId; data: ContributionWithTimestamp[] }[];
   tokens: Record<string, VotingToken>;
   activeRound: boolean;
 }) {
@@ -52,10 +52,18 @@ export function DonationsTable(props: {
           </th>
         </tr>
         {props.contributions.length > 0 &&
-          props.contributions.map((chainContribution) => {
-            const { chainId, data } = chainContribution;
-            return data.map((contribution) => {
-              const tokenId = contribution.token.toLowerCase() + "-" + chainId;
+          props.contributions
+            .map((contributions) => {
+              return contributions.data.map((contribution) => ({
+                ...contribution,
+                chainId: contributions.chainId,
+              }));
+            })
+            .flat()
+            .sort((a, b) => Number(b.timestamp - a.timestamp))
+            .map((contribution) => {
+              const tokenId =
+                contribution.token.toLowerCase() + "-" + contribution.chainId;
               const token = props.tokens[tokenId];
 
               let formattedAmount = "N/A";
@@ -75,13 +83,15 @@ export function DonationsTable(props: {
                         <div className="flex items-center">
                           <img
                             className="w-4 h-4 mr-2"
-                            src={CHAINS[chainId]?.logo}
+                            src={CHAINS[contribution.chainId]?.logo}
                             alt="Round Chain Logo"
                           />
                           <Link
                             className={`underline inline-block lg:pr-2 lg:max-w-[200px] max-w-[75px] 2xl:max-w-fit truncate`}
                             title={contribution.roundName}
-                            to={`/round/${chainId}/${contribution.roundId.toLowerCase()}`}
+                            to={`/round/${
+                              contribution.chainId
+                            }/${contribution.roundId.toLowerCase()}`}
                             target="_blank"
                           >
                             {contribution.roundName}
@@ -91,7 +101,9 @@ export function DonationsTable(props: {
                         <Link
                           className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
                           title={contribution.projectTitle}
-                          to={`/round/${chainId}/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
+                          to={`/round/${
+                            contribution.chainId
+                          }/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
                             contribution.applicationId
                           }`}
                           target="_blank"
@@ -112,15 +124,14 @@ export function DonationsTable(props: {
                   <td className="border-b py-4 lg:pr-12 w-1/3 lg:w-1/4">
                     <div className="flex justify-end">
                       <TransactionButton
-                        chainId={chainId}
+                        chainId={contribution.chainId}
                         txHash={contribution.transaction}
                       />
                     </div>
                   </td>
                 </tr>
               );
-            });
-          })}
+            })}
       </table>
       {props.contributions.length === 0 && (
         <div className="text-md mt-2 mb-12">

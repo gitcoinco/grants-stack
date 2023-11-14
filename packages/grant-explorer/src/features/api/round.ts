@@ -12,8 +12,10 @@ import {
   DetailedVote as Contribution,
 } from "allo-indexer-client";
 import { useEffect, useState } from "react";
-import { getAddress } from "viem";
+import { getAddress, Hex } from "viem";
 import { RoundVisibilityType } from "common";
+import _ from "lodash";
+import { getPublicClient } from "@wagmi/core";
 
 /**
  * Shape of subgraph response
@@ -72,7 +74,7 @@ export type ContributionHistoryState =
   | { type: "loading" }
   | {
       type: "loaded";
-      data: { chainId: number; data: Contribution[] }[];
+      data: { chainId: number; data: ContributionWithTimestamp[] }[];
     }
   | { type: "error"; error: string };
 
@@ -133,7 +135,7 @@ export async function getRoundById(
         }
       `,
       chainId,
-      { roundId }
+      { roundId: roundId.toLowerCase() }
     );
 
     const round: RoundResult = res.data.rounds[0];
@@ -276,6 +278,10 @@ export async function getProjectOwners(
   }
 }
 
+export type ContributionWithTimestamp = Contribution & {
+  timestamp: bigint;
+};
+
 export const useContributionHistory = (
   chainIds: number[],
   rawAddress: string
@@ -292,9 +298,12 @@ export const useContributionHistory = (
     const fetchContributions = async () => {
       const fetchPromises: Promise<{
         chainId: number;
-        data: Contribution[];
+        data: ContributionWithTimestamp[];
         error?: string;
       }>[] = chainIds.map((chainId: number) => {
+        const publicClient = getPublicClient({
+          chainId,
+        });
         if (!process.env.REACT_APP_ALLO_API_URL) {
           throw new Error("REACT_APP_ALLO_API_URL is not set");
         }
@@ -319,8 +328,37 @@ export const useContributionHistory = (
 
         return client
           .getContributionsByAddress(address)
-          .then((data) => {
-            return { chainId, error: undefined, data };
+          .then(async (data) => {
+            const txTimestamps = await Promise.all(
+              data.map(async (contribution) => {
+                const tx = await publicClient.getTransaction({
+                  /* We are casting to Hex here as viem doesn't yet include a getHex parsing method */
+                  hash: contribution.transaction as Hex,
+                });
+
+                const block = await publicClient.getBlock({
+                  blockHash: tx.blockHash,
+                });
+
+                return { tx: tx.hash, timestamp: block.timestamp };
+              })
+            );
+
+            return {
+              chainId,
+              error: undefined,
+              data: _(data)
+                .map((contribution) => ({
+                  ...contribution,
+                  timestamp:
+                    txTimestamps.find(
+                      (txTimestamp) =>
+                        txTimestamp.tx === contribution.transaction
+                    )?.timestamp ?? 0n,
+                }))
+                .orderBy("timestamp", "desc")
+                .value(),
+            };
           })
           .catch((error) => {
             console.log(

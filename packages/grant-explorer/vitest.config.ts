@@ -18,6 +18,11 @@ export default defineConfig({
       ["**/ViewRoundPage.test.tsx", "happy-dom"],
       ["**/ApplyNowSection.test.tsx", "happy-dom"],
       ["**/LandingPage.test.tsx", "happy-dom"],
+      ["**/useFilterRounds.test.tsx", "happy-dom"],
+      ["**/createRoundsStatusFilter.test.tsx", "happy-dom"],
+      ["**/getExplorerPageTitle.test.tsx", "happy-dom"],
+      ["**/getFilterLabel.test.tsx", "happy-dom"],
+
       // most component tests need to be tsx and run in jsdom
       ["**/*.tsx", "jsdom"],
       // everything else runs in node
