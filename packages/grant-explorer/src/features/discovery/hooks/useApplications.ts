@@ -34,7 +34,7 @@ export function useApplications(options: ApplicationFetchOptions) {
   const { data, error, size, setSize } = useSWRInfinite(
     (pageIndex) => [pageIndex, options, "/applications"],
     async ([pageIndex]) => {
-      if ("searchQuery" in options) {
+      if (options.type === "category" || options.type === "search") {
         const { results, pagination } = await grantsStackDataClient.query({
           page: pageIndex,
           type: "applications-search",
