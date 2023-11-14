@@ -6758,7 +6758,7 @@ packages:
       '@tanstack/react-query': ^4.35.0
     dependencies:
       '@tanstack/query-persist-client-core': 4.35.0
-      '@tanstack/react-query': 4.35.0(react@18.2.0)
+      '@tanstack/react-query': 4.35.0(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /@tanstack/react-query@4.35.0(react-dom@18.2.0)(react@18.2.0):
@@ -10236,7 +10236,6 @@ packages:
     requiresBuild: true
     dependencies:
       node-gyp-build: 4.6.1
-    dev: false
 
   /builtin-modules@3.3.0:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
@@ -23351,7 +23350,7 @@ packages:
       spdy: 4.0.2
       webpack: 5.88.2(esbuild@0.18.20)
       webpack-dev-middleware: 5.3.3(webpack@5.88.2)
-      ws: 8.14.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 8.14.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -23843,7 +23842,7 @@ packages:
         optional: true
     dev: false
 
-  /ws@8.14.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
+  /ws@8.14.0(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-WR0RJE9Ehsio6U4TuM+LmunEsjQ5ncHlw4sn9ihD6RoJKZrVyH9FWV3dmnwu8B2aNib1OvG2X6adUCyFpQyWcg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
