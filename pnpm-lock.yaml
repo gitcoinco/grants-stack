@@ -19,10 +19,10 @@ importers:
         version: 1.10.15
     devDependencies:
       '@commitlint/cli':
-        specifier: ^17.6.3
+        specifier: ^17.7.1
         version: 17.7.1
       '@commitlint/config-conventional':
-        specifier: ^17.6.3
+        specifier: ^17.7.0
         version: 17.7.0
 
   packages/builder:
@@ -345,7 +345,7 @@ importers:
         version: 10.16.4(react-dom@18.2.0)(react@18.2.0)
       grants-stack-data-client:
         specifier: github:gitcoinco/grants-stack-data-client
-        version: github.com/gitcoinco/grants-stack-data-client/f887367302bdbb12ab9d24e90abcedbb4e416a99(typescript@5.2.2)
+        version: github.com/gitcoinco/grants-stack-data-client/9182ebf2365b5d5a21b279538872643804b19653(typescript@5.2.2)
       markdown-it:
         specifier: ^13.0.1
         version: 13.0.1
@@ -10225,6 +10225,13 @@ packages:
 
   /bufferutil@4.0.7:
     resolution: {integrity: sha512-kukuqc39WOHtdxtw4UScxF/WVnMFVSQVKhtx3AjZJzhd0RGZZldcrfSEbVsWWe6KNH253574cq5F+wpv0G9pJw==}
+    engines: {node: '>=6.14.2'}
+    requiresBuild: true
+    dependencies:
+      node-gyp-build: 4.6.1
+
+  /bufferutil@4.0.8:
+    resolution: {integrity: sha512-4T53u4PdgsXqKaIctwF8ifXlRTTmEPJ8iEPWFdGZvcf7sbwYo6FKFEX9eNNAnzFZ7EzJAQ3CJeOtCRA4rDp7Pw==}
     engines: {node: '>=6.14.2'}
     requiresBuild: true
     dependencies:
@@ -20727,9 +20734,9 @@ packages:
       '@babel/runtime': 7.22.15
       eventemitter3: 4.0.7
       uuid: 8.3.2
-      ws: 8.14.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 8.14.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     optionalDependencies:
-      bufferutil: 4.0.7
+      bufferutil: 4.0.8
       utf-8-validate: 5.0.10
     dev: false
 
@@ -23343,7 +23350,7 @@ packages:
       spdy: 4.0.2
       webpack: 5.88.2(esbuild@0.18.20)
       webpack-dev-middleware: 5.3.3(webpack@5.88.2)
-      ws: 8.14.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 8.14.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -23835,7 +23842,7 @@ packages:
         optional: true
     dev: false
 
-  /ws@8.14.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
+  /ws@8.14.0(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-WR0RJE9Ehsio6U4TuM+LmunEsjQ5ncHlw4sn9ihD6RoJKZrVyH9FWV3dmnwu8B2aNib1OvG2X6adUCyFpQyWcg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -23847,7 +23854,7 @@ packages:
       utf-8-validate:
         optional: true
     dependencies:
-      bufferutil: 4.0.7
+      bufferutil: 4.0.8
       utf-8-validate: 5.0.10
 
   /xml-name-validator@3.0.0:
@@ -24047,9 +24054,9 @@ packages:
       '@types/node': 18.17.14
     dev: false
 
-  github.com/gitcoinco/grants-stack-data-client/f887367302bdbb12ab9d24e90abcedbb4e416a99(typescript@5.2.2):
-    resolution: {tarball: https://codeload.github.com/gitcoinco/grants-stack-data-client/tar.gz/f887367302bdbb12ab9d24e90abcedbb4e416a99}
-    id: github.com/gitcoinco/grants-stack-data-client/f887367302bdbb12ab9d24e90abcedbb4e416a99
+  github.com/gitcoinco/grants-stack-data-client/9182ebf2365b5d5a21b279538872643804b19653(typescript@5.2.2):
+    resolution: {tarball: https://codeload.github.com/gitcoinco/grants-stack-data-client/tar.gz/9182ebf2365b5d5a21b279538872643804b19653}
+    id: github.com/gitcoinco/grants-stack-data-client/9182ebf2365b5d5a21b279538872643804b19653
     name: grants-stack-data-client
     version: 1.0.0
     engines: {node: '>=18'}

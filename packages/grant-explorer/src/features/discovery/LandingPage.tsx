@@ -9,8 +9,6 @@ import {
   useFilterRounds,
 } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
-import { useCollections } from "../collections/hooks/useCollections";
-import { CollectionsGrid } from "../collections/CollectionsGrid";
 import { CategoriesGrid } from "../categories/CategoriesGrid";
 import { useCategories } from "../categories/hooks/useCategories";
 
@@ -19,21 +17,10 @@ const LandingPage = () => {
   const roundsEndingSoon = useFilterRounds(endingSoonFilter);
 
   const categories = useCategories();
-  const collections = useCollections();
 
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
-      <LandingSection title="Community collections">
-        <CollectionsGrid
-          data={collections}
-          loadingCount={8}
-          maxCount={8}
-          getItemClassName={(_, i) =>
-            `${[0, 1, 6, 7].includes(i) ? "md:col-span-2" : ""}`
-          }
-        />
-      </LandingSection>
       <LandingSection title="Categories">
         <CategoriesGrid data={categories} loadingCount={8} maxCount={8} />
       </LandingSection>

@@ -50,10 +50,8 @@ const GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE = 50;
 
 const grantsStackDataClient = new GrantsStackDataClient({
   baseUrl: getConfig().grantsStackDataClient.baseUrl,
-  applications: {
-    pagination: {
-      pageSize: GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE,
-    },
+  pagination: {
+    pageSize: GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE,
   },
 });
 
