@@ -1,6 +1,6 @@
 import { ChainId } from "common";
 
-import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils";
+import { fetchFromIPFS, graphql_fetch, pinToIPFS, dateFromMs } from "../utils";
 
 describe("graphql_fetch", () => {
   beforeEach(() => {
@@ -304,5 +304,10 @@ describe("pinToIPFS", () => {
       "https://api.pinata.cloud/pinning/pinJSONToIPFS",
       params
     );
+  });
+
+  it("should create a formatted date string with milliseconds or seconds", () => {
+    expect(dateFromMs(1627622400000)).toEqual("Jul 30, 2021");
+    expect(dateFromMs(1627622400)).toEqual("Jul 30, 2021");
   });
 });
