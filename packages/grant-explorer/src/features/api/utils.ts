@@ -173,7 +173,7 @@ export const OPTIMISM_MAINNET_TOKENS: VotingToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["GIST"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
-    permitVersion: "2",
+    permitVersion: "1",
     defaultForVoting: false,
     canVote: true,
   },
