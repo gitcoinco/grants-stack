@@ -77,7 +77,7 @@ function filterListToApplicationFilter(
 
   if (filteredByChainIds.length > 0) {
     return {
-      type: "chain",
+      type: "chains",
       chainIds: filteredByChainIds,
     };
   }
@@ -128,8 +128,7 @@ export function ExploreProjectsPage(): JSX.Element {
   } else if (category !== undefined) {
     applicationsFetchOptions = {
       type: "category",
-      searchQuery: `${category.searchQuery} --strategy=semantic`,
-      categoryName: category.name,
+      searchQuery: category.searchQuery,
     };
   }
 
@@ -167,8 +166,11 @@ export function ExploreProjectsPage(): JSX.Element {
 
   if (applicationsFetchOptions.type === "search") {
     pageTitle = "Search results";
-  } else if (applicationsFetchOptions.type === "category") {
-    pageTitle = applicationsFetchOptions.categoryName;
+  } else if (
+    applicationsFetchOptions.type === "category" &&
+    category !== undefined
+  ) {
+    pageTitle = category.name;
   }
 
   function onSearchSubmit(e: React.FormEvent<HTMLFormElement>) {

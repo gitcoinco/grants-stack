@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 export type ApplicationFilter =
   | {
-      type: "chain";
+      type: "chains";
       chainIds: number[];
     }
   | {
@@ -20,7 +20,6 @@ export type ApplicationFetchOptions =
   | {
       type: "category";
       searchQuery: string;
-      categoryName: string;
     }
   | {
       type: "all";
@@ -35,10 +34,15 @@ export function useApplications(options: ApplicationFetchOptions) {
     (pageIndex) => [pageIndex, options, "/applications"],
     async ([pageIndex]) => {
       if (options.type === "category" || options.type === "search") {
+        const searchQuery =
+          options.type === "category"
+            ? `${options.searchQuery} --strategy=semantic`
+            : options.searchQuery;
+
         const { results, pagination } = await grantsStackDataClient.query({
           page: pageIndex,
           type: "applications-search",
-          queryString: options.searchQuery,
+          queryString: searchQuery,
         });
 
         // unzip data and meta
@@ -54,6 +58,7 @@ export function useApplications(options: ApplicationFetchOptions) {
         const { applications, pagination } = await grantsStackDataClient.query({
           type: "applications-paginated",
           page: pageIndex,
+          filter: options.filter,
           order: {
             type: "random",
             seed: options.seed,
