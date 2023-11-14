@@ -30,7 +30,7 @@ const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   {
     label: "Network",
     children: allChains.map(({ id, name }) => ({
-      label: `Rounds on ${name}`,
+      label: `Projects on ${name}`,
       value: { type: "chain", chainId: id },
     })),
     allowMultiple: true,
