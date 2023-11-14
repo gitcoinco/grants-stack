@@ -19,10 +19,10 @@ importers:
         version: 1.10.15
     devDependencies:
       '@commitlint/cli':
-        specifier: ^17.6.3
+        specifier: ^17.7.1
         version: 17.7.1
       '@commitlint/config-conventional':
-        specifier: ^17.6.3
+        specifier: ^17.7.0
         version: 17.7.0
 
   packages/builder:

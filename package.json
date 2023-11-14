@@ -36,8 +36,8 @@
     "dc-test": "turbo run test --filter=grants-stack-data-client"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.6.3",
-    "@commitlint/config-conventional": "^17.6.3"
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0"
   },
   "dependencies": {
     "prettier": "^3.0.3",
