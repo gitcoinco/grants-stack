@@ -27,7 +27,7 @@ import LandingPage from "./features/discovery/LandingPage";
 import ThankYou from "./features/round/ThankYou";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
-import ViewContributionHistory from "./features/contributors/ViewContributionHistory";
+import { ViewContributionHistoryPage } from "./features/contributors/ViewContributionHistory";
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import { ChakraProvider } from "@chakra-ui/react";
 import ExploreRoundsPage from "./features/discovery/ExploreRoundsPage";
@@ -89,7 +89,7 @@ root.render(
 
                   <Route
                     path="/contributors/:address"
-                    element={<ViewContributionHistory />}
+                    element={<ViewContributionHistoryPage />}
                   />
 
                   {/* Access Denied */}

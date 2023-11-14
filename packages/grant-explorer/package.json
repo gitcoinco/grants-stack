@@ -71,6 +71,7 @@
     "https-browserify": "^1.0.0",
     "ipfs-core": "^0.14.3",
     "ipfs-core-types": "^0.14.0",
+    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "moment": "^2.29.3",
     "node-fetch": "^3.3.1",
