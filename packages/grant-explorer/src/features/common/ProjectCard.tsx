@@ -69,10 +69,7 @@ export function ProjectCard(props: {
   const roundId = application.roundId.toLowerCase() as Address;
 
   return (
-    <BasicCard
-      className="w-full hover:opacity-90 transition hover:shadow-none"
-      data-track-event="project_card_click"
-    >
+    <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">
       <a
         target="_blank"
         href={applicationPath({
@@ -80,6 +77,7 @@ export function ProjectCard(props: {
           roundId,
           applicationId: application.roundApplicationId,
         })}
+        data-track-event="project-card"
       >
         <CardHeader className="relative">
           <ProjectBanner

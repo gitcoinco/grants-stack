@@ -13,8 +13,12 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
   }
   const { id, name, projects } = category;
   return (
-    <BasicCard className="w-full" data-track-event="category-card-click">
-      <a target="_blank" href={`/#/projects?categoryId=${id}`}>
+    <BasicCard className="w-full">
+      <a
+        target="_blank"
+        href={`/#/projects?categoryId=${id}`}
+        data-track-event="category-card"
+      >
         <CardHeader>
           <CategoryBanner projectIds={projects} />
         </CardHeader>

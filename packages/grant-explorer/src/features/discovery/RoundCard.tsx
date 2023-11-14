@@ -22,9 +22,11 @@ import { RoundTimeBadge } from "./RoundTimeBadge";
 
 type RoundCardProps = {
   round: RoundOverview;
+  index: number;
+  roundType: "all" | "active" | "endingSoon";
 };
 
-const RoundCard = ({ round }: RoundCardProps) => {
+const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
   const {
     id,
     chainId,
@@ -47,12 +49,24 @@ const RoundCard = ({ round }: RoundCardProps) => {
 
   const approvedApplicationsCount = projects?.length ?? 0;
 
+  const trackEventValue = roundType === "all" && "round-card";
+  roundType === "endingSoon" && "ending-soon-round-card";
+  roundType === "active" &&
+    index % 3 &&
+    index % 4 &&
+    "donate-now-round-card-small";
+  roundType === "active" &&
+    !(index % 3) &&
+    !(index % 4) &&
+    "donate-now-round-card-big";
+
   return (
-    <BasicCard className="w-full" data-track-event="round-card-click">
+    <BasicCard className="w-full">
       <a
         target="_blank"
         href={`/#/round/${chainId}/${id}`}
         data-testid="round-card"
+        data-track-event={trackEventValue}
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />

@@ -4,14 +4,22 @@ import { Collection } from "./hooks/useCollections";
 
 type CollectionCardProps = {
   collection: Collection;
+  index: number;
 };
 
-const CollectionCard = ({ collection }: CollectionCardProps) => {
+const CollectionCard = ({ collection, index }: CollectionCardProps) => {
   const { id, name, projects } = collection;
+  const trackEventValue = [0, 1, 6, 7].includes(index)
+    ? "collections-card-big"
+    : "collections-card-small";
 
   return (
-    <BasicCard className="w-full" data-track-event="collection-card-click">
-      <a target="_blank" href={`/#/projects?collectionId=${id}`}>
+    <BasicCard className="w-full">
+      <a
+        target="_blank"
+        href={`/#/projects?collectionId=${id}`}
+        data-track-event={trackEventValue}
+      >
         <CardHeader>
           <CollectionBanner projectIds={projects} />
         </CardHeader>

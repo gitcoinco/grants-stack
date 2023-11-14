@@ -6,11 +6,13 @@ import { FilterStatus } from "./hooks/useFilterRounds";
 type Tab = {
   to: string;
   children: string;
+  tabName: string;
 };
 const tabs: Tab[] = [
   {
     to: "/",
     children: "Home",
+    tabName: "home-tab",
   },
   {
     to: `/rounds?${toQueryString({
@@ -19,10 +21,12 @@ const tabs: Tab[] = [
       status: [FilterStatus.active, FilterStatus.taking_applications].join(","),
     })}`,
     children: "Explore rounds",
+    tabName: "rounds-tab",
   },
   {
     to: "/projects",
     children: "Explore projects",
+    tabName: "projects-tab",
   },
 ];
 
@@ -32,7 +36,11 @@ export default function LandingTabs() {
     <Tabs>
       {tabs.map((tab) => {
         const match = tab.to.split("?")[0];
-        return <Tab key={tab.to} active={pathname === match} {...tab} />;
+        const isActive = pathname === match;
+        // Set the data-track-event attribute when the tab is active
+        const tabProps = isActive ? { "data-track-event": tab.tabName } : {};
+
+        return <Tab key={tab.to} active={isActive} {...tab} {...tabProps} />;
       })}
     </Tabs>
   );
