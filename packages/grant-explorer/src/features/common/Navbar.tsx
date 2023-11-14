@@ -59,7 +59,7 @@ export default function Navbar(props: NavbarProps) {
           </div>
 
           <div className="flex items-center gap-6">
-            <div>
+            <div className="hidden md:block">
               <a
                 href="https://bridge.gitcoin.co"
                 rel="noreferrer"
@@ -114,7 +114,10 @@ export default function Navbar(props: NavbarProps) {
                 </svg>
               </a>
             </div>
-            <Link to="/rounds" className="font-medium hover:underline">
+            <Link
+              to="/rounds"
+              className="font-medium hover:underline hidden md:block"
+            >
               Explore rounds
             </Link>
             {walletAddress && (
