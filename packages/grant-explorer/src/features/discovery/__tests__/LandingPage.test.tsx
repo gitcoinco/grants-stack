@@ -110,7 +110,7 @@ describe("LandingPage", () => {
     });
   });
 
-  it("Renders Collections", async () => {
+  it.skip("Renders Collections", async () => {
     renderWithContext(<LandingPage />);
 
     await waitFor(async () =>

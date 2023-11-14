@@ -31,11 +31,13 @@
     "b-test": "pnpm test --filter=builder",
     "b-typecheck": "turbo run typecheck --filter=builder",
     "c-test": "turbo run test --filter=common",
-    "ve-test": "turbo run test --filter=verify-env"
+    "ve-test": "turbo run test --filter=verify-env",
+    "// data client script": "====== packages/builder specific ======",
+    "dc-test": "turbo run test --filter=grants-stack-data-client"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.6.3",
-    "@commitlint/config-conventional": "^17.6.3"
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0"
   },
   "dependencies": {
     "prettier": "^3.0.3",
