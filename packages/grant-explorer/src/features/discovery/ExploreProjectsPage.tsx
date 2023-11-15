@@ -15,6 +15,26 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useCategory } from "../categories/hooks/useCategories";
 import { useCollection } from "../collections/hooks/useCollections";
 import { CollectionDetails } from "../collections/CollectionDetails";
+import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
+import { allChains } from "../../app/chainConfig";
+
+export type Filter =
+  | {
+      type: "chain";
+      chainId: number;
+    }
+  | { type: "roundStatus"; status: "active" | "finished" };
+
+const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
+  {
+    label: "Network",
+    children: allChains.map(({ id, name }) => ({
+      label: `Projects on ${name}`,
+      value: { type: "chain", chainId: id },
+    })),
+    allowMultiple: true,
+  },
+];
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -42,8 +62,29 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
   return `${application.roundId}-${application.roundApplicationId}`;
 }
 
+function urlParamsToFilterList(urlParams: URLSearchParams): Filter[] {
+  const chainIds = urlParams.getAll("chainId");
+
+  return chainIds.map((chainId) => ({
+    type: "chain",
+    chainId: Number(chainId),
+  }));
+}
+
+function filterListToUrlParams(filters: Filter[]): URLSearchParams {
+  return filters.reduce((acc, filter) => {
+    if (filter.type === "chain") {
+      acc.append("chainId", String(filter.chainId));
+    }
+    return acc;
+  }, new URLSearchParams());
+}
+
 export function ExploreProjectsPage(): JSX.Element {
   const [urlParams, setUrlParams] = useSearchParams();
+  const [filters, setFilters] = useState<Filter[]>(
+    urlParamsToFilterList(urlParams)
+  );
 
   const category = useCategory(urlParams.get("categoryId"));
   const collection = useCollection(urlParams.get("collectionId"));
@@ -54,6 +95,7 @@ export function ExploreProjectsPage(): JSX.Element {
     searchQuery,
     category,
     collection,
+    filters,
   });
 
   const {
@@ -103,6 +145,11 @@ export function ExploreProjectsPage(): JSX.Element {
     setUrlParams(`?q=${newSearchQuery}`);
   }
 
+  function onFiltersChange(newFilters: Filter[]) {
+    setFilters(newFilters);
+    setUrlParams(`?${filterListToUrlParams(newFilters).toString()}`);
+  }
+
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />
@@ -122,28 +169,40 @@ export function ExploreProjectsPage(): JSX.Element {
             ? "Loading..."
             : `${pageTitle} (${totalApplicationsCount})`
         }
-        // title={
-        //   isLoading ? "Loading..." : `${pageTitle} (${totalApplicationsCount})`
-        // }
         action={
           !collection && (
-            <form className="relative" onSubmit={onSearchSubmit}>
-              <MagnifyingGlassIcon
-                width={22}
-                height={22}
-                className="text-white absolute left-[14px] top-[10px]"
-              />
-              <input
-                type="text"
-                name="query"
-                placeholder="Search..."
-                defaultValue={searchQuery}
-                className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
-              />
-            </form>
+            <div className="font-mono flex gap-x-4">
+              <form
+                className="relative"
+                onSubmit={onSearchSubmit}
+                onBlur={onSearchSubmit}
+              >
+                <MagnifyingGlassIcon
+                  width={22}
+                  height={22}
+                  className="text-white absolute left-[14px] top-[10px]"
+                />
+                <input
+                  type="text"
+                  name="query"
+                  placeholder="Search..."
+                  defaultValue={searchQuery}
+                  className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
+                />
+              </form>
+              {searchQuery.length === 0 && (
+                <div>
+                  <span className="mr-2">Filter by</span>
+                  <FilterDropdown<Filter>
+                    onChange={onFiltersChange}
+                    selected={filters}
+                    options={FILTER_OPTIONS}
+                  />
+                </div>
+              )}
+            </div>
           )
         }
-        className="flex-wrap"
       >
         {isLoading === false &&
           isLoadingMore === false &&

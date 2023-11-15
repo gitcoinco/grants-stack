@@ -88,10 +88,10 @@ export class GrantsStackDataClient {
         let filteredApplicationSummaries: ApplicationSummary[];
         if (q.filter === undefined) {
           filteredApplicationSummaries = applicationSummaries;
-        } else if (q.filter.type === "chain") {
-          const { chainId } = q.filter;
-          filteredApplicationSummaries = applicationSummaries.filter(
-            (a) => a.chainId === chainId,
+        } else if (q.filter.type === "chains") {
+          const { chainIds } = q.filter;
+          filteredApplicationSummaries = applicationSummaries.filter((a) =>
+            chainIds.includes(a.chainId),
           );
         } else if (q.filter.type === "refs") {
           const { refs } = q.filter;

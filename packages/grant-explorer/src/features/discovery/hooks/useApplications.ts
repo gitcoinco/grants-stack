@@ -4,6 +4,16 @@ import { useMemo } from "react";
 import { Category } from "../../categories/hooks/useCategories";
 import { Collection } from "../../collections/hooks/useCollections";
 
+export type ApplicationFilter =
+  | {
+      type: "chains";
+      chainIds: number[];
+    }
+  | {
+      type: "refs";
+      refs: string[];
+    };
+
 export type ApplicationFetchOptions =
   | {
       type: "applications-search";
@@ -16,6 +26,7 @@ export type ApplicationFetchOptions =
   | {
       type: "applications-paginated";
       page?: number;
+      filter?: ApplicationFilter;
       order?: { type: "random"; seed: number };
     };
 
@@ -107,13 +118,16 @@ export function createApplicationFetchOptions({
   searchQuery = "",
   category,
   collection,
+  filters,
 }: {
   searchQuery?: string;
   category?: Category;
   collection?: Collection;
+  filters: Filter[];
 }): ApplicationFetchOptions {
   let applicationsFetchOptions: ApplicationFetchOptions = {
     type: "applications-paginated",
+    filter: filterListToApplicationFilter(filters),
     order: {
       type: "random",
       seed: PROJECTS_SORTING_SEED,
@@ -137,4 +151,31 @@ export function createApplicationFetchOptions({
     };
   }
   return applicationsFetchOptions;
+}
+
+export type Filter =
+  | {
+      type: "chain";
+      chainId: number;
+    }
+  | { type: "roundStatus"; status: "active" | "finished" };
+
+function filterListToApplicationFilter(
+  filters: Filter[]
+): ApplicationFilter | undefined {
+  const filteredByChainIds = filters.reduce<number[]>((acc, filter) => {
+    if (filter.type === "chain") {
+      return [...acc, filter.chainId];
+    }
+    return acc;
+  }, []);
+
+  if (filteredByChainIds.length > 0) {
+    return {
+      type: "chains",
+      chainIds: filteredByChainIds,
+    };
+  }
+
+  return undefined;
 }
