@@ -15,32 +15,32 @@ export const categories: Category[] = [
     name: "Education",
     searchQuery: "education, teaching",
   },
-  {
-    id: "climate",
-    name: "Climate",
-    searchQuery: "climate, environment, sustainability, regeneration",
-  },
+  // {
+  //   id: "climate",
+  //   name: "Climate",
+  //   searchQuery: "climate, environment, sustainability, regeneration",
+  // },
   {
     id: "civic-engagement",
     name: "Civic engagement",
     searchQuery: "civic engagement, civics, governance, democracy ",
   },
-  {
-    id: "defi",
-    name: "DeFi",
-    searchQuery: "DeFi, finance",
-  },
-  {
-    id: "nfts",
-    name: "NFTs",
-    searchQuery: "NFTs",
-  },
+  // {
+  //   id: "defi",
+  //   name: "DeFi",
+  //   searchQuery: "DeFi, finance",
+  // },
+  // {
+  //   id: "nfts",
+  //   name: "NFTs",
+  //   searchQuery: "NFTs",
+  // },
 
-  {
-    id: "gaming",
-    name: "Gaming",
-    searchQuery: "gaming, games",
-  },
+  // {
+  //   id: "gaming",
+  //   name: "Gaming",
+  //   searchQuery: "gaming, games",
+  // },
   {
     id: "social",
     name: "Social",
