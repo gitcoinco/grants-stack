@@ -141,10 +141,10 @@ export default function Navbar(props: NavbarProps) {
               <div>
                 <Link
                   to={`/contributors/${walletAddress}`}
-                  className="flex-shrink-0 flex items-center"
+                  className="flex-shrink-0 flex items-center ph-no-capture"
                   data-testid={"contributions-link"}
                 >
-                  <UserCircleIcon className="h-8 w-8" />
+                  <UserCircleIcon className="h-8 w-8 ph-no-capture" />
                 </Link>
               </div>
             )}
