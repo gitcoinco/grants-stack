@@ -9,7 +9,7 @@ export type CollectionCardProps = {
 };
 
 const CollectionCard = ({ collection, size }: CollectionCardProps) => {
-  const { id, name, projects } = collection;
+  const { id, author, name, projects } = collection;
 
   return (
     <BasicCard className="w-full">
@@ -27,7 +27,7 @@ const CollectionCard = ({ collection, size }: CollectionCardProps) => {
               {projects.length} projects
             </div>
             <div className="text-sm flex gap-2 items-center">
-              by <Badge rounded="full">ensname.eth</Badge>
+              by <Badge rounded="full">{author}</Badge>
             </div>
           </div>
         </div>
