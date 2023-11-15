@@ -55,7 +55,7 @@ function areProjectIdsEqual(a: CartProject, b: CartProject): boolean {
 function updateOrInsertCartProject(
   currentProjects: CartProject[],
   newProject: CartProject
-) {
+): CartProject[] {
   const initialAcc: {
     projects: CartProject[];
     hasUpdatedProject: boolean;
