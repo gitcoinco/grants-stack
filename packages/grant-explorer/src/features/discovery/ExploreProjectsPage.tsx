@@ -7,9 +7,9 @@ import { ApplicationStatus, CartProject } from "../api/types";
 import { useMemo, useState } from "react";
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import {
-  ApplicationFetchOptions,
-  ApplicationFilter,
+  createApplicationFetchOptions,
   useApplications,
+  Filter,
 } from "./hooks/useApplications";
 import { PaginatedProjectsList } from "./PaginatedProjectsList";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
@@ -18,13 +18,6 @@ import { useCollection } from "../collections/hooks/useCollections";
 import { CollectionDetails } from "../collections/CollectionDetails";
 import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
 import { allChains } from "../../app/chainConfig";
-
-type Filter =
-  | {
-      type: "chain";
-      chainId: number;
-    }
-  | { type: "roundStatus"; status: "active" | "finished" };
 
 const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   {
@@ -63,27 +56,6 @@ function createCompositeRoundApplicationId(application: ApplicationSummary) {
   return `${application.roundId}-${application.roundApplicationId}`.toLowerCase();
 }
 
-const PROJECTS_SORTING_SEED = Math.random();
-
-function filterListToApplicationFilter(
-  filters: Filter[]
-): ApplicationFilter | undefined {
-  const filteredByChainIds = filters.reduce<number[]>((acc, filter) => {
-    if (filter.type === "chain") {
-      return [...acc, filter.chainId];
-    }
-    return acc;
-  }, []);
-
-  if (filteredByChainIds.length > 0) {
-    return {
-      type: "chains",
-      chainIds: filteredByChainIds,
-    };
-  }
-
-  return undefined;
-}
 function urlParamsToFilterList(urlParams: URLSearchParams): Filter[] {
   const chainIds = urlParams.getAll("chainId");
 
@@ -111,26 +83,14 @@ export function ExploreProjectsPage(): JSX.Element {
   const category = useCategory(urlParams.get("categoryId"));
   const collection = useCollection(urlParams.get("collectionId"));
 
-  const seed = PROJECTS_SORTING_SEED;
   const [searchQuery, setSearchQuery] = useState(urlParams.get("q") ?? "");
 
-  let applicationsFetchOptions: ApplicationFetchOptions = {
-    type: "all",
-    seed,
-    filter: filterListToApplicationFilter(filters),
-  };
-
-  if (searchQuery.length > 0) {
-    applicationsFetchOptions = {
-      type: "search",
-      searchQuery: searchQuery,
-    };
-  } else if (category !== undefined) {
-    applicationsFetchOptions = {
-      type: "category",
-      searchQuery: category.searchQuery,
-    };
-  }
+  const applicationsFetchOptions = createApplicationFetchOptions({
+    searchQuery,
+    category,
+    collection,
+    filters,
+  });
 
   const {
     applications,
@@ -166,13 +126,12 @@ export function ExploreProjectsPage(): JSX.Element {
 
   let pageTitle = "All projects";
 
-  if (applicationsFetchOptions.type === "search") {
+  if (searchQuery.length > 0) {
     pageTitle = "Search results";
-  } else if (
-    applicationsFetchOptions.type === "category" &&
-    category !== undefined
-  ) {
-    pageTitle = category.name;
+  } else if (category) {
+    pageTitle = category?.name;
+  } else if (collection) {
+    pageTitle = collection?.name;
   }
 
   function onSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -191,45 +150,57 @@ export function ExploreProjectsPage(): JSX.Element {
     <DefaultLayout showWalletInteraction>
       <LandingHero />
 
-      {collection && <CollectionDetails collection={collection} />}
+      {collection && (
+        <CollectionDetails
+          collection={collection}
+          onAddAllApplicationsToCart={() =>
+            applications.forEach(addApplicationToCart)
+          }
+        />
+      )}
 
       <LandingSection
         title={
-          isLoading ? "Loading..." : `${pageTitle} (${totalApplicationsCount})`
+          collection
+            ? ""
+            : isLoading
+            ? "Loading..."
+            : `${pageTitle} (${totalApplicationsCount})`
         }
         action={
-          <div className="font-mono flex gap-x-4">
-            <form
-              className="relative"
-              onSubmit={onSearchSubmit}
-              onBlur={onSearchSubmit}
-            >
-              <MagnifyingGlassIcon
-                width={22}
-                height={22}
-                className="text-white absolute left-[14px] top-[10px]"
-              />
-              <input
-                type="text"
-                name="query"
-                placeholder="Search..."
-                defaultValue={searchQuery}
-                className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
-              />
-            </form>
-            {applicationsFetchOptions.type !== "search" && (
-              <div>
-                <span className="mr-2">Filter by</span>
-                <FilterDropdown<Filter>
-                  onChange={onFiltersChange}
-                  selected={filters}
-                  options={FILTER_OPTIONS}
+          !collection && (
+            <div className="font-mono flex gap-x-4">
+              <form
+                className="relative"
+                onSubmit={onSearchSubmit}
+                onBlur={onSearchSubmit}
+              >
+                <MagnifyingGlassIcon
+                  width={22}
+                  height={22}
+                  className="text-white absolute left-[14px] top-[10px]"
                 />
-              </div>
-            )}
-          </div>
+                <input
+                  type="text"
+                  name="query"
+                  placeholder="Search..."
+                  defaultValue={searchQuery}
+                  className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
+                />
+              </form>
+              {searchQuery.length === 0 && (
+                <div>
+                  <span className="mr-2">Filter by</span>
+                  <FilterDropdown<Filter>
+                    onChange={onFiltersChange}
+                    selected={filters}
+                    options={FILTER_OPTIONS}
+                  />
+                </div>
+              )}
+            </div>
+          )
         }
-        className="flex-wrap"
       >
         {isLoading === false &&
           isLoadingMore === false &&
