@@ -77,6 +77,7 @@ export function ProjectCard(props: {
           roundId,
           applicationId: application.roundApplicationId,
         })}
+        data-track-event="project-card"
       >
         <CardHeader className="relative">
           <ProjectBanner

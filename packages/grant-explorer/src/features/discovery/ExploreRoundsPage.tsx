@@ -25,7 +25,7 @@ const ExploreRoundsPage = () => {
         className="flex-wrap"
         action={<RoundsFilter />}
       >
-        <RoundsGrid {...rounds} loadingCount={6} />
+        <RoundsGrid {...rounds} loadingCount={6} roundType="all" />
       </LandingSection>
     </DefaultLayout>
   );

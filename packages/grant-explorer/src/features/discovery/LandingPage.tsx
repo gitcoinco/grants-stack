@@ -39,6 +39,7 @@ const LandingPage = () => {
           getItemClassName={(_, i) =>
             `${i % 3 && i % 4 ? "" : "md:col-span-2"}`
           }
+          roundType="active"
         />
       </LandingSection>
       <LandingSection
@@ -59,6 +60,7 @@ const LandingPage = () => {
           {...roundsEndingSoon}
           loadingCount={endingSoonFilter.first}
           maxCount={endingSoonFilter.first}
+          roundType="endingSoon"
         />
       </LandingSection>
     </DefaultLayout>
