@@ -23,6 +23,17 @@ describe("useCartStorage Zustand store", () => {
     expect(useCartStorage.getState().projects).toContain(project);
   });
 
+  test("should add multiple projects to the store", () => {
+    const project1: CartProject = makeApprovedProjectData();
+    const project2: CartProject = makeApprovedProjectData();
+
+    useCartStorage.getState().add(project1);
+    useCartStorage.getState().add(project2);
+
+    expect(useCartStorage.getState().projects).toContain(project1);
+    expect(useCartStorage.getState().projects).toContain(project2);
+  });
+
   test("should remove a project from the store", () => {
     const project = makeApprovedProjectData();
 
