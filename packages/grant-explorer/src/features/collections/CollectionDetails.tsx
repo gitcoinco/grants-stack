@@ -34,10 +34,7 @@ export function CollectionDetails({
         <div className="text-lg flex-1">{collection.description}</div>
         <div className="w-96">
           <div className="flex justify-end gap-2">
-            <Button variant="primary" onClick={() => alert("not implemented")}>
-              <LinkIcon className="w-4 h-4" />
-              Share
-            </Button>
+            <ShareButton url={location.href} />
             <AddToCartButton onAdd={onAddAllApplicationsToCart} />
           </div>
         </div>
@@ -60,6 +57,27 @@ const AddToCartButton = ({ onAdd }: { onAdd: () => void }) => {
     >
       <Icon className="w-4 h-4" />
       {isAdded ? "Added" : "Add all to cart"}
+    </Button>
+  );
+};
+
+const ShareButton = ({ url = "" }) => {
+  const [isCopied, setCopied] = useState(false);
+
+  const Icon = isCopied ? CheckIcon : LinkIcon;
+  return (
+    <Button
+      variant="primary"
+      disabled={isCopied}
+      onClick={() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+
+        navigator.clipboard.writeText(url);
+      }}
+    >
+      <Icon className="w-4 h-4" />
+      {isCopied ? "Copied" : "Share"}
     </Button>
   );
 };
