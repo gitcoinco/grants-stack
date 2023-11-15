@@ -8,6 +8,7 @@ type DropdownProps<T> = PropsWithChildren<{
   options: T[];
   keepOpen?: boolean;
   renderItem: (p: { active: boolean; close: () => void } & T) => ReactElement;
+  headerElement?: (close: () => void) => ReactElement;
 }>;
 
 export function Dropdown<T>({
@@ -15,6 +16,7 @@ export function Dropdown<T>({
   options,
   keepOpen,
   renderItem,
+  headerElement,
 }: DropdownProps<T>) {
   return (
     <Menu as="div" className="md:relative inline-block text-left z-20">
@@ -42,6 +44,7 @@ export function Dropdown<T>({
               className="absolute  max-h-[400px] overflow-y-auto w-full md:w-auto p-2 right-0 mt-2 origin-top-right rounded-2xl bg-white shadow-lg"
               static
             >
+              {headerElement?.(close)}
               {options.map((option, i) => (
                 <Menu.Item
                   key={i}

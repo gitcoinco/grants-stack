@@ -437,7 +437,7 @@ describe("data client", () => {
       const { applications, pagination } = await client.query({
         type: "applications-paginated",
         page: 0,
-        filter: { type: "chain", chainId: 1 },
+        filter: { type: "chains", chainIds: [1] },
       });
 
       expect(pagination).toEqual({
@@ -445,6 +445,7 @@ describe("data client", () => {
         totalPages: 1,
         currentPage: 0,
       });
+
       expect(applications).toEqual([
         {
           applicationRef: "1:0x123:0",

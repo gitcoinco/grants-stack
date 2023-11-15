@@ -32,8 +32,8 @@ export type DataClientInteraction =
           | { type: "random"; seed: number };
         filter?:
           | {
-              type: "chain";
-              chainId: number;
+              type: "chains";
+              chainIds: number[];
             }
           | {
               type: "refs";
