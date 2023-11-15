@@ -35,7 +35,7 @@ const LandingPage = () => {
         />
       </LandingSection>
       <LandingSection title="Categories">
-        <CategoriesGrid data={categories} loadingCount={8} maxCount={8} />
+        <CategoriesGrid data={categories} loadingCount={4} maxCount={4} />
       </LandingSection>
       <LandingSection
         title="Donate now"
