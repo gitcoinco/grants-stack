@@ -46,7 +46,7 @@ const defaultVotingTokens = Object.fromEntries(
   })
 ) as Record<ChainId, VotingToken>;
 
-function compareCartProjectIds(a: CartProject, b: CartProject): boolean {
+function areProjectIdsEqual(a: CartProject, b: CartProject): boolean {
   return (
     a.grantApplicationId === b.grantApplicationId && a.chainId === b.chainId
   );
@@ -56,21 +56,25 @@ export const useCartStorage = create<CartState>()(
   persist(
     (set, get) => ({
       projects: [],
-      add: (project: CartProject) => {
+      add: (newProject: CartProject) => {
         const currentProjects = get().projects;
-        const projectAlreadyInCart = currentProjects.some((projectInCart) =>
-          compareCartProjectIds(projectInCart, project)
-        );
 
-        const updatedProjects = projectAlreadyInCart
-          ? currentProjects.map((projectInCart) => {
-              if (compareCartProjectIds(projectInCart, project)) {
-                return project;
-              }
+        const initialAcc: { projects: CartProject[]; isUpdated: boolean } = {
+          projects: [],
+          isUpdated: false,
+        };
 
-              return projectInCart;
-            })
-          : [...currentProjects, project];
+        const result = currentProjects.reduce((acc, project) => {
+          if (areProjectIdsEqual(project, project)) {
+            return { projects: [...acc.projects, newProject], isUpdated: true };
+          } else {
+            return { ...acc, projects: [...acc.projects, project] };
+          }
+        }, initialAcc);
+
+        const updatedProjects = result.isUpdated
+          ? result.projects
+          : [...currentProjects, newProject];
 
         set({ projects: updatedProjects });
       },
