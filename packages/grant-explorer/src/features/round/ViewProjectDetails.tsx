@@ -18,6 +18,7 @@ import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { useRoundById } from "../../context/RoundContext";
+import { Spinner } from "../common/Spinner";
 import {
   CartProject,
   GrantApplicationFormAnswer,
@@ -187,7 +188,9 @@ export default function ViewProjectDetails() {
           <Breadcrumb items={breadCrumbs} />
         </div>
         <main className={"flex flex-col items-center"}>
-          {!isLoading && projectToRender && (
+          {isLoading || projectToRender === undefined ? (
+            <Spinner text="Loading project application..." />
+          ) : (
             <>
               <Header projectMetadata={projectToRender.projectMetadata} />
               <div className="flex flex-col w-full md:invisible sm:-mt-[230px]">
