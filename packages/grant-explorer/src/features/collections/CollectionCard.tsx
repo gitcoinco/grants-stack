@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Badge, BasicCard, CardHeader } from "../common/styles";
 import { CollectionBanner } from "../discovery/CardBanner";
 import { Collection } from "./hooks/useCollections";
@@ -12,9 +13,8 @@ const CollectionCard = ({ collection, size }: CollectionCardProps) => {
 
   return (
     <BasicCard className="w-full">
-      <a
-        target="_blank"
-        href={`/#/projects?collectionId=${id}`}
+      <Link
+        to={`/projects?collectionId=${id}`}
         data-track-event={`home-collections-card-${size}`}
       >
         <CardHeader>
@@ -31,7 +31,7 @@ const CollectionCard = ({ collection, size }: CollectionCardProps) => {
             </div>
           </div>
         </div>
-      </a>
+      </Link>
     </BasicCard>
   );
 };
