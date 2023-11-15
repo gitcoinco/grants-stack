@@ -46,24 +46,33 @@ const defaultVotingTokens = Object.fromEntries(
   })
 ) as Record<ChainId, VotingToken>;
 
+function compareCartProjectIds(a: CartProject, b: CartProject): boolean {
+  return (
+    a.grantApplicationId === b.grantApplicationId && a.chainId === b.chainId
+  );
+}
+
 export const useCartStorage = create<CartState>()(
   persist(
     (set, get) => ({
       projects: [],
       add: (project: CartProject) => {
-        const projectAlreadyAddedToCart = get().projects.some(
-          (projectInCart) =>
-            projectInCart.grantApplicationId === project.grantApplicationId &&
-            projectInCart.chainId === project.chainId
+        const currentProjects = get().projects;
+        const projectAlreadyInCart = currentProjects.some((projectInCart) =>
+          compareCartProjectIds(projectInCart, project)
         );
 
-        if (projectAlreadyAddedToCart) {
-          return;
-        }
+        const updatedProjects = projectAlreadyInCart
+          ? currentProjects.map((projectInCart) => {
+              if (compareCartProjectIds(projectInCart, project)) {
+                return project;
+              }
 
-        set({
-          projects: [...get().projects, project],
-        });
+              return projectInCart;
+            })
+          : [...currentProjects, project];
+
+        set({ projects: updatedProjects });
       },
       /** @param grantApplicationId - ${roundAddress}-${applicationId} */
       remove: (grantApplicationId: string) => {

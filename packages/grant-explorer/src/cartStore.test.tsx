@@ -12,6 +12,7 @@ describe("useCartStorage Zustand store", () => {
   beforeEach(() => {
     // Clear localStorage before each test to ensure a clean state
     localStorage.clear();
+    useCartStorage.getState().clear();
   });
 
   test("should add projects to the store", () => {
@@ -154,6 +155,7 @@ describe("useCartStorage Zustand store", () => {
     useCartStorage.getState().add(project);
     useCartStorage.getState().add(modifiedProject);
 
+    expect(useCartStorage.getState().projects).toHaveLength(1);
     expect(useCartStorage.getState().projects).toContainEqual(modifiedProject);
   });
 
