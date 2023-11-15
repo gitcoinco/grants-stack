@@ -8,6 +8,12 @@ type Tab = {
   children: string;
   tabName: string;
 };
+
+export const exploreRoundsLink = `/rounds?${toQueryString({
+  orderBy: "matchAmount",
+  orderDirection: "desc",
+  status: [FilterStatus.active, FilterStatus.taking_applications].join(","),
+})}`;
 const tabs: Tab[] = [
   {
     to: "/",
@@ -15,11 +21,7 @@ const tabs: Tab[] = [
     tabName: "home-tab",
   },
   {
-    to: `/rounds?${toQueryString({
-      orderBy: "matchAmount",
-      orderDirection: "desc",
-      status: [FilterStatus.active, FilterStatus.taking_applications].join(","),
-    })}`,
+    to: exploreRoundsLink,
     children: "Explore rounds",
     tabName: "home-rounds-tab",
   },

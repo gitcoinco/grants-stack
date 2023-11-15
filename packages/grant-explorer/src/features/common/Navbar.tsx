@@ -8,6 +8,7 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
 import { PassportWidget } from "./PassportWidget";
+import { exploreRoundsLink } from "../discovery/LandingTabs";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -112,7 +113,10 @@ export default function Navbar(props: NavbarProps) {
                 </svg>
               </a>
             </div>
-            <Link to="/rounds" className="font-medium hover:underline">
+            <Link
+              to={exploreRoundsLink}
+              className="font-medium hover:underline"
+            >
               Explore rounds
             </Link>
             {walletAddress && (
