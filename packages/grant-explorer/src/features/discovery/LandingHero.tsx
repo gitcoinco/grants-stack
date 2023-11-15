@@ -5,10 +5,11 @@ import LandingTabs from "./LandingTabs";
 export default function LandingHero() {
   return (
     <div>
-      <div className="flex items-center gap-12 lg:gap-24 mb-16">
+      <div className="flex items-center gap-12 lg:gap-24">
         <ByTheNumbers />
         <Logo />
       </div>
+      <div id="discovery-scroll-anchor" className="mb-16 " />
       <LandingTabs />
     </div>
   );

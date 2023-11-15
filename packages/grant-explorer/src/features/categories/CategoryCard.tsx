@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { BasicCard, CardContent, CardHeader } from "../common/styles";
 import { CategoryBanner } from "../discovery/CardBanner";
 import { Category } from "./hooks/useCategories";
@@ -6,6 +7,12 @@ type CategoryCardProps = {
   category: Category;
   isLoading?: boolean;
 };
+
+function scrollToDiscoveryAnchor() {
+  document
+    .getElementById("discovery-scroll-anchor")
+    ?.scrollIntoView({ block: "nearest" });
+}
 
 const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
   if (isLoading) {
@@ -18,10 +25,12 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
 
   return (
     <BasicCard className="w-full">
-      <a
-        target="_blank"
-        href={`/#/projects?categoryId=${id}`}
+      <Link
+        to={`/projects?categoryId=${id}`}
         data-track-event="home-category-card"
+        onClick={() => {
+          scrollToDiscoveryAnchor();
+        }}
       >
         <CardHeader>
           <CategoryBanner projectIds={projectIds} />
@@ -29,7 +38,7 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
         <CardContent>
           <div className="font-medium truncate text-xl">{name}</div>
         </CardContent>
-      </a>
+      </Link>
     </BasicCard>
   );
 };
