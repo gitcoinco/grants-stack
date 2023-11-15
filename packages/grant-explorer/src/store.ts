@@ -65,7 +65,7 @@ function updateOrInsertCartProject(
   };
 
   const result = currentProjects.reduce((acc, project) => {
-    if (isSameProject(project, project)) {
+    if (isSameProject(project, newProject)) {
       return {
         projects: [...acc.projects, newProject],
         hasUpdatedProject: true,
