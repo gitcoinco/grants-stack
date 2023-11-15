@@ -103,7 +103,6 @@ export function ExploreProjectsPage(): JSX.Element {
     setUrlParams(`?q=${newSearchQuery}`);
   }
 
-  console.log(applications);
   return (
     <DefaultLayout showWalletInteraction>
       <LandingHero />

@@ -56,6 +56,7 @@ export function useApplications(options: ApplicationFetchOptions) {
             applicationMeta: [],
           };
         }
+
         case "applications-by-refs": {
           const res = await grantsStackDataClient.query({
             ...options,
