@@ -52,6 +52,34 @@ function areProjectIdsEqual(a: CartProject, b: CartProject): boolean {
   );
 }
 
+function updateOrInsertCartProject(
+  currentProjects: CartProject[],
+  newProject: CartProject
+) {
+  const initialAcc: {
+    projects: CartProject[];
+    hasUpdatedProject: boolean;
+  } = {
+    projects: [],
+    hasUpdatedProject: false,
+  };
+
+  const result = currentProjects.reduce((acc, project) => {
+    if (areProjectIdsEqual(project, project)) {
+      return {
+        projects: [...acc.projects, newProject],
+        hasUpdatedProject: true,
+      };
+    } else {
+      return { ...acc, projects: [...acc.projects, project] };
+    }
+  }, initialAcc);
+
+  return result.hasUpdatedProject
+    ? result.projects
+    : [...currentProjects, newProject];
+}
+
 export const useCartStorage = create<CartState>()(
   persist(
     (set, get) => ({
@@ -59,24 +87,9 @@ export const useCartStorage = create<CartState>()(
       add: (newProject: CartProject) => {
         const currentProjects = get().projects;
 
-        const initialAcc: { projects: CartProject[]; isUpdated: boolean } = {
-          projects: [],
-          isUpdated: false,
-        };
-
-        const result = currentProjects.reduce((acc, project) => {
-          if (areProjectIdsEqual(project, project)) {
-            return { projects: [...acc.projects, newProject], isUpdated: true };
-          } else {
-            return { ...acc, projects: [...acc.projects, project] };
-          }
-        }, initialAcc);
-
-        const updatedProjects = result.isUpdated
-          ? result.projects
-          : [...currentProjects, newProject];
-
-        set({ projects: updatedProjects });
+        set({
+          projects: updateOrInsertCartProject(currentProjects, newProject),
+        });
       },
       /** @param grantApplicationId - ${roundAddress}-${applicationId} */
       remove: (grantApplicationId: string) => {
