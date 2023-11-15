@@ -20,11 +20,15 @@ import { RoundMatchAmountBadge } from "./RoundMatchAmountBadge";
 import { RoundStrategyBadge } from "./RoundStrategyBadge";
 import { RoundTimeBadge } from "./RoundTimeBadge";
 
+type RoundType = "all" | "endingSoon" | "active";
+
 type RoundCardProps = {
   round: RoundOverview;
+  index: number;
+  roundType: RoundType;
 };
 
-const RoundCard = ({ round }: RoundCardProps) => {
+const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
   const {
     id,
     chainId,
@@ -46,12 +50,31 @@ const RoundCard = ({ round }: RoundCardProps) => {
   const applicationsEndsIn = getDaysLeft(applicationsEndTime);
 
   const approvedApplicationsCount = projects?.length ?? 0;
+
+  const getTrackEventValue = (roundType: RoundType, index: number) => {
+    if (roundType === "all") return "round-card";
+    if (roundType === "endingSoon") return "home-rounds-ending-card";
+    if (roundType === "active") {
+      const isDivisibleBy3 = index % 3 === 0;
+      const isDivisibleBy4 = index % 4 === 0;
+
+      return isDivisibleBy3 && isDivisibleBy4
+        ? "home-donate-now-card-big"
+        : "home-donate-now-card-small";
+    }
+
+    return "round-card";
+  };
+
+  const trackEventValue = getTrackEventValue(roundType, index);
+
   return (
     <BasicCard className="w-full">
       <a
         target="_blank"
         href={`/#/round/${chainId}/${id}`}
         data-testid="round-card"
+        data-track-event={trackEventValue}
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />

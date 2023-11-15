@@ -15,7 +15,7 @@ export function CollectionsGrid({
     <div className="grid md:grid-cols-4 gap-6">
       {data?.slice(0, maxCount).map((collection, i) => (
         <div key={collection?.id} className={getItemClassName?.(collection, i)}>
-          <CollectionCard collection={collection} />
+          <CollectionCard collection={collection} index={i} />
         </div>
       ))}
     </div>

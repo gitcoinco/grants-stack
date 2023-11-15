@@ -81,7 +81,9 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:gap-6 2xl:grid-cols-4">
             {sortRoundsByTime(props.roundOverview ?? [], order).map(
               (round, index) => {
-                return <RoundCard key={index} round={round} />;
+                return (
+                  <RoundCard round={round} index={index} roundType="active" />
+                );
               }
             )}
           </div>

@@ -9,12 +9,14 @@ export function RoundsGrid({
   loadingCount,
   maxCount,
   getItemClassName,
+  roundType,
 }: {
   isLoading: boolean;
   data?: RoundOverview[];
   loadingCount: number;
   maxCount?: number;
   getItemClassName?: (round: RoundOverview, index: number) => string;
+  roundType: "all" | "active" | "endingSoon";
 }) {
   if (!isLoading && !data?.length) {
     return <RoundsEmptyState />;
@@ -25,7 +27,12 @@ export function RoundsGrid({
         ?.slice(0, maxCount)
         .map((round, i) => (
           <div key={round?.id} className={getItemClassName?.(round, i)}>
-            <RoundCard round={round} isLoading={isLoading} />
+            <RoundCard
+              round={round}
+              isLoading={isLoading}
+              index={i}
+              roundType={roundType}
+            />
           </div>
         ))}
     </div>

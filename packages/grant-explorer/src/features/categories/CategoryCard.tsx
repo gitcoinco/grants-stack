@@ -11,12 +11,17 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
   if (isLoading) {
     return <div>...</div>;
   }
-  const { id, name, projects } = category;
+  const { id, name, images } = category;
+
   return (
     <BasicCard className="w-full">
-      <a target="_blank" href={`/#/projects?categoryId=${id}`}>
+      <a
+        target="_blank"
+        href={`/#/projects?categoryId=${id}`}
+        data-track-event="home-category-card"
+      >
         <CardHeader>
-          <CategoryBanner projectIds={projects} />
+          <CategoryBanner images={images} />
         </CardHeader>
         <CardContent>
           <div className="font-medium truncate text-xl">{name}</div>
