@@ -2,8 +2,9 @@ import { Address, useEnsName } from "wagmi";
 import { Collection } from "./hooks/useCollections";
 import { Skeleton } from "@chakra-ui/react";
 import tw from "tailwind-styled-components";
-import { LinkIcon } from "@heroicons/react/20/solid";
+import { CheckIcon, LinkIcon } from "@heroicons/react/20/solid";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
 type Props = {
   collection: Collection;
@@ -37,16 +38,31 @@ export function CollectionDetails({
               <LinkIcon className="w-4 h-4" />
               Share
             </Button>
-            <Button onClick={onAddAllApplicationsToCart}>
-              <ShoppingCartIcon className="w-4 h-4" />
-              Add all to cart
-            </Button>
+            <AddToCartButton onAdd={onAddAllApplicationsToCart} />
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+const AddToCartButton = ({ onAdd }: { onAdd: () => void }) => {
+  const [isAdded, setAdded] = useState(false);
+
+  const Icon = isAdded ? CheckIcon : ShoppingCartIcon;
+  return (
+    <Button
+      disabled={isAdded}
+      onClick={() => {
+        onAdd();
+        setAdded(true);
+      }}
+    >
+      <Icon className="w-4 h-4" />
+      {isAdded ? "Added" : "Add all to cart"}
+    </Button>
+  );
+};
 
 // These buttons are very different from the old GS designs.
 // Keeping it here for now until other designs with these kinds of buttons.
@@ -55,7 +71,8 @@ const variantMap = {
   primary: "bg-orange-100 hover:bg-orange-50",
 };
 const Button = tw.button<{ variant?: "primary" | "default" }>`
-border-grey-100 
+border-grey-100
+disabled:pointer-events-none
 px-3 py-2
 text-sm
 font-medium
