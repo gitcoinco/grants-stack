@@ -60,7 +60,7 @@ function createCartProjectFromApplication(
 }
 
 function createCompositeRoundApplicationId(application: ApplicationSummary) {
-  return `${application.roundId}-${application.roundApplicationId}`;
+  return `${application.roundId}-${application.roundApplicationId}`.toLowerCase();
 }
 
 const PROJECTS_SORTING_SEED = Math.random();
@@ -144,7 +144,9 @@ export function ExploreProjectsPage(): JSX.Element {
   const { projects, add, remove } = useCartStorage();
 
   const applicationIdsInCart = useMemo(() => {
-    return new Set(projects.map((project) => project.grantApplicationId));
+    return new Set(
+      projects.map((project) => project.grantApplicationId.toLowerCase())
+    );
   }, [projects]);
 
   function addApplicationToCart(application: ApplicationSummary) {

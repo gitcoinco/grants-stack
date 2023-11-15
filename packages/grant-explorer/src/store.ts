@@ -48,7 +48,8 @@ const defaultVotingTokens = Object.fromEntries(
 
 function isSameProject(a: CartProject, b: CartProject): boolean {
   return (
-    a.grantApplicationId === b.grantApplicationId && a.chainId === b.chainId
+    a.grantApplicationId.toLowerCase() === b.grantApplicationId.toLowerCase() &&
+    a.chainId === b.chainId
   );
 }
 
