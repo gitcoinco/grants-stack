@@ -1,17 +1,19 @@
-// Dunno why this declaration is needed
-declare const require: {
-  context(
-    path: string,
-    deep?: boolean,
-    filter?: RegExp
-  ): {
-    keys(): string[];
-    <T>(id: string): T;
-  };
-};
-// Import all category images in folder
-const images = require.context("../../../assets/categories", false);
-const imageList = images.keys().map((image) => images(image) as string);
+import image01 from "../../../assets/categories/category_01.jpg";
+import image02 from "../../../assets/categories/category_02.jpg";
+import image03 from "../../../assets/categories/category_03.jpg";
+import image04 from "../../../assets/categories/category_04.jpg";
+import image05 from "../../../assets/categories/category_05.jpg";
+import image06 from "../../../assets/categories/category_06.jpg";
+import image07 from "../../../assets/categories/category_07.jpg";
+import image08 from "../../../assets/categories/category_08.jpg";
+import image09 from "../../../assets/categories/category_09.jpg";
+import image10 from "../../../assets/categories/category_10.jpg";
+import image11 from "../../../assets/categories/category_11.jpg";
+import image12 from "../../../assets/categories/category_12.jpg";
+import image13 from "../../../assets/categories/category_13.jpg";
+import image14 from "../../../assets/categories/category_14.jpg";
+import image15 from "../../../assets/categories/category_15.jpg";
+import image16 from "../../../assets/categories/category_16.jpg";
 
 export type Category = {
   id: string;
@@ -24,25 +26,25 @@ export const categories: Category[] = [
   {
     id: "open-source",
     name: "Open source",
-    images: imageList.slice(0, 4),
+    images: [image01, image02, image03, image04],
     searchQuery: "open source, open source software",
   },
   {
     id: "education",
     name: "Education",
-    images: imageList.slice(4, 8),
+    images: [image05, image06, image07, image08],
     searchQuery: "education, teaching",
   },
   {
     id: "civic-engagement",
     name: "Civic engagement",
-    images: imageList.slice(8, 12),
+    images: [image09, image10, image11, image12],
     searchQuery: "civic engagement, civics, governance, democracy ",
   },
   {
     id: "social",
     name: "Social",
-    images: imageList.slice(12, 16),
+    images: [image13, image14, image15, image16],
     searchQuery: "social",
   },
 ];
