@@ -127,6 +127,20 @@ export const collections: Collection[] = [
     description:
       "Culpa tempora quo eveniet atque a iusto harum. Molestiae autem voluptates quasi quod quae voluptate nam sint. Doloribus non ullam maxime tempora molestiae nostrum.",
   },
+  {
+    id: "0xb5fe5dc58a6f2aca3bdb7a33a25dc9e5ba3ffc1e",
+    author: "0xa52dcc11febce1ee56e0cf5be73d376a29c9a740",
+    name: "Black-winged Stilt",
+    description:
+      "Culpa tempora quo eveniet atque a iusto harum. Molestiae autem voluptates quasi quod quae voluptate nam sint. Doloribus non ullam maxime tempora molestiae nostrum.",
+  },
+  {
+    id: "0xb5fe5dc58a6f2aca3bdb7a33a25dc9e5ba3ffc1g",
+    author: "0xa52dcc11febce1ee56e0cf5be73d376a29c9a740",
+    name: "Black-winged Stilt",
+    description:
+      "Culpa tempora quo eveniet atque a iusto harum. Molestiae autem voluptates quasi quod quae voluptate nam sint. Doloribus non ullam maxime tempora molestiae nostrum.",
+  },
 ].map((c, i) => ({ ...c, projects: projectRefs.slice(i, 4 + i) }));
 
 export function useCollections() {

@@ -2,23 +2,20 @@ import { Badge, BasicCard, CardHeader } from "../common/styles";
 import { CollectionBanner } from "../discovery/CardBanner";
 import { Collection } from "./hooks/useCollections";
 
-type CollectionCardProps = {
+export type CollectionCardProps = {
   collection: Collection;
-  index: number;
+  size: "big" | "small";
 };
 
-const CollectionCard = ({ collection, index }: CollectionCardProps) => {
+const CollectionCard = ({ collection, size }: CollectionCardProps) => {
   const { id, name, projects } = collection;
-  const trackEventValue = [0, 1, 6, 7].includes(index)
-    ? "home-collections-card-big"
-    : "home-collections-card-small";
 
   return (
     <BasicCard className="w-full">
       <a
         target="_blank"
         href={`/#/projects?collectionId=${id}`}
-        data-track-event={trackEventValue}
+        data-track-event={`home-collections-card-${size}`}
       >
         <CardHeader>
           <CollectionBanner projectIds={projects} />

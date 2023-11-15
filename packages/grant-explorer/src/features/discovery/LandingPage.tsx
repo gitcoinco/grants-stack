@@ -25,14 +25,7 @@ const LandingPage = () => {
     <DefaultLayout showWalletInteraction>
       <LandingHero />
       <LandingSection title="Community collections">
-        <CollectionsGrid
-          data={collections}
-          loadingCount={10}
-          maxCount={10}
-          getItemClassName={(_, i) =>
-            `${[0, 9].includes(i) ? "md:col-span-2" : ""}`
-          }
-        />
+        <CollectionsGrid data={collections} />
       </LandingSection>
       <LandingSection title="Categories">
         <CategoriesGrid data={categories} loadingCount={4} maxCount={4} />
