@@ -9,6 +9,7 @@ import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import {
   createApplicationFetchOptions,
   useApplications,
+  Filter,
 } from "./hooks/useApplications";
 import { PaginatedProjectsList } from "./PaginatedProjectsList";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
@@ -17,13 +18,6 @@ import { useCollection } from "../collections/hooks/useCollections";
 import { CollectionDetails } from "../collections/CollectionDetails";
 import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
 import { allChains } from "../../app/chainConfig";
-
-export type Filter =
-  | {
-      type: "chain";
-      chainId: number;
-    }
-  | { type: "roundStatus"; status: "active" | "finished" };
 
 const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   {
