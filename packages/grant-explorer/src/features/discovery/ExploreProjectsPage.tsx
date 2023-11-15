@@ -157,7 +157,9 @@ export function ExploreProjectsPage(): JSX.Element {
       {collection && (
         <CollectionDetails
           collection={collection}
-          onAddAllApplicationsToCart={() => alert("not implemented")}
+          onAddAllApplicationsToCart={() =>
+            applications.forEach(addApplicationToCart)
+          }
         />
       )}
 
