@@ -35,7 +35,7 @@ export const collections: Collection[] = [
     name: "Grants Stack Veterans",
     images: [image05, image06, image07, image08],
     description:
-      "This collection showcases all grantees in GG19 that have participated in a past GG18 and/or Beta Round! Give these Grants Stack Veteran some love (and maybe some donations, too!).",
+      "This collection showcases all grantees in GG19 that have participated in a past GG18 and/or Beta Round! Give these Grants Stack Veterans some love (and maybe some donations, too!).",
     projects: veteransProjects,
   },
 ];
