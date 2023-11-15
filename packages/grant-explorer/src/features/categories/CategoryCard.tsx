@@ -11,10 +11,7 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
   if (isLoading) {
     return <div>...</div>;
   }
-  const { id, name } = category;
-
-  // TODO: Define the category pictures - where do we do this?
-  const projectIds = Array.from({ length: 4 }).map((_, i) => `${id}-${i}`);
+  const { id, name, images } = category;
 
   return (
     <BasicCard className="w-full">
@@ -24,7 +21,7 @@ const CategoryCard = ({ category, isLoading }: CategoryCardProps) => {
         data-track-event="home-category-card"
       >
         <CardHeader>
-          <CategoryBanner projectIds={projectIds} />
+          <CategoryBanner images={images} />
         </CardHeader>
         <CardContent>
           <div className="font-medium truncate text-xl">{name}</div>

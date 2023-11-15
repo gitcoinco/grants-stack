@@ -46,19 +46,49 @@ const defaultVotingTokens = Object.fromEntries(
   })
 ) as Record<ChainId, VotingToken>;
 
+function isSameProject(a: CartProject, b: CartProject): boolean {
+  return (
+    a.grantApplicationId === b.grantApplicationId && a.chainId === b.chainId
+  );
+}
+
+function updateOrInsertCartProject(
+  currentProjects: CartProject[],
+  newProject: CartProject
+): CartProject[] {
+  const initialAcc: {
+    projects: CartProject[];
+    hasUpdatedProject: boolean;
+  } = {
+    projects: [],
+    hasUpdatedProject: false,
+  };
+
+  const result = currentProjects.reduce((acc, project) => {
+    if (isSameProject(project, project)) {
+      return {
+        projects: [...acc.projects, newProject],
+        hasUpdatedProject: true,
+      };
+    } else {
+      return { ...acc, projects: [...acc.projects, project] };
+    }
+  }, initialAcc);
+
+  return result.hasUpdatedProject
+    ? result.projects
+    : [...currentProjects, newProject];
+}
+
 export const useCartStorage = create<CartState>()(
   persist(
     (set, get) => ({
       projects: [],
-      add: (project: CartProject) => {
-        // TODO: shouldn't we be checking for the applicationId instead?
-        // this might lead to multiple projects being added because the object
-        // is not exactly the same
-        if (get().projects.includes(project)) {
-          return;
-        }
+      add: (newProject: CartProject) => {
+        const currentProjects = get().projects;
+
         set({
-          projects: [...get().projects, project],
+          projects: updateOrInsertCartProject(currentProjects, newProject),
         });
       },
       /** @param grantApplicationId - ${roundAddress}-${applicationId} */

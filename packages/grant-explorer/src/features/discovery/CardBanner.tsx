@@ -106,17 +106,15 @@ export function CollectionBanner({ projectIds }: { projectIds: string[] }) {
   );
 }
 
-export function CategoryBanner({ projectIds }: { projectIds: string[] }) {
+export function CategoryBanner({ images }: { images: string[] }) {
   return (
     <div className="overflow-hidden grid grid-cols-2">
-      {projectIds.map((project) => {
-        const stockId = generateRandomNumber(project);
-        const stockImage = stockImages[stockId];
+      {images.map((image) => {
         return (
           <div
             className={`bg-grey-100 aspect-square w-full bg-no-repeat bg-cover`}
             style={{
-              backgroundImage: `url(${stockImage})`,
+              backgroundImage: `url(${image})`,
             }}
           />
         );
