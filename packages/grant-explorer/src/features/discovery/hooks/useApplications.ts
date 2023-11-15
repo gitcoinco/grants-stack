@@ -20,10 +20,6 @@ export type ApplicationFetchOptions =
       queryString: string;
     }
   | {
-      type: "applications-by-refs";
-      refs: string[];
-    }
-  | {
       type: "applications-paginated";
       page?: number;
       filter?: ApplicationFilter;
@@ -64,18 +60,6 @@ export function useApplications(options: ApplicationFetchOptions) {
           return {
             applications,
             pagination,
-            applicationMeta: [],
-          };
-        }
-
-        case "applications-by-refs": {
-          const res = await grantsStackDataClient.query({
-            ...options,
-          });
-
-          return {
-            applications: res.applications,
-            pagination: { totalItems: options.refs.length },
             applicationMeta: [],
           };
         }
@@ -146,8 +130,8 @@ export function createApplicationFetchOptions({
     };
   } else if (collection !== undefined) {
     applicationsFetchOptions = {
-      type: "applications-by-refs",
-      refs: collection.projects,
+      type: "applications-paginated",
+      filter: { type: "refs", refs: collection.projects },
     };
   }
   return applicationsFetchOptions;
