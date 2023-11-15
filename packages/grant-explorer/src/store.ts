@@ -46,7 +46,7 @@ const defaultVotingTokens = Object.fromEntries(
   })
 ) as Record<ChainId, VotingToken>;
 
-function areProjectIdsEqual(a: CartProject, b: CartProject): boolean {
+function isSameProject(a: CartProject, b: CartProject): boolean {
   return (
     a.grantApplicationId === b.grantApplicationId && a.chainId === b.chainId
   );
@@ -65,7 +65,7 @@ function updateOrInsertCartProject(
   };
 
   const result = currentProjects.reduce((acc, project) => {
-    if (areProjectIdsEqual(project, project)) {
+    if (isSameProject(project, project)) {
       return {
         projects: [...acc.projects, newProject],
         hasUpdatedProject: true,
