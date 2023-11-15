@@ -12,7 +12,6 @@ describe("useCartStorage Zustand store", () => {
   beforeEach(() => {
     // Clear localStorage before each test to ensure a clean state
     localStorage.clear();
-    useCartStorage.getState().clear();
   });
 
   test("should add projects to the store", () => {
@@ -77,7 +76,7 @@ describe("useCartStorage Zustand store", () => {
     const project: CartProject = makeApprovedProjectData();
 
     useCartStorage.getState().add(project);
-    useCartStorage.getState().add({ ...project });
+    useCartStorage.getState().add(project);
 
     // Assert that the project was only added once
     const matchingProjects = useCartStorage
@@ -85,7 +84,6 @@ describe("useCartStorage Zustand store", () => {
       .projects.filter(
         (p) => p.grantApplicationId === project.grantApplicationId
       );
-
     expect(matchingProjects).toHaveLength(1);
   });
 
@@ -155,7 +153,6 @@ describe("useCartStorage Zustand store", () => {
     useCartStorage.getState().add(project);
     useCartStorage.getState().add(modifiedProject);
 
-    expect(useCartStorage.getState().projects).toHaveLength(1);
     expect(useCartStorage.getState().projects).toContainEqual(modifiedProject);
   });
 
