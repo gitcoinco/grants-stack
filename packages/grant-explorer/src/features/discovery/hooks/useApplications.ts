@@ -2,6 +2,16 @@ import useSWRInfinite from "swr/infinite";
 import { useGrantsStackDataClient } from "common/src/grantsStackDataClientContext";
 import { useMemo } from "react";
 
+export type ApplicationFilter =
+  | {
+      type: "chains";
+      chainIds: number[];
+    }
+  | {
+      type: "refs";
+      refs: string[];
+    };
+
 export type ApplicationFetchOptions =
   | {
       type: "search";
@@ -10,11 +20,11 @@ export type ApplicationFetchOptions =
   | {
       type: "category";
       searchQuery: string;
-      categoryName: string;
     }
   | {
       type: "all";
       seed: number;
+      filter?: ApplicationFilter;
     };
 
 export function useApplications(options: ApplicationFetchOptions) {
@@ -23,11 +33,16 @@ export function useApplications(options: ApplicationFetchOptions) {
   const { data, error, size, setSize } = useSWRInfinite(
     (pageIndex) => [pageIndex, options, "/applications"],
     async ([pageIndex]) => {
-      if ("searchQuery" in options) {
+      if (options.type === "category" || options.type === "search") {
+        const searchQuery =
+          options.type === "category"
+            ? `${options.searchQuery} --strategy=semantic`
+            : options.searchQuery;
+
         const { results, pagination } = await grantsStackDataClient.query({
           page: pageIndex,
           type: "applications-search",
-          queryString: options.searchQuery,
+          queryString: searchQuery,
         });
 
         // unzip data and meta
@@ -43,6 +58,7 @@ export function useApplications(options: ApplicationFetchOptions) {
         const { applications, pagination } = await grantsStackDataClient.query({
           type: "applications-paginated",
           page: pageIndex,
+          filter: options.filter,
           order: {
             type: "random",
             seed: options.seed,

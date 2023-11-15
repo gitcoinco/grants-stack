@@ -1,0 +1,14 @@
+apis/DefaultApi.ts
+apis/index.ts
+index.ts
+models/ApplicationSummary.ts
+models/ApplicationsResponse.ts
+models/HTTPValidationError.ts
+models/SearchResponse.ts
+models/SearchResult.ts
+models/SearchResultMeta.ts
+models/SearchType.ts
+models/ValidationError.ts
+models/ValidationErrorLocInner.ts
+models/index.ts
+runtime.ts

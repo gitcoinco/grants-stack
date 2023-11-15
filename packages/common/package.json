@@ -16,7 +16,7 @@
     "dompurify": "^2.4.3",
     "ethers": "^5.6.5",
     "framer-motion": "^10.12.7",
-    "grants-stack-data-client": "github:gitcoinco/grants-stack-data-client",
+    "grants-stack-data-client": "workspace:*",
     "markdown-it": "^13.0.1",
     "react": "^18.2.0",
     "react-hook-form": "^7.42.1",
