@@ -9,7 +9,7 @@ export type CollectionCardProps = {
 };
 
 const CollectionCard = ({ collection, size }: CollectionCardProps) => {
-  const { id, author, name, projects } = collection;
+  const { id, author, name, projects, images } = collection;
 
   return (
     <BasicCard className="w-full">
@@ -18,7 +18,7 @@ const CollectionCard = ({ collection, size }: CollectionCardProps) => {
         data-track-event={`home-collections-card-${size}`}
       >
         <CardHeader>
-          <CollectionBanner projectIds={projects} />
+          <CollectionBanner images={images} />
         </CardHeader>
         <div className="p-4 space-y-1">
           <div className="font-medium truncate text-xl">{name}</div>
