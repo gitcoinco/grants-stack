@@ -17,7 +17,7 @@ import { useRoundById } from "../../context/RoundContext";
 export function createTwitterShareText(props: TwitterButtonParams) {
   return `I just donated to ${props.roundName ?? "a round"}${
     props.isMrc && props.roundName ? " and more" : ""
-  } on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${
+  } on @gitcoin @grantsstack. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${
     props.address
   }`;
 }
