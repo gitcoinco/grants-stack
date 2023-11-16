@@ -137,6 +137,10 @@ export function createApplicationFetchOptions({
     applicationsFetchOptions = {
       type: "applications-paginated",
       filter: { type: "refs", refs: collection.projects },
+      order: {
+        type: "random",
+        seed: PROJECTS_SORTING_SEED,
+      },
     };
   }
   return applicationsFetchOptions;
