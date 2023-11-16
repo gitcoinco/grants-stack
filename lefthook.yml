@@ -43,4 +43,4 @@ pre-push:
     build:
       run: turbo run build
     test:
-      run: turbo run test
+      run: turbo run test --concurrency=50%
