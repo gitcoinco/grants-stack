@@ -1,5 +1,6 @@
 import { firstTimeGranteesProject } from "../data/firstTimeGrantees";
 import { veteransProjects } from "../data/veterans";
+import { getAddress } from "viem";
 
 import image01 from "../../../assets/collections/collection_01.jpg";
 import image02 from "../../../assets/collections/collection_02.jpg";
@@ -21,7 +22,7 @@ export type Collection = {
 
 function normalizeAddress(item: string) {
   const [chain, address, idx] = item.split(":");
-  return [chain, address.toLowerCase(), idx].join(":");
+  return [chain, getAddress(address), idx].join(":");
 }
 
 export const collections: Collection[] = [
