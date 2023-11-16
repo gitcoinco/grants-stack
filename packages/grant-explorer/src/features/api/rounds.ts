@@ -32,6 +32,12 @@ const invalidRounds = [
   "0xae18f327ce481a7316d28a625d4c378c1f8b03a2",
   "0x9b3b1e7edf9c5eea07fb3c7270220be1c3fea111",
   "0x4c19261ff6e5736a2677a06741bf1e68995e7c95",
+  "0x1ebac14c3b3e539b0c1334415c70a923eb7c736f",
+  "0x3979611e7ca6db8f45b4a768079a88d9138622c1",
+  "0x0b1e3459cdadc52fca8977cede34f28bc298e3df",
+  "0x1427a0e71a222b0229a910dc72da01f8f04c7441",
+  "0xc25994667632d55a8e3dae88737e36f496600434",
+  "0x21d264139d66dd281dcb0177bbdca5ceeb71ad69",
 ].map((a) => a.toLowerCase());
 
 export type RoundOverview = {
