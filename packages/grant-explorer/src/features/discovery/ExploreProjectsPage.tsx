@@ -95,6 +95,7 @@ export function ExploreProjectsPage(): JSX.Element {
 
   const {
     applications,
+    applicationMeta,
     totalApplicationsCount,
     isLoading,
     isLoadingMore,
@@ -103,6 +104,10 @@ export function ExploreProjectsPage(): JSX.Element {
   } = useApplications(applicationsFetchOptions);
 
   const { projects, add, remove } = useCartStorage();
+
+  const allSemantic = applicationMeta.every(
+    (item) => item.searchType === "semantic"
+  );
 
   const applicationIdsInCart = useMemo(() => {
     return new Set(
@@ -217,6 +222,12 @@ export function ExploreProjectsPage(): JSX.Element {
               keywords.
             </p>
           )}
+        {isLoading === false && applicationMeta.length > 0 && allSemantic && (
+          <p className="mt-4 mb-10 text-lg">
+            Your search did not match any projects. Try again or feel free to
+            browse through projects similar to your search.
+          </p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <PaginatedProjectsList
             applications={applications}
