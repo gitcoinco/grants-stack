@@ -10,7 +10,7 @@
     "start": "pnpm --filter round-manager run start",
     "build": "pnpm turbo build",
     "compile": "pnpm --filter contracts run compile ",
-    "test": "pnpm run test",
+    "test": "pnpm turbo run test --no-cache --concurrency=50%",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write",
     "// round manager script": "====== packages/round-manager specific ======",
