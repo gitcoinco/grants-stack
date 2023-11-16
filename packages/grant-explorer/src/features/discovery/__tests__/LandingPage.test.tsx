@@ -53,13 +53,6 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: vi.fn(),
 }));
 
-vi.mock("viem", async () => {
-  const actual = await vi.importActual<typeof import("viem")>("viem");
-  return {
-    ...actual,
-    getAddress: vi.fn().mockImplementation((addr) => addr),
-  };
-});
 vi.mock("wagmi", async () => {
   const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
   return {

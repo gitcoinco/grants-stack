@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
 import { PassportWidget } from "./PassportWidget";
+import { exploreRoundsLink } from "../discovery/LandingTabs";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -115,7 +116,7 @@ export default function Navbar(props: NavbarProps) {
               </a>
             </div>
             <Link
-              to="/rounds"
+              to={exploreRoundsLink}
               className="font-medium hover:underline hidden md:block"
             >
               Explore rounds
@@ -146,10 +147,10 @@ export default function Navbar(props: NavbarProps) {
               <div>
                 <Link
                   to={`/contributors/${walletAddress}`}
-                  className="flex-shrink-0 flex items-center"
+                  className="flex-shrink-0 flex items-center ph-no-capture"
                   data-testid={"contributions-link"}
                 >
-                  <UserCircleIcon className="h-8 w-8" />
+                  <UserCircleIcon className="h-8 w-8 ph-no-capture" />
                 </Link>
               </div>
             )}
