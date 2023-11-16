@@ -21,7 +21,6 @@ export type ApplicationFetchOptions =
     }
   | {
       type: "applications-paginated";
-      page?: number;
       filter?: ApplicationFilter;
       order?: { type: "random"; seed: number };
     };
