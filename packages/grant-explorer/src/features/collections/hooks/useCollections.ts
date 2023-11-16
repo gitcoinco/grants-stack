@@ -9,7 +9,6 @@ import image05 from "../../../assets/collections/collection_05.jpg";
 import image06 from "../../../assets/collections/collection_06.jpg";
 import image07 from "../../../assets/collections/collection_07.jpg";
 import image08 from "../../../assets/collections/collection_08.jpg";
-import { getAddress } from "viem";
 
 export type Collection = {
   id: string;
@@ -22,7 +21,7 @@ export type Collection = {
 
 function normalizeAddress(item: string) {
   const [chain, address, idx] = item.split(":");
-  return [chain, getAddress(address), idx].join(":");
+  return [chain, address.toLowerCase(), idx].join(":");
 }
 
 export const collections: Collection[] = [

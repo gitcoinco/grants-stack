@@ -13,7 +13,7 @@ const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
   "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc", // Gitcoin Citizens Round #1
   "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38", // Greenpill Q2 2023
-].map((a) => getAddress(a)); // Normalize address
+].map((a) => a.toString()); // Normalize address
 
 const invalidRounds = [
   "0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef", // Meg hello
@@ -33,7 +33,7 @@ const invalidRounds = [
   "0xae18f327ce481a7316d28a625d4c378c1f8b03a2",
   "0x9b3b1e7edf9c5eea07fb3c7270220be1c3fea111",
   "0x4c19261ff6e5736a2677a06741bf1e68995e7c95",
-].map((a) => getAddress(a)); // Normalize address
+].map((a) => a.toString()); // Normalize address
 
 export type RoundOverview = {
   id: string;
@@ -269,11 +269,11 @@ export function filterRounds(
   rounds?: RoundOverview[]
 ) {
   return rounds?.filter((round) => {
-    if (validRounds.includes(getAddress(round.id))) {
+    if (validRounds.includes(round.id.toLowerCase())) {
       return true;
     }
 
-    if (invalidRounds.includes(getAddress(round.id))) {
+    if (invalidRounds.includes(round.id.toLowerCase())) {
       return false;
     }
 
