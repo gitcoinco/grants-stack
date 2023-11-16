@@ -4,7 +4,7 @@ import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import { useCartStorage } from "../../store";
 import { ApplicationStatus, CartProject } from "../api/types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
 import {
   createApplicationFetchOptions,
@@ -29,6 +29,8 @@ const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
     allowMultiple: true,
   },
 ];
+
+type SearchType = "fulltext" | "semantic" | undefined;
 
 function createCartProjectFromApplication(
   application: ApplicationSummary
@@ -84,6 +86,7 @@ export function ExploreProjectsPage(): JSX.Element {
   const collection = useCollection(urlParams.get("collectionId"));
 
   const [searchQuery, setSearchQuery] = useState(urlParams.get("q") ?? "");
+  const [searchType, setSearchType] = useState<SearchType>();
 
   const applicationsFetchOptions = createApplicationFetchOptions({
     searchQuery,
@@ -94,6 +97,7 @@ export function ExploreProjectsPage(): JSX.Element {
 
   const {
     applications,
+    applicationMeta,
     totalApplicationsCount,
     isLoading,
     isLoadingMore,
@@ -102,6 +106,17 @@ export function ExploreProjectsPage(): JSX.Element {
   } = useApplications(applicationsFetchOptions);
 
   const { projects, add, remove } = useCartStorage();
+
+  useEffect(() => {
+    if (applicationMeta.length > 0) {
+      const allSemantic = applicationMeta.every(
+        (item) => item.searchType === "semantic"
+      );
+      setSearchType(allSemantic ? "semantic" : "fulltext");
+    } else {
+      setSearchType(undefined);
+    }
+  }, [applicationMeta]);
 
   const applicationIdsInCart = useMemo(() => {
     return new Set(
@@ -210,6 +225,12 @@ export function ExploreProjectsPage(): JSX.Element {
               keywords.
             </p>
           )}
+        {isLoading === false && searchType === "semantic" && (
+          <p className="mt-4 mb-10 text-lg">
+            Your search did not match any projects. Try again or feel free to
+            browse through projects similar to your search.
+          </p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <PaginatedProjectsList
             applications={applications}
