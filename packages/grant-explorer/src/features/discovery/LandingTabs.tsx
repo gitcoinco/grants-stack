@@ -10,6 +10,12 @@ type Tab = {
   tabName: string;
 };
 
+export const exploreRoundsLink = `/rounds?${toQueryString({
+  orderBy: "matchAmount",
+  orderDirection: "desc",
+  status: [FilterStatus.active, FilterStatus.taking_applications].join(","),
+})}`;
+
 export default function LandingTabs() {
   const { pathname } = useLocation();
   const [isDesktop] = useMediaQuery("(min-width: 768px)");
