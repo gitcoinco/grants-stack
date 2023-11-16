@@ -1,4 +1,3 @@
-import { getAddress } from "viem";
 import useSWR, { useSWRConfig, Cache } from "swr";
 import { ChainId, RoundPayoutType, graphql_fetch } from "common";
 import { RoundMetadata } from "./round";
