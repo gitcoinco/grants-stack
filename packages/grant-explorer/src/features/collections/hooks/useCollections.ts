@@ -29,7 +29,7 @@ export const collections: Collection[] = [
   {
     id: "first-time-grantees",
     author: "Gitcoin",
-    name: "First Time grantees",
+    name: "First Time Grantees",
     images: [image01, image02, image03, image04],
     description:
       "This collection showcases all grantees in GG19 that have not participated in a past round on Grants Stack! Give these first-time grantees some love (and maybe some donations, too!).",
