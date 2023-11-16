@@ -63,6 +63,12 @@ export function useApplications(options: ApplicationFetchOptions) {
           };
         }
       }
+    },
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateFirstPage: false,
     }
   );
 
