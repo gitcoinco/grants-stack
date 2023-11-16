@@ -1,6 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
+import { ReactComponent as GrantsExplorerLogoMobile } from "../../assets/explorer-logo-mobile.svg";
 import NavbarCart from "./NavbarCart";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
@@ -41,7 +42,7 @@ export default function Navbar(props: NavbarProps) {
     <nav
       className={`bg-white/5 backdrop-blur-md fixed w-full z-20 shadow-[0_4px_24px_0px_rgba(0,0,0,0.08)] ${props.customBackground}`}
     >
-      <div className="mx-auto px-4 sm:px-6 lg:px-20">
+      <div className="mx-auto px-4 sm:px-4">
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link
@@ -49,16 +50,17 @@ export default function Navbar(props: NavbarProps) {
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
-              <GitcoinLogo className="block h-8 w-auto" />
-              <div className="hidden lg:block md:block">
-                <span className="mx-6 text-grey-400">|</span>
-                <GrantsExplorerLogo className="lg:inline-block md:inline-block" />
+              <div className="flex gap-1 lg:gap-3 items-center">
+                <GitcoinLogo className="" />
+                <div className="border-grey-400 border-2 h-4 border-r ml-[2px]" />
+                <GrantsExplorerLogo className="hidden lg:block" />
+                <GrantsExplorerLogoMobile className="lg:hidden" />
               </div>
             </Link>
           </div>
 
           <div className="flex items-center gap-6">
-            <div>
+            <div className="hidden md:block">
               <a
                 href="https://bridge.gitcoin.co"
                 rel="noreferrer"
@@ -115,7 +117,7 @@ export default function Navbar(props: NavbarProps) {
             </div>
             <Link
               to={exploreRoundsLink}
-              className="font-medium hover:underline"
+              className="font-medium hover:underline hidden md:block"
             >
               Explore rounds
             </Link>
