@@ -39,8 +39,8 @@ pre-push:
   parallel: true
   commands:
     typecheck:
-      run: pnpm turbo run typecheck
+      run: turbo run typecheck
     build:
-      run: pnpm turbo run build
+      run: turbo run build
     test:
-      run: pnpm turbo run test
+      run: turbo run test
