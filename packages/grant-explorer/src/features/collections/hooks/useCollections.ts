@@ -45,6 +45,7 @@ import { innovatorsChampionsProjects } from "../data/innovatorsChampions";
 import { midnightGospelProjects } from "../data/midnightGospel";
 import { coinverseProjects } from "../data/coinverse";
 import { evergreenProjects } from "../data/evergreen";
+import { carlsCollectionProjects } from "../data/carlsCollection";
 
 export type Collection = {
   id: string;
@@ -139,7 +140,7 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
     name: "Carl's Collection",
     images: [image33, image34, image35, image36],
     description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
-    projects: midnightGospelProjects.map(normalizeAddress),
+    projects: carlsCollectionProjects.map(normalizeAddress),
   },
 ];
 
