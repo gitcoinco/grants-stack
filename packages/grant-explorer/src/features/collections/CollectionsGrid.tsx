@@ -1,7 +1,9 @@
 import CollectionCard from "./CollectionCard";
 import { Collection } from "./hooks/useCollections";
 
-export const collectionGridLayout = [0, 1];
+// Index position of the big cards
+const collectionGridLayout = [0, 1, 4, 5];
+
 export function CollectionsGrid({ data }: { data: Collection[] }) {
   return (
     <div className="grid md:grid-cols-4 gap-6">
