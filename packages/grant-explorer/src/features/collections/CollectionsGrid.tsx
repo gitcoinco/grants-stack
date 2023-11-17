@@ -4,7 +4,7 @@ import { Collection } from "./hooks/useCollections";
 // Index position of the big cards
 const collectionGridLayout = [0, 1, 4, 5];
 
-const DISPLAY_COUNT = 8;
+const DISPLAY_COUNT = 12;
 
 export function CollectionsGrid({ data }: { data: Collection[] }) {
   return (
