@@ -163,14 +163,10 @@ const _updateRound = async ({
      * This won't actually update the values, it's done just to pass the checks in the contract
      * (and to confuse the developer).
      *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1 */
-    if (
-      Date.now() > round.applicationsStartTime.getTime() &&
-      Date.now() < round.applicationsEndTime.getTime()
-    ) {
+    if (Date.now() > round.applicationsStartTime.getTime()) {
       round.applicationsStartTime = subSeconds(round.applicationsEndTime, 10);
     }
     if (Date.now() > round.roundStartTime.getTime()) {
-      round.applicationsStartTime = subSeconds(round.applicationsEndTime, 10);
       round.roundStartTime = subSeconds(round.roundEndTime, 10);
     }
 
