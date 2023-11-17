@@ -21,7 +21,9 @@ export function CollectionDetails({
       </div>
 
       <div className="flex">
-        <div className="text-lg flex-1">{collection.description}</div>
+        <div className="text-lg flex-1 whitespace-pre-wrap">
+          {collection.description}
+        </div>
         <div className="w-96">
           <div className="flex justify-end gap-2">
             <ShareButton url={location.href} />
