@@ -123,9 +123,10 @@ query GetRounds(
         id
         strategyName
       }
-      projects(where:{
-        status: 1
-      }) {
+      projects(
+        first: 1000
+        where:{ status: 1 }
+      ) {
         id
       }
     }
