@@ -15,9 +15,9 @@ import { Hex } from "viem";
 import { useRoundById } from "../../context/RoundContext";
 
 export function createTwitterShareText(props: TwitterButtonParams) {
-  return `I just donated to ${props.roundName ?? "a round"}${
+  return `I just donated to ${props.roundName?.trim() ?? "a round"}${
     props.isMrc && props.roundName ? " and more" : ""
-  } on @gitcoin @grantsstack. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${
+  } on @gitcoin's @grantsstack. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${
     props.address
   }`;
 }
