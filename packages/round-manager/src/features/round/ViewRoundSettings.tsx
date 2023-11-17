@@ -1261,8 +1261,6 @@ function RoundApplicationPeriod(props: {
     return inputTime.isBefore(moment());
   };
 
-  console.log("editedRound", editedRound);
-
   return (
     <div className="w-full w-10/12">
       <span className="mt-4 inline-flex text-gray-400 mb-4">
