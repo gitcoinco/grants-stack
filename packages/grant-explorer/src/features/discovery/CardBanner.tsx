@@ -93,7 +93,7 @@ export function CollectionBanner({ images }: { images: string[] }) {
       {images.map((image) => {
         return (
           <div
-            className={`bg-grey-100 h-[48px] bg-no-repeat w-full bg-cover`}
+            className={`bg-grey-100 h-[48px] bg-no-repeat bg-center w-full bg-cover`}
             style={{
               backgroundImage: `url(${image})`,
             }}

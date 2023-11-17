@@ -123,6 +123,18 @@ describe("LandingPage", () => {
     );
   });
 
+  it("Renders Live GG19 Stats button", async () => {
+    renderWithContext(<LandingPage />);
+    const button = screen.getByText("Live GG19 stats");
+
+    expect(button).toHaveAttribute(
+      "href",
+      "https://gitcoin-grants-51f2c0c12a8e.herokuapp.com/Leaderboard"
+    );
+
+    await waitFor(async () => expect(button).toBeInTheDocument());
+  });
+
   it.skip("filters active rounds based on search query", async () => {
     const roundMetadata: RoundMetadata = {
       name: "gitcoin",
