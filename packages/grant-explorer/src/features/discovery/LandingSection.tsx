@@ -15,7 +15,7 @@ export function LandingSection({
   className,
 }: { action?: ReactNode; title: string } & ComponentProps<"div">) {
   return (
-    <section className="pt-12 pb-16">
+    <section className="not:first-child:pt-12 pb-16">
       <div
         className={classNames(
           "flex justify-between items-center  mb-8",
