@@ -22,7 +22,7 @@ export function RoundsGrid({
     return <RoundsEmptyState />;
   }
   return (
-    <div className="grid md:grid-cols-3 gap-6">
+    <div className="md:grid space-y-4 md:space-y-0 md:grid-cols-3 gap-6">
       {(data ?? createRoundLoadingData(loadingCount))
         ?.slice(0, maxCount)
         .map((round, i) => (
