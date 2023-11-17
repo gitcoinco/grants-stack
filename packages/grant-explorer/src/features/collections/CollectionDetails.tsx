@@ -81,7 +81,7 @@ const variantMap = {
   default: "bg-white hover:bg-grey-100",
   primary: "bg-orange-100 hover:bg-orange-50",
 };
-const Button = tw.button<{ variant?: "primary" | "default" }>`
+export const Button = tw.button<{ variant?: "primary" | "default" }>`
 border-grey-100
 disabled:pointer-events-none
 px-3 py-2

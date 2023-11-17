@@ -34,6 +34,10 @@ import image29 from "../../../assets/collections/collection_29.jpg";
 import image30 from "../../../assets/collections/collection_30.jpg";
 import image31 from "../../../assets/collections/collection_31.jpg";
 import image32 from "../../../assets/collections/collection_32.jpg";
+import image33 from "../../../assets/collections/collection_33.jpg";
+import image34 from "../../../assets/collections/collection_34.jpg";
+import image35 from "../../../assets/collections/collection_35.jpg";
+import image36 from "../../../assets/collections/collection_36.jpg";
 
 import { stakeFromHomeProjets } from "../data/stakeFromHome";
 import { devanshProjects } from "../data/devansh";
@@ -127,6 +131,14 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
     description: `I've centered my attention on projects that not only deliver genuine impact but also contribute tangible value to the ecosystem. My focus remains steadfast on initiatives that make a meaningful difference.
 
 ""It's not about ideas. It's about making ideas happen."" - Scott Belsky`,
+    projects: midnightGospelProjects.map(normalizeAddress),
+  },
+  {
+    id: "carls-collection",
+    author: "cerv1.eth",
+    name: "Carl's Collection",
+    images: [image33, image34, image35, image36],
+    description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
     projects: midnightGospelProjects.map(normalizeAddress),
   },
 ];
