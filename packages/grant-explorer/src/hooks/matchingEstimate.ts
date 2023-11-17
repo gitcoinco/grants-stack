@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { Address, zeroAddress } from "viem";
 import { ChainId } from "common";
 
@@ -70,7 +70,7 @@ function getMatchingEstimates(
  */
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
   const shouldFetch = params.every((param) => param.roundId !== zeroAddress);
-  return useSWR(shouldFetch ? params : null, (params) =>
+  return useSWRImmutable(shouldFetch ? params : null, (params) =>
     Promise.all(params.map((params) => getMatchingEstimates(params)))
   );
 }
