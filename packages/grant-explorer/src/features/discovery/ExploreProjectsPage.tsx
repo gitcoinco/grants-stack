@@ -83,6 +83,7 @@ export function ExploreProjectsPage(): JSX.Element {
   const category = useCategory(urlParams.get("categoryId"));
   const collection = useCollection(urlParams.get("collectionId"));
 
+  const [searchInput, setSearchInput] = useState(urlParams.get("q") ?? "");
   const [searchQuery, setSearchQuery] = useState(urlParams.get("q") ?? "");
 
   const applicationsFetchOptions = createApplicationFetchOptions({
@@ -94,6 +95,7 @@ export function ExploreProjectsPage(): JSX.Element {
 
   const {
     applications,
+    applicationMeta,
     totalApplicationsCount,
     isLoading,
     isLoadingMore,
@@ -102,6 +104,10 @@ export function ExploreProjectsPage(): JSX.Element {
   } = useApplications(applicationsFetchOptions);
 
   const { projects, add, remove } = useCartStorage();
+
+  const allSemantic = applicationMeta.every(
+    (item) => item.searchType === "semantic"
+  );
 
   const applicationIdsInCart = useMemo(() => {
     return new Set(
@@ -134,11 +140,15 @@ export function ExploreProjectsPage(): JSX.Element {
     pageTitle = collection?.name;
   }
 
+  const onQueryChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const q = e.target.value;
+    setSearchInput(q);
+  };
+
   function onSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const newSearchQuery = e.currentTarget["query"].value;
-    setSearchQuery(newSearchQuery);
-    setUrlParams(`?q=${newSearchQuery}`);
+    setSearchQuery(searchInput);
+    setUrlParams(`?q=${searchInput}`);
   }
 
   function onFiltersChange(newFilters: Filter[]) {
@@ -174,6 +184,7 @@ export function ExploreProjectsPage(): JSX.Element {
                 className="relative"
                 onSubmit={onSearchSubmit}
                 onBlur={onSearchSubmit}
+                data-ph-capture-attribute-search-query={searchInput}
               >
                 <MagnifyingGlassIcon
                   width={22}
@@ -184,7 +195,8 @@ export function ExploreProjectsPage(): JSX.Element {
                   type="text"
                   name="query"
                   placeholder="Search..."
-                  defaultValue={searchQuery}
+                  onChange={onQueryChange}
+                  value={searchInput}
                   className="w-full sm:w-96 border-2 border-white rounded-3xl px-4 py-2 mb-2 sm:mb-0 bg-white/50 pl-12 focus:border-white focus:ring-0 text-black font-mono"
                 />
               </form>
@@ -210,6 +222,12 @@ export function ExploreProjectsPage(): JSX.Element {
               keywords.
             </p>
           )}
+        {isLoading === false && applicationMeta.length > 0 && allSemantic && (
+          <p className="mt-4 mb-10 text-lg">
+            Your search did not match any projects. Try again or feel free to
+            browse through projects similar to your search.
+          </p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <PaginatedProjectsList
             applications={applications}

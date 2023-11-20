@@ -21,7 +21,9 @@ export function CollectionDetails({
       </div>
 
       <div className="flex">
-        <div className="text-lg flex-1">{collection.description}</div>
+        <div className="text-lg flex-1 whitespace-pre-wrap">
+          {collection.description}
+        </div>
         <div className="w-96">
           <div className="flex justify-end gap-2">
             <ShareButton url={location.href} />
@@ -77,9 +79,12 @@ const ShareButton = ({ url = "" }) => {
 // Keeping it here for now until other designs with these kinds of buttons.
 const variantMap = {
   default: "bg-white hover:bg-grey-100",
+  translucent: "bg-white/60 hover:bg-white/80 border-white border",
   primary: "bg-orange-100 hover:bg-orange-50",
 };
-const Button = tw.button<{ variant?: "primary" | "default" }>`
+export const Button = tw.button<{
+  variant?: "primary" | "translucent" | "default";
+}>`
 border-grey-100
 disabled:pointer-events-none
 px-3 py-2

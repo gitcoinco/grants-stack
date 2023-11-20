@@ -1,11 +1,15 @@
 import CollectionCard from "./CollectionCard";
 import { Collection } from "./hooks/useCollections";
 
-export const collectionGridLayout = [0, 1];
+// Index position of the big cards
+const collectionGridLayout = [0, 9];
+
+const DISPLAY_COUNT = 12;
+
 export function CollectionsGrid({ data }: { data: Collection[] }) {
   return (
-    <div className="grid md:grid-cols-4 gap-6">
-      {data?.slice(0, 12).map((collection, i) => {
+    <div className="md:grid space-y-4 md:space-y-0 md:grid-cols-4 gap-6">
+      {data?.slice(0, DISPLAY_COUNT).map((collection, i) => {
         const size = collectionGridLayout.includes(i) ? "big" : "small";
         return (
           <div
