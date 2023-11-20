@@ -3,6 +3,7 @@ import { CartProject, VotingToken } from "../../api/types";
 import { useRoundById } from "../../../context/RoundContext";
 import { ProjectInCart } from "./ProjectInCart";
 import {
+  DISABLED_CHAINS_FOR_ESTIMATES,
   matchingEstimatesToText,
   useMatchingEstimates,
 } from "../../../hooks/matchingEstimate";
@@ -36,7 +37,7 @@ export function RoundInCart(
   );
 
   const {
-    data: matchingEstimates,
+    data,
     error: matchingEstimateError,
     isLoading: matchingEstimateLoading,
   } = useMatchingEstimates([
@@ -58,6 +59,11 @@ export function RoundInCart(
     },
   ]);
 
+  const matchingEstimates = DISABLED_CHAINS_FOR_ESTIMATES.includes(
+    props.roundCart[0]?.chainId
+  )
+    ? undefined
+    : data;
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
   const { passportColor } = usePassport({
