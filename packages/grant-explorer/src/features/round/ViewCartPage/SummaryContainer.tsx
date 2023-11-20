@@ -23,6 +23,7 @@ import { useCheckoutStore } from "../../../checkoutStore";
 import { formatUnits, getAddress, parseUnits, zeroAddress } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
+  DISABLED_CHAINS_FOR_ESTIMATES,
   matchingEstimatesToText,
   useMatchingEstimates,
 } from "../../../hooks/matchingEstimate";
@@ -314,10 +315,12 @@ export function SummaryContainer() {
     }) ?? [];
 
   const {
-    data: matchingEstimates,
+    data,
     error: matchingEstimateError,
     isLoading: matchingEstimateLoading,
   } = useMatchingEstimates(matchingEstimateParamsPerRound);
+
+  const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
 
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
