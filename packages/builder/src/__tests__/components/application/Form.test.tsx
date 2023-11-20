@@ -92,8 +92,8 @@ jest.mock("wagmi", () => ({
     chain: jest.fn(),
     chains: [
       {
-        id: 5,
-        name: "Goerli",
+        id: 10,
+        name: "Optimism",
       },
     ],
   }),
@@ -104,11 +104,11 @@ describe("<Form />", () => {
 
   beforeEach(() => {
     store = setupStore();
-    store.dispatch(web3ChainIDLoaded(5));
+    store.dispatch(web3ChainIDLoaded(1));
     store.dispatch({
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 5,
+        chainID: 1,
         events: {
           [`1:${addressFrom(1)}:1`]: {
             createdAtBlock: 1111,
@@ -183,7 +183,7 @@ describe("<Form />", () => {
     test("checks if wallet address IS a multi-sig on current chain when NO is selected and IS a safe", async () => {
       const returnValue = {
         isContract: true,
-        isSafe: false,
+        isSafe: true,
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
@@ -224,6 +224,7 @@ describe("<Form />", () => {
           target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
         });
       });
+      screen.logTestingPlaygroundURL();
 
       await waitFor(() =>
         expect(
@@ -285,7 +286,7 @@ describe("<Form />", () => {
         expect(
           screen.getByText(
             // eslint-disable-next-line max-len
-            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the Goerli network. Please update your payout wallet address before proceeding."
+            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the Ethereum network. Please update your payout wallet address before proceeding."
           )
         ).toBeInTheDocument()
       );
@@ -397,7 +398,7 @@ describe("<Form/>", () => {
     store.dispatch({
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 5,
+        chainID: 10,
         events: {
           [`1:${addressFrom(1)}:1`]: {
             createdAtBlock: 1111,

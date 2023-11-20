@@ -19,7 +19,7 @@ describe("listPrograms", () => {
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
     // const address = "0x0"
     const expectedProgram = makeProgramData({
-      chain: CHAINS[ChainId.GOERLI_CHAIN_ID],
+      chain: CHAINS[ChainId.MAINNET],
     });
     const expectedPrograms: Program[] = [expectedProgram];
     (graphql_fetch as jest.Mock).mockResolvedValue({
@@ -53,7 +53,7 @@ describe("listPrograms", () => {
     const actualPrograms = await listPrograms("0x0", {
       getNetwork: async () =>
         // @ts-expect-error Test file
-        Promise.resolve({ chainId: ChainId.GOERLI_CHAIN_ID }),
+        Promise.resolve({ chainId: ChainId.MAINNET }),
     });
 
     expect(actualPrograms).toEqual(expectedPrograms);
@@ -63,7 +63,7 @@ describe("listPrograms", () => {
 describe("getProgramById", () => {
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
     const expectedProgram = makeProgramData({
-      chain: CHAINS[ChainId.GOERLI_CHAIN_ID],
+      chain: CHAINS[ChainId.MAINNET],
     });
     const programId = expectedProgram.id;
     (graphql_fetch as jest.Mock).mockResolvedValue({
@@ -96,7 +96,7 @@ describe("getProgramById", () => {
     const actualProgram = await getProgramById(programId as string, {
       getNetwork: async () =>
         // @ts-expect-error Test file
-        Promise.resolve({ chainId: ChainId.GOERLI_CHAIN_ID }),
+        Promise.resolve({ chainId: ChainId.MAINNET }),
     });
 
     expect(actualProgram).toEqual(expectedProgram);

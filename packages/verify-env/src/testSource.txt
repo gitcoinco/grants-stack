@@ -12,7 +12,6 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import {
   mainnet,
-  goerli,
   fantom,
   fantomTestnet,
   optimism,
@@ -27,7 +26,6 @@ import { arbitrumGoerli, arbitrum } from "viem/chains";
 
 const testnetChains = () => {
   return [
-    goerli,
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
     arbitrumGoerli,

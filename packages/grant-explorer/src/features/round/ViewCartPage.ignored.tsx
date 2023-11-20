@@ -176,7 +176,7 @@ describe.skip("View Cart Page", () => {
     });
 
     it("updates token summary based on selected token", async () => {
-      const chainId = 5;
+      const chainId = 1;
 
       const useParamsFn = () => ({
         chainId,
@@ -345,7 +345,7 @@ describe.skip("View Cart Page", () => {
   });
 
   it("renders a dropdown list of tokens when payout token input is clicked", async () => {
-    const chainId = 5;
+    const chainId = 1;
 
     const useParamsFn = () => ({
       chainId,
