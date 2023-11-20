@@ -77,12 +77,14 @@ export const MilestoneItem: React.FC<MilestoneItemProps> = ({
           }}
         />
       </Flex>
-      {!!milestone.completed && !milestone.isGrantUpdate && (
-        <>
-          <Divider my={3} />
-          <MilestoneUpdate {...milestone.completed} />
-        </>
-      )}
+      {milestone.completed &&
+        milestone.completed.text &&
+        !milestone.isGrantUpdate && (
+          <>
+            <Divider my={3} />
+            <MilestoneUpdate {...milestone.completed} />
+          </>
+        )}
     </Box>
   );
 };

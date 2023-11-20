@@ -80,25 +80,26 @@ export const GrantItem: React.FC<GrantItemProps> = ({ grant, url }) => {
                   __html: renderToHTML(grant.description),
                 }}
               />
+              {grant.milestones.length === 0 && (
+                <Text textAlign="center" mt={10} fontWeight="semibold">
+                  No updates are available for this grant currently. If you're
+                  the grant owner, you can post updates{" "}
+                  <Link color="blue.400" target="_blank" href={url}>
+                    <Text as="span" className="text-gitcoin-violet-500">
+                      here
+                    </Text>
+                  </Link>
+                  .
+                </Text>
+              )}
             </Box>
           )}
         </ExpandableGrid>
       </Box>
       <ExpandableGrid classNames="p-4" isOpen={isOpen}>
         <Box overflow="hidden">
-          {grant.milestones.length > 0 ? (
+          {grant.milestones.length > 0 && (
             <MilestoneList milestones={grant.milestones} />
-          ) : (
-            <Text textAlign="center" fontWeight="semibold">
-              No updates are available for this grant currently. If you're the
-              grant owner, you can post updates{" "}
-              <Link color="blue.400" target="_blank" href={url}>
-                <Text as="span" className="text-gitcoin-violet-500">
-                  here
-                </Text>
-              </Link>
-              .
-            </Text>
           )}
         </Box>
       </ExpandableGrid>

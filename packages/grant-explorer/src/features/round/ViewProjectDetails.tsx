@@ -152,7 +152,7 @@ export default function ViewProjectDetails() {
         ),
       },
       {
-        name: "Grants",
+        name: "Grant Updates",
         content: <GrantList grants={grants} />,
       },
     ],
@@ -161,7 +161,6 @@ export default function ViewProjectDetails() {
 
   useEffect(() => {
     const tab = window.location.search.split("=")[1];
-    console.debug("tab", tab);
     if (tab) {
       setSelectedTab(
         projectDetailsTabs.findIndex(
