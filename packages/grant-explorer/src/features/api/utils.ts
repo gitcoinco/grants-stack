@@ -530,7 +530,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
   [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
   [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
-  [ChainId.POLYGON]: "https://polygonscan.io/tx/",
+  [ChainId.POLYGON]: "https://polygonscan.com/tx/",
   [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
   [ChainId.FUJI]: "https://snowtrace.io/tx/",
   [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
