@@ -129,7 +129,7 @@ describe("LandingPage", () => {
 
     expect(button).toHaveAttribute(
       "href",
-      "https://gitcoin-grants-51f2c0c12a8e.herokuapp.com/Leaderboard"
+      "https://gitcoin-grants-51f2c0c12a8e.herokuapp.com"
     );
 
     await waitFor(async () => expect(button).toBeInTheDocument());

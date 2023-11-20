@@ -21,7 +21,7 @@ const LiveStatsButton = () => (
     <Button
       variant="translucent"
       $as="a"
-      href="https://gitcoin-grants-51f2c0c12a8e.herokuapp.com/Leaderboard"
+      href="https://gitcoin-grants-51f2c0c12a8e.herokuapp.com"
       target="_blank"
     >
       <PresentationChartLineIcon className="w-4 h-4" />
