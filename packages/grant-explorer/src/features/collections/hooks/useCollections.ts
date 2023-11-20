@@ -1,15 +1,15 @@
 import { firstTimeGranteesProject } from "../data/firstTimeGrantees";
-// import { veteransProjects } from "../data/veterans";
+import { veteransProjects } from "../data/veterans";
 import { getAddress } from "viem";
 
 import image01 from "../../../assets/collections/collection_01.jpg";
 import image02 from "../../../assets/collections/collection_02.jpg";
 import image03 from "../../../assets/collections/collection_03.jpg";
 import image04 from "../../../assets/collections/collection_04.jpg";
-// import image05 from "../../../assets/collections/collection_05.jpg";
-// import image06 from "../../../assets/collections/collection_06.jpg";
-// import image07 from "../../../assets/collections/collection_07.jpg";
-// import image08 from "../../../assets/collections/collection_08.jpg";
+import image05 from "../../../assets/collections/collection_05.jpg";
+import image06 from "../../../assets/collections/collection_06.jpg";
+import image07 from "../../../assets/collections/collection_07.jpg";
+import image08 from "../../../assets/collections/collection_08.jpg";
 import image09 from "../../../assets/collections/collection_09.jpg";
 import image10 from "../../../assets/collections/collection_10.jpg";
 import image11 from "../../../assets/collections/collection_11.jpg";
@@ -72,15 +72,15 @@ export const collections: Collection[] = [
       "This collection showcases all grantees in GG19 that have not participated in a past round on Grants Stack! Give these first-time grantees some love (and maybe some donations, too!).",
     projects: firstTimeGranteesProject.map(normalizeAddress),
   },
-  // {
-  //   id: "grants-stack-veterans",
-  //   author: "Gitcoin",
-  //   name: "Grants Stack Veterans",
-  //   images: [image05, image06, image07, image08],
-  //   description:
-  //     "This collection showcases all grantees in GG19 that have participated in a past GG18 and/or Beta Round! Give these Grants Stack Veterans some love (and maybe some donations, too!).",
-  //   projects: veteransProjects.map(normalizeAddress),
-  // },
+  {
+    id: "grants-stack-veterans",
+    author: "Gitcoin",
+    name: "Grants Stack Veterans",
+    images: [image05, image06, image07, image08],
+    description:
+      "This collection showcases all grantees in GG19 that have participated in a past GG18 and/or Beta Round! Give these Grants Stack Veterans some love (and maybe some donations, too!).",
+    projects: veteransProjects.map(normalizeAddress),
+  },
   {
     id: "devansh-mehtas-picks",
     author: "Devansh Mehta",
@@ -92,12 +92,25 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
     projects: devanshProjects.map(normalizeAddress),
   },
   {
-    id: "evergreen-list",
-    author: "Wasabi",
-    name: "The Evergreen List",
-    images: [image24, image26, image32, image25],
-    description: `List of grantees that IMO are building sustainable and with the possibility of becoming a perpetual source of value for the wider community.`,
-    projects: evergreenProjects.map(normalizeAddress),
+    id: "mxweb3",
+    author: "meximalist.eth",
+    name: "MxWeb3 GG19 Collection",
+    images: [
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreidmqlhmx5b62ar7cp4ih3ceksczzzyd6koqg5kzoyu7eigjnr6o6u?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreihigxg5bfz72jjn4boiu6xdxfnbrdgueifj4km72u7kgy7so2zgve?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeibijdo5evy4vn5hcnuyb5ecvbrabqioxqrk2emzcmlf365ehyrfdq?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreifalsv34nge6of5st7eba4z4g6fg4ughqw5g7gpovy2vm6ukl23iq?img-height=640",
+    ],
+    description: `I curated the MxWeb3 GG19 Collection list with projects that I have had contact with. I know their team personally or have talked with them in many spaces. My list is mostly LATAM projects that are building and doing cool things. LATAM is one of the best markets to onboard millions in the next few years.`,
+    projects: mxWeb3Projects.map(normalizeAddress),
+  },
+  {
+    id: "intro-to-the-gitcoinverse",
+    author: "CryptoReuMD",
+    name: "Intro to the Gitcoinverse",
+    images: [image19, image18, image30, image20],
+    description: `This is from my heart to all the ReFi projects that are building some meaningful initiatives to our lives, and the ecosystem.`,
+    projects: coinverseProjects.map(normalizeAddress),
   },
   {
     id: "stake-from-home",
@@ -118,13 +131,14 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
     projects: innovatorsChampionsProjects.map(normalizeAddress),
   },
   {
-    id: "intro-to-the-gitcoinverse",
-    author: "CryptoReuMD",
-    name: "Intro to the Gitcoinverse",
-    images: [image19, image18, image30, image20],
-    description: `This is from my heart to all the ReFi projects that are building some meaningful initiatives to our lives, and the ecosystem.`,
-    projects: coinverseProjects.map(normalizeAddress),
+    id: "carls-collection",
+    author: "cerv1.eth",
+    name: "Carl's Collection",
+    images: [image33, image34, image35, image36],
+    description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
+    projects: carlsCollectionProjects.map(normalizeAddress),
   },
+
   {
     id: "the-midnight-gospel",
     author: "Ale RaMo",
@@ -137,25 +151,12 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
   },
 
   {
-    id: "carls-collection",
-    author: "cerv1.eth",
-    name: "Carl's Collection",
-    images: [image33, image34, image35, image36],
-    description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
-    projects: carlsCollectionProjects.map(normalizeAddress),
-  },
-  {
-    id: "mxweb3",
-    author: "meximalist.eth",
-    name: "MxWeb3 GG19 Collection",
-    images: [
-      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreidmqlhmx5b62ar7cp4ih3ceksczzzyd6koqg5kzoyu7eigjnr6o6u?img-height=640",
-      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreihigxg5bfz72jjn4boiu6xdxfnbrdgueifj4km72u7kgy7so2zgve?img-height=640",
-      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeibijdo5evy4vn5hcnuyb5ecvbrabqioxqrk2emzcmlf365ehyrfdq?img-height=640",
-      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreifalsv34nge6of5st7eba4z4g6fg4ughqw5g7gpovy2vm6ukl23iq?img-height=640",
-    ],
-    description: `I curated the MxWeb3 GG19 Collection list with projects that I have had contact with. I know their team personally or have talked with them in many spaces. My list is mostly LATAM projects that are building and doing cool things. LATAM is one of the best markets to onboard millions in the next few years.`,
-    projects: mxWeb3Projects.map(normalizeAddress),
+    id: "evergreen-list",
+    author: "Wasabi",
+    name: "The Evergreen List",
+    images: [image24, image26, image32, image25],
+    description: `List of grantees that IMO are building sustainable and with the possibility of becoming a perpetual source of value for the wider community.`,
+    projects: evergreenProjects.map(normalizeAddress),
   },
 ];
 
