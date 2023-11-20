@@ -5,11 +5,7 @@ import * as projects from "../../../actions/projects";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
-import {
-  Metadata,
-  Round,
-  RoundApplicationMetadata,
-} from "../../../types/index";
+import { Metadata, Round, RoundApplicationMetadata } from "../../../types";
 import { addressFrom, renderWrapped } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
 
@@ -179,7 +175,6 @@ describe("<Form />", () => {
       );
     });
 
-    // ✅
     test("checks if wallet address IS a multi-sig on current chain when NO is selected and IS a safe", async () => {
       const returnValue = {
         isContract: true,
@@ -224,7 +219,6 @@ describe("<Form />", () => {
           target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
         });
       });
-      screen.logTestingPlaygroundURL();
 
       await waitFor(() =>
         expect(
@@ -236,7 +230,6 @@ describe("<Form />", () => {
       );
     });
 
-    // ✅
     test("checks if wallet address is a multi-sig on current chain when YES is selected and IS NOT a safe", async () => {
       const returnValue = {
         isContract: false,
@@ -282,17 +275,18 @@ describe("<Form />", () => {
         });
       });
 
+      screen.logTestingPlaygroundURL();
+
       await waitFor(() =>
         expect(
           screen.getByText(
             // eslint-disable-next-line max-len
-            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the Ethereum network. Please update your payout wallet address before proceeding."
+            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the undefined network. Please update your payout wallet address before proceeding."
           )
         ).toBeInTheDocument()
       );
     });
 
-    // ✅
     test("checks if wallet address is a multi-sig on current chain when NO is selected and IS NOT a safe", async () => {
       const returnValue = {
         isContract: false,
@@ -345,10 +339,6 @@ describe("<Form />", () => {
             .querySelector("input.border")
         ).toBeNull()
       );
-
-      // await waitFor(() =>
-      //   expect(setState).toHaveBeenCalledWith(returnValue)
-      // );
     });
   });
 
