@@ -34,10 +34,6 @@ import image29 from "../../../assets/collections/collection_29.jpg";
 import image30 from "../../../assets/collections/collection_30.jpg";
 import image31 from "../../../assets/collections/collection_31.jpg";
 import image32 from "../../../assets/collections/collection_32.jpg";
-import image33 from "../../../assets/collections/collection_33.jpg";
-import image34 from "../../../assets/collections/collection_34.jpg";
-import image35 from "../../../assets/collections/collection_35.jpg";
-import image36 from "../../../assets/collections/collection_36.jpg";
 
 import { stakeFromHomeProjets } from "../data/stakeFromHome";
 import { devanshProjects } from "../data/devansh";
@@ -130,13 +126,14 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
     description: `A selection of builders, normal users, amazing tools and different organizations that continuously contribute to the blockchain ecosystem.`,
     projects: innovatorsChampionsProjects.map(normalizeAddress),
   },
+
   {
-    id: "carls-collection",
-    author: "cerv1.eth",
-    name: "Carl's Collection",
-    images: [image33, image34, image35, image36],
-    description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
-    projects: carlsCollectionProjects.map(normalizeAddress),
+    id: "evergreen-list",
+    author: "Wasabi",
+    name: "The Evergreen List",
+    images: [image24, image26, image32, image25],
+    description: `List of grantees that IMO are building sustainable and with the possibility of becoming a perpetual source of value for the wider community.`,
+    projects: evergreenProjects.map(normalizeAddress),
   },
 
   {
@@ -151,12 +148,17 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
   },
 
   {
-    id: "evergreen-list",
-    author: "Wasabi",
-    name: "The Evergreen List",
-    images: [image24, image26, image32, image25],
-    description: `List of grantees that IMO are building sustainable and with the possibility of becoming a perpetual source of value for the wider community.`,
-    projects: evergreenProjects.map(normalizeAddress),
+    id: "carls-collection",
+    author: "cerv1.eth",
+    name: "Carl's Collection",
+    images: [
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeidh22fvqahrapg4j5nuzkmsox3nrcghgqdkjn6zdvvaswaglh3b34?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreih4uwhpqg2negucffp3hp73ofvtzabv5nknrfdylxzxkxlvrn275y?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreibbzla5hhompjod7mdjdruay7kqblwan3umokuthdt4kl3qtnk4uy?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeid7zl7464mjhrgiwk6g5ljz2jh3giw3qsp732fvgz7dtoyx3kmdoq?img-height=640",
+    ],
+    description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
+    projects: carlsCollectionProjects.map(normalizeAddress),
   },
 ];
 
