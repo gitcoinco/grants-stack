@@ -41,6 +41,7 @@ import { innovatorsChampionsProjects } from "../data/innovatorsChampions";
 import { midnightGospelProjects } from "../data/midnightGospel";
 import { coinverseProjects } from "../data/coinverse";
 import { evergreenProjects } from "../data/evergreen";
+import { mxWeb3Projects } from "../data/mxWeb3";
 
 export type Collection = {
   id: string;
@@ -128,6 +129,20 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
 
 ""It's not about ideas. It's about making ideas happen."" - Scott Belsky`,
     projects: midnightGospelProjects.map(normalizeAddress),
+  },
+
+  {
+    id: "mxweb3",
+    author: "meximalist.eth",
+    name: "MxWeb3 GG19 Collection",
+    images: [
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreidmqlhmx5b62ar7cp4ih3ceksczzzyd6koqg5kzoyu7eigjnr6o6u?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreihigxg5bfz72jjn4boiu6xdxfnbrdgueifj4km72u7kgy7so2zgve?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeibijdo5evy4vn5hcnuyb5ecvbrabqioxqrk2emzcmlf365ehyrfdq?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreifalsv34nge6of5st7eba4z4g6fg4ughqw5g7gpovy2vm6ukl23iq?img-height=640",
+    ],
+    description: `I curated the MxWeb3 GG19 Collection list with projects that I have had contact with. I know their team personally or have talked with them in many spaces. My list is mostly LATAM projects that are building and doing cool things. LATAM is one of the best markets to onboard millions in the next few years.`,
+    projects: mxWeb3Projects.map(normalizeAddress),
   },
 ];
 
