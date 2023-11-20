@@ -159,18 +159,6 @@ export default function ViewProjectDetails() {
     [grants, projectToRender]
   );
 
-  useEffect(() => {
-    const tab = window.location.search.split("=")[1];
-    console.debug("tab", tab);
-    if (tab) {
-      setSelectedTab(
-        projectDetailsTabs.findIndex(
-          (t) => t.name.toLowerCase() === tab.toLowerCase()
-        )
-      );
-    }
-  }, [projectDetailsTabs]);
-
   const handleTabChange = (tabIndex: number) => {
     setSelectedTab(tabIndex);
   };
