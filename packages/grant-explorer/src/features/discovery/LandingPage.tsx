@@ -17,7 +17,7 @@ import { Button } from "../collections/CollectionDetails";
 import { PresentationChartLineIcon } from "@heroicons/react/20/solid";
 
 const LiveStatsButton = () => (
-  <div className="flex justify-end pt-4">
+  <div className="absolute right-4 pt-4">
     <Button
       variant="translucent"
       $as="a"
