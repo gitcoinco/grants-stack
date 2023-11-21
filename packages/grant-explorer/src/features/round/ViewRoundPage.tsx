@@ -456,7 +456,7 @@ function ProjectCard(props: {
           >
             {truncateDescription(
               renderToPlainText(project.projectMetadata.description),
-              100
+              180
             )}
           </CardDescription>
         </CardContent>
@@ -522,7 +522,7 @@ export function CartButtonToggle(props: {
   if (props.isAlreadyInCart) {
     return (
       <div
-        className="float-right cursor-pointer"
+        className="float-right"
         data-testid="remove-from-cart"
         onClick={props.removeFromCart}
       >
@@ -532,7 +532,7 @@ export function CartButtonToggle(props: {
   }
   return (
     <div
-      className="float-right cursor-pointer"
+      className="float-right"
       data-testid="add-to-cart"
       // oonclick adds the project to the cart, sets the current project added to cart and shows the cart notification
       onClick={() => {
