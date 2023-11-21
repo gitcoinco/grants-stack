@@ -12,7 +12,6 @@ import {
   fantom,
   fantomTestnet,
   mainnet,
-  goerli,
   optimism,
   Chain,
   arbitrum,
@@ -30,7 +29,6 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 
 const testnetChains = () => {
   return [
-    goerli,
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
     arbitrumGoerli,

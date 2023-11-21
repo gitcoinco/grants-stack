@@ -185,11 +185,8 @@ export const mockSigner = {
 };
 
 export const mockNetwork = {
-  chain: { id: 5, name: "Goerli" },
-  chains: [
-    { id: 10, name: "Optimism" },
-    { id: 5, name: "Goerli" },
-  ],
+  chain: { id: 10, name: "Optimism" },
+  chains: [{ id: 10, name: "Optimism" }],
 };
 
 export const setWindowDimensions = (width: number, height: number): void => {

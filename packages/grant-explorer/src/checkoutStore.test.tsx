@@ -60,13 +60,8 @@ describe("Checkout Store", () => {
   it("chainsToCheckout manipulation", async () => {
     expect(store.getState().chainsToCheckout).toEqual([]);
 
-    store
-      .getState()
-      .setChainsToCheckout([ChainId.MAINNET, ChainId.GOERLI_CHAIN_ID]);
-    expect(store.getState().chainsToCheckout).toEqual([
-      ChainId.MAINNET,
-      ChainId.GOERLI_CHAIN_ID,
-    ]);
+    store.getState().setChainsToCheckout([ChainId.MAINNET]);
+    expect(store.getState().chainsToCheckout).toEqual([ChainId.MAINNET]);
   });
 
   it("chainsToCheckout manipulation", async () => {

@@ -2,7 +2,6 @@ import { ChainId } from "common";
 
 export const chains = {
   1: "mainnet",
-  5: "goerli",
   10: "optimism",
   250: "fantom",
   424: "pgn",
@@ -50,9 +49,6 @@ export const addresses: DeploymentAddressesMap = {
   },
   mainnet: {
     projectRegistry: "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
-  },
-  goerli: {
-    projectRegistry: "0xa71864fAd36439C50924359ECfF23Bb185FFDf21",
   },
   fantomTestnet: {
     projectRegistry: "0x984749e408FF0446d8ADaf20E293F2F299396631",

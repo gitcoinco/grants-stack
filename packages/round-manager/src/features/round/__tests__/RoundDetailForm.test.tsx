@@ -23,7 +23,7 @@ jest.mock("../../../constants", () => ({
 
 beforeEach(() => {
   (useWallet as jest.Mock).mockReturnValue({
-    chain: { id: ChainId.GOERLI_CHAIN_ID },
+    chain: { id: ChainId.MAINNET },
   });
 });
 

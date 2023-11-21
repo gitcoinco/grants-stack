@@ -57,7 +57,7 @@ describe("merklePayoutStrategy", () => {
       useStateSpy.mockImplementationOnce(() => [paidProjects, setState]);
 
       const round = makeRoundData();
-      const chainId = ChainId.GOERLI_CHAIN_ID;
+      const chainId = ChainId.MAINNET;
 
       const projects = [...paidProjects, ...unProjects];
       // TODO: Fix this test

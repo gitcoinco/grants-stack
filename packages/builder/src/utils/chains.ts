@@ -1,5 +1,5 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import { arbitrum, goerli, arbitrumGoerli } from "wagmi/chains";
+import { arbitrum, arbitrumGoerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
@@ -29,7 +29,6 @@ const availableChains: { [key: string]: Chain } = {
   arbitrum,
   avalanche,
   polygon: customPolygon,
-  goerli,
   fantomTestnet,
   pgnTestnet,
   arbitrumGoerli,
@@ -41,7 +40,6 @@ const stagingChains = [
   devChain1,
   devChain2,
   customOptimism,
-  goerli,
   fantomTestnet,
   fantom,
   customMainnet,

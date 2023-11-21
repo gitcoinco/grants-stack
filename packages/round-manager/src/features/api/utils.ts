@@ -26,16 +26,6 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Mainnet", // TODO get canonical network names
     logo: "/logos/ethereum-eth-logo.svg",
   },
-  [ChainId.MAINNET]: {
-    id: ChainId.MAINNET,
-    name: "Mainnet", // TODO get canonical network names
-    logo: "/logos/ethereum-eth-logo.svg",
-  },
-  [ChainId.GOERLI_CHAIN_ID]: {
-    id: ChainId.GOERLI_CHAIN_ID,
-    name: "Goerli", // TODO get canonical network names
-    logo: "/logos/ethereum-eth-logo.svg",
-  },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     name: "Optimism",
@@ -210,33 +200,6 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["GCV"],
     redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI for the price
-  },
-];
-
-const GOERLI_TESTNET_TOKENS: PayoutToken[] = [
-  {
-    name: "BUSD",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
-    decimal: 18,
-    logo: TokenNamesAndLogos["BUSD"],
-    redstoneTokenId: RedstoneTokenIds["BUSD"],
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
-  },
-  {
-    name: "ETH",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: ethers.constants.AddressZero,
-    decimal: 18,
-    logo: TokenNamesAndLogos["ETH"],
-    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
 
@@ -421,7 +384,6 @@ export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
-  ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
   ...PGN_MAINNET_TOKENS,
@@ -436,6 +398,7 @@ export const payoutTokens = [
 /*TODO: merge this and the above into one list / function*/
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
   switch (chainId) {
+    default:
     case ChainId.MAINNET: {
       return [
         {
@@ -566,33 +529,6 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 
     case ChainId.FUJI:
       return payoutTokens.filter((token) => token.chainId === ChainId.FUJI);
-
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      return [
-        {
-          name: "BUSD",
-          chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
-          logo: TokenNamesAndLogos["BUSD"],
-          decimal: 18,
-        },
-        {
-          name: "DAI",
-          chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
-          logo: TokenNamesAndLogos["DAI"],
-          decimal: 18,
-        },
-        {
-          name: "ETH",
-          chainId: ChainId.GOERLI_CHAIN_ID,
-          address: ethers.constants.AddressZero,
-          logo: TokenNamesAndLogos["ETH"],
-          decimal: 18,
-        },
-      ];
-    }
   }
 };
 /**
@@ -764,9 +700,6 @@ export const getTxExplorerForContract = (
 
     case ChainId.MAINNET:
       return `https://etherscan.io/address/${contractAddress}`;
-
-    default:
-      return `https://goerli.etherscan.io/address/${contractAddress}`;
   }
 };
 /**
