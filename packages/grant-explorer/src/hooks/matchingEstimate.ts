@@ -64,8 +64,6 @@ function getMatchingEstimates(
   ).then((r) => r.json());
 }
 
-export const DISABLED_CHAINS_FOR_ESTIMATES = [];
-
 /**
  * Fetches matching estimates for the given rounds, given potential votes, as an array
  * For a single round, pass in an array with a single element

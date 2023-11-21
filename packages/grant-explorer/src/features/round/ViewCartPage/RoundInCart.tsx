@@ -3,7 +3,6 @@ import { CartProject, VotingToken } from "../../api/types";
 import { useRoundById } from "../../../context/RoundContext";
 import { ProjectInCart } from "./ProjectInCart";
 import {
-  DISABLED_CHAINS_FOR_ESTIMATES,
   matchingEstimatesToText,
   useMatchingEstimates,
 } from "../../../hooks/matchingEstimate";
