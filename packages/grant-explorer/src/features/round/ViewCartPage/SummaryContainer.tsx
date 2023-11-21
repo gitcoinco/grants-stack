@@ -148,14 +148,6 @@ export function SummaryContainer() {
       return;
     }
 
-    // TODO: check if signer has enough token balance for the current round
-    // const accountBalance = rounds.find();
-    //
-    // if (!accountBalance || totalDonation.gt(accountBalance)) {
-    //   setInsufficientBalance(true);
-    //   return;
-    // }
-
     setOpenChainConfirmationModal(true);
   }
 
@@ -323,6 +315,7 @@ export function SummaryContainer() {
 
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
+  /** If there are no projects, render nothing */
   if (projects.length === 0) {
     return null;
   }
@@ -422,16 +415,6 @@ export function SummaryContainer() {
           >
             <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
             <span>You must enter donations for all the projects</span>
-          </p>
-        )}
-        {/*TODO: insufficient balance check*/}
-        {false && (
-          <p
-            data-testid="insufficientBalance"
-            className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-          >
-            <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-            <span>You do not have enough funds for these donations</span>
           </p>
         )}
       </div>
