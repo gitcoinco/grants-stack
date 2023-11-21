@@ -3,7 +3,7 @@ import { ChainId, RoundPayoutType, RoundVisibilityType } from "common";
 import { Hex } from "viem";
 import { WalletClient } from "wagmi";
 
-export type Network = "goerli" | "optimism" | "fantom" | "pgn";
+export type Network = "optimism" | "fantom" | "pgn";
 
 export interface Web3Instance {
   /**

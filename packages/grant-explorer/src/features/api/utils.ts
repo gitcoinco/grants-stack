@@ -49,11 +49,6 @@ export const CHAINS: Record<
     name: "Mainnet",
     logo: "./logos/ethereum-eth-logo.svg",
   },
-  [ChainId.GOERLI_CHAIN_ID]: {
-    id: ChainId.GOERLI_CHAIN_ID,
-    name: "Goerli",
-    logo: "./logos/ethereum-eth-logo.svg",
-  },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     name: "Optimism",
@@ -227,40 +222,6 @@ const FANTOM_MAINNET_TOKENS: VotingToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["GcV"],
     redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI to keep the valueless token to 1$
-    defaultForVoting: true,
-    canVote: true,
-  },
-];
-
-const GOERLI_TESTNET_TOKENS: VotingToken[] = [
-  {
-    name: "USDC",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
-    decimal: 6,
-    logo: TokenNamesAndLogos["USDC"],
-    redstoneTokenId: RedstoneTokenIds["USDC"],
-    permitVersion: "2",
-    defaultForVoting: false,
-    canVote: true,
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
-    defaultForVoting: false,
-    canVote: true,
-  },
-  {
-    name: "ETH",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: zeroAddress,
-    decimal: 18,
-    logo: TokenNamesAndLogos["ETH"],
-    redstoneTokenId: RedstoneTokenIds["ETH"],
     defaultForVoting: true,
     canVote: true,
   },
@@ -472,7 +433,6 @@ export const votingTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
-  ...GOERLI_TESTNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
   ...PGN_TESTNET_TOKENS,
   ...PGN_MAINNET_TOKENS,
@@ -488,9 +448,8 @@ type VotingTokensMap = Record<ChainId, VotingToken[]>;
 export const votingTokensMap: VotingTokensMap = {
   // FIXME: deploy tokens for local dev chains when we
   // setup explorer to work fully in local
-  [ChainId.DEV1]: GOERLI_TESTNET_TOKENS,
-  [ChainId.DEV2]: GOERLI_TESTNET_TOKENS,
-  [ChainId.GOERLI_CHAIN_ID]: GOERLI_TESTNET_TOKENS,
+  [ChainId.DEV1]: MAINNET_TOKENS,
+  [ChainId.DEV2]: MAINNET_TOKENS,
   [ChainId.MAINNET]: MAINNET_TOKENS,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: FANTOM_MAINNET_TOKENS,
@@ -522,7 +481,6 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.DEV1]: "",
   [ChainId.DEV2]: "",
   [ChainId.MAINNET]: "https://etherscan.io/tx/",
-  [ChainId.GOERLI_CHAIN_ID]: "https://goerli.etherscan.io/tx/",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "https://optimistic.etherscan.io/tx/",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: "https://ftmscan.com/tx/",
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",

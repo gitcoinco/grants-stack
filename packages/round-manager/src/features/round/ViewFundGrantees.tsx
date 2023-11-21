@@ -521,9 +521,6 @@ export function PaidProjectsTable(props: {
     case 1:
       blockScanUrl = "https://etherscan.io/tx/";
       break;
-    case 5:
-      blockScanUrl = "https://goerli.etherscan.io/tx/";
-      break;
     case 10:
       blockScanUrl = "https://optimistic.etherscan.io/tx/";
       break;

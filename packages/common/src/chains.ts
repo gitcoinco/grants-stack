@@ -37,7 +37,6 @@ export const fantomTestnet: Chain = {
 
 export enum ChainId {
   MAINNET = 1,
-  GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
   FANTOM_TESTNET_CHAIN_ID = 4002,

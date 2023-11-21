@@ -4,7 +4,6 @@ import {
   Chain,
   fantom,
   fantomTestnet,
-  goerli,
   mainnet,
   optimism,
   polygon,
@@ -15,7 +14,6 @@ import { pgnTestnet, pgn } from "common/src/chains";
 
 const testnetChains = () => {
   return [
-    goerli,
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
     arbitrumGoerli,

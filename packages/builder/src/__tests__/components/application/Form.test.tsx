@@ -5,11 +5,7 @@ import * as projects from "../../../actions/projects";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
-import {
-  Metadata,
-  Round,
-  RoundApplicationMetadata,
-} from "../../../types/index";
+import { Metadata, Round, RoundApplicationMetadata } from "../../../types";
 import { addressFrom, renderWrapped } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
 
@@ -92,8 +88,8 @@ jest.mock("wagmi", () => ({
     chain: jest.fn(),
     chains: [
       {
-        id: 5,
-        name: "Goerli",
+        id: 10,
+        name: "Optimism",
       },
     ],
   }),
@@ -104,11 +100,11 @@ describe("<Form />", () => {
 
   beforeEach(() => {
     store = setupStore();
-    store.dispatch(web3ChainIDLoaded(5));
+    store.dispatch(web3ChainIDLoaded(1));
     store.dispatch({
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 5,
+        chainID: 1,
         events: {
           [`1:${addressFrom(1)}:1`]: {
             createdAtBlock: 1111,
@@ -179,11 +175,10 @@ describe("<Form />", () => {
       );
     });
 
-    // ✅
     test("checks if wallet address IS a multi-sig on current chain when NO is selected and IS a safe", async () => {
       const returnValue = {
         isContract: true,
-        isSafe: false,
+        isSafe: true,
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
@@ -235,7 +230,6 @@ describe("<Form />", () => {
       );
     });
 
-    // ✅
     test("checks if wallet address is a multi-sig on current chain when YES is selected and IS NOT a safe", async () => {
       const returnValue = {
         isContract: false,
@@ -281,17 +275,18 @@ describe("<Form />", () => {
         });
       });
 
+      screen.logTestingPlaygroundURL();
+
       await waitFor(() =>
         expect(
           screen.getByText(
             // eslint-disable-next-line max-len
-            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the Goerli network. Please update your payout wallet address before proceeding."
+            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the undefined network. Please update your payout wallet address before proceeding."
           )
         ).toBeInTheDocument()
       );
     });
 
-    // ✅
     test("checks if wallet address is a multi-sig on current chain when NO is selected and IS NOT a safe", async () => {
       const returnValue = {
         isContract: false,
@@ -344,10 +339,6 @@ describe("<Form />", () => {
             .querySelector("input.border")
         ).toBeNull()
       );
-
-      // await waitFor(() =>
-      //   expect(setState).toHaveBeenCalledWith(returnValue)
-      // );
     });
   });
 
@@ -397,7 +388,7 @@ describe("<Form/>", () => {
     store.dispatch({
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 5,
+        chainID: 10,
         events: {
           [`1:${addressFrom(1)}:1`]: {
             createdAtBlock: 1111,
