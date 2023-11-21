@@ -64,7 +64,7 @@ function getMatchingEstimates(
   ).then((r) => r.json());
 }
 
-export const DISABLED_CHAINS_FOR_ESTIMATES = [ChainId.POLYGON];
+export const DISABLED_CHAINS_FOR_ESTIMATES = [];
 
 /**
  * Fetches matching estimates for the given rounds, given potential votes, as an array
@@ -73,13 +73,7 @@ export const DISABLED_CHAINS_FOR_ESTIMATES = [ChainId.POLYGON];
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
   const shouldFetch = params.every((param) => param.roundId !== zeroAddress);
   return useSWRImmutable(shouldFetch ? params : null, (params) =>
-    Promise.all(
-      params
-        .filter(
-          (param) => !DISABLED_CHAINS_FOR_ESTIMATES.includes(param.chainId)
-        )
-        .map((params) => getMatchingEstimates(params))
-    )
+    Promise.all(params.map((params) => getMatchingEstimates(params)))
   );
 }
 
