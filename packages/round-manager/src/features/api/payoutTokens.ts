@@ -1,7 +1,7 @@
 import { ChainId, RedstoneTokenIds } from "common";
 import { ethers } from "ethers";
 
-export type PayoutTokens = {
+export type PayoutToken = {
   name: string;
   chainId: number;
   address: string;
@@ -24,7 +24,7 @@ export const TokenNamesAndLogos = {
   MATIC: "/logos/pol-logo.svg",
   CVP: "/logos/power-pool.png", // PowerPool
 } as const;
-const MAINNET_TOKENS: PayoutTokens[] = [
+const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
@@ -50,7 +50,7 @@ const MAINNET_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["CVP"],
   },
 ];
-const OPTIMISM_MAINNET_TOKENS: PayoutTokens[] = [
+const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
@@ -68,7 +68,7 @@ const OPTIMISM_MAINNET_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
-const FANTOM_MAINNET_TOKENS: PayoutTokens[] = [
+const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "WFTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
@@ -110,7 +110,7 @@ const FANTOM_MAINNET_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["DAI"], // We use DAI for the price
   },
 ];
-const FANTOM_TESTNET_TOKENS: PayoutTokens[] = [
+const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
@@ -128,7 +128,7 @@ const FANTOM_TESTNET_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["FTM"],
   },
 ];
-const PGN_TESTNET_TOKENS: PayoutTokens[] = [
+const PGN_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "TEST",
     chainId: ChainId.PGN_TESTNET,
@@ -144,7 +144,7 @@ const PGN_TESTNET_TOKENS: PayoutTokens[] = [
     decimal: 18,
   },
 ];
-const PGN_MAINNET_TOKENS: PayoutTokens[] = [
+const PGN_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.PGN,
@@ -170,7 +170,7 @@ const PGN_MAINNET_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
 ];
-const ARBITRUM_GOERLI_TOKENS: PayoutTokens[] = [
+const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.ARBITRUM_GOERLI,
@@ -180,7 +180,7 @@ const ARBITRUM_GOERLI_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
-const ARBITRUM_TOKENS: PayoutTokens[] = [
+const ARBITRUM_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.ARBITRUM,
@@ -206,7 +206,7 @@ const ARBITRUM_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["ARB"],
   },
 ];
-const AVALANCHE_TOKENS: PayoutTokens[] = [
+const AVALANCHE_TOKENS: PayoutToken[] = [
   {
     name: "AVAX",
     chainId: ChainId.AVALANCHE,
@@ -224,7 +224,7 @@ const AVALANCHE_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
-const FUJI_TOKENS: PayoutTokens[] = [
+const FUJI_TOKENS: PayoutToken[] = [
   {
     name: "AVAX",
     chainId: ChainId.FUJI,
@@ -242,7 +242,7 @@ const FUJI_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
-const POLYGON_TOKENS: PayoutTokens[] = [
+const POLYGON_TOKENS: PayoutToken[] = [
   {
     name: "MATIC",
     chainId: ChainId.POLYGON,
@@ -260,7 +260,7 @@ const POLYGON_TOKENS: PayoutTokens[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
-const POLYGON_MUMBAI_TOKENS: PayoutTokens[] = [
+const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
   {
     name: "MATIC",
     chainId: ChainId.POLYGON_MUMBAI,
@@ -293,7 +293,7 @@ export const payoutTokens = [
   ...POLYGON_MUMBAI_TOKENS,
 ];
 
-export const getPayoutTokenOptions = (chainId: ChainId): PayoutTokens[] => {
+export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
   const tokens = payoutTokens.filter((token) => token.chainId === chainId);
   return tokens.length > 0 ? tokens : MAINNET_TOKENS;
 };

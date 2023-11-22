@@ -26,7 +26,7 @@ import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { assertAddress } from "common/src/address";
-import { PayoutTokens, payoutTokens } from "../api/payoutTokens";
+import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;
@@ -100,7 +100,7 @@ function FinalizedRoundContent(props: { round: Round }) {
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);
 
-  const matchingFundPayoutToken: PayoutTokens = payoutTokens.filter(
+  const matchingFundPayoutToken: PayoutToken = payoutTokens.filter(
     (t) => t.address.toLowerCase() == props.round.token.toLowerCase()
   )[0];
 
@@ -184,7 +184,7 @@ function FinalizedRoundContent(props: { round: Round }) {
 // TODO: Add types
 export function PayProjectsTable(props: {
   projects: MatchingStatsData[];
-  token: PayoutTokens;
+  token: PayoutToken;
   price: number;
   round: Round;
   allProjects: MatchingStatsData[];
@@ -513,7 +513,7 @@ export function PayProjectsTable(props: {
 export function PaidProjectsTable(props: {
   projects: MatchingStatsData[];
   chainId: number;
-  token: PayoutTokens;
+  token: PayoutToken;
   price: number;
 }) {
   // todo: such a nice table should be in a separate and shared file

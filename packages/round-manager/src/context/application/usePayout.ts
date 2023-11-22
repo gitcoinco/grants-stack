@@ -6,7 +6,7 @@ import {
 } from "../../types/generated/typechain";
 import { BigNumber, ethers } from "ethers";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
-import { PayoutTokens } from "../../features/api/payoutTokens";
+import { PayoutToken } from "../../features/api/payoutTokens";
 
 export function usePayout() {
   const [contractApproveSpendStatus, setContractApproveSpendStatus] =
@@ -71,7 +71,7 @@ export function usePayout() {
   type Args = {
     address: string;
     signer: ethers.Signer;
-    token: PayoutTokens;
+    token: PayoutToken;
     projectId: string;
     applicationIndex: number;
     payoutStrategyAddress: string;

@@ -19,7 +19,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
 import { DirectPayoutStrategy__factory } from "../../types/generated/typechain";
-import { PayoutTokens } from "./payoutTokens";
+import { PayoutToken } from "./payoutTokens";
 // import { verifyApplicationMetadata } from "common/src/verification";
 // import { fetchProjectOwners } from "common/src/registry";
 
@@ -485,7 +485,7 @@ export const updateApplicationList = async (
 export const fundRoundContract = async (
   roundId: string,
   signer: Signer,
-  payoutToken: PayoutTokens,
+  payoutToken: PayoutToken,
   amount: BigNumber
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   // checksum conversion
