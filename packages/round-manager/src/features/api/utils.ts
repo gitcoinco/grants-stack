@@ -395,142 +395,26 @@ export const payoutTokens = [
   ...POLYGON_MUMBAI_TOKENS,
 ];
 
-/*TODO: merge this and the above into one list / function*/
-export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
-  switch (chainId) {
-    default:
-    case ChainId.MAINNET: {
-      return [
-        {
-          name: "DAI",
-          chainId: ChainId.MAINNET,
-          address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          logo: TokenNamesAndLogos["DAI"],
-          decimal: 18,
-        },
-        {
-          name: "ETH",
-          chainId: ChainId.MAINNET,
-          address: ethers.constants.AddressZero,
-          logo: TokenNamesAndLogos["ETH"],
-          decimal: 18,
-        },
-        {
-          name: "CVP",
-          chainId: ChainId.MAINNET,
-          address: "0x38e4adB44ef08F22F5B5b76A8f0c2d0dCbE7DcA1",
-          decimal: 18,
-          logo: TokenNamesAndLogos["CVP"],
-          redstoneTokenId: RedstoneTokenIds["CVP"],
-        },
-      ];
-    }
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      return [
-        {
-          name: "DAI",
-          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-          logo: TokenNamesAndLogos["DAI"],
-          decimal: 18,
-        },
-        {
-          name: "ETH",
-          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-          address: ethers.constants.AddressZero,
-          logo: TokenNamesAndLogos["ETH"],
-          decimal: 18,
-        },
-      ];
-    }
-    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      return [
-        {
-          name: "WFTM",
-          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-          logo: TokenNamesAndLogos["FTM"],
-          decimal: 18,
-        },
-        {
-          name: "FTM",
-          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: ethers.constants.AddressZero,
-          logo: TokenNamesAndLogos["FTM"],
-          decimal: 18,
-        },
-        {
-          name: "BUSD",
-          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
-          logo: TokenNamesAndLogos["BUSD"],
-          decimal: 18,
-        },
-        {
-          name: "DAI",
-          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
-          logo: TokenNamesAndLogos["DAI"],
-          decimal: 18,
-        },
-      ];
-    }
-    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      return [
-        {
-          name: "DAI",
-          chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
-          address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
-          logo: TokenNamesAndLogos["DAI"],
-          decimal: 18,
-        },
-      ];
-    }
-    case ChainId.PGN_TESTNET:
-      return [
-        {
-          name: "TEST",
-          chainId: ChainId.PGN_TESTNET,
-          address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          logo: TokenNamesAndLogos["DAI"],
-          decimal: 18,
-        },
-        {
-          name: "ETH",
-          chainId: ChainId.PGN_TESTNET,
-          address: ethers.constants.AddressZero,
-          logo: TokenNamesAndLogos["ETH"],
-          decimal: 18,
-        },
-      ];
-    case ChainId.PGN:
-      return PGN_MAINNET_TOKENS;
-
-    case ChainId.ARBITRUM_GOERLI:
-      return payoutTokens.filter(
-        (token) => token.chainId === ChainId.ARBITRUM_GOERLI
-      );
-
-    case ChainId.ARBITRUM:
-      return payoutTokens.filter((token) => token.chainId === ChainId.ARBITRUM);
-
-    case ChainId.POLYGON:
-      return payoutTokens.filter((token) => token.chainId === ChainId.POLYGON);
-
-    case ChainId.POLYGON_MUMBAI:
-      return payoutTokens.filter(
-        (token) => token.chainId === ChainId.POLYGON_MUMBAI
-      );
-
-    case ChainId.AVALANCHE:
-      return payoutTokens.filter(
-        (token) => token.chainId === ChainId.AVALANCHE
-      );
-
-    case ChainId.FUJI:
-      return payoutTokens.filter((token) => token.chainId === ChainId.FUJI);
-  }
+const payoutTokensMap: Record<ChainId, PayoutToken[]> = {
+  [ChainId.MAINNET]: MAINNET_TOKENS,
+  [ChainId.POLYGON_MUMBAI]: POLYGON_MUMBAI_TOKENS,
+  [ChainId.POLYGON]: POLYGON_TOKENS,
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
+  [ChainId.PGN]: PGN_MAINNET_TOKENS,
+  [ChainId.PGN_TESTNET]: PGN_TESTNET_TOKENS,
+  [ChainId.ARBITRUM]: ARBITRUM_TOKENS,
+  [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_TOKENS,
+  [ChainId.FUJI]: FUJI_TOKENS,
+  [ChainId.AVALANCHE]: AVALANCHE_TOKENS,
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: FANTOM_MAINNET_TOKENS,
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: FANTOM_TESTNET_TOKENS,
+  [ChainId.DEV1]: MAINNET_TOKENS,
+  [ChainId.DEV2]: MAINNET_TOKENS,
 };
+
+export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] =>
+  payoutTokensMap[chainId];
+
 /**
  * Fetch data from IPFS
  * TODO: include support for fetching abitrary data e.g images
