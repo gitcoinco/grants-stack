@@ -51,6 +51,9 @@ export const addresses: DeploymentAddressesMap = {
   mainnet: {
     projectRegistry: "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
   },
+  sepolia: {
+    projectRegistry: "0x2420EABfA2C0e6f77E435B0B7615c848bF4963AF",
+  },
   fantomTestnet: {
     projectRegistry: "0x984749e408FF0446d8ADaf20E293F2F299396631",
   },
