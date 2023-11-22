@@ -21,10 +21,10 @@ import {
 import ReactTooltip from "react-tooltip";
 import * as yup from "yup";
 import { Round } from "../api/types";
-import { PayoutToken, getPayoutTokenOptions } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+import { getPayoutTokenOptions, PayoutTokens } from "../api/payoutTokens";
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
@@ -95,7 +95,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
     };
 
   const { chain } = useWallet();
-  const payoutTokenOptions: PayoutToken[] = [
+  const payoutTokenOptions: PayoutTokens[] = [
     {
       name: "Choose Payout Token",
       chainId: chain.id,
@@ -288,7 +288,7 @@ function LeftSidebar() {
 
 function PayoutTokenButton(props: {
   errors: FieldErrors<Round>;
-  token?: PayoutToken;
+  token?: PayoutTokens;
 }) {
   const { token } = props;
   return (
@@ -353,7 +353,7 @@ function PayoutTokenDropdown(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   control: Control<Round>;
-  payoutTokenOptions: PayoutToken[];
+  payoutTokenOptions: PayoutTokens[];
 }) {
   const { field } = useController({
     name: "token",
@@ -463,7 +463,7 @@ function MatchingFundsAvailable(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   token: string;
-  payoutTokenOptions: PayoutToken[];
+  payoutTokenOptions: PayoutTokens[];
 }) {
   // not sure why UseFormRegisterReturn only takes strings for react-hook-form
   return (
@@ -522,7 +522,7 @@ function MatchingCap(props: {
   errors: FieldErrors<Round>;
   control?: Control<Round>;
   token: string;
-  payoutTokenOptions: PayoutToken[];
+  payoutTokenOptions: PayoutTokens[];
 }) {
   const { field: matchingCapField } = useController({
     name: "roundMetadata.quadraticFundingConfig.matchingCap",

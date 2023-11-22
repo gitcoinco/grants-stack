@@ -12,7 +12,8 @@ import { fundRoundContract } from "../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 
 import { ProgressStatus } from "../../features/api/types";
-import { PayoutToken } from "../../features/api/utils";
+
+import { PayoutTokens } from "../../features/api/payoutTokens";
 
 export interface FundContractState {
   tokenApprovalStatus: ProgressStatus;
@@ -30,14 +31,14 @@ export interface FundContractState {
 export type FundContractParams = {
   roundId: string;
   fundAmount: number;
-  payoutToken: PayoutToken;
+  payoutToken: PayoutTokens;
 };
 
 interface SubmitFundParams {
   signer: Signer;
   context: FundContractState;
   roundId: string;
-  payoutToken: PayoutToken;
+  payoutToken: PayoutTokens;
   fundAmount: number;
 }
 
@@ -179,7 +180,7 @@ async function _fundContract({
 async function approveTokenForFunding(
   signerOrProvider: Signer,
   roundId: string,
-  token: PayoutToken,
+  token: PayoutTokens,
   amount: number,
   context: FundContractState
 ): Promise<void> {
@@ -203,7 +204,7 @@ async function approveTokenForFunding(
 async function fund(
   signerOrProvider: Signer,
   roundId: string,
-  token: PayoutToken,
+  token: PayoutTokens,
   fundAmount: number,
   context: FundContractState
 ): Promise<void> {

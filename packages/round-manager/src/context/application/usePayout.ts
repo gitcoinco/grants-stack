@@ -1,12 +1,12 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { ProgressStatus, ProgressStep } from "../../features/api/types";
-import { PayoutToken } from "../../features/api/utils";
 import {
   DirectPayoutStrategy__factory,
   Erc20__factory,
 } from "../../types/generated/typechain";
 import { BigNumber, ethers } from "ethers";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
+import { PayoutTokens } from "../../features/api/payoutTokens";
 
 export function usePayout() {
   const [contractApproveSpendStatus, setContractApproveSpendStatus] =
@@ -71,7 +71,7 @@ export function usePayout() {
   type Args = {
     address: string;
     signer: ethers.Signer;
-    token: PayoutToken;
+    token: PayoutTokens;
     projectId: string;
     applicationIndex: number;
     payoutStrategyAddress: string;
