@@ -1,5 +1,5 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import { arbitrum, arbitrumGoerli } from "wagmi/chains";
+import { arbitrum, arbitrumGoerli, sepolia } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
@@ -23,6 +23,7 @@ const availableChains: { [key: string]: Chain } = {
   dev1: devChain1,
   dev2: devChain2,
   mainnet: customMainnet,
+  sepolia,
   fantom,
   optimism: customOptimism,
   pgn,
@@ -43,6 +44,7 @@ const stagingChains = [
   fantomTestnet,
   fantom,
   customMainnet,
+  sepolia,
   pgnTestnet,
   pgn,
   arbitrum,

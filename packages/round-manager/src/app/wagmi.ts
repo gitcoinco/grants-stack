@@ -12,6 +12,7 @@ import {
   fantom,
   fantomTestnet,
   mainnet,
+  sepolia,
   optimism,
   Chain,
   arbitrum,
@@ -30,6 +31,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 const testnetChains = () => {
   return [
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
+    sepolia,
     pgnTestnet,
     arbitrumGoerli,
     polygonMumbai,

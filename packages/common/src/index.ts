@@ -103,6 +103,7 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
   [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
   [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_MAINNET_API!,
+  [ChainId.SEPOLIA]: process.env.REACT_APP_SUBGRAPH_SEPOLIA_API!,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
     process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API!,
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:

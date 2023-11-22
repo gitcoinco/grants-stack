@@ -26,6 +26,11 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Mainnet", // TODO get canonical network names
     logo: "/logos/ethereum-eth-logo.svg",
   },
+  [ChainId.SEPOLIA]: {
+    id: ChainId.SEPOLIA,
+    name: "Sepolia",
+    logo: "/logos/ethereum-eth-logo.svg",
+  },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     name: "Optimism",
@@ -138,6 +143,17 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["CVP"],
     redstoneTokenId: RedstoneTokenIds["CVP"],
+  },
+];
+
+const SEPOLIA_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.SEPOLIA,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
   },
 ];
 
@@ -382,6 +398,7 @@ const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
 
 export const payoutTokens = [
   ...MAINNET_TOKENS,
+  ...SEPOLIA_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
   ...FANTOM_MAINNET_TOKENS,
   ...FANTOM_TESTNET_TOKENS,
@@ -422,6 +439,17 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           decimal: 18,
           logo: TokenNamesAndLogos["CVP"],
           redstoneTokenId: RedstoneTokenIds["CVP"],
+        },
+      ];
+    }
+    case ChainId.SEPOLIA: {
+      return [
+        {
+          name: "ETH",
+          chainId: ChainId.SEPOLIA,
+          address: ethers.constants.AddressZero,
+          logo: TokenNamesAndLogos["ETH"],
+          decimal: 18,
         },
       ];
     }

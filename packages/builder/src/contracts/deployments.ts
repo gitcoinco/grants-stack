@@ -6,6 +6,7 @@ export const chains = {
   250: "fantom",
   424: "pgn",
   4002: "fantomTestnet",
+  11155111: "sepolia",
   31337: "localhost",
   313371: "dev1",
   313372: "dev2",

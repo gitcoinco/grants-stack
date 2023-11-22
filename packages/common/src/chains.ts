@@ -37,6 +37,7 @@ export const fantomTestnet: Chain = {
 
 export enum ChainId {
   MAINNET = 1,
+  SEPOLIA = 11155111,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
   FANTOM_TESTNET_CHAIN_ID = 4002,

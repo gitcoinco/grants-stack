@@ -49,6 +49,11 @@ export const CHAINS: Record<
     name: "Mainnet",
     logo: "./logos/ethereum-eth-logo.svg",
   },
+  [ChainId.SEPOLIA]: {
+    id: ChainId.SEPOLIA,
+    name: "Sepolia",
+    logo: "./logos/ethereum-eth-logo.svg",
+  },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     name: "Optimism",
@@ -130,6 +135,19 @@ export const MAINNET_TOKENS: VotingToken[] = [
   {
     name: "ETH",
     chainId: ChainId.MAINNET,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+export const SEPOLIA_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.SEPOLIA,
     address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
@@ -451,6 +469,7 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.DEV1]: MAINNET_TOKENS,
   [ChainId.DEV2]: MAINNET_TOKENS,
   [ChainId.MAINNET]: MAINNET_TOKENS,
+  [ChainId.SEPOLIA]: SEPOLIA_TOKENS,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: OPTIMISM_MAINNET_TOKENS,
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: FANTOM_MAINNET_TOKENS,
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: FANTOM_TESTNET_TOKENS,
@@ -481,6 +500,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.DEV1]: "",
   [ChainId.DEV2]: "",
   [ChainId.MAINNET]: "https://etherscan.io/tx/",
+  [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "https://optimistic.etherscan.io/tx/",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: "https://ftmscan.com/tx/",
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",
