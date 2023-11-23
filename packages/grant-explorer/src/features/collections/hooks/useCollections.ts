@@ -43,6 +43,8 @@ import { coinverseProjects } from "../data/coinverse";
 import { evergreenProjects } from "../data/evergreen";
 import { mxWeb3Projects } from "../data/mxWeb3";
 import { carlsCollectionProjects } from "../data/carlsCollection";
+import { givethGalaxyProjects } from "../data/givethGalaxy";
+import { griffsOSSProjects } from "../data/griffsOSS";
 
 export type Collection = {
   id: string;
@@ -159,6 +161,33 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
     ],
     description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
     projects: carlsCollectionProjects.map(normalizeAddress),
+  },
+
+  {
+    id: "giveth-galaxy",
+    author: "Griff",
+    name: "Giveth Galaxy",
+    images: [
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreifmllagjfloblieklder7xv56cqdtdaw3zydms6n7nwjhzw3byrte?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreiapdoywnlm6ug3szknamydm3b2q3rqxsk2jgnc7pwb5wgdk4kw2mm?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreiea37cwpqtzbkcr7lwrxkwwdtshxcuzxegmep5cizck7iqqmoo2ba?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreih5ciumf2b2i7t4hynfqsepbtwf3qfv6sdkjw7oekyuapikveyr4i?img-height=640",
+    ],
+    description: `These are the core projects working closely together in the Giveth Galaxy.`,
+    projects: givethGalaxyProjects.map(normalizeAddress),
+  },
+  {
+    id: "griffs-oss",
+    author: "Griff",
+    name: "Griff's Picks for OSS & Community",
+    images: [
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreid7724u4k4llclfw467j7hlpt6rt4pfpizjm4eldz4lnkclivcd3q?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeicqhsq7z3qobkfispnozzqiyu4gqa2azpy6gjbyawlarv4fhl6ufe?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreiggaqod3axjmtujagb4tcbxojb2gxtqsdfrcdeockxr7fn6j7b7ua?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeihiwolir4unpxcezqd27oyl3jar2inincc7kzu7fmvvwjhd575gce?img-height=640",
+    ],
+    description: `These are the projects that I know and love the work they do in the Web3 OSS and Web3 Community & Education rounds.`,
+    projects: griffsOSSProjects.map(normalizeAddress),
   },
 ];
 
