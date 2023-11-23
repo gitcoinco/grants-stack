@@ -130,8 +130,11 @@ query GetRoundByIdNew($roundId: String!, $chainId: Int!) {
       projectId
       status
       metadata
+      project {
+        id
+        ownerAddress
+      }
     }
-    # MISSING: GetProjectOwners
   }
 }
 ```
@@ -193,7 +196,7 @@ query GetRoundsNew(
   $orderBy: [RoundsOrderBy!] # includes previous "orderBy" and "orderDirection",
 ) {
   # $currentTimestamp # no longer used
-  # $where # usage needs to be investigated and adapted to `condition`
+  # $where # needs to cover these cases: active rounds, rounds taking applications, finished rounds, rounds ending soon, TODO rounds based on payout strategy.
 
   query {
     rounds(first: $first, orderBy: $orderBy) {
