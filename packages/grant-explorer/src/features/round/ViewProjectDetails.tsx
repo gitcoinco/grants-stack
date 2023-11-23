@@ -297,7 +297,7 @@ function ProjectLinks({ project }: { project?: Project }) {
       }`}
     >
       <ProjectLink icon={EthereumIcon}>
-        {ens.data ?? truncate(project?.recipient)}
+        {ens.data || truncate(recipient)}
       </ProjectLink>
       <ProjectLink icon={CalendarIcon}>{createdOn}</ProjectLink>
       <ProjectLink url={website} icon={GlobeIcon}>
