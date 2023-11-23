@@ -80,6 +80,32 @@ query GetRoundById($roundId: String) {
 }
 ```
 
+```ts
+const roundMetadata: RoundMetadata = await fetchFromIPFS(
+  round.roundMetaPtr.pointer
+);
+```
+
+```ts
+const approvedProjectsWithMetadata = await loadApprovedProjectsMetadata(
+  round,
+  chainId
+);
+```
+
+```graphql
+query GetProjectOwners($projectRegistryId: String) {
+  projects(where: { id: $projectRegistryId }) {
+    id
+    accounts {
+      account {
+        address
+      }
+    }
+  }
+}
+```
+
 new: indexer graphql
 
 ```graphql
@@ -88,23 +114,24 @@ query GetRoundByIdNew($roundId: String!, $chainId: Int!) {
   round(chainId: $chainId, id: $roundId) {
     id
     chainId
-    # program # appears not to be used anymore
-    roundMetadata # retrieving metadata instead of metadata cid
-    applicationMetadata # retrieving metadata instead of metadata cid
+    # payoutStrategy # not currently available but scheduled for addition to the indexer
+    # votingStrategy # not currently available but scheduled for addition to the indexer
+    # projectsMetaPtr # no longer used
+    # program # no longer used
+    roundMetadata
+    applicationMetadata
     applicationsStartTime
     applicationsEndTime
-    donationsStartTime # old name: roundStartTime
-    donationsEndTime # old name: roundEndTime
+    donationsStartTime # previously named roundStartTime
+    donationsEndTime # previously named roundEndTime
     matchTokenAddress
-    # payStrategy # appears to be missing
-    # votingStrategy # appears to be missing
-    # projectsMetaPtr # appears to be no longer used
     applications(first: 1000, condition: { status: APPROVED }) {
       applicationIndex: id
       projectId
       status
-      metadataCid
+      metadata
     }
+    # MISSING: GetProjectOwners
   }
 }
 ```
@@ -113,7 +140,7 @@ variables for testing in graphiql:
 
 ```json
 {
-  "roundId": "0x222EA76664ED77D18d4416d2B2E77937b76f0a35"
+  "roundId": "0x222EA76664ED77D18d4416d2B2E77937b76f0a35",
   "chainId": 424
 }
 ```
@@ -165,19 +192,19 @@ query GetRoundsNew(
   $first: Int
   $orderBy: [RoundsOrderBy!] # includes previous "orderBy" and "orderDirection",
 ) {
-  # $currentTimestamp # appears not to be used anywhere
+  # $currentTimestamp # no longer used
   # $where # usage needs to be investigated and adapted to `condition`
 
   query {
     rounds(first: $first, orderBy: $orderBy) {
       id
-      roundMetadata # retrieving metadata instead of metadataCid
+      roundMetadata
       applicationsStartTime
       applicationsEndTime
       donationsStartTime
       donationsEndTime
       matchTokenAddress
-      # payoutStrategy # appears to be missing
+      # payoutStrategy # not currently available but scheduled for addition to the indexer
       applications(first: 1000, condition: { status: APPROVED }) {
         projectId
       }
