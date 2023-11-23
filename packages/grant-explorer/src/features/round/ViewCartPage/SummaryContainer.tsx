@@ -29,6 +29,8 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
+import { getBalance } from "viem/actions";
+import { fetchBalance } from "@wagmi/core";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
@@ -125,6 +127,31 @@ export function SummaryContainer() {
       navigate("/thankyou");
     }
   }, [chainsToCheckout, navigate, voteStatus]);
+
+  const [tokenBalances, setTokenBalances] = useState(
+    new Map(chainIdsBeingCheckedOut.map((chainId) => [chainId, 0n]))
+  );
+
+  useEffect(() => {
+    const newTokenBalances = new Map(tokenBalances);
+    tokenBalances.forEach(async (_, chainId) => {
+      const votingToken = getVotingTokenForChain(parseChainId(chainId));
+      const balance = await fetchBalance({
+        token:
+          votingToken.address === zeroAddress ? undefined : votingToken.address,
+        chainId,
+        address: address ?? zeroAddress,
+      });
+      newTokenBalances.set(chainId, balance.value);
+    });
+    setTokenBalances(newTokenBalances);
+  }, [getVotingTokenForChain]);
+
+  const insufficientFunds = new Array(...tokenBalances).some(
+    ([chainId, balance]) => {
+      return totalDonationsPerChain[chainId] > balance;
+    }
+  );
 
   function checkEmptyDonations() {
     const emptyDonations = projects.filter(
@@ -370,6 +397,7 @@ export function SummaryContainer() {
           </div>
         ) : null}
         <Button
+          disabled={insufficientFunds}
           $variant="solid"
           data-testid="handle-confirmation"
           type="button"
@@ -395,7 +423,11 @@ export function SummaryContainer() {
           }}
           className="items-center shadow-sm text-sm rounded w-full mt-4"
         >
-          {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
+          {isConnected
+            ? insufficientFunds
+              ? "Insufficient funds"
+              : "Submit your donation!"
+            : "Connect wallet to continue"}
         </Button>
         {/*{round.round?.roundMetadata?.quadraticFundingConfig*/}
         {/*  ?.minDonationThresholdAmount && (*/}

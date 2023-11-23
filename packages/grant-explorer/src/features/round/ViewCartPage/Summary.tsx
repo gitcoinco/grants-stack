@@ -35,8 +35,6 @@ export function Summary({
         : selectedPayoutToken.address,
     chainId,
   });
-  console.log("bal", balance);
-  console.log("total", totalDonation);
 
   const insufficientFunds = balance ? totalDonation > balance.value : false;
 
@@ -75,9 +73,9 @@ export function Summary({
       {insufficientFunds && (
         <p
           data-testid="insufficientBalance"
-          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center mt-2 mb-6 text-sm"
+          className="rounded-md bg-red-50 font-medium p-2 text-pink-500 flex justify-start items-center mt-2 mb-6 text-sm"
         >
-          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+          <InformationCircleIcon className="w-4 h-4 mr-1" />
           <span>Insufficient funds to donate on this network</span>
         </p>
       )}
