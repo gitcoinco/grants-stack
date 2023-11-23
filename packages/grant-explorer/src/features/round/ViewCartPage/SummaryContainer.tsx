@@ -314,10 +314,12 @@ export function SummaryContainer() {
     }) ?? [];
 
   const {
-    data: matchingEstimates,
+    data,
     error: matchingEstimateError,
     isLoading: matchingEstimateLoading,
   } = useMatchingEstimates(matchingEstimateParamsPerRound);
+
+  const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
 
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
@@ -326,7 +328,7 @@ export function SummaryContainer() {
   }
 
   return (
-    <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
+    <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold sticky top-20">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
       <div
         className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${passportTextClass}`}

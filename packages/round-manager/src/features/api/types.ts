@@ -8,7 +8,7 @@ import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
 import { RoundVisibilityType } from "common";
 
-export type Network = "goerli" | "optimism" | "fantom" | "pgn";
+export type Network = "optimism" | "fantom" | "pgn";
 
 export interface Web3Instance {
   /**
