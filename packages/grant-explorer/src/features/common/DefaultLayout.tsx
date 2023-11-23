@@ -7,10 +7,9 @@ type LayoutProps = { showWalletInteraction?: boolean } & ComponentProps<"main">;
 export function DefaultLayout({
   showWalletInteraction = true,
   children,
-  className,
 }: LayoutProps) {
   return (
-    <main className={"font-sans min-h-screen " + className}>
+    <main className={"font-sans min-h-screen"}>
       <Navbar showWalletInteraction={showWalletInteraction} />
       <div className="container mx-auto max-w-screen-xl pt-16 relative z-10 px-2 xl:px-0">
         {children}
