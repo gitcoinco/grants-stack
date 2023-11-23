@@ -1,58 +1,40 @@
-# Data dependencies by page
+# Query invocations
 
 ## Project application page (ViewProjectDetails.tsx)
 
-- `GetRoundById` (subgraph)
-
-- gap (karma indexer)
-
-- cart (localStorage via `zustand`)
-
-- passport (`PassportVerifier.verifyCredential(...)`)
-
-- round applications (indexer via the indexer client)
+- `GetRoundById`
+- gap
+- cart
+- passport verification
+- approved applications for project
 
 ## Explore projects page (ExploreProjectsPage.tsx)
 
-- category definition (hardcoded)
-
-- collection definition (hardcoded)
-
-- applications (search service via `GrantsStackDataClient`)
-
-- cart (localStorage via `zustand`)
+- category definitions
+- collection definitions
+- applications
+- cart
 
 ## Landing page (LandingPage.tsx)
 
-- categories definition (hardcoded)
-
-- collections definition (hardcoded)
-
-- `GetRounds` (subgraph)
-
-- round metadata (ipfs)
+- categories definitions
+- collections definitions
+- `GetRounds`
+- round metadata
 
 ## Explore Rounds page (ExploreRoundsPage.tsx)
 
-- `GetRounds` (subgraph)
-
-- round metadata (ipfs)
+- `GetRounds`
+- round metadata
 
 ## Single Round page (ViewRoundPage.tsx)
 
-- wagmi's useToken
-- cart (localStorage via `zustand`)
-- `GetRoundById` (subgraph)
-  - projects for a round
-  - program of a round
-  - payoutStrat of a round
-  - votingStrat of a round
-  - round and application
-  - projectMetaPtr - seems to be null??
+- cart
+- `GetRoundById`
 
-# Data queries
+# Query implementations
 
-## GetRoundById (subgraph)
+## GetRoundById
 
 original:
 
@@ -98,46 +80,47 @@ query GetRoundById($roundId: String) {
 }
 ```
 
-new indexer graphql:
+new: indexer graphql
 
 ```graphql
-{
-  query {
-    round(chainId: 424, id: "0x222EA76664ED77D18d4416d2B2E77937b76f0a35") {
-      id
-      chainId
-      # program # not used anymore
-      roundMetadataCid
-      applicationMetadataCid
-      applicationsStartTime
-      applicationsEndTime
-      donationsStartTime # roundStartTime
-      donationsEndTime # roundEndTime
-      matchTokenAddress
-      # payStrategy
-      # votingStrategy
-      # projectsMetaPtr # XXX what is this? probably nothing
-      applicationsByRoundIdAndChainId(
-        first: 1000 # whene:{ status: 1 }
-      ) {
-        edges {
-          node {
-            # id # ?
-            projectId
-            status
-            applicationIndex: id
-            metadataCid
-          }
-        }
-      }
+# new query requires `chainId` whereas previous one didn't
+query GetRoundByIdNew($roundId: String!, $chainId: Int!) {
+  round(chainId: $chainId, id: $roundId) {
+    id
+    chainId
+    # program # appears not to be used anymore
+    roundMetadata # retrieving metadata instead of metadata cid
+    applicationMetadata # retrieving metadata instead of metadata cid
+    applicationsStartTime
+    applicationsEndTime
+    donationsStartTime # old name: roundStartTime
+    donationsEndTime # old name: roundEndTime
+    matchTokenAddress
+    # payStrategy # appears to be missing
+    # votingStrategy # appears to be missing
+    # projectsMetaPtr # appears to be no longer used
+    applications(first: 1000, condition: { status: APPROVED }) {
+      applicationIndex: id
+      projectId
+      status
+      metadataCid
     }
   }
 }
 ```
 
-## GetRounds (subgraph)
+variables for testing in graphiql:
 
-original:
+```json
+{
+  "roundId": "0x222EA76664ED77D18d4416d2B2E77937b76f0a35"
+  "chainId": 424
+}
+```
+
+## GetRounds
+
+before: subgraph
 
 ```graphql
 query GetRounds(
@@ -175,47 +158,49 @@ query GetRounds(
 }
 ```
 
-new indexer graphql:
+new: indexer graphql
 
 ```graphql
-{
+query GetRoundsNew(
+  $first: Int
+  $orderBy: [RoundsOrderBy!] # includes previous "orderBy" and "orderDirection",
+) {
+  # $currentTimestamp # appears not to be used anywhere
+  # $where # usage needs to be investigated and adapted to `condition`
+
   query {
-    rounds(
-      first: 1000
-    ) # condition: # needs to search by status and payout strategy
-    {
-      edges {
-        node {
-          id
-          roundMetadataCid
-          applicationsStartTime
-          applicationsEndTime
-          donationsStartTime
-          donationsEndTime
-          matchTokenAddress
-          # payoutStrategy
-          applicationsByRoundIdAndChainId(first: 1000) # where: { status: 1 }
-          {
-            edges {
-              node {
-                projectId
-              }
-            }
-          }
-        }
+    rounds(first: $first, orderBy: $orderBy) {
+      id
+      roundMetadata # retrieving metadata instead of metadataCid
+      applicationsStartTime
+      applicationsEndTime
+      donationsStartTime
+      donationsEndTime
+      matchTokenAddress
+      # payoutStrategy # appears to be missing
+      applications(first: 1000, condition: { status: APPROVED }) {
+        projectId
       }
     }
   }
 }
 ```
 
-## round metadata (ipfs)
+## round metadata
+
+before: ipfs
 
 ```ts
 fetch(https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid})
 ```
 
-## gap (karma indexer)
+new: indexer graphql
+
+see `GetRoundByIdNew`
+
+## gap
+
+before: karma indexer
 
 ```ts
 fetch(
@@ -223,7 +208,11 @@ fetch(
 );
 ```
 
-## round applications (indexer via indexer client)
+new: unchanged
+
+## approved applications for project
+
+before: indexer via indexer client
 
 ```ts
 return useSWR([roundId, "/projects"], async ([roundId]) => {
@@ -237,19 +226,54 @@ return useSWR([roundId, "/projects"], async ([roundId]) => {
 });
 ```
 
-new indexer graphql
+new: indexer graphql
 
 ```graphql
-query {
-  applications (condition: {projectId: "0x661adec1a01270a6f2d0fa694e85810429dbcbacfcb2aa42445c05badce85e39", status:APPROVED}) {
-  
-    edges {
-      node {
-        metadata
-      }
-    }
+query GetApprovedApplicationsForProject($projectId: String!) {
+  applications(condition: { projectId: $projectId, status: APPROVED }) {
+    metadata
   }
 }
 ```
 
-The underlying indexer data is the same, so I assume that the data in graphql should be the same too.
+variables for testing in graphiql:
+
+```json
+{
+  "projectId": "0x661adec1a01270a6f2d0fa694e85810429dbcbacfcb2aa42445c05badce85e39"
+}
+```
+
+## passport verification
+
+before:
+
+```ts
+PassportVerifier.verifyCredential(...)
+```
+
+new: unchanged
+
+## cart
+
+before: localStorage via `zustand`
+
+new: unchanged
+
+## category definitions
+
+before: hardcoded
+
+new: unchanged
+
+## collection definitions
+
+before: hardcoded
+
+new: unchanged
+
+## applications matching keywords
+
+before: search service `GrantsStackDataClient`
+
+new: unchanged
