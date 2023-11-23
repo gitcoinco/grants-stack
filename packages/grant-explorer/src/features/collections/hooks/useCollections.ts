@@ -181,8 +181,8 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
     author: "Griff",
     name: "Griff's Picks for OSS & Community",
     images: [
-      "",
-      "",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreid7724u4k4llclfw467j7hlpt6rt4pfpizjm4eldz4lnkclivcd3q?img-height=640",
+      "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeicqhsq7z3qobkfispnozzqiyu4gqa2azpy6gjbyawlarv4fhl6ufe?img-height=640",
       "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreiggaqod3axjmtujagb4tcbxojb2gxtqsdfrcdeockxr7fn6j7b7ua?img-height=640",
       "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeihiwolir4unpxcezqd27oyl3jar2inincc7kzu7fmvvwjhd575gce?img-height=640",
     ],
