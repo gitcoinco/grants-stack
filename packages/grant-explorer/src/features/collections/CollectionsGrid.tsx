@@ -2,7 +2,7 @@ import CollectionCard from "./CollectionCard";
 import { Collection } from "./hooks/useCollections";
 
 // Index position of the big cards
-const collectionGridLayout = [0, 9];
+const collectionGridLayout = [0, 5, 6, 11];
 
 const DISPLAY_COUNT = 12;
 
