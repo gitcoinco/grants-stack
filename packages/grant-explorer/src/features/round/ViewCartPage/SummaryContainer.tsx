@@ -29,7 +29,6 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
-import { getBalance } from "viem/actions";
 import { fetchBalance } from "@wagmi/core";
 
 export function SummaryContainer() {
