@@ -11,9 +11,9 @@ import {
 } from "@heroicons/react/24/solid";
 import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
+import { Button } from "common/src/styles";
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
-  ComponentProps,
   ComponentPropsWithRef,
   FunctionComponent,
   PropsWithChildren,
@@ -52,8 +52,6 @@ import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { truncate } from "../common/utils/truncate";
-import tw from "tailwind-styled-components";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -200,26 +198,22 @@ export default function ViewProjectDetails() {
           </div>
         </div>
       </div>
-      <div className="">
-        <Sidebar
-          isAlreadyInCart={isAlreadyInCart}
-          isBeforeRoundEndDate={isBeforeRoundEndDate}
-          removeFromCart={() => {
-            remove(cartProject.grantApplicationId);
-          }}
-          addToCart={() => {
-            add(cartProject);
-          }}
-        />
-        <div>
-          <Skeleton isLoaded={Boolean(title)}>
-            <h1 className="text-4xl font-medium tracking-tight text-black">
-              {title}
-            </h1>
-          </Skeleton>
-          <ProjectLinks project={projectToRender} />
-        </div>
-      </div>
+      <Sidebar
+        isAlreadyInCart={isAlreadyInCart}
+        isBeforeRoundEndDate={isBeforeRoundEndDate}
+        removeFromCart={() => {
+          remove(cartProject.grantApplicationId);
+        }}
+        addToCart={() => {
+          add(cartProject);
+        }}
+      />
+      <Skeleton isLoaded={Boolean(title)}>
+        <h1 className="text-4xl font-medium tracking-tight text-black">
+          {title}
+        </h1>
+      </Skeleton>
+      <ProjectLinks project={projectToRender} />
       <ProjectDetailsTabs
         selected={selectedTab}
         onChange={handleTabChange}
@@ -380,7 +374,7 @@ function ProjectLinks({ project }: { project?: Project }) {
 
   return (
     <div
-      className={`grid md:grid-cols-2 gap-4  border-y-[2px] py-4 my-4 ${
+      className={`grid md:grid-cols-2 gap-4  border-y-[2px] py-4 my-4 min-h-[140px] ${
         // isLoading?
         createdAt ? "" : "bg-grey-100 animate-pulse"
       }`}
@@ -692,7 +686,7 @@ function Sidebar(props: {
   addToCart: () => void;
 }) {
   return (
-    <div className="">
+    <div className="mt-2 md:self-auto md:ml-6">
       <ProjectStats />
       {props.isBeforeRoundEndDate && (
         <CartButtonToggle
@@ -751,94 +745,107 @@ export function ProjectStats() {
   const isBeforeRoundEndDate =
     round &&
     (isInfiniteDate(round.roundEndTime) || round.roundEndTime > new Date());
-
+  console.log({ isBeforeRoundEndDate });
   return (
     <div
       className={
-        "rounded-3xl bg-gray-50 mb-4 p-4 gap-4 grid grid-cols-3 md:flex md:flex-col"
+        "rounded bg-gray-50 mb-4 p-4 gap-4 grid grid-cols-3 md:flex md:flex-col"
       }
     >
-      <Stat
-        isLoading={!application}
-        value={`$${application?.amountUSD.toFixed(2)}`}
-      >
-        funding received in current round
-      </Stat>
-      <Stat isLoading={!application} value={application?.uniqueContributors}>
-        contributors
-      </Stat>
+      <div>
+        <StatValue
+          isLoading={!application}
+          value={`$${application?.amountUSD.toFixed(2)}`}
+        />
+        <StatLabel>funding received in current round</StatLabel>
+      </div>
+      <div>
+        <StatValue
+          isLoading={!application}
+          value={`$${application?.uniqueContributors}`}
+        />
+        <StatLabel>contributors</StatLabel>
+      </div>
 
-      <Stat
-        value={timeRemaining}
-        className={
-          // Explicitly check for true - could be undefined if round hasn't been loaded yet
-          isBeforeRoundEndDate === true ? "" : "flex-col-reverse"
-        }
-      >
-        {
-          // If loading - render empty
-          isBeforeRoundEndDate === undefined
-            ? ""
-            : isBeforeRoundEndDate
-            ? "to go"
-            : "Round ended"
-        }
-      </Stat>
+      {isBeforeRoundEndDate === undefined ? (
+        <div>
+          <StatValue value={`${timeRemaining}`} />
+          <StatLabel>to go</StatLabel>
+        </div>
+      ) : (
+        <div>
+          <StatLabel>Round ended</StatLabel>
+          <StatValue isLoading={!application} value={`$${timeRemaining} ago`} />
+        </div>
+      )}
+      <div>
+        {isBeforeRoundEndDate ? (
+          <>
+            <h4 className="text-3xl">{timeRemaining}</h4>
+            <p>to go</p>
+          </>
+        ) : (
+          <>
+            <p>Round ended</p>
+            <h4 className="text-3xl">{timeRemaining} ago</h4>
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
-function Stat({
+function StatValue({
   value,
-  children,
   isLoading,
-  className,
 }: {
-  value?: string | number | null;
+  value?: string | number;
   isLoading?: boolean;
-} & ComponentProps<"div">) {
+}) {
   return (
-    <div className={`flex flex-col ${className}`}>
-      <Skeleton isLoaded={!isLoading} height={"36px"}>
-        <h4 className="text-3xl">{value}</h4>
-      </Skeleton>
-      <span className="text-sm md:text-base">{children}</span>
-    </div>
+    <Skeleton isLoaded={!isLoading} height={"36px"}>
+      <h4 className="text-3xl">{value}</h4>
+    </Skeleton>
   );
 }
 
-const CartButton = tw.button<{ variant?: "danger" | "default" }>`
-border
-w-full
-items-center
-justify-center
-rounded-full
-px-4
-py-2
-font-medium
-inline-flex
-gap-2
-${(props) =>
-  props.variant === "danger"
-    ? `border-red-200 hover:bg-red-50`
-    : `border-blue-200 hover:bg-blue-50`}
-`;
+function StatLabel({ children }: PropsWithChildren) {
+  return <span className="text-sm md:text-base">{children}</span>;
+}
+
 function CartButtonToggle(props: {
   isAlreadyInCart: boolean;
   addToCart: () => void;
   removeFromCart: () => void;
 }) {
-  console.log(props);
+  // if the project is not added, show the add to cart button
+  // if the project is added to the cart, show the remove from cart button
+  if (props.isAlreadyInCart) {
+    return (
+      <Button
+        data-testid="remove-from-cart"
+        onClick={props.removeFromCart}
+        className={
+          "w-full md:w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
+        }
+      >
+        Remove from Cart
+      </Button>
+    );
+  }
+
   return (
-    <CartButton
-      variant={props.isAlreadyInCart ? "danger" : "default"}
-      onClick={() =>
-        props.isAlreadyInCart ? props.removeFromCart() : props.addToCart()
+    <Button
+      data-testid="add-to-cart"
+      onClick={() => {
+        props.addToCart();
+      }}
+      className={
+        "w-full md:w-80 bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"
       }
     >
-      <ShoppingCartIcon className="w-4 h-4" />
-      {props.isAlreadyInCart ? "Remove from cart" : "Add to cart"}
-    </CartButton>
+      Add to Cart
+    </Button>
   );
 }
 

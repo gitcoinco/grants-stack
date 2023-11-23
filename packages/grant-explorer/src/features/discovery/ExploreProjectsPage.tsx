@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { DefaultLayout } from "../common/DefaultLayout";
+import { GradientLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import { useCartStorage } from "../../store";
@@ -157,7 +157,7 @@ export function ExploreProjectsPage(): JSX.Element {
   }
 
   return (
-    <DefaultLayout showWalletInteraction>
+    <GradientLayout showWalletInteraction>
       <LandingHero />
 
       {collection && (
@@ -241,6 +241,6 @@ export function ExploreProjectsPage(): JSX.Element {
           />
         </div>
       </LandingSection>
-    </DefaultLayout>
+    </GradientLayout>
   );
 }

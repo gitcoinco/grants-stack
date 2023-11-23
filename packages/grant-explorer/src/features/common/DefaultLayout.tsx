@@ -1,15 +1,38 @@
-import { PropsWithChildren } from "react";
+import { ComponentProps } from "react";
 import Footer from "common/src/components/Footer";
 import Navbar from "./Navbar";
+
+type LayoutProps = { showWalletInteraction?: boolean } & ComponentProps<"main">;
 
 export function DefaultLayout({
   showWalletInteraction = true,
   children,
-}: PropsWithChildren<{ showWalletInteraction: boolean }>) {
+  className,
+}: LayoutProps) {
   return (
-    <main className="font-sans bg-gradient-to-b from-[#D3EDFE] to-[#FFD9CD] min-h-screen">
+    <main className={"font-sans min-h-screen " + className}>
       <Navbar showWalletInteraction={showWalletInteraction} />
-      <div className="container mx-auto max-w-screen-xl pt-16 relative z-10 p-4">
+      <div className="container mx-auto max-w-screen-xl pt-16 relative z-10 px-2 xl:px-0">
+        {children}
+      </div>
+
+      <Footer />
+    </main>
+  );
+}
+
+export function GradientLayout({
+  showWalletInteraction = true,
+  children,
+}: LayoutProps) {
+  return (
+    <main
+      className={
+        "font-sans min-h-screen bg-gradient-to-b from-[#D3EDFE] to-[#FFD9CD]"
+      }
+    >
+      <Navbar showWalletInteraction={showWalletInteraction} />
+      <div className="container mx-auto max-w-screen-xl pt-16 relative z-10 px-2 xl:px-0">
         {children}
       </div>
 

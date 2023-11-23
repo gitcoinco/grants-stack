@@ -1,4 +1,4 @@
-import { DefaultLayout } from "../common/DefaultLayout";
+import { GradientLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
@@ -38,7 +38,7 @@ const LandingPage = () => {
   const collections = useCollections();
 
   return (
-    <DefaultLayout showWalletInteraction>
+    <GradientLayout showWalletInteraction>
       <LandingHero />
       <LiveStatsButton />
       <LandingSection title="Community collections">
@@ -86,7 +86,7 @@ const LandingPage = () => {
           roundType="endingSoon"
         />
       </LandingSection>
-    </DefaultLayout>
+    </GradientLayout>
   );
 };
 
