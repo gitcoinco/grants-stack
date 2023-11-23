@@ -4,11 +4,7 @@ import {
   PROVIDER_ID,
 } from "@gitcoinco/passport-sdk-types";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import {
-  BoltIcon,
-  GlobeAltIcon,
-  ShieldCheckIcon,
-} from "@heroicons/react/24/solid";
+import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -18,7 +14,6 @@ import React, {
   FunctionComponent,
   PropsWithChildren,
   createElement,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -31,16 +26,7 @@ import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as EthereumIcon } from "../../assets/icons/ethereum-icon.svg";
 import { ReactComponent as GlobeIcon } from "../../assets/icons/globe-icon.svg";
 import { useRoundById } from "../../context/RoundContext";
-import { Spinner } from "../common/Spinner";
-import {
-  CartProject,
-  GrantApplicationFormAnswer,
-  Project,
-  ProjectCredentials,
-  ProjectMetadata,
-} from "../api/types";
-import Footer from "common/src/components/Footer";
-import Navbar from "../common/Navbar";
+import { CartProject, GrantApplicationFormAnswer, Project } from "../api/types";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
@@ -98,7 +84,7 @@ export default function ViewProjectDetails() {
   const { chainId, roundId, applicationId } = useParams();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round, isLoading } = useRoundById(chainId!, roundId!);
+  const { round } = useRoundById(chainId!, roundId!);
 
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
@@ -174,7 +160,7 @@ export default function ViewProjectDetails() {
         content: <GrantList grants={grants} />,
       },
     ],
-    [grants, projectToRender]
+    [grants, projectToRender, description]
   );
 
   const handleTabChange = (tabIndex: number) => {
@@ -182,131 +168,56 @@ export default function ViewProjectDetails() {
   };
 
   return (
-    <DefaultLayout>
-      <div className="py-8 flex items-center">
-        <Breadcrumb items={breadCrumbs} />
-      </div>
-      <div className="mb-4">
-        <ProjectBanner
-          bannerImgCid={bannerImg ?? null}
-          classNameOverride="h-32 w-full object-cover lg:h-80 rounded md:rounded-3xl"
-          resizeHeight={320}
-        />
-        <div className="pl-4 sm:pl-6 lg:pl-8">
-          <div className="sm:flex sm:items-end sm:space-x-5">
-            <div className="flex">
-              <ProjectLogo {...projectToRender?.projectMetadata} />
+    <>
+      <DefaultLayout>
+        {isAfterRoundEndDate && <RoundEndedBanner />}
+        <div className="py-8 flex items-center">
+          <Breadcrumb items={breadCrumbs} />
+        </div>
+        <div className="mb-4">
+          <ProjectBanner
+            bannerImgCid={bannerImg ?? null}
+            classNameOverride="h-32 w-full object-cover lg:h-80 rounded md:rounded-3xl"
+            resizeHeight={320}
+          />
+          <div className="pl-4 sm:pl-6 lg:pl-8">
+            <div className="sm:flex sm:items-end sm:space-x-5">
+              <div className="flex">
+                <ProjectLogo {...projectToRender?.projectMetadata} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="">
-        <Sidebar
-          isAlreadyInCart={isAlreadyInCart}
-          isBeforeRoundEndDate={isBeforeRoundEndDate}
-          removeFromCart={() => {
-            remove(cartProject.grantApplicationId);
-          }}
-          addToCart={() => {
-            add(cartProject);
-          }}
-        />
-        <div>
-          <Skeleton isLoaded={Boolean(title)}>
-            <h1 className="text-4xl font-medium tracking-tight text-black">
-              {title}
-            </h1>
-          </Skeleton>
-          <ProjectLinks project={projectToRender} />
-        </div>
-      </div>
-      <ProjectDetailsTabs
-        selected={selectedTab}
-        onChange={handleTabChange}
-        tabs={projectDetailsTabs.map((tab) => tab.name)}
-      />
-      <div>{projectDetailsTabs[selectedTab].content}</div>
-    </DefaultLayout>
-  );
-
-  return (
-    <>
-      <Navbar />
-      {isAfterRoundEndDate && (
-        <div>
-          <RoundEndedBanner />
-        </div>
-      )}
-      <div className="relative top-28 lg:mx-20 h-screen px-4 py-7">
-        <div className="flex flex-col pb-6" data-testid="bread-crumbs">
-          <Breadcrumb items={breadCrumbs} />
-        </div>
-        <main className={"flex flex-col items-center"}>
-          {isLoading || projectToRender === undefined ? (
-            <Spinner text="Loading project application..." />
-          ) : (
-            <>
-              <Header projectMetadata={projectToRender.projectMetadata} />
-              <div className="flex flex-col w-full md:invisible sm:-mt-[230px]">
-                <Sidebar
-                  isAlreadyInCart={isAlreadyInCart}
-                  isBeforeRoundEndDate={isBeforeRoundEndDate}
-                  removeFromCart={() => {
-                    remove(cartProject.grantApplicationId);
-                  }}
-                  addToCart={() => {
-                    add(cartProject);
-                  }}
-                />
-              </div>
-              <div className="flex flex-col md:flex-row xl:max-w-[1800px] w-full">
-                <div className="grow">
-                  <div className="relative">
-                    <ProjectTitle
-                      projectMetadata={projectToRender.projectMetadata}
-                    />
-                    <AboutProject projectToRender={projectToRender} />
-                    <ProjectDetailsTabs
-                      selected={selectedTab}
-                      onChange={handleTabChange}
-                      tabs={projectDetailsTabs.map((tab) => tab.name)}
-                    />
-                  </div>
-                  <div>{projectDetailsTabs[selectedTab].content}</div>
-                </div>
-                {round && !isDirectRound(round) && (
-                  <div className="md:visible invisible  min-w-fit">
-                    <Sidebar
-                      isAlreadyInCart={isAlreadyInCart}
-                      isBeforeRoundEndDate={isBeforeRoundEndDate}
-                      removeFromCart={() => {
-                        remove(cartProject.grantApplicationId);
-                      }}
-                      addToCart={() => {
-                        add(cartProject);
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </>
+        <div className="md:flex gap-4 flex-row-reverse">
+          {round && !isDirectRound(round) && (
+            <Sidebar
+              isAlreadyInCart={isAlreadyInCart}
+              isBeforeRoundEndDate={isBeforeRoundEndDate}
+              removeFromCart={() => {
+                remove(cartProject.grantApplicationId);
+              }}
+              addToCart={() => {
+                add(cartProject);
+              }}
+            />
           )}
-        </main>
-        <div className="my-11">
-          <Footer />
+          <div className="flex-1">
+            <Skeleton isLoaded={Boolean(title)}>
+              <h1 className="text-4xl font-medium tracking-tight text-black">
+                {title}
+              </h1>
+            </Skeleton>
+            <ProjectLinks project={projectToRender} />
+            <ProjectDetailsTabs
+              selected={selectedTab}
+              onChange={handleTabChange}
+              tabs={projectDetailsTabs.map((tab) => tab.name)}
+            />
+            <div>{projectDetailsTabs[selectedTab].content}</div>
+          </div>
         </div>
-      </div>
+      </DefaultLayout>
     </>
-  );
-}
-
-function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
-  return (
-    <div className="border-b-2 pb-2">
-      <h1 className="text-3xl mt-6 font-thin text-black">
-        {props.projectMetadata.title}
-      </h1>
-    </div>
   );
 }
 
@@ -435,181 +346,18 @@ function ProjectLink({
         >
           {children}
         </Component>
-        {isVerified && (
-          <span className="bg-teal-100 flex gap-2 rounded-full px-2 text-xs items-center font-medium text-teal-500">
-            <ShieldCheckIcon className="w-4 h-4" />
-            Verified
-          </span>
-        )}
+        {isVerified && <VerifiedBadge />}
       </div>
     </div>
   ) : null;
 }
 
-function AboutProject({ projectToRender }: { projectToRender?: Project }) {
-  const [verifiedProviders, setVerifiedProviders] = useState<{
-    [key: string]: VerifiedCredentialState;
-  }>({
-    github: VerifiedCredentialState.PENDING,
-    twitter: VerifiedCredentialState.PENDING,
-  });
-
-  const projectRecipient =
-    projectToRender?.recipient.slice(0, 6) +
-    "..." +
-    projectToRender?.recipient.slice(-4);
-  const { data: ensName } = useEnsName({
-    // @ts-expect-error Temp until viem
-    address: projectToRender?.recipient ?? "",
-  });
-  const projectWebsite = projectToRender?.projectMetadata.website;
-  const projectTwitter = projectToRender?.projectMetadata.projectTwitter;
-  const userGithub = projectToRender?.projectMetadata.userGithub;
-  const projectGithub = projectToRender?.projectMetadata.projectGithub;
-
-  const date = new Date(projectToRender?.projectMetadata.createdAt ?? 0);
-  const formattedDateWithOrdinal = `Created on: ${formatDateWithOrdinal(date)}`;
-
-  useEffect(() => {
-    if (projectToRender?.projectMetadata?.owners) {
-      const credentials: ProjectCredentials =
-        projectToRender?.projectMetadata.credentials ?? {};
-
-      if (!credentials) {
-        return;
-      }
-      const verify = async () => {
-        const newVerifiedProviders: { [key: string]: VerifiedCredentialState } =
-          { ...verifiedProviders };
-        for (const provider of Object.keys(verifiedProviders)) {
-          const verifiableCredential = credentials[provider];
-          if (verifiableCredential) {
-            newVerifiedProviders[provider] = await isVerified(
-              verifiableCredential,
-              verifier,
-              provider,
-              projectToRender
-            );
-          }
-        }
-
-        setVerifiedProviders(newVerifiedProviders);
-      };
-      verify();
-    }
-  }, [projectToRender?.projectMetadata.owners]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const getVerifiableCredentialVerificationResultView = (provider: string) => {
-    switch (verifiedProviders[provider]) {
-      case VerifiedCredentialState.VALID:
-        return (
-          <span className="rounded-full bg-teal-100 px-2.5 inline-flex flex-row justify-center items-center">
-            <ShieldCheckIcon
-              className="w-5 h-5 text-teal-500 mr-2"
-              data-testid={`${provider}-verifiable-credential`}
-            />
-            <p className="text-teal-500 font-medium text-xs">Verified</p>
-          </span>
-        );
-      default:
-        return <></>;
-    }
-  };
-
+function VerifiedBadge() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-16">
-      {projectRecipient && (
-        <span className="flex items-center mt-4 gap-1">
-          <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
-          <DetailSummary
-            text={`${ensName ? ensName : projectRecipient}`}
-            testID="project-recipient"
-            sm={true}
-          />
-        </span>
-      )}
-      {projectWebsite && (
-        <span className="flex items-center mt-4 gap-1">
-          <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
-          <a
-            href={projectWebsite}
-            target="_blank"
-            rel="noreferrer"
-            className="text-base font-normal text-black"
-          >
-            <DetailSummary
-              text={`${projectWebsite}`}
-              testID="project-website"
-            />
-          </a>
-        </span>
-      )}
-      {projectTwitter && (
-        <span className="flex items-center mt-4 gap-1">
-          <TwitterIcon className="h-4 w-4 mr-1 opacity-40" />
-          <a
-            href={`https://twitter.com/${projectTwitter}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-base font-normal text-black"
-          >
-            <DetailSummary
-              text={`@${projectTwitter}`}
-              testID="project-twitter"
-            />
-          </a>
-          {getVerifiableCredentialVerificationResultView("twitter")}
-        </span>
-      )}
-      {projectToRender?.projectMetadata.createdAt && (
-        <span className="flex items-center mt-4 gap-1">
-          <CalendarIcon className="h-4 w-4 mr-1 opacity-80" />
-          <DetailSummary
-            text={`${formattedDateWithOrdinal}`}
-            testID="project-createdAt"
-          />
-        </span>
-      )}
-      {userGithub && (
-        <span className="flex items-center mt-4 gap-1">
-          <GithubIcon className="h-4 w-4 mr-1 opacity-40" />
-          <a
-            href={`https://github.com/${userGithub}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-base font-normal text-black"
-          >
-            <DetailSummary text={`${userGithub}`} testID="user-github" />
-          </a>
-        </span>
-      )}
-      {projectGithub && (
-        <span className="flex items-center mt-4 gap-1">
-          <GithubIcon className="h-4 w-4 mr-1 opacity-40" />
-          <a
-            href={`https://github.com/${projectGithub}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-base font-normal text-black"
-          >
-            <DetailSummary text={`${projectGithub}`} testID="project-github" />
-          </a>
-          {getVerifiableCredentialVerificationResultView("github")}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function DetailSummary(props: { text: string; testID: string; sm?: boolean }) {
-  return (
-    <p
-      className={`${props.sm ? "text-sm" : "text-base"} font-normal text-black`}
-      data-testid={props.testID}
-    >
-      {" "}
-      {props.text}{" "}
-    </p>
+    <span className="bg-teal-100 flex gap-2 rounded-full px-2 text-xs items-center font-medium text-teal-500">
+      <ShieldCheckIcon className="w-4 h-4" />
+      Verified
+    </span>
   );
 }
 
@@ -692,7 +440,7 @@ function Sidebar(props: {
   addToCart: () => void;
 }) {
   return (
-    <div className="">
+    <div className="min-w-[320px] mb-6">
       <ProjectStats />
       {props.isBeforeRoundEndDate && (
         <CartButtonToggle
@@ -769,10 +517,13 @@ export function ProjectStats() {
       </Stat>
 
       <Stat
+        isLoading={isBeforeRoundEndDate === undefined}
         value={timeRemaining}
         className={
           // Explicitly check for true - could be undefined if round hasn't been loaded yet
-          isBeforeRoundEndDate === true ? "" : "flex-col-reverse"
+          isBeforeRoundEndDate === true || isBeforeRoundEndDate === undefined
+            ? ""
+            : "flex-col-reverse"
         }
       >
         {
