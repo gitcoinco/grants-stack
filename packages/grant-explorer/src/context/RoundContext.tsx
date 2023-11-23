@@ -108,8 +108,6 @@ export const useRoundById = (
     throw new Error("useRoundById must be used within a RoundProvider");
   }
 
-  console.log("useRoundById");
-
   useEffect(() => {
     context.dispatch({ type: ActionType.SET_ROUND_ID, payload: roundId });
     if (roundId) {
