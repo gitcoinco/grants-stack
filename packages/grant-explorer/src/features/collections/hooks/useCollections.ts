@@ -173,7 +173,7 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
       "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreiea37cwpqtzbkcr7lwrxkwwdtshxcuzxegmep5cizck7iqqmoo2ba?img-height=640",
       "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreih5ciumf2b2i7t4hynfqsepbtwf3qfv6sdkjw7oekyuapikveyr4i?img-height=640",
     ],
-    description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
+    description: `These are the core projects working closely together in the Giveth Galaxy.`,
     projects: givethGalaxyProjects.map(normalizeAddress),
   },
   {
@@ -186,7 +186,7 @@ This list is based on twitter shill spaces from past Gitcoin rounds and projects
       "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafkreiggaqod3axjmtujagb4tcbxojb2gxtqsdfrcdeockxr7fn6j7b7ua?img-height=640",
       "https://d16c97c2np8a2o.cloudfront.net/ipfs/bafybeihiwolir4unpxcezqd27oyl3jar2inincc7kzu7fmvvwjhd575gce?img-height=640",
     ],
-    description: `My goal was to highlight projects that have (a) been valuable to me in some way, and (b) are not front runners in any of the rounds so far. I took a snapshot of projects on the morning of Nov 17 and set a popularity threshold. I only considered projects below that threshold, and capped my picks to no more than 10% of the total projects in a given round.`,
+    description: `These are the projects that I know and love the work they do in the Web3 OSS and Web3 Community & Education rounds.`,
     projects: griffsOSSProjects.map(normalizeAddress),
   },
 ];
