@@ -33,7 +33,7 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { getAddress } from "viem";
-import { Box, Skeleton, Tab, Tabs } from "@chakra-ui/react";
+import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
 import { DefaultLayout } from "../common/DefaultLayout";
@@ -144,13 +144,15 @@ export default function ViewProjectDetails() {
         content: (
           <>
             <h3 className="text-3xl mt-8 mb-4 font-medium text-black">About</h3>
-            {!!projectToRender && (
+            {projectToRender ? (
               <>
                 <Detail text={description} testID="project-metadata" />
                 <ApplicationFormAnswers
                   answers={projectToRender.grantApplicationFormAnswers}
                 />
               </>
+            ) : (
+              <SkeletonText />
             )}
           </>
         ),
@@ -579,7 +581,6 @@ function CartButtonToggle(props: {
   addToCart: () => void;
   removeFromCart: () => void;
 }) {
-  console.log(props);
   return (
     <CartButton
       data-testid={props.isAlreadyInCart ? "remove-from-cart" : "add-to-cart"}
