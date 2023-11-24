@@ -107,38 +107,6 @@ describe("data layer", () => {
     });
   });
 
-  test("can retrieve multiple applications by refs", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      status: 200,
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => ({
-        applicationSummaries: [
-          { applicationRef: "1:0x123:0", name: "project #0" },
-          { applicationRef: "1:0x123:1", name: "project #1" },
-          { applicationRef: "1:0x123:2", name: "project #2" },
-        ],
-      }),
-    });
-
-    const dataLayer = new DataLayer({
-      fetch: fetchMock,
-      search: { baseUrl: "https://example.com" },
-    });
-    const { applications } = await dataLayer.query({
-      type: "applications-by-refs",
-      refs: ["1:0x123:0", "1:0x123:2"],
-    });
-
-    expect(applications).toEqual([
-      { applicationRef: "1:0x123:0", name: "project #0" },
-      { applicationRef: "1:0x123:2", name: "project #2" },
-    ]);
-    expect(fetchMock).toHaveBeenCalledWith("https://example.com/applications", {
-      method: "GET",
-      headers: {},
-    });
-  });
-
   describe("can retrieve paginated applications", () => {
     test("returns pagination data along with application data", async () => {
       const fetchMock = vi.fn().mockResolvedValue({

@@ -12,12 +12,6 @@ export type DataLayerInteraction =
       };
     }
   | {
-      query: { type: "applications-by-refs"; refs: string[] };
-      response: {
-        applications: ApplicationSummary[];
-      };
-    }
-  | {
       query: {
         type: "applications-paginated";
         page: number;

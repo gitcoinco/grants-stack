@@ -36,9 +36,6 @@ export class DataLayer {
   }
 
   async query(
-    q: ExtractQuery<DataLayerInteraction, "applications-by-refs">,
-  ): Promise<ExtractResponse<DataLayerInteraction, "applications-by-refs">>;
-  async query(
     q: ExtractQuery<DataLayerInteraction, "applications-paginated">,
   ): Promise<ExtractResponse<DataLayerInteraction, "applications-paginated">>;
   async query(
@@ -65,17 +62,6 @@ export class DataLayer {
             totalPages: Math.ceil(results.length / this.searchResultsPageSize),
             totalItems: results.length,
           },
-        };
-      }
-
-      case "applications-by-refs": {
-        const { applicationSummaries } =
-          await this.searchApiClient.getApplicationsApplicationsGet();
-
-        return {
-          applications: applicationSummaries.filter((a) =>
-            q.refs.includes(a.applicationRef),
-          ),
         };
       }
 
