@@ -194,12 +194,10 @@ new: indexer graphql
 query GetRoundsNew(
   $first: Int
   $orderBy: [RoundsOrderBy!] # includes previous "orderBy" and "orderDirection",
+  $filter: RoundFilter
 ) {
-  # $currentTimestamp # no longer used
-  # $where # needs to cover these cases: active rounds, rounds taking applications, finished rounds, rounds ending soon, TODO rounds based on payout strategy.
-
   query {
-    rounds(first: $first, orderBy: $orderBy) {
+    rounds(first: $first, orderBy: $orderBy, filter: $filter) {
       id
       roundMetadata
       applicationsStartTime
@@ -210,11 +208,77 @@ query GetRoundsNew(
       # payoutStrategy # not currently available but scheduled for addition to the indexer
       applications(first: 1000, condition: { status: APPROVED }) {
         projectId
+        project {
+          id
+          ownerAddresses
+        }
       }
     }
   }
 }
 ```
+
+example variables for active rounds ("2023-11-24T09:53:35.752Z" represents the current time, "2024-11-24T09:53:35.752Z" represents a point in time sufficiently far in the future, conventionally one year from current time):
+
+```json
+{
+  "first": 1000,
+  "filter": {
+    "donationsStartTime": {
+      "lessThan": "2023-11-24T09:53:35.752Z"
+    },
+    "donationsEndTime": {
+      "greaterThan": "2023-11-24T09:53:35.752Z",
+      "lessThan": "2024-11-24T09:53:35.752Z"
+    }
+  }
+}
+```
+
+example variables for rounds taking applications ("2023-11-24T09:53:35.752Z" represents current time):
+
+```json
+{
+  "first": 1000,
+  "filter": {
+    "applicationsStartTime": {
+      "lessThanOrEqualTo": "2023-11-24T09:53:35.752Z"
+    },
+    "applicationsEndTime": {
+      "greaterThanOrEqualTo": "2023-11-24T09:53:35.752Z"
+    }
+  }
+}
+```
+
+example variables for finished rounds ("2023-11-24T09:53:35.752Z" represents current time):
+
+```json
+{
+  "first": 1000,
+  "filter": {
+    "donationsEndTime": {
+      "lessThan": "2023-11-24T09:53:35.752Z"
+    }
+  }
+}
+```
+
+example variables for rounds ending soon ("2023-11-23T09:53:35.752Z" represents current time, "2023-12-23T09:53:35.752Z" represents thirty days from current time ):
+
+```json
+{
+  "first": 1000,
+  "filter": {
+    "donationsEndTime": {
+      "greaterThan": "2023-11-23T09:53:35.752Z",
+      "lessThan": "2023-12-23T09:53:35.752Z"
+    }
+  }
+}
+```
+
+TODO: filters for payout strategy.
 
 ## round metadata
 
