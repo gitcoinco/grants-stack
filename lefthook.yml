@@ -38,8 +38,8 @@ pre-push:
   parallel: true
   commands:
     typecheck:
-      run: turbo run typecheck
+      run: pnpm turbo run typecheck
     build:
-      run: turbo run build
+      run: pnpm turbo run build
     test:
-      run: turbo run test --concurrency=50%
+      run: pnpm turbo run test --concurrency=50%
