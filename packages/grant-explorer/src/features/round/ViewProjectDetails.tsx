@@ -171,7 +171,7 @@ export default function ViewProjectDetails() {
     <>
       <DefaultLayout>
         {isAfterRoundEndDate && <RoundEndedBanner />}
-        <div className="py-8 flex items-center">
+        <div className="py-8 flex items-center" data-testid="bread-crumbs">
           <Breadcrumb items={breadCrumbs} />
         </div>
         <div className="mb-4">
@@ -582,6 +582,7 @@ function CartButtonToggle(props: {
   console.log(props);
   return (
     <CartButton
+      data-testid={props.isAlreadyInCart ? "remove-from-cart" : "add-to-cart"}
       variant={props.isAlreadyInCart ? "danger" : "default"}
       onClick={() =>
         props.isAlreadyInCart ? props.removeFromCart() : props.addToCart()
