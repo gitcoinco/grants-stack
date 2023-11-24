@@ -6,6 +6,8 @@ Fixes: #issue
 
 ## Description
 
+<!-- Describe your changes here. -->
+
 ## Checklist
 
 This PR:
@@ -15,7 +17,3 @@ This PR:
 - [ ] Doesn't work around the type checker (including but not limited to: type casts, non-null assertions, `@ts-ignore`, unjustified optional values).
 - [ ] Doesn't contain commented out code.
 - [ ] If adding/updating a feature, it adds/updates its test script on Notion.
-
-##### Description
-
-<!-- Describe your changes here. -->
