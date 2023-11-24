@@ -9,7 +9,7 @@ import {
   renderWithContext,
   setWindowDimensions,
 } from "../../../test-utils";
-import ViewProjectDetails from "../ViewProjectPage";
+import ViewProjectDetails from "../ViewProjectDetails";
 import { truncate } from "../../common/utils/truncate";
 import { formatDateWithOrdinal } from "common";
 

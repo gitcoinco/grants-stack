@@ -1,7 +1,15 @@
 import { datadogLogs } from "@datadog/browser-logs";
+import {
+  VerifiableCredential,
+  PROVIDER_ID,
+} from "@gitcoinco/passport-sdk-types";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
+import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
+import { formatDistanceToNowStrict } from "date-fns";
 import React, {
+  ComponentProps,
   ComponentPropsWithRef,
   FunctionComponent,
   PropsWithChildren,
@@ -10,6 +18,7 @@ import React, {
   useState,
 } from "react";
 import { useParams } from "react-router-dom";
+import useSWR from "swr";
 import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
@@ -23,13 +32,12 @@ import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
+import { getAddress } from "viem";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
-import { GrantList } from "../round/KarmaGrant/GrantList";
+import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { truncate } from "../common/utils/truncate";
-import { useVerifyProject } from "./hooks/useVerifyProject";
-import { ProjectStats } from "./ProjectStats";
 import tw from "tailwind-styled-components";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
@@ -52,6 +60,19 @@ const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
     </svg>
   );
 };
+
+enum VerifiedCredentialState {
+  VALID,
+  INVALID,
+  PENDING,
+}
+
+const boundFetch = fetch.bind(window);
+
+export const IAM_SERVER =
+  "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+
+const verifier = new PassportVerifier();
 
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -171,20 +192,16 @@ export default function ViewProjectDetails() {
         </div>
         <div className="md:flex gap-4 flex-row-reverse">
           {round && !isDirectRound(round) && (
-            <div className="min-w-[320px] mb-6">
-              <ProjectStats
-                chainId={chainId}
-                roundId={roundId}
-                applicationId={applicationId}
-              />
-              {isBeforeRoundEndDate && (
-                <CartButtonToggle
-                  isAlreadyInCart={isAlreadyInCart}
-                  addToCart={() => add(cartProject)}
-                  removeFromCart={() => remove(cartProject.grantApplicationId)}
-                />
-              )}
-            </div>
+            <Sidebar
+              isAlreadyInCart={isAlreadyInCart}
+              isBeforeRoundEndDate={isBeforeRoundEndDate}
+              removeFromCart={() => {
+                remove(cartProject.grantApplicationId);
+              }}
+              addToCart={() => {
+                add(cartProject);
+              }}
+            />
           )}
           <div className="flex-1">
             <Skeleton isLoaded={Boolean(title)}>
@@ -215,6 +232,7 @@ function ProjectDetailsTabs(props: {
     <Box className="" bottom={0.5}>
       {props.tabs.length > 0 && (
         <Tabs
+          // className="text-blue-300"
           display="flex"
           onChange={props.onChange}
           defaultIndex={props.selected}
@@ -225,6 +243,30 @@ function ProjectDetailsTabs(props: {
         </Tabs>
       )}
     </Box>
+  );
+}
+
+function useVerifyProject(project?: Project) {
+  const { credentials = {} } = project?.projectMetadata ?? {};
+
+  // Return data as { twitter?: boolean, ... }
+  return useSWR<{ [K in Lowercase<PROVIDER_ID>]?: boolean }>(credentials, () =>
+    Promise.all(
+      // Check verifications for all credentials in project metadata
+      Object.entries(credentials).map(async ([provider, credential]) => ({
+        provider,
+        verified: await isVerified(credential, verifier, provider, project),
+      }))
+    ).then((verifications) =>
+      // Convert to object ({ [provider]: isVerified })
+      verifications.reduce(
+        (acc, x) => ({
+          ...acc,
+          [x.provider]: x.verified === VerifiedCredentialState.VALID,
+        }),
+        {}
+      )
+    )
   );
 }
 
@@ -393,6 +435,131 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
   );
 }
 
+function Sidebar(props: {
+  isAlreadyInCart: boolean;
+  isBeforeRoundEndDate?: boolean;
+  removeFromCart: () => void;
+  addToCart: () => void;
+}) {
+  return (
+    <div className="min-w-[320px] mb-6">
+      <ProjectStats />
+      {props.isBeforeRoundEndDate && (
+        <CartButtonToggle
+          isAlreadyInCart={props.isAlreadyInCart}
+          addToCart={props.addToCart}
+          removeFromCart={props.removeFromCart}
+        />
+      )}
+    </div>
+  );
+}
+
+// NOTE: Consider moving this
+export function useRoundApprovedApplication(
+  chainId: number,
+  roundId: string,
+  projectId: string
+) {
+  // use chain id and project id from url params
+  const client = new Client(
+    boundFetch,
+    process.env.REACT_APP_ALLO_API_URL ?? "",
+    chainId
+  );
+
+  return useSWR([roundId, "/projects"], async ([roundId]) => {
+    const applications = await client.getRoundApplications(
+      getAddress(roundId.toLowerCase())
+    );
+
+    return applications.find(
+      (app) => app.projectId === projectId && app.status === "APPROVED"
+    );
+  });
+}
+
+export function ProjectStats() {
+  const { chainId, roundId, applicationId } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { round } = useRoundById(chainId!, roundId!);
+
+  const projectToRender = round?.approvedProjects?.find(
+    (project) => project.grantApplicationId === applicationId
+  );
+
+  const { data: application } = useRoundApprovedApplication(
+    Number(chainId),
+    roundId as string,
+    projectToRender?.projectRegistryId as string
+  );
+
+  const timeRemaining =
+    round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
+      ? formatDistanceToNowStrict(round.roundEndTime)
+      : null;
+  const isBeforeRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > new Date());
+
+  return (
+    <div
+      className={
+        "rounded-3xl bg-gray-50 mb-4 p-4 gap-4 grid grid-cols-3 md:flex md:flex-col"
+      }
+    >
+      <Stat
+        isLoading={!application}
+        value={`$${application?.amountUSD.toFixed(2)}`}
+      >
+        funding received in current round
+      </Stat>
+      <Stat isLoading={!application} value={application?.uniqueContributors}>
+        contributors
+      </Stat>
+
+      <Stat
+        isLoading={isBeforeRoundEndDate === undefined}
+        value={timeRemaining}
+        className={
+          // Explicitly check for true - could be undefined if round hasn't been loaded yet
+          isBeforeRoundEndDate === true || isBeforeRoundEndDate === undefined
+            ? ""
+            : "flex-col-reverse"
+        }
+      >
+        {
+          // If loading - render empty
+          isBeforeRoundEndDate === undefined
+            ? ""
+            : isBeforeRoundEndDate
+            ? "to go"
+            : "Round ended"
+        }
+      </Stat>
+    </div>
+  );
+}
+
+function Stat({
+  value,
+  children,
+  isLoading,
+  className,
+}: {
+  value?: string | number | null;
+  isLoading?: boolean;
+} & ComponentProps<"div">) {
+  return (
+    <div className={`flex flex-col ${className}`}>
+      <Skeleton isLoaded={!isLoading} height={"36px"}>
+        <h4 className="text-3xl">{value}</h4>
+      </Skeleton>
+      <span className="text-sm md:text-base">{children}</span>
+    </div>
+  );
+}
+
 const CartButton = tw.button<{ variant?: "danger" | "default" }>`
 border
 w-full
@@ -426,4 +593,57 @@ function CartButtonToggle(props: {
       {props.isAlreadyInCart ? "Remove from cart" : "Add to cart"}
     </CartButton>
   );
+}
+
+function vcProviderMatchesProject(
+  provider: string,
+  verifiableCredential: VerifiableCredential,
+  project: Project | undefined
+) {
+  let vcProviderMatchesProject = false;
+  if (provider === "twitter") {
+    vcProviderMatchesProject =
+      verifiableCredential.credentialSubject.provider
+        ?.split("#")[1]
+        .toLowerCase() ===
+      project?.projectMetadata.projectTwitter?.toLowerCase();
+  } else if (provider === "github") {
+    vcProviderMatchesProject =
+      verifiableCredential.credentialSubject.provider
+        ?.split("#")[1]
+        .toLowerCase() ===
+      project?.projectMetadata.projectGithub?.toLowerCase();
+  }
+  return vcProviderMatchesProject;
+}
+
+function vcIssuedToAddress(vc: VerifiableCredential, address: string) {
+  const vcIdSplit = vc.credentialSubject.id.split(":");
+  const addressFromId = vcIdSplit[vcIdSplit.length - 1];
+  return addressFromId === address;
+}
+
+async function isVerified(
+  verifiableCredential: VerifiableCredential,
+  verifier: PassportVerifier,
+  provider: string,
+  project: Project | undefined
+) {
+  const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
+  const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
+  const providerMatchesProject = vcProviderMatchesProject(
+    provider,
+    verifiableCredential,
+    project
+  );
+  const vcIssuedToAtLeastOneProjectOwner = (
+    project?.projectMetadata?.owners ?? []
+  ).some((owner) => vcIssuedToAddress(verifiableCredential, owner.address));
+
+  return vcHasValidProof &&
+    vcIssuedByValidIAMServer &&
+    providerMatchesProject &&
+    vcIssuedToAtLeastOneProjectOwner
+    ? VerifiedCredentialState.VALID
+    : VerifiedCredentialState.INVALID;
 }

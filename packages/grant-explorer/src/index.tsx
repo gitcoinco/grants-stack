@@ -26,7 +26,7 @@ import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
 import LandingPage from "./features/discovery/LandingPage";
 import ThankYou from "./features/round/ThankYou";
-import ViewProjectDetails from "./features/projects/ViewProjectPage";
+import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import { ViewContributionHistoryPage } from "./features/contributors/ViewContributionHistory";
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
