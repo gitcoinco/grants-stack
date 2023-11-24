@@ -459,6 +459,13 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           logo: TokenNamesAndLogos["ETH"],
           decimal: 18,
         },
+        {
+          name: "DAI",
+          chainId: ChainId.SEPOLIA,
+          address: "0x20231D192a739B289c60144b83e4878983b3240e",
+          logo: TokenNamesAndLogos["DAI"],
+          decimal: 18,
+        },
       ];
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
