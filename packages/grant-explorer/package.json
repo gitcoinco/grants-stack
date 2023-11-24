@@ -61,6 +61,7 @@
     "common": "workspace:*",
     "craco-esbuild": "^0.5.2",
     "crypto-browserify": "^3.12.0",
+    "data-layer": "workspace:*",
     "date-fns": "^2.29.3",
     "eslint": ">=8.1.0 <9.0.0",
     "ethereum-blockies": "^0.1.1",

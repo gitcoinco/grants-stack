@@ -1,3 +1,3 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './DefaultApi.js';
+export * from "./DefaultApi.js";

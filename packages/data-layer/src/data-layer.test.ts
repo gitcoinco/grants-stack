@@ -1,7 +1,7 @@
 import { describe, test, expect, vi } from "vitest";
-import { GrantsStackDataClient } from "./grants-stack-data-client.js";
+import { DataLayer } from "./data-layer.js";
 
-describe("data client", () => {
+describe("data layer", () => {
   describe("can retrieve multiple applications by search query", () => {
     test("reports data and metadata", async () => {
       const fetchMock = vi.fn().mockResolvedValue({
@@ -21,12 +21,12 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
+        search: { baseUrl: "https://example.com" },
       });
 
-      const { results } = await client.query({
+      const { results } = await dataLayer.query({
         type: "applications-search",
         queryString: "open source",
         page: 0,
@@ -74,13 +74,12 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
-        pagination: { pageSize: 2 },
+        search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
 
-      const { results, pagination } = await client.query({
+      const { results, pagination } = await dataLayer.query({
         type: "applications-search",
         queryString: "open source",
         page: 0,
@@ -121,11 +120,11 @@ describe("data client", () => {
       }),
     });
 
-    const client = new GrantsStackDataClient({
+    const dataLayer = new DataLayer({
       fetch: fetchMock,
-      baseUrl: "https://example.com",
+      search: { baseUrl: "https://example.com" },
     });
-    const { applications } = await client.query({
+    const { applications } = await dataLayer.query({
       type: "applications-by-refs",
       refs: ["1:0x123:0", "1:0x123:2"],
     });
@@ -156,12 +155,11 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
-        pagination: { pageSize: 2 },
+        search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
-      const { applications, pagination } = await client.query({
+      const { applications, pagination } = await dataLayer.query({
         type: "applications-paginated",
         page: 0,
       });
@@ -192,12 +190,11 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
-        pagination: { pageSize: 2 },
+        search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
-      const { applications, pagination } = await client.query({
+      const { applications, pagination } = await dataLayer.query({
         type: "applications-paginated",
         page: 2,
       });
@@ -227,12 +224,11 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
-        pagination: { pageSize: 2 },
+        search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
-      const { applications, pagination } = await client.query({
+      const { applications, pagination } = await dataLayer.query({
         type: "applications-paginated",
         page: 10,
       });
@@ -264,14 +260,13 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
-        pagination: { pageSize: 2 },
+        search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
 
       for (let i = 0; i < 10; i++) {
-        const { applications, pagination } = await client.query({
+        const { applications, pagination } = await dataLayer.query({
           type: "applications-paginated",
           page: 0,
           order: { type: "random", seed: 42 },
@@ -314,14 +309,13 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
-        pagination: { pageSize: 2 },
+        search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
 
       for (let i = 0; i < 10; i++) {
-        const { applications, pagination } = await client.query({
+        const { applications, pagination } = await dataLayer.query({
           type: "applications-paginated",
           page: 0,
           order: { type: "createdAtBlock", direction: "asc" },
@@ -372,13 +366,12 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
-        pagination: { pageSize: 2 },
+        search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
 
-      const { applications, pagination } = await client.query({
+      const { applications, pagination } = await dataLayer.query({
         type: "applications-paginated",
         page: 0,
         order: { type: "contributorCount", direction: "asc" },
@@ -428,13 +421,12 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
-        pagination: { pageSize: 2 },
+        search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
 
-      const { applications, pagination } = await client.query({
+      const { applications, pagination } = await dataLayer.query({
         type: "applications-paginated",
         page: 0,
         filter: { type: "chains", chainIds: [1] },
@@ -473,11 +465,11 @@ describe("data client", () => {
         }),
       });
 
-      const client = new GrantsStackDataClient({
+      const dataLayer = new DataLayer({
         fetch: fetchMock,
-        baseUrl: "https://example.com",
+        search: { baseUrl: "https://example.com" },
       });
-      const { applications } = await client.query({
+      const { applications } = await dataLayer.query({
         type: "applications-paginated",
         page: 0,
         filter: {

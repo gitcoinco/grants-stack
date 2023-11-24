@@ -3,7 +3,7 @@ import {
   ApplicationSummary,
 } from "./openapi-search-client/models/index.js";
 
-export type DataClientInteraction =
+export type DataLayerInteraction =
   | {
       query: { type: "applications-search"; queryString: string; page: number };
       response: {
