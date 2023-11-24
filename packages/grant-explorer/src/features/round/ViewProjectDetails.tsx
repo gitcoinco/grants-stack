@@ -339,7 +339,7 @@ function ProjectLink({
   const Component = url ? "a" : "div";
   return children ? (
     <div className="flex items-center gap-2">
-      <div>{createElement(icon, { className: "w-4 h-4 opacity-80" })}</div>
+      <div>{createElement(icon, { className: "w-4 h-4 text-grey-400" })}</div>
       <div className="flex gap-2">
         <Component
           href={url}
