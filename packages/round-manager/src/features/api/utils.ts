@@ -155,6 +155,14 @@ const SEPOLIA_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
+  {
+    name: "DAI",
+    chainId: ChainId.SEPOLIA,
+    address: "0x20231D192a739B289c60144b83e4878983b3240e",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
 ];
 
 const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [

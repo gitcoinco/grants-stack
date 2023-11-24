@@ -155,6 +155,16 @@ export const SEPOLIA_TOKENS: VotingToken[] = [
     defaultForVoting: true,
     canVote: true,
   },
+  {
+    name: "DAI",
+    chainId: ChainId.SEPOLIA,
+    address: "0x20231D192a739B289c60144b83e4878983b3240e",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
 ];
 
 export const OPTIMISM_MAINNET_TOKENS: VotingToken[] = [
