@@ -20,12 +20,9 @@ import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { formatUnits, getAddress, parseUnits, zeroAddress } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import {
-  matchingEstimatesToText,
-  useMatchingEstimates,
-} from "../../../hooks/matchingEstimate";
+import { matchingEstimatesToText } from "../../../hooks/matchingEstimate";
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
@@ -286,42 +283,42 @@ export function SummaryContainer() {
   }, [totalDonationAcrossChainsInUSDData]);
 
   /* Matching estimates are calculated per-round */
-  const matchingEstimateParamsPerRound =
-    rounds?.map((round) => {
-      const projectFromRound = projects.find(
-        (project) => project.roundId === round.id
-      );
-      return {
-        roundId: getAddress(round.id ?? zeroAddress),
-        chainId: projectFromRound?.chainId ?? ChainId.MAINNET,
-        potentialVotes: projects
-          .filter((proj) => proj.roundId === round.id)
-          .map((proj) => ({
-            amount: parseUnits(
-              proj.amount ?? "0",
-              getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
-            ),
-            grantAddress: proj.recipient,
-            voter: address ?? zeroAddress,
-            token: getVotingTokenForChain(
-              parseChainId(proj.chainId)
-            ).address.toLowerCase(),
-            projectId: proj.projectRegistryId,
-            applicationId: proj.grantApplicationId,
-            roundId: getAddress(round.id ?? zeroAddress),
-          })),
-      };
-    }) ?? [];
+  // const matchingEstimateParamsPerRound =
+  //   rounds?.map((round) => {
+  //     const projectFromRound = projects.find(
+  //       (project) => project.roundId === round.id
+  //     );
+  //     return {
+  //       roundId: getAddress(round.id ?? zeroAddress),
+  //       chainId: projectFromRound?.chainId ?? ChainId.MAINNET,
+  //       potentialVotes: projects
+  //         .filter((proj) => proj.roundId === round.id)
+  //         .map((proj) => ({
+  //           amount: parseUnits(
+  //             proj.amount ?? "0",
+  //             getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
+  //           ),
+  //           grantAddress: proj.recipient,
+  //           voter: address ?? zeroAddress,
+  //           token: getVotingTokenForChain(
+  //             parseChainId(proj.chainId)
+  //           ).address.toLowerCase(),
+  //           projectId: proj.projectRegistryId,
+  //           applicationId: proj.grantApplicationId,
+  //           roundId: getAddress(round.id ?? zeroAddress),
+  //         })),
+  //     };
+  //   }) ?? [];
 
-  const {
-    data,
-    error: matchingEstimateError,
-    isLoading: matchingEstimateLoading,
-  } = useMatchingEstimates(matchingEstimateParamsPerRound);
+  // const {
+  //   data,
+  //   error: matchingEstimateError,
+  //   isLoading: matchingEstimateLoading,
+  // } = useMatchingEstimates(matchingEstimateParamsPerRound);
 
-  const disableEstimate = true;
-  const matchingEstimates =
-    !disableEstimate && data?.length && data.length > 0 ? data : undefined;
+  const matchingEstimateError = undefined;
+  const matchingEstimateLoading = false;
+  const matchingEstimates = undefined; //data?.length && data.length > 0 ? data : undefined;
 
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
