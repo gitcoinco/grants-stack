@@ -319,7 +319,7 @@ export function SummaryContainer() {
     isLoading: matchingEstimateLoading,
   } = useMatchingEstimates(matchingEstimateParamsPerRound);
 
-  const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
+  const matchingEstimates = undefined; //data?.length && data.length > 0 ? data : undefined;
 
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
