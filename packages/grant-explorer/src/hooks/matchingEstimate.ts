@@ -40,6 +40,8 @@ interface JSONObject {
 function getMatchingEstimates(
   params: UseMatchingEstimatesParams
 ): Promise<MatchingEstimateResult[]> {
+  throw new Error("matching estimate temporarily disabled");
+
   const replacer = (_key: string, value: JSONValue) =>
     typeof value === "bigint" ? value.toString() : value;
 
