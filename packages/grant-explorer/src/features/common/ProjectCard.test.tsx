@@ -5,6 +5,14 @@ import { ApplicationSummary } from "data-layer";
 import { zeroAddress } from "viem";
 import { ChakraProvider } from "@chakra-ui/react";
 
+vi.mock("common/src/config", async () => {
+  return {
+    getConfig: () => ({
+      ipfs: { baseUrl: "https://example.com/ipfs" },
+    }),
+  };
+});
+
 describe("ProjectCard", () => {
   const mockApplication: ApplicationSummary = {
     roundName: "This is a round name!",

@@ -8,7 +8,7 @@ import { toQueryString } from "./RoundsFilter";
 import { FilterStatus, parseFilterParams } from "./hooks/useFilterRounds";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { getFilterLabel } from "./utils/getFilterLabel";
-import { allChains } from "../../app/chainConfig";
+import { getActiveChains } from "../../app/chainConfig";
 
 export type FilterOption = {
   label: string;
@@ -58,7 +58,7 @@ export const filterOptions: FilterOption[] = [
   {
     label: "Network",
     value: "network",
-    children: allChains.map(({ id, name }) => ({
+    children: getActiveChains().map(({ id, name }) => ({
       label: `Rounds on ${name}`,
       value: String(id),
     })),

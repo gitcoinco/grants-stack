@@ -12,7 +12,7 @@ import {
 import { arbitrum, arbitrumGoerli } from "viem/chains";
 import { pgnTestnet, pgn } from "common/src/chains";
 
-const testnetChains = () => {
+const getTestnetChains = () => {
   return [
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
     pgnTestnet,
@@ -22,7 +22,7 @@ const testnetChains = () => {
   ];
 };
 
-const mainnetChains = () => {
+const getMainnetChains = () => {
   return [
     mainnet,
     optimism,
@@ -34,7 +34,17 @@ const mainnetChains = () => {
   ];
 };
 
-export const allChains: Chain[] =
-  process.env.REACT_APP_ENV === "development"
-    ? [...testnetChains(), ...mainnetChains()]
-    : [...mainnetChains()];
+export const getActiveChains = (): Chain[] => {
+  switch (process.env.REACT_APP_ENV) {
+    case "development":
+      return [...getTestnetChains(), ...getMainnetChains()];
+    case "production":
+      return getMainnetChains();
+    case "test":
+      return getMainnetChains();
+    default:
+      throw new Error(
+        `Unrecognized REACT_APP_ENV: ${process.env.REACT_APP_ENV}`
+      );
+  }
+};

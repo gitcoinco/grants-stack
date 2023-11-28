@@ -5,25 +5,33 @@ import {
   DataLayerInteraction,
   ExtractQuery,
   ExtractResponse,
-} from "./data-layer.types.js";
+} from "./data-layer.types";
 import {
   ApplicationSummary,
   DefaultApi as SearchApi,
   Configuration as SearchApiConfiguration,
-} from "./openapi-search-client/index.js";
+} from "./openapi-search-client/index";
+import * as legacy from "./backends/legacy";
 
 export class DataLayer {
   private searchResultsPageSize: number;
   private searchApiClient: SearchApi;
+  private subgraphConfig: {
+    endpointsByChainId: Record<number, string>;
+  };
 
   constructor({
     fetch,
     search,
+    subgraph,
   }: {
     fetch?: typeof _fetch;
     search: {
       pagination?: { pageSize: number };
       baseUrl: string;
+    };
+    subgraph: {
+      endpointsByChainId: Record<number, string>;
     };
   }) {
     this.searchApiClient = new SearchApi(
@@ -33,6 +41,7 @@ export class DataLayer {
       }),
     );
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
+    this.subgraphConfig = subgraph;
   }
 
   async query(
@@ -41,6 +50,9 @@ export class DataLayer {
   async query(
     q: ExtractQuery<DataLayerInteraction, "applications-search">,
   ): Promise<ExtractResponse<DataLayerInteraction, "applications-search">>;
+  async query(
+    q: ExtractQuery<DataLayerInteraction, "legacy-round-by-id">,
+  ): Promise<ExtractResponse<DataLayerInteraction, "legacy-round-by-id">>;
   async query(
     q: DataLayerInteraction["query"],
   ): Promise<DataLayerInteraction["response"]> {
@@ -118,6 +130,23 @@ export class DataLayer {
             ),
             totalItems: filteredApplicationSummaries.length,
           },
+        };
+      }
+
+      case "legacy-round-by-id": {
+        const graphqlEndpoint =
+          this.subgraphConfig.endpointsByChainId[q.chainId];
+        if (graphqlEndpoint === undefined) {
+          throw new Error(
+            `No Graph endpoint defined for chain id ${q.chainId}`,
+          );
+        }
+        return {
+          round: await legacy.getRoundById({
+            roundId: q.roundId,
+            chainId: q.chainId,
+            graphqlEndpoint,
+          }),
         };
       }
 

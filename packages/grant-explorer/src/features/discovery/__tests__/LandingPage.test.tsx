@@ -7,7 +7,7 @@ import {
   mockSigner,
   renderWithContext,
 } from "../../../test-utils";
-import { RoundMetadata } from "../../api/round";
+import { __deprecated_RoundMetadata } from "../../api/round";
 import { RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
 import { vi } from "vitest";
@@ -34,7 +34,7 @@ vi.mock("common", async () => {
 vi.mock("../../api/utils", async () => {
   const actual =
     await vi.importActual<typeof import("../../api/utils")>("../../api/utils");
-  return { ...actual, fetchFromIPFS };
+  return { ...actual, __deprecated_fetchFromIPFS: fetchFromIPFS };
 });
 
 const chainId = faker.datatype.number();
@@ -83,7 +83,9 @@ describe("LandingPage", () => {
     );
 
     // Set the mock data
-    graphql_fetch.mockResolvedValue({ data: { rounds: mockedRounds } });
+    graphql_fetch.mockResolvedValue({
+      data: { rounds: mockedRounds },
+    });
     // Return the same metadata that was created by the mock
     fetchFromIPFS.mockImplementation(
       (cid: string) =>
@@ -136,7 +138,7 @@ describe("LandingPage", () => {
   });
 
   it.skip("filters active rounds based on search query", async () => {
-    const roundMetadata: RoundMetadata = {
+    const roundMetadata: __deprecated_RoundMetadata = {
       name: "gitcoin",
       roundType: "private",
       eligibility: {

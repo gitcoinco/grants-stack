@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from "vitest";
-import { DataLayer } from "./data-layer.js";
+import { DataLayer } from "./data-layer";
 
 describe("data layer", () => {
   describe("can retrieve multiple applications by search query", () => {
@@ -24,6 +24,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com" },
+        subgraph: { endpointsByChainId: {} },
       });
 
       const { results } = await dataLayer.query({
@@ -77,6 +78,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        subgraph: { endpointsByChainId: {} },
       });
 
       const { results, pagination } = await dataLayer.query({
@@ -126,6 +128,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        subgraph: { endpointsByChainId: {} },
       });
       const { applications, pagination } = await dataLayer.query({
         type: "applications-paginated",
@@ -161,6 +164,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        subgraph: { endpointsByChainId: {} },
       });
       const { applications, pagination } = await dataLayer.query({
         type: "applications-paginated",
@@ -195,6 +199,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        subgraph: { endpointsByChainId: {} },
       });
       const { applications, pagination } = await dataLayer.query({
         type: "applications-paginated",
@@ -231,6 +236,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        subgraph: { endpointsByChainId: {} },
       });
 
       for (let i = 0; i < 10; i++) {
@@ -280,6 +286,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        subgraph: { endpointsByChainId: {} },
       });
 
       for (let i = 0; i < 10; i++) {
@@ -337,6 +344,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        subgraph: { endpointsByChainId: {} },
       });
 
       const { applications, pagination } = await dataLayer.query({
@@ -392,6 +400,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        subgraph: { endpointsByChainId: {} },
       });
 
       const { applications, pagination } = await dataLayer.query({
@@ -436,6 +445,7 @@ describe("data layer", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com" },
+        subgraph: { endpointsByChainId: {} },
       });
       const { applications } = await dataLayer.query({
         type: "applications-paginated",

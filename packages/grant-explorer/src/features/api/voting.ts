@@ -17,7 +17,7 @@ import mrcAbi from "./abi/multiRoundCheckout";
 import { ChainId } from "common";
 import { WalletClient } from "wagmi";
 import { getContract, getPublicClient } from "@wagmi/core";
-import { allChains } from "../../app/chainConfig";
+import { getActiveChains } from "../../app/chainConfig";
 
 export type PermitSignature = {
   v: number;
@@ -76,7 +76,7 @@ export const voteUsingMRCContract = async (
       ],
       {
         value: nativeTokenAmount,
-        chain: allChains.find((chain) => chain.id === chainId),
+        chain: getActiveChains().find((chain) => chain.id === chainId),
       }
     );
   } else if (permit) {

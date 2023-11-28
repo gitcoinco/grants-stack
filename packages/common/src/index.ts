@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { useMemo, useState } from "react";
-import { ChainId } from "./chains";
+import { ChainId } from "./chain-ids";
 import z from "zod";
 export * from "./icons";
 export * from "./markdown";
@@ -97,6 +97,7 @@ export type Payout = {
   createdAt: string;
 };
 
+// TODO relocate to data layer
 export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.DEV1]: process.env.REACT_APP_SUBGRAPH_DEV1_API!,
   [ChainId.DEV2]: process.env.REACT_APP_SUBGRAPH_DEV2_API!,
@@ -126,7 +127,8 @@ export const graphQlEndpoints: Record<ChainId, string> = {
  * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
  */
-const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
+export const getGraphQLEndpoint = (chainId: ChainId) =>
+  `${graphQlEndpoints[chainId]}`;
 
 /**
  * Fetch data from a GraphQL endpoint

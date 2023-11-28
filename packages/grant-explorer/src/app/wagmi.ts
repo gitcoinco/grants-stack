@@ -13,10 +13,10 @@ import {
 import { configureChains, createConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
-import { allChains } from "./chainConfig";
+import { getActiveChains } from "./chainConfig";
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  allChains,
+  getActiveChains(),
   [
     infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID as string }),
     publicProvider(),
