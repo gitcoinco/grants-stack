@@ -1,8 +1,18 @@
 import { z } from "zod";
 
+const trueStrings = ["1", "t", "T", "TRUE", "true", "True"];
+
+// remove after this PR is merged: https://github.com/colinhacks/zod/pull/2989
+function parseStringToBoolean(value: string) {
+  if (trueStrings.includes(value)) {
+    return true;
+  }
+
+  return false;
+}
+
 export type Config = {
   appEnv: "development" | "test" | "production";
-
   ipfs: {
     baseUrl: string;
   };
@@ -17,6 +27,9 @@ export type Config = {
     chainsOverride: string | undefined;
     alchemyId: string | undefined;
     infuraId: string | undefined;
+  };
+  explorer: {
+    disableEstimates: boolean;
   };
 };
 
@@ -66,6 +79,15 @@ export function getConfig(): Config {
         .parse(process.env.REACT_APP_CHAINS_OVERRIDE),
       alchemyId: z.string().optional().parse(process.env.REACT_APP_ALCHEMY_ID),
       infuraId: z.string().optional().parse(process.env.REACT_APP_INFURA_ID),
+    },
+    explorer: {
+      disableEstimates: parseStringToBoolean(
+        z
+          .string()
+          .optional()
+          .default("false")
+          .parse(process.env.REACT_APP_EXPLORER_DISABLE_MATCHING_ESTIMATES)
+      ),
     },
   };
 

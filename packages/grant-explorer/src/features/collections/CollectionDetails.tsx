@@ -41,7 +41,7 @@ const AddToCartButton = ({ onAdd }: { onAdd: () => void }) => {
   const Icon = isAdded ? CheckIcon : ShoppingCartIcon;
   return (
     <Button
-      className="hidden"
+      className=""
       disabled={isAdded}
       onClick={() => {
         onAdd();

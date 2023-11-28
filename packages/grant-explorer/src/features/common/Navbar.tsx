@@ -62,7 +62,7 @@ export default function Navbar(props: NavbarProps) {
           <div className="flex items-center gap-6">
             <div className="hidden md:block">
               <a
-                href="https://bridge.gitcoin.co"
+                href="https://docs.publicgoods.network/using-pgn/bridging"
                 rel="noreferrer"
                 target="_blank"
                 className="flex-shrink-0 flex items-center mr-[9px] -mt-[1px]"

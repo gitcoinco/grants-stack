@@ -320,7 +320,6 @@ export function SummaryContainer() {
   } = useMatchingEstimates(matchingEstimateParamsPerRound);
 
   const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
-
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
   if (projects.length === 0) {
