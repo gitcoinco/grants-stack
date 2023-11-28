@@ -163,6 +163,7 @@ export function ExploreProjectsPage(): JSX.Element {
       {collection && (
         <CollectionDetails
           collection={collection}
+          projectsInView={applications.length}
           onAddAllApplicationsToCart={() =>
             applications.forEach(addApplicationToCart)
           }
