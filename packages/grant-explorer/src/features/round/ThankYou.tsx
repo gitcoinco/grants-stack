@@ -24,7 +24,9 @@ export function createTwitterShareText(props: TwitterButtonParams) {
 
 export function createTwitterShareUrl(props: TwitterButtonParams) {
   const shareText = createTwitterShareText(props);
-  return `https://twitter.com/share?text=${encodeURIComponent(shareText)}`;
+  return `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    shareText
+  )}`;
 }
 
 type TwitterButtonParams = {
