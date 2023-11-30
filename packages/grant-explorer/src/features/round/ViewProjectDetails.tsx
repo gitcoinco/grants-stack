@@ -40,6 +40,11 @@ import { DefaultLayout } from "../common/DefaultLayout";
 import { truncate } from "../common/utils/truncate";
 import tw from "tailwind-styled-components";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import {
+  mapApplicationToProject,
+  mapApplicationToRound,
+  useApplication,
+} from "../projects/hooks/useApplication";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -83,12 +88,14 @@ export default function ViewProjectDetails() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const { chainId, roundId, applicationId } = useParams();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(chainId!, roundId!);
+  const { data: application } = useApplication({
+    chainId,
+    roundId,
+    applicationId,
+  });
 
-  const projectToRender = round?.approvedProjects?.find(
-    (project) => project.grantApplicationId === applicationId
-  );
+  const projectToRender = mapApplicationToProject(application);
+  const round = mapApplicationToRound(application);
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
 
