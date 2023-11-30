@@ -1,5 +1,5 @@
 import useSWRInfinite from "swr/infinite";
-import { useGrantsStackDataClient } from "common/src/grantsStackDataClientContext";
+import { useDataLayer } from "data-layer";
 import { useMemo } from "react";
 import { Category } from "../../categories/hooks/useCategories";
 import { Collection } from "../../collections/hooks/useCollections";
@@ -26,7 +26,7 @@ export type ApplicationFetchOptions =
     };
 
 export function useApplications(options: ApplicationFetchOptions) {
-  const grantsStackDataClient = useGrantsStackDataClient();
+  const dataLayer = useDataLayer();
 
   const { data, error, size, setSize } = useSWRInfinite(
     (pageIndex) => [pageIndex, options, "/applications"],
@@ -35,7 +35,7 @@ export function useApplications(options: ApplicationFetchOptions) {
       // const res = await grantsStackDataClient.query({ page, ...options })
       switch (options.type) {
         case "applications-search": {
-          const { results, pagination } = await grantsStackDataClient.query({
+          const { results, pagination } = await dataLayer.query({
             page: pageIndex,
             ...options,
           });
@@ -51,11 +51,10 @@ export function useApplications(options: ApplicationFetchOptions) {
           };
         }
         case "applications-paginated": {
-          const { applications, pagination } =
-            await grantsStackDataClient.query({
-              page: pageIndex,
-              ...options,
-            });
+          const { applications, pagination } = await dataLayer.query({
+            page: pageIndex,
+            ...options,
+          });
           return {
             applications,
             pagination,

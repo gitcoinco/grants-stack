@@ -16,8 +16,8 @@ export type Config = {
   ipfs: {
     baseUrl: string;
   };
-  grantsStackDataClient: {
-    baseUrl: string;
+  dataLayer: {
+    searchServiceBaseUrl: string;
   };
   pinata: {
     jwt: string;
@@ -52,13 +52,13 @@ export function getConfig(): Config {
         .default("https://local-ipfs.dev")
         .parse(process.env.REACT_APP_IPFS_BASE_URL),
     },
-    grantsStackDataClient: {
-      baseUrl: z
+    dataLayer: {
+      searchServiceBaseUrl: z
         .string()
         .url()
         // TODO: fix `env.test` in tests to remove this
         .default("https://gitcoin-search-dev.fly.dev")
-        .parse(process.env.REACT_APP_GRANTS_STACK_DATA_CLIENT_BASE_URL),
+        .parse(process.env.REACT_APP_GRANTS_STACK_SEARCH_API_BASE_URL),
     },
     pinata: {
       jwt: z
