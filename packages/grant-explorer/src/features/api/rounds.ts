@@ -3,9 +3,7 @@ import { ChainId, RoundPayoutType, graphql_fetch } from "common";
 import { __deprecated_RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { __deprecated_fetchFromIPFS, useDebugMode } from "./utils";
-import { getActiveChains } from "../../app/chainConfig";
-import { tryParseChainIdToEnum } from "common/src/chains";
-import { isPresent } from "ts-is-present";
+import { getEnabledChains } from "../../app/chainConfig";
 import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 
 const validRounds = [
@@ -89,11 +87,8 @@ export type TimestampVariables = {
   roundEndTime_lt?: string;
 };
 
-export const getActiveChainIds = (): ChainId[] =>
-  getActiveChains()
-    .map((chain) => chain.id)
-    .map(tryParseChainIdToEnum)
-    .filter(isPresent); // TODO don't silently discard invalid config
+export const getEnabledChainsIds = (): ChainId[] =>
+  getEnabledChains().map((chain) => chain.id);
 
 const ROUNDS_QUERY = `
 query GetRounds(
@@ -135,7 +130,7 @@ query GetRounds(
 
 export function useRounds(
   variables: RoundsVariables,
-  chainIds: ChainId[] = getActiveChainIds()
+  chainIds: ChainId[] = getEnabledChainsIds()
 ) {
   const { cache, mutate } = useSWRConfig();
   const debugModeEnabled = useDebugMode();

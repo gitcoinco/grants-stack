@@ -17,12 +17,12 @@ import { useCategory } from "../categories/hooks/useCategories";
 import { useCollection } from "../collections/hooks/useCollections";
 import { CollectionDetails } from "../collections/CollectionDetails";
 import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
-import { getActiveChains } from "../../app/chainConfig";
+import { getEnabledChains } from "../../app/chainConfig";
 
 const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   {
     label: "Network",
-    children: getActiveChains().map(({ id, name }) => ({
+    children: getEnabledChains().map(({ id, name }) => ({
       label: `Projects on ${name}`,
       value: { type: "chain", chainId: id },
     })),

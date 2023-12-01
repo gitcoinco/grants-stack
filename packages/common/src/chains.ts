@@ -36,25 +36,6 @@ export const fantomTestnet: Chain = {
   iconUrl: FantomFTMLogo,
 };
 
-/**
- * Attempts to parse a numerical or string chainId to the Enum.
- * returns null if the chainid is invalid */
-// TODO parse should throw if data is invalid
-export function tryParseChainIdToEnum(
-  chainId: string | number
-): ChainId | null {
-  const chains = Object.keys(ChainId)
-    .map(Number)
-    .filter((item) => {
-      return !isNaN(item);
-    });
-  const chainIdEnumValue = chains.find((chain) => chain === chainId);
-  if (chainIdEnumValue === undefined) {
-    return null;
-  }
-  return chainIdEnumValue as ChainId;
-}
-
 export const avalancheFuji: Chain = {
   ...avalancheFujiOriginal,
   rpcUrls: {
