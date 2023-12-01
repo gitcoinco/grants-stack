@@ -3,7 +3,7 @@ import {
   SearchResult,
   ApplicationSummary,
 } from "./openapi-search-client/models/index";
-import { Round } from "./data.types";
+import { Round, RoundOverview, TimestampVariables } from "./data.types";
 
 export type DataLayerInteraction =
   | {
@@ -44,6 +44,33 @@ export type DataLayerInteraction =
   | {
       query: { type: "legacy-round-by-id"; roundId: string; chainId: number };
       response: { round: Round };
+    }
+  | {
+      query: {
+        type: "legacy-rounds";
+        chainIds: number[];
+        // We need to overfetch these because many will be filtered out from the metadata.roundType === "public"
+        // The `first` param in the arguments will instead be used last to limit the results returned
+        first: number;
+        orderBy?:
+          | "createdAt"
+          | "matchAmount"
+          | "roundStartTime"
+          | "roundEndTime"
+          | "applicationsStartTime"
+          | "applicationsEndTime"
+          | undefined;
+        orderDirection?: "asc" | "desc" | undefined;
+        where?:
+          | {
+              and: [
+                { or: TimestampVariables[] },
+                { payoutStrategy_?: { or: { strategyName: string }[] } },
+              ];
+            }
+          | undefined;
+      };
+      response: { rounds: RoundOverview[] };
     };
 
 interface PaginationInfo {

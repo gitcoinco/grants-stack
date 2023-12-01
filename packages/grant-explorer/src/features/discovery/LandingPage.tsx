@@ -3,9 +3,9 @@ import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
 import {
-  FilterStatus,
-  activeFilter,
-  endingSoonFilter,
+  RoundStatus,
+  ACTIVE_ROUNDS_FILTER,
+  ROUNDS_ENDING_SOON_FILTER,
   useFilterRounds,
 } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
@@ -15,6 +15,7 @@ import { CollectionsGrid } from "../collections/CollectionsGrid";
 import { useCollections } from "../collections/hooks/useCollections";
 import { Button } from "../collections/CollectionDetails";
 import { PresentationChartLineIcon } from "@heroicons/react/20/solid";
+import { getEnabledChains } from "../../app/chainConfig";
 
 const LiveStatsButton = () => (
   <div className="absolute right-4 pt-4">
@@ -31,8 +32,14 @@ const LiveStatsButton = () => (
 );
 
 const LandingPage = () => {
-  const activeRounds = useFilterRounds(activeFilter);
-  const roundsEndingSoon = useFilterRounds(endingSoonFilter);
+  const activeRounds = useFilterRounds(
+    ACTIVE_ROUNDS_FILTER,
+    getEnabledChains()
+  );
+  const roundsEndingSoon = useFilterRounds(
+    ROUNDS_ENDING_SOON_FILTER,
+    getEnabledChains()
+  );
 
   const categories = useCategories();
   const collections = useCollections();
@@ -50,7 +57,7 @@ const LandingPage = () => {
       <LandingSection
         title="Donate now"
         action={
-          <ViewAllLink to={`/rounds?${toQueryString(activeFilter)}`}>
+          <ViewAllLink to={`/rounds?${toQueryString(ACTIVE_ROUNDS_FILTER)}`}>
             View all
           </ViewAllLink>
         }
@@ -70,9 +77,9 @@ const LandingPage = () => {
         action={
           <ViewAllLink
             to={`/rounds?${toQueryString({
-              orderBy: endingSoonFilter.orderBy,
-              orderDirection: endingSoonFilter.orderDirection,
-              status: FilterStatus.active,
+              orderBy: ROUNDS_ENDING_SOON_FILTER.orderBy,
+              orderDirection: ROUNDS_ENDING_SOON_FILTER.orderDirection,
+              status: RoundStatus.active,
             })}`}
           >
             View all
@@ -81,8 +88,8 @@ const LandingPage = () => {
       >
         <RoundsGrid
           {...roundsEndingSoon}
-          loadingCount={endingSoonFilter.first}
-          maxCount={endingSoonFilter.first}
+          loadingCount={ROUNDS_ENDING_SOON_FILTER.first}
+          maxCount={ROUNDS_ENDING_SOON_FILTER.first}
           roundType="endingSoon"
         />
       </LandingSection>

@@ -1,7 +1,9 @@
 import { ChainId } from "common";
-import { RoundOverview } from "../../api/rounds";
+import { __deprecated_RoundOverview } from "../../api/rounds";
 
-export function createRoundLoadingData(length = 4): RoundOverview[] {
+export function createRoundLoadingData(
+  length = 4
+): __deprecated_RoundOverview[] {
   return Array.from({ length }).map((_, i) => ({
     id: String(i),
     chainId: ChainId.MAINNET,

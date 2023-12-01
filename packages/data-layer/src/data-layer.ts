@@ -17,11 +17,13 @@ export class DataLayer {
   private searchResultsPageSize: number;
   private searchApiClient: SearchApi;
   private subgraphEndpointsByChainId: Record<number, string>;
+  private ipfsGateway: string;
 
   constructor({
     fetch,
     search,
     subgraph,
+    ipfs,
   }: {
     fetch?: typeof _fetch;
     search: {
@@ -30,6 +32,10 @@ export class DataLayer {
     };
     subgraph?: {
       endpointsByChainId: Record<number, string>;
+    };
+    // TODO reflect that we specifically require Pinata?
+    ipfs?: {
+      gateway: string;
     };
   }) {
     this.searchApiClient = new SearchApi(
@@ -40,6 +46,7 @@ export class DataLayer {
     );
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
+    this.ipfsGateway = ipfs?.gateway ?? "ipfs.io";
   }
 
   async query(
@@ -51,6 +58,9 @@ export class DataLayer {
   async query(
     q: ExtractQuery<DataLayerInteraction, "legacy-round-by-id">,
   ): Promise<ExtractResponse<DataLayerInteraction, "legacy-round-by-id">>;
+  async query(
+    q: ExtractQuery<DataLayerInteraction, "legacy-rounds">,
+  ): Promise<ExtractResponse<DataLayerInteraction, "legacy-rounds">>;
   async query(
     q: DataLayerInteraction["query"],
   ): Promise<DataLayerInteraction["response"]> {
@@ -139,10 +149,17 @@ export class DataLayer {
           );
         }
         return {
-          round: await legacy.getRoundById({
-            roundId: q.roundId,
-            chainId: q.chainId,
-            graphqlEndpoint,
+          round: await legacy.getRoundById(
+            { roundId: q.roundId, chainId: q.chainId },
+            { graphqlEndpoint, ipfsGateway: this.ipfsGateway },
+          ),
+        };
+      }
+
+      case "legacy-rounds": {
+        return {
+          rounds: await legacy.getRounds(q, {
+            graphqlEndpoints: this.subgraphEndpointsByChainId,
           }),
         };
       }

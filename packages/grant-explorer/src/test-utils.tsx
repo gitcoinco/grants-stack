@@ -9,7 +9,7 @@ import {
   initialRoundState,
 } from "./context/RoundContext";
 import { __deprecated_RoundMetadata } from "./features/api/round";
-import { RoundOverview } from "./features/api/rounds";
+import { __deprecated_RoundOverview } from "./features/api/rounds";
 import { CartProject, ProjectMetadata, Round } from "./features/api/types";
 import { parseUnits } from "viem";
 import { ChainId } from "common";
@@ -115,9 +115,9 @@ export const makeRoundMetadata = (
 });
 
 export const makeRoundOverviewData = (
-  overrides?: Partial<RoundOverview>,
+  overrides?: Partial<__deprecated_RoundOverview>,
   roundMetadataOverrides?: Partial<__deprecated_RoundMetadata>
-): RoundOverview => {
+): __deprecated_RoundOverview => {
   return {
     id: faker.finance.ethereumAddress(),
     chainId: ChainId.MAINNET,
@@ -154,17 +154,22 @@ export const renderWithContext = (
   ui: JSX.Element,
   roundStateOverrides: Partial<RoundState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = vi.fn()
+  dispatch: any = vi.fn(),
+  overrides?: {
+    dataLayer?: DataLayer;
+  }
 ) => {
-  const dataLayerMock = {
-    query: vi.fn().mockResolvedValue({
-      round:
-        roundStateOverrides.rounds !== undefined &&
-        roundStateOverrides.rounds.length > 0
-          ? roundStateOverrides.rounds[0]
-          : undefined,
-    }),
-  } as unknown as Mocked<DataLayer>;
+  const dataLayerMock =
+    overrides?.dataLayer ??
+    ({
+      query: vi.fn().mockResolvedValue({
+        round:
+          roundStateOverrides.rounds !== undefined &&
+          roundStateOverrides.rounds.length > 0
+            ? roundStateOverrides.rounds[0]
+            : undefined,
+      }),
+    } as unknown as Mocked<DataLayer>);
 
   return render(
     <ChakraProvider>
