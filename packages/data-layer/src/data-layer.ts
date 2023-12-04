@@ -16,9 +16,7 @@ import * as legacy from "./backends/legacy";
 export class DataLayer {
   private searchResultsPageSize: number;
   private searchApiClient: SearchApi;
-  private subgraphConfig: {
-    endpointsByChainId: Record<number, string>;
-  };
+  private subgraphEndpointsByChainId: Record<number, string>;
 
   constructor({
     fetch,
@@ -30,7 +28,7 @@ export class DataLayer {
       pagination?: { pageSize: number };
       baseUrl: string;
     };
-    subgraph: {
+    subgraph?: {
       endpointsByChainId: Record<number, string>;
     };
   }) {
@@ -41,7 +39,7 @@ export class DataLayer {
       }),
     );
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
-    this.subgraphConfig = subgraph;
+    this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
   }
 
   async query(
@@ -134,8 +132,7 @@ export class DataLayer {
       }
 
       case "legacy-round-by-id": {
-        const graphqlEndpoint =
-          this.subgraphConfig.endpointsByChainId[q.chainId];
+        const graphqlEndpoint = this.subgraphEndpointsByChainId[q.chainId];
         if (graphqlEndpoint === undefined) {
           throw new Error(
             `No Graph endpoint defined for chain id ${q.chainId}`,
