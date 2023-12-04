@@ -1,6 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   BoltIcon,
   GlobeAltIcon,
@@ -37,6 +36,7 @@ import { getAddress } from "viem";
 import { Box, Tab, Tabs } from "@chakra-ui/react";
 import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
+import { DataLayer, useDataLayer } from "data-layer";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -68,8 +68,6 @@ const boundFetch = fetch.bind(window);
 
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
-
-const verifier = new PassportVerifier();
 
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -289,6 +287,7 @@ function ProjectDetailsTabs(props: {
 }
 
 function AboutProject(props: { projectToRender: Project }) {
+  const dataLayer = useDataLayer();
   const [verifiedProviders, setVerifiedProviders] = useState<{
     [key: string]: VerifiedCredentialState;
   }>({
@@ -328,10 +327,8 @@ function AboutProject(props: { projectToRender: Project }) {
           const verifiableCredential = credentials[provider];
           if (verifiableCredential) {
             newVerifiedProviders[provider] = await isVerified(
-              verifiableCredential,
-              verifier,
-              provider,
-              projectToRender
+              { verifiableCredential, provider, project: projectToRender },
+              { dataLayer }
             );
           }
         }
@@ -710,12 +707,22 @@ function vcIssuedToAddress(vc: VerifiableCredential, address: string) {
 }
 
 async function isVerified(
-  verifiableCredential: VerifiableCredential,
-  verifier: PassportVerifier,
-  provider: string,
-  project: Project | undefined
+  data: {
+    verifiableCredential: VerifiableCredential;
+    provider: string;
+    project: Project | undefined;
+  },
+  deps: {
+    dataLayer: DataLayer;
+  }
 ) {
-  const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
+  const { verifiableCredential, provider, project } = data;
+  const { dataLayer } = deps;
+
+  const { isVerified: vcHasValidProof } = await dataLayer.query({
+    type: "verify-passport-credential",
+    credential: verifiableCredential,
+  });
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(
     provider,

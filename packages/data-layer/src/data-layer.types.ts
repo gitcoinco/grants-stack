@@ -1,3 +1,4 @@
+import { VerifiableCredential as PassportVerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { CustomError } from "ts-custom-error";
 import {
   SearchResult,
@@ -71,6 +72,13 @@ export type DataLayerInteraction =
           | undefined;
       };
       response: { rounds: RoundOverview[] };
+    }
+  | {
+      query: {
+        type: "verify-passport-credential";
+        credential: PassportVerifiableCredential;
+      };
+      response: { isVerified: boolean };
     };
 
 interface PaginationInfo {
