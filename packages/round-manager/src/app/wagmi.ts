@@ -20,6 +20,8 @@ import {
   avalanche,
   polygon,
   polygonMumbai,
+  zkSync,
+  zkSyncTestnet,
 } from "wagmi/chains";
 
 import { pgn, pgnTestnet } from "common/src/chains";
@@ -34,6 +36,7 @@ const testnetChains = () => {
     arbitrumGoerli,
     polygonMumbai,
     avalancheFuji,
+    zkSyncTestnet,
   ];
 };
 
@@ -45,6 +48,7 @@ const mainnetChains = () => {
     arbitrum,
     avalanche,
     polygon,
+    zkSync,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
   ];
 };

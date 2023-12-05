@@ -116,6 +116,10 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.AVALANCHE]: process.env.REACT_APP_SUBGRAPH_AVALANCHE_API!,
   [ChainId.POLYGON]: process.env.REACT_APP_SUBGRAPH_POLYGON_API!,
   [ChainId.POLYGON_MUMBAI]: process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API!,
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_ZKSYNC_ERA_TESTNET_API!,
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_ZKSYNC_ERA_MAINNET_API!,
 };
 
 /**

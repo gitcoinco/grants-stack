@@ -81,6 +81,16 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Polygon Mumbai",
     logo: "./logos/pol-logo.svg",
   },
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
+    id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    name: "zkSync Era Mainnet",
+    logo: "/logos/zksync-logo.svg",
+  },
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: {
+    id: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    name: "zkSync Era Testnet",
+    logo: "/logos/zksync-logo.svg",
+  },
 };
 
 export type PayoutToken = {
@@ -112,6 +122,7 @@ export const TokenNamesAndLogos = {
   AVAX: "/logos/avax-logo.svg",
   MATIC: "/logos/pol-logo.svg",
   CVP: "/logos/power-pool.png", // PowerPool
+  TEST: "/logos/dai-logo.svg",
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -219,6 +230,52 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
     redstoneTokenId: RedstoneTokenIds["FTM"],
+  },
+];
+
+const ZKSYNC_ERA_TESTNET_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "TEST",
+    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    address: "0x8fd03Cd97Da068CC242Ab7551Dc4100DD405E8c7",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+];
+
+const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
 
@@ -393,6 +450,8 @@ export const payoutTokens = [
   ...FUJI_TOKENS,
   ...POLYGON_TOKENS,
   ...POLYGON_MUMBAI_TOKENS,
+  ...ZKSYNC_ERA_MAINNET_TOKENS,
+  ...ZKSYNC_ERA_TESTNET_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -529,6 +588,16 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 
     case ChainId.FUJI:
       return payoutTokens.filter((token) => token.chainId === ChainId.FUJI);
+
+    case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID:
+      return payoutTokens.filter(
+        (token) => token.chainId === ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID
+      );
+
+    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
+      return payoutTokens.filter(
+        (token) => token.chainId === ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID
+      );
   }
 };
 /**

@@ -5,6 +5,8 @@ import {
   avalancheFuji as avalancheFujiOriginal,
   fantom as fantomOriginal,
   fantomTestnet as fantomTestnetOriginal,
+  zkSyncTestnet as zkSyncTestnetOriginal,
+  zkSync as zkSyncOriginal,
 } from "wagmi/chains";
 import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
 import { getConfig } from "./config";
@@ -39,6 +41,8 @@ export enum ChainId {
   MAINNET = 1,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
+  ZKSYNC_ERA_TESTNET_CHAIN_ID = 280,
+  ZKSYNC_ERA_MAINNET_CHAIN_ID = 324,
   FANTOM_TESTNET_CHAIN_ID = 4002,
   PGN = 424,
   PGN_TESTNET = 58008,
@@ -94,6 +98,30 @@ export const avalanche: Chain = {
     },
     public: {
       http: ["https://api.avax.network/ext/bc/C/rpc"],
+    },
+  },
+};
+
+export const zkSyncEraTestnet: Chain = {
+  ...zkSyncTestnetOriginal,
+  rpcUrls: {
+    default: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+    public: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+  },
+};
+
+export const zkSyncEraMainnet: Chain = {
+  ...zkSyncOriginal,
+  rpcUrls: {
+    default: {
+      http: ["https://mainnet.era.zksync.io"],
+    },
+    public: {
+      http: ["https://mainnet.era.zksync.io"],
     },
   },
 };

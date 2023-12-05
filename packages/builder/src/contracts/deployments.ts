@@ -4,6 +4,8 @@ export const chains = {
   1: "mainnet",
   10: "optimism",
   250: "fantom",
+  280: "zkSyncEraTestnet",
+  324: "zkSyncEraMainnet",
   424: "pgn",
   4002: "fantomTestnet",
   31337: "localhost",
@@ -79,6 +81,12 @@ export const addresses: DeploymentAddressesMap = {
   },
   polygonMumbai: {
     projectRegistry: "0x545B282A50EaeA01A619914d44105437036CbB36",
+  },
+  zkSyncEraMainnet: {
+    projectRegistry: "0x1593FAA41134544354a1509566DDf8D6596e7348",
+  },
+  zkSyncEraTestnet: {
+    projectRegistry: "0x2C17D0FAb47bD87333714dC35f84BB669951cea6",
   },
 };
 

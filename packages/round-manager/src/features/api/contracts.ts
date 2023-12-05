@@ -30,6 +30,10 @@ const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
   [ChainId.POLYGON]: "0x5C5E2D94b107C7691B08E43169fDe76EAAB6D48b",
   [ChainId.POLYGON_MUMBAI]: "0x545B282A50EaeA01A619914d44105437036CbB36",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x1593FAA41134544354a1509566DDf8D6596e7348",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x2C17D0FAb47bD87333714dC35f84BB669951cea6",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -66,6 +70,10 @@ const programFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
   [ChainId.POLYGON]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
   [ChainId.POLYGON_MUMBAI]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0xe1b01395986bd93Cc9Fa62290987793c150a1AB2",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x1c58945a9A61a3390c56a24d42fEab7106E48d03",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -96,6 +104,10 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x8eC471f30cA797FD52F9D37A47Be2517a7BD6912",
   [ChainId.POLYGON]: "0x5ab68dCdcA37A1C2b09c5218e28eB0d9cc3FEb03",
   [ChainId.POLYGON_MUMBAI]: "0xE1c5812e9831bc1d5BDcF50AAEc1a47C4508F3fA",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0xF631C72e0C5837b794911DDaf167861d1A3eDBf5",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x35E5f2abfaCdbe1bc7C2E09Fbe2e051Ea574Dd3b",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (
@@ -133,6 +145,10 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x2AFA4bE0f2468347A2F086c2167630fb1E58b725",
   [ChainId.POLYGON]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
   [ChainId.POLYGON_MUMBAI]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0xa1F116d1Cb73b6f8dDFD6DDD6E06386553B3af7b",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x7DA751bb567D37fbd5311f8e37629c3355675bEe",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (
@@ -206,6 +222,14 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
       address = "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918";
       break;
     }
+    case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID: {
+      address = "0x590638033E8DeE4028244326c1ecA251c8022346";
+      break;
+    }
+    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID: {
+      address = "0x1127EF659bF29bBe05C892D0Bd683a07AB350A09";
+      break;
+    }
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
@@ -236,6 +260,10 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x27efa1C90e097c980c669AB1a6e326AD4164f1Cb",
   [ChainId.POLYGON]: "0xD0e19DBF9b896199F35Df255A1bf8dB3C787531c",
   [ChainId.POLYGON_MUMBAI]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0xE3710C11A5E06E987657A8ce665961362C079De3",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x898126eA2A581b94a7C08F828DF68B54e2063B7c",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId
@@ -268,6 +296,8 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "",
   [ChainId.POLYGON]: "",
   [ChainId.POLYGON_MUMBAI]: "",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: "",
 };
 
 /* AlloSettingsContract  */
@@ -301,6 +331,10 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x8AdFcF226dfb2fA73788Ad711C958Ba251369cb3",
   [ChainId.POLYGON]: "0xF2a07728107B04266015E67b1468cA0a536956C8",
   [ChainId.POLYGON_MUMBAI]: "0xD9B7Ce1F68A93dF783A8519ed52b74f5DcF5AFE1",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x5A7ea8C03C40e02A97B1901101e415Fdfc1aE64d",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x5e3E56F81588220bC0b3827C49A9e9Babb3D8228",
 };
 
 /* DirectPayoutStrategyFactoryContract  */

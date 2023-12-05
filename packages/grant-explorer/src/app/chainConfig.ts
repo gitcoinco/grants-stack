@@ -8,6 +8,8 @@ import {
   optimism,
   polygon,
   polygonMumbai,
+  zkSync,
+  zkSyncTestnet,
 } from "wagmi/chains";
 import { arbitrum, arbitrumGoerli } from "viem/chains";
 import { pgnTestnet, pgn } from "common/src/chains";
@@ -19,6 +21,7 @@ const testnetChains = () => {
     arbitrumGoerli,
     avalancheFuji,
     polygonMumbai,
+    zkSyncTestnet,
   ];
 };
 
@@ -30,6 +33,7 @@ const mainnetChains = () => {
     arbitrum,
     avalanche,
     polygon,
+    zkSync,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
   ];
 };

@@ -99,6 +99,16 @@ export const CHAINS: Record<
     name: "Polygon Mumbai",
     logo: "./logos/pol-logo.svg",
   },
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: {
+    id: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    name: "zkSync Era Testnet",
+    logo: "./logos/zksync-logo.svg",
+  },
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
+    id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    name: "zkSync Era Mainnet",
+    logo: "./logos/zksync-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos = {
@@ -113,6 +123,7 @@ export const TokenNamesAndLogos = {
   ARB: "./logos/arb-logo.svg",
   AVAX: "./logos/avax-logo.svg",
   MATIC: "./logos/pol-logo.svg",
+  TEST: "./logos/dai-logo.svg",
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -224,6 +235,62 @@ const FANTOM_TESTNET_TOKENS: VotingToken[] = [
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
     defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+const ZKSYNC_ERA_TESTNET_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "TEST",
+    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    address: "0x8fd03Cd97Da068CC242Ab7551Dc4100DD405E8c7",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+];
+
+const ZKSYNC_ERA_MAINNET_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
     canVote: true,
   },
 ];
@@ -430,6 +497,8 @@ export const votingTokens = [
   ...FUJI_TOKENS,
   ...POLYGON_TOKENS,
   ...POLYGON_MUMBAI_TOKENS,
+  ...ZKSYNC_ERA_TESTNET_TOKENS,
+  ...ZKSYNC_ERA_MAINNET_TOKENS,
 ];
 
 type VotingTokensMap = Record<ChainId, VotingToken[]>;
@@ -450,6 +519,8 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.FUJI]: FUJI_TOKENS,
   [ChainId.POLYGON]: POLYGON_TOKENS,
   [ChainId.POLYGON_MUMBAI]: POLYGON_MUMBAI_TOKENS,
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: ZKSYNC_ERA_TESTNET_TOKENS,
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: ZKSYNC_ERA_MAINNET_TOKENS,
 };
 
 export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
@@ -480,6 +551,9 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
   [ChainId.FUJI]: "https://snowtrace.io/tx/",
   [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "https://goerli.explorer.zksync.io/tx/",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
 };
 
 /**
@@ -635,6 +709,7 @@ export function getChainIds(): number[] {
       Number(ChainId.ARBITRUM),
       Number(ChainId.AVALANCHE),
       Number(ChainId.POLYGON),
+      Number(ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID),
     ];
   } else {
     return Object.values(ChainId)
