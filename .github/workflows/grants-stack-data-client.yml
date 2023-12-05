@@ -31,13 +31,13 @@ jobs:
           pnpm install
 
       # TODO
-      # - name: Lint Data Client
+      # - name: Lint Data Layer
       #   run: |
-      #     pnpm dc-lint
+      #     pnpm dl-lint
 
-      - name: Test Data Client
+      - name: Test Data Layer
         run: |
-          pnpm dc-test
+          pnpm dl-test
 
       # TODO    
       # - name: Typecheck Explorer

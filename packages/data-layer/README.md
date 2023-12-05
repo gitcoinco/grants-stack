@@ -15,10 +15,12 @@ pnpm run generate:openapi
 ## Example
 
 ```ts
-import { GrantsStackDataClient } from "grants-stack-data-client";
+import { DataLayer } from "data-layer";
 
-const gsData = new GrantsStackDataClient({
-  baseUrl: "https://gitcoin-search-dev.fly.dev",
+const gsData = new DataLayer({
+  search: {
+    baseUrl: "https://gitcoin-search-dev.fly.dev",
+  },
 });
 
 const { applications, pagination } = await gsData.query({
@@ -27,4 +29,4 @@ const { applications, pagination } = await gsData.query({
 });
 ```
 
-For more examples, see `src/grants-stack-data-client.test.ts`.
+For more examples, see `src/data-layer.test.ts`.

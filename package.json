@@ -32,8 +32,8 @@
     "b-typecheck": "turbo run typecheck --filter=builder",
     "c-test": "turbo run test --filter=common",
     "ve-test": "turbo run test --filter=verify-env",
-    "// data client script": "====== packages/builder specific ======",
-    "dc-test": "turbo run test --filter=grants-stack-data-client"
+    "// data layer script": "====== packages/builder specific ======",
+    "dl-test": "turbo run test --filter=data-layer"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",

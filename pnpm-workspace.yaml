@@ -1,6 +1,6 @@
 packages:
   - 'packages/common'
-  - 'packages/grants-stack-data-client'
+  - 'packages/data-layer'
   - 'packages/eslint-config-gitcoin'
   - 'packages/round-manager'
   - 'packages/grant-explorer'

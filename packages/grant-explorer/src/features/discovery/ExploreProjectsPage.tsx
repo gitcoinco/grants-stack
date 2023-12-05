@@ -5,7 +5,7 @@ import { LandingSection } from "./LandingSection";
 import { useCartStorage } from "../../store";
 import { ApplicationStatus, CartProject } from "../api/types";
 import { useMemo, useState } from "react";
-import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
+import { ApplicationSummary } from "data-layer";
 import {
   createApplicationFetchOptions,
   useApplications,
@@ -163,6 +163,7 @@ export function ExploreProjectsPage(): JSX.Element {
       {collection && (
         <CollectionDetails
           collection={collection}
+          projectsInView={applications.length}
           onAddAllApplicationsToCart={() =>
             applications.forEach(addApplicationToCart)
           }

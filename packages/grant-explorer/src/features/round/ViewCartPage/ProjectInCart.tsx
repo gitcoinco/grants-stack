@@ -80,7 +80,6 @@ export function ProjectInCart(
             key={inputID}
             {...(focusedElement === inputID ? { autoFocus: true } : {})}
             min="0"
-            defaultValue={"0"}
             value={
               props.projects.find(
                 (project) =>

@@ -226,6 +226,10 @@ export function ViewContributionHistory(props: {
             iconStyle="h-4 w-4 mr-1"
           />
         </div>
+        <div className="mt-8 mb-2">
+          Please note that your recent transactions may take a short while to
+          reflect in your donation history, as processing times may vary.
+        </div>
         <div className="text-2xl my-6">Donation Impact</div>
         <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-3 lg:grid-row-1 gap-4">
           <div className="col-span-2 lg:col-span-1">
