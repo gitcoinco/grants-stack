@@ -392,12 +392,18 @@ importers:
       '@types/react-dom':
         specifier: ^18.0.11
         version: 18.2.7
+      dotenv-flow:
+        specifier: ^3.3.0
+        version: 3.3.0
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
 
   packages/data-layer:
     dependencies:
+      '@gitcoinco/passport-sdk-types':
+        specifier: ^0.2.0
+        version: 0.2.0
       cross-fetch:
         specifier: ^4.0.0
         version: 4.0.0
@@ -410,9 +416,15 @@ importers:
       knuth-shuffle-seeded:
         specifier: ^1.0.6
         version: 1.0.6
+      ts-custom-error:
+        specifier: ^3.3.1
+        version: 3.3.1
       ts-essentials:
         specifier: ^9.4.1
         version: 9.4.1(typescript@5.3.2)
+      viem:
+        specifier: ^1.5.3
+        version: 1.10.7(typescript@5.3.2)(zod@3.22.4)
       zod:
         specifier: ^3.22.2
         version: 3.22.4
@@ -784,6 +796,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.7
         version: 10.4.15(postcss@8.4.29)
+      dotenv-flow:
+        specifier: ^3.3.0
+        version: 3.3.0
       eslint-config-gitcoin:
         specifier: workspace:*
         version: link:../eslint-config-gitcoin
@@ -9530,6 +9545,21 @@ packages:
       zod: 3.22.4
     dev: false
 
+  /abitype@0.9.8(typescript@5.3.2)(zod@3.22.4):
+    resolution: {integrity: sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.19.1
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.3.2
+      zod: 3.22.4
+    dev: false
+
   /abortable-iterator@3.0.2:
     resolution: {integrity: sha512-qVP8HFfTpUQI2F+f1tpTriKDIZ4XrmwCrBCrQeRKO7DKWF3kgoT6NXiNDv2krrGcHxPwmI63eGQiec81sEaWIw==}
     dependencies:
@@ -12198,7 +12228,6 @@ packages:
     engines: {node: '>= 8.0.0'}
     dependencies:
       dotenv: 8.6.0
-    dev: false
 
   /dotenv@10.0.0:
     resolution: {integrity: sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==}
@@ -12212,7 +12241,6 @@ packages:
   /dotenv@8.6.0:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
     engines: {node: '>=10'}
-    dev: false
 
   /duplexer@0.1.2:
     resolution: {integrity: sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==}
@@ -22893,6 +22921,11 @@ packages:
       string-format: 2.0.0
     dev: true
 
+  /ts-custom-error@3.3.1:
+    resolution: {integrity: sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==}
+    engines: {node: '>=14.0.0'}
+    dev: false
+
   /ts-debounce@4.0.0:
     resolution: {integrity: sha512-+1iDGY6NmOGidq7i7xZGA4cm8DAa6fqdYcvO5Z6yBevH++Bdo9Qt/mN0TzHUgcCcKv1gmh9+W5dHqz8pMWbCbg==}
     dev: false
@@ -23724,6 +23757,30 @@ packages:
       abitype: 0.9.8(typescript@5.2.2)(zod@3.22.4)
       isomorphic-ws: 5.0.0(ws@8.13.0)
       typescript: 5.2.2
+      ws: 8.13.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - zod
+    dev: false
+
+  /viem@1.10.7(typescript@5.3.2)(zod@3.22.4):
+    resolution: {integrity: sha512-yuaYSHgV1g794nfxhn+V89qgK5ziFTLBSNqSDt4KW8YpjLu0Ah6LLZTtpOj3+MRWKKDwJ1YL2rENb8cuXstUzg==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@adraffy/ens-normalize': 1.9.4
+      '@noble/curves': 1.2.0
+      '@noble/hashes': 1.3.2
+      '@scure/bip32': 1.3.2
+      '@scure/bip39': 1.2.1
+      '@types/ws': 8.5.5
+      abitype: 0.9.8(typescript@5.3.2)(zod@3.22.4)
+      isomorphic-ws: 5.0.0(ws@8.13.0)
+      typescript: 5.3.2
       ws: 8.13.0
     transitivePeerDependencies:
       - bufferutil

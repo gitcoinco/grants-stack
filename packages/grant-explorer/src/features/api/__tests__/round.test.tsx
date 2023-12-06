@@ -1,27 +1,34 @@
 import { makeApprovedProjectData, makeRoundData } from "../../../test-utils";
-import { ApplicationStatus, Round } from "../types";
-import { fetchFromIPFS, graphql_fetch } from "../utils";
-import { getRoundById, GetRoundByIdResult, getProjectOwners } from "../round";
+import { Round } from "../types";
+import {
+  __deprecated_fetchFromIPFS,
+  __deprecated_graphql_fetch,
+} from "../utils";
+import {
+  __deprecated_getRoundById,
+  __deprecated_GetRoundByIdResult,
+  __deprecated_getProjectOwners,
+} from "../round";
 import { Mock } from "vitest";
 
 vi.mock("../utils", () => ({
   ...vi.importActual("../utils"),
-  graphql_fetch: vi.fn(),
-  fetchFromIPFS: vi.fn(),
+  __deprecated_graphql_fetch: vi.fn(),
+  __deprecated_fetchFromIPFS: vi.fn(),
 }));
 
 vi.mock("../round", async () => {
   const actual = await vi.importActual<typeof import("../round")>("../round");
   return {
     ...actual,
-    getProjectOwners: vi.fn(),
+    __deprecated_getProjectOwners: vi.fn(),
   };
 });
 
 describe("getRoundById", () => {
   let expectedRoundData: Round;
   let expectedRound: Partial<Round>;
-  let graphQLResult: GetRoundByIdResult;
+  let graphQLResult: __deprecated_GetRoundByIdResult;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -56,7 +63,7 @@ describe("getRoundById", () => {
               expectedRoundData.roundEndTime
             ),
             token: expectedRoundData.token,
-            payoutStrategy: { 
+            payoutStrategy: {
               id: "some-id",
               strategyName: "MERKLE",
             },
@@ -68,22 +75,27 @@ describe("getRoundById", () => {
       },
     };
 
-    (graphql_fetch as Mock).mockResolvedValue(graphQLResult);
-    (fetchFromIPFS as Mock).mockImplementation((pointer: string) => {
-      if (pointer === expectedRoundData.store?.pointer) {
-        return expectedRoundData.roundMetadata;
+    (__deprecated_graphql_fetch as Mock).mockResolvedValue(graphQLResult);
+    (__deprecated_fetchFromIPFS as Mock).mockImplementation(
+      (pointer: string) => {
+        if (pointer === expectedRoundData.store?.pointer) {
+          return expectedRoundData.roundMetadata;
+        }
+        return {};
       }
-      return {};
-    });
+    );
   });
 
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
-    const actualRound = await getRoundById(expectedRoundData.id!, "someChain");
+    const actualRound = await __deprecated_getRoundById(
+      expectedRoundData.id!,
+      "someChain"
+    );
 
     expect(actualRound).toMatchObject(expectedRound);
-    expect(graphql_fetch as Mock).toBeCalledTimes(1);
-    expect(fetchFromIPFS as Mock).toBeCalledTimes(1);
-    expect(fetchFromIPFS as Mock).toBeCalledWith(
+    expect(__deprecated_graphql_fetch as Mock).toBeCalledTimes(1);
+    expect(__deprecated_fetchFromIPFS as Mock).toBeCalledTimes(1);
+    expect(__deprecated_fetchFromIPFS as Mock).toBeCalledWith(
       expectedRoundData.store?.pointer
     );
   });
@@ -93,7 +105,7 @@ describe("getRoundById", () => {
     const approvedProjectMetadataPointer = "my-project-metadata";
     const expectedApprovedApplication = makeApprovedProjectData();
 
-    let graphQLResultWithApprovedApplication: GetRoundByIdResult;
+    let graphQLResultWithApprovedApplication: __deprecated_GetRoundByIdResult;
     let graphQLResultWithProjectOwners: any;
     let roundMetadataIpfsResult: any;
     let roundProjectStatusesIpfsResult: any;
@@ -144,7 +156,7 @@ describe("getRoundById", () => {
       roundProjectStatusesIpfsResult = [
         {
           id: expectedApprovedApplication.grantApplicationId,
-          status: ApplicationStatus.APPROVED,
+          status: "APPROVED",
           payoutAddress: "some payout address",
         },
       ];
@@ -154,7 +166,7 @@ describe("getRoundById", () => {
           (it) => it.address
         );
 
-      (getProjectOwners as Mock).mockResolvedValue(projectOwners);
+      (__deprecated_getProjectOwners as Mock).mockResolvedValue(projectOwners);
     });
 
     it("maps approved project metadata for old application format", async () => {
@@ -165,24 +177,26 @@ describe("getRoundById", () => {
         },
       };
 
-      (graphql_fetch as Mock)
+      (__deprecated_graphql_fetch as Mock)
         .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
         .mockResolvedValueOnce(graphQLResultWithProjectOwners);
 
-      (fetchFromIPFS as Mock).mockImplementation((pointer: string) => {
-        if (pointer === expectedRoundData.store?.pointer) {
-          return roundMetadataIpfsResult;
+      (__deprecated_fetchFromIPFS as Mock).mockImplementation(
+        (pointer: string) => {
+          if (pointer === expectedRoundData.store?.pointer) {
+            return roundMetadataIpfsResult;
+          }
+          if (pointer === roundProjectStatuses) {
+            return roundProjectStatusesIpfsResult;
+          }
+          if (pointer === approvedProjectMetadataPointer) {
+            return oldFormat;
+          }
+          return {};
         }
-        if (pointer === roundProjectStatuses) {
-          return roundProjectStatusesIpfsResult;
-        }
-        if (pointer === approvedProjectMetadataPointer) {
-          return oldFormat;
-        }
-        return {};
-      });
+      );
 
-      const actualRound = await getRoundById(
+      const actualRound = await __deprecated_getRoundById(
         expectedRoundData.id!,
         "someChain"
       );

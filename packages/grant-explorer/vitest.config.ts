@@ -28,6 +28,6 @@ export default defineConfig({
       // everything else runs in node
       ["**/*", "node"],
     ],
-    setupFiles: "src/setupTests.ts",
+    setupFiles: ["dotenv-flow/config", "src/setupTests.ts"],
   },
 });

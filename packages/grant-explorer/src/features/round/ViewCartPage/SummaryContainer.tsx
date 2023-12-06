@@ -16,7 +16,6 @@ import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor, usePassport } from "../../api/passport";
 import useSWR from "swr";
 import { groupBy, uniqBy } from "lodash-es";
-import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
@@ -29,11 +28,13 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
+import { useDataLayer } from "data-layer";
 
 export function SummaryContainer() {
   const { projects, getVotingTokenForChain, chainToVotingToken } =
     useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
+  const dataLayer = useDataLayer();
 
   const { openConnectModal } = useConnectModal();
   const publicClient = usePublicClient();
@@ -45,7 +46,14 @@ export function SummaryContainer() {
   const { data: rounds } = useSWR(projects, (projects) => {
     const uniqueProjects = uniqBy(projects, "roundId");
     return Promise.all(
-      uniqueProjects.map((proj) => getRoundById(proj.roundId, proj.chainId))
+      uniqueProjects.map(async (proj) => {
+        const { round } = await dataLayer.query({
+          type: "legacy-round-by-id",
+          roundId: proj.roundId,
+          chainId: proj.chainId,
+        });
+        return round;
+      })
     );
   });
 

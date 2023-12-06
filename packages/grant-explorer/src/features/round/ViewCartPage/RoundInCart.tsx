@@ -22,7 +22,7 @@ export function RoundInCart(
   }
 ) {
   const round = useRoundById(
-    String(props.roundCart[0].chainId),
+    props.roundCart[0].chainId,
     props.roundCart[0].roundId
   ).round;
 

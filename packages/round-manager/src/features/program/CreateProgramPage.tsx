@@ -19,7 +19,7 @@ import { ProgressStatus, ProgressStep } from "../api/types";
 import { useCreateProgram } from "../../context/program/CreateProgramContext";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
-import { ChainId } from "common/src/chains";
+import { ChainId } from "common/src/chain-ids";
 
 type FormData = {
   name: string;

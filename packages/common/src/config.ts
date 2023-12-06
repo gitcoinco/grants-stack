@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ChainId } from "./chain-ids";
 
 const trueStrings = ["1", "t", "T", "TRUE", "true", "True"];
 
@@ -18,6 +19,7 @@ export type Config = {
   };
   dataLayer: {
     searchServiceBaseUrl: string;
+    subgraphEndpoints: Record<number, string>;
   };
   pinata: {
     jwt: string;
@@ -56,9 +58,49 @@ export function getConfig(): Config {
       searchServiceBaseUrl: z
         .string()
         .url()
-        // TODO: fix `env.test` in tests to remove this
-        .default("https://gitcoin-search-dev.fly.dev")
         .parse(process.env.REACT_APP_GRANTS_STACK_SEARCH_API_BASE_URL),
+      subgraphEndpoints: {
+        [ChainId.DEV1]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_DEV1_API),
+        [ChainId.DEV2]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_DEV2_API),
+        [ChainId.PGN]: z.string().parse(process.env.REACT_APP_SUBGRAPH_PGN_API),
+        [ChainId.PGN_TESTNET]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API),
+        [ChainId.MAINNET]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_MAINNET_API),
+        [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API),
+        [ChainId.FANTOM_MAINNET_CHAIN_ID]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API),
+        [ChainId.FANTOM_TESTNET_CHAIN_ID]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API),
+        [ChainId.ARBITRUM_GOERLI]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API),
+        [ChainId.ARBITRUM]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_ARBITRUM_API),
+        [ChainId.FUJI]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_FUJI_API),
+        [ChainId.AVALANCHE]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_AVALANCHE_API),
+        [ChainId.POLYGON]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_POLYGON_API),
+        [ChainId.POLYGON_MUMBAI]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API),
+      },
     },
     pinata: {
       jwt: z

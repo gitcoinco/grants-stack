@@ -160,7 +160,7 @@ describe("useCartStorage Zustand store", () => {
 
     const modifiedProject: CartProject = {
       ...project,
-      status: ApplicationStatus.REJECTED,
+      status: "REJECTED",
     };
 
     useCartStorage.getState().add(project);
