@@ -43,7 +43,7 @@ describe("legacy", () => {
             "115792089237316195423570985008687907853269984665640564039457584007913129639935",
         },
       ])[0].roundStartTime,
-    ).toBe(undefined);
+    ).toBeUndefined();
   });
 
   test("sortRounds", async () => {
@@ -55,8 +55,8 @@ describe("legacy", () => {
         orderDirection: "asc",
       },
     );
-    expect(sortedAsc[0].matchAmount).toEqual("1");
-    expect(sortedAsc[1].matchAmount).toEqual("10");
+    expect(sortedAsc[0].matchAmount).toBe("1");
+    expect(sortedAsc[1].matchAmount).toBe("10");
 
     const sortedDesc = sortRounds(
       [{ matchAmount: "10" }, { matchAmount: "1" }] as RoundOverview[],
@@ -66,8 +66,8 @@ describe("legacy", () => {
         orderDirection: "desc",
       },
     );
-    expect(sortedDesc[0].matchAmount).toEqual("10");
-    expect(sortedDesc[1].matchAmount).toEqual("1");
+    expect(sortedDesc[0].matchAmount).toBe("10");
+    expect(sortedDesc[1].matchAmount).toBe("1");
   });
 });
 

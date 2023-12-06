@@ -40,7 +40,6 @@ const LandingPage = () => {
     ROUNDS_ENDING_SOON_FILTER,
     getEnabledChains()
   );
-
   const categories = useCategories();
   const collections = useCollections();
 
@@ -48,12 +47,20 @@ const LandingPage = () => {
     <DefaultLayout showWalletInteraction>
       <LandingHero />
       <LiveStatsButton />
-      <LandingSection title="Community collections">
-        <CollectionsGrid data={collections} />
-      </LandingSection>
-      <LandingSection title="Categories">
-        <CategoriesGrid data={categories} loadingCount={4} maxCount={4} />
-      </LandingSection>
+      {collections.data && (
+        <LandingSection title="Community collections">
+          <CollectionsGrid data={collections.data} />
+        </LandingSection>
+      )}
+      {categories.data && (
+        <LandingSection title="Categories">
+          <CategoriesGrid
+            data={categories.data}
+            loadingCount={4}
+            maxCount={4}
+          />
+        </LandingSection>
+      )}
       <LandingSection
         title="Donate now"
         action={

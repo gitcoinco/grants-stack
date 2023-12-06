@@ -4,7 +4,13 @@ import {
   SearchResult,
   ApplicationSummary,
 } from "./openapi-search-client/models/index";
-import { Round, RoundOverview, TimestampVariables } from "./data.types";
+import {
+  Collection,
+  Round,
+  RoundOverview,
+  SearchBasedProjectCategory,
+  TimestampVariables,
+} from "./data.types";
 
 export type DataLayerInteraction =
   | {
@@ -79,6 +85,22 @@ export type DataLayerInteraction =
         credential: PassportVerifiableCredential;
       };
       response: { isVerified: boolean };
+    }
+  | {
+      query: { type: "search-based-project-categories" };
+      response: { categories: SearchBasedProjectCategory[] };
+    }
+  | {
+      query: { type: "search-based-project-category"; id: string };
+      response: { category: SearchBasedProjectCategory | null };
+    }
+  | {
+      query: { type: "project-collections" };
+      response: { collections: Collection[] };
+    }
+  | {
+      query: { type: "project-collection"; id: string };
+      response: { collection: Collection | null };
     };
 
 interface PaginationInfo {

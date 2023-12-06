@@ -13,6 +13,8 @@ import {
   Configuration as SearchApiConfiguration,
 } from "./openapi-search-client/index";
 import * as legacy from "./backends/legacy";
+import * as categories from "./backends/categories";
+import * as collections from "./backends/collections";
 
 export class DataLayer {
   private searchResultsPageSize: number;
@@ -20,6 +22,7 @@ export class DataLayer {
   private subgraphEndpointsByChainId: Record<number, string>;
   private ipfsGateway: string;
   private passportVerifier: PassportVerifier;
+  private collectionsSource: collections.CollectionsSource;
 
   constructor({
     fetch,
@@ -27,6 +30,7 @@ export class DataLayer {
     subgraph,
     ipfs,
     passport,
+    collections,
   }: {
     fetch?: typeof _fetch;
     search: {
@@ -43,6 +47,9 @@ export class DataLayer {
     passport?: {
       verifier: PassportVerifier;
     };
+    collections?: {
+      googleSheetsUrl: string;
+    };
   }) {
     this.searchApiClient = new SearchApi(
       new SearchApiConfiguration({
@@ -54,6 +61,10 @@ export class DataLayer {
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
     this.ipfsGateway = ipfs?.gateway ?? "ipfs.io";
     this.passportVerifier = passport?.verifier ?? new PassportVerifier();
+    this.collectionsSource =
+      collections?.googleSheetsUrl === undefined
+        ? { type: "hardcoded" }
+        : { type: "google-sheet", url: collections.googleSheetsUrl };
   }
 
   async query(
@@ -73,6 +84,22 @@ export class DataLayer {
   ): Promise<
     ExtractResponse<DataLayerInteraction, "verify-passport-credential">
   >;
+  async query(
+    q: ExtractQuery<DataLayerInteraction, "search-based-project-categories">,
+  ): Promise<
+    ExtractResponse<DataLayerInteraction, "search-based-project-categories">
+  >;
+  async query(
+    q: ExtractQuery<DataLayerInteraction, "search-based-project-category">,
+  ): Promise<
+    ExtractResponse<DataLayerInteraction, "search-based-project-category">
+  >;
+  async query(
+    q: ExtractQuery<DataLayerInteraction, "project-collections">,
+  ): Promise<ExtractResponse<DataLayerInteraction, "project-collections">>;
+  async query(
+    q: ExtractQuery<DataLayerInteraction, "project-collection">,
+  ): Promise<ExtractResponse<DataLayerInteraction, "project-collection">>;
   async query(
     q: DataLayerInteraction["query"],
   ): Promise<DataLayerInteraction["response"]> {
@@ -118,7 +145,7 @@ export class DataLayer {
             refs.includes(a.applicationRef),
           );
         } else {
-          throw new Error(`Unreachable brank invoked`);
+          throw new Error(`Unreachable branch invoked`);
         }
 
         let orderedApplicationSummaries: ApplicationSummary[];
@@ -181,6 +208,34 @@ export class DataLayer {
           isVerified: await this.passportVerifier.verifyCredential(
             q.credential,
           ),
+        };
+      }
+
+      case "search-based-project-categories": {
+        return {
+          categories: await categories.getSearchBasedCategories(),
+        };
+      }
+
+      case "search-based-project-category": {
+        return {
+          category: await categories.getSearchBasedCategoryById(q.id),
+        };
+      }
+
+      case "project-collections": {
+        return {
+          collections: await collections.getCollections({
+            source: this.collectionsSource,
+          }),
+        };
+      }
+
+      case "project-collection": {
+        return {
+          collection: await collections.getCollectionById(q.id, {
+            source: this.collectionsSource,
+          }),
         };
       }
 

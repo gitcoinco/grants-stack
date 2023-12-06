@@ -11,8 +11,6 @@ import { __deprecated_RoundMetadata } from "../../api/round";
 import { __deprecated_RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
 import { vi } from "vitest";
-import { collections } from "../../collections/hooks/useCollections";
-import { categories } from "../../categories/hooks/useCategories";
 import { DataLayer } from "data-layer";
 import { getEnabledChains } from "../../../app/chainConfig";
 
@@ -118,24 +116,21 @@ describe("LandingPage", () => {
     });
   });
 
-  it("Renders Collections", async () => {
+  it("Renders collections", async () => {
     renderWithContext(<LandingPage />);
 
-    await waitFor(async () =>
-      collections.forEach((collection) =>
-        expect(screen.getByText(collection.name)).toBeInTheDocument()
-      )
-    );
+    await waitFor(async () => {
+      expect(screen.getByText("Open source")).toBeInTheDocument();
+      expect(screen.getByText("First Time Grantees")).toBeInTheDocument();
+    });
   });
 
-  it("Renders Categories", async () => {
+  it("Renders categories", async () => {
     renderWithContext(<LandingPage />);
 
-    await waitFor(async () =>
-      categories.forEach((category) =>
-        expect(screen.getByText(category.name)).toBeInTheDocument()
-      )
-    );
+    await waitFor(async () => {
+      expect(screen.getByText("Open source")).toBeInTheDocument();
+    });
   });
 
   it("Renders Live GG19 Stats button", async () => {
