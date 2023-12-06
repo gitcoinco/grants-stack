@@ -160,6 +160,26 @@ export function SummaryContainer() {
     }
   );
 
+  /** Uncheck chains with insufficient funds from chain confirmation dialog */
+  useEffect(() => {
+    const chainsWithEnoughTokens = Object.keys(projectsByChain)
+      .map(parseChainId)
+      .filter((chainId) => {
+        const balance = tokenBalances.get(chainId);
+        const totalDonation = totalDonationsPerChain[chainId];
+        return (balance ?? 0n) >= totalDonation;
+      });
+    setChainIdsBeingCheckedOut(chainsWithEnoughTokens);
+
+    /* We don't want to run this when chainidsBeingCheckedOut changes, that would cause an infinite loop */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    chainsToCheckout,
+    tokenBalances,
+    totalDonationsPerChain,
+    projectsByChain,
+  ]);
+
   function checkEmptyDonations() {
     const emptyDonations = projects.filter(
       (project) => !project.amount || Number(project.amount) === 0
@@ -403,7 +423,6 @@ export function SummaryContainer() {
           </div>
         ) : null}
         <Button
-          disabled={insufficientFunds}
           $variant="solid"
           data-testid="handle-confirmation"
           type="button"
@@ -429,11 +448,7 @@ export function SummaryContainer() {
           }}
           className="items-center shadow-sm text-sm rounded w-full mt-4"
         >
-          {isConnected
-            ? insufficientFunds
-              ? "Insufficient funds"
-              : "Submit your donation!"
-            : "Connect wallet to continue"}
+          {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
         </Button>
         {/*{round.round?.roundMetadata?.quadraticFundingConfig*/}
         {/*  ?.minDonationThresholdAmount && (*/}
