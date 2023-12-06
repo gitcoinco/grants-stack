@@ -297,7 +297,8 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.POLYGON]: "",
   [ChainId.POLYGON_MUMBAI]: "",
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "",
-  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: "",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x0FD600678475C03f28baE59A2d55f7a911383e2B",
 };
 
 /* AlloSettingsContract  */
