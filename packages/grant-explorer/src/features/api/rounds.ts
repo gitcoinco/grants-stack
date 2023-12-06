@@ -1,5 +1,5 @@
 import useSWR, { useSWRConfig, Cache, SWRResponse } from "swr";
-import { ChainId, RoundPayoutType } from "common";
+import { ChainId, RoundPayoutType, graphql_fetch } from "common";
 import { __deprecated_RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { __deprecated_fetchFromIPFS, useDebugMode } from "./utils";
@@ -36,6 +36,7 @@ const invalidRounds = [
   "0x1427a0e71a222b0229a910dc72da01f8f04c7441",
   "0xc25994667632d55a8e3dae88737e36f496600434",
   "0x21d264139d66dd281dcb0177bbdca5ceeb71ad69",
+  "0x822742805c0596e883aba99ba2f3117e8c49b94a",
 ].map((a) => a.toLowerCase());
 
 export type __deprecated_RoundOverview = {
