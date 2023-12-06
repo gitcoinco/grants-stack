@@ -1,5 +1,5 @@
 import useSWR, { useSWRConfig, Cache, SWRResponse } from "swr";
-import { ChainId, RoundPayoutType, graphql_fetch } from "common";
+import { ChainId, RoundPayoutType } from "common";
 import { __deprecated_RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { __deprecated_fetchFromIPFS, useDebugMode } from "./utils";
