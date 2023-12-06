@@ -85,16 +85,9 @@ describe("LandingPage", () => {
   });
 
   it("fetches and displays active rounds and rounds in application phase", async () => {
-    faker.seed(42);
-
     const mockedRounds = Array.from({ length: 1 }).map(() =>
       makeRoundOverviewData()
     );
-
-    // Set the mock data
-    __deprecated_graphql_fetch.mockResolvedValue({
-      data: { rounds: mockedRounds },
-    });
 
     const mockDataLayer = {
       query: vi.fn().mockResolvedValue({
@@ -116,9 +109,6 @@ describe("LandingPage", () => {
     renderWithContext(<LandingPage />, undefined, undefined, {
       dataLayer: mockDataLayer,
     });
-
-    // ADDING A DELAY CAUSES TEST TO FAIL
-    // await new Promise<void>((resolve) => setTimeout(() => resolve(), 1000));
 
     await waitFor(() => {
       // Check if the fetched active rounds are displayed
