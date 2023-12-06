@@ -81,7 +81,7 @@ export default function ViewProjectDetails() {
   const { chainId, roundId, applicationId } = useParams();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round, isLoading } = useRoundById(chainId!, roundId!);
+  const { round, isLoading } = useRoundById(Number(chainId), roundId!);
 
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
@@ -594,7 +594,7 @@ export function useRoundApprovedApplication(
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(chainId!, roundId!);
+  const { round } = useRoundById(Number(chainId), roundId!);
 
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId

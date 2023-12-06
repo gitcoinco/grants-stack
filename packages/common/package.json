@@ -13,10 +13,10 @@
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@rainbow-me/rainbowkit": "^0.12.16",
+    "data-layer": "workspace:*",
     "dompurify": "^2.4.3",
     "ethers": "^5.6.5",
     "framer-motion": "^10.12.7",
-    "data-layer": "workspace:*",
     "markdown-it": "^13.0.1",
     "react": "^18.2.0",
     "react-hook-form": "^7.42.1",
@@ -34,6 +34,7 @@
     "@types/node": "^18.15.5",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
+    "dotenv-flow": "^3.3.0",
     "vitest": "^0.34.6"
   }
 }

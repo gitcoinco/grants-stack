@@ -32,4 +32,4 @@ jobs:
 
       - name: Test Verify-Env
         run: |
-          pnpm ve-test
+          pnpm test:verify-env

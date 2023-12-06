@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from "vitest";
-import { DataLayer } from "./data-layer.js";
+import { DataLayer } from "./data-layer";
 
 describe("data layer", () => {
   describe("can retrieve multiple applications by search query", () => {

@@ -33,12 +33,12 @@ jobs:
 
     - name: Lint Builder
       run: |
-        pnpm b-lint    
+        pnpm lint:builder
 
     - name: Test Builder
       run: |
-        pnpm b-test
+        pnpm test:builder
 
     - name: Typecheck Builder
       run: |
-        pnpm b-typecheck
+        pnpm typecheck:builder

@@ -1,5 +1,5 @@
 import { Address } from "wagmi";
-import { ChainId } from "../chains";
+import { ChainId } from "../chain-ids";
 
 export function applicationPath(p: {
   chainId: ChainId;
