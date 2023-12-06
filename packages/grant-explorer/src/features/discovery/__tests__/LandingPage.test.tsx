@@ -106,9 +106,7 @@ describe("LandingPage", () => {
         ?.roundMetadata;
     });
 
-    renderWithContext(<LandingPage />, undefined, undefined, {
-      dataLayer: mockDataLayer,
-    });
+    renderWithContext(<LandingPage />, { dataLayer: mockDataLayer });
 
     await waitFor(() => {
       // Check if the fetched active rounds are displayed

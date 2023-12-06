@@ -152,21 +152,21 @@ export function generateIpfsCid() {
 
 export const renderWithContext = (
   ui: JSX.Element,
-  roundStateOverrides: Partial<RoundState> = {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = vi.fn(),
   overrides?: {
+    dispatch?: () => void;
     dataLayer?: DataLayer;
+    roundState?: Partial<RoundState>;
   }
 ) => {
+  const dispatch = overrides?.dispatch ?? vi.fn();
   const dataLayerMock =
     overrides?.dataLayer ??
     ({
       query: vi.fn().mockResolvedValue({
         round:
-          roundStateOverrides.rounds !== undefined &&
-          roundStateOverrides.rounds.length > 0
-            ? roundStateOverrides.rounds[0]
+          overrides?.roundState?.rounds !== undefined &&
+          overrides?.roundState?.rounds.length > 0
+            ? overrides?.roundState?.rounds[0]
             : undefined,
       }),
     } as unknown as Mocked<DataLayer>);
@@ -177,7 +177,7 @@ export const renderWithContext = (
         <DataLayerProvider client={dataLayerMock}>
           <RoundContext.Provider
             value={{
-              state: { ...initialRoundState, ...roundStateOverrides },
+              state: { ...initialRoundState, ...overrides?.roundState },
               dispatch,
             }}
           >
