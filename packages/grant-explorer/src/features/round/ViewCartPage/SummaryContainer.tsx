@@ -152,13 +152,8 @@ export function SummaryContainer() {
       newTokenBalances.set(chainId, balance.value);
     });
     setTokenBalances(newTokenBalances);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getVotingTokenForChain]);
-
-  const insufficientFunds = new Array(...tokenBalances).some(
-    ([chainId, balance]) => {
-      return totalDonationsPerChain[chainId] > balance;
-    }
-  );
 
   /** Uncheck chains with insufficient funds from chain confirmation dialog */
   useEffect(() => {
