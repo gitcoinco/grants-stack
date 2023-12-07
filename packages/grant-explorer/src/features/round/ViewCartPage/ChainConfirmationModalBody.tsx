@@ -42,20 +42,24 @@ export function ChainConfirmationModalBody({
         wish to checkout now.
       </p>
       <div className="my-4">
-        {Object.keys(projectsByChain).map((chainId, index) => (
-          <ChainSummary
-            chainId={Number(chainId) as ChainId}
-            selectedPayoutToken={getVotingTokenForChain(
-              Number(chainId) as ChainId
-            )}
-            totalDonation={totalDonationsPerChain[Number(chainId)]}
-            checked={chainIdsBeingCheckedOut.includes(Number(chainId))}
-            onChange={(checked) =>
-              handleChainCheckboxChange(Number(chainId), checked)
-            }
-            isLastItem={index === Object.keys(projectsByChain).length - 1}
-          />
-        ))}
+        {Object.keys(projectsByChain)
+          .filter((chainId) =>
+            chainIdsBeingCheckedOut.includes(Number(chainId))
+          )
+          .map((chainId, index) => (
+            <ChainSummary
+              chainId={Number(chainId) as ChainId}
+              selectedPayoutToken={getVotingTokenForChain(
+                Number(chainId) as ChainId
+              )}
+              totalDonation={totalDonationsPerChain[Number(chainId)]}
+              checked={chainIdsBeingCheckedOut.includes(Number(chainId))}
+              onChange={(checked) =>
+                handleChainCheckboxChange(Number(chainId), checked)
+              }
+              isLastItem={index === Object.keys(projectsByChain).length - 1}
+            />
+          ))}
       </div>
     </>
   );
