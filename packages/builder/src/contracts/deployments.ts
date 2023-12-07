@@ -83,7 +83,7 @@ export const addresses: DeploymentAddressesMap = {
     projectRegistry: "0x545B282A50EaeA01A619914d44105437036CbB36",
   },
   zkSyncEraMainnet: {
-    projectRegistry: "TODO:WIRE",
+    projectRegistry: "0xe6CCEe93c97E20644431647B306F48e278aFFdb9",
   },
   zkSyncEraTestnet: {
     projectRegistry: "0xb0F4882184EB6e3ed120c5181651D50719329788",
