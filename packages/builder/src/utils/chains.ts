@@ -11,6 +11,7 @@ import {
   avalanche,
   avalancheFuji,
   fantom,
+  base,
   fantomTestnet,
   customOptimism,
   customPolygon,
@@ -29,6 +30,7 @@ const availableChains: { [key: string]: Chain } = {
   arbitrum,
   avalanche,
   polygon: customPolygon,
+  base,
   fantomTestnet,
   pgnTestnet,
   arbitrumGoerli,
@@ -61,6 +63,7 @@ const productionChains = [
   arbitrum,
   avalanche,
   customPolygon,
+  base,
 ];
 
 export function getEnabledChainsAndProviders() {

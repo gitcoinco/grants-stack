@@ -16,6 +16,7 @@ export const chains = {
   43113: "fuji",
   137: "polygon",
   80001: "polygonMumbai",
+  8453: "base",
 } as const;
 
 export type ChainName = (typeof chains)[keyof typeof chains];
@@ -79,6 +80,9 @@ export const addresses: DeploymentAddressesMap = {
   },
   polygonMumbai: {
     projectRegistry: "0x545B282A50EaeA01A619914d44105437036CbB36",
+  },
+  base: {
+    projectRegistry: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
   },
 };
 

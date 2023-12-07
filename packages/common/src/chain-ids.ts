@@ -11,6 +11,7 @@ export enum ChainId {
   FUJI = 43113,
   POLYGON = 137,
   POLYGON_MUMBAI = 80001,
+  BASE = 8453,
   DEV1 = 313371,
   DEV2 = 313372,
 }

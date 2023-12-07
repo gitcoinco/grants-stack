@@ -5,7 +5,8 @@ import {
   avalancheFuji as avalancheFujiOriginal,
   fantom as fantomOriginal,
   fantomTestnet as fantomTestnetOriginal,
-} from "wagmi/chains";
+  base as baseOriginal,
+} from "@wagmi/chains";
 import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
@@ -46,6 +47,18 @@ export const avalancheFuji: Chain = {
     },
     public: {
       http: ["https://api.avax-test.network/ext/bc/C/rpc"],
+    },
+  },
+};
+
+export const base: Chain = {
+  ...baseOriginal,
+  rpcUrls: {
+    default: {
+      http: ["https://mainnet.base.org/"],
+    },
+    public: {
+      http: ["https://mainnet.base.org/"],
     },
   },
 };

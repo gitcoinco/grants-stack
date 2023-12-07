@@ -10,7 +10,7 @@ import {
   polygonMumbai,
 } from "wagmi/chains";
 import { arbitrum, arbitrumGoerli } from "viem/chains";
-import { pgnTestnet, pgn } from "common/src/chains";
+import { pgnTestnet, pgn, base } from "common/src/chains";
 import { ChainId } from "common/src/chain-ids";
 
 const ensureValidChainId = (chain: Chain) => {
@@ -36,6 +36,7 @@ const MAINNET_CHAINS = [
   arbitrum,
   avalanche,
   polygon,
+  base,
   { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
 ].map(ensureValidChainId);
 

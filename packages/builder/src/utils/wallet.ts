@@ -44,6 +44,7 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   fuji: "Fuji (Avalanche Testnet)",
   polygon: "Polygon PoS",
   polygonMumbai: "Polygon Mumbai",
+  base: "Base",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -62,6 +63,7 @@ export const networkIcon: { [key in ChainName]: string } = {
   fuji: AVAXIcon,
   polygon: POLIcon,
   polygonMumbai: POLIcon,
+  base: EthDiamondGlyph,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -80,6 +82,7 @@ export const payoutIcon: { [key in ChainName]: string } = {
   polygonMumbai: POLIcon,
   avalanche: AVAXIcon,
   fuji: AVAXIcon,
+  base: EthDiamondGlyph,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {

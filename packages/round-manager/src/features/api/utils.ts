@@ -81,6 +81,11 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Polygon Mumbai",
     logo: "./logos/pol-logo.svg",
   },
+  [ChainId.BASE]: {
+    id: ChainId.BASE,
+    name: "Base",
+    logo: "/logos/ethereum-eth-logo.svg",
+  },
 };
 
 export type PayoutToken = {
@@ -266,6 +271,25 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
   },
 ];
 
+const BASE_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.BASE,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.BASE,
+    address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+  },
+];
+
 const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -393,6 +417,7 @@ export const payoutTokens = [
   ...FUJI_TOKENS,
   ...POLYGON_TOKENS,
   ...POLYGON_MUMBAI_TOKENS,
+  ...BASE_TOKENS,
 ];
 
 /*TODO: merge this and the above into one list / function*/
@@ -505,6 +530,9 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
       ];
     case ChainId.PGN:
       return PGN_MAINNET_TOKENS;
+
+    case ChainId.BASE:
+      return BASE_TOKENS;
 
     case ChainId.ARBITRUM_GOERLI:
       return payoutTokens.filter(

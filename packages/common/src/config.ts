@@ -100,6 +100,9 @@ export function getConfig(): Config {
         [ChainId.POLYGON_MUMBAI]: z
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API),
+        [ChainId.BASE]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_BASE_API),
       },
     },
     pinata: {

@@ -30,6 +30,7 @@ const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
   [ChainId.POLYGON]: "0x5C5E2D94b107C7691B08E43169fDe76EAAB6D48b",
   [ChainId.POLYGON_MUMBAI]: "0x545B282A50EaeA01A619914d44105437036CbB36",
+  [ChainId.BASE]: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -66,6 +67,7 @@ const programFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
   [ChainId.POLYGON]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
   [ChainId.POLYGON_MUMBAI]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
+  [ChainId.BASE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -96,6 +98,7 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x8eC471f30cA797FD52F9D37A47Be2517a7BD6912",
   [ChainId.POLYGON]: "0x5ab68dCdcA37A1C2b09c5218e28eB0d9cc3FEb03",
   [ChainId.POLYGON_MUMBAI]: "0xE1c5812e9831bc1d5BDcF50AAEc1a47C4508F3fA",
+  [ChainId.BASE]: "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (
@@ -133,6 +136,7 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x2AFA4bE0f2468347A2F086c2167630fb1E58b725",
   [ChainId.POLYGON]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
   [ChainId.POLYGON_MUMBAI]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
+  [ChainId.BASE]: "0xC3A195EEa198e74D67671732E1B8F8A23781D735",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (
@@ -206,6 +210,10 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
       address = "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918";
       break;
     }
+    case ChainId.BASE: {
+      address = "0x73AB205af1476Dc22104A6B8b3d4c273B58C6E27";
+      break;
+    }
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
@@ -236,6 +244,7 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x27efa1C90e097c980c669AB1a6e326AD4164f1Cb",
   [ChainId.POLYGON]: "0xD0e19DBF9b896199F35Df255A1bf8dB3C787531c",
   [ChainId.POLYGON_MUMBAI]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
+  [ChainId.BASE]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId
@@ -268,6 +277,7 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "",
   [ChainId.POLYGON]: "",
   [ChainId.POLYGON_MUMBAI]: "",
+  [ChainId.BASE]: "",
 };
 
 /* AlloSettingsContract  */
@@ -301,6 +311,7 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x8AdFcF226dfb2fA73788Ad711C958Ba251369cb3",
   [ChainId.POLYGON]: "0xF2a07728107B04266015E67b1468cA0a536956C8",
   [ChainId.POLYGON_MUMBAI]: "0xD9B7Ce1F68A93dF783A8519ed52b74f5DcF5AFE1",
+  [ChainId.BASE]: "0x74c3665540FC8B92Dd06a7e56a51eCa038C18180",
 };
 
 /* DirectPayoutStrategyFactoryContract  */
