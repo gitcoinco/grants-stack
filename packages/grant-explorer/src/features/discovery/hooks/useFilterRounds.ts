@@ -66,9 +66,14 @@ export const useFilterRounds = (
   chains: Chain[]
 ): SWRResponse<__deprecated_RoundOverview[]> => {
   const chainIds =
-    filter.network?.split(",").map(parseInt) ?? chains.map((c) => c.id);
+    filter.network === undefined || filter.network.trim() === ""
+      ? chains.map((c) => c.id)
+      : filter.network.split(",").map(parseInt);
   const statusFilter = createRoundsStatusFilter(filter.status);
-  const strategyNames = filter.type?.split(",") ?? [];
+  const strategyNames =
+    filter.type === undefined || filter.type.trim() === ""
+      ? []
+      : filter.type.split(",");
   const where = createRoundWhereFilter(statusFilter, strategyNames);
   const orderBy =
     filter.orderBy === undefined || filter.orderBy === ""
