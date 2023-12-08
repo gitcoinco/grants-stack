@@ -1,7 +1,7 @@
 import PlusIcon from "@heroicons/react/20/solid/PlusIcon";
 import { LoadingRing } from "../common/Spinner";
 import { ProjectCard, ProjectCardSkeleton } from "../common/ProjectCard";
-import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
+import { ApplicationSummary } from "data-layer";
 
 interface PaginatedProjectsListProps {
   applications: ApplicationSummary[];

@@ -32,4 +32,4 @@ jobs:
 
       - name: Test Common
         run: |
-          pnpm c-test
+          pnpm test:common

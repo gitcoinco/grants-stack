@@ -1,9 +1,17 @@
 import { vi } from "vitest";
 import { render, fireEvent, screen } from "@testing-library/react";
 import { ProjectCard, ProjectCardSkeleton } from "./ProjectCard";
-import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
+import { ApplicationSummary } from "data-layer";
 import { zeroAddress } from "viem";
 import { ChakraProvider } from "@chakra-ui/react";
+
+vi.mock("common/src/config", async () => {
+  return {
+    getConfig: () => ({
+      ipfs: { baseUrl: "https://example.com/ipfs" },
+    }),
+  };
+});
 
 describe("ProjectCard", () => {
   const mockApplication: ApplicationSummary = {

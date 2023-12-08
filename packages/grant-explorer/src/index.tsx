@@ -12,10 +12,7 @@ import { initTagmanager } from "./tagmanager";
 import { initPosthog } from "./posthog";
 import { chains, config } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
-import {
-  GrantsStackDataProvider,
-  GrantsStackDataClient,
-} from "common/src/grantsStackDataClientContext";
+import { DataLayerProvider, DataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
 
 import "./index.css";
@@ -45,10 +42,15 @@ const root = ReactDOM.createRoot(
 
 const GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE = 50;
 
-const grantsStackDataClient = new GrantsStackDataClient({
-  baseUrl: getConfig().grantsStackDataClient.baseUrl,
-  pagination: {
-    pageSize: GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE,
+const dataLayer = new DataLayer({
+  search: {
+    baseUrl: getConfig().dataLayer.searchServiceBaseUrl,
+    pagination: {
+      pageSize: GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
   },
 });
 
@@ -58,7 +60,7 @@ root.render(
       <WagmiConfig config={config}>
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
-            <GrantsStackDataProvider client={grantsStackDataClient}>
+            <DataLayerProvider client={dataLayer}>
               <HashRouter>
                 <Routes>
                   {/* Protected Routes */}
@@ -96,7 +98,7 @@ root.render(
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </HashRouter>
-            </GrantsStackDataProvider>
+            </DataLayerProvider>
           </RoundProvider>
         </RainbowKitProvider>
       </WagmiConfig>

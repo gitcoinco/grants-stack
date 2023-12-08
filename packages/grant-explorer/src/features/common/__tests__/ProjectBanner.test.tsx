@@ -2,6 +2,17 @@ import { ProjectBanner } from "../ProjectBanner";
 import { render, screen } from "@testing-library/react";
 import { generateIpfsCid } from "../../../test-utils";
 
+vi.mock("common/src/config", async () => {
+  return {
+    getConfig: () => ({
+      blockchain: {
+        infuraId: "example",
+      },
+      ipfs: { baseUrl: "https://example.com/ipfs" },
+    }),
+  };
+});
+
 describe("<ProjectBanner>", () => {
   it("should render banner image if provided", function () {
     const bannerImgCid = generateIpfsCid();

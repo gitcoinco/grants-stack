@@ -3,7 +3,7 @@ import { Skeleton, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
-import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
+import { ApplicationSummary } from "data-layer";
 import {
   Badge,
   BasicCard,

@@ -1,6 +1,11 @@
 import { ChainId } from "common";
 
-import { fetchFromIPFS, graphql_fetch, pinToIPFS, dateFromMs } from "../utils";
+import {
+  __deprecated_fetchFromIPFS,
+  __deprecated_graphql_fetch,
+  pinToIPFS,
+  dateFromMs,
+} from "../utils";
 
 describe("graphql_fetch", () => {
   beforeEach(() => {
@@ -25,7 +30,7 @@ describe("graphql_fetch", () => {
       }
     `;
 
-    const res = await graphql_fetch(query, ChainId.MAINNET);
+    const res = await __deprecated_graphql_fetch(query, ChainId.MAINNET);
 
     const params = {
       method: "POST",
@@ -57,10 +62,9 @@ describe("graphql_fetch", () => {
       }
     `;
 
-    await expect(graphql_fetch(query, ChainId.MAINNET)).rejects.toHaveProperty(
-      "status",
-      400
-    );
+    await expect(
+      __deprecated_graphql_fetch(query, ChainId.MAINNET)
+    ).rejects.toHaveProperty("status", 400);
 
     const params = {
       method: "POST",
@@ -86,7 +90,10 @@ describe("graphql_fetch", () => {
       })
     );
 
-    await graphql_fetch(`rounds { id }`, ChainId.OPTIMISM_MAINNET_CHAIN_ID);
+    await __deprecated_graphql_fetch(
+      `rounds { id }`,
+      ChainId.OPTIMISM_MAINNET_CHAIN_ID
+    );
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
@@ -105,7 +112,7 @@ describe("fetchFromIPFS", () => {
 
     const cid = "bafkreih475g3yk67xjenvlatgumnbtqay7edgyrxevoqzihjltjm3f6cf4";
 
-    const res = await fetchFromIPFS(cid);
+    const res = await __deprecated_fetchFromIPFS(cid);
 
     expect(fetchMock).toHaveBeenCalledWith(
       `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
@@ -120,7 +127,10 @@ describe("fetchFromIPFS", () => {
       status: 404,
     });
 
-    await expect(fetchFromIPFS(cid)).rejects.toHaveProperty("status", 404);
+    await expect(__deprecated_fetchFromIPFS(cid)).rejects.toHaveProperty(
+      "status",
+      404
+    );
 
     expect(fetchMock).toHaveBeenCalledWith(
       `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`

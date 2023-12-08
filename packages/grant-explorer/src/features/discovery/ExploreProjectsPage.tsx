@@ -3,9 +3,9 @@ import { DefaultLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import { useCartStorage } from "../../store";
-import { ApplicationStatus, CartProject } from "../api/types";
+import { CartProject } from "../api/types";
 import { useMemo, useState } from "react";
-import { ApplicationSummary } from "common/src/grantsStackDataClientContext";
+import { ApplicationSummary } from "data-layer";
 import {
   createApplicationFetchOptions,
   useApplications,
@@ -17,12 +17,12 @@ import { useCategory } from "../categories/hooks/useCategories";
 import { useCollection } from "../collections/hooks/useCollections";
 import { CollectionDetails } from "../collections/CollectionDetails";
 import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
-import { allChains } from "../../app/chainConfig";
+import { getEnabledChains } from "../../app/chainConfig";
 
 const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   {
     label: "Network",
-    children: allChains.map(({ id, name }) => ({
+    children: getEnabledChains().map(({ id, name }) => ({
       label: `Projects on ${name}`,
       value: { type: "chain", chainId: id },
     })),
@@ -40,7 +40,7 @@ function createCartProjectFromApplication(
     grantApplicationId: createCompositeRoundApplicationId(application),
     recipient: application.payoutWalletAddress,
     grantApplicationFormAnswers: [],
-    status: ApplicationStatus.APPROVED,
+    status: "APPROVED",
     applicationIndex: Number(application.roundApplicationId),
     projectMetadata: {
       title: application.name,
@@ -163,6 +163,7 @@ export function ExploreProjectsPage(): JSX.Element {
       {collection && (
         <CollectionDetails
           collection={collection}
+          projectsInView={applications.length}
           onAddAllApplicationsToCart={() =>
             applications.forEach(addApplicationToCart)
           }

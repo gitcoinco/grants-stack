@@ -6,10 +6,12 @@ import { useState } from "react";
 
 type Props = {
   collection: Collection;
+  projectsInView: number;
   onAddAllApplicationsToCart: () => void;
 };
 export function CollectionDetails({
   collection,
+  projectsInView,
   onAddAllApplicationsToCart,
 }: Props) {
   return (
@@ -27,7 +29,11 @@ export function CollectionDetails({
         <div className="w-96">
           <div className="flex justify-end gap-2">
             <ShareButton url={location.href} />
-            <AddToCartButton onAdd={onAddAllApplicationsToCart} />
+            <AddToCartButton
+              current={projectsInView}
+              total={collection.projects.length}
+              onAdd={onAddAllApplicationsToCart}
+            />
           </div>
         </div>
       </div>
@@ -35,13 +41,21 @@ export function CollectionDetails({
   );
 }
 
-const AddToCartButton = ({ onAdd }: { onAdd: () => void }) => {
+const AddToCartButton = ({
+  current,
+  total,
+  onAdd,
+}: {
+  current: number;
+  total: number;
+  onAdd: () => void;
+}) => {
   const [isAdded, setAdded] = useState(false);
 
   const Icon = isAdded ? CheckIcon : ShoppingCartIcon;
   return (
     <Button
-      className="hidden"
+      className=""
       disabled={isAdded}
       onClick={() => {
         onAdd();
@@ -49,7 +63,7 @@ const AddToCartButton = ({ onAdd }: { onAdd: () => void }) => {
       }}
     >
       <Icon className="w-4 h-4" />
-      {isAdded ? "Added" : "Add all to cart"}
+      {isAdded ? "Added" : `Add all to cart (${current}/${total})`}
     </Button>
   );
 };

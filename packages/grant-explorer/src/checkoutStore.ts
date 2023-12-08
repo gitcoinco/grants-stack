@@ -24,7 +24,7 @@ import {
 import { MRC_CONTRACTS } from "./features/api/contracts";
 import { groupBy, uniq } from "lodash-es";
 import { datadogLogs } from "@datadog/browser-logs";
-import { allChains } from "./app/chainConfig";
+import { getEnabledChains } from "./app/chainConfig";
 import { WalletClient } from "wagmi";
 import { getContract, getWalletClient, PublicClient } from "@wagmi/core";
 
@@ -60,7 +60,7 @@ interface CheckoutState {
 }
 
 const defaultProgressStatusForAllChains = Object.fromEntries(
-  Object.values(allChains).map((value) => [
+  Object.values(getEnabledChains()).map((value) => [
     value.id as ChainId,
     ProgressStatus.NOT_STARTED,
   ])
@@ -332,7 +332,9 @@ async function switchToChain(
   get: () => CheckoutState
 ) {
   get().setChainSwitchStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
-  const nextChainData = allChains.find((chain) => chain.id === chainId);
+  const nextChainData = getEnabledChains().find(
+    (chain) => chain.id === chainId
+  );
   if (!nextChainData) {
     get().setChainSwitchStatusForChain(chainId, ProgressStatus.IS_ERROR);
     throw "next chain not found";

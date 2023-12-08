@@ -83,9 +83,9 @@
   "scripts": {
     "start": "craco start",
     "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
-    "test": "jest --watchAll=false",
-    "test:dev": "jest --watch",
-    "test:coverage": "jest --watchAll=false --coverage",
+    "test": "craco test --watchAll=false",
+    "test:dev": "craco test --watchAll=true",
+    "test:coverage": "craco test --watchAll=false --coverage",
     "eject": "react-scripts eject",
     "lint:local": "eslint",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
