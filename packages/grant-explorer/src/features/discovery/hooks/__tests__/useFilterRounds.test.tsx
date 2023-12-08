@@ -62,7 +62,7 @@ describe("useFilterRounds", () => {
 
     await waitFor(() => sleep(100));
 
-    expect(result?.current.data?.length).toBe(MOCKED_ROUNDS * 7);
+    expect(result?.current.data?.length).toBe(MOCKED_ROUNDS * 8);
   });
   it("filterRoundsWithProjects", async () => {
     expect(filterRoundsWithProjects([mockedRounds[0]]).length).toBe(1);
