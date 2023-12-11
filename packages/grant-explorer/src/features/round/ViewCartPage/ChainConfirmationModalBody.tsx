@@ -4,6 +4,7 @@ import { ChainId } from "common";
 import { CHAINS } from "../../api/utils";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
+import { parseChainId } from "common/src/chains";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
@@ -43,19 +44,16 @@ export function ChainConfirmationModalBody({
       </p>
       <div className="my-4">
         {Object.keys(projectsByChain)
-          .filter((chainId) =>
-            chainIdsBeingCheckedOut.includes(Number(chainId))
-          )
+          .map(parseChainId)
+          .filter((chainId) => chainIdsBeingCheckedOut.includes(chainId))
           .map((chainId, index) => (
             <ChainSummary
-              chainId={Number(chainId) as ChainId}
-              selectedPayoutToken={getVotingTokenForChain(
-                Number(chainId) as ChainId
-              )}
-              totalDonation={totalDonationsPerChain[Number(chainId)]}
-              checked={chainIdsBeingCheckedOut.includes(Number(chainId))}
+              chainId={chainId}
+              selectedPayoutToken={getVotingTokenForChain(chainId)}
+              totalDonation={totalDonationsPerChain[chainId]}
+              checked={chainIdsBeingCheckedOut.includes(chainId)}
               onChange={(checked) =>
-                handleChainCheckboxChange(Number(chainId), checked)
+                handleChainCheckboxChange(chainId, checked)
               }
               isLastItem={index === Object.keys(projectsByChain).length - 1}
             />

@@ -35,7 +35,7 @@ export function Summary({
         : selectedPayoutToken.address,
     chainId,
   });
-
+  /*TODO: make this an explicit cehck of `balance !== undefined && totaldonation > balance.value ` */
   const insufficientFunds = balance ? totalDonation > balance.value : false;
 
   return (

@@ -47,6 +47,8 @@ export function SummaryContainer() {
     [projects]
   );
 
+  /*  This needs to be a useMemo to prevent an infinite loop in the below useEffect */
+  /* TODO: can we remove the useMemo without causing an infinite loop? */
   const chainIds = useMemo(
     () => Object.keys(projectsByChain).map(Number),
     [projectsByChain]
