@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import { DataLayer } from "./data-layer.js";
+import { DataLayer } from "./data-layer";
 
 export const DataLayerContext = createContext<DataLayer | null>(null);
 

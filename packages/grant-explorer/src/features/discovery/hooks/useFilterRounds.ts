@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import {
   RoundsVariables,
   TimestampVariables,
-  getActiveChainIds,
+  getEnabledChainsIds,
   useRounds,
 } from "../../api/rounds";
 import { FilterProps } from "../FilterDropdown";
@@ -37,7 +37,7 @@ export const endingSoonFilter = {
 } as const;
 
 export function useFilterRounds(filter: Filter) {
-  const chainIds = getActiveChainIds();
+  const chainIds = getEnabledChainsIds();
   const statusFilter = useMemo(
     () => createRoundsStatusFilter(filter.status),
     [filter.status]

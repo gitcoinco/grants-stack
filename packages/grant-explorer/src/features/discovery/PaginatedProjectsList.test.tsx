@@ -4,6 +4,14 @@ import { PaginatedProjectsList } from "./PaginatedProjectsList"; // Adjust the i
 import { ApplicationSummary } from "data-layer";
 import { zeroAddress } from "viem";
 
+vi.mock("common/src/config", async () => {
+  return {
+    getConfig: () => ({
+      ipfs: { baseUrl: "https://example.com/ipfs" },
+    }),
+  };
+});
+
 const applicationsMock: ApplicationSummary[] = [
   {
     roundName: "Round 1",

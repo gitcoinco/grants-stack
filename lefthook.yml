@@ -9,19 +9,19 @@ pre-commit:
       run: pnpm format {staged_files}
       stage_fixed: true
 
-    lint-ge:
+    lint-builder:
       root: "packages/builder"
       glob: "**/*.{js,ts,jsx,tsx}"
       run: pnpm --filter "builder" lint:local {staged_files}
       stage_fixed: true
 
-    lint-rm:
+    lint-manager:
       root: "packages/round-manager"
       glob: "**/*.{js,ts,jsx,tsx}"
       run: pnpm --filter "round-manager" lint:local {staged_files}
       stage_fixed: true
 
-    lint-builder:
+    lint-explorer:
       root: "packages/grant-explorer"
       glob: "**/*.{js,ts,jsx,tsx}"
       run: pnpm --filter "grant-explorer" lint:local {staged_files}

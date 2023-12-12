@@ -19,6 +19,7 @@
     "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
     "typechain": "typechain --target=ethers-v5 ./src/features/**/*.json --out-dir ./src/types/generated/typechain/",
     "postinstall": "pnpm typechain"
   },

@@ -49,6 +49,9 @@ const dataLayer = new DataLayer({
       pageSize: GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE,
     },
   },
+  subgraph: {
+    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
+  },
 });
 
 root.render(

@@ -609,7 +609,7 @@ export const getTxExplorerTxLink = (chainId: ChainId, txHash: string) => {
  * @param fromProjectRegistry - Override to fetch from grant hub project registry subgraph
  * @returns The result of the query
  */
-export const graphql_fetch = async (
+export const __deprecated_graphql_fetch = async (
   query: string,
   chainId: ChainId,
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -642,7 +642,7 @@ export const graphql_fetch = async (
  *
  * @param cid - the unique content identifier that points to the data
  */
-export const fetchFromIPFS = (cid: string) => {
+export const __deprecated_fetchFromIPFS = (cid: string) => {
   return fetch(
     `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
   ).then((resp) => {

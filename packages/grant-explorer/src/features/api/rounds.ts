@@ -1,11 +1,9 @@
 import useSWR, { useSWRConfig, Cache } from "swr";
 import { ChainId, RoundPayoutType, graphql_fetch } from "common";
-import { RoundMetadata } from "./round";
+import { __deprecated_RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
-import { fetchFromIPFS, useDebugMode } from "./utils";
-import { allChains } from "../../app/chainConfig";
-import { tryParseChainIdToEnum } from "common/src/chains";
-import { isPresent } from "ts-is-present";
+import { __deprecated_fetchFromIPFS, useDebugMode } from "./utils";
+import { getEnabledChains } from "../../app/chainConfig";
 import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 
 const validRounds = [
@@ -38,6 +36,7 @@ const invalidRounds = [
   "0x1427a0e71a222b0229a910dc72da01f8f04c7441",
   "0xc25994667632d55a8e3dae88737e36f496600434",
   "0x21d264139d66dd281dcb0177bbdca5ceeb71ad69",
+  "0x822742805c0596e883aba99ba2f3117e8c49b94a",
 ].map((a) => a.toLowerCase());
 
 export type RoundOverview = {
@@ -52,7 +51,7 @@ export type RoundOverview = {
   roundEndTime: string;
   matchAmount: string;
   token: string;
-  roundMetadata?: RoundMetadata;
+  roundMetadata?: __deprecated_RoundMetadata;
   projects?: { id: string }[];
   payoutStrategy: {
     id: string;
@@ -89,11 +88,8 @@ export type TimestampVariables = {
   roundEndTime_lt?: string;
 };
 
-export const getActiveChainIds = (): ChainId[] =>
-  allChains
-    .map((chain) => chain.id)
-    .map(tryParseChainIdToEnum)
-    .filter(isPresent);
+export const getEnabledChainsIds = (): ChainId[] =>
+  getEnabledChains().map((chain) => chain.id);
 
 const ROUNDS_QUERY = `
 query GetRounds(
@@ -135,7 +131,7 @@ query GetRounds(
 
 export function useRounds(
   variables: RoundsVariables,
-  chainIds: ChainId[] = getActiveChainIds()
+  chainIds: ChainId[] = getEnabledChainsIds()
 ) {
   const { cache, mutate } = useSWRConfig();
   const debugModeEnabled = useDebugMode();
@@ -179,7 +175,10 @@ export function useRounds(
                 const cid = round.roundMetaPtr.pointer;
                 if (!cache.get(`@"metadata","${cid}",`)) {
                   // Fetch metadata and update cache
-                  mutate(["metadata", cid], await fetchFromIPFS(cid));
+                  mutate(
+                    ["metadata", cid],
+                    await __deprecated_fetchFromIPFS(cid)
+                  );
                   return round;
                 }
               })
@@ -293,7 +292,7 @@ export function filterRounds(
 
 // Will only make a request if metadata doesn't exist yet
 export function useMetadata(cid: string) {
-  return useSWR(["metadata", cid], () => fetchFromIPFS(cid));
+  return useSWR(["metadata", cid], () => __deprecated_fetchFromIPFS(cid));
 }
 
 /* 
@@ -303,13 +302,15 @@ Builds a results object and filters round name on a search query
 export function useSearchRounds(query = "") {
   const { cache } = useSWRConfig();
 
-  const results: RoundMetadata[] = [];
+  const results: __deprecated_RoundMetadata[] = [];
   // Cache is actually a Map but says forEach doesn't exist
-  (cache as Map<string, { data: RoundMetadata }>).forEach(({ data }, key) => {
-    if (nameContains(data?.name, key)) {
-      results.push(data);
+  (cache as Map<string, { data: __deprecated_RoundMetadata }>).forEach(
+    ({ data }, key) => {
+      if (nameContains(data?.name, key)) {
+        results.push(data);
+      }
     }
-  });
+  );
 
   function nameContains(name: string, key: string) {
     return (

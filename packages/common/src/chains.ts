@@ -10,6 +10,7 @@ import {
   zkSync as zkSyncOriginal,
 } from "wagmi/chains";
 import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
+import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
 
 export const fantom: Chain = {
@@ -37,43 +38,6 @@ export const fantomTestnet: Chain = {
   },
   iconUrl: FantomFTMLogo,
 };
-
-export enum ChainId {
-  MAINNET = 1,
-  OPTIMISM_MAINNET_CHAIN_ID = 10,
-  FANTOM_MAINNET_CHAIN_ID = 250,
-  ZKSYNC_ERA_TESTNET_CHAIN_ID = 280,
-  ZKSYNC_ERA_MAINNET_CHAIN_ID = 324,
-  FANTOM_TESTNET_CHAIN_ID = 4002,
-  PGN = 424,
-  PGN_TESTNET = 58008,
-  ARBITRUM = 42161,
-  ARBITRUM_GOERLI = 421613,
-  AVALANCHE = 43114,
-  FUJI = 43113,
-  POLYGON = 137,
-  POLYGON_MUMBAI = 80001,
-  DEV1 = 313371,
-  DEV2 = 313372,
-}
-
-/**
- * Attempts to parse a numerical or string chainId to the Enum.
- * returns null if the chainid is invalid */
-export function tryParseChainIdToEnum(
-  chainId: string | number
-): ChainId | null {
-  const chains = Object.keys(ChainId)
-    .map(Number)
-    .filter((item) => {
-      return !isNaN(item);
-    });
-  const chainIdEnumValue = chains.find((chain) => chain === chainId);
-  if (chainIdEnumValue === undefined) {
-    return null;
-  }
-  return chainIdEnumValue as ChainId;
-}
 
 export const avalancheFuji: Chain = {
   ...avalancheFujiOriginal,

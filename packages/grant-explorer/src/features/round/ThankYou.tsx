@@ -120,7 +120,7 @@ export default function ThankYou() {
 
   const { round } = useRoundById(
     /* If we don't have a round, pass in invalid params and silently fail */
-    topProject?.chainId.toString() ?? "",
+    Number(topProject?.chainId),
     topProject?.roundId ?? ""
   );
 
