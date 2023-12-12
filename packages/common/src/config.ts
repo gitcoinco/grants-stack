@@ -100,6 +100,12 @@ export function getConfig(): Config {
         [ChainId.POLYGON_MUMBAI]: z
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API),
+        [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_ZKSYNC_ERA_TESTNET_API),
+        [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_ZKSYNC_ERA_MAINNET_API),
       },
     },
     pinata: {
