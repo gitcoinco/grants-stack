@@ -102,12 +102,12 @@ export const CHAINS: Record<
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: {
     id: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
     name: "zkSync Era Testnet",
-    logo: "./logos/zksync-logo.svg",
+    logo: "./logos/zkSync.svg",
   },
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
     id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
     name: "zkSync Era Mainnet",
-    logo: "./logos/zksync-logo.svg",
+    logo: "./logos/zkSync.svg",
   },
 };
 
@@ -124,6 +124,9 @@ export const TokenNamesAndLogos = {
   AVAX: "./logos/avax-logo.svg",
   MATIC: "./logos/pol-logo.svg",
   TEST: "./logos/dai-logo.svg",
+  USDT: "./logos/usdc-logo.svg",
+  LUSD: "./logos/lusd-logo.svg",
+  MUTE: "./logos/mute-logo.svg",
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -290,6 +293,36 @@ const ZKSYNC_ERA_MAINNET_TOKENS: VotingToken[] = [
     decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "USDT",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDT"],
+    redstoneTokenId: RedstoneTokenIds["USDT"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "LUSD",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x503234F203fC7Eb888EEC8513210612a43Cf6115",
+    decimal: 18,
+    logo: TokenNamesAndLogos["USDT"],
+    redstoneTokenId: RedstoneTokenIds["USDT"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "MUTE",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x0e97C7a0F8B2C9885C8ac9fC6136e829CbC21d42",
+    decimal: 18,
+    logo: TokenNamesAndLogos["MUTE"],
+    redstoneTokenId: RedstoneTokenIds["MUTE"],
     defaultForVoting: false,
     canVote: true,
   },

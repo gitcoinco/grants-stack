@@ -20,11 +20,14 @@ import {
   avalanche,
   polygon,
   polygonMumbai,
-  zkSync,
-  zkSyncTestnet,
 } from "wagmi/chains";
 
-import { pgn, pgnTestnet } from "common/src/chains";
+import {
+  pgn,
+  pgnTestnet,
+  zkSyncEraMainnet,
+  zkSyncEraTestnet,
+} from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -32,11 +35,11 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 const testnetChains = () => {
   return [
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
+    zkSyncEraTestnet,
     pgnTestnet,
     arbitrumGoerli,
     polygonMumbai,
     avalancheFuji,
-    zkSyncTestnet,
   ];
 };
 
@@ -48,7 +51,7 @@ const mainnetChains = () => {
     arbitrum,
     avalanche,
     polygon,
-    zkSync,
+    zkSyncEraMainnet,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
   ];
 };

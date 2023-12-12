@@ -123,6 +123,9 @@ export const TokenNamesAndLogos = {
   MATIC: "/logos/pol-logo.svg",
   CVP: "/logos/power-pool.png", // PowerPool
   TEST: "/logos/dai-logo.svg",
+  USDT: "/logos/usdt-logo.svg",
+  LUSD: "/logos/lusd-logo.svg",
+  MUTE: "/logos/mute-logo.svg",
 } as const;
 
 const MAINNET_TOKENS: PayoutToken[] = [
@@ -276,6 +279,30 @@ const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
+  },
+  {
+    name: "USDT",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDT"],
+    redstoneTokenId: RedstoneTokenIds["USDT"],
+  },
+  {
+    name: "LUSD",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x503234F203fC7Eb888EEC8513210612a43Cf6115",
+    decimal: 18,
+    logo: TokenNamesAndLogos["LUSD"],
+    redstoneTokenId: RedstoneTokenIds["LUSD"],
+  },
+  {
+    name: "MUTE",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x0e97C7a0F8B2C9885C8ac9fC6136e829CbC21d42",
+    decimal: 18,
+    logo: TokenNamesAndLogos["MUTE"],
+    redstoneTokenId: RedstoneTokenIds["MUTE"],
   },
 ];
 

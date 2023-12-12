@@ -1,5 +1,6 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
+import zkSyncIcon from "./icons/zkSync.svg";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,
@@ -104,6 +105,7 @@ export const avalanche: Chain = {
 
 export const zkSyncEraTestnet: Chain = {
   ...zkSyncTestnetOriginal,
+  iconUrl: zkSyncIcon,
   rpcUrls: {
     default: {
       http: ["https://testnet.era.zksync.dev"],
@@ -116,6 +118,7 @@ export const zkSyncEraTestnet: Chain = {
 
 export const zkSyncEraMainnet: Chain = {
   ...zkSyncOriginal,
+  iconUrl: zkSyncIcon,
   rpcUrls: {
     default: {
       http: ["https://mainnet.era.zksync.io"],
