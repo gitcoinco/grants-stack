@@ -1,6 +1,6 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
-import zkSyncIcon from "./icons/zkSync.svg";
+import zkSyncIcon from "./icons/zksync-logo.svg";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,

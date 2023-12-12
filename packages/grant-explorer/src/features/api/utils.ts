@@ -102,12 +102,12 @@ export const CHAINS: Record<
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: {
     id: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
     name: "zkSync Era Testnet",
-    logo: "./logos/zkSync.svg",
+    logo: "./logos/zksync-logo.svg",
   },
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
     id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
     name: "zkSync Era Mainnet",
-    logo: "./logos/zkSync.svg",
+    logo: "./logos/zksync-logo.svg",
   },
 };
 
