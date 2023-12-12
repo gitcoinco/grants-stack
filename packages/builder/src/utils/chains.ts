@@ -55,6 +55,7 @@ const stagingChains = [
   polygonMumbai,
   avalanche,
   avalancheFuji,
+  zkSyncEraMainnet,
   zkSyncEraTestnet,
 ];
 
