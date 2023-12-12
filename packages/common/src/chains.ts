@@ -1,5 +1,6 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
+import BaseLogo from "./icons/base-logo.svg";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,
@@ -53,6 +54,7 @@ export const avalancheFuji: Chain = {
 
 export const base: Chain = {
   ...baseOriginal,
+  iconUrl: BaseLogo,
   rpcUrls: {
     default: {
       http: ["https://mainnet.base.org/"],

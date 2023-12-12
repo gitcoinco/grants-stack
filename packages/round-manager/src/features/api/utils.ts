@@ -84,7 +84,7 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
   [ChainId.BASE]: {
     id: ChainId.BASE,
     name: "Base",
-    logo: "/logos/ethereum-eth-logo.svg",
+    logo: "/logos/base-logo.svg",
   },
 };
 
