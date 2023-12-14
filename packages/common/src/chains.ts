@@ -56,6 +56,10 @@ export const base: Chain = {
   ...baseOriginal,
   iconUrl: BaseLogo,
   rpcUrls: {
+    alchemy: {
+      http: ["https://base-mainnet.g.alchemy.com/v2/"],
+      webSocket: ["wss://base-mainnet.g.alchemy.com/v2/"],
+    },
     default: {
       http: ["https://mainnet.base.org/"],
     },
