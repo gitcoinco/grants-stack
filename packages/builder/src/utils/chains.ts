@@ -48,6 +48,7 @@ const stagingChains = [
   pgnTestnet,
   pgn,
   arbitrum,
+  base,
   arbitrumGoerli,
   customPolygon,
   polygonMumbai,
