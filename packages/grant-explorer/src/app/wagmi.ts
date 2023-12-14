@@ -7,7 +7,6 @@ import {
 import {
   coinbaseWallet,
   injectedWallet,
-  walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createConfig } from "wagmi";
@@ -38,7 +37,6 @@ const connectors = connectorsForWallets([
     groupName: "Recommended",
     wallets: [
       injectedWallet({ chains }),
-      walletConnectWallet({ chains, projectId }),
       coinbaseWallet({ appName: "Gitcoin Explorer", chains }),
       metaMaskWallet({ chains, projectId }),
     ],
