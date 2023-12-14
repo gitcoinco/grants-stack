@@ -12,6 +12,8 @@ import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
 
+const config = getConfig();
+
 export const fantom: Chain = {
   ...fantomOriginal,
   rpcUrls: {
@@ -61,7 +63,9 @@ export const base: Chain = {
       webSocket: ["wss://base-mainnet.g.alchemy.com/v2/"],
     },
     default: {
-      http: ["https://mainnet.base.org/"],
+      http: [
+        `https://base-mainnet.g.alchemy.com/v2/${config.blockchain.alchemyId}`,
+      ],
     },
     public: {
       http: ["https://mainnet.base.org/"],
@@ -135,8 +139,6 @@ export const pgn: Chain = {
     },
   },
 };
-
-const config = getConfig();
 
 export const customOptimism = {
   id: 10,
