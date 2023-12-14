@@ -1,7 +1,6 @@
 import { Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { PGN as PGNLogoIcon } from "common/src/icons/PGN";
 import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
 import { grantsPath, newGrantPath } from "../routes";
@@ -53,7 +52,6 @@ export default function Header() {
                 New Project
               </Button>
             </Link>
-            <ConnectButton />
             <a
               href="https://bridge.gitcoin.co"
               target="_blank"
