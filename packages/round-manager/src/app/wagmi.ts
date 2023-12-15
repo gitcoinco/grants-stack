@@ -4,6 +4,7 @@ import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   injectedWallet,
+  walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { createClient, configureChains } from "wagmi";
@@ -79,6 +80,7 @@ const connectors = connectorsForWallets([
     groupName: "Recommended",
     wallets: [
       injectedWallet({ chains }),
+      walletConnectWallet({ chains, projectId }),
       coinbaseWallet({ appName: "Gitcoin Round Manager", chains }),
       metaMaskWallet({ chains, projectId }),
     ],
