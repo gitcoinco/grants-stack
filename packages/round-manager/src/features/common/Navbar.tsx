@@ -5,6 +5,7 @@ import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
 import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dark.svg";
 import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo-dark.svg";
 import { Button } from "common/src/styles";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export interface NavbarProps {
   programCta?: boolean;
@@ -49,6 +50,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
                 </Link>
               )}
             </div>
+            <ConnectButton />
             <div>
               <a
                 href="https://bridge.gitcoin.co"
