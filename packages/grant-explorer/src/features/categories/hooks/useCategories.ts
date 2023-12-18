@@ -17,15 +17,18 @@ export const useCategory = (
 ): SWRResponse<SearchBasedProjectCategory | undefined> => {
   const dataLayer = useDataLayer();
 
-  return useSWR(["categories"], async () => {
+  return useSWR(id === null ? null : ["categories"], async () => {
     if (id === null) {
-      return undefined;
-    } else {
-      const { category } = await dataLayer.query({
-        type: "search-based-project-category",
-        id,
-      });
-      return category === null ? undefined : category;
+      // The first argument to useSRW will ensure that this function never gets
+      // called if options is `null`. If it's still called, we fail early and
+      // clearly.
+      throw new Error("Bug");
     }
+
+    const { category } = await dataLayer.query({
+      type: "search-based-project-category",
+      id,
+    });
+    return category === null ? undefined : category;
   });
 };

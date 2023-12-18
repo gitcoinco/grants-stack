@@ -30,7 +30,6 @@ export const useCollection = (
       id,
     });
 
-    // TODObard return null instead of undefined if not found
     return collection === null ? undefined : collection;
   });
 };
