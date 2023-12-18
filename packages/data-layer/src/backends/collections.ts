@@ -51,7 +51,9 @@ export const getCollections = async (opts?: {
 
       return collections;
     } catch (err) {
-      // TODO decide whether to throw or fall back
+      // Return hardcoded collections in case there is an error accessing online
+      // data.  TODO review this choice (should we log the error? should we
+      // surface the error? should we return empty collections?)
       return COLLECTIONS_HARDCODED.map(ensureAddressIsInChecksumFormat);
     }
   } else {

@@ -31,6 +31,9 @@ export function useApplications(options: ApplicationFetchOptions | null) {
     (pageIndex) =>
       options === null ? null : [pageIndex, options, "/applications"],
     async ([pageIndex]) => {
+      // The first argument to useSRWInfinite will ensure that this function
+      // never gets called if options is `null`. If it's still called, we fail
+      // early and clearly.
       if (options === null) {
         throw new Error("Bug");
       }

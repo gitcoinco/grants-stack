@@ -6,7 +6,7 @@ export const COLLECTIONS_HARDCODED: Collection[] = [
     author: "Gitcoin",
     name: "First Time Grantees",
     images: [
-      // TODO: make into absolute URLs
+      // TODO: ideally these should be external, absolute URLs.
       "/assets/collections/collection_01.jpg",
       "/assets/collections/collection_02.jpg",
       "/assets/collections/collection_03.jpg",
@@ -14,7 +14,6 @@ export const COLLECTIONS_HARDCODED: Collection[] = [
     ],
     description:
       "This collection showcases all grantees in GG19 that have not participated in a past round on Grants Stack! Give these first-time grantees some love (and maybe some donations, too!).",
-    // TODO rename ot applicationRefs
     applicationRefs: [
       "10:0x36f548e082b09b0cec5b3f5a7b78953c75de5e74:2",
       "10:0x36f548e082b09b0cec5b3f5a7b78953c75de5e74:8",

@@ -20,7 +20,9 @@ export const useCollection = (
 
   return useSWR(id === null ? null : ["collections", id], async () => {
     if (id === null) {
-      // Type narrowing only. Should never happen as long as `null` is passed as the first argument to `useSWR` to enable conditional fetching.
+      // The first argument to useSRW will ensure that this function never gets
+      // called if options is `null`. If it's still called, we fail early and
+      // clearly.
       throw new Error("Bug");
     }
     const { collection } = await dataLayer.query({
