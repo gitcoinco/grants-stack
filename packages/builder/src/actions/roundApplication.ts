@@ -18,7 +18,7 @@ import { getProjectURIComponents, metadataToProject } from "../utils/utils";
 import { fetchProjectApplications } from "./projects";
 import { graphqlFetch } from "../utils/graphql";
 
-const LitJsSdk = isJestRunning() ? null : require("gitcoinco-lit-js-sdk");
+const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
