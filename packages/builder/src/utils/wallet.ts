@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import PGNIcon from "common/src/icons/PublicGoodsNetwork.svg";
 import AVAXIcon from "common/src/icons/AVAX.svg";
 import POLIcon from "common/src/icons/pol-logo.svg";
-import ZKSYNCICON from "common/src/icons/zksync-logo.svg";
+import ZkSyncIcon from "common/src/icons/zksync-logo.svg";
 import FantomFTMLogo from "common/src/assets/fantom-ftm-logo.png";
 import {
   EthDiamondGlyph,
@@ -65,8 +65,8 @@ export const networkIcon: { [key in ChainName]: string } = {
   fuji: AVAXIcon,
   polygon: POLIcon,
   polygonMumbai: POLIcon,
-  zkSyncEraMainnet: ZKSYNCICON,
-  zkSyncEraTestnet: ZKSYNCICON,
+  zkSyncEraMainnet: ZkSyncIcon,
+  zkSyncEraTestnet: ZkSyncIcon,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -85,8 +85,8 @@ export const payoutIcon: { [key in ChainName]: string } = {
   polygonMumbai: POLIcon,
   avalanche: AVAXIcon,
   fuji: AVAXIcon,
-  zkSyncEraMainnet: ZKSYNCICON,
-  zkSyncEraTestnet: ZKSYNCICON,
+  zkSyncEraMainnet: ZkSyncIcon,
+  zkSyncEraTestnet: ZkSyncIcon,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {
