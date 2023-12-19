@@ -35,8 +35,12 @@ export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
-  const { projects, getVotingTokenForChain, chainToVotingToken } =
-    useCartStorage();
+  const {
+    projects,
+    getVotingTokenForChain,
+    chainToVotingToken,
+    remove: removeProjectFromCart,
+  } = useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
   const dataLayer = useDataLayer();
 
@@ -127,6 +131,25 @@ export function SummaryContainer() {
       })
     );
   });
+
+  /** useEffect to clear projects from expired rounds (no longer accepting donations) */
+  useEffect(() => {
+    if (!rounds) {
+      return;
+    }
+    /*get rounds that have expired */
+    const expiredRounds = rounds
+      .filter((round) => round.roundEndTime.getTime() < Date.now())
+      .map((round) => round.id)
+      .filter((id): id is string => id !== undefined);
+
+    const expiredProjects = projects.filter((project) =>
+      expiredRounds.includes(project.roundId)
+    );
+    expiredProjects.forEach((project) => {
+      removeProjectFromCart(project.grantApplicationId);
+    });
+  }, [projects, removeProjectFromCart, rounds]);
 
   const [clickedSubmit, setClickedSubmit] = useState(false);
 
