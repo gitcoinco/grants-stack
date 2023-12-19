@@ -4,7 +4,7 @@ import {
   truncateDescription,
 } from "common";
 import { RoundOverview, useMetadata } from "../api/rounds";
-import { CHAINS, getDaysLeft } from "../api/utils";
+import { CHAINS, getDaysLeft, getRoundPhase } from "../api/utils";
 import {
   Badge,
   BasicCard,
@@ -44,10 +44,26 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
   } = round ?? {};
 
   const { data: metadata, isLoading } = useMetadata(roundMetaPtr?.pointer);
-  const roundEndsIn = getDaysLeft(roundEndTime);
-  const roundStartsIn = getDaysLeft(roundStartTime);
-  const applicationsStartsIn = getDaysLeft(applicationsStartTime);
-  const applicationsEndsIn = getDaysLeft(applicationsEndTime);
+
+  const roundEndsIn =
+    roundEndTime === undefined ? undefined : getDaysLeft(roundEndTime);
+  const roundStartsIn =
+    roundStartTime === undefined ? undefined : getDaysLeft(roundStartTime);
+  const applicationsStartsIn =
+    applicationsStartTime === undefined
+      ? undefined
+      : getDaysLeft(applicationsStartTime);
+  const applicationsEndsIn =
+    applicationsEndTime === undefined
+      ? undefined
+      : getDaysLeft(applicationsEndTime);
+
+  const roundPhase = getRoundPhase({
+    roundStartTimeInSecsStr: roundStartTime,
+    roundEndTimeInSecsStr: roundEndTime,
+    applicationsEndTimeInSecsStr: applicationsEndTime,
+    currentTimeMs: Date.now(),
+  });
 
   const approvedApplicationsCount = projects?.length ?? 0;
 
@@ -78,10 +94,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
-          <RoundTimeBadge
-            roundEndsIn={roundEndsIn}
-            applicationsEndsIn={applicationsEndsIn}
-          />
+          <RoundTimeBadge roundPhase={roundPhase} />
           <CardTitle
             data-testid="round-name"
             className="absolute bottom-1 px-2 text-white"

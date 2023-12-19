@@ -605,19 +605,20 @@ export const pinToIPFS = (obj: IPFSObject) => {
   }
 };
 
-export const getDaysLeft = (fromTimestamp?: string) => {
+export const getDaysLeft = (fromNowToTimestampStr: string) => {
+  const targetTimestamp = Number(fromNowToTimestampStr);
+
   // Some timestamps are returned as overflowed (1.15e+77)
   // We parse these into undefined to show as "No end date" rather than make the date diff calculation
-  if (
-    fromTimestamp === undefined ||
-    Number(fromTimestamp) > Number.MAX_SAFE_INTEGER
-  ) {
+  if (targetTimestamp > Number.MAX_SAFE_INTEGER) {
     return undefined;
   }
-  const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
+
+  // TODO replace with differenceInCalendarDays from 'date-fns'
+  const currentTimestampInSeconds = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day
 
-  const differenceInSeconds = Number(fromTimestamp) - currentTimestamp;
+  const differenceInSeconds = targetTimestamp - currentTimestampInSeconds;
   const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
 
   return differenceInDays;
@@ -720,3 +721,46 @@ export function dateFromMs(ms: number) {
     dateStyle: "medium",
   }).format(date);
 }
+
+export const getRoundPhase = ({
+  roundStartTimeInSecsStr,
+  roundEndTimeInSecsStr,
+  applicationsEndTimeInSecsStr,
+  currentTimeMs,
+}: {
+  roundStartTimeInSecsStr: string | undefined;
+  roundEndTimeInSecsStr: string | undefined;
+  applicationsEndTimeInSecsStr: string | undefined;
+  currentTimeMs: number;
+}): undefined | "accepting-applications" | "active" | "ended" => {
+  const roundStartTimeMs =
+    roundStartTimeInSecsStr === undefined
+      ? undefined
+      : Number(roundStartTimeInSecsStr) * 1000;
+  const roundEndTimeMs =
+    roundEndTimeInSecsStr === undefined
+      ? undefined
+      : Number(roundEndTimeInSecsStr) * 1000;
+  const applicationsEndTimeMs =
+    applicationsEndTimeInSecsStr === undefined
+      ? undefined
+      : Number(applicationsEndTimeInSecsStr) * 1000;
+
+  switch (true) {
+    case roundStartTimeMs !== undefined &&
+      roundEndTimeMs !== undefined &&
+      currentTimeMs > roundStartTimeMs &&
+      currentTimeMs < roundEndTimeMs: {
+      return "active";
+    }
+    case roundEndTimeMs !== undefined && currentTimeMs > roundEndTimeMs: {
+      return "ended";
+    }
+    case applicationsEndTimeMs !== undefined &&
+      currentTimeMs < applicationsEndTimeMs: {
+      return "accepting-applications";
+    }
+    default:
+      return undefined;
+  }
+};
