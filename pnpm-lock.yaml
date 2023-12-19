@@ -330,7 +330,7 @@ importers:
     dependencies:
       '@ethersproject/providers':
         specifier: ^5.7.2
-        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+        version: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@rainbow-me/rainbowkit':
         specifier: ^0.12.16
         version: 0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.19)
@@ -542,7 +542,7 @@ importers:
         version: 5.7.0
       '@ethersproject/providers':
         specifier: ^5.7.2
-        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+        version: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@gitcoinco/passport-sdk-verifier':
         specifier: ^0.2.2
         version: 0.2.2
@@ -849,7 +849,7 @@ importers:
         version: 5.7.0
       '@ethersproject/providers':
         specifier: ^5.7.2
-        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+        version: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@gitcoinco/passport-sdk-verifier':
         specifier: ^0.1.2
         version: 0.1.2
@@ -950,8 +950,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       lit-js-sdk-old-w-pgn:
-        specifier: ^1.1.251
-        version: 1.1.252
+        specifier: ^1.1.253
+        version: 1.1.253
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -4988,7 +4988,7 @@ packages:
     dependencies:
       '@ethersproject/logger': 5.7.0
 
-  /@ethersproject/providers@5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10):
+  /@ethersproject/providers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-g34EWZ1WWAVgr4aptGlVBF8mhl3VWjv+8hoAnzStu8Ah22VHBsuGzP17eb6xDVRzw895G4W7vvx60lFFur/1Rg==}
     dependencies:
       '@ethersproject/abstract-provider': 5.7.0
@@ -5010,7 +5010,7 @@ packages:
       '@ethersproject/transactions': 5.7.0
       '@ethersproject/web': 5.7.1
       bech32: 1.1.4
-      ws: 7.4.6(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 7.4.6(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -5572,20 +5572,6 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
-
-  /@json-rpc-tools/provider@1.7.6(bufferutil@4.0.7)(utf-8-validate@5.0.10):
-    resolution: {integrity: sha512-z7D3xvJ33UfCGv77n40lbzOYjZKVM3k2+5cV7xS8G6SCvKTzMkhkUYuD/qzQUNT4cG/lv0e9mRToweEEVLVVmA==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-    dependencies:
-      '@json-rpc-tools/utils': 1.7.6
-      axios: 0.21.4(debug@4.3.4)
-      safe-json-utils: 1.1.1
-      ws: 7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - utf-8-validate
-    dev: false
 
   /@json-rpc-tools/provider@1.7.6(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-z7D3xvJ33UfCGv77n40lbzOYjZKVM3k2+5cV7xS8G6SCvKTzMkhkUYuD/qzQUNT4cG/lv0e9mRToweEEVLVVmA==}
@@ -7143,7 +7129,7 @@ packages:
     dependencies:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/bytes': 5.7.0
-      '@ethersproject/providers': 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@ethersproject/providers': 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       ethers: 5.7.2
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@4.9.5)
@@ -8587,36 +8573,12 @@ packages:
       detect-browser: 5.2.0
     dev: false
 
-  /@walletconnect/client@1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
-    resolution: {integrity: sha512-svyBQ14NHx6Cs2j4TpkQaBI/2AF4+LXz64FojTjMtV4VMMhl81jSO1vNeg+yYhQzvjcGH/GpSwixjyCW0xFBOQ==}
-    deprecated: 'WalletConnect''s v1 SDKs are now deprecated. Please upgrade to a v2 SDK. For details see: https://docs.walletconnect.com/'
-    dependencies:
-      '@walletconnect/core': 1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-      '@walletconnect/iso-crypto': 1.8.0
-      '@walletconnect/types': 1.8.0
-      '@walletconnect/utils': 1.8.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
-
   /@walletconnect/client@1.8.0(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-svyBQ14NHx6Cs2j4TpkQaBI/2AF4+LXz64FojTjMtV4VMMhl81jSO1vNeg+yYhQzvjcGH/GpSwixjyCW0xFBOQ==}
     deprecated: 'WalletConnect''s v1 SDKs are now deprecated. Please upgrade to a v2 SDK. For details see: https://docs.walletconnect.com/'
     dependencies:
       '@walletconnect/core': 1.8.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@walletconnect/iso-crypto': 1.8.0
-      '@walletconnect/types': 1.8.0
-      '@walletconnect/utils': 1.8.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
-
-  /@walletconnect/core@1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
-    resolution: {integrity: sha512-aFTHvEEbXcZ8XdWBw6rpQDte41Rxwnuk3SgTD8/iKGSRTni50gI9S3YEzMj05jozSiOBxQci4pJDMVhIUMtarw==}
-    dependencies:
-      '@walletconnect/socket-transport': 1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       '@walletconnect/types': 1.8.0
       '@walletconnect/utils': 1.8.0
     transitivePeerDependencies:
@@ -8738,17 +8700,17 @@ packages:
       tslib: 1.14.1
     dev: false
 
-  /@walletconnect/ethereum-provider@1.7.8(bufferutil@4.0.7)(utf-8-validate@5.0.10):
+  /@walletconnect/ethereum-provider@1.7.8(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-dnl560zFMdK/LD4MD2XwHbWj7RXOaeXWPc9jzDaosLQLAXfA5mKe4XbCFFUPbVMYuyBdRI9NZv3Ci/qDb5wncQ==}
     deprecated: 'WalletConnect''s v1 SDKs are now deprecated. Please upgrade to a v2 SDK. For details see: https://docs.walletconnect.com/'
     dependencies:
-      '@walletconnect/client': 1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@walletconnect/client': 1.8.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@walletconnect/jsonrpc-http-connection': 1.0.7
       '@walletconnect/jsonrpc-provider': 1.0.13
-      '@walletconnect/signer-connection': 1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@walletconnect/signer-connection': 1.8.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@walletconnect/types': 1.8.0
       '@walletconnect/utils': 1.8.0
-      eip1193-provider: 1.0.1(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      eip1193-provider: 1.0.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       eventemitter3: 4.0.7
     transitivePeerDependencies:
       - bufferutil
@@ -8918,7 +8880,7 @@ packages:
       '@walletconnect/safe-json': 1.0.2
       events: 3.3.0
       tslib: 1.14.1
-      ws: 7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 7.5.9(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8931,7 +8893,7 @@ packages:
       '@walletconnect/safe-json': 1.0.2
       events: 3.3.0
       tslib: 1.14.1
-      ws: 7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 7.5.9(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -9156,20 +9118,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@walletconnect/signer-connection@1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
-    resolution: {integrity: sha512-+YAaTAP52MWZJ2wWnqKClKCPlPHBo6reURFe0cWidLADh9mi/kPWGALZ5AENK22zpem1bbKV466rF5Rzvu0ehA==}
-    dependencies:
-      '@walletconnect/client': 1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-      '@walletconnect/jsonrpc-types': 1.0.3
-      '@walletconnect/jsonrpc-utils': 1.0.8
-      '@walletconnect/qrcode-modal': 1.8.0
-      '@walletconnect/types': 1.8.0
-      eventemitter3: 4.0.7
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
-
   /@walletconnect/signer-connection@1.8.0(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-+YAaTAP52MWZJ2wWnqKClKCPlPHBo6reURFe0cWidLADh9mi/kPWGALZ5AENK22zpem1bbKV466rF5Rzvu0ehA==}
     dependencies:
@@ -9179,17 +9127,6 @@ packages:
       '@walletconnect/qrcode-modal': 1.8.0
       '@walletconnect/types': 1.8.0
       eventemitter3: 4.0.7
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
-
-  /@walletconnect/socket-transport@1.8.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
-    resolution: {integrity: sha512-5DyIyWrzHXTcVp0Vd93zJ5XMW61iDM6bcWT4p8DTRfFsOtW46JquruMhxOLeCOieM4D73kcr3U7WtyR4JUsGuQ==}
-    dependencies:
-      '@walletconnect/types': 1.8.0
-      '@walletconnect/utils': 1.8.0
-      ws: 7.5.3(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -10687,13 +10624,6 @@ packages:
       base64-js: 1.5.1
       ieee754: 1.2.1
     dev: false
-
-  /bufferutil@4.0.7:
-    resolution: {integrity: sha512-kukuqc39WOHtdxtw4UScxF/WVnMFVSQVKhtx3AjZJzhd0RGZZldcrfSEbVsWWe6KNH253574cq5F+wpv0G9pJw==}
-    engines: {node: '>=6.14.2'}
-    requiresBuild: true
-    dependencies:
-      node-gyp-build: 4.6.1
 
   /bufferutil@4.0.8:
     resolution: {integrity: sha512-4T53u4PdgsXqKaIctwF8ifXlRTTmEPJ8iEPWFdGZvcf7sbwYo6FKFEX9eNNAnzFZ7EzJAQ3CJeOtCRA4rDp7Pw==}
@@ -12337,16 +12267,6 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /eip1193-provider@1.0.1(bufferutil@4.0.7)(utf-8-validate@5.0.10):
-    resolution: {integrity: sha512-kSuqwQ26d7CzuS/t3yRXo2Su2cVH0QfvyKbr2H7Be7O5YDyIq4hQGCNTo5wRdP07bt+E2R/8nPCzey4ojBHf7g==}
-    dependencies:
-      '@json-rpc-tools/provider': 1.7.6(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - utf-8-validate
-    dev: false
-
   /eip1193-provider@1.0.1(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-kSuqwQ26d7CzuS/t3yRXo2Su2cVH0QfvyKbr2H7Be7O5YDyIq4hQGCNTo5wRdP07bt+E2R/8nPCzey4ojBHf7g==}
     dependencies:
@@ -13689,7 +13609,7 @@ packages:
       '@ethersproject/networks': 5.7.1
       '@ethersproject/pbkdf2': 5.7.0
       '@ethersproject/properties': 5.7.0
-      '@ethersproject/providers': 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@ethersproject/providers': 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@ethersproject/random': 5.7.0
       '@ethersproject/rlp': 5.7.0
       '@ethersproject/sha2': 5.7.0
@@ -14498,7 +14418,7 @@ packages:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0
       '@ethersproject/hash': 5.7.0
-      '@ethersproject/providers': 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@ethersproject/providers': 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@ethersproject/strings': 5.7.0
       '@ethersproject/units': 5.7.0
       '@ethersproject/wallet': 5.7.0
@@ -14722,7 +14642,7 @@ packages:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/constants': 5.7.0
       '@ethersproject/contracts': 5.7.0
-      '@ethersproject/providers': 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@ethersproject/providers': 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@ethersproject/solidity': 5.7.0
       '@ethersproject/transactions': 5.7.0
       '@ethersproject/wallet': 5.7.0
@@ -16103,7 +16023,7 @@ packages:
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 7.5.9(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     dev: false
 
   /isomorphic-ws@5.0.0(ws@8.13.0):
@@ -16343,7 +16263,7 @@ packages:
       buffer: 6.0.3
       event-iterator: 2.0.0
       iso-url: 1.2.1
-      ws: 7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 7.5.9(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16397,7 +16317,7 @@ packages:
       isomorphic-ws: 4.0.1(ws@7.5.9)
       json-stringify-safe: 5.0.1
       uuid: 8.3.2
-      ws: 7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 7.5.9(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -17053,7 +16973,7 @@ packages:
       whatwg-encoding: 1.0.5
       whatwg-mimetype: 2.3.0
       whatwg-url: 8.7.0
-      ws: 7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 7.5.9(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       xml-name-validator: 3.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -17842,19 +17762,19 @@ packages:
       '@types/trusted-types': 2.0.3
     dev: false
 
-  /lit-js-sdk-old-w-pgn@1.1.252:
-    resolution: {integrity: sha512-xa3xu3+1HGNk7LhzX9SP+u75TbG8iAuQBPL++RGYRwi3bgIZq3CApAC502QRwqP0eMx/3OOXDUBMqXV0/PMAjQ==}
+  /lit-js-sdk-old-w-pgn@1.1.253:
+    resolution: {integrity: sha512-aK/C/MLWEz/byNrofiyNfApojPyw6F/LgB90VXfLJ0gpnolTizFtSiPAn8mvRyq8Yg8mnPvIH7hBvhHgFuhqyg==}
     dependencies:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0
       '@ethersproject/hash': 5.7.0
-      '@ethersproject/providers': 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@ethersproject/providers': 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@ethersproject/strings': 5.7.0
       '@ethersproject/units': 5.7.0
       '@ethersproject/wallet': 5.7.0
-      '@walletconnect/ethereum-provider': 1.7.8(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@walletconnect/ethereum-provider': 1.7.8(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       buffer: 6.0.3
-      bufferutil: 4.0.7
+      bufferutil: 4.0.8
       cross-blob: 3.0.2
       jszip: 3.10.1
       lit-connect-modal: 0.1.11
@@ -17880,7 +17800,7 @@ packages:
     dependencies:
       '@ethersproject/contracts': 5.7.0
       '@ethersproject/hash': 5.7.0
-      '@ethersproject/providers': 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      '@ethersproject/providers': 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@ethersproject/wallet': 5.7.0
       '@spruceid/siwe-parser': 1.1.3
       '@stablelib/random': 1.0.2
@@ -24834,7 +24754,7 @@ packages:
       signal-exit: 3.0.7
       typedarray-to-buffer: 3.1.5
 
-  /ws@7.4.6(bufferutil@4.0.7)(utf-8-validate@5.0.10):
+  /ws@7.4.6(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-YmhHDO4MzaDLB+M9ym/mDA5z0naX8j7SIlT8f8z+I0VtzsRbekxEutHSme7NPS2qE8StCYQNUnfWdXta/Yu85A==}
     engines: {node: '>=8.3.0'}
     peerDependencies:
@@ -24846,24 +24766,8 @@ packages:
       utf-8-validate:
         optional: true
     dependencies:
-      bufferutil: 4.0.7
+      bufferutil: 4.0.8
       utf-8-validate: 5.0.10
-
-  /ws@7.5.3(bufferutil@4.0.7)(utf-8-validate@5.0.10):
-    resolution: {integrity: sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==}
-    engines: {node: '>=8.3.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    dependencies:
-      bufferutil: 4.0.7
-      utf-8-validate: 5.0.10
-    dev: false
 
   /ws@7.5.3(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==}
@@ -24881,21 +24785,6 @@ packages:
       utf-8-validate: 5.0.10
     dev: false
 
-  /ws@7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10):
-    resolution: {integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==}
-    engines: {node: '>=8.3.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    dependencies:
-      bufferutil: 4.0.7
-      utf-8-validate: 5.0.10
-
   /ws@7.5.9(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==}
     engines: {node: '>=8.3.0'}
@@ -24910,7 +24799,6 @@ packages:
     dependencies:
       bufferutil: 4.0.8
       utf-8-validate: 5.0.10
-    dev: false
 
   /ws@8.11.0:
     resolution: {integrity: sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg==}
