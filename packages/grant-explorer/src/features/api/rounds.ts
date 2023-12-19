@@ -1,10 +1,10 @@
-import useSWR, { useSWRConfig, Cache } from "swr";
-import { ChainId, RoundPayoutType, graphql_fetch } from "common";
+import useSWR, { useSWRConfig, Cache, SWRResponse } from "swr";
+import { ChainId, RoundPayoutType } from "common";
 import { __deprecated_RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
 import { __deprecated_fetchFromIPFS, useDebugMode } from "./utils";
-import { getEnabledChains } from "../../app/chainConfig";
 import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
+import { useDataLayer } from "data-layer";
 
 const validRounds = [
   "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
@@ -39,7 +39,7 @@ const invalidRounds = [
   "0x822742805c0596e883aba99ba2f3117e8c49b94a",
 ].map((a) => a.toLowerCase());
 
-export type RoundOverview = {
+export type __deprecated_RoundOverview = {
   id: string;
   chainId: ChainId;
   createdAt: string;
@@ -59,7 +59,7 @@ export type RoundOverview = {
   };
 };
 
-export type RoundsVariables = {
+export type __deprecated_RoundsQueryVariables = {
   first?: number;
   orderBy?:
     | "createdAt"
@@ -71,12 +71,13 @@ export type RoundsVariables = {
   orderDirection?: "asc" | "desc";
   where?: {
     and: [
-      { or: TimestampVariables[] },
+      { or: __deprecated_TimestampVariables[] },
       { payoutStrategy_?: { or: { strategyName: string }[] } },
     ];
   };
 };
-export type TimestampVariables = {
+
+export type __deprecated_TimestampVariables = {
   applicationsStartTime_lte?: string;
   applicationsEndTime_gt?: string;
   applicationsEndTime_lt?: string;
@@ -88,123 +89,71 @@ export type TimestampVariables = {
   roundEndTime_lt?: string;
 };
 
-export const getEnabledChainsIds = (): ChainId[] =>
-  getEnabledChains().map((chain) => chain.id);
-
-const ROUNDS_QUERY = `
-query GetRounds(
-  $first: Int, 
-  $orderBy: String,
-  $orderDirection: String,
-  $where: Round_filter,
-  $currentTimestamp: String
-  ) {
-    rounds(first: $first,
-      orderBy: $orderBy,
-      orderDirection: $orderDirection,
-      where: $where
-    ) {
-      id
-      roundMetaPtr {
-        protocol
-        pointer
-      }
-      applicationsStartTime
-      applicationsEndTime
-      roundStartTime
-      roundEndTime
-      matchAmount
-      token
-      payoutStrategy {
-        id
-        strategyName
-      }
-      projects(
-        first: 1000
-        where:{ status: 1 }
-      ) {
-        id
-      }
-    }
-}
-`;
-
-export function useRounds(
-  variables: RoundsVariables,
-  chainIds: ChainId[] = getEnabledChainsIds()
-) {
+export const useRounds = (
+  variables: __deprecated_RoundsQueryVariables,
+  chainIds: ChainId[]
+): SWRResponse<__deprecated_RoundOverview[]> => {
   const { cache, mutate } = useSWRConfig();
-  const debugModeEnabled = useDebugMode();
+  const isDebugModeEnabled = useDebugMode();
+  const dataLayer = useDataLayer();
 
-  const mergedVariables = {
-    ...variables,
-    // We need to overfetch these because many will be filtered out from the metadata.roundType === "public"
-    // The `first` param in the arguments will instead be used last to limit the results returned
-    first: 100,
+  const prewarmSwrCacheWithRoundsMetadata = async (
+    rounds: __deprecated_RoundOverview[]
+  ): Promise<void> => {
+    const roundsWithUncachedMetadata = rounds.filter(
+      (round) =>
+        cache.get(`@"metadata","${round.roundMetaPtr.pointer}",`) === undefined
+    );
+
+    const uncachedMetadata = await Promise.all(
+      roundsWithUncachedMetadata.map(async (round) => {
+        const cid = round.roundMetaPtr.pointer;
+        const metadata = await __deprecated_fetchFromIPFS(cid);
+        return [cid, metadata];
+      })
+    );
+
+    for (const [cid, metadata] of uncachedMetadata) {
+      mutate(["metadata", cid], metadata);
+    }
+
+    if (roundsWithUncachedMetadata.length > 0) {
+      // clear rounds cache
+      mutate(["rounds", chainIds, variables]);
+    }
   };
 
   const query = useSWR(
-    // Cache requests on chainIds and variables as keys (when these are the same, cache will be used instead of new requests)
+    // Cache requests on chainIds and variables as keys (when these are the
+    // same, cache will be used instead of new requests)
     ["rounds", chainIds, variables],
-    () =>
-      Promise.all(
-        chainIds.flatMap((chainId) =>
-          graphql_fetch(ROUNDS_QUERY, chainId, mergedVariables).then(
-            (r) =>
-              r.data?.rounds?.map((round: RoundOverview) => ({
-                ...round,
-                chainId,
-              })) ?? []
-          )
-        )
-      )
-        .then((res) => res.flat())
-        .then(filterRoundsWithProjects)
-        .then(cleanRoundData)
-        .then(async (rounds) => {
-          // Load the metadata for the rounds
-          fetchRoundsMetadata(rounds);
+    async () => {
+      const { rounds } = await dataLayer.query({
+        type: "legacy-rounds",
+        ...variables,
+        // We need to overfetch these because many will be filtered out from the
+        // metadata.roundType === "public" The `first` param in the arguments
+        // will instead be used last to limit the results returned
+        first: 100,
+        chainIds,
+      });
 
-          // Return the rounds immediately
-          return rounds;
+      await prewarmSwrCacheWithRoundsMetadata(rounds);
 
-          function fetchRoundsMetadata(rounds: RoundOverview[]): void {
-            Promise.all(
-              rounds.map(async (round) => {
-                // Check if cache exist (we only need to fetch this once)
-                const cid = round.roundMetaPtr.pointer;
-                if (!cache.get(`@"metadata","${cid}",`)) {
-                  // Fetch metadata and update cache
-                  mutate(
-                    ["metadata", cid],
-                    await __deprecated_fetchFromIPFS(cid)
-                  );
-                  return round;
-                }
-              })
-            ).then((roundsWithMetadata) => {
-              // Reset the cache
-              if (roundsWithMetadata.filter(Boolean).length) {
-                mutate(["rounds", chainIds, variables]);
-              }
-            });
-          }
-        })
-        // We need to do another sort because of results from many chains
-        .then((rounds) => sortRounds(rounds, variables))
+      return rounds;
+    }
   );
 
-  const data = (debugModeEnabled ? query.data : filterRounds(cache, query.data))
+  const data = (
+    isDebugModeEnabled ? query.data : filterRounds(cache, query.data)
+  )
     // Limit final results returned
     ?.slice(0, variables.first ?? query.data?.length);
 
-  return {
-    ...query,
-    data,
-  };
-}
+  return { ...query, data };
+};
 
-export function filterRoundsWithProjects(rounds: RoundOverview[]) {
+export function filterRoundsWithProjects(rounds: __deprecated_RoundOverview[]) {
   /*
 0 projects + application period is still open: show 
 0 projects + application period has closed: hide
@@ -216,63 +165,10 @@ export function filterRoundsWithProjects(rounds: RoundOverview[]) {
   });
 }
 
-const timestampKeys = [
-  "roundStartTime",
-  "roundEndTime",
-  "applicationsStartTime",
-  "applicationsEndTime",
-] as const;
-
-export function sortRounds(
-  rounds: RoundOverview[],
-  { orderBy = "roundEndTime", orderDirection = "asc" }: RoundsVariables
-) {
-  const dir = { asc: 1, desc: -1 };
-  /*
-  Something to note about sorting by matchAmount is that it doesn't
-  take token decimals into consideration. For example USDC has 6 decimals.
-  */
-  const isNumber = ["matchAmount", ...timestampKeys].includes(orderBy);
-
-  const compareFn = isNumber
-    ? (a: RoundOverview, b: RoundOverview) =>
-        BigInt(a[orderBy] ?? Number.MAX_SAFE_INTEGER) >
-        BigInt(b[orderBy] ?? Number.MAX_SAFE_INTEGER)
-    : (a: RoundOverview, b: RoundOverview) =>
-        a[orderBy] ?? "" > b[orderBy] ?? "";
-
-  return [...rounds].sort((a, b) =>
-    compareFn(a, b) ? dir[orderDirection] : -dir[orderDirection]
-  );
-}
-/* 
-Some timestamps are in milliseconds and others in overflowed values (115792089237316195423570985008687907853269984665640564039457584007913129639935)
-See this query: https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet/graphql?query=query+%7B%0A+++rounds%28first%3A+3%2C%0A++++++orderBy%3A+roundEndTime%2C%0A++++++orderDirection%3A+asc%0A++++%29+%7B%0A++++++id%0A++++++roundEndTime%0A+++++%0A++++%7D%0A%7D
-*/
-const OVERFLOWED_TIMESTAMP =
-  "115792089237316195423570985008687907853269984665640564039457584007913129639935";
-export function cleanRoundData(rounds: RoundOverview[]) {
-  return rounds.map((round) => ({
-    ...round,
-    ...timestampKeys.reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]:
-          round[key] === OVERFLOWED_TIMESTAMP
-            ? undefined
-            : round[key].length > 10 // This timestamp is in milliseconds, convert to seconds
-            ? Math.round(Number(round[key]) / 1000).toString()
-            : round[key],
-      }),
-      {}
-    ),
-  }));
-}
-
-export function filterRounds(
+export const filterRounds = (
   cache: Cache<{ roundType: string }>,
-  rounds?: RoundOverview[]
-) {
+  rounds?: __deprecated_RoundOverview[]
+) => {
   return rounds?.filter((round) => {
     if (validRounds.includes(round.id.toLowerCase())) {
       return true;
@@ -288,7 +184,7 @@ export function filterRounds(
       return true;
     }
   });
-}
+};
 
 // Will only make a request if metadata doesn't exist yet
 export function useMetadata(cid: string) {

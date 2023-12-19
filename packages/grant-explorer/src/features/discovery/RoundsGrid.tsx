@@ -1,4 +1,4 @@
-import { RoundOverview } from "../api/rounds";
+import { __deprecated_RoundOverview } from "../api/rounds";
 import RoundCard from "./RoundCard";
 import { createRoundLoadingData } from "./utils/createRoundLoadingData";
 import { RoundsEmptyState } from "./RoundsEmptyState";
@@ -12,10 +12,13 @@ export function RoundsGrid({
   roundType,
 }: {
   isLoading: boolean;
-  data?: RoundOverview[];
+  data?: __deprecated_RoundOverview[];
   loadingCount: number;
   maxCount?: number;
-  getItemClassName?: (round: RoundOverview, index: number) => string;
+  getItemClassName?: (
+    round: __deprecated_RoundOverview,
+    index: number
+  ) => string;
   roundType: "all" | "active" | "endingSoon";
 }) {
   if (!isLoading && !data?.length) {

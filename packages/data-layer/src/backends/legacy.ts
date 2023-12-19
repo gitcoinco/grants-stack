@@ -6,18 +6,18 @@ import {
   PayoutStrategy,
   Project,
   Round,
+  RoundOverview,
   RoundVisibilityType,
+  TimestampVariables,
 } from "../data.types";
 
-export const getRoundById = async ({
-  graphqlEndpoint,
-  roundId,
-  chainId,
-}: {
-  graphqlEndpoint: string;
-  roundId: string;
-  chainId: number;
-}): Promise<Round> => {
+export const getRoundById = async (
+  { roundId, chainId }: { roundId: string; chainId: number },
+  {
+    graphqlEndpoint,
+    ipfsGateway,
+  }: { ipfsGateway: string; graphqlEndpoint: string },
+): Promise<Round> => {
   try {
     // get the subgraph for round by $roundId
     const res: GetRoundByIdResult = await graphql_fetch(
@@ -77,6 +77,7 @@ export const getRoundById = async ({
 
     const roundMetadata: RoundMetadata = await fetchFromIPFS(
       round.roundMetaPtr.pointer,
+      { ipfsGateway },
     );
 
     round.projects = round.projects.map((project) => {
@@ -89,7 +90,7 @@ export const getRoundById = async ({
     const approvedProjectsWithMetadata = await loadApprovedProjectsMetadata(
       round,
       chainId,
-      { graphqlEndpoint },
+      { graphqlEndpoint, ipfsGateway },
     );
 
     return {
@@ -108,8 +109,9 @@ export const getRoundById = async ({
       approvedProjects: approvedProjectsWithMetadata,
     };
   } catch (error) {
-    console.error("getRoundById", error);
-    throw Error("Unable to fetch round");
+    throw Error(`Unable to fetch round ${roundId} on chain ${chainId}`, {
+      cause: error,
+    });
   }
 };
 
@@ -128,7 +130,8 @@ const graphql_fetch = async (
   // eslint-disable-next-line @typescript-eslint/ban-types
   variables: object = {},
   fromProjectRegistry = false,
-) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> => {
   if (fromProjectRegistry) {
     endpoint = endpoint.replace("grants-round", "grants-hub");
   }
@@ -189,10 +192,12 @@ type RoundMetadata = {
  *
  * @param cid - the unique content identifier that points to the data
  */
-const fetchFromIPFS = (cid: string) => {
-  return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`,
-  ).then((resp) => {
+const fetchFromIPFS = (
+  cid: string,
+  { ipfsGateway }: { ipfsGateway: string },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> => {
+  return fetch(`https://${ipfsGateway}/ipfs/${cid}`).then((resp) => {
     if (resp.ok) {
       return resp.json();
     }
@@ -221,7 +226,10 @@ async function loadApprovedProjectsMetadata(
   round: RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
-  { graphqlEndpoint }: { graphqlEndpoint: string },
+  {
+    graphqlEndpoint,
+    ipfsGateway,
+  }: { graphqlEndpoint: string; ipfsGateway: string },
 ): Promise<Project[]> {
   if (round.projects.length === 0) {
     return [];
@@ -231,7 +239,10 @@ async function loadApprovedProjectsMetadata(
 
   const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map(
     (project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId, { graphqlEndpoint }),
+      fetchMetadataAndMapProject(project, chainId, {
+        graphqlEndpoint,
+        ipfsGateway,
+      }),
   );
 
   return Promise.all(fetchApprovedProjectMetadata);
@@ -241,12 +252,18 @@ async function fetchMetadataAndMapProject(
   project: RoundProjectResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
-  { graphqlEndpoint }: { graphqlEndpoint: string },
+  {
+    graphqlEndpoint,
+    ipfsGateway,
+  }: { graphqlEndpoint: string; ipfsGateway: string },
 ): Promise<Project> {
-  const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
+  const applicationData = await fetchFromIPFS(project.metaPtr.pointer, {
+    ipfsGateway,
+  });
   // NB: applicationData can be in two formats:
   // old format: { round, project, ... }
   // new format: { signature: "...", application: { round, project, ... } }
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const application = applicationData.application || applicationData;
   const projectMetadataFromApplication = application.project;
   const projectRegistryId = `0x${projectMetadataFromApplication.id}`;
@@ -273,7 +290,8 @@ async function getProjectOwners(
   chainId: any,
   projectRegistryId: string,
   { graphqlEndpoint }: { graphqlEndpoint: string },
-) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
   try {
     // get the subgraph for project owners by $projectRegistryId
     const res = await graphql_fetch(
@@ -297,13 +315,170 @@ async function getProjectOwners(
     );
 
     return (
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       res.data?.projects[0]?.accounts.map(
         (account: { account: { address: string } }) =>
           getAddress(account.account.address),
       ) || []
     );
   } catch (error) {
-    console.log("getProjectOwners", error);
-    throw Error("Unable to fetch project owners");
+    throw Error("Unable to fetch project owners", { cause: error });
   }
 }
+
+const ROUNDS_QUERY = `
+query GetRounds(
+  $first: Int, 
+  $orderBy: String,
+  $orderDirection: String,
+  $where: Round_filter,
+  $currentTimestamp: String
+  ) {
+    rounds(first: $first,
+      orderBy: $orderBy,
+      orderDirection: $orderDirection,
+      where: $where
+    ) {
+      id
+      roundMetaPtr {
+        protocol
+        pointer
+      }
+      applicationsStartTime
+      applicationsEndTime
+      roundStartTime
+      roundEndTime
+      matchAmount
+      token
+      payoutStrategy {
+        id
+        strategyName
+      }
+      projects(
+        first: 1000
+        where:{ status: 1 }
+      ) {
+        id
+      }
+    }
+}
+`;
+
+export const getRounds = async (
+  params: {
+    chainIds: number[];
+    // We need to overfetch these because many will be filtered out from the metadata.roundType === "public"
+    // The `first` param in the arguments will instead be used last to limit the results returned
+    first: number;
+    orderBy?:
+      | "createdAt"
+      | "matchAmount"
+      | "roundStartTime"
+      | "roundEndTime"
+      | "applicationsStartTime"
+      | "applicationsEndTime"
+      | undefined;
+    orderDirection?: "asc" | "desc" | undefined;
+    where?:
+      | {
+          and: [
+            { or: TimestampVariables[] },
+            { payoutStrategy_?: { or: { strategyName: string }[] } },
+          ];
+        }
+      | undefined;
+  },
+  { graphqlEndpoints }: { graphqlEndpoints: Record<number, string> },
+): Promise<RoundOverview[]> => {
+  let rounds: RoundOverview[] = await Promise.all(
+    params.chainIds.flatMap(async (chainId) => {
+      const round = await graphql_fetch(
+        ROUNDS_QUERY,
+        graphqlEndpoints[chainId],
+        params,
+      );
+      return (
+        round.data?.rounds?.map((round: RoundOverview) => ({
+          ...round,
+          chainId,
+        })) ?? []
+      );
+    }),
+  );
+  rounds = rounds.flat();
+  rounds = cleanRoundData(rounds);
+  rounds = sortRounds(rounds, params);
+  return rounds;
+};
+
+/* 
+Some timestamps are in milliseconds and others in overflowed values (115792089237316195423570985008687907853269984665640564039457584007913129639935)
+See this query: https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet/graphql?query=query+%7B%0A+++rounds%28first%3A+3%2C%0A++++++orderBy%3A+roundEndTime%2C%0A++++++orderDirection%3A+asc%0A++++%29+%7B%0A++++++id%0A++++++roundEndTime%0A+++++%0A++++%7D%0A%7D
+*/
+const OVERFLOWED_TIMESTAMP =
+  "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+const TIMESTAMP_KEYS = [
+  "roundStartTime",
+  "roundEndTime",
+  "applicationsStartTime",
+  "applicationsEndTime",
+] as const;
+
+export const cleanRoundData = (rounds: RoundOverview[]): RoundOverview[] => {
+  return rounds.map((round) => ({
+    ...round,
+    ...TIMESTAMP_KEYS.reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]:
+          round[key] === OVERFLOWED_TIMESTAMP
+            ? undefined
+            : round[key].length > 10 // This timestamp is in milliseconds, convert to seconds
+            ? Math.round(Number(round[key]) / 1000).toString()
+            : round[key],
+      }),
+      {},
+    ),
+  }));
+};
+
+type RoundsQueryVariables = {
+  first?: number;
+  orderBy?:
+    | "createdAt"
+    | "matchAmount"
+    | "roundStartTime"
+    | "roundEndTime"
+    | "applicationsStartTime"
+    | "applicationsEndTime";
+  orderDirection?: "asc" | "desc";
+  where?: {
+    and: [
+      { or: TimestampVariables[] },
+      { payoutStrategy_?: { or: { strategyName: string }[] } },
+    ];
+  };
+};
+
+export const sortRounds = (
+  rounds: RoundOverview[],
+  { orderBy = "roundEndTime", orderDirection = "asc" }: RoundsQueryVariables,
+): RoundOverview[] => {
+  const dir = { asc: 1, desc: -1 };
+  /*
+  Something to note about sorting by matchAmount is that it doesn't
+  take token decimals into consideration. For example USDC has 6 decimals.
+  */
+  const isNumber = ["matchAmount", ...TIMESTAMP_KEYS].includes(orderBy);
+
+  const compareFn = isNumber
+    ? (a: RoundOverview, b: RoundOverview): boolean =>
+        BigInt(a[orderBy] ?? Number.MAX_SAFE_INTEGER) >
+        BigInt(b[orderBy] ?? Number.MAX_SAFE_INTEGER)
+    : (a: RoundOverview, b: RoundOverview): boolean =>
+        (a[orderBy] ?? "") > (b[orderBy] ?? "");
+
+  return [...rounds].sort((a, b) =>
+    compareFn(a, b) ? dir[orderDirection] : -dir[orderDirection],
+  );
+};

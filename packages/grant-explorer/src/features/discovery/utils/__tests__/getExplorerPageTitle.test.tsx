@@ -1,6 +1,6 @@
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { getExplorerPageTitle } from "../getExplorerPageTitle";
-import { FilterStatus } from "../../hooks/useFilterRounds";
+import { RoundStatus } from "../../hooks/useFilterRounds";
 
 describe("getExplorerPageTitle", () => {
   it("Returns All when none are selected", async () => {
@@ -25,14 +25,14 @@ describe("getExplorerPageTitle", () => {
     ).toEqual("Direct Grants rounds");
     expect(
       getExplorerPageTitle({
-        status: FilterStatus.taking_applications,
+        status: RoundStatus.taking_applications,
         type: "",
         network: "",
       })
     ).toEqual("Rounds taking applications");
     expect(
       getExplorerPageTitle({
-        status: FilterStatus.active,
+        status: RoundStatus.active,
         type: "",
         network: "",
       })

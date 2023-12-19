@@ -1,11 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "prettier",
-    "@typescript-eslint",
-    "import"
-  ],
+  "plugins": ["prettier", "@typescript-eslint", "import"],
   "extends": [
     "eslint:recommended",
     "prettier",
@@ -14,13 +10,17 @@
   "env": {
     "node": true
   },
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
   "rules": {
-    "@typescript-eslint/no-unused-vars": [
-      1,
-      {
-        "argsIgnorePattern": "^_"
-      }
-    ],
-    "import/no-default-export": "error"
+    "import/no-default-export": "error",
+    "no-console": "error",
+    "no-process-env": "error",
+    "@typescript-eslint/no-unused-vars": [1, { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/no-non-null-assertion": "error",
+    "@typescript-eslint/ban-ts-comment": "error",
+    "@typescript-eslint/strict-boolean-expressions": "error"
   }
 }
