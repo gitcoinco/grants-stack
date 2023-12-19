@@ -950,8 +950,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       lit-js-sdk-old-w-pgn:
-        specifier: ^1.1.253
-        version: 1.1.253
+        specifier: ^1.1.254
+        version: 1.1.254
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -17762,8 +17762,8 @@ packages:
       '@types/trusted-types': 2.0.3
     dev: false
 
-  /lit-js-sdk-old-w-pgn@1.1.253:
-    resolution: {integrity: sha512-aK/C/MLWEz/byNrofiyNfApojPyw6F/LgB90VXfLJ0gpnolTizFtSiPAn8mvRyq8Yg8mnPvIH7hBvhHgFuhqyg==}
+  /lit-js-sdk-old-w-pgn@1.1.254:
+    resolution: {integrity: sha512-czJousy2bo2oRR83ol/FZcS3TkZzYxkkVXVXKvfAdXLEspmYRjWvaTXWUnf21eUdUIBcoxfUox0AnTPjYna+rA==}
     dependencies:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0
