@@ -228,6 +228,8 @@ export const submitApplication =
       chain = "ethereum";
     } else if (chainName === "pgn") {
       chain = "publicGoodsNetwork";
+    } else if (chainName === "zkSyncEraTestnet") {
+      chain = "zksyncTestnet";
     } else {
       chain = chainName;
     }

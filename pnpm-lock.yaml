@@ -166,8 +166,8 @@ importers:
         specifier: ^6
         version: 6.5.1(react-dom@18.2.0)(react@18.2.0)
       gitcoin-lit-js-sdk:
-        specifier: ^1.2.4
-        version: 1.2.4
+        specifier: ^1.2.6
+        version: 1.2.6
       history:
         specifier: ^5.3.0
         version: 5.3.0
@@ -14492,8 +14492,8 @@ packages:
       through2: 4.0.2
     dev: true
 
-  /gitcoin-lit-js-sdk@1.2.4:
-    resolution: {integrity: sha512-KESYtaqWP4U7Xhab5z/yD8HZtvy+ACCnyPj69IL6NssGpiXNByR1K8pPsmXigxSQAbdinkKHhk6Bxh3b+V4GHw==}
+  /gitcoin-lit-js-sdk@1.2.6:
+    resolution: {integrity: sha512-Y3CYfgAXqRrDciLBBD7iTIiSOlSBLEF7jChWx4fa9J7JAMmKYNIrVqC1Jj4tasx67oaPjtcFx7Rw/9PWP6zy6Q==}
     dependencies:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0
