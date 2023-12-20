@@ -30,6 +30,10 @@ const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
   [ChainId.POLYGON]: "0x5C5E2D94b107C7691B08E43169fDe76EAAB6D48b",
   [ChainId.POLYGON_MUMBAI]: "0x545B282A50EaeA01A619914d44105437036CbB36",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0xe6CCEe93c97E20644431647B306F48e278aFFdb9",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0xb0F4882184EB6e3ed120c5181651D50719329788",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -66,6 +70,10 @@ const programFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
   [ChainId.POLYGON]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
   [ChainId.POLYGON_MUMBAI]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x68a14AF71BFa0FE09fC937033f6Ea5153c0e75e4",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x6D341814Be4E2316142D9190E390b494F1dECFAf",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -96,6 +104,10 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x8eC471f30cA797FD52F9D37A47Be2517a7BD6912",
   [ChainId.POLYGON]: "0x5ab68dCdcA37A1C2b09c5218e28eB0d9cc3FEb03",
   [ChainId.POLYGON_MUMBAI]: "0xE1c5812e9831bc1d5BDcF50AAEc1a47C4508F3fA",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0xF3B5a0d59C6292BD0e4f8Cf735EEF52b98f428E6",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x0Bb6e2dfEaef0Db5809B3979717E99e053Cbae72",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (
@@ -133,6 +145,10 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x2AFA4bE0f2468347A2F086c2167630fb1E58b725",
   [ChainId.POLYGON]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
   [ChainId.POLYGON_MUMBAI]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x94cB638556d3991363102431d8cE9e839C734677",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x8c28F21D2d8C53eedC58bF9cdCfb7DCF7d809d97",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (
@@ -206,6 +222,14 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
       address = "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918";
       break;
     }
+    case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID: {
+      address = "0x787D662D19C9528EB33FdaBb3cBEcBeAb2a7F15a";
+      break;
+    }
+    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID: {
+      address = "0x0c0B71BA1427cb46424d38133E8187365Cc5466b";
+      break;
+    }
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
@@ -236,6 +260,10 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x27efa1C90e097c980c669AB1a6e326AD4164f1Cb",
   [ChainId.POLYGON]: "0xD0e19DBF9b896199F35Df255A1bf8dB3C787531c",
   [ChainId.POLYGON_MUMBAI]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x41A8F19C6CB88C9Cc98d29Cb7A4015629910fFc0",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0xbA160C13F8F626e3232078aDFD6eD2f2B2289563",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId
@@ -268,6 +296,9 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "",
   [ChainId.POLYGON]: "",
   [ChainId.POLYGON_MUMBAI]: "",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x0FD600678475C03f28baE59A2d55f7a911383e2B",
 };
 
 /* AlloSettingsContract  */
@@ -301,6 +332,10 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x8AdFcF226dfb2fA73788Ad711C958Ba251369cb3",
   [ChainId.POLYGON]: "0xF2a07728107B04266015E67b1468cA0a536956C8",
   [ChainId.POLYGON_MUMBAI]: "0xD9B7Ce1F68A93dF783A8519ed52b74f5DcF5AFE1",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x0ccdfCB7e5DB60AAE5667d1680B490F7830c49C8",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x4170665B31bC10009f8a69CeaACf3265C3d66797",
 };
 
 /* DirectPayoutStrategyFactoryContract  */

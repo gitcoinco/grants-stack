@@ -1,10 +1,13 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
+import zkSyncIcon from "./icons/zksync-logo.svg";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,
   fantom as fantomOriginal,
   fantomTestnet as fantomTestnetOriginal,
+  zkSyncTestnet as zkSyncTestnetOriginal,
+  zkSync as zkSyncOriginal,
 } from "wagmi/chains";
 import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
 import { ChainId } from "./chain-ids";
@@ -60,6 +63,32 @@ export const avalanche: Chain = {
     },
     public: {
       http: ["https://api.avax.network/ext/bc/C/rpc"],
+    },
+  },
+};
+
+export const zkSyncEraTestnet: Chain = {
+  ...zkSyncTestnetOriginal,
+  iconUrl: zkSyncIcon,
+  rpcUrls: {
+    default: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+    public: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+  },
+};
+
+export const zkSyncEraMainnet: Chain = {
+  ...zkSyncOriginal,
+  iconUrl: zkSyncIcon,
+  rpcUrls: {
+    default: {
+      http: ["https://mainnet.era.zksync.io"],
+    },
+    public: {
+      http: ["https://mainnet.era.zksync.io"],
     },
   },
 };
