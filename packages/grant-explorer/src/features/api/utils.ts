@@ -605,19 +605,20 @@ export const pinToIPFS = (obj: IPFSObject) => {
   }
 };
 
-export const getDaysLeft = (fromTimestamp?: string) => {
+export const getDaysLeft = (fromNowToTimestampStr: string) => {
+  const targetTimestamp = Number(fromNowToTimestampStr);
+
   // Some timestamps are returned as overflowed (1.15e+77)
   // We parse these into undefined to show as "No end date" rather than make the date diff calculation
-  if (
-    fromTimestamp === undefined ||
-    Number(fromTimestamp) > Number.MAX_SAFE_INTEGER
-  ) {
+  if (targetTimestamp > Number.MAX_SAFE_INTEGER) {
     return undefined;
   }
-  const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
+
+  // TODO replace with differenceInCalendarDays from 'date-fns'
+  const currentTimestampInSeconds = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day
 
-  const differenceInSeconds = Number(fromTimestamp) - currentTimestamp;
+  const differenceInSeconds = targetTimestamp - currentTimestampInSeconds;
   const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
 
   return differenceInDays;
@@ -720,3 +721,48 @@ export function dateFromMs(ms: number) {
     dateStyle: "medium",
   }).format(date);
 }
+
+export const getRoundStates = ({
+  roundStartTimeInSecsStr,
+  roundEndTimeInSecsStr,
+  applicationsEndTimeInSecsStr,
+  atTimeMs: currentTimeMs,
+}: {
+  roundStartTimeInSecsStr: string | undefined;
+  roundEndTimeInSecsStr: string | undefined;
+  applicationsEndTimeInSecsStr: string | undefined;
+  atTimeMs: number;
+}): undefined | Array<"accepting-applications" | "active" | "ended"> => {
+  const safeSecStrToMs = (timestampInSecStr: string | undefined) =>
+    timestampInSecStr === undefined ||
+    Number(timestampInSecStr) > Number.MAX_SAFE_INTEGER
+      ? undefined
+      : Number(timestampInSecStr) * 1000;
+
+  const roundStartTimeMs = safeSecStrToMs(roundStartTimeInSecsStr);
+  const roundEndTimeMs = safeSecStrToMs(roundEndTimeInSecsStr);
+  const applicationsEndTimeMs = safeSecStrToMs(applicationsEndTimeInSecsStr);
+
+  const states: Array<"accepting-applications" | "active" | "ended"> = [];
+  if (
+    roundStartTimeMs !== undefined &&
+    roundEndTimeMs !== undefined &&
+    currentTimeMs > roundStartTimeMs &&
+    currentTimeMs < roundEndTimeMs
+  ) {
+    states.push("active");
+  }
+
+  if (roundEndTimeMs !== undefined && currentTimeMs > roundEndTimeMs) {
+    states.push("ended");
+  }
+
+  if (
+    applicationsEndTimeMs !== undefined &&
+    currentTimeMs < applicationsEndTimeMs
+  ) {
+    states.push("accepting-applications");
+  }
+
+  return states.length > 0 ? states : undefined;
+};
