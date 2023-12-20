@@ -106,7 +106,7 @@ export const CHAINS: Record<
   },
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
     id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    name: "zkSync Era Mainnet",
+    name: "zkSync Era",
     logo: "./logos/zksync-logo.svg",
   },
 };
@@ -124,7 +124,7 @@ export const TokenNamesAndLogos = {
   AVAX: "./logos/avax-logo.svg",
   MATIC: "./logos/pol-logo.svg",
   TEST: "./logos/dai-logo.svg",
-  USDT: "./logos/usdc-logo.svg",
+  USDT: "./logos/usdt-logo.svg",
   LUSD: "./logos/lusd-logo.svg",
   MUTE: "./logos/mute-logo.svg",
 } as const;
@@ -311,8 +311,8 @@ const ZKSYNC_ERA_MAINNET_TOKENS: VotingToken[] = [
     chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
     address: "0x503234F203fC7Eb888EEC8513210612a43Cf6115",
     decimal: 18,
-    logo: TokenNamesAndLogos["USDT"],
-    redstoneTokenId: RedstoneTokenIds["USDT"],
+    logo: TokenNamesAndLogos["LUSD"],
+    redstoneTokenId: RedstoneTokenIds["LUSD"],
     defaultForVoting: false,
     canVote: true,
   },
