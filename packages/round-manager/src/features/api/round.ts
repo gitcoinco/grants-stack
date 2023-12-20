@@ -15,8 +15,9 @@ import {
   MetadataPointer,
   Round,
 } from "./types";
-import { fetchFromIPFS, payoutTokens } from "./utils";
+import { fetchFromIPFS } from "./utils";
 import { maxDateForUint256 } from "../../constants";
+import { payoutTokens } from "./payoutTokens";
 
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",

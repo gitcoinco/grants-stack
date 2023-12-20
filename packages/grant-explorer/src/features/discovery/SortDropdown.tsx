@@ -1,16 +1,13 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { RoundsVariables } from "../api/rounds";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
-import { parseFilterParams } from "./hooks/useFilterRounds";
+import {
+  RoundSortUiOption,
+  getRoundSelectionParamsFromUrlParams,
+} from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
 import { getSortLabel } from "./utils/getSortLabel";
 
-type Option = {
-  label: string;
-  orderBy: RoundsVariables["orderBy"] | "";
-  orderDirection: RoundsVariables["orderDirection"] | "";
-};
-export const sortOptions: Option[] = [
+export const SORT_OPTIONS: RoundSortUiOption[] = [
   {
     label: "All",
     orderBy: "",
@@ -67,23 +64,18 @@ export const sortOptions: Option[] = [
     orderDirection: "asc",
   },
 ];
-export type SortOption = (typeof sortOptions)[number];
-
-export type SortProps = {
-  orderBy: SortOption["orderBy"];
-  orderDirection: SortOption["orderDirection"];
-};
 
 export function SortDropdown() {
   const [params] = useSearchParams();
-  const { orderBy = "", orderDirection = "" } = parseFilterParams(params);
+  const { orderBy = "", orderDirection = "" } =
+    getRoundSelectionParamsFromUrlParams(params);
 
   const selected = getSortLabel({ orderBy, orderDirection });
 
   return (
     <Dropdown
       label={selected?.label}
-      options={sortOptions}
+      options={SORT_OPTIONS}
       renderItem={({ label, orderBy, orderDirection, close }) => (
         <DropdownItem
           $as={Link}

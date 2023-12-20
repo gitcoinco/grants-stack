@@ -19,13 +19,14 @@ import {
   Round,
   TransactionBlock,
 } from "../api/types";
-import { formatCurrency, PayoutToken, payoutTokens } from "../api/utils";
+import { formatCurrency } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { assertAddress } from "common/src/address";
+import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;

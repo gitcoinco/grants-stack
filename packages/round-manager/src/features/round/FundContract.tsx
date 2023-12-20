@@ -9,13 +9,14 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
 import { ProgressStatus, Round } from "../api/types";
-import { getTxExplorerForContract, payoutTokens } from "../api/utils";
+import { getTxExplorerForContract } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { classNames, useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
+import { payoutTokens } from "../api/payoutTokens";
 
 export default function FundContract(props: {
   round: Round | undefined;
