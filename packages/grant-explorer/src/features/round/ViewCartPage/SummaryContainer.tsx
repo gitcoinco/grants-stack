@@ -30,13 +30,18 @@ import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
 import { fetchBalance } from "@wagmi/core";
+import { isPresent } from "ts-is-present";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
-  const { projects, getVotingTokenForChain, chainToVotingToken } =
-    useCartStorage();
+  const {
+    projects,
+    getVotingTokenForChain,
+    chainToVotingToken,
+    remove: removeProjectFromCart,
+  } = useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
   const dataLayer = useDataLayer();
 
@@ -127,6 +132,25 @@ export function SummaryContainer() {
       })
     );
   });
+
+  /** useEffect to clear projects from expired rounds (no longer accepting donations) */
+  useEffect(() => {
+    if (!rounds) {
+      return;
+    }
+    /*get rounds that have expired */
+    const expiredRounds = rounds
+      .filter((round) => round.roundEndTime.getTime() < Date.now())
+      .map((round) => round.id)
+      .filter(isPresent);
+
+    const expiredProjects = projects.filter((project) =>
+      expiredRounds.includes(project.roundId)
+    );
+    expiredProjects.forEach((project) => {
+      removeProjectFromCart(project.grantApplicationId);
+    });
+  }, [projects, removeProjectFromCart, rounds]);
 
   const [clickedSubmit, setClickedSubmit] = useState(false);
 
