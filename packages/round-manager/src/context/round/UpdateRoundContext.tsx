@@ -5,9 +5,9 @@ import { saveToIPFS } from "../../features/api/ipfs";
 import { TransactionBuilder, UpdateAction } from "../../features/api/round";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { EditedGroups, ProgressStatus, Round } from "../../features/api/types";
-import { getPayoutTokenOptions } from "../../features/api/utils";
 import { useWallet } from "../../features/common/Auth";
 import subSeconds from "date-fns/subSeconds";
+import { getPayoutTokenOptions } from "../../features/api/payoutTokens";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 

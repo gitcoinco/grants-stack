@@ -38,7 +38,7 @@ import {
   ProgressStep,
   Round,
 } from "../api/types";
-import { CHAINS, SupportType, payoutTokens } from "../api/utils";
+import { CHAINS, SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import FormValidationErrorList from "../common/FormValidationErrorList";
@@ -52,6 +52,7 @@ import {
 } from "./RoundDetailForm";
 import { isDirectRound } from "./ViewRoundPage";
 import { maxDateForUint256 } from "../../constants";
+import { payoutTokens } from "../api/payoutTokens";
 
 type EditMode = {
   canEdit: boolean;

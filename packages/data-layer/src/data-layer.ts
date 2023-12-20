@@ -239,6 +239,14 @@ export class DataLayer {
         };
       }
 
+      case "verify-passport-credential": {
+        return {
+          isVerified: await this.passportVerifier.verifyCredential(
+            q.credential,
+          ),
+        };
+      }
+
       default:
         throw new UnreachableCaseError(q);
     }

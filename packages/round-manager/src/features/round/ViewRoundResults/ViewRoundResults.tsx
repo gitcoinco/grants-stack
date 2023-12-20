@@ -28,7 +28,7 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
-import { payoutTokens, fetchFromIPFS } from "../../api/utils";
+import { fetchFromIPFS } from "../../api/utils";
 import { roundApplicationsToCSV } from "../../api/exports";
 import { Signer } from "@ethersproject/abstract-signer";
 import {
@@ -36,6 +36,7 @@ import {
   roundImplementationContract,
 } from "../../api/contracts";
 import { TransactionResponse } from "@ethersproject/providers";
+import { payoutTokens } from "../../api/payoutTokens";
 
 type RevisedMatch = {
   revisedContributionCount: number;

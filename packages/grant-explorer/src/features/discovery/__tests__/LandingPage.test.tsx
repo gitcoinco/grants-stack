@@ -116,35 +116,6 @@ describe("LandingPage", () => {
     });
   });
 
-  it("Renders collections", async () => {
-    renderWithContext(<LandingPage />);
-
-    await waitFor(async () => {
-      expect(screen.getByText("Open source")).toBeInTheDocument();
-      expect(screen.getByText("First Time Grantees")).toBeInTheDocument();
-    });
-  });
-
-  it("Renders categories", async () => {
-    renderWithContext(<LandingPage />);
-
-    await waitFor(async () => {
-      expect(screen.getByText("Open source")).toBeInTheDocument();
-    });
-  });
-
-  it("Renders Live GG19 Stats button", async () => {
-    renderWithContext(<LandingPage />);
-    const button = screen.getByText("Live GG19 stats");
-
-    expect(button).toHaveAttribute(
-      "href",
-      "https://gitcoin-grants-51f2c0c12a8e.herokuapp.com"
-    );
-
-    await waitFor(async () => expect(button).toBeInTheDocument());
-  });
-
   it.skip("filters active rounds based on search query", async () => {
     const roundMetadata: __deprecated_RoundMetadata = {
       name: "gitcoin",

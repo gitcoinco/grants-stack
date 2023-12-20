@@ -12,7 +12,8 @@ import { fundRoundContract } from "../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 
 import { ProgressStatus } from "../../features/api/types";
-import { PayoutToken } from "../../features/api/utils";
+
+import { PayoutToken } from "../../features/api/payoutTokens";
 
 export interface FundContractState {
   tokenApprovalStatus: ProgressStatus;

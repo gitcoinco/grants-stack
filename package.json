@@ -33,11 +33,11 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
-    "@commitlint/config-conventional": "^17.7.0"
+    "@commitlint/config-conventional": "^17.7.0",
+    "turbo": "^1.11.0"
   },
   "dependencies": {
-    "prettier": "^3.0.3",
-    "turbo": "^1.10.15"
+    "prettier": "^3.0.3"
   },
   "pnpm": {
     "overrides": {
