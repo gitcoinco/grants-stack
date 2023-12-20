@@ -3,7 +3,7 @@ import {
   ROUND_PAYOUT_DIRECT,
   truncateDescription,
 } from "common";
-import { RoundOverview, useMetadata } from "../api/rounds";
+import { __deprecated_RoundOverview, useMetadata } from "../api/rounds";
 import { CHAINS, getDaysLeft, getRoundStates } from "../api/utils";
 import {
   Badge,
@@ -23,7 +23,7 @@ import { RoundTimeBadge } from "./RoundTimeBadge";
 type RoundType = "all" | "endingSoon" | "active";
 
 type RoundCardProps = {
-  round: RoundOverview;
+  round: __deprecated_RoundOverview;
   index: number;
   roundType: RoundType;
 };
@@ -64,18 +64,6 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
     applicationsEndTimeInSecsStr: applicationsEndTime,
     atTimeMs: Date.now(),
   });
-
-  if (metadata?.name?.match(/season/i)) {
-    console.log(roundStates, {
-      applicationsStartTime: new Date(
-        Number(applicationsStartTime) * 1000
-      ).toString(),
-      roundStartTime: new Date(Number(roundStartTime) * 1000).toString(),
-      applicationsEndTime: new Date(
-        Number(applicationsEndTime) * 1000
-      ).toString(),
-    });
-  }
 
   const approvedApplicationsCount = projects?.length ?? 0;
 

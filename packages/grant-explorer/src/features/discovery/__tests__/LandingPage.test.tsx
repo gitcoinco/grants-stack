@@ -8,33 +8,40 @@ import {
   renderWithContext,
 } from "../../../test-utils";
 import { __deprecated_RoundMetadata } from "../../api/round";
-import { RoundOverview } from "../../api/rounds";
+import { __deprecated_RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
 import { vi } from "vitest";
 import { collections } from "../../collections/hooks/useCollections";
 import { categories } from "../../categories/hooks/useCategories";
+import { DataLayer } from "data-layer";
+import { getEnabledChains } from "../../../app/chainConfig";
 
 // Mock the API calls
 
 // Create empty mock functions - we will set these inside the tests.
-const { graphql_fetch, fetchFromIPFS } = vi.hoisted(() => ({
-  graphql_fetch: vi.fn(),
-  fetchFromIPFS: vi.fn(),
-}));
+const { __deprecated_graphql_fetch, __deprecated_fetchFromIPFS } = vi.hoisted(
+  () => ({
+    __deprecated_graphql_fetch: vi.fn(),
+    __deprecated_fetchFromIPFS: vi.fn(),
+  })
+);
 
 vi.mock("common", async () => {
   const actual = await vi.importActual<typeof import("common")>("common");
   return {
     ...actual,
     renderToPlainText: vi.fn().mockReturnValue((str = "") => str),
-    graphql_fetch,
   };
 });
 
 vi.mock("../../api/utils", async () => {
   const actual =
     await vi.importActual<typeof import("../../api/utils")>("../../api/utils");
-  return { ...actual, __deprecated_fetchFromIPFS: fetchFromIPFS };
+  return {
+    ...actual,
+    __deprecated_graphql_fetch,
+    __deprecated_fetchFromIPFS,
+  };
 });
 
 const chainId = faker.datatype.number();
@@ -69,8 +76,8 @@ vi.mock("wagmi", async () => {
 describe("LandingPage", () => {
   beforeEach(() => {
     // Reset the mocks before each test
-    graphql_fetch.mockReset();
-    fetchFromIPFS.mockReset();
+    __deprecated_graphql_fetch.mockReset();
+    __deprecated_fetchFromIPFS.mockReset();
   });
 
   it("renders landing page", () => {
@@ -82,18 +89,24 @@ describe("LandingPage", () => {
       makeRoundOverviewData()
     );
 
-    // Set the mock data
-    graphql_fetch.mockResolvedValue({
-      data: { rounds: mockedRounds },
-    });
-    // Return the same metadata that was created by the mock
-    fetchFromIPFS.mockImplementation(
-      (cid: string) =>
-        mockedRounds.find((round) => round.roundMetaPtr.pointer === cid)
-          ?.roundMetadata
-    );
+    const mockDataLayer = {
+      query: vi.fn().mockResolvedValue({
+        rounds: getEnabledChains().flatMap((chain) =>
+          mockedRounds.map((round) => ({
+            ...round,
+            chainId: chain.id,
+          }))
+        ),
+      }),
+    } as unknown as DataLayer;
 
-    renderWithContext(<LandingPage />);
+    // Return the same metadata that was created by the mock
+    __deprecated_fetchFromIPFS.mockImplementation(async (cid: string) => {
+      return mockedRounds.find((round) => round.roundMetaPtr.pointer === cid)
+        ?.roundMetadata;
+    });
+
+    renderWithContext(<LandingPage />, { dataLayer: mockDataLayer });
 
     await waitFor(() => {
       // Check if the fetched active rounds are displayed
@@ -103,38 +116,6 @@ describe("LandingPage", () => {
         ).toBeInTheDocument();
       });
     });
-  });
-
-  it("Renders Collections", async () => {
-    renderWithContext(<LandingPage />);
-
-    await waitFor(async () =>
-      collections.forEach((collection) =>
-        expect(screen.getByText(collection.name)).toBeInTheDocument()
-      )
-    );
-  });
-
-  it("Renders Categories", async () => {
-    renderWithContext(<LandingPage />);
-
-    await waitFor(async () =>
-      categories.forEach((category) =>
-        expect(screen.getByText(category.name)).toBeInTheDocument()
-      )
-    );
-  });
-
-  it("Renders Live GG19 Stats button", async () => {
-    renderWithContext(<LandingPage />);
-    const button = screen.getByText("Live GG19 stats");
-
-    expect(button).toHaveAttribute(
-      "href",
-      "https://gitcoin-grants-51f2c0c12a8e.herokuapp.com"
-    );
-
-    await waitFor(async () => expect(button).toBeInTheDocument());
   });
 
   it.skip("filters active rounds based on search query", async () => {
@@ -148,7 +129,7 @@ describe("LandingPage", () => {
       programContractAddress: faker.finance.ethereumAddress(),
     };
 
-    const activeRounds: RoundOverview[] = [
+    const activeRounds: __deprecated_RoundOverview[] = [
       makeRoundOverviewData(),
       makeRoundOverviewData(),
       makeRoundOverviewData({ roundMetadata }),

@@ -1,7 +1,6 @@
-import { SortDropdown, type SortProps } from "./SortDropdown";
-import { FilterDropdown, type FilterProps } from "./FilterDropdown";
-
-type Filter = SortProps & FilterProps;
+import { SortDropdown } from "./SortDropdown";
+import { FilterDropdown } from "./FilterDropdown";
+import { RoundSelectionParams } from "./hooks/useFilterRounds";
 
 export function RoundsFilter() {
   return (
@@ -18,5 +17,6 @@ export function RoundsFilter() {
   );
 }
 
-export const toQueryString = (filterParams: Partial<Filter> = {}) =>
-  new URLSearchParams(filterParams).toString();
+export const toQueryString = (
+  filterParams: Partial<RoundSelectionParams> = {}
+): string => new URLSearchParams(filterParams).toString();

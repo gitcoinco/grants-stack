@@ -9,6 +9,7 @@
     "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix",
     "lint": "eslint ./src --cache",
+    "lint:unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
     "start": "craco start",
@@ -132,6 +133,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "tailwind-styled-components": "^2.1.7",
     "tailwindcss": "^3.0.24",
+    "ts-unused-exports": "^10.0.1",
     "vite": "^4.4.9",
     "vitest": "^0.34.2",
     "vitest-fetch-mock": "^0.2.2"
