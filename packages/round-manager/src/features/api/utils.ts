@@ -83,7 +83,7 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
   },
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
     id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    name: "zkSync Era Mainnet",
+    name: "zkSync Era",
     logo: "/logos/zksync-logo.svg",
   },
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: {
