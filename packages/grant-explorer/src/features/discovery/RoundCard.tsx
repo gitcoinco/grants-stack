@@ -3,7 +3,7 @@ import {
   ROUND_PAYOUT_DIRECT,
   truncateDescription,
 } from "common";
-import { RoundOverview, useMetadata } from "../api/rounds";
+import { __deprecated_RoundOverview, useMetadata } from "../api/rounds";
 import { CHAINS, getDaysLeft } from "../api/utils";
 import {
   Badge,
@@ -23,7 +23,7 @@ import { RoundTimeBadge } from "./RoundTimeBadge";
 type RoundType = "all" | "endingSoon" | "active";
 
 type RoundCardProps = {
-  round: RoundOverview;
+  round: __deprecated_RoundOverview;
   index: number;
   roundType: RoundType;
 };

@@ -1,3 +1,4 @@
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import shuffle from "knuth-shuffle-seeded";
 import { UnreachableCaseError } from "ts-essentials";
 import _fetch from "cross-fetch";
@@ -17,11 +18,15 @@ export class DataLayer {
   private searchResultsPageSize: number;
   private searchApiClient: SearchApi;
   private subgraphEndpointsByChainId: Record<number, string>;
+  private ipfsGateway: string;
+  private passportVerifier: PassportVerifier;
 
   constructor({
     fetch,
     search,
     subgraph,
+    ipfs,
+    passport,
   }: {
     fetch?: typeof _fetch;
     search: {
@@ -30,6 +35,13 @@ export class DataLayer {
     };
     subgraph?: {
       endpointsByChainId: Record<number, string>;
+    };
+    // TODO reflect that we specifically require Pinata?
+    ipfs?: {
+      gateway: string;
+    };
+    passport?: {
+      verifier: PassportVerifier;
     };
   }) {
     this.searchApiClient = new SearchApi(
@@ -40,6 +52,8 @@ export class DataLayer {
     );
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
+    this.ipfsGateway = ipfs?.gateway ?? "ipfs.io";
+    this.passportVerifier = passport?.verifier ?? new PassportVerifier();
   }
 
   async query(
@@ -51,6 +65,14 @@ export class DataLayer {
   async query(
     q: ExtractQuery<DataLayerInteraction, "legacy-round-by-id">,
   ): Promise<ExtractResponse<DataLayerInteraction, "legacy-round-by-id">>;
+  async query(
+    q: ExtractQuery<DataLayerInteraction, "legacy-rounds">,
+  ): Promise<ExtractResponse<DataLayerInteraction, "legacy-rounds">>;
+  async query(
+    q: ExtractQuery<DataLayerInteraction, "verify-passport-credential">,
+  ): Promise<
+    ExtractResponse<DataLayerInteraction, "verify-passport-credential">
+  >;
   async query(
     q: DataLayerInteraction["query"],
   ): Promise<DataLayerInteraction["response"]> {
@@ -139,11 +161,26 @@ export class DataLayer {
           );
         }
         return {
-          round: await legacy.getRoundById({
-            roundId: q.roundId,
-            chainId: q.chainId,
-            graphqlEndpoint,
+          round: await legacy.getRoundById(
+            { roundId: q.roundId, chainId: q.chainId },
+            { graphqlEndpoint, ipfsGateway: this.ipfsGateway },
+          ),
+        };
+      }
+
+      case "legacy-rounds": {
+        return {
+          rounds: await legacy.getRounds(q, {
+            graphqlEndpoints: this.subgraphEndpointsByChainId,
           }),
+        };
+      }
+
+      case "verify-passport-credential": {
+        return {
+          isVerified: await this.passportVerifier.verifyCredential(
+            q.credential,
+          ),
         };
       }
 

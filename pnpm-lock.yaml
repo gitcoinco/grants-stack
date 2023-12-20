@@ -62,7 +62,7 @@ importers:
         version: 0.2.0
       '@gitcoinco/passport-sdk-verifier':
         specifier: ^0.2.2
-        version: 0.2.2
+        version: 0.2.2(debug@4.3.4)
       '@headlessui/react':
         specifier: ^1.6.5
         version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
@@ -404,6 +404,9 @@ importers:
       '@gitcoinco/passport-sdk-types':
         specifier: ^0.2.0
         version: 0.2.0
+      '@gitcoinco/passport-sdk-verifier':
+        specifier: ^0.2.2
+        version: 0.2.2(debug@4.3.4)
       cross-fetch:
         specifier: ^4.0.0
         version: 4.0.0
@@ -429,6 +432,9 @@ importers:
         specifier: ^3.22.2
         version: 3.22.4
     devDependencies:
+      '@faker-js/faker':
+        specifier: ^8.3.1
+        version: 8.3.1
       '@openapitools/openapi-generator-cli':
         specifier: ^2.7.0
         version: 2.7.0(debug@4.3.4)
@@ -545,7 +551,7 @@ importers:
         version: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@gitcoinco/passport-sdk-verifier':
         specifier: ^0.2.2
-        version: 0.2.2
+        version: 0.2.2(debug@4.3.4)
       '@headlessui/react':
         specifier: ^1.7.4
         version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
@@ -817,6 +823,9 @@ importers:
       tailwindcss:
         specifier: ^3.0.24
         version: 3.3.3(ts-node@10.9.1)
+      ts-unused-exports:
+        specifier: ^10.0.1
+        version: 10.0.1(typescript@5.2.2)
       vite:
         specifier: ^4.4.9
         version: 4.4.9(@types/node@17.0.45)
@@ -5123,11 +5132,16 @@ packages:
     engines: {node: '>=14.0.0', npm: '>=6.0.0'}
     dev: true
 
-  /@gitcoinco/passport-sdk-reader@0.1.4:
+  /@faker-js/faker@8.3.1:
+    resolution: {integrity: sha512-FdgpFxY6V6rLZE9mmIBb9hM0xpfvQOSNOLnzolzKwsE1DH+gC7lEKV1p1IbR0lAYyvYd5a4u3qWJzowUkw1bIw==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
+    dev: true
+
+  /@gitcoinco/passport-sdk-reader@0.1.4(debug@4.3.4):
     resolution: {integrity: sha512-MRZ+p3ZdBz7/7U7/+3/LnwU4nXMeWGwPWakvPLTXL0ys74jmIrn0b1j2uh0D8EsdstoAnksbO9wEBRED40wHAg==}
     dependencies:
       '@gitcoinco/passport-sdk-types': 0.2.0
-      tulons: 0.0.7
+      tulons: 0.0.7(debug@4.3.4)
     transitivePeerDependencies:
       - debug
     dev: false
@@ -5141,17 +5155,17 @@ packages:
   /@gitcoinco/passport-sdk-verifier@0.1.2:
     resolution: {integrity: sha512-VvIcnoQfV0Y4xhF3Ay9maUkuIbAZk4uaD0OQjXBJAnKZM1JtfWUqTo5OWHPb55CzKv1o4V14LGBpJOGqaQWHyg==}
     dependencies:
-      '@gitcoinco/passport-sdk-reader': 0.1.4
+      '@gitcoinco/passport-sdk-reader': 0.1.4(debug@4.3.4)
       '@gitcoinco/passport-sdk-types': 0.1.2
       '@spruceid/didkit-wasm': 0.2.1
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /@gitcoinco/passport-sdk-verifier@0.2.2:
+  /@gitcoinco/passport-sdk-verifier@0.2.2(debug@4.3.4):
     resolution: {integrity: sha512-Z6drCRRKXV4QeO5a2zIyUAOB9RfiJhA/zICfmpQZkLOIFDuoctezMy0NM5s28Pbq4st74rcN7E3497sBRvTumQ==}
     dependencies:
-      '@gitcoinco/passport-sdk-reader': 0.1.4
+      '@gitcoinco/passport-sdk-reader': 0.1.4(debug@4.3.4)
       '@gitcoinco/passport-sdk-types': 0.2.0
       '@spruceid/didkit-wasm': 0.3.0-alpha0
     transitivePeerDependencies:
@@ -23107,6 +23121,17 @@ packages:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
+  /ts-unused-exports@10.0.1(typescript@5.2.2):
+    resolution: {integrity: sha512-nWG8Y96pKem01Hw4j4+Mwuy+L0/9sKT7D61Q+OS3cii9ocQACuV6lu00B9qpiPhF4ReVWw3QYHDqV8+to2wbsg==}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=3.8.3'
+    dependencies:
+      chalk: 4.1.2
+      tsconfig-paths: 3.14.2
+      typescript: 5.2.2
+    dev: true
+
   /ts-unused-exports@10.0.1(typescript@5.3.2):
     resolution: {integrity: sha512-nWG8Y96pKem01Hw4j4+Mwuy+L0/9sKT7D61Q+OS3cii9ocQACuV6lu00B9qpiPhF4ReVWw3QYHDqV8+to2wbsg==}
     hasBin: true
@@ -23174,7 +23199,7 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /tulons@0.0.7:
+  /tulons@0.0.7(debug@4.3.4):
     resolution: {integrity: sha512-JyL9Vn4PPG2TTEJS35yqQgAMLd3IX9pFIlbiLmv47HuHTo2F3ihYg2yfMqde4hqGY1nGk77iJ/lvsTbAURJ8rg==}
     dependencies:
       axios: 0.27.2(debug@4.3.4)

@@ -8,6 +8,7 @@
     "start": "node -r dotenv-flow/config dist/index.js",
     "lint": "eslint --cache --max-warnings=0",
     "lint:fix": "eslint --cache --max-warnings=0 --fix",
+    "lint:all:fix": "eslint --fix --cache --max-warnings=0 src",
     "lint:all": "eslint --cache --max-warnings=0 src",
     "generate:openapi": "openapi-generator-cli generate -i https://gitcoin-search-dev.fly.dev/openapi.json -o src/openapi-search-client -g typescript-fetch --additional-properties=importFileExtension=.js",
     "generate:openapi:local": "openapi-generator-cli generate -i http://localhost:8000/openapi.json -o src/openapi-search-client -g typescript-fetch --additional-properties=importFileExtension=.js",
@@ -22,6 +23,7 @@
     "prepare": "tsc"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
     "@openapitools/openapi-generator-cli": "^2.7.0",
     "@tsconfig/node18": "^18.2.2",
     "@types/debug": "^4.1.8",
@@ -49,6 +51,7 @@
   },
   "dependencies": {
     "@gitcoinco/passport-sdk-types": "^0.2.0",
+    "@gitcoinco/passport-sdk-verifier": "^0.2.2",
     "cross-fetch": "^4.0.0",
     "debug": "^4.3.4",
     "dotenv-flow": "^3.3.0",
