@@ -9,6 +9,7 @@ import {
   useFilterRounds,
 } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
+import { getEnabledChains } from "../../app/chainConfig";
 
 const LandingPage = () => {
   const activeRounds = useFilterRounds(
