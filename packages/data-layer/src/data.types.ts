@@ -157,3 +157,45 @@ export interface Round {
    */
   approvedProjects?: Project[];
 }
+
+export type TimestampVariables = {
+  applicationsStartTime_lte?: string;
+  applicationsEndTime_gt?: string;
+  applicationsEndTime_lt?: string;
+  applicationsEndTime?: string;
+  applicationsEndTime_gte?: string;
+  roundStartTime_lt?: string;
+  roundStartTime_gt?: string;
+  roundEndTime_gt?: string;
+  roundEndTime_lt?: string;
+};
+
+export type RoundOverview = {
+  id: string;
+  chainId: number;
+  createdAt: string;
+  roundMetaPtr: MetadataPointer;
+  applicationMetaPtr: MetadataPointer;
+  applicationsStartTime: string;
+  applicationsEndTime: string;
+  roundStartTime: string;
+  roundEndTime: string;
+  matchAmount: string;
+  token: string;
+  roundMetadata?: RoundMetadata;
+  projects?: { id: string }[];
+  payoutStrategy: {
+    id: string;
+    strategyName: RoundPayoutType;
+  };
+};
+
+/**
+ * Shape of IPFS content of Round RoundMetaPtr
+ */
+export type RoundMetadata = {
+  name: string;
+  roundType: RoundVisibilityType;
+  eligibility: Eligibility;
+  programContractAddress: string;
+};

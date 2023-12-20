@@ -9,7 +9,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { ExternalLinkIcon } from "@heroicons/react/outline";
-import { getPayoutTokenOptions } from "../api/utils";
 import { Erc20__factory } from "../../types/generated/typechain";
 import { usePayout } from "../../context/application/usePayout";
 import { Button, Input } from "common/src/styles";
@@ -18,6 +17,7 @@ import { AnswerBlock, GrantApplication, Round } from "../api/types";
 import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
+import { getPayoutTokenOptions } from "../api/payoutTokens";
 
 const schema = yup.object().shape({
   amount: yup

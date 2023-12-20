@@ -16,9 +16,9 @@ export default function LandingHero() {
 
 const ByTheNumbers = () => {
   // TODO: fetch data (where to get this?)
-  const uniqueDonations = "3.8M";
+  const uniqueDonations = "4.2M";
   const raisedFunds = "3,715";
-  const fundingDistributed = "$50,000,000+";
+  const fundingDistributed = "$56,000,000+";
 
   return (
     <div className="w-[300px] lg:w-[380px] h-[460px] flex-shrink-0 flex-col justify-between bg-white/50 hidden md:flex rounded-b-3xl px-6 py-8">

@@ -1,5 +1,5 @@
-import { TimestampVariables } from "../../api/rounds";
-import { FilterStatus } from "../hooks/useFilterRounds";
+import { __deprecated_TimestampVariables } from "../../api/rounds";
+import { RoundStatus } from "../hooks/useFilterRounds";
 
 export const createTimestamp = (timestamp = 0) => {
   const NOW_IN_SECONDS = Date.now() / 1000;
@@ -9,29 +9,29 @@ export const createTimestamp = (timestamp = 0) => {
 const ONE_DAY_IN_SECONDS = 3600 * 24;
 const ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365;
 
-function getStatusFilter(status: string): TimestampVariables {
+function getStatusFilter(status: string): __deprecated_TimestampVariables {
   const currentTimestamp = createTimestamp();
   const futureTimestamp = createTimestamp(ONE_YEAR_IN_SECONDS);
 
   switch (status) {
-    case FilterStatus.active:
+    case RoundStatus.active:
       return {
         // Round must have started and not ended yet
         roundStartTime_lt: currentTimestamp,
         roundEndTime_gt: currentTimestamp,
         roundEndTime_lt: futureTimestamp,
       };
-    case FilterStatus.taking_applications:
+    case RoundStatus.taking_applications:
       return {
         applicationsStartTime_lte: currentTimestamp,
         applicationsEndTime_gte: currentTimestamp,
       };
 
-    case FilterStatus.finished:
+    case RoundStatus.finished:
       return {
         roundEndTime_lt: currentTimestamp,
       };
-    case FilterStatus.ending_soon:
+    case RoundStatus.ending_soon:
       return {
         roundEndTime_gt: currentTimestamp,
         roundEndTime_lt: String(
@@ -43,14 +43,16 @@ function getStatusFilter(status: string): TimestampVariables {
   }
 }
 
-export function createRoundsStatusFilter(status: string): TimestampVariables[] {
+export function createRoundsStatusFilter(
+  status: string
+): __deprecated_TimestampVariables[] {
   // Default to all filters
   const selectedFilters =
     status ||
     [
-      FilterStatus.active,
-      FilterStatus.taking_applications,
-      FilterStatus.finished,
+      RoundStatus.active,
+      RoundStatus.taking_applications,
+      RoundStatus.finished,
     ].join(",");
 
   // Build a filter array: [activeFilter, takingApplicationsFilter]
