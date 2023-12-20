@@ -722,45 +722,47 @@ export function dateFromMs(ms: number) {
   }).format(date);
 }
 
-export const getRoundPhase = ({
+export const getRoundStates = ({
   roundStartTimeInSecsStr,
   roundEndTimeInSecsStr,
   applicationsEndTimeInSecsStr,
-  currentTimeMs,
+  atTimeMs: currentTimeMs,
 }: {
   roundStartTimeInSecsStr: string | undefined;
   roundEndTimeInSecsStr: string | undefined;
   applicationsEndTimeInSecsStr: string | undefined;
-  currentTimeMs: number;
-}): undefined | "accepting-applications" | "active" | "ended" => {
-  const roundStartTimeMs =
-    roundStartTimeInSecsStr === undefined
+  atTimeMs: number;
+}): undefined | Array<"accepting-applications" | "active" | "ended"> => {
+  const safeSecStrToMs = (timestampInSecStr: string | undefined) =>
+    timestampInSecStr === undefined ||
+    Number(timestampInSecStr) > Number.MAX_SAFE_INTEGER
       ? undefined
-      : Number(roundStartTimeInSecsStr) * 1000;
-  const roundEndTimeMs =
-    roundEndTimeInSecsStr === undefined
-      ? undefined
-      : Number(roundEndTimeInSecsStr) * 1000;
-  const applicationsEndTimeMs =
-    applicationsEndTimeInSecsStr === undefined
-      ? undefined
-      : Number(applicationsEndTimeInSecsStr) * 1000;
+      : Number(timestampInSecStr) * 1000;
 
-  switch (true) {
-    case roundStartTimeMs !== undefined &&
-      roundEndTimeMs !== undefined &&
-      currentTimeMs > roundStartTimeMs &&
-      currentTimeMs < roundEndTimeMs: {
-      return "active";
-    }
-    case roundEndTimeMs !== undefined && currentTimeMs > roundEndTimeMs: {
-      return "ended";
-    }
-    case applicationsEndTimeMs !== undefined &&
-      currentTimeMs < applicationsEndTimeMs: {
-      return "accepting-applications";
-    }
-    default:
-      return undefined;
+  const roundStartTimeMs = safeSecStrToMs(roundStartTimeInSecsStr);
+  const roundEndTimeMs = safeSecStrToMs(roundEndTimeInSecsStr);
+  const applicationsEndTimeMs = safeSecStrToMs(applicationsEndTimeInSecsStr);
+
+  const states: Array<"accepting-applications" | "active" | "ended"> = [];
+  if (
+    roundStartTimeMs !== undefined &&
+    roundEndTimeMs !== undefined &&
+    currentTimeMs > roundStartTimeMs &&
+    currentTimeMs < roundEndTimeMs
+  ) {
+    states.push("active");
   }
+
+  if (roundEndTimeMs !== undefined && currentTimeMs > roundEndTimeMs) {
+    states.push("ended");
+  }
+
+  if (
+    applicationsEndTimeMs !== undefined &&
+    currentTimeMs < applicationsEndTimeMs
+  ) {
+    states.push("accepting-applications");
+  }
+
+  return states.length > 0 ? states : undefined;
 };

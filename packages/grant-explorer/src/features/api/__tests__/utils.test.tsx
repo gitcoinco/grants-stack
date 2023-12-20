@@ -6,7 +6,7 @@ import {
   pinToIPFS,
   dateFromMs,
   getDaysLeft,
-  getRoundPhase,
+  getRoundStates,
 } from "../utils";
 
 describe("graphql_fetch", () => {
@@ -325,10 +325,10 @@ describe("pinToIPFS", () => {
   });
 });
 
-describe("getRoundPhase", () => {
+describe("getRoundStates", () => {
   test("when round is ended, report `ended`", () => {
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: String(
           new Date("2023-12-15").getTime() / 1000
         ),
@@ -336,14 +336,14 @@ describe("getRoundPhase", () => {
         applicationsEndTimeInSecsStr: String(
           new Date("2023-12-13").getTime() / 1000
         ),
-        currentTimeMs: new Date("2023-12-19").getTime(),
+        atTimeMs: new Date("2023-12-19").getTime(),
       })
-    ).toEqual("ended");
+    ).toEqual(["ended"]);
   });
 
   test("before application start, report `accepting-applications`", () => {
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: String(
           new Date("2023-12-15").getTime() / 1000
         ),
@@ -351,14 +351,29 @@ describe("getRoundPhase", () => {
         applicationsEndTimeInSecsStr: String(
           new Date("2023-12-13").getTime() / 1000
         ),
-        currentTimeMs: new Date("2023-12-12").getTime(),
+        atTimeMs: new Date("2023-12-12").getTime(),
       })
-    ).toEqual("accepting-applications");
+    ).toEqual(["accepting-applications"]);
+  });
+
+  test("when application time overlaps with round time, report both `accepting-applications` and `active`", () => {
+    expect(
+      getRoundStates({
+        roundStartTimeInSecsStr: String(
+          new Date("2023-12-10").getTime() / 1000
+        ),
+        roundEndTimeInSecsStr: String(new Date("2023-12-18").getTime() / 1000),
+        applicationsEndTimeInSecsStr: String(
+          new Date("2023-12-15").getTime() / 1000
+        ),
+        atTimeMs: new Date("2023-12-14").getTime(),
+      })
+    ).toEqual(["active", "accepting-applications"]);
   });
 
   test("between round start and round end, report `active`", () => {
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: String(
           new Date("2023-12-15").getTime() / 1000
         ),
@@ -366,39 +381,39 @@ describe("getRoundPhase", () => {
         applicationsEndTimeInSecsStr: String(
           new Date("2023-12-13").getTime() / 1000
         ),
-        currentTimeMs: new Date("2023-12-16").getTime(),
+        atTimeMs: new Date("2023-12-16").getTime(),
       })
-    ).toEqual("active");
+    ).toEqual(["active"]);
   });
 
   test("when application end time is invalid and round end time is in the past, report `ended`", () => {
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: String(
           new Date("2023-12-15").getTime() / 1000
         ),
         roundEndTimeInSecsStr: String(new Date("2023-12-18").getTime() / 1000),
         applicationsEndTimeInSecsStr: undefined,
-        currentTimeMs: new Date("2023-12-20").getTime(),
+        atTimeMs: new Date("2023-12-20").getTime(),
       })
-    ).toEqual("ended");
+    ).toEqual(["ended"]);
 
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: String(
           new Date("2023-12-15").getTime() / 1000
         ),
         roundEndTimeInSecsStr: String(new Date("2023-12-18").getTime() / 1000),
         applicationsEndTimeInSecsStr:
           "1000000000000000000000000000000000000000000",
-        currentTimeMs: new Date("2023-12-20").getTime(),
+        atTimeMs: new Date("2023-12-20").getTime(),
       })
-    ).toEqual("ended");
+    ).toEqual(["ended"]);
   });
 
   test("when round end time is invalid and application end time is in the future, report `accepting-applications`", () => {
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: String(
           new Date("2023-12-15").getTime() / 1000
         ),
@@ -406,12 +421,12 @@ describe("getRoundPhase", () => {
         applicationsEndTimeInSecsStr: String(
           new Date("2023-12-13").getTime() / 1000
         ),
-        currentTimeMs: new Date("2023-12-12").getTime(),
+        atTimeMs: new Date("2023-12-12").getTime(),
       })
-    ).toEqual("accepting-applications");
+    ).toEqual(["accepting-applications"]);
 
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: String(
           new Date("2023-12-15").getTime() / 1000
         ),
@@ -420,14 +435,14 @@ describe("getRoundPhase", () => {
         applicationsEndTimeInSecsStr: String(
           new Date("2023-12-13").getTime() / 1000
         ),
-        currentTimeMs: new Date("2023-12-12").getTime(),
+        atTimeMs: new Date("2023-12-12").getTime(),
       })
-    ).toEqual("accepting-applications");
+    ).toEqual(["accepting-applications"]);
   });
 
   test("between applications end and round start, report undefined", () => {
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: String(
           new Date("2023-12-15").getTime() / 1000
         ),
@@ -435,18 +450,18 @@ describe("getRoundPhase", () => {
         applicationsEndTimeInSecsStr: String(
           new Date("2023-12-13").getTime() / 1000
         ),
-        currentTimeMs: new Date("2023-12-14").getTime(),
+        atTimeMs: new Date("2023-12-14").getTime(),
       })
     ).toEqual(undefined);
   });
 
   test("when round end time and applications end time are invalid, report undefined", () => {
     expect(
-      getRoundPhase({
+      getRoundStates({
         roundStartTimeInSecsStr: undefined,
         roundEndTimeInSecsStr: undefined,
         applicationsEndTimeInSecsStr: undefined,
-        currentTimeMs: new Date("2023-12-12").getTime(),
+        atTimeMs: new Date("2023-12-12").getTime(),
       })
     ).toEqual(undefined);
   });

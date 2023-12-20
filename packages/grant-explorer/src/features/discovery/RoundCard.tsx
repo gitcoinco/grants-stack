@@ -4,7 +4,7 @@ import {
   truncateDescription,
 } from "common";
 import { RoundOverview, useMetadata } from "../api/rounds";
-import { CHAINS, getDaysLeft, getRoundPhase } from "../api/utils";
+import { CHAINS, getDaysLeft, getRoundStates } from "../api/utils";
 import {
   Badge,
   BasicCard,
@@ -58,12 +58,24 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
       ? undefined
       : getDaysLeft(applicationsEndTime);
 
-  const roundPhase = getRoundPhase({
+  const roundStates = getRoundStates({
     roundStartTimeInSecsStr: roundStartTime,
     roundEndTimeInSecsStr: roundEndTime,
     applicationsEndTimeInSecsStr: applicationsEndTime,
-    currentTimeMs: Date.now(),
+    atTimeMs: Date.now(),
   });
+
+  if (metadata?.name?.match(/season/i)) {
+    console.log(roundStates, {
+      applicationsStartTime: new Date(
+        Number(applicationsStartTime) * 1000
+      ).toString(),
+      roundStartTime: new Date(Number(roundStartTime) * 1000).toString(),
+      applicationsEndTime: new Date(
+        Number(applicationsEndTime) * 1000
+      ).toString(),
+    });
+  }
 
   const approvedApplicationsCount = projects?.length ?? 0;
 
@@ -94,7 +106,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
-          <RoundTimeBadge roundPhase={roundPhase} />
+          <RoundTimeBadge roundStates={roundStates} />
           <CardTitle
             data-testid="round-name"
             className="absolute bottom-1 px-2 text-white"
