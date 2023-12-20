@@ -81,6 +81,16 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Polygon Mumbai",
     logo: "./logos/pol-logo.svg",
   },
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
+    id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    name: "zkSync Era Mainnet",
+    logo: "/logos/zksync-logo.svg",
+  },
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: {
+    id: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    name: "zkSync Era Testnet",
+    logo: "/logos/zksync-logo.svg",
+  },
 };
 
 export type SupportType = {
