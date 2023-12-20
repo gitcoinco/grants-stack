@@ -30,6 +30,7 @@ import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
 import { fetchBalance } from "@wagmi/core";
+import { isPresent } from "ts-is-present";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -141,7 +142,7 @@ export function SummaryContainer() {
     const expiredRounds = rounds
       .filter((round) => round.roundEndTime.getTime() < Date.now())
       .map((round) => round.id)
-      .filter((id): id is string => id !== undefined);
+      .filter(isPresent);
 
     const expiredProjects = projects.filter((project) =>
       expiredRounds.includes(project.roundId)
