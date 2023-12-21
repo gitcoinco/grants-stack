@@ -18,6 +18,7 @@ export const chains = {
   43113: "fuji",
   137: "polygon",
   80001: "polygonMumbai",
+  8453: "base",
 } as const;
 
 export type ChainName = (typeof chains)[keyof typeof chains];
@@ -87,6 +88,9 @@ export const addresses: DeploymentAddressesMap = {
   },
   zkSyncEraTestnet: {
     projectRegistry: "0xb0F4882184EB6e3ed120c5181651D50719329788",
+  },
+  base: {
+    projectRegistry: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
   },
 };
 

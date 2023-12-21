@@ -245,6 +245,26 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
 ];
+
+const BASE_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.BASE,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.BASE,
+    address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+  },
+];
+
 const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -368,6 +388,7 @@ export const payoutTokens = [
   ...POLYGON_MUMBAI_TOKENS,
   ...ZKSYNC_ERA_MAINNET_TOKENS,
   ...ZKSYNC_ERA_TESTNET_TOKENS,
+  ...BASE_TOKENS,
 ];
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {

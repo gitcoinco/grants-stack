@@ -106,6 +106,9 @@ export function getConfig(): Config {
         [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: z
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_ZKSYNC_MAINNET_API),
+        [ChainId.BASE]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_BASE_API),
       },
     },
     pinata: {

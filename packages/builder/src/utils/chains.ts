@@ -13,6 +13,7 @@ import {
   avalanche,
   avalancheFuji,
   fantom,
+  base,
   fantomTestnet,
   customOptimism,
   customPolygon,
@@ -31,6 +32,7 @@ const availableChains: { [key: string]: Chain } = {
   arbitrum,
   avalanche,
   polygon: customPolygon,
+  base,
   fantomTestnet,
   pgnTestnet,
   arbitrumGoerli,
@@ -50,6 +52,7 @@ const stagingChains = [
   pgnTestnet,
   pgn,
   arbitrum,
+  base,
   arbitrumGoerli,
   customPolygon,
   polygonMumbai,
@@ -68,6 +71,7 @@ const productionChains = [
   avalanche,
   customPolygon,
   zkSyncEraMainnet,
+  base,
 ];
 
 export function getEnabledChainsAndProviders() {
