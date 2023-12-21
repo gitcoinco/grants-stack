@@ -397,6 +397,7 @@ const BASE_TOKENS: VotingToken[] = [
     decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
+    permitVersion: "2",
     defaultForVoting: false,
     canVote: true,
   },
