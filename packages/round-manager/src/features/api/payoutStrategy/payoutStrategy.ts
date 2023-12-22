@@ -50,9 +50,10 @@ export async function updateDistributionToContract({
       signerOrProvider
     );
 
-    const tx = await merklePayoutStrategyImplementation.updateDistribution(
-      encodedDistribution
-    );
+    const tx =
+      await merklePayoutStrategyImplementation.updateDistribution(
+        encodedDistribution
+      );
     const receipt = await tx.wait();
 
     console.log("✅ Transaction hash: ", tx.hash);
@@ -107,6 +108,7 @@ export const useFetchMatchingDistributionFromContract = (
 };
 
 interface GroupedProjects {
+  all: MatchingStatsData[];
   paid: MatchingStatsData[];
   unpaid: MatchingStatsData[];
 }
@@ -123,6 +125,7 @@ export const useGroupProjectsByPaymentStatus = (
 ): GroupedProjects => {
   const [groupedProjects, setGroupedProjects] = useState<GroupedProjects>({
     paid: [],
+    all: [],
     unpaid: [],
   });
 
@@ -136,6 +139,7 @@ export const useGroupProjectsByPaymentStatus = (
   useEffect(() => {
     async function fetchData() {
       const groupedProjectsTmp: GroupedProjects = {
+        all: allProjects,
         paid: [],
         unpaid: [],
       };
@@ -267,9 +271,8 @@ export async function reclaimFundsFromContract(
       signerOrProvider
     );
 
-    const tx = await merklePayoutStrategyImplementation.withdrawFunds(
-      recipient
-    );
+    const tx =
+      await merklePayoutStrategyImplementation.withdrawFunds(recipient);
 
     const receipt = await tx.wait();
 
