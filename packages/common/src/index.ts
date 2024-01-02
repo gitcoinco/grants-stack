@@ -121,6 +121,7 @@ export const graphQlEndpoints: Record<ChainId, string> = {
     process.env.REACT_APP_SUBGRAPH_ZKSYNC_TESTNET_API!,
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
     process.env.REACT_APP_SUBGRAPH_ZKSYNC_MAINNET_API!,
+  [ChainId.BASE]: process.env.REACT_APP_SUBGRAPH_BASE_API!,
 };
 
 /**

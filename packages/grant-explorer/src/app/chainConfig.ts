@@ -13,6 +13,7 @@ import { arbitrum, arbitrumGoerli } from "viem/chains";
 import {
   pgnTestnet,
   pgn,
+  base,
   zkSyncEraMainnet,
   zkSyncEraTestnet,
 } from "common/src/chains";
@@ -43,6 +44,7 @@ const MAINNET_CHAINS = [
   avalanche,
   polygon,
   zkSyncEraMainnet,
+  base,
   { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
 ].map(ensureValidChainId);
 

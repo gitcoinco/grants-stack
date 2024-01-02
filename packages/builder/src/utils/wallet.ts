@@ -47,6 +47,7 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   polygonMumbai: "Polygon Mumbai",
   zkSyncEraMainnet: "zkSync Era Mainnet",
   zkSyncEraTestnet: "zkSync Era Testnet",
+  base: "Base",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -67,6 +68,7 @@ export const networkIcon: { [key in ChainName]: string } = {
   polygonMumbai: POLIcon,
   zkSyncEraMainnet: ZkSyncIcon,
   zkSyncEraTestnet: ZkSyncIcon,
+  base: EthDiamondGlyph,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -87,6 +89,7 @@ export const payoutIcon: { [key in ChainName]: string } = {
   fuji: AVAXIcon,
   zkSyncEraMainnet: ZkSyncIcon,
   zkSyncEraTestnet: ZkSyncIcon,
+  base: EthDiamondGlyph,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {

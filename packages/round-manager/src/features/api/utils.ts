@@ -81,6 +81,11 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Polygon Mumbai",
     logo: "./logos/pol-logo.svg",
   },
+  [ChainId.BASE]: {
+    id: ChainId.BASE,
+    name: "Base",
+    logo: "/logos/base-logo.svg",
+  },
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
     id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
     name: "zkSync Era",

@@ -109,6 +109,11 @@ export const CHAINS: Record<
     name: "zkSync Era",
     logo: "./logos/zksync-logo.svg",
   },
+  [ChainId.BASE]: {
+    id: ChainId.BASE,
+    name: "Base",
+    logo: "./logos/base-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos = {
@@ -374,6 +379,30 @@ const PGN_MAINNET_TOKENS: VotingToken[] = [
   },
 ];
 
+const BASE_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.BASE,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.BASE,
+    address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    permitVersion: "2",
+    defaultForVoting: false,
+    canVote: true,
+  },
+];
+
 const ARBITRUM_TOKENS: VotingToken[] = [
   {
     name: "ETH",
@@ -532,6 +561,7 @@ export const votingTokens = [
   ...POLYGON_MUMBAI_TOKENS,
   ...ZKSYNC_ERA_TESTNET_TOKENS,
   ...ZKSYNC_ERA_MAINNET_TOKENS,
+  ...BASE_TOKENS,
 ];
 
 type VotingTokensMap = Record<ChainId, VotingToken[]>;
@@ -554,6 +584,7 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.POLYGON_MUMBAI]: POLYGON_MUMBAI_TOKENS,
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: ZKSYNC_ERA_TESTNET_TOKENS,
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: ZKSYNC_ERA_MAINNET_TOKENS,
+  [ChainId.BASE]: BASE_TOKENS,
 };
 
 export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
@@ -587,6 +618,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "https://goerli.explorer.zksync.io/tx/",
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
+  [ChainId.BASE]: "https://basescan.org/tx/",
 };
 
 /**
@@ -744,6 +776,7 @@ export function getChainIds(): number[] {
       Number(ChainId.AVALANCHE),
       Number(ChainId.POLYGON),
       Number(ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID),
+      Number(ChainId.BASE),
     ];
   } else {
     return Object.values(ChainId)

@@ -34,6 +34,7 @@ const projectRegistryMap: ChainIdToStringMap = {
     "0xe6CCEe93c97E20644431647B306F48e278aFFdb9",
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0xb0F4882184EB6e3ed120c5181651D50719329788",
+  [ChainId.BASE]: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -74,6 +75,7 @@ const programFactoryMap: ChainIdToStringMap = {
     "0x68a14AF71BFa0FE09fC937033f6Ea5153c0e75e4",
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x6D341814Be4E2316142D9190E390b494F1dECFAf",
+  [ChainId.BASE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -108,6 +110,7 @@ const roundFactoryMap: ChainIdToStringMap = {
     "0xF3B5a0d59C6292BD0e4f8Cf735EEF52b98f428E6",
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x0Bb6e2dfEaef0Db5809B3979717E99e053Cbae72",
+  [ChainId.BASE]: "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (
@@ -149,6 +152,7 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
     "0x94cB638556d3991363102431d8cE9e839C734677",
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x8c28F21D2d8C53eedC58bF9cdCfb7DCF7d809d97",
+  [ChainId.BASE]: "0xC3A195EEa198e74D67671732E1B8F8A23781D735",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (
@@ -230,6 +234,10 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
       address = "0x0c0B71BA1427cb46424d38133E8187365Cc5466b";
       break;
     }
+    case ChainId.BASE: {
+      address = "0x73AB205af1476Dc22104A6B8b3d4c273B58C6E27";
+      break;
+    }
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
@@ -264,6 +272,7 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
     "0x41A8F19C6CB88C9Cc98d29Cb7A4015629910fFc0",
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0xbA160C13F8F626e3232078aDFD6eD2f2B2289563",
+  [ChainId.BASE]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId
@@ -299,6 +308,7 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "",
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x0FD600678475C03f28baE59A2d55f7a911383e2B",
+  [ChainId.BASE]: "",
 };
 
 /* AlloSettingsContract  */
@@ -336,6 +346,7 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
     "0x0ccdfCB7e5DB60AAE5667d1680B490F7830c49C8",
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x4170665B31bC10009f8a69CeaACf3265C3d66797",
+  [ChainId.BASE]: "0x74c3665540FC8B92Dd06a7e56a51eCa038C18180",
 };
 
 /* DirectPayoutStrategyFactoryContract  */
