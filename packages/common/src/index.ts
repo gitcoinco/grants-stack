@@ -117,6 +117,11 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.AVALANCHE]: process.env.REACT_APP_SUBGRAPH_AVALANCHE_API!,
   [ChainId.POLYGON]: process.env.REACT_APP_SUBGRAPH_POLYGON_API!,
   [ChainId.POLYGON_MUMBAI]: process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API!,
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_ZKSYNC_TESTNET_API!,
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_ZKSYNC_MAINNET_API!,
+  [ChainId.BASE]: process.env.REACT_APP_SUBGRAPH_BASE_API!,
 };
 
 /**
@@ -323,6 +328,9 @@ export const RedstoneTokenIds = {
   MATIC: "MATIC",
   AVAX: "AVAX",
   CVP: "CVP",
+  USDT: "USDT",
+  LUSD: "LUSD",
+  MUTE: "MUTE",
 } as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {

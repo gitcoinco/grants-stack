@@ -6,11 +6,14 @@ import { publicProvider } from "wagmi/providers/public";
 import {
   pgn,
   pgnTestnet,
+  zkSyncEraMainnet,
+  zkSyncEraTestnet,
   devChain1,
   devChain2,
   avalanche,
   avalancheFuji,
   fantom,
+  base,
   fantomTestnet,
   customOptimism,
   customPolygon,
@@ -29,11 +32,14 @@ const availableChains: { [key: string]: Chain } = {
   arbitrum,
   avalanche,
   polygon: customPolygon,
+  base,
   fantomTestnet,
   pgnTestnet,
   arbitrumGoerli,
   polygonMumbai,
   avalancheFuji,
+  zkSyncEraMainnet,
+  zkSyncEraTestnet,
 };
 
 const stagingChains = [
@@ -46,11 +52,14 @@ const stagingChains = [
   pgnTestnet,
   pgn,
   arbitrum,
+  base,
   arbitrumGoerli,
   customPolygon,
   polygonMumbai,
   avalanche,
   avalancheFuji,
+  zkSyncEraMainnet,
+  zkSyncEraTestnet,
 ];
 
 const productionChains = [
@@ -61,6 +70,8 @@ const productionChains = [
   arbitrum,
   avalanche,
   customPolygon,
+  zkSyncEraMainnet,
+  base,
 ];
 
 export function getEnabledChainsAndProviders() {

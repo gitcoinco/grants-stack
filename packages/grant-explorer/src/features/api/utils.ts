@@ -99,6 +99,21 @@ export const CHAINS: Record<
     name: "Polygon Mumbai",
     logo: "./logos/pol-logo.svg",
   },
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: {
+    id: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    name: "zkSync Era Testnet",
+    logo: "./logos/zksync-logo.svg",
+  },
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
+    id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    name: "zkSync Era",
+    logo: "./logos/zksync-logo.svg",
+  },
+  [ChainId.BASE]: {
+    id: ChainId.BASE,
+    name: "Base",
+    logo: "./logos/base-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos = {
@@ -113,6 +128,10 @@ export const TokenNamesAndLogos = {
   ARB: "./logos/arb-logo.svg",
   AVAX: "./logos/avax-logo.svg",
   MATIC: "./logos/pol-logo.svg",
+  TEST: "./logos/dai-logo.svg",
+  USDT: "./logos/usdt-logo.svg",
+  LUSD: "./logos/lusd-logo.svg",
+  MUTE: "./logos/mute-logo.svg",
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -228,6 +247,92 @@ const FANTOM_TESTNET_TOKENS: VotingToken[] = [
   },
 ];
 
+const ZKSYNC_ERA_TESTNET_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "TEST",
+    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    address: "0x8fd03Cd97Da068CC242Ab7551Dc4100DD405E8c7",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+];
+
+const ZKSYNC_ERA_MAINNET_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "USDT",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDT"],
+    redstoneTokenId: RedstoneTokenIds["USDT"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "LUSD",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x503234F203fC7Eb888EEC8513210612a43Cf6115",
+    decimal: 18,
+    logo: TokenNamesAndLogos["LUSD"],
+    redstoneTokenId: RedstoneTokenIds["LUSD"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+  {
+    name: "MUTE",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: "0x0e97C7a0F8B2C9885C8ac9fC6136e829CbC21d42",
+    decimal: 18,
+    logo: TokenNamesAndLogos["MUTE"],
+    redstoneTokenId: RedstoneTokenIds["MUTE"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+];
+
 const PGN_TESTNET_TOKENS: VotingToken[] = [
   {
     name: "TEST",
@@ -269,6 +374,30 @@ const PGN_MAINNET_TOKENS: VotingToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+];
+
+const BASE_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.BASE,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.BASE,
+    address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    permitVersion: "2",
     defaultForVoting: false,
     canVote: true,
   },
@@ -430,6 +559,9 @@ export const votingTokens = [
   ...FUJI_TOKENS,
   ...POLYGON_TOKENS,
   ...POLYGON_MUMBAI_TOKENS,
+  ...ZKSYNC_ERA_TESTNET_TOKENS,
+  ...ZKSYNC_ERA_MAINNET_TOKENS,
+  ...BASE_TOKENS,
 ];
 
 type VotingTokensMap = Record<ChainId, VotingToken[]>;
@@ -450,6 +582,9 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.FUJI]: FUJI_TOKENS,
   [ChainId.POLYGON]: POLYGON_TOKENS,
   [ChainId.POLYGON_MUMBAI]: POLYGON_MUMBAI_TOKENS,
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: ZKSYNC_ERA_TESTNET_TOKENS,
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: ZKSYNC_ERA_MAINNET_TOKENS,
+  [ChainId.BASE]: BASE_TOKENS,
 };
 
 export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
@@ -480,6 +615,10 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
   [ChainId.FUJI]: "https://snowtrace.io/tx/",
   [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "https://goerli.explorer.zksync.io/tx/",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
+  [ChainId.BASE]: "https://basescan.org/tx/",
 };
 
 /**
@@ -605,19 +744,20 @@ export const pinToIPFS = (obj: IPFSObject) => {
   }
 };
 
-export const getDaysLeft = (fromTimestamp?: string) => {
+export const getDaysLeft = (fromNowToTimestampStr: string) => {
+  const targetTimestamp = Number(fromNowToTimestampStr);
+
   // Some timestamps are returned as overflowed (1.15e+77)
   // We parse these into undefined to show as "No end date" rather than make the date diff calculation
-  if (
-    fromTimestamp === undefined ||
-    Number(fromTimestamp) > Number.MAX_SAFE_INTEGER
-  ) {
+  if (targetTimestamp > Number.MAX_SAFE_INTEGER) {
     return undefined;
   }
-  const currentTimestamp = Math.floor(Date.now() / 1000); // current timestamp in seconds
+
+  // TODO replace with differenceInCalendarDays from 'date-fns'
+  const currentTimestampInSeconds = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day
 
-  const differenceInSeconds = Number(fromTimestamp) - currentTimestamp;
+  const differenceInSeconds = targetTimestamp - currentTimestampInSeconds;
   const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
 
   return differenceInDays;
@@ -635,6 +775,8 @@ export function getChainIds(): number[] {
       Number(ChainId.ARBITRUM),
       Number(ChainId.AVALANCHE),
       Number(ChainId.POLYGON),
+      Number(ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID),
+      Number(ChainId.BASE),
     ];
   } else {
     return Object.values(ChainId)
@@ -720,3 +862,48 @@ export function dateFromMs(ms: number) {
     dateStyle: "medium",
   }).format(date);
 }
+
+export const getRoundStates = ({
+  roundStartTimeInSecsStr,
+  roundEndTimeInSecsStr,
+  applicationsEndTimeInSecsStr,
+  atTimeMs: currentTimeMs,
+}: {
+  roundStartTimeInSecsStr: string | undefined;
+  roundEndTimeInSecsStr: string | undefined;
+  applicationsEndTimeInSecsStr: string | undefined;
+  atTimeMs: number;
+}): undefined | Array<"accepting-applications" | "active" | "ended"> => {
+  const safeSecStrToMs = (timestampInSecStr: string | undefined) =>
+    timestampInSecStr === undefined ||
+    Number(timestampInSecStr) > Number.MAX_SAFE_INTEGER
+      ? undefined
+      : Number(timestampInSecStr) * 1000;
+
+  const roundStartTimeMs = safeSecStrToMs(roundStartTimeInSecsStr);
+  const roundEndTimeMs = safeSecStrToMs(roundEndTimeInSecsStr);
+  const applicationsEndTimeMs = safeSecStrToMs(applicationsEndTimeInSecsStr);
+
+  const states: Array<"accepting-applications" | "active" | "ended"> = [];
+  if (
+    roundStartTimeMs !== undefined &&
+    roundEndTimeMs !== undefined &&
+    currentTimeMs > roundStartTimeMs &&
+    currentTimeMs < roundEndTimeMs
+  ) {
+    states.push("active");
+  }
+
+  if (roundEndTimeMs !== undefined && currentTimeMs > roundEndTimeMs) {
+    states.push("ended");
+  }
+
+  if (
+    applicationsEndTimeMs !== undefined &&
+    currentTimeMs < applicationsEndTimeMs
+  ) {
+    states.push("accepting-applications");
+  }
+
+  return states.length > 0 ? states : undefined;
+};

@@ -1,11 +1,10 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { ChainId } from "common";
+import { ChainId, isJestRunning } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
-import { chains } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";
@@ -18,6 +17,8 @@ import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
 import { fetchProjectApplications } from "./projects";
 import { graphqlFetch } from "../utils/graphql";
+
+const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
@@ -132,6 +133,17 @@ const dispatchAndLogApplicationError = (
   dispatch(applicationError(roundAddress, error, step));
 };
 
+export function chainIdToChainName(chainId: number): string {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const name in LitJsSdk.LIT_CHAINS) {
+    if (LitJsSdk.LIT_CHAINS[name].chainId === chainId) {
+      return name;
+    }
+  }
+
+  throw new Error(`couldn't find LIT chain name for chainId ${chainId}`);
+}
+
 export const submitApplication =
   (roundAddress: string, formInputs: RoundApplicationAnswers) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
@@ -211,7 +223,7 @@ export const submitApplication =
       );
       return;
     }
-    const chainName = chains[chainID];
+    const chainName = chainIdToChainName(chainID);
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
@@ -222,23 +234,13 @@ export const submitApplication =
     let application: RoundApplication;
     let deterministicApplication: string;
 
-    let chain: string = "";
-
-    if (chainName === "mainnet") {
-      chain = "ethereum";
-    } else if (chainName === "pgn") {
-      chain = "publicGoodsNetwork";
-    } else {
-      chain = chainName;
-    }
-
     try {
       const builder = new RoundApplicationBuilder(
         true,
         project,
         roundApplicationMetadata,
         roundAddress,
-        chain
+        chainName
       );
 
       application = await builder.build(roundAddress, formInputs);

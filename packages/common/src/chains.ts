@@ -1,14 +1,21 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
+import zkSyncIcon from "./icons/zksync-logo.svg";
+import BaseLogo from "./icons/base-logo.svg";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,
   fantom as fantomOriginal,
   fantomTestnet as fantomTestnetOriginal,
-} from "wagmi/chains";
+  zkSyncTestnet as zkSyncTestnetOriginal,
+  zkSync as zkSyncOriginal,
+  base as baseOriginal,
+} from "@wagmi/chains";
 import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
+
+const config = getConfig();
 
 export const fantom: Chain = {
   ...fantomOriginal,
@@ -50,6 +57,21 @@ export const avalancheFuji: Chain = {
   },
 };
 
+export const base: Chain = {
+  ...baseOriginal,
+  iconUrl: BaseLogo,
+  rpcUrls: {
+    default: {
+      http: [
+        `https://base-mainnet.g.alchemy.com/v2/${config.blockchain.alchemyId}`,
+      ],
+    },
+    public: {
+      http: ["https://mainnet.base.org/"],
+    },
+  },
+};
+
 export const avalanche: Chain = {
   ...avalancheOriginal,
   rpcUrls: {
@@ -60,6 +82,32 @@ export const avalanche: Chain = {
     },
     public: {
       http: ["https://api.avax.network/ext/bc/C/rpc"],
+    },
+  },
+};
+
+export const zkSyncEraTestnet: Chain = {
+  ...zkSyncTestnetOriginal,
+  iconUrl: zkSyncIcon,
+  rpcUrls: {
+    default: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+    public: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+  },
+};
+
+export const zkSyncEraMainnet: Chain = {
+  ...zkSyncOriginal,
+  iconUrl: zkSyncIcon,
+  rpcUrls: {
+    default: {
+      http: ["https://mainnet.era.zksync.io"],
+    },
+    public: {
+      http: ["https://mainnet.era.zksync.io"],
     },
   },
 };
@@ -116,8 +164,6 @@ export const pgn: Chain = {
     },
   },
 };
-
-const config = getConfig();
 
 export const customOptimism = {
   id: 10,
