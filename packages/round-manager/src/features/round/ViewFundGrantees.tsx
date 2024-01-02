@@ -154,7 +154,7 @@ function FinalizedRoundContent(props: { round: Round }) {
               </div>
             </Tab.List>
           </div>
-          <Tab.Panels className="basis-5/6 ml-6">
+          <Tab.Panels className="basis-5/6">
             <Tab.Panel>
               <PayProjectsTable
                 projects={unpaidProjects}
@@ -327,7 +327,7 @@ export function PayProjectsTable(props: {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
+    <div>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 text-gray-900">
