@@ -27,6 +27,7 @@ export const TokenNamesAndLogos = {
   USDT: "/logos/usdt-logo.svg",
   LUSD: "/logos/lusd-logo.svg",
   MUTE: "/logos/mute-logo.svg",
+  mkUSD: "/logos/mkusd-logo.svg", // Prisma mkUSD
 } as const;
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -52,6 +53,14 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["CVP"],
     redstoneTokenId: RedstoneTokenIds["CVP"],
+  },
+  {
+    name: "mkUSD",
+    chainId: ChainId.MAINNET,
+    address: "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28",
+    decimal: 18,
+    logo: TokenNamesAndLogos["mkUSD"],
+    redstoneTokenId: RedstoneTokenIds["mkUSD"],
   },
 ];
 const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
