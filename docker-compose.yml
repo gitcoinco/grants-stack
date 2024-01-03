@@ -18,15 +18,14 @@ services:
       - '127.0.0.1:3003:8000'
 
   localchain-1:
-    image: ghcr.io/gitcoinco/allo-contracts-v1:main
+    image: ghcr.io/foundry-rs/foundry:latest
+    entrypoint: [ "anvil", "--host", "0.0.0.0", "--chain-id", "313371" ]  
     ports:
       - '127.0.0.1:3005:8545'
-    environment:
-      - DEV_CHAIN_ID=313371
 
   # initializes localchain deploying contracts and populates with test data
   dev-setup-1:
-    image: ghcr.io/gitcoinco/allo-contracts-v1:main
+    image: ghcr.io/gitcoinco/allo-contracts-v1:updates
     depends_on:
       - pinata
       - localchain-1
@@ -36,18 +35,16 @@ services:
       - DEV_CHAIN_HOST=localchain-1
       - DEV_CHAIN_ID=313371
     restart: "no"
-    entrypoint: [ "bash", "-c", "sleep 2 && corepack enable && exec ./docker/deploy-contracts.sh"]
 
   localchain-2:
-    image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
+    image: ghcr.io/foundry-rs/foundry:latest
+    entrypoint: [ "anvil", "--host", "0.0.0.0", "--chain-id", "313372" ]  
     ports:
       - '127.0.0.1:3007:8545'
-    environment:
-      - DEV_CHAIN_ID=313372
 
   # initializes localchain deploying contracts and populates with test data
   dev-setup-2:
-    image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
+    image: ghcr.io/gitcoinco/allo-contracts-v1:updates
     depends_on:
       - pinata
       - localchain-2
@@ -57,4 +54,3 @@ services:
       - DEV_CHAIN_HOST=localchain-2
       - DEV_CHAIN_ID=313372
     restart: "no"
-    entrypoint: [ "bash", "-c", "sleep 2 && corepack enable && exec ./docker/deploy-contracts.sh"]
