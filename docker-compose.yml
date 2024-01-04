@@ -54,3 +54,17 @@ services:
       - DEV_CHAIN_HOST=localchain-2
       - DEV_CHAIN_ID=313372
     restart: "no"
+
+  explorer-1:
+    image: otterscan/otterscan
+    environment:
+      - ERIGON_URL=http://127.0.0.1:3005
+    ports:
+      - '127.0.0.1:13005:80'
+      
+  explorer-2:
+    image: otterscan/otterscan
+    environment:
+      - ERIGON_URL=http://127.0.0.1:3007
+    ports:
+      - '127.0.0.1:13007:80'
