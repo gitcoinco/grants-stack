@@ -9,30 +9,37 @@ pre-commit:
       run: pnpm format {staged_files}
       stage_fixed: true
 
-    lint-ge:
+    lint-builder:
       root: "packages/builder"
       glob: "**/*.{js,ts,jsx,tsx}"
       run: pnpm --filter "builder" lint:local {staged_files}
       stage_fixed: true
 
-    lint-rm:
+    lint-manager:
       root: "packages/round-manager"
       glob: "**/*.{js,ts,jsx,tsx}"
       run: pnpm --filter "round-manager" lint:local {staged_files}
       stage_fixed: true
 
-    lint-builder:
+    lint-explorer:
       root: "packages/grant-explorer"
       glob: "**/*.{js,ts,jsx,tsx}"
       run: pnpm --filter "grant-explorer" lint:local {staged_files}
       stage_fixed: true
 
+    lint-data-layer:
+      root: "packages/data-layer"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: pnpm --filter "data-layer" lint {staged_files}
+      stage_fixed: true
+
+
 pre-push:
   parallel: true
   commands:
     typecheck:
-      run: turbo run typecheck
+      run: pnpm turbo run typecheck
     build:
-      run: turbo run build
+      run: pnpm turbo run build
     test:
-      run: turbo run test
+      run: pnpm turbo run test --concurrency=50%

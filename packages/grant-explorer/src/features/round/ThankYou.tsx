@@ -15,16 +15,18 @@ import { Hex } from "viem";
 import { useRoundById } from "../../context/RoundContext";
 
 export function createTwitterShareText(props: TwitterButtonParams) {
-  return `I just donated to ${props.roundName ?? "a round"}${
+  return `I just donated to ${props.roundName?.trim() ?? "a round"}${
     props.isMrc && props.roundName ? " and more" : ""
-  } on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${
+  } on @gitcoin's @grantsstack. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!\n\nhttps://explorer.gitcoin.co/#/contributors/${
     props.address
   }`;
 }
 
 export function createTwitterShareUrl(props: TwitterButtonParams) {
   const shareText = createTwitterShareText(props);
-  return `https://twitter.com/share?text=${encodeURIComponent(shareText)}`;
+  return `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    shareText
+  )}`;
 }
 
 type TwitterButtonParams = {
@@ -118,7 +120,7 @@ export default function ThankYou() {
 
   const { round } = useRoundById(
     /* If we don't have a round, pass in invalid params and silently fail */
-    topProject?.chainId.toString() ?? "",
+    Number(topProject?.chainId),
     topProject?.roundId ?? ""
   );
 

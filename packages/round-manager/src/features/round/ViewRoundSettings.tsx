@@ -38,7 +38,7 @@ import {
   ProgressStep,
   Round,
 } from "../api/types";
-import { CHAINS, SupportType, payoutTokens } from "../api/utils";
+import { CHAINS, SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import FormValidationErrorList from "../common/FormValidationErrorList";
@@ -52,6 +52,7 @@ import {
 } from "./RoundDetailForm";
 import { isDirectRound } from "./ViewRoundPage";
 import { maxDateForUint256 } from "../../constants";
+import { payoutTokens } from "../api/payoutTokens";
 
 type EditMode = {
   canEdit: boolean;
@@ -122,6 +123,43 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [ipfsStep, setIpfsStep] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
 
+  const [noRoundEndDate, setNoRoundEndDate] = useState(false);
+  // Is the round a rolling application round as per the contract
+  const [rollingApplications, setRollingApplications] = useState(false);
+  // Is the round a rolling application round as per the form
+  const [editedRollingApplications, setEditedRollingApplications] =
+    useState(false);
+
+  useEffect(() => {
+    setNoRoundEndDate(moment(round?.roundEndTime).isSame(maxDateForUint256));
+  }, [round?.roundEndTime]);
+
+  useEffect(() => {
+    if (
+      round?.roundEndTime.toISOString() !== "" &&
+      round?.applicationsEndTime.toISOString() ===
+        round?.roundEndTime.toISOString()
+    ) {
+      setRollingApplications(true);
+    }
+  }, [round?.applicationsEndTime, round?.roundEndTime]);
+
+  useEffect(() => {
+    if (
+      editedRound?.roundEndTime.toISOString() !== "" &&
+      editedRound?.applicationsEndTime.toISOString() ===
+        editedRound?.roundEndTime.toISOString()
+    ) {
+      setEditedRollingApplications(true);
+    }
+  }, [editedRound?.applicationsEndTime, editedRound?.roundEndTime]);
+
+  useEffect(() => {
+    if (isDirectRound(round!)) {
+      setEditedRollingApplications(true);
+    }
+  }, [round]);
+
   const ValidationSchema = !isDirectRound(round!)
     ? RoundValidationSchema.shape({
         // Overrides for validation schema that was not included in imported schema.
@@ -184,7 +222,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 .number()
                 .typeError("Invalid value.")
                 .positive()
-                .integer()
                 .required("This field is required.")
                 .moreThan(0.001, "Must be greater than zero (0).")
                 .lessThan(101, "Must be equal or less than 100."),
@@ -198,7 +235,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   .number()
                   .typeError("Invalid value.")
                   .positive()
-                  .integer()
                   .required("This field is required.")
                   .moreThan(0, "Must be greater than 0."),
                 otherwise: yup.number().notRequired(),
@@ -284,8 +320,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
   if (!round) {
     return <></>;
   }
-  const roundStartDateTime = round.roundStartTime
-    ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(round.roundStartTime)}`
+  const roundEndDateTime = noRoundEndDate
+    ? ""
+    : round.roundEndTime
+    ? `${getUTCDate(round.roundEndTime)} ${getUTCTime(round.roundEndTime)}`
     : "...";
 
   const hasRoundEnded = moment().isAfter(moment(round.roundEndTime));
@@ -314,7 +352,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
       // @ts-expect-error TS upgrade broke this, TODO fix this
       handleSubmit(submit(editedRound as Round));
       const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
-      console.log("editedGroups", editedGroups);
       setIpfsStep(
         editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer
       );
@@ -338,7 +375,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   const confirmationModalBody = (
     <p className="text-md text-center font-normal mb-4">
-      You will need to sign 1 transaction to update your round with the latest
+      You will need to sign a transaction to update your round with the latest
       changes. Please note that once the round starts, you will not be able to
       make any more changes to your round settings.
     </p>
@@ -447,12 +484,12 @@ export default function ViewRoundSettings(props: { id?: string }) {
         </div>
         <div className="mb-8">
           <p className="text-sm text-gray-400">
-            Changes can be made up until the round starts ({roundStartDateTime}
-            ).
+            Changes can be made up until the round ends
+            {noRoundEndDate ? "" : " (" + roundEndDateTime + ")"}.
           </p>
           <p className="text-sm text-gray-400">
-            Once the round starts, you’ll only be able to change the Round End
-            Date.
+            The round will be locked after the round ends, so be sure to make
+            any edits before then.
           </p>
         </div>
         <FormValidationErrorList errors={errors} />
@@ -514,6 +551,10 @@ export default function ViewRoundSettings(props: { id?: string }) {
                   editMode={editMode}
                   editedRound={editedRound as Round}
                   setEditedRound={setEditedRound}
+                  noRoundEndDate={noRoundEndDate}
+                  rollingApplications={rollingApplications}
+                  editedRollingApplications={editedRollingApplications}
+                  setEditedRollingApplications={setEditedRollingApplications}
                   control={control}
                   register={register}
                   errors={errors}
@@ -572,7 +613,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
   );
 }
 
-//
 function DetailsPage(props: {
   editMode: EditMode;
   editedRound: Round;
@@ -624,12 +664,7 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <Controller
               name="roundMetadata.name"
               control={props.control}
@@ -638,11 +673,8 @@ function DetailsPage(props: {
                   {...field}
                   {...props.register("roundMetadata.name")}
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
+                  disabled={!props.editMode.canEdit}
                   data-testid={"round-name-input"}
                   onChange={(e) => {
                     field.onChange(e);
@@ -674,7 +706,7 @@ function DetailsPage(props: {
             Program Chain
           </div>
           <div
-            className={`border pl-2 rounded-lg py-0.5 opacity-50 leading-8 font-normal ${
+            className={`border border-gray-400 bg-gray-50 pl-2 rounded-lg py-0.5 opacity-50 leading-8 font-normal ${
               !props.editMode.canEdit ||
               (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
             }`}
@@ -699,12 +731,7 @@ function DetailsPage(props: {
           *Required
         </span>
       </div>
-      <div
-        className={`leading-8 font-normal ${
-          !props.editMode.canEdit ||
-          (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-        }`}
-      >
+      <div className="leading-8 font-normal">
         <Controller
           name="roundMetadata.eligibility.description"
           control={props.control}
@@ -713,11 +740,8 @@ function DetailsPage(props: {
               {...field}
               {...props.register("roundMetadata.eligibility.description")}
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-              disabled={
-                !props.editMode.canEdit ||
-                props.editMode.canEditOnlyRoundEndDate
-              }
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
+              disabled={!props.editMode.canEdit}
               onChange={(e) => {
                 field.onChange(e);
                 props.setEditedRound({
@@ -756,22 +780,13 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
-            {!props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate ? (
+          <div className="leading-8 font-normal">
+            {!props.editMode.canEdit ? (
               <input
                 type="text"
-                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
                 defaultValue={props.editedRound?.roundMetadata.support?.type}
-                disabled={
-                  !props.editMode.canEdit ||
-                  props.editMode.canEditOnlyRoundEndDate
-                }
+                disabled={!props.editMode.canEdit}
               />
             ) : (
               <Controller
@@ -786,10 +801,7 @@ function DetailsPage(props: {
                     editedRound={props.editedRound}
                     setEditedRound={props.setEditedRound}
                     field={field}
-                    disabled={
-                      !props.editMode.canEdit ||
-                      props.editMode.canEditOnlyRoundEndDate
-                    }
+                    disabled={!props.editMode.canEdit}
                   />
                 )}
               />
@@ -811,12 +823,7 @@ function DetailsPage(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <Controller
               name="roundMetadata.support.info"
               control={props.control}
@@ -825,11 +832,8 @@ function DetailsPage(props: {
                   {...field}
                   {...props.register("roundMetadata.support.info")}
                   type="text"
-                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                  className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
+                  disabled={!props.editMode.canEdit}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -888,12 +892,7 @@ function DetailsPage(props: {
                   Optional
                 </span>
               </div>
-              <div
-                className={`leading-8 font-normal ${
-                  !props.editMode.canEdit ||
-                  (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-                }`}
-              >
+              <div className="leading-8 font-normal">
                 <Controller
                   control={props.control}
                   name={`roundMetadata.eligibility.requirements.${i}.requirement`}
@@ -905,11 +904,8 @@ function DetailsPage(props: {
                           `roundMetadata.eligibility.requirements.${i}.requirement`
                         )}
                         type="text"
-                        className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
-                        disabled={
-                          !props.editMode.canEdit ||
-                          props.editMode.canEditOnlyRoundEndDate
-                        }
+                        className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
+                        disabled={!props.editMode.canEdit}
                         onChange={(e) => {
                           field.onChange(e);
                           const updatedRequirements = [
@@ -934,39 +930,38 @@ function DetailsPage(props: {
                           });
                         }}
                       />
-                      {props.editMode.canEdit &&
-                        !props.editMode.canEditOnlyRoundEndDate && (
-                          <button
-                            data-testid="remove-requirement-button"
-                            className="ml-4"
-                            onClick={() => {
-                              const updatedRequirements = [
-                                ...(props.editedRound!.roundMetadata
-                                  .eligibility!.requirements || []),
-                              ];
-                              updatedRequirements.splice(i, 1);
-                              props.control.unregister(
-                                `roundMetadata.eligibility.requirements.${i}.requirement`
-                              );
-                              props.setEditedRound({
-                                ...props.editedRound,
-                                roundMetadata: {
-                                  ...props.editedRound?.roundMetadata,
-                                  eligibility: {
-                                    ...props.editedRound?.roundMetadata
-                                      .eligibility,
-                                    requirements: updatedRequirements,
-                                    description:
-                                      props.editedRound?.roundMetadata
-                                        .eligibility?.description || "",
-                                  },
+                      {props.editMode.canEdit && (
+                        <button
+                          data-testid="remove-requirement-button"
+                          className="ml-4"
+                          onClick={() => {
+                            const updatedRequirements = [
+                              ...(props.editedRound!.roundMetadata.eligibility!
+                                .requirements || []),
+                            ];
+                            updatedRequirements.splice(i, 1);
+                            props.control.unregister(
+                              `roundMetadata.eligibility.requirements.${i}.requirement`
+                            );
+                            props.setEditedRound({
+                              ...props.editedRound,
+                              roundMetadata: {
+                                ...props.editedRound?.roundMetadata,
+                                eligibility: {
+                                  ...props.editedRound?.roundMetadata
+                                    .eligibility,
+                                  requirements: updatedRequirements,
+                                  description:
+                                    props.editedRound?.roundMetadata.eligibility
+                                      ?.description || "",
                                 },
-                              });
-                            }}
-                          >
-                            <Cross color="red" />
-                          </button>
-                        )}
+                              },
+                            });
+                          }}
+                        >
+                          <Cross color="red" />
+                        </button>
+                      )}
                     </div>
                   )}
                 />
@@ -990,15 +985,9 @@ function DetailsPage(props: {
       )}
       <Button
         type="button"
-        disabled={
-          (!props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate) ||
-          !isValidLastRequirement
-        }
+        disabled={!props.editMode.canEdit || !isValidLastRequirement}
         $variant="secondary"
-        $hidden={
-          !props.editMode.canEdit && !props.editMode.canEditOnlyRoundEndDate
-        }
+        $hidden={!props.editMode.canEdit}
         className="mb-4"
         data-testid="add-requirement-button"
         onClick={(e) => {
@@ -1230,16 +1219,25 @@ function RoundApplicationPeriod(props: {
   editMode: EditMode;
   editedRound: Round;
   setEditedRound: (round: Round) => void;
+  noRoundEndDate: boolean;
+  rollingApplications: boolean;
+  editedRollingApplications: boolean;
+  setEditedRollingApplications: (editedRollingApplications: boolean) => void;
   control: Control<Round, unknown>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
 }) {
-  const { editedRound } = props;
+  const {
+    editedRound,
+    noRoundEndDate,
+    rollingApplications,
+    editedRollingApplications,
+    setEditedRollingApplications,
+  } = props;
 
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
   const [applicationEndDate, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
-  const [noRoundEndDate, setNoRoundEndDate] = useState(false);
 
   const yesterday = moment().subtract(1, "day");
 
@@ -1264,12 +1262,6 @@ function RoundApplicationPeriod(props: {
     return inputTime.isBefore(moment());
   };
 
-  useEffect(() => {
-    setNoRoundEndDate(
-      moment(editedRound.roundEndTime).isSame(maxDateForUint256)
-    );
-  }, [editedRound.roundEndTime]);
-
   return (
     <div className="w-full w-10/12">
       <span className="mt-4 inline-flex text-gray-400 mb-4">
@@ -1288,123 +1280,192 @@ function RoundApplicationPeriod(props: {
               >
                 Applications
               </div>
-              <div
-                className={`leading-8 font-normal ${
-                  !props.editMode.canEdit &&
-                  props.editMode.canEditOnlyRoundEndDate &&
-                  "text-grey-400"
-                }`}
-              >
-                {props.editMode.canEdit &&
-                !props.editMode.canEditOnlyRoundEndDate &&
-                !moment(editedRound.applicationsStartTime).isBefore(
-                  new Date()
-                ) ? (
-                  <div className="col-span-6 sm:col-span-3">
-                    <div
-                      className={`${
-                        !props.editMode.canEdit ? "bg-grey-50" : ""
-                      } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                        props.errors.applicationsStartTime
-                          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                          : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                      }`}
-                    >
-                      <p className="block text-[10px]">Start Date</p>
-                      <Controller
-                        name="applicationsStartTime"
-                        control={props.control}
-                        render={({ field }) => (
-                          <Datetime
-                            {...field}
-                            {...props.register("applicationsStartTime")}
-                            closeOnSelect
-                            onChange={(date) => {
-                              setApplicationStartDate(moment(date));
-                              field.onChange(moment(date).toDate());
-                              props.setEditedRound({
-                                ...props.editedRound,
-                                applicationsStartTime: moment(date).toDate(),
-                              });
-                            }}
-                            utc={true}
-                            dateFormat={"YYYY-MM-DD"}
-                            timeFormat={"HH:mm UTC"}
-                            isValidDate={disablePastDate}
-                            inputProps={{
-                              id: "applicationsStartTime",
-                              placeholder: "",
-                              className: `${
-                                props.editMode.canEdit &&
-                                !timeHasPassed(
-                                  moment(
-                                    props.editedRound.applicationsStartTime
+              <div className="leading-8 font-normal">
+                <div>
+                  {props.editMode.canEdit &&
+                  !moment(editedRound.applicationsStartTime).isBefore(
+                    new Date()
+                  ) ? (
+                    <div className="col-span-6 sm:col-span-3">
+                      <div
+                        className={`${
+                          !props.editMode.canEdit ? "bg-grey-50 " : ""
+                        } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
+                          props.errors.applicationsStartTime
+                            ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                            : " border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                        }`}
+                      >
+                        <p className="block text-[10px]">Start Date</p>
+                        <Controller
+                          name="applicationsStartTime"
+                          control={props.control}
+                          render={({ field }) => (
+                            <Datetime
+                              {...field}
+                              {...props.register("applicationsStartTime")}
+                              closeOnSelect
+                              onChange={(date) => {
+                                setApplicationStartDate(moment(date));
+                                field.onChange(moment(date).toDate());
+                                props.setEditedRound({
+                                  ...props.editedRound,
+                                  applicationsStartTime: moment(date).toDate(),
+                                });
+                              }}
+                              utc={true}
+                              dateFormat={"YYYY/MM/DD"}
+                              timeFormat={"HH:mm UTC"}
+                              isValidDate={disablePastDate}
+                              inputProps={{
+                                id: "applicationsStartTime",
+                                placeholder: "",
+                                className: `${
+                                  props.editMode.canEdit &&
+                                  !timeHasPassed(
+                                    moment(
+                                      props.editedRound.applicationsStartTime
+                                    )
                                   )
-                                )
-                                  ? ""
-                                  : "bg-grey-50"
-                              } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
-                            }}
-                          />
-                        )}
-                      />
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
+                                    ? ""
+                                    : "bg-grey-50"
+                                } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
+                              }}
+                            />
+                          )}
+                        />
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      {props.errors.applicationsStartTime && (
+                        <p
+                          className="text-xs text-pink-500 mt-1"
+                          data-testid="application-start-date-error"
                         >
-                          <path
-                            fillRule="evenodd"
-                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                          {props.errors.applicationsStartTime?.message}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="col-span-6 sm:col-span-3">
+                      <div
+                        className={`${
+                          !props.editMode.canEdit ||
+                          timeHasPassed(
+                            moment(props.editedRound.applicationsStartTime)
+                          )
+                            ? "bg-grey-50"
+                            : ""
+                        } relative border rounded-md shadow-sm focus-within:ring-1 ${
+                          props.errors.applicationsStartTime
+                            ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                            : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                        }`}
+                      >
+                        <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
+                        <input
+                          type="text"
+                          className={`border-0 pt-0 ml-2 pl-0 -mt-2 text-sm ${
+                            !props.editMode.canEdit ||
+                            timeHasPassed(
+                              moment(props.editedRound.applicationsStartTime)
+                            )
+                              ? "bg-grey-50 text-gray-400"
+                              : ""
+                          }`}
+                          defaultValue={`${getUTCDate(
+                            editedRound.applicationsStartTime
+                          )} ${getUTCTime(editedRound.applicationsStartTime)}`}
+                          disabled
+                        />
                       </div>
                     </div>
-                    {props.errors.applicationsStartTime && (
-                      <p
-                        className="text-xs text-pink-500 mt-1"
-                        data-testid="application-start-date-error"
+                  )}
+                  {props.editMode.canEdit &&
+                  !moment(editedRound.applicationsEndTime).isBefore(
+                    new Date()
+                  ) ? (
+                    <div className="flex items-center mt-2">
+                      <input
+                        id="rollingApplications"
+                        name="rollingApplications"
+                        type="checkbox"
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        checked={editedRollingApplications}
+                        onChange={(e) =>
+                          setEditedRollingApplications(e.target.checked)
+                        }
+                      />
+                      <label
+                        htmlFor="rollingApplications"
+                        className="ml-2 block text-sm text-grey-400"
                       >
-                        {props.errors.applicationsStartTime?.message}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div
-                    className={`${
-                      !props.editMode.canEdit ||
-                      timeHasPassed(
-                        moment(props.editedRound.applicationsStartTime)
-                      )
-                        ? "bg-grey-50"
-                        : ""
-                    } relative border rounded-md shadow-sm focus-within:ring-1 ${
-                      props.errors.applicationsStartTime
-                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                    }`}
-                  >
-                    <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
-                    <input
-                      type="text"
-                      className={`border-0 pt-0 pl-2 -mt-2 text-sm ${
-                        !props.editMode.canEdit ||
-                        timeHasPassed(
-                          moment(props.editedRound.applicationsStartTime)
-                        )
-                          ? "bg-grey-50"
-                          : ""
-                      }`}
-                      defaultValue={`${getUTCDate(
-                        editedRound.applicationsStartTime
-                      )} ${getUTCTime(editedRound.applicationsStartTime)}`}
-                      disabled
-                    />
-                  </div>
-                )}
+                        Enable rolling applications
+                      </label>
+                      <InformationCircleIcon
+                        data-tip
+                        data-for="rollingApplicationsTooltip"
+                        className="h-4 w-4 ml-1 text-grey-400"
+                      />
+                      <ReactTooltip
+                        id="rollingApplicationsTooltip"
+                        place="top"
+                        effect="solid"
+                        className="text-grey-400"
+                      >
+                        <span>
+                          If enabled, applications will be accepted until the
+                          round ends.
+                        </span>
+                      </ReactTooltip>
+                    </div>
+                  ) : (
+                    <div className="flex items-center mt-2">
+                      <input
+                        id="rollingApplications"
+                        name="rollingApplications"
+                        type="checkbox"
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        checked={rollingApplications}
+                        disabled
+                      />
+                      <label
+                        htmlFor="rollingApplications"
+                        className="ml-2 block text-sm text-grey-400"
+                      >
+                        Enable rolling applications
+                      </label>
+                      <InformationCircleIcon
+                        data-tip
+                        data-for="rollingApplicationsTooltip"
+                        className="h-4 w-4 ml-1 text-grey-400"
+                      />
+                      <ReactTooltip
+                        id="rollingApplicationsTooltip"
+                        place="top"
+                        effect="solid"
+                        className="text-grey-400"
+                      >
+                        <span>
+                          If enabled, applications will be accepted until the
+                          round ends.
+                        </span>
+                      </ReactTooltip>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div>
@@ -1415,14 +1476,9 @@ function RoundApplicationPeriod(props: {
               >
                 &nbsp;
               </div>
-              <div
-                className={`leading-8 font-normal ${
-                  !props.editMode.canEdit ||
-                  (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-                }`}
-              >
+              <div className="leading-8 font-normal">
                 {props.editMode.canEdit &&
-                !props.editMode.canEditOnlyRoundEndDate &&
+                !editedRollingApplications &&
                 !moment(editedRound.applicationsEndTime).isBefore(
                   new Date()
                 ) ? (
@@ -1454,9 +1510,9 @@ function RoundApplicationPeriod(props: {
                               });
                             }}
                             utc={true}
-                            dateFormat={"YYYY-MM-DD"}
-                            isValidDate={disableBeforeApplicationStartDate}
+                            dateFormat={"YYYY/MM/DD"}
                             timeFormat={"HH:mm UTC"}
+                            isValidDate={disableBeforeApplicationStartDate}
                             inputProps={{
                               id: "applicationsEndTime",
                               placeholder: "",
@@ -1495,6 +1551,7 @@ function RoundApplicationPeriod(props: {
                   <div
                     className={`${
                       !props.editMode.canEdit ||
+                      editedRollingApplications ||
                       timeHasPassed(
                         moment(props.editedRound.applicationsEndTime)
                       )
@@ -1511,14 +1568,17 @@ function RoundApplicationPeriod(props: {
                       type="text"
                       className={`${
                         !props.editMode.canEdit ||
+                        editedRollingApplications ||
                         timeHasPassed(
                           moment(props.editedRound.applicationsEndTime)
-                        ) ||
-                        !props.editMode.canEditOnlyRoundEndDate
-                          ? "bg-grey-50"
+                        )
+                          ? "bg-grey-50 text-gray-400"
                           : ""
-                      } border-0 pt-0 pl-2 -mt-2 text-sm`}
+                      } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
                       defaultValue={`${getUTCDate(
+                        editedRound.applicationsEndTime
+                      )} ${getUTCTime(editedRound.applicationsEndTime)}`}
+                      value={`${getUTCDate(
                         editedRound.applicationsEndTime
                       )} ${getUTCTime(editedRound.applicationsEndTime)}`}
                       disabled
@@ -1536,14 +1596,8 @@ function RoundApplicationPeriod(props: {
           >
             Round
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             {props.editMode.canEdit &&
-            !props.editMode.canEditOnlyRoundEndDate &&
             !moment(editedRound.roundStartTime).isBefore(new Date()) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
@@ -1574,7 +1628,7 @@ function RoundApplicationPeriod(props: {
                             });
                           }}
                           utc={true}
-                          dateFormat={"YYYY-MM-DD"}
+                          dateFormat={"YYYY/MM/DD"}
                           timeFormat={"HH:mm UTC"}
                           isValidDate={disablePastDate}
                           inputProps={{
@@ -1631,9 +1685,9 @@ function RoundApplicationPeriod(props: {
                   className={`${
                     !props.editMode.canEdit ||
                     timeHasPassed(moment(props.editedRound.roundStartTime))
-                      ? "bg-grey-50"
+                      ? "bg-grey-50 text-gray-400"
                       : ""
-                  } border-0 pt-0 pl-2 -mt-2 text-sm`}
+                  } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
                   defaultValue={`${getUTCDate(
                     editedRound.roundStartTime
                   )} ${getUTCTime(editedRound.roundStartTime)}`}
@@ -1649,19 +1703,13 @@ function RoundApplicationPeriod(props: {
           >
             &nbsp;
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
-            {props.editMode.canEdit ||
-            (props.editMode.canEditOnlyRoundEndDate &&
-              !moment(editedRound.roundEndTime).isBefore(new Date())) ? (
+          <div className="leading-8 font-normal">
+            {props.editMode.canEdit &&
+            !moment(editedRound.roundEndTime).isBefore(new Date()) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`${
-                    !props.editMode.canEdit ? "bg-grey-50" : ""
+                    !props.editMode.canEdit ? "bg-grey-50 text-gray-400" : ""
                   } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
                     props.errors.roundEndTime
                       ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
@@ -1687,21 +1735,29 @@ function RoundApplicationPeriod(props: {
                           closeOnSelect
                           onChange={(date) => {
                             field.onChange(moment(date).toDate());
-                            props.setEditedRound({
-                              ...props.editedRound,
-                              roundEndTime: moment(date).toDate(),
-                            });
+                            !editedRollingApplications
+                              ? props.setEditedRound({
+                                  ...props.editedRound,
+                                  roundEndTime: moment(date).toDate(),
+                                })
+                              : props.setEditedRound({
+                                  ...props.editedRound,
+                                  roundEndTime: moment(date).toDate(),
+                                  applicationsEndTime: moment(date).toDate(),
+                                });
                           }}
                           utc={true}
-                          dateFormat={"YYYY-MM-DD"}
+                          dateFormat={"YYYY/MM/DD"}
                           timeFormat={"HH:mm UTC"}
                           isValidDate={disableBeforeRoundStartDate}
                           inputProps={{
                             id: "roundEndTime",
                             placeholder: "",
                             className: `${
-                              !props.editMode.canEdit ? "bg-grey-50" : ""
-                            } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
+                              !props.editMode.canEdit
+                                ? "bg-grey-50"
+                                : "text-gray-900"
+                            } block w-full border-0 p-0 placeholder-grey-400 focus:ring-0 text-sm`,
                           }}
                         />
                         <div className="absolute inset-y-2 right-0 pr-3 flex items-center pointer-events-none">
@@ -1734,7 +1790,7 @@ function RoundApplicationPeriod(props: {
             ) : (
               <div
                 className={`${
-                  !props.editMode.canEdit ? "bg-grey-50" : ""
+                  !props.editMode.canEdit ? "bg-grey-50 text-gray-400" : ""
                 } relative border rounded-md shadow-sm focus-within:ring-1 ${
                   props.errors.roundEndTime
                     ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
@@ -1745,7 +1801,7 @@ function RoundApplicationPeriod(props: {
                 <input
                   type="text"
                   className={`${
-                    !props.editMode.canEdit ? "bg-grey-50" : ""
+                    !props.editMode.canEdit ? "bg-grey-50 text-gray-400" : ""
                   } border-0 pt-0 pl-2 -mt-2 text-sm`}
                   value={
                     noRoundEndDate
@@ -1800,9 +1856,6 @@ function Funding(props: {
           <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
             <span>Payout Token</span>
             <PayoutTokenInformation />
-            <span className="text-right text-violet-400 float-right text-xs mt-1">
-              *Required
-            </span>
           </div>
           <div
             className={`leading-8 font-normal ${
@@ -1812,7 +1865,7 @@ function Funding(props: {
           >
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
               defaultValue={matchingFundPayoutToken.name}
               disabled
             />
@@ -1826,15 +1879,11 @@ function Funding(props: {
             </span>
           </div>
 
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 flex font-normal">
             <input
+              size={matchingFundPayoutToken?.name?.length ?? 3}
               type="text"
-              className="text-grey-400 disabled:bg-gray-50 w-[12%] rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="text-grey-400 disabled:bg-gray-50 rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={matchingFundPayoutToken.name}
               disabled
             />
@@ -1849,17 +1898,14 @@ function Funding(props: {
                   )}
                   value={field.value}
                   type="number"
+                  step="any"
                   className={classNames(
                     "w-[88%] rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
-                    !props.editMode.canEdit ||
-                      props.editMode.canEditOnlyRoundEndDate
-                      ? "disabled:bg-gray-50"
+                    !props.editMode.canEdit
+                      ? "disabled:bg-gray-50 disabled:text-gray-400"
                       : "bg-red"
                   )}
-                  disabled={
-                    !props.editMode.canEdit ||
-                    props.editMode.canEditOnlyRoundEndDate
-                  }
+                  disabled={!props.editMode.canEdit}
                   onChange={(e) => {
                     field.onChange(e.target.value);
                     props.setEditedRound({
@@ -1903,9 +1949,6 @@ function Funding(props: {
         <div>
           <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
             <span>Do you want a matching cap for projects?</span>
-            <span className="text-right text-violet-400 float-right text-xs mt-1">
-              *Required
-            </span>
             <InformationCircleIcon
               data-tip
               data-background-color="#0E0333"
@@ -1926,12 +1969,7 @@ function Funding(props: {
               </p>
             </ReactTooltip>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.matchingCap"
@@ -1946,7 +1984,6 @@ function Funding(props: {
                   value={"yes"}
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCap
                   }
@@ -1954,10 +1991,7 @@ function Funding(props: {
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCap ?? true
                   }
-                  readOnly={
-                    !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate
-                  }
+                  readOnly={!props.editMode.canEdit}
                   onChange={(e) => {
                     props.resetField(
                       "roundMetadata.quadraticFundingConfig.matchingCapAmount"
@@ -1993,7 +2027,6 @@ function Funding(props: {
                   value={"no"}
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.matchingCap !== true
                   }
@@ -2031,15 +2064,11 @@ function Funding(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 flex font-normal">
             <input
+              size={1}
               type="text"
-              className="text-gray-400 disabled:bg-gray-50 w-[12%] text-center rounded-l-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="text-gray-400 disabled:bg-gray-50 text-center rounded-l-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
               defaultValue={"%"}
               disabled
             />
@@ -2055,16 +2084,14 @@ function Funding(props: {
                   type="number"
                   className={classNames(
                     "w-[88%] rounded-r-md border border-gray-300 shadow-sm py-2 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
-                    (!props.editMode.canEdit &&
-                      !props.editMode.canEditOnlyRoundEndDate) ||
+                    !props.editMode.canEdit ||
                       !props.editedRound?.roundMetadata.quadraticFundingConfig
                         .matchingCap
-                      ? "disabled:bg-gray-50"
+                      ? "disabled:bg-gray-50 disabled:text-gray-400"
                       : "bg-red"
                   )}
                   disabled={
-                    (!props.editMode.canEdit &&
-                      !props.editMode.canEditOnlyRoundEndDate) ||
+                    !props.editMode.canEdit ||
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
                       .matchingCap
                   }
@@ -2129,16 +2156,8 @@ function Funding(props: {
             <span className="text-sm">
               Do you want a minimum donation threshold for projects?
             </span>
-            <span className="text-right text-violet-400 float-right text-xs">
-              *Required
-            </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 font-normal">
             <Controller
               control={props.control}
               name="roundMetadata.quadraticFundingConfig.minDonationThreshold"
@@ -2153,7 +2172,6 @@ function Funding(props: {
                   value={"yes"}
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
                   }
@@ -2161,10 +2179,7 @@ function Funding(props: {
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
                   }
-                  readOnly={
-                    !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate
-                  }
+                  readOnly={!props.editMode.canEdit}
                   onChange={(e) => {
                     props.resetField(
                       "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount"
@@ -2204,7 +2219,6 @@ function Funding(props: {
                   }
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.minDonationThreshold
                   }
@@ -2238,15 +2252,13 @@ function Funding(props: {
               *Required
             </span>
           </div>
-          <div
-            className={`leading-8 font-normal ${
-              !props.editMode.canEdit ||
-              (props.editMode.canEditOnlyRoundEndDate && "text-grey-400")
-            }`}
-          >
+          <div className="leading-8 flex font-normal">
             <input
               type="text"
-              className="disabled:bg-gray-50 w-2/12 rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              size={3}
+              className="disabled:bg-gray-50 text-gray-400 rounded-l-md border border-gray-300 shadow-sm py-2 text-center
+               bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition
+                duration-150 ease-in-out"
               defaultValue={"USD"}
               disabled
             />
@@ -2261,18 +2273,17 @@ function Funding(props: {
                   )}
                   type="number"
                   className={classNames(
-                    "w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
-                    (!props.editMode.canEdit &&
-                      !props.editMode.canEditOnlyRoundEndDate) ||
+                    "w-10/12 rounded-r-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5" +
+                      " focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out",
+                    !props.editMode.canEdit ||
                       !props.editedRound?.roundMetadata.quadraticFundingConfig
                         .minDonationThreshold
-                      ? "disabled:bg-gray-50"
+                      ? "disabled:bg-gray-50 disabled:text-gray-400"
                       : "bg-red"
                   )}
                   value={field.value}
                   disabled={
-                    (!props.editMode.canEdit &&
-                      !props.editMode.canEditOnlyRoundEndDate) ||
+                    !props.editMode.canEdit ||
                     !props.editedRound?.roundMetadata.quadraticFundingConfig
                       .minDonationThreshold
                   }
@@ -2326,9 +2337,6 @@ function Funding(props: {
         <span className="mt-2 inline-flex font-light text-gray-400 mb-2">
           Sybil Defense
         </span>
-        <span className="text-right text-violet-400 float-right text-xs mt-1">
-          *Required
-        </span>
       </div>
       <div>
         <span className="inline-flex text-sm font-light text-gray-600 mb-4">
@@ -2354,7 +2362,6 @@ function Funding(props: {
                   value="yes"
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     !props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.sybilDefense
                   }
@@ -2404,7 +2411,6 @@ function Funding(props: {
                   }
                   disabled={
                     !props.editMode.canEdit &&
-                    !props.editMode.canEditOnlyRoundEndDate &&
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
                       ?.sybilDefense
                   }

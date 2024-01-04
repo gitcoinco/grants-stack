@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { useMemo, useState } from "react";
-import { ChainId } from "./chains";
-
+import { ChainId } from "./chain-ids";
+import z from "zod";
 export * from "./icons";
 export * from "./markdown";
 
@@ -10,27 +10,28 @@ export { ChainId };
 export enum PassportState {
   NOT_CONNECTED,
   INVALID_PASSPORT,
-  MATCH_ELIGIBLE,
-  MATCH_INELIGIBLE,
+  SCORE_AVAILABLE,
   LOADING,
   ERROR,
   INVALID_RESPONSE,
 }
 
-type PassportEvidence = {
-  type: string;
-  rawScore: string;
-  threshold: string;
-};
+const PassportEvidenceSchema = z.object({
+  type: z.string().nullish(),
+  rawScore: z.coerce.number(),
+  threshold: z.string().nullish(),
+});
 
-export type PassportResponse = {
-  address?: string;
-  score?: string;
-  status?: string;
-  evidence?: PassportEvidence;
-  error?: string;
-  detail?: string;
-};
+export type PassportResponse = z.infer<typeof PassportResponseSchema>;
+
+export const PassportResponseSchema = z.object({
+  address: z.string().nullish(),
+  score: z.string().nullish(),
+  status: z.string().nullish(),
+  evidence: PassportEvidenceSchema.nullish(),
+  error: z.string().nullish(),
+  detail: z.string().nullish(),
+});
 
 /**
  * Endpoint used to fetch the passport score for a given address
@@ -96,9 +97,11 @@ export type Payout = {
   createdAt: string;
 };
 
+// TODO relocate to data layer
 export const graphQlEndpoints: Record<ChainId, string> = {
+  [ChainId.DEV1]: process.env.REACT_APP_SUBGRAPH_DEV1_API!,
+  [ChainId.DEV2]: process.env.REACT_APP_SUBGRAPH_DEV2_API!,
   [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
-  [ChainId.GOERLI_CHAIN_ID]: process.env.REACT_APP_SUBGRAPH_GOERLI_API!,
   [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
   [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_MAINNET_API!,
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
@@ -114,6 +117,11 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.AVALANCHE]: process.env.REACT_APP_SUBGRAPH_AVALANCHE_API!,
   [ChainId.POLYGON]: process.env.REACT_APP_SUBGRAPH_POLYGON_API!,
   [ChainId.POLYGON_MUMBAI]: process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API!,
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_ZKSYNC_TESTNET_API!,
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_ZKSYNC_MAINNET_API!,
+  [ChainId.BASE]: process.env.REACT_APP_SUBGRAPH_BASE_API!,
 };
 
 /**
@@ -124,7 +132,8 @@ export const graphQlEndpoints: Record<ChainId, string> = {
  * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
  */
-const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
+export const getGraphQLEndpoint = (chainId: ChainId) =>
+  `${graphQlEndpoints[chainId]}`;
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -296,9 +305,9 @@ export const getUTCTime = (date: Date): string => {
 
 export const getUTCDate = (date: Date): string => {
   const utcDate = [
-    padSingleDigitNumberWithZero(date.getUTCDate()),
-    padSingleDigitNumberWithZero(date.getUTCMonth() + 1),
     padSingleDigitNumberWithZero(date.getUTCFullYear()),
+    padSingleDigitNumberWithZero(date.getUTCMonth() + 1),
+    padSingleDigitNumberWithZero(date.getUTCDate()),
   ];
 
   return utcDate.join("/");
@@ -319,6 +328,9 @@ export const RedstoneTokenIds = {
   MATIC: "MATIC",
   AVAX: "AVAX",
   CVP: "CVP",
+  USDT: "USDT",
+  LUSD: "LUSD",
+  MUTE: "MUTE",
 } as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {

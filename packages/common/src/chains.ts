@@ -1,21 +1,116 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
+import zkSyncIcon from "./icons/zksync-logo.svg";
+import BaseLogo from "./icons/base-logo.svg";
+import {
+  avalanche as avalancheOriginal,
+  avalancheFuji as avalancheFujiOriginal,
+  fantom as fantomOriginal,
+  fantomTestnet as fantomTestnetOriginal,
+  zkSyncTestnet as zkSyncTestnetOriginal,
+  zkSync as zkSyncOriginal,
+  base as baseOriginal,
+} from "@wagmi/chains";
+import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
+import { ChainId } from "./chain-ids";
+import { getConfig } from "./config";
 
-export enum ChainId {
-  MAINNET = 1,
-  GOERLI_CHAIN_ID = 5,
-  OPTIMISM_MAINNET_CHAIN_ID = 10,
-  FANTOM_MAINNET_CHAIN_ID = 250,
-  FANTOM_TESTNET_CHAIN_ID = 4002,
-  PGN = 424,
-  PGN_TESTNET = 58008,
-  ARBITRUM = 42161,
-  ARBITRUM_GOERLI = 421613,
-  AVALANCHE = 43114,
-  FUJI = 43113,
-  POLYGON = 137,
-  POLYGON_MUMBAI = 80001,
-}
+const config = getConfig();
+
+export const fantom: Chain = {
+  ...fantomOriginal,
+  rpcUrls: {
+    default: {
+      http: ["https://rpcapi.fantom.network/"],
+    },
+    public: {
+      http: ["https://rpcapi.fantom.network/"],
+    },
+  },
+  iconUrl: FantomFTMLogo,
+};
+
+export const fantomTestnet: Chain = {
+  ...fantomTestnetOriginal,
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.testnet.fantom.network/"],
+    },
+    public: {
+      http: ["https://rpc.testnet.fantom.network/"],
+    },
+  },
+  iconUrl: FantomFTMLogo,
+};
+
+export const avalancheFuji: Chain = {
+  ...avalancheFujiOriginal,
+  rpcUrls: {
+    default: {
+      http: [
+        "https://avalanche-fuji.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
+      ],
+    },
+    public: {
+      http: ["https://api.avax-test.network/ext/bc/C/rpc"],
+    },
+  },
+};
+
+export const base: Chain = {
+  ...baseOriginal,
+  iconUrl: BaseLogo,
+  rpcUrls: {
+    default: {
+      http: [
+        `https://base-mainnet.g.alchemy.com/v2/${config.blockchain.alchemyId}`,
+      ],
+    },
+    public: {
+      http: ["https://mainnet.base.org/"],
+    },
+  },
+};
+
+export const avalanche: Chain = {
+  ...avalancheOriginal,
+  rpcUrls: {
+    default: {
+      http: [
+        "https://avalanche-mainnet.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
+      ],
+    },
+    public: {
+      http: ["https://api.avax.network/ext/bc/C/rpc"],
+    },
+  },
+};
+
+export const zkSyncEraTestnet: Chain = {
+  ...zkSyncTestnetOriginal,
+  iconUrl: zkSyncIcon,
+  rpcUrls: {
+    default: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+    public: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+  },
+};
+
+export const zkSyncEraMainnet: Chain = {
+  ...zkSyncOriginal,
+  iconUrl: zkSyncIcon,
+  rpcUrls: {
+    default: {
+      http: ["https://mainnet.era.zksync.io"],
+    },
+    public: {
+      http: ["https://mainnet.era.zksync.io"],
+    },
+  },
+};
 
 export const pgnTestnet: Chain = {
   id: 58008,
@@ -70,6 +165,125 @@ export const pgn: Chain = {
   },
 };
 
+export const customOptimism = {
+  id: 10,
+  name: "Optimism",
+  network: "optimism",
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    alchemy: {
+      http: ["https://opt-mainnet.g.alchemy.com/v2/"],
+      webSocket: ["wss://opt-mainnet.g.alchemy.com/v2/"],
+    },
+    infura: {
+      http: ["https://optimism-mainnet.infura.io/v3/"],
+      webSocket: ["wss://optimism-mainnet.infura.io/ws/v3"],
+    },
+    default: {
+      http: [
+        `https://optimism-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
+      ],
+    },
+    public: {
+      http: [
+        `https://optimism-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
+      ],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Etherscan",
+      url: "https://optimistic.etherscan.io",
+    },
+    default: {
+      name: "Optimism Explorer",
+      url: "https://explorer.optimism.io",
+    },
+  },
+};
+
+export const customPolygon = {
+  id: 137,
+  name: "Polygon",
+  network: "matic",
+  nativeCurrency: {
+    name: "MATIC",
+    symbol: "MATIC",
+    decimals: 18,
+  },
+  rpcUrls: {
+    alchemy: {
+      http: ["https://polygon-mainnet.g.alchemy.com/v2"],
+      webSocket: ["wss://polygon-mainnet.g.alchemy.com/v2"],
+    },
+    infura: {
+      http: ["https://polygon-mainnet.infura.io/v3"],
+      webSocket: ["wss://polygon-mainnet.infura.io/ws/v3"],
+    },
+    default: {
+      http: [
+        `https://polygon-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
+      ],
+    },
+    public: {
+      http: [
+        `https://polygon-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
+      ],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "PolygonScan",
+      url: "https://polygonscan.com",
+    },
+    default: {
+      name: "PolygonScan",
+      url: "https://polygonscan.com",
+    },
+  },
+};
+
+export const customMainnet = {
+  id: 1,
+  network: "homestead",
+  name: "Ethereum",
+  nativeCurrency: {
+    name: "Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    alchemy: {
+      http: ["https://eth-mainnet.g.alchemy.com/v2"],
+      webSocket: ["wss://eth-mainnet.g.alchemy.com/v2"],
+    },
+    infura: {
+      http: ["https://mainnet.infura.io/v3"],
+      webSocket: ["wss://mainnet.infura.io/ws/v3"],
+    },
+    default: {
+      http: [`https://mainnet.infura.io/v3/${config.blockchain.infuraId}`],
+    },
+    public: {
+      http: [`https://mainnet.infura.io/v3/${config.blockchain.infuraId}`],
+    },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Etherscan",
+      url: "https://etherscan.io",
+    },
+    default: {
+      name: "Etherscan",
+      url: "https://etherscan.io",
+    },
+  },
+};
+
 export function parseChainId(input: string | number): ChainId {
   if (typeof input === "string") {
     // If the input is a string, try to parse it as a number
@@ -90,3 +304,47 @@ export function parseChainId(input: string | number): ChainId {
   // If the input is not a valid enum value, return undefined
   throw "Invalid chainId " + input;
 }
+
+export const devChain1: Chain = {
+  id: 313371,
+  name: "Development 1",
+  network: "dev1",
+  iconUrl: PublicGoodsNetworkIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: { http: ["http://localhost:3005"] },
+    public: { http: ["http://localhost:3005"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "dev1",
+      url: "",
+    },
+  },
+};
+
+export const devChain2: Chain = {
+  id: 313372,
+  name: "Development 2",
+  network: "dev2",
+  iconUrl: PublicGoodsNetworkIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: { http: ["http://localhost:3007"] },
+    public: { http: ["http://localhost:3007"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "dev2",
+      url: "",
+    },
+  },
+};

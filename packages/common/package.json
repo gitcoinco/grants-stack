@@ -13,6 +13,8 @@
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@rainbow-me/rainbowkit": "^0.12.16",
+    "@wagmi/chains": "^1.8.0",
+    "data-layer": "workspace:*",
     "dompurify": "^2.4.3",
     "ethers": "^5.6.5",
     "framer-motion": "^10.12.7",
@@ -24,7 +26,8 @@
     "swr": "^2.0.1",
     "tailwind-styled-components": "^2.2.0",
     "typescript": "latest",
-    "wagmi": "0.12.19"
+    "wagmi": "0.12.19",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/dompurify": "^2.4.0",
@@ -32,6 +35,7 @@
     "@types/node": "^18.15.5",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
+    "dotenv-flow": "^3.3.0",
     "vitest": "^0.34.6"
   }
 }

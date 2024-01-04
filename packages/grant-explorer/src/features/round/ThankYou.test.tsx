@@ -39,7 +39,7 @@ describe("<TwitterButton />", () => {
     fireEvent.click(screen.getByText("Share on Twitter"));
     expect(openSpy).toHaveBeenCalledOnce();
     expect(openSpy).toHaveBeenCalledWith(
-      "https://twitter.com/share?text=I%20just%20donated%20to%20Round%20and%20more%20on%20%40gitcoin.%20Join%20me%20in%20making%20a%20difference%20by%20donating%20today%2C%20and%20check%20out%20the%20projects%20I%20supported%20on%20my%20Donation%20History%20page!%0A%0Ahttps%3A%2F%2Fexplorer.gitcoin.co%2F%23%2Fcontributors%2F0x0000000000000000000000000000000000000000",
+      "https://twitter.com/intent/tweet?text=I%20just%20donated%20to%20Round%20and%20more%20on%20%40gitcoin's%20%40grantsstack.%20Join%20me%20in%20making%20a%20difference%20by%20donating%20today%2C%20and%20check%20out%20the%20projects%20I%20supported%20on%20my%20Donation%20History%20page!%0A%0Ahttps%3A%2F%2Fexplorer.gitcoin.co%2F%23%2Fcontributors%2F0x0000000000000000000000000000000000000000",
       "_blank"
     );
   });
@@ -53,7 +53,7 @@ describe("createTwitterShareUrl", () => {
         isMrc: false,
       })
     ).toEqual(
-      "https://twitter.com/share?text=I%20just%20donated%20to%20a%20round%20on%20%40gitcoin.%20Join%20me%20in%20making%20a%20difference%20by%20donating%20today%2C%20and%20check%20out%20the%20projects%20I%20supported%20on%20my%20Donation%20History%20page!%0A%0Ahttps%3A%2F%2Fexplorer.gitcoin.co%2F%23%2Fcontributors%2F0x0000000000000000000000000000000000000000"
+      "https://twitter.com/intent/tweet?text=I%20just%20donated%20to%20a%20round%20on%20%40gitcoin's%20%40grantsstack.%20Join%20me%20in%20making%20a%20difference%20by%20donating%20today%2C%20and%20check%20out%20the%20projects%20I%20supported%20on%20my%20Donation%20History%20page!%0A%0Ahttps%3A%2F%2Fexplorer.gitcoin.co%2F%23%2Fcontributors%2F0x0000000000000000000000000000000000000000"
     );
   });
 });
@@ -66,7 +66,7 @@ describe("createTwiterShareText", () => {
         isMrc: false,
       })
     ).toEqual(
-      `I just donated to a round on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!
+      `I just donated to a round on @gitcoin's @grantsstack. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!
 
 https://explorer.gitcoin.co/#/contributors/0x0000000000000000000000000000000000000000`
     );
@@ -79,7 +79,7 @@ https://explorer.gitcoin.co/#/contributors/0x00000000000000000000000000000000000
         isMrc: false,
       })
     ).toEqual(
-      `I just donated to a round on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!
+      `I just donated to a round on @gitcoin's @grantsstack. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!
 
 https://explorer.gitcoin.co/#/contributors/0x0000000000000000000000000000000000000000`
     );
@@ -93,7 +93,7 @@ https://explorer.gitcoin.co/#/contributors/0x00000000000000000000000000000000000
         roundName: "Round",
       })
     ).toEqual(
-      `I just donated to Round on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!
+      `I just donated to Round on @gitcoin's @grantsstack. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!
 
 https://explorer.gitcoin.co/#/contributors/0x0000000000000000000000000000000000000000`
     );
@@ -107,7 +107,7 @@ https://explorer.gitcoin.co/#/contributors/0x00000000000000000000000000000000000
         roundName: "Round",
       })
     ).toEqual(
-      `I just donated to Round and more on @gitcoin. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!
+      `I just donated to Round and more on @gitcoin's @grantsstack. Join me in making a difference by donating today, and check out the projects I supported on my Donation History page!
 
 https://explorer.gitcoin.co/#/contributors/0x0000000000000000000000000000000000000000`
     );

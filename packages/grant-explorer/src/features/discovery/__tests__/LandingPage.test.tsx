@@ -7,20 +7,40 @@ import {
   mockSigner,
   renderWithContext,
 } from "../../../test-utils";
-import { RoundMetadata } from "../../api/round";
-import {
-  RoundOverview,
-  getActiveRounds,
-  getRoundsInApplicationPhase,
-} from "../../api/rounds";
+import { __deprecated_RoundMetadata } from "../../api/round";
+import { __deprecated_RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
-import { MockedFunction, vi } from "vitest";
+import { vi } from "vitest";
+import { collections } from "../../collections/hooks/useCollections";
+import { categories } from "../../categories/hooks/useCategories";
+import { DataLayer } from "data-layer";
+import { getEnabledChains } from "../../../app/chainConfig";
 
 // Mock the API calls
-vi.mock("../../api/rounds", () => {
+
+// Create empty mock functions - we will set these inside the tests.
+const { __deprecated_graphql_fetch, __deprecated_fetchFromIPFS } = vi.hoisted(
+  () => ({
+    __deprecated_graphql_fetch: vi.fn(),
+    __deprecated_fetchFromIPFS: vi.fn(),
+  })
+);
+
+vi.mock("common", async () => {
+  const actual = await vi.importActual<typeof import("common")>("common");
   return {
-    getActiveRounds: vi.fn(),
-    getRoundsInApplicationPhase: vi.fn(),
+    ...actual,
+    renderToPlainText: vi.fn().mockReturnValue((str = "") => str),
+  };
+});
+
+vi.mock("../../api/utils", async () => {
+  const actual =
+    await vi.importActual<typeof import("../../api/utils")>("../../api/utils");
+  return {
+    ...actual,
+    __deprecated_graphql_fetch,
+    __deprecated_fetchFromIPFS,
   };
 });
 
@@ -32,6 +52,7 @@ const mockAccount = {
 const mockSwitchNetwork = {
   chainId: chainId,
 };
+const mockToken = vi.fn();
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
@@ -39,27 +60,24 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: vi.fn(),
 }));
 
-vi.mock("wagmi", () => ({
-  useAccount: () => mockAccount,
-  useBalance: () => mockBalance,
-  useSigner: () => mockSigner,
-  useNetwork: () => mockNetwork,
-  useSwitchNetwork: () => mockSwitchNetwork,
-}));
-
-const mockGetActiveRounds = getActiveRounds as MockedFunction<
-  typeof getActiveRounds
->;
-const mockGetRoundsInApplicationPhase =
-  getRoundsInApplicationPhase as MockedFunction<
-    typeof getRoundsInApplicationPhase
-  >;
+vi.mock("wagmi", async () => {
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
+  return {
+    ...actual,
+    useAccount: () => mockAccount,
+    useToken: () => mockToken,
+    useBalance: () => mockBalance,
+    useSigner: () => mockSigner,
+    useNetwork: () => mockNetwork,
+    useSwitchNetwork: () => mockSwitchNetwork,
+  };
+});
 
 describe("LandingPage", () => {
   beforeEach(() => {
     // Reset the mocks before each test
-    mockGetActiveRounds.mockReset();
-    mockGetRoundsInApplicationPhase.mockReset();
+    __deprecated_graphql_fetch.mockReset();
+    __deprecated_fetchFromIPFS.mockReset();
   });
 
   it("renders landing page", () => {
@@ -67,31 +85,32 @@ describe("LandingPage", () => {
   });
 
   it("fetches and displays active rounds and rounds in application phase", async () => {
-    const activeRounds: RoundOverview[] = [];
-    const roundsInApplicationPhase: RoundOverview[] = [
-      // Provide your rounds in application phase data
-    ];
+    const mockedRounds = Array.from({ length: 1 }).map(() =>
+      makeRoundOverviewData()
+    );
 
-    mockGetActiveRounds.mockImplementation(async () => {
-      return activeRounds;
+    const mockDataLayer = {
+      query: vi.fn().mockResolvedValue({
+        rounds: getEnabledChains().flatMap((chain) =>
+          mockedRounds.map((round) => ({
+            ...round,
+            chainId: chain.id,
+          }))
+        ),
+      }),
+    } as unknown as DataLayer;
+
+    // Return the same metadata that was created by the mock
+    __deprecated_fetchFromIPFS.mockImplementation(async (cid: string) => {
+      return mockedRounds.find((round) => round.roundMetaPtr.pointer === cid)
+        ?.roundMetadata;
     });
 
-    mockGetRoundsInApplicationPhase.mockImplementation(async () => {
-      return roundsInApplicationPhase;
-    });
-
-    renderWithContext(<LandingPage />);
+    renderWithContext(<LandingPage />, { dataLayer: mockDataLayer });
 
     await waitFor(() => {
       // Check if the fetched active rounds are displayed
-      activeRounds.forEach((round) => {
-        expect(
-          screen.getByText(round.roundMetadata?.name ?? "")
-        ).toBeInTheDocument();
-      });
-
-      // Check if the fetched rounds in application phase are displayed
-      roundsInApplicationPhase.forEach((round) => {
+      mockedRounds.forEach((round) => {
         expect(
           screen.getByText(round.roundMetadata?.name ?? "")
         ).toBeInTheDocument();
@@ -100,7 +119,7 @@ describe("LandingPage", () => {
   });
 
   it.skip("filters active rounds based on search query", async () => {
-    const roundMetadata: RoundMetadata = {
+    const roundMetadata: __deprecated_RoundMetadata = {
       name: "gitcoin",
       roundType: "private",
       eligibility: {
@@ -110,7 +129,7 @@ describe("LandingPage", () => {
       programContractAddress: faker.finance.ethereumAddress(),
     };
 
-    const activeRounds: RoundOverview[] = [
+    const activeRounds: __deprecated_RoundOverview[] = [
       makeRoundOverviewData(),
       makeRoundOverviewData(),
       makeRoundOverviewData({ roundMetadata }),
@@ -121,10 +140,6 @@ describe("LandingPage", () => {
         },
       }),
     ];
-
-    mockGetActiveRounds.mockImplementation(async () => {
-      return activeRounds;
-    });
 
     renderWithContext(<LandingPage />);
 

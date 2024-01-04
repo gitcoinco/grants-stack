@@ -1,5 +1,4 @@
-import { useAccount } from "wagmi";
-import { DetailedVote as Contribution } from "allo-indexer-client";
+import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { VotingToken } from "../api/types";
@@ -9,17 +8,27 @@ import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import { useContributionHistory } from "../api/round";
+import {
+  ContributionWithTimestamp,
+  useContributionHistory,
+} from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
+import { isAddress } from "viem";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")
 );
 
-export default function () {
+export function ViewContributionHistoryPage() {
   const params = useParams();
   const chainIds = getChainIds();
+
+  const { data: ensResolvedAddress } = useEnsAddress({
+    /* If params.address is actually an address, don't resolve the ens address for it*/
+    name: isAddress(params.address ?? "") ? undefined : params.address,
+    chainId: 1,
+  });
 
   if (params.address === undefined) {
     return null;
@@ -29,7 +38,7 @@ export default function () {
     <>
       <Navbar showWalletInteraction={true} />
       <ViewContributionHistoryFetcher
-        address={params.address}
+        address={ensResolvedAddress ?? params.address}
         chainIds={chainIds}
       />
     </>
@@ -45,6 +54,17 @@ function ViewContributionHistoryFetcher(props: {
     props.address
   );
 
+  const { data: ensName } = useEnsName({
+    /* If props.address is an ENS name, don't pass in anything, as we already have the ens name*/
+    address: isAddress(props.address) ? props.address : undefined,
+    chainId: 1,
+  });
+
+  const { data: ensAvatar } = useEnsAvatar({
+    name: ensName,
+    chainId: 1,
+  });
+
   const breadCrumbs = [
     {
       name: "Explorer Home",
@@ -57,8 +77,11 @@ function ViewContributionHistoryFetcher(props: {
   ] as BreadcrumbItem[];
 
   const addressLogo = useMemo(() => {
-    return blockies.create({ seed: props.address.toLowerCase() }).toDataURL();
-  }, [props.address]);
+    return (
+      ensAvatar ??
+      blockies.create({ seed: props.address.toLowerCase() }).toDataURL()
+    );
+  }, [props.address, ensAvatar]);
 
   // tokens is a map of token address + chainId to token
   const tokens = Object.fromEntries(
@@ -87,6 +110,7 @@ function ViewContributionHistoryFetcher(props: {
         contributions={contributionHistory.data}
         address={props.address}
         breadCrumbs={breadCrumbs}
+        ensName={ensName}
       />
     );
   }
@@ -94,10 +118,10 @@ function ViewContributionHistoryFetcher(props: {
 
 export function ViewContributionHistory(props: {
   tokens: Record<string, VotingToken>;
-  contributions: { chainId: number; data: Contribution[] }[];
+  contributions: { chainId: number; data: ContributionWithTimestamp[] }[];
   address: string;
   addressLogo: string;
-  ensName?: string;
+  ensName?: string | null;
   breadCrumbs: BreadcrumbItem[];
 }) {
   const currentOrigin = window.location.origin;
@@ -127,8 +151,10 @@ export function ViewContributionHistory(props: {
     }, [props.contributions, props.tokens]);
 
   const [activeRoundDonations] = useMemo(() => {
-    const activeRoundDonations: { chainId: number; data: Contribution[] }[] =
-      [];
+    const activeRoundDonations: {
+      chainId: number;
+      data: ContributionWithTimestamp[];
+    }[] = [];
     const now = Date.now();
 
     props.contributions.forEach((chainContribution) => {
@@ -149,7 +175,10 @@ export function ViewContributionHistory(props: {
   }, [props.contributions]);
 
   const [pastRoundDonations] = useMemo(() => {
-    const pastRoundDonations: { chainId: number; data: Contribution[] }[] = [];
+    const pastRoundDonations: {
+      chainId: number;
+      data: ContributionWithTimestamp[];
+    }[] = [];
     const now = Date.now();
 
     props.contributions.forEach((chainContribution) => {
@@ -192,10 +221,14 @@ export function ViewContributionHistory(props: {
             </div>
           </div>
           <CopyToClipboardButton
-            textToCopy={`${currentOrigin}#/contributors/${props.address}`}
+            textToCopy={`${currentOrigin}/#/contributors/${props.address}`}
             styles="text-xs p-2"
             iconStyle="h-4 w-4 mr-1"
           />
+        </div>
+        <div className="mt-8 mb-2">
+          Please note that your recent transactions may take a short while to
+          reflect in your donation history, as processing times may vary.
         </div>
         <div className="text-2xl my-6">Donation Impact</div>
         <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-3 lg:grid-row-1 gap-4">
@@ -274,7 +307,7 @@ export function ViewContributionHistoryWithoutDonations(props: {
             </div>
           </div>
           <CopyToClipboardButton
-            textToCopy={`${currentOrigin}#/contributors/${props.address}`}
+            textToCopy={`${currentOrigin}/#/contributors/${props.address}`}
             styles="text-xs p-2"
             iconStyle="h-4 w-4 mr-1"
           />

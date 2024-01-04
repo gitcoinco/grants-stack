@@ -1,0 +1,68 @@
+name: Bug Report
+description: File a bug report
+labels: ["bug", "triage"]
+projects: ["gitcoinco/grants-stack"]
+assignees:
+  - jesuloluwao
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: url
+    attributes:
+      label: What was the URL where the error occurred? 
+      description:
+      placeholder: https://example.com
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: If applicable, add screenshots to help explain your problem.
+      placeholder: 
+      value: "Page X displayed Z..."
+    validations:
+      required: true
+  - type: textarea
+    id: what-expected
+    attributes:
+      label: What should have happened instead?
+      description: A clear and concise description of what you expected the system to do.
+      placeholder: 
+      value: "Page X should display Y"
+    validations:
+      required: true
+  - type: textarea 
+    id: repro
+    attributes:
+      label: Steps to Reproduce
+      description: Issues that developers can reproduce are quicker to resolve 
+      placeholder: "1. Go to '...'\n2. Click on '....'\n3. Scroll down to '....'\n4. See error"
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browser(s) are you seeing the problem on?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+  - type: input
+    id: chain
+    attributes:
+      label: What chain(s) did the error occur on? 
+      description:
+      placeholder: i.e. Optimism, PGN, etc. 
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  

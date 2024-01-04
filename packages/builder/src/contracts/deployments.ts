@@ -2,12 +2,15 @@ import { ChainId } from "common";
 
 export const chains = {
   1: "mainnet",
-  5: "goerli",
   10: "optimism",
   250: "fantom",
+  280: "zkSyncEraTestnet",
+  324: "zkSyncEraMainnet",
   424: "pgn",
   4002: "fantomTestnet",
   31337: "localhost",
+  313371: "dev1",
+  313372: "dev2",
   58008: "pgnTestnet",
   42161: "arbitrum",
   421613: "arbitrumGoerli",
@@ -15,6 +18,7 @@ export const chains = {
   43113: "fuji",
   137: "polygon",
   80001: "polygonMumbai",
+  8453: "base",
 } as const;
 
 export type ChainName = (typeof chains)[keyof typeof chains];
@@ -34,6 +38,12 @@ export type DeploymentAddressesMap = {
 };
 
 export const addresses: DeploymentAddressesMap = {
+  dev1: {
+    projectRegistry: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  },
+  dev2: {
+    projectRegistry: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  },
   localhost: {
     projectRegistry: "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5",
   },
@@ -42,9 +52,6 @@ export const addresses: DeploymentAddressesMap = {
   },
   mainnet: {
     projectRegistry: "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
-  },
-  goerli: {
-    projectRegistry: "0xa71864fAd36439C50924359ECfF23Bb185FFDf21",
   },
   fantomTestnet: {
     projectRegistry: "0x984749e408FF0446d8ADaf20E293F2F299396631",
@@ -75,6 +82,15 @@ export const addresses: DeploymentAddressesMap = {
   },
   polygonMumbai: {
     projectRegistry: "0x545B282A50EaeA01A619914d44105437036CbB36",
+  },
+  zkSyncEraMainnet: {
+    projectRegistry: "0xe6CCEe93c97E20644431647B306F48e278aFFdb9",
+  },
+  zkSyncEraTestnet: {
+    projectRegistry: "0xb0F4882184EB6e3ed120c5181651D50719329788",
+  },
+  base: {
+    projectRegistry: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
   },
 };
 

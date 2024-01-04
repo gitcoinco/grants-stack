@@ -1,6 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   BoltIcon,
   GlobeAltIcon,
@@ -10,7 +9,7 @@ import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
 import { Button } from "common/src/styles";
 import { formatDistanceToNowStrict } from "date-fns";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { useEnsName } from "wagmi";
@@ -18,6 +17,7 @@ import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { useRoundById } from "../../context/RoundContext";
+import { Spinner } from "../common/Spinner";
 import {
   CartProject,
   GrantApplicationFormAnswer,
@@ -27,13 +27,16 @@ import {
 } from "../api/types";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
-import PassportBanner from "../common/PassportBanner";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { getAddress } from "viem";
+import { Box, Tab, Tabs } from "@chakra-ui/react";
+import { GrantList } from "./KarmaGrant/GrantList";
+import { useGap } from "../api/gap";
+import { DataLayer, useDataLayer } from "data-layer";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -66,9 +69,9 @@ const boundFetch = fetch.bind(window);
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
-const verifier = new PassportVerifier();
-
 export default function ViewProjectDetails() {
+  const [selectedTab, setSelectedTab] = useState(0);
+
   datadogLogs.logger.info(
     "====> Route: /round/:chainId/:roundId/:applicationId"
   );
@@ -76,11 +79,13 @@ export default function ViewProjectDetails() {
   const { chainId, roundId, applicationId } = useParams();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round, isLoading } = useRoundById(chainId!, roundId!);
+  const { round, isLoading } = useRoundById(Number(chainId), roundId!);
 
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
   );
+
+  const { grants } = useGap(projectToRender?.projectRegistryId as string);
 
   const currentTime = new Date();
   const isAfterRoundEndDate =
@@ -123,13 +128,42 @@ export default function ViewProjectDetails() {
     },
   ] as BreadcrumbItem[];
 
+  const projectDetailsTabs = useMemo(
+    () => [
+      {
+        name: "Project details",
+        content: (
+          <>
+            <DescriptionTitle />
+            {!!projectToRender && (
+              <>
+                <Detail
+                  text={projectToRender.projectMetadata.description}
+                  testID="project-metadata"
+                />
+                <ApplicationFormAnswers
+                  answers={projectToRender.grantApplicationFormAnswers}
+                />
+              </>
+            )}
+          </>
+        ),
+      },
+      {
+        name: "Grants",
+        content: <GrantList grants={grants} />,
+      },
+    ],
+    [grants, projectToRender]
+  );
+
+  const handleTabChange = (tabIndex: number) => {
+    setSelectedTab(tabIndex);
+  };
+
   return (
     <>
       <Navbar />
-
-      {round && !isDirectRound(round) && isBeforeRoundEndDate && (
-        <PassportBanner chainId={Number(chainId)} round={round} />
-      )}
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />
@@ -140,7 +174,9 @@ export default function ViewProjectDetails() {
           <Breadcrumb items={breadCrumbs} />
         </div>
         <main className={"flex flex-col items-center"}>
-          {!isLoading && projectToRender && (
+          {isLoading || projectToRender === undefined ? (
+            <Spinner text="Loading project application..." />
+          ) : (
             <>
               <Header projectMetadata={projectToRender.projectMetadata} />
               <div className="flex flex-col w-full md:invisible sm:-mt-[230px]">
@@ -157,22 +193,18 @@ export default function ViewProjectDetails() {
               </div>
               <div className="flex flex-col md:flex-row xl:max-w-[1800px] w-full">
                 <div className="grow">
-                  <div>
+                  <div className="relative">
                     <ProjectTitle
                       projectMetadata={projectToRender.projectMetadata}
                     />
                     <AboutProject projectToRender={projectToRender} />
-                  </div>
-                  <div>
-                    <DescriptionTitle />
-                    <Detail
-                      text={projectToRender.projectMetadata.description}
-                      testID="project-metadata"
-                    />
-                    <ApplicationFormAnswers
-                      answers={projectToRender.grantApplicationFormAnswers}
+                    <ProjectDetailsTabs
+                      selected={selectedTab}
+                      onChange={handleTabChange}
+                      tabs={projectDetailsTabs.map((tab) => tab.name)}
                     />
                   </div>
+                  <div>{projectDetailsTabs[selectedTab].content}</div>
                 </div>
                 {round && !isDirectRound(round) && (
                   <div className="md:visible invisible  min-w-fit">
@@ -204,7 +236,7 @@ function Header(props: { projectMetadata: ProjectMetadata }) {
   return (
     <div className={"w-full xl:max-w-[1800px]"}>
       <ProjectBanner
-        projectMetadata={props.projectMetadata}
+        bannerImgCid={props.projectMetadata.bannerImg ?? null}
         classNameOverride="h-32 w-full object-cover lg:h-80 rounded"
         resizeHeight={320}
       />
@@ -232,7 +264,30 @@ function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
   );
 }
 
+function ProjectDetailsTabs(props: {
+  tabs: string[];
+  onChange?: (tabIndex: number) => void;
+  selected: number;
+}) {
+  return (
+    <Box className="__project-details-tabs absolute" bottom={0.5}>
+      {props.tabs.length > 0 && (
+        <Tabs
+          display="flex"
+          onChange={props.onChange}
+          defaultIndex={props.selected}
+        >
+          {props.tabs.map((tab, index) => (
+            <Tab key={index}>{tab}</Tab>
+          ))}
+        </Tabs>
+      )}
+    </Box>
+  );
+}
+
 function AboutProject(props: { projectToRender: Project }) {
+  const dataLayer = useDataLayer();
   const [verifiedProviders, setVerifiedProviders] = useState<{
     [key: string]: VerifiedCredentialState;
   }>({
@@ -272,10 +327,8 @@ function AboutProject(props: { projectToRender: Project }) {
           const verifiableCredential = credentials[provider];
           if (verifiableCredential) {
             newVerifiedProviders[provider] = await isVerified(
-              verifiableCredential,
-              verifier,
-              provider,
-              projectToRender
+              { verifiableCredential, provider, project: projectToRender },
+              { dataLayer }
             );
           }
         }
@@ -304,7 +357,7 @@ function AboutProject(props: { projectToRender: Project }) {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-16">
       {projectRecipient && (
         <span className="flex items-center mt-4 gap-1">
           <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
@@ -538,7 +591,7 @@ export function useRoundApprovedApplication(
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(chainId!, roundId!);
+  const { round } = useRoundById(Number(chainId), roundId!);
 
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
@@ -654,12 +707,22 @@ function vcIssuedToAddress(vc: VerifiableCredential, address: string) {
 }
 
 async function isVerified(
-  verifiableCredential: VerifiableCredential,
-  verifier: PassportVerifier,
-  provider: string,
-  project: Project | undefined
+  data: {
+    verifiableCredential: VerifiableCredential;
+    provider: string;
+    project: Project | undefined;
+  },
+  deps: {
+    dataLayer: DataLayer;
+  }
 ) {
-  const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
+  const { verifiableCredential, provider, project } = data;
+  const { dataLayer } = deps;
+
+  const { isVerified: vcHasValidProof } = await dataLayer.query({
+    type: "verify-passport-credential",
+    credential: verifiableCredential,
+  });
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(
     provider,

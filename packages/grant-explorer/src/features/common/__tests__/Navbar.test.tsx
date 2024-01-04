@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { fireEvent, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import {
   mockBalance,
   mockNetwork,
@@ -33,6 +33,10 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
 
 vi.mock("../Auth");
 
+vi.mock("../PassportWidget", () => ({
+  PassportWidget: vi.fn(),
+}));
+
 const navigateMock = vi.fn();
 
 vi.mock("react-router-dom", async () => {
@@ -63,27 +67,13 @@ describe("<Navbar>", () => {
     expect(screen.getByTestId("connect-wallet-button")).toBeInTheDocument();
   });
 
+  it("SHOULD display passport widget", () => {
+    renderWithContext(<Navbar customBackground="" />);
+    expect(screen.getByTestId("passport-widget")).toBeInTheDocument();
+  });
+
   it("SHOULD display cart if round has not ended", () => {
     renderWithContext(<Navbar customBackground="" />);
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
-  });
-
-  it("SHOULD navigate to the correct round URL when a round is clicked in RoundsSubNav", () => {
-    renderWithContext(<Navbar customBackground="" />);
-
-    const openSubnavButton = screen.getByLabelText("Open Grants Subnav");
-    fireEvent.click(openSubnavButton);
-
-    const link = screen.getByRole("link", {
-      name: /gaming round/i,
-    });
-
-    fireEvent.click(link);
-
-    const expectedChainId = "42161";
-    const expectedRoundId = "0xd0a086c37fbd20c44f3ba2cff69208d1b62f54e3";
-    expect(navigateMock).toHaveBeenCalledWith(
-      `/round/${expectedChainId}/${expectedRoundId}`
-    );
   });
 });

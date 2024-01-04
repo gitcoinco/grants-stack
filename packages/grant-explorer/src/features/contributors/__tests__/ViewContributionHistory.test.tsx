@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import {
   ViewContributionHistory,
@@ -53,6 +53,7 @@ const mockContributions = [
         projectTitle: "Project 1",
         roundStartTime: Number(faker.date.past()),
         roundEndTime: Number(faker.date.future()),
+        timestamp: 0n,
       },
       {
         id: "2",
@@ -69,6 +70,7 @@ const mockContributions = [
         projectTitle: "Project 2",
         roundStartTime: Number(faker.date.past()),
         roundEndTime: Number(faker.date.past()),
+        timestamp: 0n,
       },
     ],
   },
@@ -101,7 +103,7 @@ vi.mock("@rainbow-me/rainbowkit", () => ({
 vi.mock("react-router-dom", async () => {
   const actual =
     await vi.importActual<typeof import("react-router-dom")>(
-      "react-router-dom",
+      "react-router-dom"
     );
 
   return {
@@ -123,6 +125,10 @@ vi.mock("wagmi", async () => {
   };
 });
 
+Object.assign(navigator, {
+  clipboard: { writeText: vi.fn() },
+});
+
 describe("<ViewContributionHistory/>", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -138,7 +144,7 @@ describe("<ViewContributionHistory/>", () => {
           addressLogo="mockedAddressLogo"
           breadCrumbs={breadCrumbs}
         />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     expect(screen.getByText("Donation Impact")).toBeInTheDocument();
@@ -146,20 +152,20 @@ describe("<ViewContributionHistory/>", () => {
     expect(screen.getByText("Active Rounds")).toBeInTheDocument();
     expect(screen.getByText("Past Rounds")).toBeInTheDocument();
     expect(
-      screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6)),
+      screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
     ).toBeInTheDocument();
     expect(screen.getByText("Share Profile")).toBeInTheDocument();
 
     for (const contribution of mockContributions) {
       for (const chainContribution of contribution.data) {
         expect(
-          screen.getByText(chainContribution.roundName),
+          screen.getByText(chainContribution.roundName)
         ).toBeInTheDocument();
         expect(
-          screen.getByText(chainContribution.projectTitle),
+          screen.getByText(chainContribution.projectTitle)
         ).toBeInTheDocument();
         expect(screen.getAllByText("View transaction").length).toBeGreaterThan(
-          0,
+          0
         );
       }
     }
@@ -179,15 +185,20 @@ describe("<ViewContributionHistoryWithoutDonations/>", () => {
           addressLogo="mockedAddressLogo"
           breadCrumbs={breadCrumbs}
         />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     await waitFor(() => {
       expect(screen.getByText("Donation History")).toBeInTheDocument();
     });
     expect(
-      screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6)),
+      screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
     ).toBeInTheDocument();
     expect(screen.getByText("Share Profile")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Share Profile"));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      expect.stringMatching("http://localhost:3000/#/contributors/")
+    );
   });
 });

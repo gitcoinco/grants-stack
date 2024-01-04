@@ -29,7 +29,7 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
-import { payoutTokens, fetchFromIPFS, PayoutToken } from "../../api/utils";
+import { fetchFromIPFS } from "../../api/utils";
 import { roundApplicationsToCSV } from "../../api/exports";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Round } from "allo-indexer-client";
@@ -38,6 +38,7 @@ import {
   roundImplementationContract,
 } from "../../api/contracts";
 import { TransactionResponse } from "@ethersproject/providers";
+import { payoutTokens } from "../../api/payoutTokens";
 
 type RevisedMatch = {
   revisedContributionCount: number;
@@ -902,8 +903,7 @@ function ViewRoundResults({
                     round &&
                       (await exportAndDownloadApplicationsCSV(
                         round.id,
-                        chain.id,
-                        chain.name
+                        chain.id
                       ));
                   } finally {
                     setIsExportingApplicationsCSV(false);
@@ -1037,10 +1037,9 @@ function NoInformationContent() {
 
 async function exportAndDownloadApplicationsCSV(
   roundId: string,
-  chainId: number,
-  chainName: string
+  chainId: number
 ) {
-  const csv = await roundApplicationsToCSV(roundId, chainId, chainName, true);
+  const csv = await roundApplicationsToCSV(roundId, chainId, true);
   // create a download link and click it
   const blob = new Blob([csv], {
     type: "text/csv;charset=utf-8;",

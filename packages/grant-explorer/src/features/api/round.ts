@@ -1,4 +1,7 @@
-import { fetchFromIPFS, graphql_fetch } from "./utils";
+import {
+  __deprecated_fetchFromIPFS,
+  __deprecated_graphql_fetch,
+} from "./utils";
 import {
   ApplicationStatus,
   Eligibility,
@@ -12,22 +15,24 @@ import {
   DetailedVote as Contribution,
 } from "allo-indexer-client";
 import { useEffect, useState } from "react";
-import { getAddress } from "viem";
+import { getAddress, Hex } from "viem";
 import { RoundVisibilityType } from "common";
+import _ from "lodash";
+import { getPublicClient } from "@wagmi/core";
 
 /**
  * Shape of subgraph response
  */
-export interface GetRoundByIdResult {
+export interface __deprecated_GetRoundByIdResult {
   data: {
-    rounds: RoundResult[];
+    rounds: __deprecated_RoundResult[];
   };
 }
 
 /**
  * Shape of subgraph response of Round
  */
-export interface RoundResult {
+export interface __deprecated_RoundResult {
   id: string;
   program: {
     id: string;
@@ -42,9 +47,9 @@ export interface RoundResult {
   payoutStrategy: PayoutStrategy;
   votingStrategy: string;
   projectsMetaPtr?: MetadataPointer | null;
-  projects: RoundProjectResult[];
+  projects: __deprecated_RoundProjectResult[];
 }
-interface RoundProjectResult {
+interface __deprecated_RoundProjectResult {
   id: string;
   project: string;
   status: string | number;
@@ -55,7 +60,7 @@ interface RoundProjectResult {
 /**
  * Shape of IPFS content of Round RoundMetaPtr
  */
-export type RoundMetadata = {
+export type __deprecated_RoundMetadata = {
   name: string;
   roundType: RoundVisibilityType;
   eligibility: Eligibility;
@@ -72,19 +77,20 @@ export type ContributionHistoryState =
   | { type: "loading" }
   | {
       type: "loaded";
-      data: { chainId: number; data: Contribution[] }[];
+      data: { chainId: number; data: ContributionWithTimestamp[] }[];
     }
   | { type: "error"; error: string };
 
-export async function getRoundById(
+export async function __deprecated_getRoundById(
   roundId: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
 ): Promise<Round> {
   try {
     // get the subgraph for round by $roundId
-    const res: GetRoundByIdResult = await graphql_fetch(
-      `
+    const res: __deprecated_GetRoundByIdResult =
+      await __deprecated_graphql_fetch(
+        `
         query GetRoundById($roundId: String) {
           rounds(where: {
             id: $roundId
@@ -132,27 +138,24 @@ export async function getRoundById(
           }
         }
       `,
-      chainId,
-      { roundId }
-    );
+        chainId,
+        { roundId: roundId.toLowerCase() }
+      );
 
-    const round: RoundResult = res.data.rounds[0];
+    const round: __deprecated_RoundResult = res.data.rounds[0];
 
-    const roundMetadata: RoundMetadata = await fetchFromIPFS(
-      round.roundMetaPtr.pointer
-    );
+    const roundMetadata: __deprecated_RoundMetadata =
+      await __deprecated_fetchFromIPFS(round.roundMetaPtr.pointer);
 
     round.projects = round.projects.map((project) => {
       return {
         ...project,
-        status: convertStatus(project.status),
+        status: __deprecated_convertStatus(project.status),
       };
     });
 
-    const approvedProjectsWithMetadata = await loadApprovedProjectsMetadata(
-      round,
-      chainId
-    );
+    const approvedProjectsWithMetadata =
+      await __deprecated_loadApprovedProjectsMetadata(round, chainId);
 
     return {
       id: roundId,
@@ -175,7 +178,7 @@ export async function getRoundById(
   }
 }
 
-export function convertStatus(status: string | number) {
+export function __deprecated_convertStatus(status: string | number) {
   switch (status) {
     case 0:
       return "PENDING";
@@ -190,8 +193,8 @@ export function convertStatus(status: string | number) {
   }
 }
 
-async function loadApprovedProjectsMetadata(
-  round: RoundResult,
+async function __deprecated_loadApprovedProjectsMetadata(
+  round: __deprecated_RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
 ): Promise<Project[]> {
@@ -202,26 +205,31 @@ async function loadApprovedProjectsMetadata(
   const approvedProjects = round.projects;
 
   const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map(
-    (project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId)
+    (project: __deprecated_RoundProjectResult) =>
+      __deprecated_fetchMetadataAndMapProject(project, chainId)
   );
 
   return Promise.all(fetchApprovedProjectMetadata);
 }
 
-async function fetchMetadataAndMapProject(
-  project: RoundProjectResult,
+async function __deprecated_fetchMetadataAndMapProject(
+  project: __deprecated_RoundProjectResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
 ): Promise<Project> {
-  const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
+  const applicationData = await __deprecated_fetchFromIPFS(
+    project.metaPtr.pointer
+  );
   // NB: applicationData can be in two formats:
   // old format: { round, project, ... }
   // new format: { signature: "...", application: { round, project, ... } }
   const application = applicationData.application || applicationData;
   const projectMetadataFromApplication = application.project;
   const projectRegistryId = `0x${projectMetadataFromApplication.id}`;
-  const projectOwners = await getProjectOwners(chainId, projectRegistryId);
+  const projectOwners = await __deprecated_getProjectOwners(
+    chainId,
+    projectRegistryId
+  );
 
   return {
     grantApplicationId: project.id,
@@ -232,19 +240,19 @@ async function fetchMetadataAndMapProject(
       ...projectMetadataFromApplication,
       owners: projectOwners.map((address: string) => ({ address })),
     },
-    status: ApplicationStatus.APPROVED,
+    status: "APPROVED",
     applicationIndex: project.applicationIndex,
   };
 }
 
-export async function getProjectOwners(
+export async function __deprecated_getProjectOwners(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
   projectRegistryId: string
 ) {
   try {
     // get the subgraph for project owners by $projectRegistryId
-    const res = await graphql_fetch(
+    const res = await __deprecated_graphql_fetch(
       `
         query GetProjectOwners($projectRegistryId: String) {
           projects(where: {
@@ -276,6 +284,10 @@ export async function getProjectOwners(
   }
 }
 
+export type ContributionWithTimestamp = Contribution & {
+  timestamp: bigint;
+};
+
 export const useContributionHistory = (
   chainIds: number[],
   rawAddress: string
@@ -292,9 +304,12 @@ export const useContributionHistory = (
     const fetchContributions = async () => {
       const fetchPromises: Promise<{
         chainId: number;
-        data: Contribution[];
+        data: ContributionWithTimestamp[];
         error?: string;
       }>[] = chainIds.map((chainId: number) => {
+        const publicClient = getPublicClient({
+          chainId,
+        });
         if (!process.env.REACT_APP_ALLO_API_URL) {
           throw new Error("REACT_APP_ALLO_API_URL is not set");
         }
@@ -319,8 +334,37 @@ export const useContributionHistory = (
 
         return client
           .getContributionsByAddress(address)
-          .then((data) => {
-            return { chainId, error: undefined, data };
+          .then(async (data) => {
+            const txTimestamps = await Promise.all(
+              data.map(async (contribution) => {
+                const tx = await publicClient.getTransaction({
+                  /* We are casting to Hex here as viem doesn't yet include a getHex parsing method */
+                  hash: contribution.transaction as Hex,
+                });
+
+                const block = await publicClient.getBlock({
+                  blockHash: tx.blockHash,
+                });
+
+                return { tx: tx.hash, timestamp: block.timestamp };
+              })
+            );
+
+            return {
+              chainId,
+              error: undefined,
+              data: _(data)
+                .map((contribution) => ({
+                  ...contribution,
+                  timestamp:
+                    txTimestamps.find(
+                      (txTimestamp) =>
+                        txTimestamp.tx === contribution.transaction
+                    )?.timestamp ?? 0n,
+                }))
+                .orderBy("timestamp", "desc")
+                .value(),
+            };
           })
           .catch((error) => {
             console.log(

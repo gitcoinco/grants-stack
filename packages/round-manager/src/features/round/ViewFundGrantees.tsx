@@ -19,13 +19,14 @@ import {
   Round,
   TransactionBlock,
 } from "../api/types";
-import { formatCurrency, PayoutToken, payoutTokens } from "../api/utils";
+import { formatCurrency } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { assertAddress } from "common/src/address";
+import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;
@@ -153,7 +154,7 @@ function FinalizedRoundContent(props: { round: Round }) {
               </div>
             </Tab.List>
           </div>
-          <Tab.Panels className="basis-5/6 ml-6">
+          <Tab.Panels className="basis-5/6">
             <Tab.Panel>
               <PayProjectsTable
                 projects={unpaidProjects}
@@ -326,7 +327,7 @@ export function PayProjectsTable(props: {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
+    <div>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 text-gray-900">
@@ -520,9 +521,6 @@ export function PaidProjectsTable(props: {
   switch (props.chainId) {
     case 1:
       blockScanUrl = "https://etherscan.io/tx/";
-      break;
-    case 5:
-      blockScanUrl = "https://goerli.etherscan.io/tx/";
       break;
     case 10:
       blockScanUrl = "https://optimistic.etherscan.io/tx/";

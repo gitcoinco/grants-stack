@@ -7,7 +7,6 @@ import DefaultProjectBanner from "./default-project-banner.png";
 import DefaultProjectLogo from "./default-project-logo.png";
 import EthDiamondGlyph from "./eth-diamond-glyph.png";
 import Ethereum from "./ethereum.svg";
-import FantomFTMLogo from "./fantom-ftm-logo.png";
 import FooterImg from "./footer-img.svg";
 import FTMTestnet from "./ftm-testnet.png";
 import GHBackground from "./gh-background.svg";
@@ -38,7 +37,6 @@ export {
   DefaultProjectLogo,
   EthDiamondGlyph,
   Ethereum,
-  FantomFTMLogo,
   FooterImg,
   FTMTestnet,
   GHBackground,

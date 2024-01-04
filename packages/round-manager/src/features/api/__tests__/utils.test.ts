@@ -280,7 +280,7 @@ describe("graphql_fetch", () => {
       }
     `;
 
-    const res = await graphql_fetch(query, ChainId.GOERLI_CHAIN_ID);
+    const res = await graphql_fetch(query, ChainId.MAINNET);
 
     const params = {
       method: "POST",
@@ -294,7 +294,7 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`,
       params
     );
     expect(res.data.programs[0]).toEqual({
@@ -312,9 +312,10 @@ describe("graphql_fetch", () => {
       }
     `;
 
-    await expect(
-      graphql_fetch(query, ChainId.GOERLI_CHAIN_ID)
-    ).rejects.toHaveProperty("status", 400);
+    await expect(graphql_fetch(query, ChainId.MAINNET)).rejects.toHaveProperty(
+      "status",
+      400
+    );
 
     const params = {
       method: "POST",
@@ -328,7 +329,7 @@ describe("graphql_fetch", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`,
       params
     );
   });

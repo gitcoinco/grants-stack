@@ -13,8 +13,9 @@ type ChainIdToStringMap = Record<ChainId, string>;
 /************************/
 
 const projectRegistryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  [ChainId.DEV2]: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
   [ChainId.MAINNET]: "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
-  [ChainId.GOERLI_CHAIN_ID]: "0xa71864fAd36439C50924359ECfF23Bb185FFDf21",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
     "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:
@@ -29,6 +30,11 @@ const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
   [ChainId.POLYGON]: "0x5C5E2D94b107C7691B08E43169fDe76EAAB6D48b",
   [ChainId.POLYGON_MUMBAI]: "0x545B282A50EaeA01A619914d44105437036CbB36",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0xe6CCEe93c97E20644431647B306F48e278aFFdb9",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0xb0F4882184EB6e3ed120c5181651D50719329788",
+  [ChainId.BASE]: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -48,8 +54,9 @@ export const ERC20Contract: Contract = {
 /* ===== Program ====== */
 /************************/
 const programFactoryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+  [ChainId.DEV2]: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
   [ChainId.MAINNET]: "0x56296242CA408bA36393f3981879fF9692F193cC",
-  [ChainId.GOERLI_CHAIN_ID]: "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
     "0xd5Fb00093Ebd30011d932cB69bb6313c550aB05f",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:
@@ -64,6 +71,11 @@ const programFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
   [ChainId.POLYGON]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
   [ChainId.POLYGON_MUMBAI]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x68a14AF71BFa0FE09fC937033f6Ea5153c0e75e4",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x6D341814Be4E2316142D9190E390b494F1dECFAf",
+  [ChainId.BASE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -77,8 +89,9 @@ export const programFactoryContract = (chainId: ChainId): Contract => {
 /* ====== Round ======= */
 /************************/
 const roundFactoryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+  [ChainId.DEV2]: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
   [ChainId.MAINNET]: "0x9Cb7f434aD3250d1656854A9eC7A71EceC6eE1EF",
-  [ChainId.GOERLI_CHAIN_ID]: "0x24F9EBFAdf095e0afe3d98635ee83CD72e49B5B0",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
     "0x04E753cFB8c8D1D7f776f7d7A033740961b6AEC2",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:
@@ -93,6 +106,11 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x8eC471f30cA797FD52F9D37A47Be2517a7BD6912",
   [ChainId.POLYGON]: "0x5ab68dCdcA37A1C2b09c5218e28eB0d9cc3FEb03",
   [ChainId.POLYGON_MUMBAI]: "0xE1c5812e9831bc1d5BDcF50AAEc1a47C4508F3fA",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0xF3B5a0d59C6292BD0e4f8Cf735EEF52b98f428E6",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x0Bb6e2dfEaef0Db5809B3979717E99e053Cbae72",
+  [ChainId.BASE]: "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (
@@ -113,8 +131,9 @@ export const roundImplementationContract: Contract = {
 /* == VotingStrategy == */
 /************************/
 const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+  [ChainId.DEV2]: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
   [ChainId.MAINNET]: "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F",
-  [ChainId.GOERLI_CHAIN_ID]: "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
     "0x838C5e10dcc1e54d62761d994722367BA167AC22",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:
@@ -129,6 +148,11 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x2AFA4bE0f2468347A2F086c2167630fb1E58b725",
   [ChainId.POLYGON]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
   [ChainId.POLYGON_MUMBAI]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x94cB638556d3991363102431d8cE9e839C734677",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x8c28F21D2d8C53eedC58bF9cdCfb7DCF7d809d97",
+  [ChainId.BASE]: "0xC3A195EEa198e74D67671732E1B8F8A23781D735",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (
@@ -145,6 +169,15 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
   let address;
 
   switch (chainId) {
+    // FIXME: set the real addresses when we have a full local env
+    case ChainId.DEV1: {
+      address = "TODO";
+      break;
+    }
+    case ChainId.DEV2: {
+      address = "TODO";
+      break;
+    }
     case ChainId.MAINNET: {
       address = "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e";
       break;
@@ -193,6 +226,18 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
       address = "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918";
       break;
     }
+    case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID: {
+      address = "0x787D662D19C9528EB33FdaBb3cBEcBeAb2a7F15a";
+      break;
+    }
+    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID: {
+      address = "0x0c0B71BA1427cb46424d38133E8187365Cc5466b";
+      break;
+    }
+    case ChainId.BASE: {
+      address = "0x73AB205af1476Dc22104A6B8b3d4c273B58C6E27";
+      break;
+    }
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
@@ -206,8 +251,9 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
 /* == PayoutStrategy == */
 /************************/
 const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+  [ChainId.DEV2]: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
   [ChainId.MAINNET]: "0x8F8d78f119Aa722453d33d6881f4D400D67D054F",
-  [ChainId.GOERLI_CHAIN_ID]: "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
     "0xB5365543cdDa2C795AD104F4cB784EF3DB1CD383",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:
@@ -222,6 +268,11 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x27efa1C90e097c980c669AB1a6e326AD4164f1Cb",
   [ChainId.POLYGON]: "0xD0e19DBF9b896199F35Df255A1bf8dB3C787531c",
   [ChainId.POLYGON_MUMBAI]: "0xc1a26b0789C3E93b07713e90596Cad8d0442C826",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x41A8F19C6CB88C9Cc98d29Cb7A4015629910fFc0",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0xbA160C13F8F626e3232078aDFD6eD2f2B2289563",
+  [ChainId.BASE]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId
@@ -240,8 +291,9 @@ export const merklePayoutStrategyImplementationContract: Contract = {
 /* AlloSettings contract  */
 
 const alloSettingsContractMap: ChainIdToStringMap = {
+  [ChainId.DEV1]: "0x59b670e9fA9D0A427751Af201D676719a970857b",
+  [ChainId.DEV2]: "0x59b670e9fA9D0A427751Af201D676719a970857b",
   [ChainId.MAINNET]: "",
-  [ChainId.GOERLI_CHAIN_ID]: "0x991cd65cb6AE183F06a489857775D7aE14794055",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: "",
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: "",
@@ -253,6 +305,10 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "",
   [ChainId.POLYGON]: "",
   [ChainId.POLYGON_MUMBAI]: "",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x0FD600678475C03f28baE59A2d55f7a911383e2B",
+  [ChainId.BASE]: "",
 };
 
 /* AlloSettingsContract  */
@@ -268,8 +324,10 @@ export const alloSettingsContract = (
 /* DirectPayoutStrategyFactoryContract contract  */
 
 const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
+  // FIXME: set the real addresses when we have a full local env
+  [ChainId.DEV1]: "TODO",
+  [ChainId.DEV2]: "TODO",
   [ChainId.MAINNET]: "0xd07D54b0231088Ca9BF7DA6291c911B885cBC140",
-  [ChainId.GOERLI_CHAIN_ID]: "0x0077551e24bfB910aBABedC4336246e34B5fB0A2",
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
     "0x2Bb670C3ffC763b691062d671b386E51Cf1840f0",
   [ChainId.FANTOM_MAINNET_CHAIN_ID]:
@@ -284,6 +342,11 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.AVALANCHE]: "0x8AdFcF226dfb2fA73788Ad711C958Ba251369cb3",
   [ChainId.POLYGON]: "0xF2a07728107B04266015E67b1468cA0a536956C8",
   [ChainId.POLYGON_MUMBAI]: "0xD9B7Ce1F68A93dF783A8519ed52b74f5DcF5AFE1",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    "0x0ccdfCB7e5DB60AAE5667d1680B490F7830c49C8",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "0x4170665B31bC10009f8a69CeaACf3265C3d66797",
+  [ChainId.BASE]: "0x74c3665540FC8B92Dd06a7e56a51eCa038C18180",
 };
 
 /* DirectPayoutStrategyFactoryContract  */

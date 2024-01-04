@@ -1,13 +1,22 @@
-import { ProjectMetadata } from "../api/types";
 import DefaultBannerImage from "../../assets/default_banner.jpg";
+import { createIpfsImageUrl } from "common/src/ipfs";
+import { getConfig } from "common/src/config";
 
 export function ProjectBanner(props: {
-  projectMetadata: ProjectMetadata;
+  bannerImgCid: string | null;
   classNameOverride?: string;
   resizeHeight?: number;
 }) {
-  const projectBannerImage = props.projectMetadata.bannerImg
-    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.projectMetadata.bannerImg}`
+  const {
+    ipfs: { baseUrl: ipfsBaseUrl },
+  } = getConfig();
+
+  const projectBannerImageUrl = props.bannerImgCid
+    ? createIpfsImageUrl({
+        baseUrl: ipfsBaseUrl,
+        cid: props.bannerImgCid,
+        height: props.resizeHeight ? props.resizeHeight * 2 : undefined,
+      })
     : DefaultBannerImage;
 
   return (
@@ -16,9 +25,7 @@ export function ProjectBanner(props: {
         className={
           props.classNameOverride ?? "h-[120px] w-full object-cover rounded-t"
         }
-        src={`${projectBannerImage}${
-          props.resizeHeight ? "?img-height=" + props.resizeHeight : ""
-        }`}
+        src={projectBannerImageUrl}
         alt="Project Banner"
       />
     </div>
