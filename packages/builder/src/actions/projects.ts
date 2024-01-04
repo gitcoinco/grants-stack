@@ -173,7 +173,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   const createdEventSig = ethers.utils.id("ProjectCreated(uint256,address)");
   const createdFilter = {
     address: addresses.projectRegistry,
-    fromBlock: "0x00",
+    fromBlock: chainID === ChainId.POLYGON ? "0x2D01F56" : "0x00",
     toBlock: "latest",
     topics: [createdEventSig, null, ethers.utils.hexZeroPad(account, 32)],
   };
@@ -224,7 +224,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   );
   const updatedFilter = {
     address: addresses.projectRegistry,
-    fromBlock: "0x00",
+    fromBlock: chainID === ChainId.POLYGON ? "0x2D01F56" : "0x00",
     toBlock: "latest",
     topics: [updatedEventSig, hexIDs],
   };
