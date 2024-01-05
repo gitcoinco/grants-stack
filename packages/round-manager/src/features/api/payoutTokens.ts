@@ -171,14 +171,6 @@ const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
   {
-    name: "USDC",
-    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    address: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
-    decimal: 6,
-    logo: TokenNamesAndLogos["USDC"],
-    redstoneTokenId: RedstoneTokenIds["USDC"],
-  },
-  {
     name: "USDT",
     chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
     address: "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C",
