@@ -38,7 +38,7 @@ import {
   roundImplementationContract,
 } from "../../api/contracts";
 import { TransactionResponse } from "@ethersproject/providers";
-import { payoutTokens } from "../../api/payoutTokens";
+import { PayoutToken, payoutTokens } from "../../api/payoutTokens";
 
 type RevisedMatch = {
   revisedContributionCount: number;
