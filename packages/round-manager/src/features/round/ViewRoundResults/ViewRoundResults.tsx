@@ -541,7 +541,8 @@ function ViewRoundResults({
                 <div className="flex flex-col">
                   <span className="text-sm leading-5 text-gray-400 text-left">
                     Finalize your round results here. Doing so will allow you to
-                    fund your grantees.
+                    fund your grantees. Please make sure to fully fund the round
+                    contract on the Fund Contract tab before finalizing results.
                   </span>
                 </div>
               )}
