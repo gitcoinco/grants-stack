@@ -1,10 +1,11 @@
 import { ChainId, RedstoneTokenIds } from "common";
 import { ethers } from "ethers";
+import { Address } from "wagmi";
 
 export type PayoutToken = {
   name: string;
   chainId: number;
-  address: string;
+  address: Address;
   logo?: string;
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
   redstoneTokenId?: string;
