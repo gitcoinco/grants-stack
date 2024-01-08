@@ -298,7 +298,7 @@ export default function ApplicationDirectPayout({
                 </p>
               </label>
               <div className="relative mt-2 rounded-md shadow-sm">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center m-0.5 pl-3 pr-3 bg-gray-100 rounded-sm">
                   <span className="text-gray-400 sm:text-sm">
                     {tokenInfo.name}
                   </span>
@@ -306,7 +306,7 @@ export default function ApplicationDirectPayout({
                 <Input
                   {...register("amount")}
                   className={
-                    "block w-full rounded-md border-gray-300 pl-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10"
+                    "block w-full rounded-md border-gray-300 pl-24 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10"
                   }
                   type="number"
                   placeholder="Enter payout amount"
