@@ -305,9 +305,9 @@ export default function ApplicationDirectPayout({
                 </div>
                 <Input
                   {...register("amount")}
-                  className={
-                    "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10"
-                  }
+                  className={`block w-full rounded-md border-gray-300   ${
+                    tokenInfo.name.length <= 4 ? "pl-12" : "pl-16"
+                  } focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10`}
                   type="number"
                   placeholder="Enter payout amount"
                   aria-describedby="token-symbol"
