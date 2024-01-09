@@ -10,6 +10,7 @@ import {
   zkSyncTestnet as zkSyncTestnetOriginal,
   zkSync as zkSyncOriginal,
   base as baseOriginal,
+  scrollSepolia as scrollSepoliaOriginal,
 } from "@wagmi/chains";
 import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
 import { ChainId } from "./chain-ids";
@@ -95,6 +96,18 @@ export const zkSyncEraTestnet: Chain = {
     },
     public: {
       http: ["https://testnet.era.zksync.dev"],
+    },
+  },
+};
+
+export const scrollTestnet: Chain = {
+  ...scrollSepoliaOriginal,
+  rpcUrls: {
+    default: {
+      http: ["https://sepolia-rpc.scroll.io"],
+    },
+    public: {
+      http: ["https://sepolia-rpc.scroll.io"],
     },
   },
 };

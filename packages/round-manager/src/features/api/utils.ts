@@ -96,6 +96,11 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "zkSync Era Testnet",
     logo: "/logos/zksync-logo.svg",
   },
+  [ChainId.SCROLL_TESTNET]: {
+    id: ChainId.SCROLL_TESTNET,
+    name: "Scroll Testnet",
+    logo: "/logos/ethereum-eth-logo.svg",
+  },
 };
 
 export type SupportType = {

@@ -122,6 +122,7 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
     process.env.REACT_APP_SUBGRAPH_ZKSYNC_MAINNET_API!,
   [ChainId.BASE]: process.env.REACT_APP_SUBGRAPH_BASE_API!,
+  [ChainId.SCROLL_TESTNET]: process.env.REACT_APP_SUBGRAPH_SCROLL_TESTNET_API!,
 };
 
 /**

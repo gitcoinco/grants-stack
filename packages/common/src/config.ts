@@ -109,6 +109,9 @@ export function getConfig(): Config {
         [ChainId.BASE]: z
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_BASE_API),
+        [ChainId.SCROLL_TESTNET]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_SCROLL_TESTNET_API),
       },
     },
     pinata: {

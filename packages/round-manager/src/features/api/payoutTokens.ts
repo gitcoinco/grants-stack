@@ -375,6 +375,24 @@ const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
+
+const SCROLL_TESTNET_TOKENS: PayoutToken[] = [
+  {
+    name: "TEST",
+    chainId: ChainId.SCROLL_TESTNET,
+    address: "0x00",
+    logo: TokenNamesAndLogos["DAI"],
+    decimal: 18,
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.SCROLL_TESTNET,
+    address: ethers.constants.AddressZero,
+    logo: TokenNamesAndLogos["ETH"],
+    decimal: 18,
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -391,6 +409,7 @@ export const payoutTokens = [
   ...ZKSYNC_ERA_MAINNET_TOKENS,
   ...ZKSYNC_ERA_TESTNET_TOKENS,
   ...BASE_TOKENS,
+  ...SCROLL_TESTNET_TOKENS,
 ];
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
