@@ -123,8 +123,7 @@ export function SummaryContainer() {
     const uniqueProjects = uniqBy(projects, "roundId");
     return Promise.all(
       uniqueProjects.map(async (proj) => {
-        const { round } = await dataLayer.query({
-          type: "legacy-round-by-id",
+        const { round } = await dataLayer.getLegacyRoundById({
           roundId: proj.roundId,
           chainId: proj.chainId,
         });

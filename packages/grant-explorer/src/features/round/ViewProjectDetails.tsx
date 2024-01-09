@@ -719,10 +719,8 @@ async function isVerified(
   const { verifiableCredential, provider, project } = data;
   const { dataLayer } = deps;
 
-  const { isVerified: vcHasValidProof } = await dataLayer.query({
-    type: "verify-passport-credential",
-    credential: verifiableCredential,
-  });
+  const { isVerified: vcHasValidProof } =
+    await dataLayer.verifyPassportCredential(verifiableCredential);
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(
     provider,
