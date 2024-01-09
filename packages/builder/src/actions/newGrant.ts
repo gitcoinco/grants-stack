@@ -1,3 +1,4 @@
+import { AlloV2, AlloEvents, CreateProfileParams } from "data-layer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
@@ -11,6 +12,8 @@ import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
 import { getProjectURIComponents } from "../utils/utils";
+
+// fix import
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
@@ -65,6 +68,66 @@ export const grantCreated = ({
   metaData,
   owner,
 });
+
+export const publishGrantDummy =
+  (fullId?: string) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const { metadata: formMetaData, credentials: formCredentials } =
+      state.projectForm;
+
+    // const { id: grantId } = fullId
+    //   ? getProjectURIComponents(fullId)
+    //   : { id: undefined };
+
+    const oldGrantMetadata = state.grantsMetadata[fullId || ""];
+
+    if (formMetaData === undefined) {
+      return;
+    }
+    const application = {
+      ...formMetaData,
+    } as Project;
+    const { signer } = global;
+
+    const allo = new AlloV2(1); // add chainId
+
+    allo
+      .on(AlloEvents.IpfsUploaded, (success: boolean) => {
+        if (success) {
+          // dispatch status
+        } else {
+          // log error
+        }
+      })
+      .on(AlloEvents.WaitForTransaction, () => {
+        // dispatch status
+      })
+      .on(AlloEvents.ProfileCreated, (success: boolean) => {
+        if (success) {
+          // dispatch status
+        }
+      })
+      .on(AlloEvents.WaitForTransactionToBeIndexed, () => {
+        // dispatch status
+      });
+    // etc..
+
+    application.credentials = formCredentials;
+    application.createdAt = oldGrantMetadata
+      ? oldGrantMetadata.metadata?.createdAt
+      : Date.now();
+
+    const params: CreateProfileParams = {
+      name: application.title,
+      metadata: application,
+      owner: signer.address,
+      members: [], // add some members here
+    };
+
+    // const profileId: string =
+    await allo.createProfile(params);
+  };
 
 export const publishGrant =
   (fullId?: string) =>
