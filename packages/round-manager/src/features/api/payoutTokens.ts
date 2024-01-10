@@ -29,6 +29,7 @@ export const TokenNamesAndLogos = {
   LUSD: "/logos/lusd-logo.svg",
   MUTE: "/logos/mute-logo.svg",
   mkUSD: "/logos/mkusd-logo.svg", // Prisma mkUSD
+  MTK: "logo/dai-logo.svg", // scroll testnet token
 } as const;
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -378,7 +379,7 @@ const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
 
 const SCROLL_TESTNET_TOKENS: PayoutToken[] = [
   {
-    name: "TEST",
+    name: "MTK",
     chainId: ChainId.SCROLL_TESTNET,
     address: "0xc2332031de487f430fae3290c05465d907785eda",
     logo: TokenNamesAndLogos["DAI"],

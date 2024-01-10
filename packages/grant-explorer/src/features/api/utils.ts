@@ -137,6 +137,7 @@ export const TokenNamesAndLogos = {
   USDT: "./logos/usdt-logo.svg",
   LUSD: "./logos/lusd-logo.svg",
   MUTE: "./logos/mute-logo.svg",
+  MTK: "./logos/dai-logo.svg", // scroll testnet token
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -543,7 +544,7 @@ const FUJI_TOKENS: VotingToken[] = [
 
 const SCROLL_TESTNET_TOKENS: VotingToken[] = [
   {
-    name: "TEST",
+    name: "MTK",
     chainId: ChainId.SCROLL_TESTNET,
     address: "0xc2332031de487f430fae3290c05465d907785eda",
     decimal: 18,
