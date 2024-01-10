@@ -114,6 +114,11 @@ export const CHAINS: Record<
     name: "Base",
     logo: "./logos/base-logo.svg",
   },
+  [ChainId.SCROLL_TESTNET]: {
+    id: ChainId.SCROLL_TESTNET,
+    name: "Scroll Testnet",
+    logo: "./logos/scroll-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos = {

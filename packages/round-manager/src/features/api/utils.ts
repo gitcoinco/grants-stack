@@ -99,7 +99,7 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
   [ChainId.SCROLL_TESTNET]: {
     id: ChainId.SCROLL_TESTNET,
     name: "Scroll Testnet",
-    logo: "/logos/ethereum-eth-logo.svg",
+    logo: "/logos/scroll-logo.svg",
   },
 };
 
