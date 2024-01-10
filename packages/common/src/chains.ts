@@ -1,6 +1,7 @@
 import { Chain } from "@rainbow-me/rainbowkit";
 import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
 import zkSyncIcon from "./icons/zksync-logo.svg";
+import scrollIcon from "./icons/scroll-logo.svg";
 import BaseLogo from "./icons/base-logo.svg";
 import {
   avalanche as avalancheOriginal,
@@ -102,6 +103,7 @@ export const zkSyncEraTestnet: Chain = {
 
 export const scrollTestnet: Chain = {
   ...scrollSepoliaOriginal,
+  iconUrl: scrollIcon,
   rpcUrls: {
     default: {
       http: ["https://sepolia-rpc.scroll.io"],
