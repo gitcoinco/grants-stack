@@ -92,6 +92,7 @@ export const payoutIcon: { [key in ChainName]: string } = {
   zkSyncEraMainnet: ZkSyncIcon,
   zkSyncEraTestnet: ZkSyncIcon,
   base: EthDiamondGlyph,
+  scrollTestnet: EthDiamondGlyph,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {
