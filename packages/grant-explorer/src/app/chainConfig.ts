@@ -19,7 +19,6 @@ import {
   scrollTestnet,
 } from "common/src/chains";
 import { ChainId } from "common/src/chain-ids";
-import { s } from "vitest/dist/reporters-2ff87305";
 
 const ensureValidChainId = (chain: Chain) => {
   if (Object.values(ChainId).includes(chain.id)) {
