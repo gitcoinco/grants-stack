@@ -380,7 +380,7 @@ const SCROLL_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "TEST",
     chainId: ChainId.SCROLL_TESTNET,
-    address: "0xaaa",
+    address: "0xc2332031de487f430fae3290c05465d907785eda",
     logo: TokenNamesAndLogos["DAI"],
     decimal: 18,
   },

@@ -545,7 +545,7 @@ const SCROLL_TESTNET_TOKENS: VotingToken[] = [
   {
     name: "TEST",
     chainId: ChainId.SCROLL_TESTNET,
-    address: "0xaaa",
+    address: "0xc2332031de487f430fae3290c05465d907785eda",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
