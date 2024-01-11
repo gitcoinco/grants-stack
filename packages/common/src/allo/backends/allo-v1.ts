@@ -85,6 +85,7 @@ export class AlloV1 implements Allo {
         blockNumber,
       });
 
+      // TODO: get project id from receipt logs
       return success({ projectId: 0n });
     });
   }
