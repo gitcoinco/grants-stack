@@ -8,12 +8,14 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@rainbow-me/rainbowkit": "^0.12.16",
     "@wagmi/chains": "^1.8.0",
+    "abitype": "^0.10.3",
     "data-layer": "workspace:*",
     "dompurify": "^2.4.3",
     "ethers": "^5.6.5",

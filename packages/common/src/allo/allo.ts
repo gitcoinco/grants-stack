@@ -56,7 +56,7 @@ export interface Allo {
     name: string;
     metadata: Record<string, unknown>;
   }) => AlloOperation<
-    Result<{ projectId: bigint }>,
+    Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;
       transaction: Result<Hex>;

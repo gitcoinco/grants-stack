@@ -1,10 +1,15 @@
 import {
   Address,
+  GetEventArgs,
   Hex,
   PublicClient,
   WalletClient,
+  decodeEventLog,
+  encodeEventTopics,
   encodeFunctionData,
 } from "viem";
+import { Abi, ExtractAbiEventNames } from "abitype";
+
 import { Result, error, success } from "./common";
 import { AlloError } from "./allo";
 
@@ -18,11 +23,54 @@ export interface TransactionReceipt {
   transactionHash: Hex;
   blockHash: Hex;
   blockNumber: bigint;
+  logs: Array<{
+    data: Hex;
+    topics: Hex[];
+  }>;
 }
 
 export interface TransactionSender {
   send(tx: TransactionData): Promise<Hex>;
   wait(txHash: Hex): Promise<TransactionReceipt>;
+}
+
+export function decodeEventFromReceipt<
+  TAbi extends Abi,
+  TEventName extends ExtractAbiEventNames<TAbi>,
+>(args: {
+  receipt: TransactionReceipt;
+  abi: TAbi;
+  event: TEventName;
+}): GetEventArgs<
+  TAbi,
+  TEventName,
+  { EnableUnion: false; IndexedOnly: false; Required: true }
+> {
+  const data = encodeEventTopics({
+    abi: args.abi as Abi,
+    eventName: args.event as string,
+  });
+
+  const log = args.receipt.logs.find((log) => log.topics[0] === data[0]);
+
+  if (log === undefined) {
+    // should never happen
+    throw new Error("Event not found in receipt");
+  }
+
+  const decoded = decodeEventLog({
+    abi: args.abi as Abi,
+    eventName: args.event as string,
+    data: log.data,
+    topics: log.topics as [Hex, ...Hex[]],
+  });
+
+  // typed at the function signature already
+  return decoded.args as GetEventArgs<
+    TAbi,
+    TEventName,
+    { EnableUnion: false; IndexedOnly: false; Required: true }
+  >;
 }
 
 export function createViemTransactionSender(
@@ -53,6 +101,10 @@ export function createViemTransactionSender(
         transactionHash: receipt.transactionHash,
         blockHash: receipt.blockHash,
         blockNumber: receipt.blockNumber,
+        logs: receipt.logs.map((log) => ({
+          data: log.data,
+          topics: log.topics,
+        })),
       };
     },
   };
@@ -102,6 +154,7 @@ export function createMockTransactionSender(): TransactionSender & {
         transactionHash: txHash,
         blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
         blockNumber: 1n,
+        logs: [],
       };
     },
   };

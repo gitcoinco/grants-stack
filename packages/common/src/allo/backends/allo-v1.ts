@@ -3,12 +3,27 @@ import { Allo, AlloError, AlloOperation } from "../allo";
 import {
   TransactionReceipt,
   TransactionSender,
+  decodeEventFromReceipt,
   sendTransaction,
 } from "../transaction-sender";
 import { Result, error, success } from "../common";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import { IpfsUploader } from "../ipfs";
 import { WaitUntilIndexerSynced } from "../indexer";
+import { keccak256, encodePacked } from "viem";
+
+function createProjectId(args: {
+  chainId: number;
+  registryAddress: Address;
+  projectIndex: bigint;
+}): Hex {
+  return keccak256(
+    encodePacked(
+      ["uint256", "address", "uint256"],
+      [BigInt(args.chainId), args.registryAddress, args.projectIndex]
+    )
+  );
+}
 
 export class AlloV1 implements Allo {
   private projectRegistryAddress: Address;
@@ -35,7 +50,7 @@ export class AlloV1 implements Allo {
     name: string;
     metadata: Record<string, unknown>;
   }): AlloOperation<
-    Result<{ projectId: bigint }>,
+    Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;
       transaction: Result<Hex>;
@@ -67,13 +82,12 @@ export class AlloV1 implements Allo {
       }
 
       // --- wait for transaction to be mined
-      let blockNumber: bigint;
+      let receipt: TransactionReceipt;
 
       try {
-        const receipt = await this.transactionSender.wait(txResult.value);
+        receipt = await this.transactionSender.wait(txResult.value);
 
         emit("transactionStatus", success(receipt));
-        blockNumber = receipt.blockNumber;
       } catch (err) {
         const result = new AlloError("Failed to create project");
         emit("transactionStatus", error(result));
@@ -82,11 +96,24 @@ export class AlloV1 implements Allo {
 
       await this.waitUntilIndexerSynced({
         chainId: this.chainId,
-        blockNumber,
+        blockNumber: receipt.blockNumber,
       });
 
-      // TODO: get project id from receipt logs
-      return success({ projectId: 0n });
+      const projectCreatedEvent = decodeEventFromReceipt({
+        abi: ProjectRegistryABI,
+        receipt,
+        event: "ProjectCreated",
+      });
+
+      const projectId = createProjectId({
+        chainId: this.chainId,
+        registryAddress: this.projectRegistryAddress,
+        projectIndex: projectCreatedEvent.projectID,
+      });
+
+      return success({
+        projectId,
+      });
     });
   }
 }
