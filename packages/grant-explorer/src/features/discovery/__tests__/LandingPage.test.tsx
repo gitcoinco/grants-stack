@@ -90,7 +90,7 @@ describe("LandingPage", () => {
     );
 
     const mockDataLayer = {
-      query: vi.fn().mockResolvedValue({
+      getLegacyRounds: vi.fn().mockResolvedValue({
         rounds: getEnabledChains().flatMap((chain) =>
           mockedRounds.map((round) => ({
             ...round,

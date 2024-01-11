@@ -162,7 +162,7 @@ export const renderWithContext = (
   const dataLayerMock =
     overrides?.dataLayer ??
     ({
-      query: vi.fn().mockResolvedValue({
+      getLegacyRoundById: vi.fn().mockResolvedValue({
         round:
           overrides?.roundState?.rounds !== undefined &&
           overrides?.roundState?.rounds.length > 0
