@@ -11,7 +11,7 @@ import { Dispatch } from "redux";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
-import { AppStatus, Application, ProjectStats } from "../reducers/projects";
+import { Application, AppStatus, ProjectStats } from "../reducers/projects";
 import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
 import { fetchProjectOwners } from "../utils/projects";
@@ -22,6 +22,23 @@ import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
 const { chains } = getEnabledChainsAndProviders();
+
+const getProjectRegistryCreatedAt = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.SCROLL_TESTNET: {
+      return "0x2A5600";
+    }
+
+    case ChainId.POLYGON: {
+      return "0x2D01F56";
+    }
+
+    default: {
+      return "0x0";
+    }
+  }
+};
+
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 
 export type SubgraphApplication = {
@@ -173,7 +190,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   const createdEventSig = ethers.utils.id("ProjectCreated(uint256,address)");
   const createdFilter = {
     address: addresses.projectRegistry,
-    fromBlock: chainID === ChainId.POLYGON ? "0x2D01F56" : "0x00",
+    fromBlock: getProjectRegistryCreatedAt(chainID),
     toBlock: "latest",
     topics: [createdEventSig, null, ethers.utils.hexZeroPad(account, 32)],
   };
@@ -224,7 +241,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   );
   const updatedFilter = {
     address: addresses.projectRegistry,
-    fromBlock: chainID === ChainId.POLYGON ? "0x2D01F56" : "0x00",
+    fromBlock: getProjectRegistryCreatedAt(chainID),
     toBlock: "latest",
     topics: [updatedEventSig, hexIDs],
   };

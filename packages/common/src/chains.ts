@@ -6,12 +6,12 @@ import BaseLogo from "./icons/base-logo.svg";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,
+  base as baseOriginal,
   fantom as fantomOriginal,
   fantomTestnet as fantomTestnetOriginal,
-  zkSyncTestnet as zkSyncTestnetOriginal,
-  zkSync as zkSyncOriginal,
-  base as baseOriginal,
   scrollSepolia as scrollSepoliaOriginal,
+  zkSync as zkSyncOriginal,
+  zkSyncTestnet as zkSyncTestnetOriginal,
 } from "@wagmi/chains";
 import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
 import { ChainId } from "./chain-ids";
@@ -106,10 +106,10 @@ export const scrollTestnet: Chain = {
   iconUrl: scrollIcon,
   rpcUrls: {
     default: {
-      http: ["https://sepolia-rpc.scroll.io"],
+      http: ["https://scroll-sepolia.chainstacklabs.com"],
     },
     public: {
-      http: ["https://sepolia-rpc.scroll.io"],
+      http: ["https://scroll-sepolia.chainstacklabs.com"],
     },
   },
 };
