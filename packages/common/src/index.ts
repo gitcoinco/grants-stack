@@ -331,6 +331,7 @@ export const RedstoneTokenIds = {
   USDT: "USDT",
   LUSD: "LUSD",
   MUTE: "MUTE",
+  mkUSD: "mkUSD",
 } as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {

@@ -406,6 +406,11 @@ export function SummaryContainer() {
     return null;
   }
 
+  const noPassportRoundsInCart =
+    rounds?.filter(
+      (round) => round.roundMetadata?.quadraticFundingConfig?.sybilDefense
+    ).length === 0;
+
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold sticky top-20">
       <h2 className="text-xl border-b-2 pb-2">Summary</h2>
@@ -419,7 +424,8 @@ export function SummaryContainer() {
                 <p>Estimated match</p>
                 <MatchingEstimateTooltip
                   isEligible={
-                    passportScore !== undefined && passportScore >= 15
+                    (passportScore !== undefined && passportScore >= 15) ||
+                    noPassportRoundsInCart
                   }
                 />
               </div>
@@ -469,9 +475,10 @@ export function SummaryContainer() {
 
             /* Check if user hasn't connected passport yet, display the warning modal */
             if (
-              passportState === PassportState.ERROR ||
-              passportState === PassportState.NOT_CONNECTED ||
-              passportState === PassportState.INVALID_PASSPORT
+              (passportState === PassportState.ERROR ||
+                passportState === PassportState.NOT_CONNECTED ||
+                passportState === PassportState.INVALID_PASSPORT) &&
+              !noPassportRoundsInCart
             ) {
               setDonateWarningModalOpen(true);
               return;
