@@ -33,6 +33,7 @@ export interface TransactionReceipt {
 export interface TransactionSender {
   send(tx: TransactionData): Promise<Hex>;
   wait(txHash: Hex): Promise<TransactionReceipt>;
+  address(): Promise<Address>;
 }
 
 export function decodeEventFromReceipt<
@@ -139,6 +140,11 @@ export function createViemTransactionSender(
         })),
       };
     },
+
+    async address(): Promise<Address> {
+      const [address] = await walletClient.getAddresses();
+      return address;
+    },
   };
 }
 
@@ -189,7 +195,29 @@ export function createMockTransactionSender(): TransactionSender & {
         logs: [],
       };
     },
+
+    async address(): Promise<Address> {
+      return ("0x" + "0".repeat(40)) as Address;
+    },
   };
+}
+
+export async function sendRawTransaction(
+  sender: TransactionSender,
+  args: TransactionData
+): Promise<Result<Hex>> {
+  try {
+    const tx = await sender.send({
+      to: args.to,
+      data: args.data,
+      value: args.value,
+    });
+    return success(tx);
+  } catch (err) {
+    return error(
+      new AlloError(`Failed to send raw transaction: ${String(err)}`, err)
+    );
+  }
 }
 
 export async function sendTransaction(
