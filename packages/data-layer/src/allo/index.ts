@@ -1,7 +1,7 @@
 import { Hex } from "viem";
-import { AlloOperation } from "./allo/operation";
-import { Result } from "./allo/common";
-import { TransactionReceipt } from "./allo/transaction-sender";
+import { AlloOperation } from "./operation";
+import { Result } from "./common";
+import { TransactionReceipt } from "./transaction-sender";
 
 export { AlloOperation };
 
