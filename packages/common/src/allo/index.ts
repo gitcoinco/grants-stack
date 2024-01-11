@@ -3,19 +3,6 @@ import { AlloOperation } from "./operation";
 import { Result } from "./common";
 import { TransactionReceipt } from "./transaction-sender";
 
-export { AlloOperation };
-
-export class AlloError extends Error {
-  constructor(
-    message: string,
-    public inner: unknown = undefined
-  ) {
-    super(message);
-
-    this.name = "AlloError";
-  }
-}
-
 /**
  * Represents the common interface for interacting with Allo contracts.
  * This interface provides methods to perform various operations related to Allo contracts.
@@ -76,4 +63,17 @@ export interface Allo {
       transactionStatus: Result<TransactionReceipt>;
     }
   >;
+}
+
+export { AlloOperation };
+
+export class AlloError extends Error {
+  constructor(
+    message: string,
+    public inner: unknown = undefined
+  ) {
+    super(message);
+
+    this.name = "AlloError";
+  }
 }

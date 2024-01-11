@@ -79,21 +79,21 @@ export function createViemTransactionSender(
  *  ]);
  */
 export function createMockTransactionSender(): TransactionSender & {
-  transactions: TransactionData[];
+  sentTransactions: TransactionData[];
   clearTransactions(): void;
 } {
-  const transactions: TransactionData[] = [];
+  const sentTransactions: TransactionData[] = [];
 
   return {
-    transactions,
+    sentTransactions,
 
     clearTransactions(): void {
-      transactions.splice(0, transactions.length);
+      sentTransactions.splice(0, sentTransactions.length);
     },
 
     async send(tx: TransactionData): Promise<Hex> {
-      const txHash = `0x${Math.random().toString(16).slice(2)}` as Hex;
-      transactions.push(tx);
+      const txHash = ("0x" + "0".repeat(64)) as Hex;
+      sentTransactions.push(tx);
       return txHash;
     },
 
