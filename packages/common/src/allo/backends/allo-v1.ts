@@ -1,5 +1,5 @@
 import { Address, Hex } from "viem";
-import { Allo, AlloError, AlloOperation } from "../index";
+import { Allo, AlloError, AlloOperation } from "../allo";
 import {
   TransactionReceipt,
   TransactionSender,

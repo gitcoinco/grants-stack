@@ -1,4 +1,4 @@
-import { AlloError } from ".";
+import { AlloError } from "./allo";
 
 export type Result<T> =
   | { type: "success"; value: T }

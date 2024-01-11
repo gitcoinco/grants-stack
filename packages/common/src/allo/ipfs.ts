@@ -1,4 +1,4 @@
-import { AlloError } from ".";
+import { AlloError } from "./allo";
 import { Result, error, success } from "./common";
 
 export interface IpfsUploader {

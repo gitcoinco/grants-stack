@@ -6,7 +6,7 @@ import {
   encodeFunctionData,
 } from "viem";
 import { Result, error, success } from "./common";
-import { AlloError } from ".";
+import { AlloError } from "./allo";
 
 export interface TransactionData {
   to: Hex;

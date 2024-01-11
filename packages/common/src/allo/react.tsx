@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import { Allo } from "../allo";
+import { Allo } from "./allo";
 
 export const AlloContext = createContext<Allo | null>(null);
 
