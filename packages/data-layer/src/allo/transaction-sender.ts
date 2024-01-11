@@ -6,6 +6,7 @@ import {
   encodeFunctionData,
 } from "viem";
 import { Result, error, success } from "./common";
+import { AlloError } from ".";
 
 export interface TransactionData {
   to: Hex;
@@ -72,7 +73,8 @@ export async function sendTransaction(
 
     return success(tx);
   } catch (err) {
-    // TODO: define custom error with more details for better debugging
-    return error(new Error("Failed to send transaction .."));
+    return error(
+      new AlloError(`Failed to send transaction: ${String(err)}`, err),
+    );
   }
 }

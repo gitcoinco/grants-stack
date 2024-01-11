@@ -1,3 +1,5 @@
+import { AlloError } from ".";
+
 export type Result<T> =
   | { type: "success"; value: T }
   | { type: "error"; error: Error };
@@ -18,6 +20,6 @@ export async function uploadToIPFS(
 
     return success(metadataCid);
   } catch (err) {
-    return error(new Error("Failed to upload to IPFS"));
+    return error(new AlloError("Failed to upload to IPFS", err));
   }
 }

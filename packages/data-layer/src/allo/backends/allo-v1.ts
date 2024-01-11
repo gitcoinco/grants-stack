@@ -1,5 +1,5 @@
 import { Address, Hex } from "viem";
-import { Allo, AlloOperation } from "../../allo";
+import { Allo, AlloError, AlloOperation } from "../index";
 import {
   TransactionReceipt,
   TransactionSender,
@@ -64,7 +64,7 @@ export class AlloV1 implements Allo {
         emit("transactionStatus", success(receipt));
         blockNumber = receipt.blockNumber;
       } catch (err) {
-        const result = new Error("Failed to create project");
+        const result = new AlloError("Failed to create project");
         emit("transactionStatus", error(result));
         return error(result);
       }

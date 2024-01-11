@@ -5,6 +5,17 @@ import { TransactionReceipt } from "./transaction-sender";
 
 export { AlloOperation };
 
+export class AlloError extends Error {
+  constructor(
+    message: string,
+    public inner: unknown = undefined,
+  ) {
+    super(message);
+
+    this.name = "AlloError";
+  }
+}
+
 /**
  * Represents the common interface for interacting with Allo contracts.
  * This interface provides methods to perform various operations related to Allo contracts.
@@ -13,7 +24,7 @@ export { AlloOperation };
  *
  * @example
  * ```typescript
- * const allo = new AlloV1({});
+ * const allo = new AlloV1({ .. });
  *
  * const result = await allo
  *   .createProject({
