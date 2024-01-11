@@ -64,34 +64,45 @@ export function createViemTransactionSender(
  *  @example
  *  const sender = createInMemoryTransactionSender();
  *  const txHash = await sender.send({
- *  to: "0x1234",
- *  data: "0x1234",
- *  value: 0n,
+ *    to: "0x1234",
+ *    data: "0x1234",
+ *    value: 0n,
  *  });
  *  const receipt = await sender.wait(txHash);
- *  console.log(receipt);
- *  // { transactionHash: '0x...', blockHash: '0x...', blockNumber: 1n }
+ *  expect(receipt.transactionHash).toEqual(txHash);
+ *  expect(sender.transactions).toEqual([
+ *  {
+ *    to: "0x1234",
+ *    data: "0x1234",
+ *    value: 0n,
+ *  },
+ *  ]);
  */
 export function createMockTransactionSender(): TransactionSender & {
-  transactions: Record<Hex, TransactionReceipt>;
+  transactions: TransactionData[];
+  clearTransactions(): void;
 } {
-  const transactions: Record<Hex, TransactionReceipt> = {};
+  const transactions: TransactionData[] = [];
 
   return {
     transactions,
 
-    async send(_tx: TransactionData): Promise<Hex> {
+    clearTransactions(): void {
+      transactions.splice(0, transactions.length);
+    },
+
+    async send(tx: TransactionData): Promise<Hex> {
       const txHash = `0x${Math.random().toString(16).slice(2)}` as Hex;
-      transactions[txHash] = {
-        transactionHash: txHash,
-        blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
-        blockNumber: 1n,
-      };
+      transactions.push(tx);
       return txHash;
     },
 
     async wait(txHash: Hex): Promise<TransactionReceipt> {
-      return transactions[txHash];
+      return {
+        transactionHash: txHash,
+        blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
+        blockNumber: 1n,
+      };
     },
   };
 }
