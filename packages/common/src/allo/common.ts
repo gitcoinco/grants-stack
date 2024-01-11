@@ -11,15 +11,3 @@ export function success<T>(value: T): Result<T> {
 export function error<T>(error: Error): Result<T> {
   return { type: "error", error };
 }
-
-export async function uploadToIPFS(
-  _metadata: unknown
-): Promise<Result<string>> {
-  try {
-    const metadataCid = "..";
-
-    return success(metadataCid);
-  } catch (err) {
-    return error(new AlloError("Failed to upload to IPFS", err));
-  }
-}

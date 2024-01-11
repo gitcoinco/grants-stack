@@ -5,7 +5,7 @@ import {
   TransactionSender,
   sendTransaction,
 } from "../transaction-sender";
-import { Result, error, success, uploadToIPFS } from "../common";
+import { Result, error, success } from "../common";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import { IpfsUploader } from "../ipfs";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -80,7 +80,7 @@ export class AlloV1 implements Allo {
         return error(result);
       }
 
-      const indexerResult = await this.waitUntilIndexerSynced({
+      await this.waitUntilIndexerSynced({
         chainId: this.chainId,
         blockNumber,
       });
