@@ -7,17 +7,28 @@ import {
 } from "../transaction-sender";
 import { Result, error, success, uploadToIPFS } from "../common";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
+import { IpfsUploader } from "../ipfs";
+import { WaitUntilIndexerSynced } from "../indexer";
 
 export class AlloV1 implements Allo {
   private projectRegistryAddress: Address;
   private transactionSender: TransactionSender;
+  private ipfsUploader: IpfsUploader;
+  private waitUntilIndexerSynced: WaitUntilIndexerSynced;
+  private chainId: number;
 
   constructor(args: {
+    chainId: number;
     transactionSender: TransactionSender;
     projectRegistryAddress: Address;
+    ipfsUploader: IpfsUploader;
+    waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
+    this.chainId = args.chainId;
     this.transactionSender = args.transactionSender;
     this.projectRegistryAddress = args.projectRegistryAddress;
+    this.ipfsUploader = args.ipfsUploader;
+    this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
   }
 
   createProject(args: {
@@ -33,7 +44,7 @@ export class AlloV1 implements Allo {
   > {
     return new AlloOperation(async ({ emit }) => {
       // --- upload metadata to IPFS
-      const ipfsResult = await uploadToIPFS(args.metadata);
+      const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
 
@@ -56,7 +67,7 @@ export class AlloV1 implements Allo {
       }
 
       // --- wait for transaction to be mined
-      let blockNumber;
+      let blockNumber: bigint;
 
       try {
         const receipt = await this.transactionSender.wait(txResult.value);
@@ -69,9 +80,10 @@ export class AlloV1 implements Allo {
         return error(result);
       }
 
-      console.log(blockNumber);
-
-      // -- TODO: poll indexer until blockNumber is indexed
+      const indexerResult = await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber,
+      });
 
       return success({ projectId: 0n });
     });

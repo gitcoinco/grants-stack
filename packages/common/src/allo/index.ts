@@ -8,7 +8,7 @@ export { AlloOperation };
 export class AlloError extends Error {
   constructor(
     message: string,
-    public inner: unknown = undefined,
+    public inner: unknown = undefined
   ) {
     super(message);
 

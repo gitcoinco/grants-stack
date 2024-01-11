@@ -27,7 +27,7 @@ export interface TransactionSender {
 
 export function createViemTransactionSender(
   walletClient: WalletClient,
-  publicClient: PublicClient,
+  publicClient: PublicClient
 ): TransactionSender {
   return {
     async send(tx: TransactionData): Promise<Hex> {
@@ -109,7 +109,7 @@ export function createMockTransactionSender(): TransactionSender & {
 
 export async function sendTransaction(
   sender: TransactionSender,
-  args: Parameters<typeof encodeFunctionData>[0] & { address: Address },
+  args: Parameters<typeof encodeFunctionData>[0] & { address: Address }
 ): Promise<Result<Hex>> {
   try {
     const data = encodeFunctionData(args);
@@ -123,7 +123,7 @@ export async function sendTransaction(
     return success(tx);
   } catch (err) {
     return error(
-      new AlloError(`Failed to send transaction: ${String(err)}`, err),
+      new AlloError(`Failed to send transaction: ${String(err)}`, err)
     );
   }
 }

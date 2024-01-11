@@ -13,7 +13,7 @@ export function error<T>(error: Error): Result<T> {
 }
 
 export async function uploadToIPFS(
-  _metadata: unknown,
+  _metadata: unknown
 ): Promise<Result<string>> {
   try {
     const metadataCid = "..";

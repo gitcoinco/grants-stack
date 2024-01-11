@@ -332,7 +332,7 @@ importers:
         version: 0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.19)
       '@wagmi/chains':
         specifier: ^1.8.0
-        version: 1.8.0(typescript@5.2.2)
+        version: 1.8.0(typescript@5.3.3)
       data-layer:
         specifier: workspace:*
         version: link:../data-layer
@@ -368,7 +368,10 @@ importers:
         version: 2.2.0(react-dom@18.2.0)(react@18.2.0)
       typescript:
         specifier: latest
-        version: 5.2.2
+        version: 5.3.3
+      viem:
+        specifier: ^1.5.3
+        version: 1.10.7(typescript@5.3.3)(zod@3.22.4)
       wagmi:
         specifier: 0.12.19
         version: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(lokijs@1.5.12)(react-dom@18.2.0)(react@18.2.0)(typescript@4.9.5)(zod@3.22.4)
@@ -8316,7 +8319,7 @@ packages:
       typescript: 4.9.5
     dev: false
 
-  /@wagmi/chains@1.8.0(typescript@5.2.2):
+  /@wagmi/chains@1.8.0(typescript@5.3.3):
     resolution: {integrity: sha512-UXo0GF0Cl0+neKC2KAmVAahv8L/5rACbFRRqkDvHMefzY6Fh7yzJd8F4GaGNNG3w4hj8eUB/E3+dEpaTYDN62w==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -8324,7 +8327,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      typescript: 5.2.2
+      typescript: 5.3.3
     dev: false
 
   /@wagmi/connectors@0.3.22(@wagmi/core@0.10.16)(ethers@5.7.2)(react@18.2.0)(typescript@4.9.5):
@@ -8347,7 +8350,7 @@ packages:
       '@walletconnect/ethereum-provider': 2.8.4(@walletconnect/modal@2.6.1)
       '@walletconnect/legacy-provider': 2.0.0
       '@walletconnect/modal': 2.6.1(react@18.2.0)
-      abitype: 0.3.0(typescript@5.2.2)(zod@3.22.4)
+      abitype: 0.3.0(typescript@4.9.5)(zod@3.22.4)
       ethers: 5.7.2
       eventemitter3: 4.0.7
       typescript: 4.9.5
@@ -8440,7 +8443,7 @@ packages:
     dependencies:
       '@wagmi/chains': 0.2.22(typescript@4.9.5)
       '@wagmi/connectors': 0.3.22(@wagmi/core@0.10.16)(ethers@5.7.2)(react@18.2.0)(typescript@4.9.5)
-      abitype: 0.3.0(typescript@5.2.2)(zod@3.22.4)
+      abitype: 0.3.0(typescript@4.9.5)(zod@3.22.4)
       ethers: 5.7.2
       eventemitter3: 4.0.7
       typescript: 4.9.5
@@ -9455,20 +9458,6 @@ packages:
       zod: 3.22.4
     dev: false
 
-  /abitype@0.3.0(typescript@5.2.2)(zod@3.22.4):
-    resolution: {integrity: sha512-0YokyAV4hKMcy97Pl+6QgZBlBdZJN2llslOs7kiFY+cu7kMlVXDBpxMExfv0krzBCQt2t7hNovpQ3y/zvEm18A==}
-    engines: {pnpm: '>=7'}
-    peerDependencies:
-      typescript: '>=4.9.4'
-      zod: '>=3.19.1'
-    peerDependenciesMeta:
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.2.2
-      zod: 3.22.4
-    dev: false
-
   /abitype@0.8.7(typescript@5.2.2)(zod@3.22.4):
     resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
     peerDependencies:
@@ -9509,6 +9498,21 @@ packages:
         optional: true
     dependencies:
       typescript: 5.3.2
+      zod: 3.22.4
+    dev: false
+
+  /abitype@0.9.8(typescript@5.3.3)(zod@3.22.4):
+    resolution: {integrity: sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.19.1
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.3.3
       zod: 3.22.4
     dev: false
 
@@ -23753,6 +23757,30 @@ packages:
       - zod
     dev: false
 
+  /viem@1.10.7(typescript@5.3.3)(zod@3.22.4):
+    resolution: {integrity: sha512-yuaYSHgV1g794nfxhn+V89qgK5ziFTLBSNqSDt4KW8YpjLu0Ah6LLZTtpOj3+MRWKKDwJ1YL2rENb8cuXstUzg==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@adraffy/ens-normalize': 1.9.4
+      '@noble/curves': 1.2.0
+      '@noble/hashes': 1.3.2
+      '@scure/bip32': 1.3.2
+      '@scure/bip39': 1.2.1
+      '@types/ws': 8.5.5
+      abitype: 0.9.8(typescript@5.3.3)(zod@3.22.4)
+      isomorphic-ws: 5.0.0(ws@8.13.0)
+      typescript: 5.3.3
+      ws: 8.13.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - zod
+    dev: false
+
   /vite-node@0.34.3(@types/node@20.9.0):
     resolution: {integrity: sha512-+0TzJf1g0tYXj6tR2vEyiA42OPq68QkRZCu/ERSo2PtsDJfBpDyEfuKbRvLmZqi/CgC7SCBtyC+WjTGNMRIaig==}
     engines: {node: '>=v14.18.0'}
@@ -24073,7 +24101,7 @@ packages:
       '@tanstack/react-query': 4.35.0(react-dom@18.2.0)(react@18.2.0)
       '@tanstack/react-query-persist-client': 4.35.0(@tanstack/react-query@4.35.0)
       '@wagmi/core': 0.10.16(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@4.9.5)
-      abitype: 0.3.0(typescript@5.2.2)(zod@3.22.4)
+      abitype: 0.3.0(typescript@4.9.5)(zod@3.22.4)
       ethers: 5.7.2
       react: 18.2.0
       typescript: 4.9.5
