@@ -1,17 +1,16 @@
-import { Address, Hex } from "viem";
+import { Address, Hex, encodePacked, keccak256 } from "viem";
+import { AnyJson } from "../..";
+import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import { Allo, AlloError, AlloOperation } from "../allo";
+import { Result, error, success } from "../common";
+import { WaitUntilIndexerSynced } from "../indexer";
+import { IpfsUploader } from "../ipfs";
 import {
   TransactionReceipt,
   TransactionSender,
   decodeEventFromReceipt,
   sendTransaction,
 } from "../transaction-sender";
-import { Result, error, success } from "../common";
-import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
-import { IpfsUploader } from "../ipfs";
-import { WaitUntilIndexerSynced } from "../indexer";
-import { keccak256, encodePacked } from "viem";
-import { AnyJson } from "../..";
 
 function createProjectId(args: {
   chainId: number;

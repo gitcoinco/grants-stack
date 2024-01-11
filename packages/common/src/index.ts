@@ -1,7 +1,7 @@
-import useSWR from "swr";
 import { useMemo, useState } from "react";
-import { ChainId } from "./chain-ids";
+import useSWR from "swr";
 import z from "zod";
+import { ChainId } from "./chain-ids";
 export * from "./icons";
 export * from "./markdown";
 
@@ -394,23 +394,19 @@ export const ROUND_PAYOUT_DIRECT = "DIRECT";
 export type RoundPayoutType = "MERKLE" | "DIRECT";
 export type RoundVisibilityType = "public" | "private";
 
-export { useAllo, AlloContext, AlloProvider } from "./allo/react";
-export type { Allo, AlloOperation, AlloError } from "./allo/allo";
+export type { Allo, AlloError, AlloOperation } from "./allo/allo";
 export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
-export { createPinataIpfsUploader } from "./allo/ipfs";
 export {
-  createEthersTransactionSender,
-  createViemTransactionSender,
-  decodeEventFromReceipt,
-  createMockTransactionSender,
-  sendRawTransaction,
-  sendTransaction,
-} from "./allo/transaction-sender";
-export {
-  waitForSubgraphSyncTo,
-  getCurrentSubgraphBlockNumber,
+  getCurrentSubgraphBlockNumber, waitForSubgraphSyncTo
 } from "./allo/indexer";
+export { createPinataIpfsUploader } from "./allo/ipfs";
+export { AlloContext, AlloProvider, useAllo } from "./allo/react";
+export {
+  createEthersTransactionSender, createMockTransactionSender, createViemTransactionSender,
+  decodeEventFromReceipt, sendRawTransaction,
+  sendTransaction
+} from "./allo/transaction-sender";
 
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap;
 interface JsonMap {

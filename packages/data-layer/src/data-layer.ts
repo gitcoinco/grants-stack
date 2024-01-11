@@ -1,16 +1,24 @@
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import shuffle from "knuth-shuffle-seeded";
-import _fetch from "cross-fetch";
 import { VerifiableCredential as PassportVerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { Round, RoundOverview, TimestampVariables } from "./data.types";
-import {
-  SearchResult,
-  DefaultApi as SearchApi,
-  Configuration as SearchApiConfiguration,
-  ApplicationSummary,
-} from "./openapi-search-client/index";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import _fetch from "cross-fetch";
+import { request } from "graphql-request";
+import shuffle from "knuth-shuffle-seeded";
 import * as legacy from "./backends/legacy";
 import { PaginationInfo } from "./data-layer.types";
+import {
+  ProjectEventsMap,
+  Round,
+  RoundOverview,
+  TimestampVariables,
+  v2Project,
+} from "./data.types";
+import {
+  ApplicationSummary,
+  DefaultApi as SearchApi,
+  Configuration as SearchApiConfiguration,
+  SearchResult,
+} from "./openapi-search-client/index";
+import { getProjectById, getProjects, getProjectsByAddress } from "./queries";
 
 export class DataLayer {
   private searchResultsPageSize: number;
@@ -18,11 +26,13 @@ export class DataLayer {
   private subgraphEndpointsByChainId: Record<number, string>;
   private ipfsGateway: string;
   private passportVerifier: PassportVerifier;
+  private gsIndexerEndpoint: string;
 
   constructor({
     fetch,
     search,
     subgraph,
+    indexer,
     ipfs,
     passport,
   }: {
@@ -33,6 +43,9 @@ export class DataLayer {
     };
     subgraph?: {
       endpointsByChainId: Record<number, string>;
+    };
+    indexer: {
+      baseUrl: string;
     };
     // TODO reflect that we specifically require Pinata?
     ipfs?: {
@@ -52,7 +65,145 @@ export class DataLayer {
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
     this.ipfsGateway = ipfs?.gateway ?? "https://ipfs.io";
     this.passportVerifier = passport?.verifier ?? new PassportVerifier();
+    this.gsIndexerEndpoint = indexer.baseUrl;
   }
+
+  /**
+   * Allo v1 & v2 builder queries
+   */
+
+  /**
+   * getProjectById() returns a project by its ID.
+   *
+   * @param projectId
+   * @param chainId
+   * @param alloVersion
+   * @returns v2Project
+   */
+  async getProjectById({
+    projectId,
+    chainId,
+    alloVersion,
+  }: {
+    projectId: string;
+    chainId: number;
+    alloVersion: string;
+  }): Promise<{ project: v2Project } | null> {
+    const requestVariables = {
+      alloVersion,
+      projectId,
+      chainId,
+    };
+
+    // fixme: any
+    const response: any = await request(
+      this.gsIndexerEndpoint,
+      getProjectById,
+      requestVariables,
+    );
+
+    const project = response.projects[0];
+
+    if (!project) return null;
+
+    return { project };
+  }
+
+  /**
+   * getProjects() returns a list of projects.
+   *
+   * @param chainIds
+   * @param first
+   * @param alloVersion
+   * @returns v2Projects[]
+   */
+  async getProjects({
+    chainIds,
+    first,
+    alloVersion,
+  }: {
+    chainIds: number[];
+    first: number;
+    alloVersion: string;
+  }): Promise<{ projects: v2Project[] } | null> {
+    const projects: v2Project[] = [];
+
+    for (const chainId of chainIds) {
+      const requestVariables = {
+        alloVersion,
+        first,
+        chainId,
+      };
+
+      const profilesData: v2Project = await request(
+        this.gsIndexerEndpoint,
+        getProjects,
+        requestVariables,
+      );
+
+      projects.push(profilesData);
+    }
+
+    return {
+      projects,
+    };
+  }
+
+  // getProjectsByAddress
+  /**
+   * getProjectsByAddress() returns a list of projects by address.
+   * @param address
+   * @param chainId
+   * @param role
+   */
+  async getProjectsByAddress({
+    address,
+    chainId,
+    role,
+    alloVersion,
+  }: {
+    address: string;
+    chainId: number;
+    role: string;
+    alloVersion?: string;
+  }): Promise<ProjectEventsMap | undefined> {
+    const requestVariables = {
+      address: address.toLowerCase(),
+      chainId,
+      role,
+    };
+
+    // todo: how to handle alloVersion?
+    console.log("dl: alloVersion", alloVersion);
+
+    const response: any = await request(
+      this.gsIndexerEndpoint,
+      getProjectsByAddress,
+      requestVariables,
+    );
+
+    const projectRoles = response.projectRoles;
+
+    if (!projectRoles) return undefined;
+
+    let projectEventsMap: ProjectEventsMap = {};
+
+    for (const projectRole of projectRoles) {
+      const project = projectRole.project;
+      projectEventsMap[
+        `${project.chainId}:${project.registryAddress}:${project.projectNumber}`
+      ] = {
+        createdAtBlock: Number(project.createdAtBlock),
+        updatedAtBlock: Number(project.createdAtBlock), // todo: fix once updatedAtBlock is available
+      };
+    }
+
+    return projectEventsMap;
+  }
+
+  /**
+   * Legacy - Allo v1 queries
+   */
 
   async searchApplications({
     queryString,

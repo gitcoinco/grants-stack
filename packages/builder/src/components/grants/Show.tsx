@@ -1,3 +1,4 @@
+import { useDataLayer } from "data-layer";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
@@ -20,6 +21,8 @@ import Details from "./Details";
 import PageNotFound from "../base/PageNotFound";
 
 function Project() {
+  const dataLayer = useDataLayer();
+
   const dispatch = useDispatch();
   // FIXME: params.id doesn't change if the location hash is changed manually.
   const params = useParams();
@@ -66,13 +69,13 @@ function Project() {
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
     // 2 - when ipfs is initialized (it fetches it if not loaded yet)
     if (props.id !== undefined && props.currentProject === undefined) {
-      dispatch(fetchGrantData(props.id));
+      dispatch(fetchGrantData(props.id, dataLayer));
     }
   }, [dispatch, props.id, props.currentProject]);
 
   useEffect(() => {
     if (props.projectEvents === undefined) {
-      dispatch(loadAllChainsProjects(true));
+      dispatch(loadAllChainsProjects(dataLayer, true));
     }
 
     if (props.owners === undefined) {

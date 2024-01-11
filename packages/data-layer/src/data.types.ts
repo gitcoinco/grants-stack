@@ -51,6 +51,53 @@ export type Project = {
   applicationIndex: number;
 };
 
+export type v2Project = {
+  id: string;
+  chainId: number;
+  metadata: {
+    title: string;
+    logoImg: string;
+    website: string;
+    bannerImg: string;
+    createdAt: number;
+    credentials: ProjectCredentials;
+    description: string;
+    logoImgData: Blob;
+    bannerImgData: Blob;
+  };
+  metadataCid: string;
+  name: string;
+  nodeId: string;
+  ownerAddresses: [string];
+  projectNumber: number;
+  registryAddress: string;
+  tags: [string];
+};
+
+export type v2ProjectNew = {
+  id: string;
+  chainId: number;
+  metadata: {
+    name: string;
+    description: string;
+  };
+  metadataCid: string;
+  name: string;
+  nodeId: string;
+  projectNumber: number;
+  registryAddress: string;
+  tags: [string];
+};
+
+export type ProjectEvents = {
+  createdAtBlock: number | undefined;
+  updatedAtBlock: number | undefined;
+};
+
+export type ProjectEventsMap = {
+  [projectID: string]: ProjectEvents;
+};
+
 export interface PayoutStrategy {
   id: string;
   /**

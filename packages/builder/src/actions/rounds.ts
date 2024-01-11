@@ -87,6 +87,11 @@ export const loadRound =
 
     const chainId = roundChainId || stateChainID;
 
+    // todo: remove or fix this
+    if (chainId === 5) {
+      return;
+    }
+
     const appProvider = getProviderByChainId(chainId!);
 
     const contract = new ethers.Contract(address, RoundABI, appProvider);

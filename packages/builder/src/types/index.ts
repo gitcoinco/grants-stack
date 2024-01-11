@@ -102,15 +102,6 @@ export type AddressInputProps = {
   };
 };
 
-export type ProjectEvents = {
-  createdAtBlock: number | undefined;
-  updatedAtBlock: number | undefined;
-};
-
-export type ProjectEventsMap = {
-  [projectID: string]: ProjectEvents;
-};
-
 export interface MetaPtr {
   protocol: string;
   pointer: string;

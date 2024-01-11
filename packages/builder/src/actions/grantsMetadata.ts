@@ -1,13 +1,9 @@
+import { DataLayer } from "data-layer";
 import { datadogRum } from "@datadog/browser-rum";
-import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { getConfig } from "common/src/config";
 import { RootState } from "../reducers";
-import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import PinataClient from "../services/pinata";
-import { LocalStorage } from "../services/Storage";
-import { Metadata, ProjectRegistryMetadata } from "../types";
-import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
+import { Metadata } from "../types";
+import { getProjectURIComponents, getV1HashedProjectId } from "../utils/utils";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -74,173 +70,53 @@ export const grantMetadataFetchingError = (
   error,
 });
 
-const getProjectById = async (
-  projectId: string,
-  addresses: any,
-  signerOrProvider: any
-) => {
-  const projectRegistry = new ethers.Contract(
-    addresses.projectRegistry,
-    ProjectRegistryABI,
-    signerOrProvider
-  );
-
-  const { id } = getProjectURIComponents(projectId);
-  const project: ProjectRegistryMetadata = await projectRegistry.projects(id);
-
-  return project;
-};
-
-// This fills the createdAt timestamp from the block creation time
-// for older projects that don't have it
-const ensureMetadataTimestamps = async (
-  metadata: Metadata,
-  appProvider: ethers.providers.BaseProvider,
-  createdAtBlock?: number,
-  updatedAtBlock?: number
-) => {
-  let ret = metadata;
-
-  if (!metadata.createdAt && createdAtBlock) {
-    const block = await appProvider.getBlock(createdAtBlock);
-    ret = { ...ret, createdAt: block.timestamp * 1000 };
-  }
-
-  if (!metadata.updatedAt && updatedAtBlock) {
-    const block = await appProvider.getBlock(updatedAtBlock);
-    ret = { ...ret, updatedAt: block.timestamp * 1000 };
-  }
-
-  return ret;
-};
-
-const getMetadata = async (
-  projectId: string,
-  project: any,
-  cacheKey: string,
-  appProvider: ethers.providers.BaseProvider,
-  createdAtBlock?: number,
-  updatedAtBlock?: number
-) => {
-  const storage = new LocalStorage();
-  let metadata: Metadata;
-
-  if (storage.supported) {
-    const item = storage.get(cacheKey);
-    if (item !== null) {
-      try {
-        metadata = JSON.parse(item);
-
-        const ret = await ensureMetadataTimestamps(
-          {
-            ...metadata,
-            protocol: project.metadata.protocol,
-            pointer: project.metadata.pointer,
-            id: projectId,
-          },
-          appProvider,
-          createdAtBlock,
-          updatedAtBlock
-        );
-
-        storage.add(cacheKey, JSON.stringify(ret));
-        return ret;
-      } catch (e) {
-        // FIXME: dispatch error
-        datadogRum.addError(e);
-        console.log("error parsing cached project metadata", e);
-      }
-    }
-  }
-
-  // if not cached in localstorage
-  let content;
-  try {
-    // FIXME: fetch from pinata gateway
-    const pinataClient = new PinataClient(getConfig());
-    content = await pinataClient.fetchText(project.metadata.pointer);
-  } catch (e) {
-    // FIXME: dispatch "ipfs error"
-    datadogRum.addError(e);
-    console.error(e);
-    return null;
-  }
-
-  try {
-    metadata = await ensureMetadataTimestamps(
-      JSON.parse(content),
-      appProvider,
-      createdAtBlock,
-      updatedAtBlock
-    );
-  } catch (e) {
-    // FIXME: dispatch JSON error
-    datadogRum.addError(e);
-    console.error(e);
-    return null;
-  }
-
-  const ret = {
-    ...metadata,
-    protocol: project.metadata.protocol,
-    pointer: project.metadata.pointer,
-    id: projectId,
-  };
-  storage.add(cacheKey, JSON.stringify(ret));
-  return ret;
-};
-
 export const fetchGrantData =
-  (id: string) => async (dispatch: Dispatch, getState: () => RootState) => {
+  (id: string, dataLayer: DataLayer) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(grantMetadataLoadingURI(id));
 
-    const { chainId, registryAddress } = getProjectURIComponents(id);
-
-    const chainID = Number(chainId);
-    const addresses = { projectRegistry: registryAddress };
-    const appProvider = getProviderByChainId(chainID);
-
-    let project: ProjectRegistryMetadata;
+    const { chainId } = getProjectURIComponents(id);
 
     try {
-      project = await getProjectById(id, addresses, appProvider!);
-    } catch (e) {
-      datadogRum.addError(e);
-      console.error("error fetching project by id", e);
-      dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
-      return;
-    }
+      const result = await dataLayer.getProjectById({
+        projectId: getV1HashedProjectId(id),
+        chainId: Number(chainId),
+        alloVersion: "allo-v1",
+      });
 
-    if (!project.metadata.protocol) {
-      console.error("project not found");
-      dispatch(grantMetadataFetchingError(id, "project not found"));
-      return;
-    }
+      if (!result?.project) {
+        return;
+      }
 
-    dispatch(grantMetadataLoading(id));
+      const { project } = result;
 
-    try {
-      const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
-      const { projects } = getState();
-      const { createdAtBlock, updatedAtBlock } = projects.events[id] || {};
+      console.log(getState());
 
-      const item = await getMetadata(
+      const item: Metadata = {
         id,
-        project,
-        cacheKey,
-        appProvider,
-        createdAtBlock,
-        updatedAtBlock
-      );
+        title: project.metadata.title,
+        description: project.metadata.description,
+        website: project.metadata.website,
+        bannerImg: project.metadata.bannerImg,
+        logoImg: project.metadata.logoImg,
+        createdAt: project.metadata.createdAt,
+        updatedAt: project.metadata.createdAt, // todo: get this value
+        credentials: project.metadata.credentials,
+        protocol: 1,
+        pointer: project.metadataCid,
+      };
 
       if (item === null) {
         throw new Error("item is null");
       }
 
+      console.log("item", item);
+
       dispatch(grantMetadataFetched(item));
-    } catch (error) {
-      console.error(error);
-      dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
+    } catch (e) {
+      datadogRum.addError(e);
+      console.error("error fetching project by id", e);
+      dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
     }
   };
 

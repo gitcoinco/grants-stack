@@ -20,6 +20,7 @@ export type Config = {
   dataLayer: {
     searchServiceBaseUrl: string;
     subgraphEndpoints: Record<number, string>;
+    gsIndexerEndpoint?: string;
   };
   pinata: {
     jwt: string;
@@ -110,6 +111,11 @@ export function getConfig(): Config {
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_BASE_API),
       },
+      gsIndexerEndpoint: z
+        .string()
+        .url()
+        .default("https://indexer-staging.fly.dev/graphql")
+        .parse(process.env.REACT_APP_ALLO_API_URL),
     },
     pinata: {
       jwt: z

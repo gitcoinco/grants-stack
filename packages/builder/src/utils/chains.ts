@@ -18,6 +18,7 @@ import {
   customOptimism,
   customPolygon,
   customMainnet,
+  sepolia,
 } from "common/src/chains";
 import { getConfig } from "common/src/config";
 import { polygonMumbai } from "@wagmi/core/chains";
@@ -40,6 +41,7 @@ const availableChains: { [key: string]: Chain } = {
   avalancheFuji,
   zkSyncEraMainnet,
   zkSyncEraTestnet,
+  sepolia,
 };
 
 const stagingChains = [

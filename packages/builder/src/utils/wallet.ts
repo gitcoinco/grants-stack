@@ -48,6 +48,7 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   zkSyncEraMainnet: "zkSync Era Mainnet",
   zkSyncEraTestnet: "zkSync Era Testnet",
   base: "Base",
+  sepolia: "sepolia",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -69,6 +70,7 @@ export const networkIcon: { [key in ChainName]: string } = {
   zkSyncEraMainnet: ZkSyncIcon,
   zkSyncEraTestnet: ZkSyncIcon,
   base: EthDiamondGlyph,
+  sepolia: EthDiamondGlyph,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -90,6 +92,7 @@ export const payoutIcon: { [key in ChainName]: string } = {
   zkSyncEraMainnet: ZkSyncIcon,
   zkSyncEraTestnet: ZkSyncIcon,
   base: EthDiamondGlyph,
+  sepolia: EthDiamondGlyph,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {

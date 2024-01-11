@@ -1,3 +1,4 @@
+import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -23,6 +24,7 @@ import VerificationForm from "../base/VerificationForm";
 import Cross from "../icons/Cross";
 
 function EditProject() {
+  const dataLayer = useDataLayer();
   const params = useParams();
   const dispatch = useDispatch();
   const { switchNetwork } = useSwitchNetwork();
@@ -73,7 +75,7 @@ function EditProject() {
       props.id !== undefined &&
       props.metadataStatus === GrantsMetadataStatus.Undefined
     ) {
-      dispatch(fetchGrantData(props.id));
+      dispatch(fetchGrantData(props.id, dataLayer));
     }
   }, [dispatch, props.id, props.metadataStatus]);
 

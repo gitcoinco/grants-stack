@@ -8,6 +8,8 @@ import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
 import { Alert } from "../types/alert";
+import { DataLayerProvider } from "data-layer";
+import { dataLayerConfig } from "..";
 
 export function addressFrom(n: number): string {
   const bn = ethers.BigNumber.from(n);
@@ -112,9 +114,11 @@ export const renderWrapped = (
   const wrapped = (
     <ChakraProvider>
       <Provider store={store}>
-        <ReduxRouter store={store} history={history}>
-          {ui}
-        </ReduxRouter>
+        <DataLayerProvider client={dataLayerConfig}>
+          <ReduxRouter store={store} history={history}>
+            {ui}
+          </ReduxRouter>
+        </DataLayerProvider>
       </Provider>
     </ChakraProvider>
   );

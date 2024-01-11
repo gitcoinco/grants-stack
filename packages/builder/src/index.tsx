@@ -1,4 +1,6 @@
 import { ChakraProvider } from "@chakra-ui/react";
+import { getConfig } from "common/src/config";
+import { DataLayer, DataLayerProvider } from "data-layer";
 import { datadogRum } from "@datadog/browser-rum";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -8,6 +10,7 @@ import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
 import { WagmiConfig } from "wagmi";
 import "./browserPatches";
+import AlloWrapper from "./components/AlloWrapper";
 import PageNotFound from "./components/base/PageNotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import EditProject from "./components/grants/Edit";
@@ -23,10 +26,24 @@ import reportWebVitals from "./reportWebVitals";
 import { slugs } from "./routes";
 import setupStore from "./store";
 import "./styles/index.css";
+import initTagmanager from "./tagmanager";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
-import initTagmanager from "./tagmanager";
-import AlloWrapper from "./components/AlloWrapper";
+
+export const dataLayerConfig = new DataLayer({
+  search: {
+    baseUrl: getConfig().dataLayer.searchServiceBaseUrl,
+    pagination: {
+      pageSize: 50,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
+  },
+  indexer: {
+    baseUrl: getConfig().dataLayer.gsIndexerEndpoint as string,
+  },
+});
 
 const store = setupStore();
 const root = ReactDOM.createRoot(
@@ -95,30 +112,32 @@ root.render(
         <ChakraProvider resetCSS={false}>
           <Provider store={store}>
             <AlloWrapper>
-              <ReduxRouter history={history} store={store}>
-                <Layout>
-                  <Routes>
-                    <Route
-                      path={slugs.root}
-                      element={<Navigate to={slugs.grants} />}
-                    />
-                    <Route path={slugs.grants} element={<ProjectsList />} />
-                    <Route path={slugs.project} element={<Project />} />
-                    <Route path={slugs.newGrant} element={<NewProject />} />
-                    <Route path={slugs.edit} element={<EditProject />} />
-                    <Route path={slugs.round} element={<RoundShow />} />
-                    <Route
-                      path={slugs.roundApplication}
-                      element={<RoundApply />}
-                    />
-                    <Route
-                      path={slugs.roundApplicationView}
-                      element={<ViewApplication />}
-                    />
-                    <Route path="*" element={<PageNotFound />} />
-                  </Routes>
-                </Layout>
-              </ReduxRouter>
+              <DataLayerProvider client={dataLayerConfig}>
+                <ReduxRouter history={history} store={store}>
+                  <Layout>
+                    <Routes>
+                      <Route
+                        path={slugs.root}
+                        element={<Navigate to={slugs.grants} />}
+                      />
+                      <Route path={slugs.grants} element={<ProjectsList />} />
+                      <Route path={slugs.project} element={<Project />} />
+                      <Route path={slugs.newGrant} element={<NewProject />} />
+                      <Route path={slugs.edit} element={<EditProject />} />
+                      <Route path={slugs.round} element={<RoundShow />} />
+                      <Route
+                        path={slugs.roundApplication}
+                        element={<RoundApply />}
+                      />
+                      <Route
+                        path={slugs.roundApplicationView}
+                        element={<ViewApplication />}
+                      />
+                      <Route path="*" element={<PageNotFound />} />
+                    </Routes>
+                  </Layout>
+                </ReduxRouter>
+              </DataLayerProvider>
             </AlloWrapper>
           </Provider>
         </ChakraProvider>

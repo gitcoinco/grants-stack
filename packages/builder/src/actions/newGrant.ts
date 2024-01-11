@@ -1,9 +1,9 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { Dispatch } from "redux";
-import { getConfig } from "common/src/config";
 import { Allo, AnyJson } from "common";
+import { getConfig } from "common/src/config";
 import { ethers } from "ethers";
+import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";

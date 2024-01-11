@@ -1,8 +1,8 @@
 import { Hex } from "viem";
-import { AlloOperation } from "./operation";
-import { Result } from "./common";
-import { TransactionReceipt } from "./transaction-sender";
 import { AnyJson } from "..";
+import { Result } from "./common";
+import { AlloOperation } from "./operation";
+import { TransactionReceipt } from "./transaction-sender";
 
 /**
  * Represents the common interface for interacting with Allo contracts.

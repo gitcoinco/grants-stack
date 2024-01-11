@@ -1,6 +1,7 @@
+import { Abi, ExtractAbiEventNames } from "abitype";
+import ethers from "ethers";
 import {
   Address,
-  EncodeFunctionDataParameters,
   GetEventArgs,
   Hex,
   Log,
@@ -11,11 +12,9 @@ import {
   encodeFunctionData,
   zeroAddress,
 } from "viem";
-import ethers from "ethers";
-import { Abi, ExtractAbiEventNames } from "abitype";
 
-import { Result, error, success } from "./common";
 import { AlloError } from "./allo";
+import { Result, error, success } from "./common";
 
 export interface TransactionData {
   to: Hex;

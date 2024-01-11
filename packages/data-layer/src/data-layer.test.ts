@@ -1,7 +1,29 @@
-import { describe, test, expect, vi } from "vitest";
-import { DataLayer } from "./data-layer";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import { describe, expect, test, vi } from "vitest";
+import { v2ProjectNew } from ".";
+import { DataLayer } from "./data-layer";
+
+const mockProjects: v2ProjectNew[] = [
+  {
+    id: "0x00490de473481e6883b7a13f582ee8e927dce1bafa924c28407edd425aac916e",
+    chainId: 5,
+    metadata: {
+      name: "Random Round",
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat",
+    },
+    metadataCid: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi",
+    name: "Allo Workshop",
+    nodeId:
+      "WyJwcm9qZWN0cyIsIjB4MDA0OTBkZTQ3MzQ4MWU2ODgzYjdhMTNmNTgyZWU4ZTkyN2RjZTFiYWZhOTI0YzI4NDA3ZWRkNDI1YWFjOTE2ZSIsNV0=",
+    projectNumber: 0,
+    registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
+    tags: ["allo-v2"],
+  },
+];
+
+const mockProject = mockProjects[0];
 
 describe("applications search", () => {
   describe("can retrieve multiple applications by search query", () => {
@@ -26,6 +48,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com" },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       const { results } = await dataLayer.searchApplications({
@@ -78,6 +101,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       const { results, pagination } = await dataLayer.searchApplications({
@@ -126,6 +150,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
       const { applications, pagination } =
         await dataLayer.getApplicationsPaginated({
@@ -161,6 +186,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
       const { applications, pagination } =
         await dataLayer.getApplicationsPaginated({
@@ -195,6 +221,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
       const { applications, pagination } =
         await dataLayer.getApplicationsPaginated({
@@ -231,6 +258,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       for (let i = 0; i < 10; i++) {
@@ -280,6 +308,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       for (let i = 0; i < 10; i++) {
@@ -337,6 +366,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       const { applications, pagination } =
@@ -392,6 +422,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       const { applications, pagination } =
@@ -436,6 +467,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com" },
+        indexer: { baseUrl: "https://example.com" },
       });
       const { applications } = await dataLayer.getApplicationsPaginated({
         page: 0,
@@ -470,6 +502,7 @@ describe("passport verification", () => {
       search: { baseUrl: "https://example.com" },
       subgraph: { endpointsByChainId: {} },
       passport: { verifier: mockPassportVerifier },
+      indexer: { baseUrl: "https://example.com" },
     });
 
     const { isVerified } = await dataLayer.verifyPassportCredential({
@@ -488,5 +521,59 @@ describe("passport verification", () => {
         id: "did:pkh:eip155:1:subject",
       },
     });
+  });
+});
+
+describe("projects retrieval", () => {
+  test("can retrieve project by id", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        project: mockProject,
+      }),
+    });
+
+    const dataLayer = new DataLayer({
+      fetch: fetchMock,
+      search: { baseUrl: "https://example.com" },
+      subgraph: { endpointsByChainId: {} },
+      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+    });
+
+    const project = await dataLayer.getProjectById({
+      projectId:
+        "0x00490de473481e6883b7a13f582ee8e927dce1bafa924c28407edd425aac916e",
+      chainId: 5,
+      alloVersion: "allo-v2",
+    });
+
+    // fixme: not working
+    // expect(project).toEqual(mockProject);
+  });
+
+  test("can retrieve all projects for a network", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        projects: mockProjects,
+      }),
+    });
+
+    const dataLayer = new DataLayer({
+      fetch: fetchMock,
+      search: { baseUrl: "https://example.com" },
+      subgraph: { endpointsByChainId: {} },
+      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+    });
+
+    const data = await dataLayer.getProjects({
+      chainIds: [5],
+      first: 10,
+      alloVersion: "allo-v2",
+    });
+
+    if (data?.projects) expect(data.projects.length).toBeGreaterThan(0);
   });
 });

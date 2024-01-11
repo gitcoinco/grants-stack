@@ -7,6 +7,7 @@ import {
   zkSyncTestnet as zkSyncTestnetOriginal,
   zkSync as zkSyncOriginal,
   base as baseOriginal,
+  sepolia as ethereumSepolia,
 } from "@wagmi/chains";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
@@ -285,6 +286,22 @@ export const customMainnet = {
     default: {
       name: "Etherscan",
       url: "https://etherscan.io",
+    },
+  },
+};
+
+export const sepolia: Chain = {
+  ...ethereumSepolia,
+  rpcUrls: {
+    default: {
+      http: [
+        `https://eth-sepolia.g.alchemy.com/v2/${config.blockchain.alchemyId}`,
+      ],
+    },
+    public: {
+      http: [
+        `https://eth-sepolia.g.alchemy.com/v2/${config.blockchain.alchemyId}`,
+      ],
     },
   },
 };

@@ -1,21 +1,21 @@
 import { Address, Hex } from "viem";
+import RegistryABI from "../abis/allo-v2/Registry";
 import { Allo, AlloError, AlloOperation } from "../allo";
+import { Result, error, success } from "../common";
+import { WaitUntilIndexerSynced } from "../indexer";
+import { IpfsUploader } from "../ipfs";
 import {
   TransactionReceipt,
   TransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
 } from "../transaction-sender";
-import { Result, error, success } from "../common";
-import RegistryABI from "../abis/allo-v2/Registry";
-import { IpfsUploader } from "../ipfs";
-import { WaitUntilIndexerSynced } from "../indexer";
 
-import {
-  TransactionData,
-  CreateProfileArgs,
-} from "@allo-team/allo-v2-sdk/dist/types";
 import { Registry } from "@allo-team/allo-v2-sdk/";
+import {
+  CreateProfileArgs,
+  TransactionData,
+} from "@allo-team/allo-v2-sdk/dist/types";
 import { AnyJson } from "../..";
 
 export class AlloV2 implements Allo {
