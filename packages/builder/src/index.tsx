@@ -26,6 +26,13 @@ import "./styles/index.css";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
 import initTagmanager from "./tagmanager";
+import {
+  Allo,
+  AlloV2,
+  AlloProvider,
+  createPinataIpfsUploader,
+  waitForSubgraphSyncTo,
+} from "common";
 
 const store = setupStore();
 const root = ReactDOM.createRoot(
@@ -87,6 +94,17 @@ if (pathname && pathname !== window.location.pathname) {
   window.location.pathname = pathname;
 }
 
+const alloBackend: Allo = new AlloV2({
+  chainId: 5,
+  transactionSender: {},
+  projectRegistryAddress: "0x0000000000000000000000000000000000000000",
+  ipfsUploader: createPinataIpfsUploader({
+    token: "",
+    endpoint: "",
+  }),
+  waitUntilIndexerSynced: waitForSubgraphSyncTo,
+});
+
 root.render(
   <ErrorBoundary>
     <WagmiConfig client={wagmiClient}>
@@ -94,28 +112,30 @@ root.render(
         <ChakraProvider resetCSS={false}>
           <Provider store={store}>
             <ReduxRouter history={history} store={store}>
-              <Layout>
-                <Routes>
-                  <Route
-                    path={slugs.root}
-                    element={<Navigate to={slugs.grants} />}
-                  />
-                  <Route path={slugs.grants} element={<ProjectsList />} />
-                  <Route path={slugs.project} element={<Project />} />
-                  <Route path={slugs.newGrant} element={<NewProject />} />
-                  <Route path={slugs.edit} element={<EditProject />} />
-                  <Route path={slugs.round} element={<RoundShow />} />
-                  <Route
-                    path={slugs.roundApplication}
-                    element={<RoundApply />}
-                  />
-                  <Route
-                    path={slugs.roundApplicationView}
-                    element={<ViewApplication />}
-                  />
-                  <Route path="*" element={<PageNotFound />} />
-                </Routes>
-              </Layout>
+              <AlloProvider backend={undefined}>
+                <Layout>
+                  <Routes>
+                    <Route
+                      path={slugs.root}
+                      element={<Navigate to={slugs.grants} />}
+                    />
+                    <Route path={slugs.grants} element={<ProjectsList />} />
+                    <Route path={slugs.project} element={<Project />} />
+                    <Route path={slugs.newGrant} element={<NewProject />} />
+                    <Route path={slugs.edit} element={<EditProject />} />
+                    <Route path={slugs.round} element={<RoundShow />} />
+                    <Route
+                      path={slugs.roundApplication}
+                      element={<RoundApply />}
+                    />
+                    <Route
+                      path={slugs.roundApplicationView}
+                      element={<ViewApplication />}
+                    />
+                    <Route path="*" element={<PageNotFound />} />
+                  </Routes>
+                </Layout>
+              </AlloProvider>
             </ReduxRouter>
           </Provider>
         </ChakraProvider>

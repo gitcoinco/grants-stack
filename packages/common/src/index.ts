@@ -393,3 +393,20 @@ export const ROUND_PAYOUT_MERKLE = "MERKLE";
 export const ROUND_PAYOUT_DIRECT = "DIRECT";
 export type RoundPayoutType = "MERKLE" | "DIRECT";
 export type RoundVisibilityType = "public" | "private";
+
+export { useAllo, AlloContext, AlloProvider } from "./allo/react";
+export type { Allo, AlloOperation, AlloError } from "./allo/allo";
+export { AlloV1 } from "./allo/backends/allo-v1";
+export { AlloV2 } from "./allo/backends/allo-v2";
+export { createPinataIpfsUploader } from "./allo/ipfs";
+export {
+  createViemTransactionSender,
+  decodeEventFromReceipt,
+  createMockTransactionSender,
+  sendRawTransaction,
+  sendTransaction,
+} from "./allo/transaction-sender";
+export {
+  waitForSubgraphSyncTo,
+  getCurrentSubgraphBlockNumber,
+} from "./allo/indexer";
