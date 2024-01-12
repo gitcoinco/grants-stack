@@ -400,6 +400,7 @@ export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
 export { createPinataIpfsUploader } from "./allo/ipfs";
 export {
+  createEthersTransactionSender,
   createViemTransactionSender,
   decodeEventFromReceipt,
   createMockTransactionSender,

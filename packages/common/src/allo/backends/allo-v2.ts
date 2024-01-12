@@ -134,7 +134,7 @@ export class AlloV2 implements Allo {
   //   }
   // > {
   //   return new AlloOperation(async ({ emit }) => {
-    
+
   //   });
   // }
 }

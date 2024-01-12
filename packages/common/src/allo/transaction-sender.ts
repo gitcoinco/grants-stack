@@ -103,6 +103,10 @@ export function createEthersTransactionSender(
         })),
       };
     },
+
+    async address(): Promise<Address> {
+      return (await signer.getAddress()) as Address;
+    },
   };
 }
 
