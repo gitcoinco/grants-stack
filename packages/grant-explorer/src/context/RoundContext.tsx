@@ -93,8 +93,7 @@ function fetchRoundsById(
   dispatch({ type: ActionType.SET_LOADING, payload: true });
 
   dataLayer
-    .query({
-      type: "legacy-round-by-id",
+    .getLegacyRoundById({
       roundId,
       chainId,
     })

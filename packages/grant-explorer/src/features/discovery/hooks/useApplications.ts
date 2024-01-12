@@ -35,7 +35,7 @@ export function useApplications(options: ApplicationFetchOptions) {
       // const res = await grantsStackDataClient.query({ page, ...options })
       switch (options.type) {
         case "applications-search": {
-          const { results, pagination } = await dataLayer.query({
+          const { results, pagination } = await dataLayer.searchApplications({
             page: pageIndex,
             ...options,
           });
@@ -51,10 +51,11 @@ export function useApplications(options: ApplicationFetchOptions) {
           };
         }
         case "applications-paginated": {
-          const { applications, pagination } = await dataLayer.query({
-            page: pageIndex,
-            ...options,
-          });
+          const { applications, pagination } =
+            await dataLayer.getApplicationsPaginated({
+              page: pageIndex,
+              ...options,
+            });
           return {
             applications,
             pagination,
