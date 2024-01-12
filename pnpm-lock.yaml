@@ -324,6 +324,9 @@ importers:
 
   packages/common:
     dependencies:
+      '@allo-team/allo-v2-sdk':
+        specifier: ^1.0.36
+        version: 1.0.36(typescript@5.3.3)(zod@3.22.4)
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
@@ -1147,6 +1150,19 @@ packages:
 
   /@adraffy/ens-normalize@1.9.4:
     resolution: {integrity: sha512-UK0bHA7hh9cR39V+4gl2/NnBBjoXIxkuWAPCaY4X7fbH4L/azIi7ilWOCjMUYfpJgraLUAqkRi2BqrjME8Rynw==}
+    dev: false
+
+  /@allo-team/allo-v2-sdk@1.0.36(typescript@5.3.3)(zod@3.22.4):
+    resolution: {integrity: sha512-/OdPHFnRlJ97Y4l98q1VHGM1V15U3aSlRNFmOoJ2y6YNbipNykrbQAmhroSwLTyHXj2qqjMlPUBVX3V4m/RjAQ==}
+    dependencies:
+      dotenv: 16.3.1
+      events: 3.3.0
+      viem: 1.21.4(typescript@5.3.3)(zod@3.22.4)
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
     dev: false
 
   /@alloc/quick-lru@5.2.0:
@@ -12569,6 +12585,11 @@ packages:
 
   /dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
     dev: false
 

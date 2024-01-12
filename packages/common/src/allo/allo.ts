@@ -63,6 +63,18 @@ export interface Allo {
       transactionStatus: Result<TransactionReceipt>;
     }
   >;
+
+  updateProjectMetadata: (args: {
+    projectId: Hex;
+    metadata: Record<string, unknown>;
+  }) => AlloOperation<
+    Result<{ projectId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  >;
 }
 
 export { AlloOperation };

@@ -116,4 +116,65 @@ export class AlloV1 implements Allo {
       });
     });
   }
+
+  // projectId is the grantId and not the fullProjectId as computed by createProjectId
+  updateProjectMetadata(args: {
+    projectId: Hex; // Note: this is projectIndex
+    metadata: Record<string, unknown>;
+  }): AlloOperation<
+    Result<{projectId: Hex}>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+
+      // --- upload metadata to IPFS
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      // --- send transaction to update project metadata
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: args.projectId,
+        abi: ProjectRegistryABI,
+        functionName: "updateProjectMetadata",
+        args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      // --- wait for transaction to be mined
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to update project metadata");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      return success({
+        projectId: args.projectId,
+      });
+    });
+  }
 }

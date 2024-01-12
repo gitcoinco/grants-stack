@@ -121,20 +121,74 @@ export class AlloV2 implements Allo {
     });
   }
 
-  // applyToRound(args: {
-  //   roundId: Hex;
+  updateProjectMetadata(args: {
+    projectId: Hex;
+    metadata: Record<string, unknown>;
+  }): AlloOperation<
+    Result<{ projectId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const projectId = args.projectId;
 
-  //   metadata: Record<string, unknown>;
-  // }): AlloOperation<
-  //   Result<{ applicationId: Hex }>,
-  //   {
-  //     ipfs: Result<string>;
-  //     transaction: Result<Hex>;
-  //     transactionStatus: Result<TransactionReceipt>;
-  //   }
-  // > {
-  //   return new AlloOperation(async ({ emit }) => {
+      // --- upload metadata to IPFS
+      const ipfsResult = await this.ipfsUploader(args.metadata);
 
-  //   });
-  // }
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      const data = {
+        profileId: projectId,
+        metadata: {
+          protocol: BigInt(1),
+          pointer: ipfsResult.value,
+        },
+      };
+
+      const txUpdateProfile: TransactionData =
+        this.registry.updateProfileMetadata(data);
+
+      // --- send transaction to create project
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txUpdateProfile.to,
+        data: txUpdateProfile.data,
+        value: BigInt(txUpdateProfile.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      // --- wait for transaction to be mined
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to update project metadata");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      return success({
+        projectId: projectId,
+      });
+    });
+  }
 }
