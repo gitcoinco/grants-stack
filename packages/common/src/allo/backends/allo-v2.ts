@@ -120,4 +120,21 @@ export class AlloV2 implements Allo {
       });
     });
   }
+
+  // applyToRound(args: {
+  //   roundId: Hex;
+
+  //   metadata: Record<string, unknown>;
+  // }): AlloOperation<
+  //   Result<{ applicationId: Hex }>,
+  //   {
+  //     ipfs: Result<string>;
+  //     transaction: Result<Hex>;
+  //     transactionStatus: Result<TransactionReceipt>;
+  //   }
+  // > {
+  //   return new AlloOperation(async ({ emit }) => {
+    
+  //   });
+  // }
 }
