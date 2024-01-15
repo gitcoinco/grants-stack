@@ -2,13 +2,13 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
-import { AlloOperation, useAllo } from "common";
+import { useAllo } from "common";
+import { ethers } from "ethers";
 import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
 import { getProjectURIComponents } from "../utils/utils";
-import { ethers } from "ethers";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
@@ -117,16 +117,17 @@ export const publishGrant =
     dispatch(grantStatus(Status.UploadingJSON));
 
     const result = grantId
-    ? allo.updateProjectMetadata({ 
-      projectId: ethers.utils.hexlify(Number(grantId)) as `0x${string}`,
-      metadata: application as unknown as Record<string, unknown>,
-    })
-    : allo.createProject({
-        name: application.title,
-        metadata: application as unknown as Record<string, unknown>,
-      });
-    
-    result.on("ipfs", (res) => {
+      ? allo.updateProjectMetadata({
+          projectId: ethers.utils.hexlify(Number(grantId)) as `0x${string}`,
+          metadata: application as unknown as Record<string, unknown>,
+        })
+      : allo.createProject({
+          name: application.title,
+          metadata: application as unknown as Record<string, unknown>,
+        });
+
+    result
+      .on("ipfs", (res) => {
         if (res.type === "success") {
           console.log("IPFS CID", res.value);
           dispatch(grantStatus(Status.WaitingForSignature));
