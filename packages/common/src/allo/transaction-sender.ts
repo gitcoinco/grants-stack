@@ -195,7 +195,7 @@ export function createMockTransactionSender(): TransactionSender & {
       return {
         transactionHash: txHash,
         blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
-        blockNumber: 1n,
+        blockNumber: BigInt(1),
         logs: [],
       };
     },
@@ -234,7 +234,7 @@ export async function sendTransaction(
     const tx = await sender.send({
       to: args.address,
       data: data,
-      value: 0n,
+      value: BigInt(0),
     });
 
     return success(tx);

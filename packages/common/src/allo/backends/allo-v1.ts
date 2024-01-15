@@ -72,7 +72,7 @@ export class AlloV1 implements Allo {
         address: this.projectRegistryAddress,
         abi: ProjectRegistryABI,
         functionName: "createProject",
-        args: [{ protocol: 1n, pointer: ipfsResult.value }],
+        args: [{ protocol: BigInt(1), pointer: ipfsResult.value }],
       });
 
       emit("transaction", txResult);
@@ -122,7 +122,7 @@ export class AlloV1 implements Allo {
     projectId: Hex; // Note: this is projectIndex
     metadata: Record<string, unknown>;
   }): AlloOperation<
-    Result<{projectId: Hex}>,
+    Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;
       transaction: Result<Hex>;
@@ -130,7 +130,6 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-
       // --- upload metadata to IPFS
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
@@ -145,7 +144,10 @@ export class AlloV1 implements Allo {
         address: args.projectId,
         abi: ProjectRegistryABI,
         functionName: "updateProjectMetadata",
-        args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
+        args: [
+          args.projectId,
+          { protocol: BigInt(1), pointer: ipfsResult.value },
+        ],
       });
 
       emit("transaction", txResult);
