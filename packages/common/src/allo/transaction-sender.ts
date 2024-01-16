@@ -120,7 +120,7 @@ export function createViemTransactionSender(
     async send(tx: TransactionData): Promise<Hex> {
       const account = await walletClient.account;
 
-      if (!account) return '0x';
+      if (!account) return "0x";
 
       const transactionHash = await walletClient.sendTransaction({
         account: account,
@@ -151,7 +151,7 @@ export function createViemTransactionSender(
 
     async address(): Promise<Address> {
       const address = await walletClient?.account?.address;
-      if (!address) return '0x';
+      if (!address) return "0x";
       return address;
     },
   };
