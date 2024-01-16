@@ -2,7 +2,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
-import { useAllo } from "common";
+import { Allo } from "common";
 import { ethers } from "ethers";
 import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
@@ -66,10 +66,9 @@ export const grantCreated = ({
 
 // todo: wire in metadata update
 export const publishGrant =
-  (fullId?: string) =>
+  (allo: Allo, fullId?: string) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
-    const allo = useAllo();
 
     const { metadata: formMetaData, credentials: formCredentials } =
       state.projectForm;

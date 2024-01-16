@@ -16,6 +16,7 @@ import { grantSteps } from "../../utils/steps";
 import StatusModal from "./StatusModal";
 import ErrorModal from "./ErrorModal";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
+import { useAllo } from "common";
 
 export default function Preview({
   currentProjectId,
@@ -54,10 +55,12 @@ export default function Preview({
     dispatch(resetStatus());
   };
 
+  const allo = useAllo();
+
   const publishProject = async () => {
     setSubmitted(true);
     showModal(true);
-    dispatch(publishGrant(currentProjectId));
+    dispatch(publishGrant(allo, currentProjectId));
   };
 
   const navigate = useNavigate();
