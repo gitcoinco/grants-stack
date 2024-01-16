@@ -8,6 +8,7 @@ import {
   createEthersTransactionSender,
 } from "common";
 import { useNetwork, useProvider, useSigner } from "wagmi";
+import { getConfig } from "common/src/config";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -27,8 +28,8 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
         transactionSender: createEthersTransactionSender(signer, web3Provider),
         projectRegistryAddress: "0x0000000000000000000000000000000000000000",
         ipfsUploader: createPinataIpfsUploader({
-          token: process.env.REACT_APP_PINATA_JWT || "",
-          endpoint: process.env.REACT_APP_PINATA_GATEWAY || "",
+          token: getConfig().pinata.jwt,
+          endpoint: getConfig().pinata.baseUrl,
         }),
         waitUntilIndexerSynced: waitForSubgraphSyncTo,
       });
