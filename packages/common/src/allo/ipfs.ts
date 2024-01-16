@@ -10,6 +10,7 @@ export function createPinataIpfsUploader(args: {
   endpoint: string;
   fetch?: typeof globalThis.fetch;
 }): IpfsUploader {
+
   const {
     fetch = globalThis.fetch,
     token,
@@ -25,7 +26,12 @@ export function createPinataIpfsUploader(args: {
         Authorization: `Bearer ${token}`,
       },
       body: {
-        pinataMetadata: {},
+        pinataMetadata: {
+          name: "Gitcoin.co",
+          keyvalues: {
+            app: "Gitcoin.co",
+          },
+        },
         pinataOptions: {
           cidVersion: 1,
         },
@@ -45,9 +51,16 @@ export function createPinataIpfsUploader(args: {
     fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions));
     fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata));
 
-    const res = await fetch(endpoint);
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: fd,
+      // Include any other headers or options as needed
+    });
 
-    if (res.ok) {
+    if (!res.ok) {
       return error(
         new AlloError(`Failed to upload file to IPFS: ${await res.text()}`)
       );

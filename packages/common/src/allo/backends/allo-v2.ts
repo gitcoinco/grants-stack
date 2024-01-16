@@ -54,7 +54,6 @@ export class AlloV2 implements Allo {
   > {
     return new AlloOperation(async ({ emit }) => {
       // --- upload metadata to IPFS
-      console.log("====> args.metadata", args.metadata);
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);

@@ -1,3 +1,4 @@
+import { useAllo } from "common";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +17,6 @@ import { grantSteps } from "../../utils/steps";
 import StatusModal from "./StatusModal";
 import ErrorModal from "./ErrorModal";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
-import { useAllo } from "common";
 
 export default function Preview({
   currentProjectId,
