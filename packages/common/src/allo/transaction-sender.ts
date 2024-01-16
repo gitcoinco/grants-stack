@@ -99,7 +99,7 @@ export function createEthersTransactionSender(
         transactionHash: txReceipt.transactionHash as Hex,
         blockHash: txReceipt.blockHash as Hex,
         blockNumber: BigInt(txReceipt.blockNumber),
-        logs: txReceipt.logs.map((log: Log) => ({
+        logs: txReceipt.logs.map((log) => ({
           data: log.data as Hex,
           topics: log.topics as Hex[],
         })),
