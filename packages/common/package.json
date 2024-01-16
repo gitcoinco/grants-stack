@@ -1,14 +1,14 @@
 {
   "name": "common",
   "version": "1.0.0",
-  "description": "Common code shared between GE and RM",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "author": "Josef Vacek",
-  "license": "MIT",
+  "description": "Common package for Grants Stack",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "private": false,
   "scripts": {
     "test": "vitest --run",
+    "prepare": "tsc",
+    "build": "tsc",
     "test:watch": "vitest watch"
   },
   "dependencies": {
