@@ -7,13 +7,18 @@ import {
   waitForSubgraphSyncTo,
   createEthersTransactionSender,
 } from "common";
-import { global } from "../global";
+import { useNetwork, useProvider, useSigner } from "wagmi";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
-  const { web3Provider, signer, chainID } = global;
+  const { chain } = useNetwork();
+  const web3Provider = useProvider();
+  const { data: signer } = useSigner();
+  const chainID = chain?.id;
+
   const [backend, setBackend] = useState<Allo | null>(null);
 
   useEffect(() => {
+    console.log("AlloWrapper: useEffect", web3Provider, signer, chainID);
     if (!web3Provider || !signer || !chainID) {
       setBackend(null);
     } else {
