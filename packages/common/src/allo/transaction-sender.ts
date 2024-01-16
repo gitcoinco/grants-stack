@@ -8,6 +8,7 @@ import {
   encodeEventTopics,
   encodeFunctionData,
 } from "viem";
+import ethers from "ethers";
 import { Abi, ExtractAbiEventNames } from "abitype";
 
 import { Result, error, success } from "./common";
@@ -71,6 +72,37 @@ export function decodeEventFromReceipt<
     TEventName,
     { EnableUnion: false; IndexedOnly: false; Required: true }
   >;
+}
+
+export function createEthersTransactionSender(
+  signer: ethers.Signer,
+  provider: ethers.providers.Provider
+): TransactionSender {
+  return {
+    async send(tx: TransactionData): Promise<Hex> {
+      const txResponse = await signer.sendTransaction({
+        to: tx.to,
+        data: tx.data,
+        value: tx.value,
+      });
+
+      return txResponse.hash as Hex;
+    },
+
+    async wait(txHash: Hex): Promise<TransactionReceipt> {
+      const txReceipt = await provider.waitForTransaction(txHash);
+
+      return {
+        transactionHash: txReceipt.transactionHash as Hex,
+        blockHash: txReceipt.blockHash as Hex,
+        blockNumber: BigInt(txReceipt.blockNumber),
+        logs: txReceipt.logs.map((log) => ({
+          data: log.data as Hex,
+          topics: log.topics as Hex[],
+        })),
+      };
+    },
+  };
 }
 
 export function createViemTransactionSender(
