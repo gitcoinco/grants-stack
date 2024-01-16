@@ -105,7 +105,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 0,
+          chainID: 10,
           events: {
             "1:1:1": {
               createdAtBlock: 1111,
@@ -138,7 +138,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 0,
+          chainID: 10,
           events: {
             "1:1:1": {
               createdAtBlock: 1111,
@@ -173,7 +173,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 0,
+          chainID: 10,
           events: {
             "1:1:1": {
               createdAtBlock: 1111,
@@ -205,7 +205,7 @@ describe("<List />", () => {
 
       store.dispatch({
         type: "PROJECTS_LOADED",
-        payload: { chainID: 0, events: {} },
+        payload: { chainID: 10, events: {} },
       });
 
       renderWrapped(<List />, store);
@@ -230,7 +230,7 @@ describe("<List />", () => {
         const store = setupStore();
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 0, events: {} },
+          payload: { chainID: 10, events: {} },
         });
 
         renderWrapped(<List />, store);
@@ -247,7 +247,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 0, events: projectEventsMap },
+          payload: { chainID: 10, events: projectEventsMap },
         });
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -273,7 +273,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 0, events: projectEventsMap },
+          payload: { chainID: 10, events: projectEventsMap },
         });
 
         store.dispatch({
@@ -366,7 +366,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 0, events: projectEventsMap },
+          payload: { chainID: 10, events: projectEventsMap },
         });
 
         store.dispatch({
@@ -397,7 +397,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "PROJECTS_LOADED",
             payload: {
-              chainID: 0,
+              chainID: 10,
               events: {
                 "1:1:1": {
                   createdAtBlock: 1111,

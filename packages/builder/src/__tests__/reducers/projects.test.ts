@@ -250,7 +250,7 @@ describe("projects reducer", () => {
     const state4: ProjectsState = projectsReducer(state3, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 0,
+        chainID: 10,
         events: {},
       },
     });
