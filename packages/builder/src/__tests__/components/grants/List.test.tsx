@@ -73,7 +73,7 @@ describe("<List />", () => {
 
     test("should not be called if it's already loading", async () => {
       const store = setupStore();
-      store.dispatch({ type: "PROJECTS_LOADING", payload: 0 });
+      store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
 
       renderWrapped(<List />, store);
 
@@ -218,7 +218,7 @@ describe("<List />", () => {
     describe("projects", () => {
       test("should show a loading element", async () => {
         const store = setupStore();
-        store.dispatch({ type: "PROJECTS_LOADING", payload: 0 });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
 
         renderWrapped(<List />, store);
 
