@@ -165,7 +165,7 @@ export function createViemTransactionSender(
  *  const txHash = await sender.send({
  *    to: "0x1234",
  *    data: "0x1234",
- *    value: 0n,
+ *    value: BigInt(0),
  *  });
  *  const receipt = await sender.wait(txHash);
  *  expect(receipt.transactionHash).toEqual(txHash);
@@ -173,7 +173,7 @@ export function createViemTransactionSender(
  *  {
  *    to: "0x1234",
  *    data: "0x1234",
- *    value: 0n,
+ *    value: BigInt(0),
  *  },
  *  ]);
  */
