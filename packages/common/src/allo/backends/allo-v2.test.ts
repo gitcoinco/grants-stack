@@ -7,7 +7,6 @@ import {
 } from "../transaction-sender";
 import { Result, success } from "../common";
 import RegistryABI from "../abis/allo-v2/Registry";
-import * as registryConfig from "@allo-team/allo-v2-sdk/dist/Registry/registry.config";
 
 const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
@@ -15,6 +14,8 @@ const waitUntilIndexerSynced = vi.fn().mockResolvedValue(success(null));
 const transactionSender = createMockTransactionSender();
 const projectRegistryAddress = zeroAddress;
 const chainId = 1;
+
+const alloV2RegistryAddress = "0x4AAcca72145e1dF2aeC137E1f3C5E3D75DB8b5f3";
 
 const profileCreationEvent = {
   indexed: {
@@ -80,8 +81,8 @@ describe("AlloV2", () => {
     expect(transactionSender.sentTransactions).toHaveLength(1);
     expect(ipfsResult!).toEqual(success("ipfsHash"));
     expect(txResult!).toEqual(success(zeroTxHash));
-    expect(transactionSender.sentTransactions[0].to).toEqual(
-      registryConfig.address
+    expect(transactionSender.sentTransactions[0].to.toLowerCase()).toEqual(
+      alloV2RegistryAddress.toLocaleLowerCase()
     );
     expect(txStatusResult!).toBeTruthy();
   });
