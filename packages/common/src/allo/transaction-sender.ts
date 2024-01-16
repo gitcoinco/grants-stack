@@ -1,7 +1,9 @@
 import {
   Address,
+  EncodeFunctionDataParameters,
   GetEventArgs,
   Hex,
+  Log,
   PublicClient,
   WalletClient,
   decodeEventLog,
@@ -97,7 +99,7 @@ export function createEthersTransactionSender(
         transactionHash: txReceipt.transactionHash as Hex,
         blockHash: txReceipt.blockHash as Hex,
         blockNumber: BigInt(txReceipt.blockNumber),
-        logs: txReceipt.logs.map((log) => ({
+        logs: txReceipt.logs.map((log: Log) => ({
           data: log.data as Hex,
           topics: log.topics as Hex[],
         })),
@@ -116,10 +118,12 @@ export function createViemTransactionSender(
 ): TransactionSender {
   return {
     async send(tx: TransactionData): Promise<Hex> {
-      const [address] = await walletClient.getAddresses();
+      const account = await walletClient.account;
+
+      if (!account) return '0x';
 
       const transactionHash = await walletClient.sendTransaction({
-        account: address,
+        account: account,
         to: tx.to,
         data: tx.data,
         value: tx.value,
@@ -138,7 +142,7 @@ export function createViemTransactionSender(
         transactionHash: receipt.transactionHash,
         blockHash: receipt.blockHash,
         blockNumber: receipt.blockNumber,
-        logs: receipt.logs.map((log) => ({
+        logs: receipt.logs.map((log: Log) => ({
           data: log.data,
           topics: log.topics,
         })),
@@ -146,7 +150,8 @@ export function createViemTransactionSender(
     },
 
     async address(): Promise<Address> {
-      const [address] = await walletClient.getAddresses();
+      const address = await walletClient?.account?.address;
+      if (!address) return '0x';
       return address;
     },
   };
@@ -226,7 +231,7 @@ export async function sendRawTransaction(
 
 export async function sendTransaction(
   sender: TransactionSender,
-  args: Parameters<typeof encodeFunctionData>[0] & { address: Address }
+  args: EncodeFunctionDataParameters<Abi, string> & { address: Address }
 ): Promise<Result<Hex>> {
   try {
     const data = encodeFunctionData(args);
