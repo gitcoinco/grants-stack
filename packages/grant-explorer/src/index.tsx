@@ -48,6 +48,9 @@ const dataLayer = new DataLayer({
       pageSize: GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE,
     },
   },
+  ipfs: {
+    gateway: getConfig().ipfs.baseUrl,
+  },
   subgraph: {
     endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
   },
