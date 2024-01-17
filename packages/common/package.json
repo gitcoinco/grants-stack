@@ -9,6 +9,7 @@
     "test": "vitest --run",
     "prepare": "tsc",
     "build": "tsc",
+    "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "test:watch": "vitest watch"
   },
