@@ -197,7 +197,7 @@ const fetchFromIPFS = (
   { ipfsGateway }: { ipfsGateway: string },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-  return fetch(`https://${ipfsGateway}/ipfs/${cid}`).then((resp) => {
+  return fetch(`${ipfsGateway}/ipfs/${cid}`).then((resp) => {
     if (resp.ok) {
       return resp.json();
     }
