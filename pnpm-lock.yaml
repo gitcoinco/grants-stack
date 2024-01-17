@@ -345,6 +345,9 @@ importers:
       '@wagmi/chains':
         specifier: ^1.8.0
         version: 1.8.0(typescript@5.3.3)
+      abitype:
+        specifier: ^0.10.3
+        version: 0.10.3(typescript@5.3.3)(zod@3.22.4)
       data-layer:
         specifier: workspace:*
         version: link:../data-layer
@@ -378,6 +381,9 @@ importers:
       tailwind-styled-components:
         specifier: ^2.2.0
         version: 2.2.0(react-dom@18.2.0)(react@18.2.0)
+      tiny-emitter:
+        specifier: ^2.1.0
+        version: 2.1.0
       typescript:
         specifier: latest
         version: 5.3.3
