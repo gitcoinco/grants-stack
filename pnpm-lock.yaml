@@ -341,13 +341,10 @@ importers:
         version: 5.7.2
       '@rainbow-me/rainbowkit':
         specifier: ^0.12.16
-        version: 0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(wagmi@0.12.19)
+        version: 0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.19)
       '@wagmi/chains':
         specifier: ^1.8.0
         version: 1.8.0(typescript@5.3.3)
-      abitype:
-        specifier: ^0.10.3
-        version: 0.10.3(typescript@5.3.3)(zod@3.22.4)
       data-layer:
         specifier: workspace:*
         version: link:../data-layer
@@ -359,7 +356,7 @@ importers:
         version: 5.7.2
       framer-motion:
         specifier: ^10.12.7
-        version: 10.16.4(react@18.2.0)
+        version: 10.16.4(react-dom@18.2.0)(react@18.2.0)
       markdown-it:
         specifier: ^13.0.1
         version: 13.0.1
@@ -374,16 +371,13 @@ importers:
         version: 6.15.0(react@18.2.0)
       react-router-dom:
         specifier: ^6.11.1
-        version: 6.15.0(react@18.2.0)
+        version: 6.15.0(react-dom@18.2.0)(react@18.2.0)
       swr:
         specifier: ^2.0.1
         version: 2.2.2(react@18.2.0)
       tailwind-styled-components:
         specifier: ^2.2.0
-        version: 2.2.0(react@18.2.0)
-      tiny-emitter:
-        specifier: ^2.1.0
-        version: 2.1.0
+        version: 2.2.0(react-dom@18.2.0)(react@18.2.0)
       typescript:
         specifier: latest
         version: 5.3.3
@@ -392,7 +386,7 @@ importers:
         version: 1.10.7(typescript@5.3.3)(zod@3.22.4)
       wagmi:
         specifier: 0.12.19
-        version: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
+        version: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -6280,7 +6274,7 @@ packages:
       - '@types/react'
     dev: false
 
-  /@rainbow-me/rainbowkit@0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(wagmi@0.12.19):
+  /@rainbow-me/rainbowkit@0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.19):
     resolution: {integrity: sha512-4uuJIOJaBjPVM/8HqM1kNf2Yqb52lNYkQD1m8p8e7zcIK2K3nml6BfG5r04f4kqUWRmT3yosZOz2+AYL1zFqdA==}
     engines: {node: '>=12.4'}
     peerDependencies:
@@ -6296,8 +6290,9 @@ packages:
       ethers: 5.7.2
       qrcode: 1.5.0
       react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
       react-remove-scroll: 2.5.4(@types/react@18.2.21)(react@18.2.0)
-      wagmi: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
+      wagmi: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -7115,23 +7110,6 @@ packages:
       '@tanstack/query-core': 4.35.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      use-sync-external-store: 1.2.0(react@18.2.0)
-    dev: false
-
-  /@tanstack/react-query@4.35.0(react@18.2.0):
-    resolution: {integrity: sha512-LLYDNnM9ewYHgjm2rzhk4KG/puN2rdoqCUD+N9+V7SwlsYwJk5ypX58rpkoZAhFyZ+KmFUJ7Iv2lIEOoUqydIg==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-    dependencies:
-      '@tanstack/query-core': 4.35.0
-      react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
@@ -14520,23 +14498,6 @@ packages:
       '@emotion/is-prop-valid': 0.8.8
     dev: false
 
-  /framer-motion@10.16.4(react@18.2.0):
-    resolution: {integrity: sha512-p9V9nGomS3m6/CALXqv6nFGMuFOxbWsmaOrdmhyQimMIlLl3LC7h7l86wge/Js/8cRu5ktutS/zlzgR7eBOtFA==}
-    peerDependencies:
-      react: ^18.0.0
-      react-dom: ^18.0.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-    dependencies:
-      react: 18.2.0
-      tslib: 2.6.2
-    optionalDependencies:
-      '@emotion/is-prop-valid': 0.8.8
-    dev: false
-
   /framer-motion@6.5.1(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-o1BGqqposwi7cgDrtg0dNONhkmPsUFDaLcKXigzuTFC5x58mE8iyTazxSudFzmT6MEyJKfjjU8ItoMe3W+3fiw==}
     peerDependencies:
@@ -21121,18 +21082,6 @@ packages:
       react-router: 6.15.0(react@18.2.0)
     dev: false
 
-  /react-router-dom@6.15.0(react@18.2.0):
-    resolution: {integrity: sha512-aR42t0fs7brintwBGAv2+mGlCtgtFQeOzK0BM1/OiqEzRejOZtpMZepvgkscpMUnKb8YO84G7s3LsHnnDNonbQ==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      react: '>=16.8'
-      react-dom: '>=16.8'
-    dependencies:
-      '@remix-run/router': 1.8.0
-      react: 18.2.0
-      react-router: 6.15.0(react@18.2.0)
-    dev: false
-
   /react-router@6.15.0(react@18.2.0):
     resolution: {integrity: sha512-NIytlzvzLwJkCQj2HLefmeakxxWHWAP+02EGqWEZy+DgfHHKQMUoBBjUQLOtFInBMhWtb3hiUy6MfFgwLjXhqg==}
     engines: {node: '>=14.0.0'}
@@ -22796,17 +22745,6 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       tailwind-merge: 1.14.0
-    dev: true
-
-  /tailwind-styled-components@2.2.0(react@18.2.0):
-    resolution: {integrity: sha512-Ogemwk0p69aU8WE/ooJZHjqstdJgT5R6HGU6TFz2uSnveSEtvW+C6aWOjGCvCr5H/bREv0IbbQ4yODknRrLBRQ==}
-    peerDependencies:
-      react: '>= 16.8.0'
-      react-dom: '>= 16.8.0'
-    dependencies:
-      react: 18.2.0
-      tailwind-merge: 1.14.0
-    dev: false
 
   /tailwindcss@3.3.3:
     resolution: {integrity: sha512-A0KgSkef7eE4Mf+nKJ83i75TMyq8HqY3qmFIJSWy8bNt0v1lG7jUcpGpoTFxAwYcWOphcTBLPPJg+bDfhDf52w==}
@@ -24526,7 +24464,7 @@ packages:
       - zod
     dev: false
 
-  /wagmi@0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4):
+  /wagmi@0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4):
     resolution: {integrity: sha512-S/el9BDb/HNeQWh1v8TvntMPX/CgKLDAoJqDb8i7jifLfWPqFL7gor3vnI1Vs6ZlB8uh7m+K1Qyg+mKhbITuDQ==}
     peerDependencies:
       ethers: '>=5.5.1 <6'
@@ -24537,7 +24475,7 @@ packages:
         optional: true
     dependencies:
       '@tanstack/query-sync-storage-persister': 4.35.0
-      '@tanstack/react-query': 4.35.0(react@18.2.0)
+      '@tanstack/react-query': 4.35.0(react-dom@18.2.0)(react@18.2.0)
       '@tanstack/react-query-persist-client': 4.35.0(@tanstack/react-query@4.35.0)
       '@wagmi/core': 0.10.17(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
       abitype: 0.3.0(typescript@5.3.3)(zod@3.22.4)
