@@ -44,7 +44,7 @@ describe("AlloV1", () => {
         // mock transaction receipt
         transactionSender.wait = vi.fn().mockResolvedValueOnce({
           transactionHash: zeroTxHash,
-          blockNumber: BigInt(1),
+          blockNumber: 1n,
           blockHash: "0x0",
           logs: [
             {
@@ -52,7 +52,7 @@ describe("AlloV1", () => {
                 abi: ProjectRegistry,
                 eventName: "ProjectCreated",
                 args: {
-                  projectID: BigInt(1),
+                  projectID: 1n,
                   owner: zeroAddress,
                 },
               }),

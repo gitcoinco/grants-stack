@@ -54,7 +54,7 @@ describe("AlloV2", () => {
         // mock transaction receipt
         transactionSender.wait = vi.fn().mockResolvedValueOnce({
           transactionHash: zeroTxHash,
-          blockNumber: BigInt(1),
+          blockNumber: 1n,
           blockHash: "0x0",
           logs: [
             {

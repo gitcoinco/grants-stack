@@ -38,8 +38,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
 
       const addresses = addressesByChainID(chainID!);
 
-      console.log("AlloWrapper: addresses", addresses);
-
       const alloBackend: Allo = new AlloV1({
         chainId: chainID,
         transactionSender: createEthersTransactionSender(signer, web3Provider),

@@ -2,7 +2,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
-import { Allo } from "common";
+import { Allo, AnyJson } from "common";
 import { ethers } from "ethers";
 import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
@@ -118,11 +118,11 @@ export const publishGrant =
     const result = grantId
       ? allo.updateProjectMetadata({
           projectId: ethers.utils.hexlify(Number(grantId)) as `0x${string}`,
-          metadata: application as unknown as Record<string, unknown>,
+          metadata: application as unknown as AnyJson,
         })
       : allo.createProject({
           name: application.title,
-          metadata: application as unknown as Record<string, unknown>,
+          metadata: application as unknown as AnyJson,
         });
 
     await result

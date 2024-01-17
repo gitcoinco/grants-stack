@@ -11,6 +11,7 @@ import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import { IpfsUploader } from "../ipfs";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { keccak256, encodePacked } from "viem";
+import { AnyJson } from "../..";
 
 function createProjectId(args: {
   chainId: number;
@@ -46,10 +47,7 @@ export class AlloV1 implements Allo {
     this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
   }
 
-  createProject(args: {
-    name: string;
-    metadata: Record<string, unknown>;
-  }): AlloOperation<
+  createProject(args: { name: string; metadata: AnyJson }): AlloOperation<
     Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;
@@ -72,7 +70,7 @@ export class AlloV1 implements Allo {
         address: this.projectRegistryAddress,
         abi: ProjectRegistryABI,
         functionName: "createProject",
-        args: [{ protocol: BigInt(1), pointer: ipfsResult.value }],
+        args: [{ protocol: 1n, pointer: ipfsResult.value }],
       });
 
       emit("transaction", txResult);
@@ -120,7 +118,7 @@ export class AlloV1 implements Allo {
   // projectId is the grantId and not the fullProjectId as computed by createProjectId
   updateProjectMetadata(args: {
     projectId: Hex; // Note: this is projectIndex
-    metadata: Record<string, unknown>;
+    metadata: AnyJson;
   }): AlloOperation<
     Result<{ projectId: Hex }>,
     {
@@ -144,10 +142,7 @@ export class AlloV1 implements Allo {
         address: args.projectId,
         abi: ProjectRegistryABI,
         functionName: "updateProjectMetadata",
-        args: [
-          args.projectId,
-          { protocol: BigInt(1), pointer: ipfsResult.value },
-        ],
+        args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
       });
 
       emit("transaction", txResult);

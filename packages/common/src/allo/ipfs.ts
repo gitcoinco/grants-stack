@@ -1,8 +1,9 @@
+import { AnyJson } from "..";
 import { AlloError } from "./allo";
 import { Result, error, success } from "./common";
 
 export interface IpfsUploader {
-  (file: Blob | Record<string, unknown>): Promise<Result<string>>;
+  (file: Blob | AnyJson): Promise<Result<string>>;
 }
 
 export function createPinataIpfsUploader(args: {
@@ -10,16 +11,13 @@ export function createPinataIpfsUploader(args: {
   endpoint: string;
   fetch?: typeof globalThis.fetch;
 }): IpfsUploader {
-
   const {
     fetch = globalThis.fetch,
     token,
     endpoint = "https://api.pinata.cloud/pinning/pinFileToIPFS",
   } = args;
 
-  return async (
-    file: Blob | Record<string, unknown>
-  ): Promise<Result<string>> => {
+  return async (file: Blob | AnyJson): Promise<Result<string>> => {
     const params = {
       method: "POST",
       headers: {

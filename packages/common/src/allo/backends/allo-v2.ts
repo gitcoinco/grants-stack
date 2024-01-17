@@ -16,6 +16,7 @@ import {
   CreateProfileArgs,
 } from "@allo-team/allo-v2-sdk/dist/types";
 import { Registry } from "@allo-team/allo-v2-sdk/";
+import { AnyJson } from "../..";
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -41,10 +42,7 @@ export class AlloV2 implements Allo {
     });
   }
 
-  createProject(args: {
-    name: string;
-    metadata: Record<string, unknown>;
-  }): AlloOperation<
+  createProject(args: { name: string; metadata: AnyJson }): AlloOperation<
     Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;
@@ -68,7 +66,7 @@ export class AlloV2 implements Allo {
         nonce: randomNonce,
         name: args.name,
         metadata: {
-          protocol: BigInt(1),
+          protocol: 1n,
           pointer: ipfsResult.value,
         },
         owner: await this.transactionSender.address(),
@@ -123,7 +121,7 @@ export class AlloV2 implements Allo {
 
   updateProjectMetadata(args: {
     projectId: Hex;
-    metadata: Record<string, unknown>;
+    metadata: AnyJson;
   }): AlloOperation<
     Result<{ projectId: Hex }>,
     {
@@ -147,7 +145,7 @@ export class AlloV2 implements Allo {
       const data = {
         profileId: projectId,
         metadata: {
-          protocol: BigInt(1),
+          protocol: 1n,
           pointer: ipfsResult.value,
         },
       };

@@ -9,6 +9,7 @@ import {
   decodeEventLog,
   encodeEventTopics,
   encodeFunctionData,
+  zeroAddress,
 } from "viem";
 import ethers from "ethers";
 import { Abi, ExtractAbiEventNames } from "abitype";
@@ -118,9 +119,12 @@ export function createViemTransactionSender(
 ): TransactionSender {
   return {
     async send(tx: TransactionData): Promise<Hex> {
-      const account = await walletClient.account;
+      const account = walletClient.account;
 
-      if (!account) return "0x";
+      if (!account)
+        throw new Error(
+          "createViemTransactionSender: walletClient.account is undefined"
+        );
 
       const transactionHash = await walletClient.sendTransaction({
         account: account,
@@ -150,9 +154,11 @@ export function createViemTransactionSender(
     },
 
     async address(): Promise<Address> {
-      const address = await walletClient?.account?.address;
-      if (!address) return "0x";
-      return address;
+      if (!walletClient.account || !walletClient.account.address) {
+        throw new Error("createViemTransactionSender: address is undefined");
+      }
+
+      return walletClient?.account?.address;
     },
   };
 }
@@ -165,7 +171,7 @@ export function createViemTransactionSender(
  *  const txHash = await sender.send({
  *    to: "0x1234",
  *    data: "0x1234",
- *    value: BigInt(0),
+ *    value: 0n,
  *  });
  *  const receipt = await sender.wait(txHash);
  *  expect(receipt.transactionHash).toEqual(txHash);
@@ -173,7 +179,7 @@ export function createViemTransactionSender(
  *  {
  *    to: "0x1234",
  *    data: "0x1234",
- *    value: BigInt(0),
+ *    value: 0n,
  *  },
  *  ]);
  */
@@ -200,13 +206,13 @@ export function createMockTransactionSender(): TransactionSender & {
       return {
         transactionHash: txHash,
         blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
-        blockNumber: BigInt(1),
+        blockNumber: 1n,
         logs: [],
       };
     },
 
     async address(): Promise<Address> {
-      return ("0x" + "0".repeat(40)) as Address;
+      return zeroAddress;
     },
   };
 }
@@ -231,7 +237,7 @@ export async function sendRawTransaction(
 
 export async function sendTransaction(
   sender: TransactionSender,
-  args: EncodeFunctionDataParameters<Abi, string> & { address: Address }
+  args: Parameters<typeof encodeFunctionData>[0] & { address: Address }
 ): Promise<Result<Hex>> {
   try {
     const data = encodeFunctionData(args);
@@ -239,7 +245,7 @@ export async function sendTransaction(
     const tx = await sender.send({
       to: args.address,
       data: data,
-      value: BigInt(0),
+      value: 0n,
     });
 
     return success(tx);
