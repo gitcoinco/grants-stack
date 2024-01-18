@@ -15,7 +15,7 @@ import {
   TransactionData,
   CreateProfileArgs,
 } from "@allo-team/allo-v2-sdk/dist/types";
-import { Registry } from "@allo-team/allo-v2-sdk/";
+import { Registry, Allo as AlloV2Contract } from "@allo-team/allo-v2-sdk/";
 import { AnyJson } from "../..";
 
 export class AlloV2 implements Allo {
@@ -24,11 +24,13 @@ export class AlloV2 implements Allo {
   private waitUntilIndexerSynced: WaitUntilIndexerSynced;
   private chainId: number;
   private registry: Registry;
+  private allo: AlloV2Contract;
 
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
     projectRegistryAddress: Address; // todo: not used, handled by sdk
+    allo: Address;
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
@@ -38,6 +40,9 @@ export class AlloV2 implements Allo {
     this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
 
     this.registry = new Registry({
+      chain: this.chainId,
+    });
+    this.allo = new AlloV2Contract({
       chain: this.chainId,
     });
   }
@@ -189,4 +194,13 @@ export class AlloV2 implements Allo {
       });
     });
   }
+
+  createRound!: (args: { metadata: AnyJson }) => AlloOperation<
+    Result<{ roundId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  >;
 }

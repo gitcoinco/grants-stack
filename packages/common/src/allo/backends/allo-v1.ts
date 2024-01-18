@@ -8,6 +8,7 @@ import {
 } from "../transaction-sender";
 import { Result, error, success } from "../common";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
+import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import { IpfsUploader } from "../ipfs";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { keccak256, encodePacked } from "viem";
@@ -28,6 +29,7 @@ function createProjectId(args: {
 
 export class AlloV1 implements Allo {
   private projectRegistryAddress: Address;
+  private roundFactoryAddress: Address;
   private transactionSender: TransactionSender;
   private ipfsUploader: IpfsUploader;
   private waitUntilIndexerSynced: WaitUntilIndexerSynced;
@@ -37,12 +39,14 @@ export class AlloV1 implements Allo {
     chainId: number;
     transactionSender: TransactionSender;
     projectRegistryAddress: Address;
+    roundFactoryAddress: Address;
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
     this.chainId = args.chainId;
     this.transactionSender = args.transactionSender;
     this.projectRegistryAddress = args.projectRegistryAddress;
+    this.roundFactoryAddress = args.roundFactoryAddress;
     this.ipfsUploader = args.ipfsUploader;
     this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
   }
@@ -171,6 +175,69 @@ export class AlloV1 implements Allo {
 
       return success({
         projectId: args.projectId,
+      });
+    });
+  }
+
+  // create round
+  createRound(args: { metadata: AnyJson }): AlloOperation<
+    Result<{ roundId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      // --- upload metadata to IPFS
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      // --- send transaction to create round
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: this.roundFactoryAddress,
+        abi: RoundFactoryABI,
+        functionName: "createRound",
+        args: [{ protocol: 1n, pointer: ipfsResult.value }],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      // --- wait for transaction to be mined
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to create round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      const roundCreatedEvent = decodeEventFromReceipt({
+        abi: RoundFactoryABI,
+        receipt,
+        event: "RoundCreated",
+      });
+
+      return success({
+        roundId: roundCreatedEvent.roundAddress,
       });
     });
   }
