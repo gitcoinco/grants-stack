@@ -73,6 +73,15 @@ export interface Allo {
       transactionStatus: Result<TransactionReceipt>;
     }
   >;
+
+  createRound: (args: { metadata: AnyJson }) => AlloOperation<
+    Result<{ roundId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  >;
 }
 
 export { AlloOperation };
