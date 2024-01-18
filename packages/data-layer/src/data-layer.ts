@@ -50,7 +50,7 @@ export class DataLayer {
     );
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
-    this.ipfsGateway = ipfs?.gateway ?? "ipfs.io";
+    this.ipfsGateway = ipfs?.gateway ?? "https://ipfs.io";
     this.passportVerifier = passport?.verifier ?? new PassportVerifier();
   }
 
