@@ -1,8 +1,9 @@
+import { AnyJson } from "..";
 import { AlloError } from "./allo";
 import { Result, error, success } from "./common";
 
 export interface IpfsUploader {
-  (file: Blob | Record<string, unknown>): Promise<Result<string>>;
+  (file: Blob | AnyJson): Promise<Result<string>>;
 }
 
 export function createPinataIpfsUploader(args: {
@@ -16,16 +17,19 @@ export function createPinataIpfsUploader(args: {
     endpoint = "https://api.pinata.cloud/pinning/pinFileToIPFS",
   } = args;
 
-  return async (
-    file: Blob | Record<string, unknown>
-  ): Promise<Result<string>> => {
+  return async (file: Blob | AnyJson): Promise<Result<string>> => {
     const params = {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
       body: {
-        pinataMetadata: {},
+        pinataMetadata: {
+          name: "Gitcoin.co",
+          keyvalues: {
+            app: "Gitcoin.co",
+          },
+        },
         pinataOptions: {
           cidVersion: 1,
         },
@@ -45,9 +49,16 @@ export function createPinataIpfsUploader(args: {
     fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions));
     fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata));
 
-    const res = await fetch(endpoint);
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: fd,
+      // Include any other headers or options as needed
+    });
 
-    if (res.ok) {
+    if (!res.ok) {
       return error(
         new AlloError(`Failed to upload file to IPFS: ${await res.text()}`)
       );

@@ -145,7 +145,7 @@ describe("<Show />", () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
 
-        store.dispatch({ type: "PROJECTS_LOADING", payload: 0 });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
 
         renderWrapped(<Show />, store);
 
@@ -169,7 +169,7 @@ describe("<Show />", () => {
         store.dispatch({
           type: "PROJECTS_LOADED",
           payload: {
-            chainID: 0,
+            chainID: 10,
             events: {},
           },
         });
@@ -187,7 +187,7 @@ describe("<Show />", () => {
         store.dispatch({
           type: "PROJECTS_LOADED",
           payload: {
-            chainID: 0,
+            chainID: 10,
             events: {},
           },
         });
@@ -224,7 +224,7 @@ describe("<Show />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 0,
+          chainID: 10,
           events: {},
         },
       });
@@ -257,7 +257,7 @@ describe("<Show />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 0,
+          chainID: 10,
           events: {},
         },
       });

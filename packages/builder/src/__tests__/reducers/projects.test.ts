@@ -219,7 +219,7 @@ describe("projects reducer", () => {
     // start loading chain 0
     const state1: ProjectsState = projectsReducer(state, {
       type: "PROJECTS_LOADING",
-      payload: 0,
+      payload: 10,
     });
 
     expect(state1.status).toEqual(Status.Loading);
@@ -250,7 +250,7 @@ describe("projects reducer", () => {
     const state4: ProjectsState = projectsReducer(state3, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 0,
+        chainID: 10,
         events: {},
       },
     });

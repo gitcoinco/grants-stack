@@ -4,7 +4,7 @@ import { Allo } from "./allo";
 export const AlloContext = createContext<Allo | null>(null);
 
 interface AlloProps extends React.PropsWithChildren {
-  backend: Allo;
+  backend: Allo | null;
 }
 
 export const AlloProvider: React.FC<AlloProps> = ({ backend, children }) => {
