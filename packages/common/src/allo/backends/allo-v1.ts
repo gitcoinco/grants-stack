@@ -13,6 +13,7 @@ import { IpfsUploader } from "../ipfs";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { keccak256, encodePacked } from "viem";
 import { AnyJson } from "../..";
+import { CreateRoundData, RoundCategory } from "../../types";
 
 function createProjectId(args: {
   chainId: number;
@@ -180,7 +181,7 @@ export class AlloV1 implements Allo {
   }
 
   // create round
-  createRound(args: { metadata: AnyJson }): AlloOperation<
+  createRound(args: { rounddata: CreateRoundData }): AlloOperation<
     Result<{ roundId: Hex }>,
     {
       ipfs: Result<string>;
@@ -189,8 +190,13 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
+      const QF =
+        args.rounddata?.roundCategory === RoundCategory.QuadraticFunding;
+
       // --- upload metadata to IPFS
-      const ipfsResult = await this.ipfsUploader(args.metadata);
+      const ipfsResult = await this.ipfsUploader(
+        args.rounddata.roundMetadataWithProgramContractAddress
+      );
 
       emit("ipfs", ipfsResult);
 

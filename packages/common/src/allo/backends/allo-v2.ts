@@ -17,6 +17,7 @@ import {
 } from "@allo-team/allo-v2-sdk/dist/types";
 import { Registry, Allo as AlloV2Contract } from "@allo-team/allo-v2-sdk/";
 import { AnyJson } from "../..";
+import { CreateRoundData } from "../../types";
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -195,7 +196,7 @@ export class AlloV2 implements Allo {
     });
   }
 
-  createRound!: (args: { metadata: AnyJson }) => AlloOperation<
+  createRound!: (args: { rounddata: CreateRoundData }) => AlloOperation<
     Result<{ roundId: Hex }>,
     {
       ipfs: Result<string>;
