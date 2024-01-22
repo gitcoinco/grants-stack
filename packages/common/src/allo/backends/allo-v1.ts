@@ -1,19 +1,35 @@
-import { Address, Hex } from "viem";
+import {
+  Address,
+  encodeAbiParameters,
+  encodePacked,
+  Hex,
+  keccak256,
+  parseAbiParameters,
+} from "viem";
 import { Allo, AlloError, AlloOperation } from "../allo";
 import {
-  TransactionReceipt,
-  TransactionSender,
   decodeEventFromReceipt,
   sendTransaction,
+  TransactionReceipt,
+  TransactionSender,
 } from "../transaction-sender";
-import { Result, error, success } from "../common";
+import { error, Result, success } from "../common";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import { IpfsUploader } from "../ipfs";
 import { WaitUntilIndexerSynced } from "../indexer";
-import { keccak256, encodePacked } from "viem";
-import { AnyJson } from "../..";
+import { AnyJson, ChainId } from "../..";
 import { CreateRoundData, RoundCategory } from "../../types";
+import { parseChainId } from "../../chains";
+import {
+  dgVotingStrategyDummyContractMap,
+  directPayoutStrategyFactoryContractMap,
+  merklePayoutStrategyFactoryMap,
+  projectRegistryMap,
+  qfVotingStrategyFactoryMap,
+  roundFactoryMap,
+} from "../addresses/allo-v1";
+import { Round } from "data-layer";
 
 function createProjectId(args: {
   chainId: number;
@@ -34,20 +50,18 @@ export class AlloV1 implements Allo {
   private transactionSender: TransactionSender;
   private ipfsUploader: IpfsUploader;
   private waitUntilIndexerSynced: WaitUntilIndexerSynced;
-  private chainId: number;
+  private chainId: ChainId;
 
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
-    projectRegistryAddress: Address;
-    roundFactoryAddress: Address;
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
-    this.chainId = args.chainId;
+    this.chainId = parseChainId(args.chainId);
     this.transactionSender = args.transactionSender;
-    this.projectRegistryAddress = args.projectRegistryAddress;
-    this.roundFactoryAddress = args.roundFactoryAddress;
+    this.projectRegistryAddress = projectRegistryMap[this.chainId];
+    this.roundFactoryAddress = roundFactoryMap[this.chainId];
     this.ipfsUploader = args.ipfsUploader;
     this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
   }
@@ -181,35 +195,66 @@ export class AlloV1 implements Allo {
   }
 
   // create round
-  createRound(args: { rounddata: CreateRoundData }): AlloOperation<
+  createRound(args: { roundData: CreateRoundData }): AlloOperation<
     Result<{ roundId: Hex }>,
     {
-      ipfs: Result<string>;
+      applicationMetadataIpfs: Result<string>;
+      roundMetadataIpfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      const QF =
-        args.rounddata?.roundCategory === RoundCategory.QuadraticFunding;
+      const isQF =
+        args.roundData?.roundCategory === RoundCategory.QuadraticFunding;
+
+      const votingStrategyFactory = isQF
+        ? qfVotingStrategyFactoryMap[this.chainId]
+        : dgVotingStrategyDummyContractMap[this.chainId];
+      const payoutStrategyFactory = isQF
+        ? merklePayoutStrategyFactoryMap[this.chainId]
+        : directPayoutStrategyFactoryContractMap[this.chainId];
 
       // --- upload metadata to IPFS
-      const ipfsResult = await this.ipfsUploader(
-        args.rounddata.roundMetadataWithProgramContractAddress
+      const roundIpfsResult = await this.ipfsUploader(
+        args.roundData.roundMetadataWithProgramContractAddress
       );
 
-      emit("ipfs", ipfsResult);
+      const applicationMetadataIpfsResult = await this.ipfsUploader(
+        args.roundData.applicationQuestions
+      );
 
-      if (ipfsResult.type === "error") {
-        return ipfsResult;
+      emit("roundMetadataIpfs", roundIpfsResult);
+      emit("applicationMetadataIpfs", applicationMetadataIpfsResult);
+
+      if (roundIpfsResult.type === "error") {
+        return roundIpfsResult;
       }
+
+      if (applicationMetadataIpfsResult.type === "error") {
+        return applicationMetadataIpfsResult;
+      }
+
+      const roundContractInputsWithPointers = {
+        ...args.roundData,
+        store: {
+          protocol: 1n,
+          pointer: roundIpfsResult.value,
+        },
+        applicationStore: {
+          protocol: 1n,
+          pointer: applicationMetadataIpfsResult.value,
+        },
+        votingStrategyFactory,
+        payoutStrategyFactory,
+      };
 
       // --- send transaction to create round
       const txResult = await sendTransaction(this.transactionSender, {
         address: this.roundFactoryAddress,
         abi: RoundFactoryABI,
         functionName: "createRound",
-        args: [{ protocol: 1n, pointer: ipfsResult.value }],
+        args: constructCreateRoundArgs(roundContractInputsWithPointers),
       });
 
       emit("transaction", txResult);
@@ -247,4 +292,32 @@ export class AlloV1 implements Allo {
       });
     });
   }
+}
+type ConstructCreateRoundArgs = {
+  store: { protocol: bigint; pointer: string };
+  applicationStore: { protocol: bigint; pointer: string };
+  votingStrategyFactory: `0x${string}`;
+  payoutStrategyFactory: `0x${string}`;
+  roundMetadataWithProgramContractAddress: {} | undefined;
+  applicationQuestions: {};
+  round: Round;
+  roundCategory: RoundCategory;
+};
+function constructCreateRoundArgs(round: ConstructCreateRoundArgs) {
+  let abiType = parseAbiParameters([
+    "(address votingStrategy, address payoutStrategy)",
+    "(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime)",
+    "uint256",
+    "address",
+    "uint8",
+    "address",
+    "((uint256 protocol, string pointer), (uint256 protocol, string pointer))",
+    "(address[] adminRoles, address[] roundOperators)",
+  ]);
+  return encodeAbiParameters(abiType, [
+    {
+      votingStrategy: round.votingStrategyFactory,
+      payoutStrategy: round.payoutStrategyFactory,
+    },
+  ]);
 }

@@ -73,17 +73,17 @@ export interface MetadataPointer {
   pointer: string;
 }
 
-export interface Requirement {
+export type Requirement = {
   // Requirement for the round
   requirement?: string;
-}
+};
 
-export interface Eligibility {
+export type Eligibility = {
   // Eligibility for the round
   description: string;
   // Requirements for the round
   requirements?: Requirement[];
-}
+};
 
 export interface Round {
   /**

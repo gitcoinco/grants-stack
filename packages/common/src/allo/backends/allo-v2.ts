@@ -1,21 +1,21 @@
 import { Address, Hex } from "viem";
 import { Allo, AlloError, AlloOperation } from "../allo";
 import {
-  TransactionReceipt,
-  TransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
+  TransactionReceipt,
+  TransactionSender,
 } from "../transaction-sender";
-import { Result, error, success } from "../common";
+import { error, Result, success } from "../common";
 import RegistryABI from "../abis/allo-v2/Registry";
 import { IpfsUploader } from "../ipfs";
 import { WaitUntilIndexerSynced } from "../indexer";
 
 import {
-  TransactionData,
   CreateProfileArgs,
+  TransactionData,
 } from "@allo-team/allo-v2-sdk/dist/types";
-import { Registry, Allo as AlloV2Contract } from "@allo-team/allo-v2-sdk/";
+import { Allo as AlloV2Contract, Registry } from "@allo-team/allo-v2-sdk/";
 import { AnyJson } from "../..";
 import { CreateRoundData } from "../../types";
 
@@ -196,10 +196,10 @@ export class AlloV2 implements Allo {
     });
   }
 
-  createRound!: (args: { rounddata: CreateRoundData }) => AlloOperation<
+  createRound!: (args: { roundData: CreateRoundData }) => AlloOperation<
     Result<{ roundId: Hex }>,
     {
-      ipfs: Result<string>;
+      roundMetadataIpfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
     }

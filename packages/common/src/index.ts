@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { useMemo, useState } from "react";
 import { ChainId } from "./chain-ids";
 import z from "zod";
+
 export * from "./icons";
 export * from "./markdown";
 
@@ -412,7 +413,14 @@ export {
   getCurrentSubgraphBlockNumber,
 } from "./allo/indexer";
 
-export type AnyJson = boolean | number | string | null | JsonArray | JsonMap;
+export type AnyJson =
+  | boolean
+  | number
+  | string
+  | null
+  | undefined
+  | JsonArray
+  | JsonMap;
 interface JsonMap {
   [key: string]: AnyJson;
 }
