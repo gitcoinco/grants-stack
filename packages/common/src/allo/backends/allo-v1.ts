@@ -2,6 +2,7 @@ import {
   Address,
   encodeAbiParameters,
   encodePacked,
+  getAddress,
   Hex,
   keccak256,
   maxUint256,
@@ -49,12 +50,12 @@ function createProjectId(args: {
 }
 
 export class AlloV1 implements Allo {
-  private projectRegistryAddress: Address;
-  private roundFactoryAddress: Address;
-  private transactionSender: TransactionSender;
-  private ipfsUploader: IpfsUploader;
-  private waitUntilIndexerSynced: WaitUntilIndexerSynced;
-  private chainId: ChainId;
+  private readonly projectRegistryAddress: Address;
+  private readonly roundFactoryAddress: Address;
+  private readonly transactionSender: TransactionSender;
+  private readonly ipfsUploader: IpfsUploader;
+  private readonly waitUntilIndexerSynced: WaitUntilIndexerSynced;
+  private readonly chainId: ChainId;
 
   constructor(args: {
     chainId: number;
@@ -198,7 +199,7 @@ export class AlloV1 implements Allo {
     });
   }
 
-  // create round
+  /** Creates a round on Allo v1*/
   createRound(args: { roundData: CreateRoundData }): AlloOperation<
     Result<{ roundId: Hex }>,
     {
@@ -239,18 +240,18 @@ export class AlloV1 implements Allo {
         return applicationMetadataIpfsResult;
       }
 
-      let initRoundTimes: string[] = [];
-      const formatDate = (date: Date) => (date.getTime() / 1000).toString();
+      let initRoundTimes: bigint[] = [];
+
       if (isQF) {
         if (args.roundData.round.applicationsEndTime === undefined) {
           args.roundData.round.applicationsEndTime =
             args.roundData.round.roundStartTime;
         }
         initRoundTimes = [
-          formatDate(args.roundData.round.applicationsStartTime),
-          formatDate(args.roundData.round.applicationsEndTime),
-          formatDate(args.roundData.round.roundStartTime),
-          formatDate(args.roundData.round.roundEndTime),
+          dateToBigInt(args.roundData.round.applicationsStartTime),
+          dateToBigInt(args.roundData.round.applicationsEndTime),
+          dateToBigInt(args.roundData.round.roundStartTime),
+          dateToBigInt(args.roundData.round.roundEndTime),
         ];
       } else {
         // note: DirectRounds does not set application dates.
@@ -260,19 +261,19 @@ export class AlloV1 implements Allo {
         // if the round has not end time, we set it with MaxUint256.
 
         initRoundTimes = [
-          formatDate(
+          dateToBigInt(
             args.roundData.round.applicationsStartTime ??
               args.roundData.round.roundStartTime
           ),
           args.roundData.round.applicationsEndTime
-            ? formatDate(args.roundData.round.applicationsEndTime)
-            : args.roundData.round.roundEndTime
-            ? formatDate(args.roundData.round.roundEndTime)
-            : maxUint256.toString(),
-          formatDate(args.roundData.round.roundStartTime),
+            ? dateToBigInt(args.roundData.round.applicationsEndTime)
+            : dateToBigInt(args.roundData.round.roundEndTime)
+            ? dateToBigInt(args.roundData.round.roundEndTime)
+            : maxUint256,
+          dateToBigInt(args.roundData.round.roundStartTime),
           args.roundData.round.roundEndTime
-            ? formatDate(args.roundData.round.roundEndTime)
-            : maxUint256.toString(),
+            ? dateToBigInt(args.roundData.round.roundEndTime)
+            : maxUint256,
         ];
       }
 
@@ -309,7 +310,15 @@ export class AlloV1 implements Allo {
         address: this.roundFactoryAddress,
         abi: RoundFactoryABI,
         functionName: "createRound",
-        args: constructCreateRoundArgs(roundContractInputsWithPointers),
+        args: [
+          constructCreateRoundArgs({
+            round: roundContractInputsWithPointers,
+            initTimes: initRoundTimes,
+            matchingAmount: parsedTokenAmount,
+            operators: [],
+            admins: [],
+          }),
+        ],
       });
 
       emit("transaction", txResult);
@@ -353,27 +362,49 @@ type ConstructCreateRoundArgs = {
   applicationStore: { protocol: bigint; pointer: string };
   votingStrategyFactory: `0x${string}`;
   payoutStrategyFactory: `0x${string}`;
-  roundMetadataWithProgramContractAddress: {} | undefined;
+  roundMetadataWithProgramContractAddress?: {};
   applicationQuestions: {};
   round: Round;
   roundCategory: RoundCategory;
 };
 
-function constructCreateRoundArgs(round: ConstructCreateRoundArgs) {
+function constructCreateRoundArgs({
+  round,
+  initTimes,
+  matchingAmount,
+  operators,
+  admins,
+}: {
+  round: ConstructCreateRoundArgs;
+  initTimes: bigint[];
+  matchingAmount: bigint;
+  operators: Address[];
+  admins: Address[];
+}) {
   let abiType = parseAbiParameters([
-    "(address votingStrategy, address payoutStrategy)",
-    "(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime)",
-    "uint256",
-    "address",
-    "uint8",
-    "address",
-    "((uint256 protocol, string pointer), (uint256 protocol, string pointer))",
-    "(address[] adminRoles, address[] roundOperators)",
+    "(address votingStrategy, address payoutStrategy),(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime),uint256,address,uint8,address,((uint256 protocol, string pointer), (uint256 protocol, string pointer)),(address[] adminRoles, address[] roundOperators)",
   ]);
   return encodeAbiParameters(abiType, [
     {
       votingStrategy: round.votingStrategyFactory,
       payoutStrategy: round.payoutStrategyFactory,
     },
+    {
+      applicationsStartTime: initTimes[0],
+      applicationsEndTime: initTimes[1],
+      roundStartTime: initTimes[2],
+      roundEndTime: initTimes[3],
+    },
+    matchingAmount,
+    getAddress(round.round.token),
+    0,
+    zeroAddress,
+    [round.store, round.applicationStore],
+    {
+      roundOperators: operators,
+      adminRoles: admins,
+    },
   ]);
 }
+
+const dateToBigInt = (date: Date) => BigInt(Math.floor(date.getTime() / 1000));
