@@ -4,7 +4,10 @@ import {
   encodePacked,
   Hex,
   keccak256,
+  maxUint256,
   parseAbiParameters,
+  parseUnits,
+  zeroAddress,
 } from "viem";
 import { Allo, AlloError, AlloOperation } from "../allo";
 import {
@@ -30,6 +33,7 @@ import {
   roundFactoryMap,
 } from "../addresses/allo-v1";
 import { Round } from "data-layer";
+import { payoutTokens } from "../../payoutTokens";
 
 function createProjectId(args: {
   chainId: number;
@@ -235,6 +239,57 @@ export class AlloV1 implements Allo {
         return applicationMetadataIpfsResult;
       }
 
+      let initRoundTimes: string[] = [];
+      const formatDate = (date: Date) => (date.getTime() / 1000).toString();
+      if (isQF) {
+        if (args.roundData.round.applicationsEndTime === undefined) {
+          args.roundData.round.applicationsEndTime =
+            args.roundData.round.roundStartTime;
+        }
+        initRoundTimes = [
+          formatDate(args.roundData.round.applicationsStartTime),
+          formatDate(args.roundData.round.applicationsEndTime),
+          formatDate(args.roundData.round.roundStartTime),
+          formatDate(args.roundData.round.roundEndTime),
+        ];
+      } else {
+        // note: DirectRounds does not set application dates.
+        // in those cases, we set:
+        // application start time with the round start time
+        // application end time with MaxUint256.
+        // if the round has not end time, we set it with MaxUint256.
+
+        initRoundTimes = [
+          formatDate(
+            args.roundData.round.applicationsStartTime ??
+              args.roundData.round.roundStartTime
+          ),
+          args.roundData.round.applicationsEndTime
+            ? formatDate(args.roundData.round.applicationsEndTime)
+            : args.roundData.round.roundEndTime
+            ? formatDate(args.roundData.round.roundEndTime)
+            : maxUint256.toString(),
+          formatDate(args.roundData.round.roundStartTime),
+          args.roundData.round.roundEndTime
+            ? formatDate(args.roundData.round.roundEndTime)
+            : maxUint256.toString(),
+        ];
+      }
+
+      let parsedTokenAmount = 0n;
+
+      if (isQF) {
+        // Ensure tokenAmount is normalized to token decimals
+        const tokenAmount =
+          args.roundData.round.roundMetadata?.quadraticFundingConfig
+            ?.matchingFundsAvailable ?? 0;
+        const pyToken = payoutTokens.filter(
+          (t) =>
+            t.address.toLowerCase() === args.roundData.round.token.toLowerCase()
+        )[0];
+        parsedTokenAmount = parseUnits(tokenAmount.toString(), pyToken.decimal);
+      }
+
       const roundContractInputsWithPointers = {
         ...args.roundData,
         store: {
@@ -303,6 +358,7 @@ type ConstructCreateRoundArgs = {
   round: Round;
   roundCategory: RoundCategory;
 };
+
 function constructCreateRoundArgs(round: ConstructCreateRoundArgs) {
   let abiType = parseAbiParameters([
     "(address votingStrategy, address payoutStrategy)",
