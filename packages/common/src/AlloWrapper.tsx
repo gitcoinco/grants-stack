@@ -7,10 +7,9 @@ import {
   waitForSubgraphSyncTo,
   createEthersTransactionSender,
   AlloV1,
-} from "common";
+} from "./";
 import { useNetwork, useProvider, useSigner } from "wagmi";
-import { getConfig } from "common/src/config";
-import { addressesByChainID } from "../contracts/deployments";
+import { getConfig } from "./config";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -28,7 +27,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       // const alloBackend: Allo = new AlloV2({
       //   chainId: chainID,
       //   transactionSender: createEthersTransactionSender(signer, web3Provider),
-      //   projectRegistryAddress: "0x0000000000000000000000000000000000000000",
       //   ipfsUploader: createPinataIpfsUploader({
       //     token: getConfig().pinata.jwt,
       //     endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
@@ -36,12 +34,9 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       //   waitUntilIndexerSynced: waitForSubgraphSyncTo,
       // });
 
-      const addresses = addressesByChainID(chainID!);
-
       const alloBackend: Allo = new AlloV1({
         chainId: chainID,
         transactionSender: createEthersTransactionSender(signer, web3Provider),
-        projectRegistryAddress: addresses?.projectRegistry! as `0x${string}`,
         ipfsUploader: createPinataIpfsUploader({
           token: getConfig().pinata.jwt,
           endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,

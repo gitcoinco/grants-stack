@@ -7,6 +7,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
 import { WagmiConfig } from "wagmi";
+import AlloWrapper from "common/src/AlloWrapper";
 import "./browserPatches";
 import PageNotFound from "./components/base/PageNotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -26,7 +27,6 @@ import "./styles/index.css";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
 import initTagmanager from "./tagmanager";
-import AlloWrapper from "./components/AlloWrapper";
 
 const store = setupStore();
 const root = ReactDOM.createRoot(
