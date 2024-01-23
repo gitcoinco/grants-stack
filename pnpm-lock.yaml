@@ -506,7 +506,7 @@ importers:
         version: 5.0.1(eslint-config-prettier@9.0.0)(eslint@8.50.0)(prettier@3.0.3)
       eslint-plugin-vitest:
         specifier: ^0.3.10
-        version: 0.3.10(@typescript-eslint/eslint-plugin@6.7.2)(eslint@8.50.0)(typescript@5.3.2)(vitest@0.34.6)
+        version: 0.3.20(@typescript-eslint/eslint-plugin@6.7.2)(eslint@8.50.0)(typescript@5.3.2)(vitest@0.34.6)
       leasot:
         specifier: ^13.3.0
         version: 13.3.0
@@ -1154,7 +1154,6 @@ importers:
         version: 5.2.2
       vitest:
         specifier: ^0.34.2
-        version: 0.34.3(happy-dom@11.0.2)
         version: 0.34.3(happy-dom@11.0.2)
 
 packages:
@@ -8647,6 +8646,35 @@ packages:
       - zod
     dev: false
 
+  /@wagmi/core@0.10.17(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4):
+    resolution: {integrity: sha512-qud45y3IlHp7gYWzoFeyysmhyokRie59Xa5tcx5F1E/v4moD5BY0kzD26mZW/ZQ3WZuVK/lZwiiPRqpqWH52Gw==}
+    peerDependencies:
+      ethers: '>=5.5.1 <6'
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@wagmi/chains': 0.2.22(typescript@5.3.3)
+      '@wagmi/connectors': 0.3.24(@wagmi/core@0.10.17)(ethers@5.7.2)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
+      abitype: 0.3.0(typescript@5.3.3)(zod@3.22.4)
+      ethers: 5.7.2
+      eventemitter3: 4.0.7
+      typescript: 5.3.3
+      zustand: 4.4.1(@types/react@18.2.21)(react@18.2.0)
+    transitivePeerDependencies:
+      - '@react-native-async-storage/async-storage'
+      - '@types/react'
+      - bufferutil
+      - encoding
+      - immer
+      - lokijs
+      - react
+      - supports-color
+      - utf-8-validate
+      - zod
+    dev: false
+
   /@wagmi/core@1.4.1(@types/react@18.2.21)(react@18.2.0)(typescript@5.2.2)(viem@1.10.7)(zod@3.22.4):
     resolution: {integrity: sha512-b6LDFL0vZSCNcIHjnJzv++hakavTTt1/2WEQg2S5eEnaHTp7UoQlwfCyjKeiBhRih4yF34N06ea8cyEVjyjXrw==}
     peerDependencies:
@@ -13476,9 +13504,9 @@ packages:
       eslint: 8.50.0
     dev: false
 
-  /eslint-plugin-vitest@0.3.10(@typescript-eslint/eslint-plugin@6.7.2)(eslint@8.50.0)(typescript@5.3.2)(vitest@0.34.6):
-    resolution: {integrity: sha512-08lj4rdhZHYyHk+Py2nJ7SlE6arP8GNfGXl9jVqhe9s5JoZIGiBpIkLGX+VNBiB6vXTn56H6Ant7Koc6XzRjtQ==}
-    engines: {node: 14.x || >= 16}
+  /eslint-plugin-vitest@0.3.20(@typescript-eslint/eslint-plugin@6.7.2)(eslint@8.50.0)(typescript@5.3.2)(vitest@0.34.6):
+    resolution: {integrity: sha512-O05k4j9TGMOkkghj9dRgpeLDyOSiVIxQWgNDPfhYPm5ioJsehcYV/zkRLekQs+c8+RBCVXucSED3fYOyy2EoWA==}
+    engines: {node: ^18.0.0 || >= 20.0.0}
     peerDependencies:
       '@typescript-eslint/eslint-plugin': '*'
       eslint: '>=8.0.0'
@@ -25299,7 +25327,3 @@ packages:
     dependencies:
       '@types/node': 18.17.14
     dev: false
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
