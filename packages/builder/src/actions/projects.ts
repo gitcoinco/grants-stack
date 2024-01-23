@@ -1,4 +1,5 @@
 import { DataLayer, ProjectEventsMap } from "data-layer";
+import { getConfig } from "common/src/config";
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
 import {
@@ -182,6 +183,7 @@ export const loadProjects =
         address: account!,
         chainId: chainID,
         role: "OWNER",
+        alloVersion: getConfig().allo.version,
       });
 
       if (!projectEventsMap) {

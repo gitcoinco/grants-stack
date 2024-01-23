@@ -25,6 +25,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     if (!web3Provider || !signer || !chainID) {
       setBackend(null);
     } else {
+      // todo: if v2: load this
       // const alloBackend: Allo = new AlloV2({
       //   chainId: chainID,
       //   transactionSender: createEthersTransactionSender(signer, web3Provider),

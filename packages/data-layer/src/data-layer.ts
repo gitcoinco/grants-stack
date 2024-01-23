@@ -173,9 +173,6 @@ export class DataLayer {
       role,
     };
 
-    // todo: how to handle alloVersion?
-    console.log("dl: alloVersion", alloVersion);
-
     const response: any = await request(
       this.gsIndexerEndpoint,
       getProjectsByAddress,
@@ -191,7 +188,9 @@ export class DataLayer {
     for (const projectRole of projectRoles) {
       const project = projectRole.project;
       projectEventsMap[
-        `${project.chainId}:${project.registryAddress}:${project.projectNumber}`
+        `${project.chainId}:${project.registryAddress}:${
+          alloVersion === "allo-v2" ? project.id : project.projectNumber
+        }`
       ] = {
         createdAtBlock: Number(project.createdAtBlock),
         updatedAtBlock: Number(project.createdAtBlock), // todo: fix once updatedAtBlock is available

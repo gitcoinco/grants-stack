@@ -12,6 +12,11 @@ function parseStringToBoolean(value: string) {
   return false;
 }
 
+export enum AlloVersion {
+  v1 = "allo-v1",
+  v2 = "allo-v2",
+}
+
 export type Config = {
   appEnv: "development" | "test" | "production";
   ipfs: {
@@ -33,6 +38,9 @@ export type Config = {
   };
   explorer: {
     disableEstimates: boolean;
+  };
+  allo: {
+    version: string;
   };
 };
 
@@ -145,6 +153,12 @@ export function getConfig(): Config {
           .default("false")
           .parse(process.env.REACT_APP_EXPLORER_DISABLE_MATCHING_ESTIMATES)
       ),
+    },
+    allo: {
+      version: z
+        .string()
+        .default(AlloVersion.v1)
+        .parse(process.env.REACT_APP_ALLO_VERSION),
     },
   };
 

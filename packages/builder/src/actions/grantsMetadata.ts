@@ -79,9 +79,9 @@ export const fetchGrantData =
 
     try {
       const result = await dataLayer.getProjectById({
-        projectId: getV1HashedProjectId(id),
+        projectId: getV1HashedProjectId(id), // todo: v2? => v2 project id
         chainId: Number(chainId),
-        alloVersion: "allo-v1",
+        alloVersion: "allo-v1", // todo: update hardcoded versions to getConfig
       });
 
       if (!result?.project) {
