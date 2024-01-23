@@ -198,9 +198,10 @@ export class AlloV2 implements Allo {
   createRound!: (args: { roundData: CreateRoundData }) => AlloOperation<
     Result<{ roundId: Hex }>,
     {
-      roundMetadataIpfs: Result<string>;
+      ipfsStatus: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 }

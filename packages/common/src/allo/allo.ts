@@ -78,10 +78,10 @@ export interface Allo {
   createRound: (args: { roundData: CreateRoundData }) => AlloOperation<
     Result<{ roundId: Hex }>,
     {
-      roundMetadataIpfs: Result<string>;
-      applicationMetadataIpfs?: Result<string>;
+      ipfsStatus: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 }

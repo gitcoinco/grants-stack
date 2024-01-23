@@ -90,9 +90,11 @@
     "url": "^0.11.0",
     "util": "^0.12.4",
     "verify-env": "*",
+    "viem": "^2.5.0",
     "wagmi": "0.12.18",
     "web-vitals": "^2.1.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "zustand": "^4.4.0"
   },
   "jest": {
     "transformIgnorePatterns": [

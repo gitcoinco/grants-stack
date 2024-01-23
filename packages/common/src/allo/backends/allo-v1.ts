@@ -35,7 +35,6 @@ import {
 } from "../addresses/allo-v1";
 import { Round } from "data-layer";
 import { payoutTokens } from "../../payoutTokens";
-import { Signer } from "ethers";
 
 function createProjectId(args: {
   chainId: number;
@@ -204,10 +203,10 @@ export class AlloV1 implements Allo {
   createRound(args: { roundData: CreateRoundData }): AlloOperation<
     Result<{ roundId: Hex }>,
     {
-      applicationMetadataIpfs: Result<string>;
-      roundMetadataIpfs: Result<string>;
+      ipfsStatus: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -222,16 +221,22 @@ export class AlloV1 implements Allo {
         : directPayoutStrategyFactoryContractMap[this.chainId];
 
       // --- upload metadata to IPFS
-      const roundIpfsResult = await this.ipfsUploader(
-        args.roundData.roundMetadataWithProgramContractAddress
-      );
+      const [roundIpfsResult, applicationMetadataIpfsResult] =
+        await Promise.all([
+          this.ipfsUploader(
+            args.roundData.roundMetadataWithProgramContractAddress
+          ),
+          this.ipfsUploader(args.roundData.applicationQuestions),
+        ]);
 
-      const applicationMetadataIpfsResult = await this.ipfsUploader(
-        args.roundData.applicationQuestions
+      emit(
+        "ipfsStatus",
+        [roundIpfsResult, applicationMetadataIpfsResult].every(
+          (status) => status.type === "success"
+        )
+          ? success("")
+          : error(new Error("ipfs error"))
       );
-
-      emit("roundMetadataIpfs", roundIpfsResult);
-      emit("applicationMetadataIpfs", applicationMetadataIpfsResult);
 
       if (roundIpfsResult.type === "error") {
         return roundIpfsResult;
@@ -359,6 +364,8 @@ export class AlloV1 implements Allo {
         chainId: this.chainId,
         blockNumber: receipt.blockNumber,
       });
+
+      emit("indexingStatus", success(void 0));
 
       const roundCreatedEvent = decodeEventFromReceipt({
         abi: RoundFactoryABI,
