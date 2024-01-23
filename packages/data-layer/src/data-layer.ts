@@ -2,7 +2,13 @@ import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import shuffle from "knuth-shuffle-seeded";
 import _fetch from "cross-fetch";
 import { VerifiableCredential as PassportVerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { Round, RoundOverview, TimestampVariables } from "./data.types";
+import {
+  Collection,
+  Round,
+  RoundOverview,
+  TimestampVariables,
+  SearchBasedProjectCategory,
+} from "./data.types";
 import {
   SearchResult,
   DefaultApi as SearchApi,
@@ -10,6 +16,8 @@ import {
   ApplicationSummary,
 } from "./openapi-search-client/index";
 import * as legacy from "./backends/legacy";
+import * as categories from "./backends/categories";
+import * as collections from "./backends/collections";
 import { PaginationInfo } from "./data-layer.types";
 
 export class DataLayer {
@@ -18,6 +26,7 @@ export class DataLayer {
   private subgraphEndpointsByChainId: Record<number, string>;
   private ipfsGateway: string;
   private passportVerifier: PassportVerifier;
+  private collectionsSource: collections.CollectionsSource;
 
   constructor({
     fetch,
@@ -25,6 +34,7 @@ export class DataLayer {
     subgraph,
     ipfs,
     passport,
+    collections,
   }: {
     fetch?: typeof _fetch;
     search: {
@@ -41,6 +51,9 @@ export class DataLayer {
     passport?: {
       verifier: PassportVerifier;
     };
+    collections?: {
+      googleSheetsUrl: string;
+    };
   }) {
     this.searchApiClient = new SearchApi(
       new SearchApiConfiguration({
@@ -50,8 +63,12 @@ export class DataLayer {
     );
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
-    this.ipfsGateway = ipfs?.gateway ?? "ipfs.io";
+    this.ipfsGateway = ipfs?.gateway ?? "https://ipfs.io";
     this.passportVerifier = passport?.verifier ?? new PassportVerifier();
+    this.collectionsSource =
+      collections?.googleSheetsUrl === undefined
+        ? { type: "hardcoded" }
+        : { type: "google-sheet", url: collections.googleSheetsUrl };
   }
 
   async searchApplications({
@@ -219,5 +236,27 @@ export class DataLayer {
     return {
       isVerified: await this.passportVerifier.verifyCredential(credential),
     };
+  }
+
+  async getProjectCollections(): Promise<Collection[]> {
+    return await collections.getCollections({
+      source: this.collectionsSource,
+    });
+  }
+
+  async getProjectCollectionById(id: string): Promise<Collection | null> {
+    return await collections.getCollectionById(id, {
+      source: this.collectionsSource,
+    });
+  }
+
+  async getSearchBasedCategories(): Promise<SearchBasedProjectCategory[]> {
+    return await categories.getSearchBasedCategories();
+  }
+
+  async getSearchBasedCategoryById(
+    id: string,
+  ): Promise<SearchBasedProjectCategory | null> {
+    return await categories.getSearchBasedCategoryById(id);
   }
 }

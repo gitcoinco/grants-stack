@@ -1,12 +1,15 @@
 import {
   Address,
+  EncodeFunctionDataParameters,
   GetEventArgs,
   Hex,
+  Log,
   PublicClient,
   WalletClient,
   decodeEventLog,
   encodeEventTopics,
   encodeFunctionData,
+  zeroAddress,
 } from "viem";
 import ethers from "ethers";
 import { Abi, ExtractAbiEventNames } from "abitype";
@@ -33,6 +36,7 @@ export interface TransactionReceipt {
 export interface TransactionSender {
   send(tx: TransactionData): Promise<Hex>;
   wait(txHash: Hex): Promise<TransactionReceipt>;
+  address(): Promise<Address>;
 }
 
 export function decodeEventFromReceipt<
@@ -102,6 +106,10 @@ export function createEthersTransactionSender(
         })),
       };
     },
+
+    async address(): Promise<Address> {
+      return (await signer.getAddress()) as Address;
+    },
   };
 }
 
@@ -111,10 +119,15 @@ export function createViemTransactionSender(
 ): TransactionSender {
   return {
     async send(tx: TransactionData): Promise<Hex> {
-      const [address] = await walletClient.getAddresses();
+      const account = walletClient.account;
+
+      if (!account)
+        throw new Error(
+          "createViemTransactionSender: walletClient.account is undefined"
+        );
 
       const transactionHash = await walletClient.sendTransaction({
-        account: address,
+        account: account,
         to: tx.to,
         data: tx.data,
         value: tx.value,
@@ -133,11 +146,19 @@ export function createViemTransactionSender(
         transactionHash: receipt.transactionHash,
         blockHash: receipt.blockHash,
         blockNumber: receipt.blockNumber,
-        logs: receipt.logs.map((log) => ({
+        logs: receipt.logs.map((log: Log) => ({
           data: log.data,
           topics: log.topics,
         })),
       };
+    },
+
+    async address(): Promise<Address> {
+      if (!walletClient.account || !walletClient.account.address) {
+        throw new Error("createViemTransactionSender: address is undefined");
+      }
+
+      return walletClient?.account?.address;
     },
   };
 }
@@ -189,7 +210,29 @@ export function createMockTransactionSender(): TransactionSender & {
         logs: [],
       };
     },
+
+    async address(): Promise<Address> {
+      return zeroAddress;
+    },
   };
+}
+
+export async function sendRawTransaction(
+  sender: TransactionSender,
+  args: TransactionData
+): Promise<Result<Hex>> {
+  try {
+    const tx = await sender.send({
+      to: args.to,
+      data: args.data,
+      value: args.value,
+    });
+    return success(tx);
+  } catch (err) {
+    return error(
+      new AlloError(`Failed to send raw transaction: ${String(err)}`, err)
+    );
+  }
 }
 
 export async function sendTransaction(

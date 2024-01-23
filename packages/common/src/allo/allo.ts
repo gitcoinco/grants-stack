@@ -2,6 +2,7 @@ import { Hex } from "viem";
 import { AlloOperation } from "./operation";
 import { Result } from "./common";
 import { TransactionReceipt } from "./transaction-sender";
+import { AnyJson } from "..";
 
 /**
  * Represents the common interface for interacting with Allo contracts.
@@ -52,9 +53,18 @@ import { TransactionReceipt } from "./transaction-sender";
  * ```
  */
 export interface Allo {
-  createProject: (args: {
-    name: string;
-    metadata: Record<string, unknown>;
+  createProject: (args: { name: string; metadata: AnyJson }) => AlloOperation<
+    Result<{ projectId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  >;
+
+  updateProjectMetadata: (args: {
+    projectId: Hex;
+    metadata: AnyJson;
   }) => AlloOperation<
     Result<{ projectId: Hex }>,
     {

@@ -1,3 +1,4 @@
+import { useAllo } from "common";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -54,10 +55,12 @@ export default function Preview({
     dispatch(resetStatus());
   };
 
+  const allo = useAllo();
+
   const publishProject = async () => {
     setSubmitted(true);
     showModal(true);
-    dispatch(publishGrant(currentProjectId));
+    dispatch(publishGrant(allo, currentProjectId));
   };
 
   const navigate = useNavigate();

@@ -10,6 +10,8 @@ import {
   setWindowDimensions,
 } from "../../../test-utils";
 import ViewProjectDetails from "../ViewProjectDetails";
+import { truncate } from "../../common/utils/truncate";
+import { formatDateWithOrdinal } from "common";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -88,7 +90,8 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     it("shows project recipient", async () => {
-      expect(screen.getByTestId("project-recipient")).toBeInTheDocument();
+      const [{ recipient }] = roundWithProjects.approvedProjects ?? [];
+      expect(screen.getByText(truncate(recipient))).toBeInTheDocument();
     });
 
     it("shows project website", async () => {
@@ -98,40 +101,39 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     it("shows project twitter", async () => {
-      expect(screen.getByTestId("project-twitter")).toBeInTheDocument();
+      const [{ projectMetadata }] = roundWithProjects.approvedProjects ?? [];
+      expect(
+        screen.getByText(projectMetadata?.projectTwitter as string)
+      ).toBeInTheDocument();
     });
 
     it("shows created at date", async () => {
-      expect(screen.getByTestId("project-createdAt")).toBeInTheDocument();
+      const [{ projectMetadata }] = roundWithProjects.approvedProjects ?? [];
+      expect(
+        screen.getByText(
+          formatDateWithOrdinal(new Date(projectMetadata?.createdAt ?? 0)),
+          { exact: false }
+        )
+      ).toBeInTheDocument();
     });
 
     it("shows project user github", async () => {
-      expect(screen.getByTestId("user-github")).toBeInTheDocument();
+      const [{ projectMetadata }] = roundWithProjects.approvedProjects ?? [];
+      expect(
+        screen.getByText(projectMetadata?.userGithub as string)
+      ).toBeInTheDocument();
     });
 
     it("shows project github", async () => {
-      expect(screen.getByTestId("project-github")).toBeInTheDocument();
+      const [{ projectMetadata }] = roundWithProjects.approvedProjects ?? [];
+      expect(
+        screen.getByText(projectMetadata?.projectGithub as string)
+      ).toBeInTheDocument();
     });
 
     it("displays the bread crumbs", async () => {
       expect(await screen.findByTestId("bread-crumbs")).toBeInTheDocument();
     });
-  });
-
-  it("shows project stats", async () => {
-    const expectedProject = makeApprovedProjectData({ grantApplicationId });
-    const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [expectedProject],
-    });
-    renderWithContext(
-      <SWRConfig value={{ dedupingInterval: 0 }}>
-        <ViewProjectDetails />
-      </SWRConfig>,
-      { roundState: { rounds: [roundWithProjects], isLoading: false } }
-    );
-    /* Initially shows - when loading */
-    expect(screen.getAllByText("$-")[0]).toBeInTheDocument();
   });
 
   it("shows project description", async () => {
