@@ -110,19 +110,23 @@ border-b-4
 border-blue-100
 gap-4
 `;
-export const Tab = tw(Link)<{ active?: boolean }>`
-py-3
-px-6
-border-b-4
-border-blue-100
-rounded-t-2xl
--mb-1
-${(props) =>
-  props.active
-    ? `
-font-bold
-bg-blue-100
-border-orange-100
-`
-    : ""}
-`;
+
+export const Tab = ({
+  active,
+  ...linkProps
+}: React.ComponentProps<typeof Link> & { active: boolean }) => {
+  return (
+    <Link
+      className={`
+  py-3
+  px-6
+  border-b-4
+  border-blue-100
+  rounded-t-2xl
+  -mb-1
+  ${active ? `font-bold bg-blue-100 border-orange-100` : ""}
+  `}
+      {...linkProps}
+    />
+  );
+};

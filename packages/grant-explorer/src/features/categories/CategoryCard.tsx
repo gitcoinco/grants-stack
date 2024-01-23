@@ -1,9 +1,9 @@
+import { SearchBasedProjectCategory } from "data-layer";
 import { BasicCard, CardContent, CardHeader } from "../common/styles";
 import { CategoryBanner } from "../discovery/CardBanner";
-import { Category } from "./hooks/useCategories";
 
 type CategoryCardProps = {
-  category: Category;
+  category: SearchBasedProjectCategory;
   isLoading?: boolean;
 };
 

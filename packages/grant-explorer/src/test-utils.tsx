@@ -151,7 +151,7 @@ export function generateIpfsCid() {
 }
 
 export const renderWithContext = (
-  ui: JSX.Element,
+  ui: React.ReactNode,
   overrides?: {
     dispatch?: () => void;
     dataLayer?: DataLayer;
@@ -162,6 +162,53 @@ export const renderWithContext = (
   const dataLayerMock =
     overrides?.dataLayer ??
     ({
+      getSearchBasedProjectCategories: vi.fn().mockResolvedValue([
+        {
+          id: "open-source",
+          name: "Open source",
+          images: [
+            "/assets/categories/category_01.jpg",
+            "/assets/categories/category_02.jpg",
+            "/assets/categories/category_03.jpg",
+            "/assets/categories/category_04.jpg",
+          ],
+          searchQuery: "open source, open source software",
+        },
+      ]),
+      getProjectCollections: vi.fn().mockResolvedValue([
+        {
+          id: "first-time-grantees",
+          author: "Gitcoin",
+          name: "First Time Grantees",
+          images: [
+            "/assets/collections/collection_01.jpg",
+            "/assets/collections/collection_02.jpg",
+            "/assets/collections/collection_03.jpg",
+            "/assets/collections/collection_04.jpg",
+          ],
+          description:
+            "This collection showcases all grantees in GG19 that have not participated in a past round on Grants Stack! Give these first-time grantees some love (and maybe some donations, too!).",
+          applicationRefs: [
+            "10:0x36f548e082b09b0cec5b3f5a7b78953c75de5e74:2",
+            "10:0x36f548e082b09b0cec5b3f5a7b78953c75de5e74:8",
+          ],
+        },
+        {
+          id: "grants-stack-veterans",
+          author: "Gitcoin",
+          name: "Grants Stack Veterans",
+          images: [
+            "/assets/collections/collection_05.jpg",
+            "/assets/collections/collection_06.jpg",
+          ],
+          description:
+            "This collection showcases all grantees in GG19 that have participated in a past GG18 and/or Beta Round! Give these Grants Stack Veterans some love (and maybe some donations, too!).",
+          applicationRefs: [
+            "10:0x36f548e082b09b0cec5b3f5a7b78953c75de5e74:1",
+            "10:0x4727e3265706c59dbc31e7c518960f4f843bb4da:16",
+          ],
+        },
+      ]),
       getLegacyRoundById: vi.fn().mockResolvedValue({
         round:
           overrides?.roundState?.rounds !== undefined &&

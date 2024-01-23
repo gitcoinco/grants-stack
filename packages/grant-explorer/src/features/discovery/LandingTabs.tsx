@@ -45,7 +45,11 @@ export default function LandingTabs() {
         // Set the data-track-event attribute when the tab is active
         const tabProps = isActive ? { "data-track-event": tab.tabName } : {};
 
-        return <Tab key={tab.to} active={isActive} {...tab} {...tabProps} />;
+        return (
+          <Tab key={tab.to} to={tab.to} active={isActive} {...tabProps}>
+            {tab.children}
+          </Tab>
+        );
       })}
     </Tabs>
   );
