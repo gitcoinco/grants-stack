@@ -330,6 +330,9 @@ importers:
       '@allo-team/allo-v2-sdk':
         specifier: ^1.0.36
         version: 1.0.36(typescript@5.3.3)(zod@3.22.4)
+      '@ethersproject/abstract-signer':
+        specifier: ^5.7.0
+        version: 5.7.0
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
@@ -10365,7 +10368,7 @@ packages:
   /axios@0.21.4(debug@4.3.4):
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2(debug@4.3.4)
+      follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
     dev: true

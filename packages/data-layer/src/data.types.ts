@@ -153,6 +153,10 @@ export interface Round {
    */
   ownedBy: string;
   /**
+   * Addresses of wallets that will have admin privileges to operate the Grant program
+   */
+  operatorWallets?: Array<string>;
+  /**
    * List of projects approved for the round
    */
   approvedProjects?: Project[];

@@ -2,6 +2,9 @@ import useSWR from "swr";
 import { useMemo, useState } from "react";
 import { ChainId } from "./chain-ids";
 import z from "zod";
+import { useOutletContext } from "react-router-dom";
+import { Network, Web3Provider } from "@ethersproject/providers";
+import { Signer } from "@ethersproject/abstract-signer";
 
 export * from "./icons";
 export * from "./markdown";
@@ -425,3 +428,27 @@ interface JsonMap {
   [key: string]: AnyJson;
 }
 interface JsonArray extends Array<AnyJson> {}
+
+/**
+ * Wrapper hook to expose wallet auth information to other components
+ */
+export function useWallet() {
+  return useOutletContext<Web3Instance>();
+}
+
+export interface Web3Instance {
+  /**
+   * Currently selected address in ETH format i.e 0x...
+   */
+  address: string;
+  /**
+   * Chain ID & name of the currently connected network
+   */
+  chain: {
+    id: number;
+    name: string;
+    network: Network;
+  };
+  provider: Web3Provider;
+  signer?: Signer;
+}

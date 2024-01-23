@@ -22,7 +22,7 @@ import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import { IpfsUploader } from "../ipfs";
 import { WaitUntilIndexerSynced } from "../indexer";
-import { AnyJson, ChainId } from "../..";
+import { AnyJson, ChainId, useWallet } from "../..";
 import { CreateRoundData, RoundCategory } from "../../types";
 import { parseChainId } from "../../chains";
 import {
@@ -35,6 +35,7 @@ import {
 } from "../addresses/allo-v1";
 import { Round } from "data-layer";
 import { payoutTokens } from "../../payoutTokens";
+import { Signer } from "ethers";
 
 function createProjectId(args: {
   chainId: number;
@@ -240,13 +241,27 @@ export class AlloV1 implements Allo {
         return applicationMetadataIpfsResult;
       }
 
+      const { signer: walletSigner } = useWallet();
+
       let initRoundTimes: bigint[] = [];
+      let operators: Address[] | undefined = [];
+      let admins: Address[] | undefined = [];
 
       if (isQF) {
         if (args.roundData.round.applicationsEndTime === undefined) {
           args.roundData.round.applicationsEndTime =
             args.roundData.round.roundStartTime;
         }
+
+        args.roundData.round.operatorWallets =
+          args.roundData.round.operatorWallets?.filter((e) => e !== "");
+
+        operators = args.roundData.round.operatorWallets?.map((e) =>
+          getAddress(e)
+        );
+
+        admins = [getAddress((await walletSigner?.getAddress()) ?? "")];
+
         initRoundTimes = [
           dateToBigInt(args.roundData.round.applicationsStartTime),
           dateToBigInt(args.roundData.round.applicationsEndTime),
@@ -315,8 +330,8 @@ export class AlloV1 implements Allo {
             round: roundContractInputsWithPointers,
             initTimes: initRoundTimes,
             matchingAmount: parsedTokenAmount,
-            operators: [],
-            admins: [],
+            operators: operators ?? [],
+            admins: admins ?? [],
           }),
         ],
       });
