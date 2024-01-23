@@ -3,7 +3,6 @@ import {
   VerifiableCredential,
   PROVIDER_ID,
 } from "@gitcoinco/passport-sdk-types";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
