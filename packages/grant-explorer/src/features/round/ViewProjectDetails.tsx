@@ -289,6 +289,7 @@ function ProjectLinks({ project }: { project?: Project }) {
     },
   } = project ?? { projectMetadata: {} };
 
+  // @ts-expect-error Temp until viem (could also cast recipient as Address or update the type)
   const ens = useEnsName({ address: recipient, enabled: Boolean(recipient) });
 
   const verified = useVerifyProject(project);
@@ -638,7 +639,7 @@ async function isVerified(args: {
   const { verifiableCredential, provider, project, dataLayer } = args;
 
   const { isVerified: vcHasValidProof } =
-    await dataLayer.verifyCredential(verifiableCredential);
+    await dataLayer.verifyPassportCredential(verifiableCredential);
 
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(
