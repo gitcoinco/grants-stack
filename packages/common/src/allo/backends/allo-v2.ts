@@ -30,7 +30,6 @@ export class AlloV2 implements Allo {
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
-    projectRegistryAddress: Address; // todo: not used, handled by sdk
     allo: Address;
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;

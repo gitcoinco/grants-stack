@@ -12,7 +12,6 @@ const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
 const waitUntilIndexerSynced = vi.fn().mockResolvedValue(success(null));
 const transactionSender = createMockTransactionSender();
-const projectRegistryAddress = zeroAddress;
 const chainId = 1;
 
 describe("AlloV1", () => {
@@ -20,7 +19,6 @@ describe("AlloV1", () => {
   beforeEach(() => {
     allo = new AlloV1({
       chainId,
-      projectRegistryAddress,
       ipfsUploader,
       transactionSender,
       waitUntilIndexerSynced,
@@ -73,9 +71,6 @@ describe("AlloV1", () => {
     expect(transactionSender.sentTransactions).toHaveLength(1);
     expect(ipfsResult!).toEqual(success("ipfsHash"));
     expect(txResult!).toEqual(success(zeroTxHash));
-    expect(transactionSender.sentTransactions[0].to).toEqual(
-      projectRegistryAddress
-    );
     expect(txStatusResult!).toBeTruthy();
   });
 });
