@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { DefaultLayout } from "../common/DefaultLayout";
+import { GradientLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import { useCartStorage } from "../../store";
@@ -86,12 +86,15 @@ export function ExploreProjectsPage(): JSX.Element {
   const [searchInput, setSearchInput] = useState(urlParams.get("q") ?? "");
   const [searchQuery, setSearchQuery] = useState(urlParams.get("q") ?? "");
 
-  const applicationsFetchOptions = createApplicationFetchOptions({
-    searchQuery,
-    category,
-    collection,
-    filters,
-  });
+  const applicationsFetchOptions =
+    category.isLoading || collection.isLoading
+      ? null
+      : createApplicationFetchOptions({
+          searchQuery,
+          category: category.data,
+          collection: collection.data,
+          filters,
+        });
 
   const {
     applications,
@@ -134,10 +137,10 @@ export function ExploreProjectsPage(): JSX.Element {
 
   if (searchQuery.length > 0) {
     pageTitle = "Search results";
-  } else if (category) {
-    pageTitle = category?.name;
-  } else if (collection) {
-    pageTitle = collection?.name;
+  } else if (category.data !== undefined) {
+    pageTitle = category.data.name;
+  } else if (collection.data !== undefined) {
+    pageTitle = collection.data.name;
   }
 
   const onQueryChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -157,12 +160,12 @@ export function ExploreProjectsPage(): JSX.Element {
   }
 
   return (
-    <DefaultLayout showWalletInteraction>
+    <GradientLayout showWalletInteraction>
       <LandingHero />
 
-      {collection && (
+      {collection.data && (
         <CollectionDetails
-          collection={collection}
+          collection={collection.data}
           projectsInView={applications.length}
           onAddAllApplicationsToCart={() =>
             applications.forEach(addApplicationToCart)
@@ -245,6 +248,6 @@ export function ExploreProjectsPage(): JSX.Element {
           />
         </div>
       </LandingSection>
-    </DefaultLayout>
+    </GradientLayout>
   );
 }

@@ -3,12 +3,16 @@ import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import _fetch from "cross-fetch";
 import { request } from "graphql-request";
 import shuffle from "knuth-shuffle-seeded";
+import * as categories from "./backends/categories";
+import * as collections from "./backends/collections";
 import * as legacy from "./backends/legacy";
 import { PaginationInfo } from "./data-layer.types";
 import {
+  Collection,
   ProjectEventsMap,
   Round,
   RoundOverview,
+  SearchBasedProjectCategory,
   TimestampVariables,
   v2Project,
 } from "./data.types";
@@ -26,6 +30,7 @@ export class DataLayer {
   private subgraphEndpointsByChainId: Record<number, string>;
   private ipfsGateway: string;
   private passportVerifier: PassportVerifier;
+  private collectionsSource: collections.CollectionsSource;
   private gsIndexerEndpoint: string;
 
   constructor({
@@ -35,6 +40,7 @@ export class DataLayer {
     indexer,
     ipfs,
     passport,
+    collections,
   }: {
     fetch?: typeof _fetch;
     search: {
@@ -54,6 +60,9 @@ export class DataLayer {
     passport?: {
       verifier: PassportVerifier;
     };
+    collections?: {
+      googleSheetsUrl: string;
+    };
   }) {
     this.searchApiClient = new SearchApi(
       new SearchApiConfiguration({
@@ -65,6 +74,10 @@ export class DataLayer {
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
     this.ipfsGateway = ipfs?.gateway ?? "https://ipfs.io";
     this.passportVerifier = passport?.verifier ?? new PassportVerifier();
+    this.collectionsSource =
+      collections?.googleSheetsUrl === undefined
+        ? { type: "hardcoded" }
+        : { type: "google-sheet", url: collections.googleSheetsUrl };
     this.gsIndexerEndpoint = indexer.baseUrl;
   }
 
@@ -369,5 +382,27 @@ export class DataLayer {
     return {
       isVerified: await this.passportVerifier.verifyCredential(credential),
     };
+  }
+
+  async getProjectCollections(): Promise<Collection[]> {
+    return await collections.getCollections({
+      source: this.collectionsSource,
+    });
+  }
+
+  async getProjectCollectionById(id: string): Promise<Collection | null> {
+    return await collections.getCollectionById(id, {
+      source: this.collectionsSource,
+    });
+  }
+
+  async getSearchBasedCategories(): Promise<SearchBasedProjectCategory[]> {
+    return await categories.getSearchBasedCategories();
+  }
+
+  async getSearchBasedCategoryById(
+    id: string,
+  ): Promise<SearchBasedProjectCategory | null> {
+    return await categories.getSearchBasedCategoryById(id);
   }
 }

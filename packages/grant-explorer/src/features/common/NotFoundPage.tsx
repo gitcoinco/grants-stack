@@ -10,8 +10,6 @@ export default function NotFoundPage() {
   datadogLogs.logger.info(`====> Route: NotFound`);
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  console.error("displayed 404 page");
-
   return (
     <>
       <Navbar />

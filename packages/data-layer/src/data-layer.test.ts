@@ -1,5 +1,6 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import { getAddress } from "viem";
 import { describe, expect, test, vi } from "vitest";
 import { v2ProjectNew } from ".";
 import { DataLayer } from "./data-layer";
@@ -493,7 +494,7 @@ describe("applications search", () => {
 });
 
 describe("passport verification", () => {
-  test("invokes passport verifier ", async () => {
+  test("invokes passport verifier", async () => {
     const mockPassportVerifier = {
       verifyCredential: vi.fn().mockResolvedValue(true),
     } as unknown as PassportVerifier;
@@ -513,7 +514,7 @@ describe("passport verification", () => {
       },
     } as VerifiableCredential);
 
-    expect(isVerified).toEqual(true);
+    expect(isVerified).toBe(true);
     expect(mockPassportVerifier.verifyCredential).toBeCalledWith({
       "@context": ["https://www.w3.org/2018/credentials/v1"],
       type: ["VerifiableCredential"],
@@ -575,5 +576,107 @@ describe("projects retrieval", () => {
     });
 
     if (data?.projects) expect(data.projects.length).toBeGreaterThan(0);
+  });
+});
+
+describe("categories", () => {
+  test("can be retrieved collectively", async () => {
+    const dataLayer = new DataLayer({
+      search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
+    });
+
+    const categories = await dataLayer.getSearchBasedCategories();
+
+    expect(categories[0]).toMatchObject({
+      id: expect.any(String),
+      name: expect.any(String),
+      images: expect.any(Array),
+      searchQuery: expect.any(String),
+    });
+    expect(categories).toHaveLength(4);
+  });
+
+  test("can be retrieved individually", async () => {
+    const dataLayer = new DataLayer({
+      search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
+    });
+
+    const category = await dataLayer.getSearchBasedCategoryById("open-source");
+
+    expect(category).toMatchObject({
+      id: "open-source",
+      name: "Open source",
+      images: [
+        "/assets/categories/category_01.jpg",
+        "/assets/categories/category_02.jpg",
+        "/assets/categories/category_03.jpg",
+        "/assets/categories/category_04.jpg",
+      ],
+      searchQuery: "open source, open source software",
+    });
+  });
+});
+
+describe("collections", () => {
+  test("can be retrieved collectively", async () => {
+    const dataLayer = new DataLayer({
+      search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
+    });
+
+    const collections = await dataLayer.getProjectCollections();
+
+    expect(collections[0]).toMatchObject({
+      id: expect.any(String),
+      author: expect.any(String),
+      images: expect.any(Array),
+      description: expect.any(String),
+      applicationRefs: expect.any(Array),
+    });
+    expect(collections).toHaveLength(12);
+  });
+
+  test("can be retrieved individually", async () => {
+    const dataLayer = new DataLayer({
+      search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
+    });
+
+    const collection = await dataLayer.getProjectCollectionById(
+      "first-time-grantees",
+    );
+
+    expect(collection).toMatchObject({
+      id: "first-time-grantees",
+      author: "Gitcoin",
+      name: "First Time Grantees",
+      images: [
+        // TODO: make into absolute URLs
+        "/assets/collections/collection_01.jpg",
+        "/assets/collections/collection_02.jpg",
+        "/assets/collections/collection_03.jpg",
+        "/assets/collections/collection_04.jpg",
+      ],
+      description:
+        "This collection showcases all grantees in GG19 that have not participated in a past round on Grants Stack! Give these first-time grantees some love (and maybe some donations, too!).",
+      applicationRefs: expect.any(Array),
+    });
+  });
+
+  test("ensures that the address component of the application ref is in checksummed format", async () => {
+    const dataLayer = new DataLayer({
+      search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
+    });
+
+    const collections = await dataLayer.getProjectCollections();
+    for (const collection of collections) {
+      for (const applicationRef of collection.applicationRefs) {
+        const address = applicationRef.split(":")[1];
+        expect(address).toEqual(getAddress(address));
+      }
+    }
   });
 });

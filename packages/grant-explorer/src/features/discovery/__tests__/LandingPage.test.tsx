@@ -11,8 +11,6 @@ import { __deprecated_RoundMetadata } from "../../api/round";
 import { __deprecated_RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
 import { vi } from "vitest";
-import { collections } from "../../collections/hooks/useCollections";
-import { categories } from "../../categories/hooks/useCategories";
 import { DataLayer } from "data-layer";
 import { getEnabledChains } from "../../../app/chainConfig";
 

@@ -156,15 +156,17 @@ export const useCartStorage = create<CartState>()(
       },
       setVotingTokenForChain: (chainId: ChainId, payoutToken: VotingToken) => {
         if (!Object.values(ChainId).includes(chainId)) {
-          console.warn(
-            "Tried setting payoutToken",
-            payoutToken,
-            "for chain",
-            chainId,
-            ", but chain",
-            chainId,
-            " doesn't exist"
-          );
+          if (process.env.NODE_ENV !== "test") {
+            console.warn(
+              "Tried setting payoutToken",
+              payoutToken,
+              "for chain",
+              chainId,
+              ", but chain",
+              chainId,
+              " doesn't exist"
+            );
+          }
           return;
         }
 
