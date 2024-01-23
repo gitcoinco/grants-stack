@@ -136,23 +136,6 @@ describe("<ViewProjectDetails/>", () => {
     });
   });
 
-  // Using skeletons for loading
-  it.skip("shows project stats", async () => {
-    const expectedProject = makeApprovedProjectData({ grantApplicationId });
-    const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [expectedProject],
-    });
-    renderWithContext(
-      <SWRConfig value={{ dedupingInterval: 0 }}>
-        <ViewProjectDetails />
-      </SWRConfig>,
-      { roundState: { rounds: [roundWithProjects], isLoading: false } }
-    );
-    /* Initially shows - when loading */
-    expect(screen.getAllByText("$-")[0]).toBeInTheDocument();
-  });
-
   it("shows project description", async () => {
     const expectedProject = makeApprovedProjectData({ grantApplicationId });
     const expectedProjectDescription =
