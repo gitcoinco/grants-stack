@@ -28,9 +28,8 @@ export function MatchingEstimateTooltip(props: { isEligible: boolean }) {
               </>
             ) : (
               <>
-                Keep in mind that this is a potential match. By connecting to
-                Gitcoin Passport, you can update your score before or after
-                submitting your donation.{" "}
+                Keep in mind that this is a potential match that may change with
+                the number of donations to a round.
                 <a
                   href="https://passport.gitcoin.co"
                   className={"underline"}

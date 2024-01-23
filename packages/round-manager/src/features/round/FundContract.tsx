@@ -9,13 +9,14 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
 import { ProgressStatus, Round } from "../api/types";
-import { getTxExplorerForContract, payoutTokens } from "../api/utils";
+import { getTxExplorerForContract } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { classNames, useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
+import { payoutTokens } from "../api/payoutTokens";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -144,8 +145,9 @@ export default function FundContract(props: {
   const protocolFeePercentage = (props.round?.protocolFeePercentage ?? 0) * 100;
   const combinedFees =
     ((roundFeePercentage + protocolFeePercentage) * matchingFunds) / 100;
-  const contractBalance = ethers.utils.formatEther(
-    balanceData?.value.toString() ?? "0"
+  const contractBalance = ethers.utils.formatUnits(
+    balanceData?.value.toString() ?? "0",
+    matchingFundPayoutToken?.decimal
   );
   const totalAmountLeftToFund = (
     combinedFees +
@@ -271,10 +273,10 @@ export default function FundContract(props: {
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Matching pool size:</p>
           <p className="text-sm">
-            {matchingFunds} {matchingFundPayoutToken?.name}{" "}
+            {matchingFunds.toFixed(2)} {matchingFundPayoutToken?.name}{" "}
             {matchingFundsInUSD && matchingFundsInUSD > 0 ? (
               <span className="text-sm text-slate-400 ml-2">
-                ${matchingFundsInUSD} USD
+                ${matchingFundsInUSD.toFixed(2)} USD
               </span>
             ) : null}
           </p>
@@ -345,10 +347,11 @@ export default function FundContract(props: {
             <div className="flex flex-row justify-start mt-6">
               <p className="text-sm w-1/3">Amount in contract:</p>
               <p className="text-sm">
-                {contractBalance} {matchingFundPayoutToken?.name}{" "}
+                {Number(contractBalance).toFixed(2)}{" "}
+                {matchingFundPayoutToken?.name}{" "}
                 {tokenBalanceInUSD && Number(tokenBalanceInUSD) > 0 ? (
                   <span className="text-sm text-slate-400 ml-2">
-                    ${tokenBalanceInUSD} USD
+                    ${tokenBalanceInUSD.toFixed(2)} USD
                   </span>
                 ) : null}
               </p>
@@ -360,7 +363,7 @@ export default function FundContract(props: {
                 {totalAmountLeftToFund} {matchingFundPayoutToken?.name}{" "}
                 {amountLeftToFundInUSD > 0 ? (
                   <span className="text-sm text-slate-400 ml-2">
-                    ${amountLeftToFundInUSD} USD
+                    ${amountLeftToFundInUSD.toFixed(2)} USD
                   </span>
                 ) : null}
               </p>

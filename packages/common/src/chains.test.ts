@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
-import { parseChainId, ChainId } from "./chains"; // Replace 'your-module' with the actual module path
+import { parseChainId } from "./chains";
+import { ChainId } from "./chain-ids";
 
 test("Valid input: number", () => {
   const input = 137;

@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - release
+      - mrelease
   pull_request:
     branches:
       - "**"
@@ -30,14 +30,14 @@ jobs:
         run: |
           pnpm install
 
-      - name: Lint Explorer
+      - name: Lint Round Manager
         run: |
-          pnpm rm-lint
+          pnpm lint:manager
 
-      - name: Test Explorer
+      - name: Test Round Manager
         run: |
-          pnpm rm-test
+          pnpm test:manager
 
-      - name: Typecheck Explorer
+      - name: Typecheck Round Manager
         run: |
-          pnpm rm-typecheck
+          pnpm typecheck:manager

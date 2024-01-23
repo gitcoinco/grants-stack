@@ -5,8 +5,8 @@ import {
   useEffect,
   useReducer,
 } from "react";
-import { getRoundById } from "../features/api/round";
 import { Round } from "../features/api/types";
+import { DataLayer, useDataLayer } from "data-layer";
 
 export interface RoundState {
   rounds: Round[];
@@ -84,11 +84,22 @@ export const RoundProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-function fetchRoundsById(dispatch: Dispatch, chainId: string, roundId: string) {
+function fetchRoundsById(
+  dispatch: Dispatch,
+  dataLayer: DataLayer,
+  chainId: number,
+  roundId: string
+) {
   dispatch({ type: ActionType.SET_LOADING, payload: true });
 
-  getRoundById(roundId, chainId)
-    .then((round) => dispatch({ type: ActionType.ADD_ROUND, payload: round }))
+  dataLayer
+    .getLegacyRoundById({
+      roundId,
+      chainId,
+    })
+    .then(({ round }) =>
+      dispatch({ type: ActionType.ADD_ROUND, payload: round })
+    )
     .catch((error) =>
       dispatch({ type: ActionType.SET_ERROR_GET_ROUND, payload: error })
     )
@@ -96,7 +107,7 @@ function fetchRoundsById(dispatch: Dispatch, chainId: string, roundId: string) {
 }
 
 export const useRoundById = (
-  chainId: string,
+  chainId: number,
   roundId: string
 ): {
   round?: Round;
@@ -107,6 +118,7 @@ export const useRoundById = (
   if (context === undefined) {
     throw new Error("useRoundById must be used within a RoundProvider");
   }
+  const dataLayer = useDataLayer();
 
   useEffect(() => {
     context.dispatch({ type: ActionType.SET_ROUND_ID, payload: roundId });
@@ -116,7 +128,7 @@ export const useRoundById = (
       );
 
       if (!existingRound?.token) {
-        fetchRoundsById(context.dispatch, chainId, roundId);
+        fetchRoundsById(context.dispatch, dataLayer, chainId, roundId);
       }
     }
   }, [chainId, roundId]); // eslint-disable-line react-hooks/exhaustive-deps

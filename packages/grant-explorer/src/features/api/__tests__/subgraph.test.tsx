@@ -2,12 +2,12 @@ import {
   getCurrentSubgraphBlockNumber,
   waitForSubgraphSyncTo,
 } from "../subgraph";
-import { graphql_fetch } from "../utils";
+import { __deprecated_graphql_fetch } from "../utils";
 import { Mock } from "vitest";
 
 vi.mock("../utils", () => ({
   ...vi.importActual("../utils"),
-  graphql_fetch: vi.fn(),
+  __deprecated_graphql_fetch: vi.fn(),
 }));
 
 vi.mock("common", () => ({
@@ -23,7 +23,7 @@ describe("getCurrentSubgraphBlockNumber", () => {
   it("retrieves the current block number of the subgraph index", async () => {
     const chainId = 1;
     const expectedCurrentBlockNumber = 999;
-    (graphql_fetch as Mock).mockResolvedValue({
+    (__deprecated_graphql_fetch as Mock).mockResolvedValue({
       data: {
         _meta: {
           block: {
@@ -34,9 +34,8 @@ describe("getCurrentSubgraphBlockNumber", () => {
       },
     });
 
-    const actualCurrentBlockNumber = await getCurrentSubgraphBlockNumber(
-      chainId
-    );
+    const actualCurrentBlockNumber =
+      await getCurrentSubgraphBlockNumber(chainId);
 
     expect(actualCurrentBlockNumber).toEqual(expectedCurrentBlockNumber);
   });
@@ -48,7 +47,7 @@ describe("Wait for subgraph to sync", () => {
 
   it("resolves when the current block number is greater than to the desired block number", async () => {
     const desiredBlockNumber = 5000;
-    (graphql_fetch as Mock).mockResolvedValue({
+    (__deprecated_graphql_fetch as Mock).mockResolvedValue({
       data: {
         _meta: {
           block: {
@@ -61,12 +60,12 @@ describe("Wait for subgraph to sync", () => {
 
     await waitForSubgraphSyncTo(chainId, desiredBlockNumber, pollIntervalInMs);
 
-    expect(graphql_fetch).toBeCalledTimes(1);
+    expect(__deprecated_graphql_fetch).toBeCalledTimes(1);
   });
 
   it("keeps polling until the current block number is greater than or equal to the desired block number", async () => {
     const desiredBlockNumber = 5000;
-    (graphql_fetch as Mock)
+    (__deprecated_graphql_fetch as Mock)
       .mockResolvedValueOnce({
         data: {
           _meta: {
@@ -100,6 +99,6 @@ describe("Wait for subgraph to sync", () => {
 
     await waitForSubgraphSyncTo(chainId, desiredBlockNumber, pollIntervalInMs);
 
-    expect(graphql_fetch).toBeCalledTimes(3);
+    expect(__deprecated_graphql_fetch).toBeCalledTimes(3);
   });
 });

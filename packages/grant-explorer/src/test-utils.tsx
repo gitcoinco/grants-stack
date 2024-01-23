@@ -1,3 +1,4 @@
+import { Mocked } from "vitest";
 import { faker } from "@faker-js/faker";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
@@ -7,16 +8,12 @@ import {
   RoundState,
   initialRoundState,
 } from "./context/RoundContext";
-import { RoundMetadata } from "./features/api/round";
-import { RoundOverview } from "./features/api/rounds";
-import {
-  ApplicationStatus,
-  CartProject,
-  ProjectMetadata,
-  Round,
-} from "./features/api/types";
+import { __deprecated_RoundMetadata } from "./features/api/round";
+import { __deprecated_RoundOverview } from "./features/api/rounds";
+import { CartProject, ProjectMetadata, Round } from "./features/api/types";
 import { parseUnits } from "viem";
 import { ChainId } from "common";
+import { DataLayer, DataLayerProvider } from "data-layer";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -90,7 +87,7 @@ export const makeApprovedProjectData = (
       owners: [{ address: faker.finance.ethereumAddress() }],
       ...projectMetadataOverrides,
     },
-    status: ApplicationStatus.APPROVED,
+    status: "APPROVED",
     applicationIndex: faker.datatype.number(),
     roundId: faker.finance.ethereumAddress(),
     chainId: ChainId.MAINNET,
@@ -102,8 +99,8 @@ const makeTimestamp = (days?: number) =>
   Math.floor(Number(faker.date.soon(days)) / 1000).toString();
 
 export const makeRoundMetadata = (
-  overrides?: Partial<RoundMetadata>
-): RoundMetadata => ({
+  overrides?: Partial<__deprecated_RoundMetadata>
+): __deprecated_RoundMetadata => ({
   name: faker.company.name(),
   roundType: "public",
   eligibility: {
@@ -118,9 +115,9 @@ export const makeRoundMetadata = (
 });
 
 export const makeRoundOverviewData = (
-  overrides?: Partial<RoundOverview>,
-  roundMetadataOverrides?: Partial<RoundMetadata>
-): RoundOverview => {
+  overrides?: Partial<__deprecated_RoundOverview>,
+  roundMetadataOverrides?: Partial<__deprecated_RoundMetadata>
+): __deprecated_RoundOverview => {
   return {
     id: faker.finance.ethereumAddress(),
     chainId: ChainId.MAINNET,
@@ -155,25 +152,42 @@ export function generateIpfsCid() {
 
 export const renderWithContext = (
   ui: JSX.Element,
-  roundStateOverrides: Partial<RoundState> = {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = vi.fn()
-) =>
-  render(
+  overrides?: {
+    dispatch?: () => void;
+    dataLayer?: DataLayer;
+    roundState?: Partial<RoundState>;
+  }
+) => {
+  const dispatch = overrides?.dispatch ?? vi.fn();
+  const dataLayerMock =
+    overrides?.dataLayer ??
+    ({
+      getLegacyRoundById: vi.fn().mockResolvedValue({
+        round:
+          overrides?.roundState?.rounds !== undefined &&
+          overrides?.roundState?.rounds.length > 0
+            ? overrides?.roundState?.rounds[0]
+            : undefined,
+      }),
+    } as unknown as Mocked<DataLayer>);
+
+  return render(
     <ChakraProvider>
       <MemoryRouter>
-        <RoundContext.Provider
-          value={{
-            state: { ...initialRoundState, ...roundStateOverrides },
-            dispatch,
-          }}
-        >
-          {ui}
-        </RoundContext.Provider>
+        <DataLayerProvider client={dataLayerMock}>
+          <RoundContext.Provider
+            value={{
+              state: { ...initialRoundState, ...overrides?.roundState },
+              dispatch,
+            }}
+          >
+            {ui}
+          </RoundContext.Provider>
+        </DataLayerProvider>
       </MemoryRouter>
     </ChakraProvider>
   );
-
+};
 export const mockBalance = {
   data: {
     value: parseUnits("10", 18),

@@ -30,8 +30,10 @@ vi.mock("../../api/utils", async () => {
     await vi.importActual<typeof import("../../api/utils")>("../../api/utils");
   return {
     ...actual,
-    graphql_fetch: vi.fn().mockReturnValue({ data: { rounds: [] } }),
-    fetchFromIPFS: vi.fn(),
+    __deprecated_graphql_fetch: vi
+      .fn()
+      .mockReturnValue({ data: { rounds: [] } }),
+    __deprecated_fetchFromIPFS: vi.fn(),
   };
 });
 
@@ -98,7 +100,9 @@ describe("<ViewRound /> in case of before the application start date", () => {
   });
 
   it("Should show grayed out Applications Open buttom", async () => {
-    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [stubRound], isLoading: false },
+    });
 
     const AppSubmissionButton = screen.getByTestId("applications-open-button");
     expect(AppSubmissionButton).toBeInTheDocument();
@@ -129,13 +133,17 @@ describe("<ViewRound /> in case of during the application period", () => {
   });
 
   it("should display 404 when round is not found", () => {
-    renderWithContext(<ViewRound />, { rounds: [], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [], isLoading: false },
+    });
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
 
   it("should show the application view page", () => {
     // render the component
-    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [stubRound], isLoading: false },
+    });
 
     // expect that components / text / dates / etc. specific to  application view page
     expect(screen.getByText(stubRound.roundMetadata!.name)).toBeInTheDocument();
@@ -149,7 +157,9 @@ describe("<ViewRound /> in case of during the application period", () => {
   });
 
   it("Should show apply to round button", async () => {
-    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [stubRound], isLoading: false },
+    });
     const AppSubmissionButton = await screen.findAllByText(
       "Apply to Grant Round"
     );
@@ -179,7 +189,9 @@ describe("<ViewRound /> in case of post application end date & before round star
   });
 
   it("Should show Applications Closed button", async () => {
-    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [stubRound], isLoading: false },
+    });
 
     const AppSubmissionButton = screen.getByTestId(
       "applications-closed-button"
@@ -210,24 +222,30 @@ describe("<ViewRound /> in case of after the round start date", () => {
   });
 
   it("should display 404 when round is not found", () => {
-    renderWithContext(<ViewRound />, { rounds: [], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [], isLoading: false },
+    });
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
 
   it("displays the round name", async () => {
-    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [stubRound], isLoading: false },
+    });
 
     expect(await screen.findByTestId("round-title")).toBeInTheDocument();
   });
 
   it("displays the bread crumbs", async () => {
-    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [stubRound], isLoading: false },
+    });
 
     expect(await screen.findByTestId("bread-crumbs")).toBeInTheDocument();
   });
 
   it("displays a loading spinner if loading", () => {
-    renderWithContext(<ViewRound />, { isLoading: true });
+    renderWithContext(<ViewRound />, { roundState: { isLoading: true } });
 
     screen.getByTestId("loading-spinner");
   });
@@ -247,8 +265,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
 
     renderWithContext(<ViewRound />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     const ProjectTitle = await screen.getByTestId("project-title");
@@ -280,8 +300,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
 
     renderWithContext(<ViewRound />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     const actualBanner = screen.getAllByRole("img", {
@@ -308,8 +330,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
 
     renderWithContext(<ViewRound />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     const projectCards = screen.getAllByTestId("project-card");
@@ -339,8 +363,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
 
     renderWithContext(<ViewRound />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     const projectLinks = screen.getAllByTestId(
@@ -387,8 +413,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
 
     renderWithContext(<ViewRound />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     const searchInput = screen.getByPlaceholderText("Search");
@@ -420,8 +448,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
     it("shows an add-to-cart button", () => {
       renderWithContext(<ViewRound />, {
-        rounds: [roundWithProjects],
-        isLoading: false,
+        roundState: {
+          rounds: [roundWithProjects],
+          isLoading: false,
+        },
       });
 
       expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
@@ -429,8 +459,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
     it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked", () => {
       renderWithContext(<ViewRound />, {
-        rounds: [roundWithProjects],
-        isLoading: false,
+        roundState: {
+          rounds: [roundWithProjects],
+          isLoading: false,
+        },
       });
       const addToCart = screen.getByTestId("add-to-cart");
       fireEvent.click(addToCart);
@@ -443,8 +475,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
     it.skip("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
       renderWithContext(<ViewRound />, {
-        rounds: [roundWithProjects],
-        isLoading: false,
+        roundState: {
+          rounds: [roundWithProjects],
+          isLoading: false,
+        },
       });
 
       // click add to cart
@@ -486,7 +520,9 @@ describe("<ViewRound /> in case ApplicationsEnd and RoundEnd dates are not set",
   });
 
   it("Should display 'No End Date' for Applications and Round end dates", async () => {
-    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+    renderWithContext(<ViewRound />, {
+      roundState: { rounds: [stubRound], isLoading: false },
+    });
 
     const AppSubmissionButton = await screen.findAllByText("No End Date");
     expect(AppSubmissionButton.length).toEqual(2);

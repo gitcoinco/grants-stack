@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { useMemo, useState } from "react";
-import { ChainId } from "./chains";
+import { ChainId } from "./chain-ids";
 import z from "zod";
 export * from "./icons";
 export * from "./markdown";
@@ -97,6 +97,7 @@ export type Payout = {
   createdAt: string;
 };
 
+// TODO relocate to data layer
 export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.DEV1]: process.env.REACT_APP_SUBGRAPH_DEV1_API!,
   [ChainId.DEV2]: process.env.REACT_APP_SUBGRAPH_DEV2_API!,
@@ -116,6 +117,11 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.AVALANCHE]: process.env.REACT_APP_SUBGRAPH_AVALANCHE_API!,
   [ChainId.POLYGON]: process.env.REACT_APP_SUBGRAPH_POLYGON_API!,
   [ChainId.POLYGON_MUMBAI]: process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API!,
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_ZKSYNC_TESTNET_API!,
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]:
+    process.env.REACT_APP_SUBGRAPH_ZKSYNC_MAINNET_API!,
+  [ChainId.BASE]: process.env.REACT_APP_SUBGRAPH_BASE_API!,
 };
 
 /**
@@ -126,7 +132,8 @@ export const graphQlEndpoints: Record<ChainId, string> = {
  * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
  */
-const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
+export const getGraphQLEndpoint = (chainId: ChainId) =>
+  `${graphQlEndpoints[chainId]}`;
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -321,6 +328,10 @@ export const RedstoneTokenIds = {
   MATIC: "MATIC",
   AVAX: "AVAX",
   CVP: "CVP",
+  USDT: "USDT",
+  LUSD: "LUSD",
+  MUTE: "MUTE",
+  mkUSD: "mkUSD",
 } as const;
 
 export const useTokenPrice = (tokenId: string | undefined) => {
@@ -382,3 +393,27 @@ export const ROUND_PAYOUT_MERKLE = "MERKLE";
 export const ROUND_PAYOUT_DIRECT = "DIRECT";
 export type RoundPayoutType = "MERKLE" | "DIRECT";
 export type RoundVisibilityType = "public" | "private";
+
+export { useAllo, AlloContext, AlloProvider } from "./allo/react";
+export type { Allo, AlloOperation, AlloError } from "./allo/allo";
+export { AlloV1 } from "./allo/backends/allo-v1";
+export { AlloV2 } from "./allo/backends/allo-v2";
+export { createPinataIpfsUploader } from "./allo/ipfs";
+export {
+  createEthersTransactionSender,
+  createViemTransactionSender,
+  decodeEventFromReceipt,
+  createMockTransactionSender,
+  sendRawTransaction,
+  sendTransaction,
+} from "./allo/transaction-sender";
+export {
+  waitForSubgraphSyncTo,
+  getCurrentSubgraphBlockNumber,
+} from "./allo/indexer";
+
+export type AnyJson = boolean | number | string | null | JsonArray | JsonMap;
+interface JsonMap {
+  [key: string]: AnyJson;
+}
+interface JsonArray extends Array<AnyJson> {}

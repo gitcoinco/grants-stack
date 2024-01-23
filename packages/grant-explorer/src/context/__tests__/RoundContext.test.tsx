@@ -2,8 +2,8 @@
 import { useRoundById, RoundProvider } from "../RoundContext";
 import { render, screen, waitFor } from "@testing-library/react";
 import { makeRoundData } from "../../test-utils";
-import { getRoundById } from "../../features/api/round";
-import { Round } from "../../features/api/types";
+import { DataLayer, DataLayerProvider } from "data-layer";
+import { Mocked } from "vitest";
 
 vi.mock("../../features/api/round");
 /*TODO: look into wagmi MockConnector*/
@@ -18,12 +18,19 @@ describe("<ListRoundProvider />", () => {
     it("provides round based on given round id", async () => {
       const expectedRound = makeRoundData();
       const expectedRoundId: string = expectedRound.id!;
-      (getRoundById as any).mockResolvedValue(expectedRound);
+
+      const dataLayerMock = {
+        getLegacyRoundById: vi.fn().mockResolvedValue({
+          round: expectedRound,
+        }),
+      } as unknown as Mocked<DataLayer>;
 
       render(
-        <RoundProvider>
-          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        <DataLayerProvider client={dataLayerMock}>
+          <RoundProvider>
+            <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       expect(await screen.findByText(expectedRoundId)).toBeInTheDocument();
@@ -32,12 +39,19 @@ describe("<ListRoundProvider />", () => {
     it("sets isLoading to true when getRoundById call is in progress", async () => {
       const expectedRound = makeRoundData();
       const expectedRoundId: string = expectedRound.id!;
-      (getRoundById as any).mockReturnValue(new Promise<Round>(() => {}));
+
+      const dataLayerMock = {
+        getLegacyRoundById: vi.fn().mockResolvedValue({
+          round: expectedRound,
+        }),
+      } as unknown as Mocked<DataLayer>;
 
       render(
-        <RoundProvider>
-          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        <DataLayerProvider client={dataLayerMock}>
+          <RoundProvider>
+            <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       expect(
@@ -48,12 +62,19 @@ describe("<ListRoundProvider />", () => {
     it("sets isLoading back to false and when getRoundById call succeeds", async () => {
       const expectedRound = makeRoundData();
       const expectedRoundId: string = expectedRound.id!;
-      (getRoundById as any).mockResolvedValue(expectedRound);
+
+      const dataLayerMock = {
+        getLegacyRoundById: vi.fn().mockResolvedValue({
+          round: expectedRound,
+        }),
+      } as unknown as Mocked<DataLayer>;
 
       render(
-        <RoundProvider>
-          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        <DataLayerProvider client={dataLayerMock}>
+          <RoundProvider>
+            <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       await waitFor(() => {
@@ -66,12 +87,17 @@ describe("<ListRoundProvider />", () => {
     it("sets isLoading back to false when getRoundById call fails", async () => {
       const expectedRound = makeRoundData();
       const expectedRoundId: string = expectedRound.id!;
-      (getRoundById as any).mockRejectedValue(new Error(":("));
+
+      const dataLayerMock = {
+        getLegacyRoundById: vi.fn().mockRejectedValue(new Error()),
+      } as unknown as Mocked<DataLayer>;
 
       render(
-        <RoundProvider>
-          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        <DataLayerProvider client={dataLayerMock}>
+          <RoundProvider>
+            <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       await waitFor(() => {
@@ -87,7 +113,7 @@ describe("<ListRoundProvider />", () => {
 
 const TestingUseRoundByIdComponent = (props: { expectedRoundId: string }) => {
   const { round, isLoading, getRoundByIdError } = useRoundById(
-    "chainID",
+    1,
     props.expectedRoundId
   );
   return (

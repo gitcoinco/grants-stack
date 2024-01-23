@@ -4,6 +4,8 @@ export const chains = {
   1: "mainnet",
   10: "optimism",
   250: "fantom",
+  280: "zkSyncEraTestnet",
+  324: "zkSyncEraMainnet",
   424: "pgn",
   4002: "fantomTestnet",
   31337: "localhost",
@@ -16,6 +18,7 @@ export const chains = {
   43113: "fuji",
   137: "polygon",
   80001: "polygonMumbai",
+  8453: "base",
 } as const;
 
 export type ChainName = (typeof chains)[keyof typeof chains];
@@ -79,6 +82,15 @@ export const addresses: DeploymentAddressesMap = {
   },
   polygonMumbai: {
     projectRegistry: "0x545B282A50EaeA01A619914d44105437036CbB36",
+  },
+  zkSyncEraMainnet: {
+    projectRegistry: "0xe6CCEe93c97E20644431647B306F48e278aFFdb9",
+  },
+  zkSyncEraTestnet: {
+    projectRegistry: "0xb0F4882184EB6e3ed120c5181651D50719329788",
+  },
+  base: {
+    projectRegistry: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
   },
 };
 

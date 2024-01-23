@@ -30,6 +30,10 @@ jobs:
         run: |
           pnpm install
 
+      - name: Typecheck
+        run: |
+          pnpm typecheck:common
+
       - name: Test Common
         run: |
-          pnpm c-test
+          pnpm test:common

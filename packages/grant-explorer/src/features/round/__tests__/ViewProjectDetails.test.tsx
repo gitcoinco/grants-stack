@@ -61,8 +61,10 @@ describe("<ViewProjectDetails/>", () => {
       approvedProjects: [expectedProject],
     });
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     expect(await screen.findByText(expectedProjectName)).toBeInTheDocument();
@@ -80,8 +82,10 @@ describe("<ViewProjectDetails/>", () => {
     beforeEach(() => {
       vi.clearAllMocks();
       renderWithContext(<ViewProjectDetails />, {
-        rounds: [roundWithProjects],
-        isLoading: false,
+        roundState: {
+          rounds: [roundWithProjects],
+          isLoading: false,
+        },
       });
     });
 
@@ -143,7 +147,7 @@ describe("<ViewProjectDetails/>", () => {
       <SWRConfig value={{ dedupingInterval: 0 }}>
         <ViewProjectDetails />
       </SWRConfig>,
-      { rounds: [roundWithProjects], isLoading: false }
+      { roundState: { rounds: [roundWithProjects], isLoading: false } }
     );
     /* Initially shows - when loading */
     expect(screen.getAllByText("$-")[0]).toBeInTheDocument();
@@ -159,8 +163,10 @@ describe("<ViewProjectDetails/>", () => {
       approvedProjects: [expectedProject],
     });
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     expect(
@@ -180,8 +186,10 @@ describe("<ViewProjectDetails/>", () => {
       approvedProjects: [expectedProject],
     });
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     const bannerImg = screen.getByRole("img", {
@@ -203,8 +211,10 @@ describe("<ViewProjectDetails/>", () => {
       approvedProjects: [expectedProject],
     });
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     const logoImg = screen.getByRole("img", {
@@ -245,8 +255,10 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     expect(screen.getByText("Additional Information")).toBeInTheDocument();
@@ -282,8 +294,10 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     expect(
@@ -306,8 +320,10 @@ describe("voting cart", () => {
 
   it("shows an add-to-cart button", async () => {
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     // mock screen size
@@ -349,8 +365,10 @@ describe("voting cart", () => {
 
   it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked", () => {
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
     const addToCart = screen.getAllByTestId("add-to-cart");
     fireEvent.click(addToCart[0]);
@@ -363,8 +381,10 @@ describe("voting cart", () => {
 
   it.skip("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", async () => {
     renderWithContext(<ViewProjectDetails />, {
-      rounds: [roundWithProjects],
-      isLoading: false,
+      roundState: {
+        rounds: [roundWithProjects],
+        isLoading: false,
+      },
     });
 
     // mock screen size

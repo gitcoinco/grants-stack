@@ -342,7 +342,7 @@ export const loadRound =
           }
         `,
         chainId!,
-        { roundId: address }
+        { roundId: address.toLowerCase() }
       );
       roundPayoutStrategy = resp.data.rounds[0].payoutStrategy
         ? resp.data.rounds[0].payoutStrategy.strategyName

@@ -3,10 +3,10 @@ import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
 import { ChainId } from "common";
 
-import { getPayoutTokenOptions } from "../../api/utils";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import QuadraticFundingForm from "../QuadraticFundingForm";
+import { getPayoutTokenOptions } from "../../api/payoutTokens";
 
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({

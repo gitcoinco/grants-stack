@@ -55,7 +55,7 @@ export default function ViewRound() {
   const { chainId, roundId } = useParams();
 
   const { round, isLoading } = useRoundById(
-    chainId as string,
+    Number(chainId),
     roundId?.toLowerCase() as string
   );
 

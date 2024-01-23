@@ -1,13 +1,26 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,
   fantom as fantomOriginal,
   fantomTestnet as fantomTestnetOriginal,
-} from "wagmi/chains";
-import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
+  zkSyncTestnet as zkSyncTestnetOriginal,
+  zkSync as zkSyncOriginal,
+  base as baseOriginal,
+} from "@wagmi/chains";
+import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
+
+export const PublicGoodsNetworkIcon =
+  "https://ipfs.io/ipfs/Qmagrvn2SY5TEoLgqUtcc1745ABZTFoPmod37tW37u7HYo";
+export const ZkSyncIcon =
+  "https://ipfs.io/ipfs/QmUcGLhpBWRXD3CMbXZQT99adetptxXPqQYA6Pghb4WKSR";
+export const BaseLogo =
+  "https://ipfs.io/ipfs/QmQaAsfJpUuKmpX3eJEzgdZjqqFWmWHXnDy3MpPVJyDzcj";
+export const FantomFTMLogo =
+  "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9";
+
+const config = getConfig();
 
 export const fantom: Chain = {
   ...fantomOriginal,
@@ -35,41 +48,6 @@ export const fantomTestnet: Chain = {
   iconUrl: FantomFTMLogo,
 };
 
-export enum ChainId {
-  MAINNET = 1,
-  OPTIMISM_MAINNET_CHAIN_ID = 10,
-  FANTOM_MAINNET_CHAIN_ID = 250,
-  FANTOM_TESTNET_CHAIN_ID = 4002,
-  PGN = 424,
-  PGN_TESTNET = 58008,
-  ARBITRUM = 42161,
-  ARBITRUM_GOERLI = 421613,
-  AVALANCHE = 43114,
-  FUJI = 43113,
-  POLYGON = 137,
-  POLYGON_MUMBAI = 80001,
-  DEV1 = 313371,
-  DEV2 = 313372,
-}
-
-/**
- * Attempts to parse a numerical or string chainId to the Enum.
- * returns null if the chainid is invalid */
-export function tryParseChainIdToEnum(
-  chainId: string | number
-): ChainId | null {
-  const chains = Object.keys(ChainId)
-    .map(Number)
-    .filter((item) => {
-      return !isNaN(item);
-    });
-  const chainIdEnumValue = chains.find((chain) => chain === chainId);
-  if (chainIdEnumValue === undefined) {
-    return null;
-  }
-  return chainIdEnumValue as ChainId;
-}
-
 export const avalancheFuji: Chain = {
   ...avalancheFujiOriginal,
   rpcUrls: {
@@ -84,6 +62,21 @@ export const avalancheFuji: Chain = {
   },
 };
 
+export const base: Chain = {
+  ...baseOriginal,
+  iconUrl: BaseLogo,
+  rpcUrls: {
+    default: {
+      http: [
+        `https://base-mainnet.g.alchemy.com/v2/${config.blockchain.alchemyId}`,
+      ],
+    },
+    public: {
+      http: ["https://mainnet.base.org/"],
+    },
+  },
+};
+
 export const avalanche: Chain = {
   ...avalancheOriginal,
   rpcUrls: {
@@ -94,6 +87,32 @@ export const avalanche: Chain = {
     },
     public: {
       http: ["https://api.avax.network/ext/bc/C/rpc"],
+    },
+  },
+};
+
+export const zkSyncEraTestnet: Chain = {
+  ...zkSyncTestnetOriginal,
+  iconUrl: ZkSyncIcon,
+  rpcUrls: {
+    default: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+    public: {
+      http: ["https://testnet.era.zksync.dev"],
+    },
+  },
+};
+
+export const zkSyncEraMainnet: Chain = {
+  ...zkSyncOriginal,
+  iconUrl: ZkSyncIcon,
+  rpcUrls: {
+    default: {
+      http: ["https://mainnet.era.zksync.io"],
+    },
+    public: {
+      http: ["https://mainnet.era.zksync.io"],
     },
   },
 };
@@ -150,8 +169,6 @@ export const pgn: Chain = {
     },
   },
 };
-
-const config = getConfig();
 
 export const customOptimism = {
   id: 10,
