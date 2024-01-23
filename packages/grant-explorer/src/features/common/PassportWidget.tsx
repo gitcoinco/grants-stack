@@ -66,9 +66,9 @@ export function PassportWidget() {
           direction={isOpen ? "up" : "down"}
         />
         <div
-          className={`backdrop-blur-sm cursor-auto absolute mt-1 top-12 border-2
+          className={`backdrop-blur-[2px] cursor-auto absolute mt-1 top-12 border-2
            z-10 ml-[-75px] font-modern-era-medium md:right-0
-            md:ml-0 md:mr-[-20px] w-96 bg-grey-150 md:bg-opacity-80 py-4 px-6
+            md:ml-0 md:mr-[-20px] w-96 bg-white md:bg-white/90 py-4 px-6
              rounded-3xl shadow-lg ${isOpen ? "block" : "hidden"}`}
         >
           <div className="flex flex-col gap-4 mt-1">

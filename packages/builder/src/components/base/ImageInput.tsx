@@ -153,7 +153,7 @@ export default function ImageInput({
             className="hidden"
             type="file"
             name="file"
-            accept=".png,.jpg"
+            accept=".png,.jpg,.jpeg"
           />
           {fileInput && (
             <button

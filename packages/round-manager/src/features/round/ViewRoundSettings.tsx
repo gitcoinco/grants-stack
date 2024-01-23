@@ -4,10 +4,10 @@ import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ChainId,
-  RoundVisibilityType,
   classNames,
   getUTCDate,
   getUTCTime,
+  RoundVisibilityType,
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
@@ -20,11 +20,12 @@ import {
   ControllerRenderProps,
   FieldErrors,
   SubmitHandler,
+  useController,
+  useForm,
   UseFormRegister,
   UseFormRegisterReturn,
   UseFormResetField,
-  useController,
-  useForm,
+  UseFormSetValue,
 } from "react-hook-form";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import ReactTooltip from "react-tooltip";
@@ -124,10 +125,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const [hasChanged, setHasChanged] = useState(false);
 
   const [noRoundEndDate, setNoRoundEndDate] = useState(false);
-  // Is the round a rolling application round as per the contract
-  const [rollingApplications, setRollingApplications] = useState(false);
-  // Is the round a rolling application round as per the form
-  const [editedRollingApplications, setEditedRollingApplications] =
+
+  const [rollingApplicationsEnabled, setRollingApplicationsEnabled] =
     useState(false);
 
   useEffect(() => {
@@ -140,23 +139,14 @@ export default function ViewRoundSettings(props: { id?: string }) {
       round?.applicationsEndTime.toISOString() ===
         round?.roundEndTime.toISOString()
     ) {
-      setRollingApplications(true);
+      setRollingApplicationsEnabled(true);
     }
   }, [round?.applicationsEndTime, round?.roundEndTime]);
 
+  /* All DG rounds have rolling applications enabled */
   useEffect(() => {
-    if (
-      editedRound?.roundEndTime.toISOString() !== "" &&
-      editedRound?.applicationsEndTime.toISOString() ===
-        editedRound?.roundEndTime.toISOString()
-    ) {
-      setEditedRollingApplications(true);
-    }
-  }, [editedRound?.applicationsEndTime, editedRound?.roundEndTime]);
-
-  useEffect(() => {
-    if (isDirectRound(round!)) {
-      setEditedRollingApplications(true);
+    if (round && isDirectRound(round)) {
+      setRollingApplicationsEnabled(true);
     }
   }, [round]);
 
@@ -298,6 +288,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     formState: { errors },
     reset,
     resetField,
+    setValue,
   } = useForm<Round>({
     defaultValues: {
       ...round,
@@ -548,13 +539,13 @@ export default function ViewRoundSettings(props: { id?: string }) {
               </Tab.Panel>
               <Tab.Panel>
                 <RoundApplicationPeriod
+                  setValue={setValue}
                   editMode={editMode}
                   editedRound={editedRound as Round}
                   setEditedRound={setEditedRound}
                   noRoundEndDate={noRoundEndDate}
-                  rollingApplications={rollingApplications}
-                  editedRollingApplications={editedRollingApplications}
-                  setEditedRollingApplications={setEditedRollingApplications}
+                  rollingApplicationsEnabled={rollingApplicationsEnabled}
+                  setRollingApplicationsEnabled={setRollingApplicationsEnabled}
                   control={control}
                   register={register}
                   errors={errors}
@@ -1220,19 +1211,18 @@ function RoundApplicationPeriod(props: {
   editedRound: Round;
   setEditedRound: (round: Round) => void;
   noRoundEndDate: boolean;
-  rollingApplications: boolean;
-  editedRollingApplications: boolean;
-  setEditedRollingApplications: (editedRollingApplications: boolean) => void;
+  rollingApplicationsEnabled: boolean;
+  setRollingApplicationsEnabled: (value: boolean) => void;
   control: Control<Round, unknown>;
   register: UseFormRegister<Round>;
   errors: FieldErrors<Round>;
+  setValue: UseFormSetValue<Round>;
 }) {
   const {
     editedRound,
     noRoundEndDate,
-    rollingApplications,
-    editedRollingApplications,
-    setEditedRollingApplications,
+    rollingApplicationsEnabled,
+    setRollingApplicationsEnabled,
   } = props;
 
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
@@ -1393,78 +1383,56 @@ function RoundApplicationPeriod(props: {
                       </div>
                     </div>
                   )}
-                  {props.editMode.canEdit &&
-                  !moment(editedRound.applicationsEndTime).isBefore(
-                    new Date()
-                  ) ? (
-                    <div className="flex items-center mt-2">
-                      <input
-                        id="rollingApplications"
-                        name="rollingApplications"
-                        type="checkbox"
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        checked={editedRollingApplications}
-                        onChange={(e) =>
-                          setEditedRollingApplications(e.target.checked)
-                        }
-                      />
-                      <label
-                        htmlFor="rollingApplications"
-                        className="ml-2 block text-sm text-grey-400"
-                      >
-                        Enable rolling applications
-                      </label>
-                      <InformationCircleIcon
-                        data-tip
-                        data-for="rollingApplicationsTooltip"
-                        className="h-4 w-4 ml-1 text-grey-400"
-                      />
-                      <ReactTooltip
-                        id="rollingApplicationsTooltip"
-                        place="top"
-                        effect="solid"
-                        className="text-grey-400"
-                      >
-                        <span>
-                          If enabled, applications will be accepted until the
-                          round ends.
-                        </span>
-                      </ReactTooltip>
-                    </div>
-                  ) : (
-                    <div className="flex items-center mt-2">
-                      <input
-                        id="rollingApplications"
-                        name="rollingApplications"
-                        type="checkbox"
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        checked={rollingApplications}
-                        disabled
-                      />
-                      <label
-                        htmlFor="rollingApplications"
-                        className="ml-2 block text-sm text-grey-400"
-                      >
-                        Enable rolling applications
-                      </label>
-                      <InformationCircleIcon
-                        data-tip
-                        data-for="rollingApplicationsTooltip"
-                        className="h-4 w-4 ml-1 text-grey-400"
-                      />
-                      <ReactTooltip
-                        id="rollingApplicationsTooltip"
-                        place="top"
-                        effect="solid"
-                        className="text-grey-400"
-                      >
-                        <span>
-                          If enabled, applications will be accepted until the
-                          round ends.
-                        </span>
-                      </ReactTooltip>
-                    </div>
-                  )}
+                  <div className="flex items-center mt-2">
+                    <input
+                      id="rollingApplications"
+                      name="rollingApplications"
+                      type="checkbox"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      checked={rollingApplicationsEnabled}
+                      disabled={
+                        !props.editMode.canEdit ||
+                        moment(editedRound.applicationsEndTime).isBefore(
+                          new Date()
+                        )
+                      }
+                      onChange={() => {
+                        setRollingApplicationsEnabled(
+                          !rollingApplicationsEnabled
+                        );
+                        props.setEditedRound({
+                          ...props.editedRound,
+                          applicationsEndTime: props.editedRound.roundEndTime,
+                        });
+                        props.setValue(
+                          "applicationsEndTime",
+                          props.editedRound.roundEndTime
+                        );
+                      }}
+                    />
+                    <label
+                      htmlFor="rollingApplications"
+                      className="ml-2 block text-sm text-grey-400"
+                    >
+                      Enable rolling applications
+                    </label>
+                    <InformationCircleIcon
+                      data-tip
+                      data-for="rollingApplicationsTooltip"
+                      className="h-4 w-4 ml-1 text-grey-400"
+                    />
+                    <ReactTooltip
+                      id="rollingApplicationsTooltip"
+                      place="top"
+                      effect="solid"
+                      className="text-grey-400"
+                    >
+                      <span>
+                        If enabled, applications will be accepted until the
+                        round ends.
+                      </span>
+                    </ReactTooltip>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1478,7 +1446,7 @@ function RoundApplicationPeriod(props: {
               </div>
               <div className="leading-8 font-normal">
                 {props.editMode.canEdit &&
-                !editedRollingApplications &&
+                !rollingApplicationsEnabled &&
                 !moment(editedRound.applicationsEndTime).isBefore(
                   new Date()
                 ) ? (
@@ -1551,7 +1519,7 @@ function RoundApplicationPeriod(props: {
                   <div
                     className={`${
                       !props.editMode.canEdit ||
-                      editedRollingApplications ||
+                      rollingApplicationsEnabled ||
                       timeHasPassed(
                         moment(props.editedRound.applicationsEndTime)
                       )
@@ -1568,7 +1536,7 @@ function RoundApplicationPeriod(props: {
                       type="text"
                       className={`${
                         !props.editMode.canEdit ||
-                        editedRollingApplications ||
+                        rollingApplicationsEnabled ||
                         timeHasPassed(
                           moment(props.editedRound.applicationsEndTime)
                         )
@@ -1735,7 +1703,7 @@ function RoundApplicationPeriod(props: {
                           closeOnSelect
                           onChange={(date) => {
                             field.onChange(moment(date).toDate());
-                            !editedRollingApplications
+                            !rollingApplicationsEnabled
                               ? props.setEditedRound({
                                   ...props.editedRound,
                                   roundEndTime: moment(date).toDate(),

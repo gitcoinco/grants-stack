@@ -5,9 +5,7 @@ export const useCategories = (): SWRResponse<SearchBasedProjectCategory[]> => {
   const dataLayer = useDataLayer();
 
   return useSWR(["categories"], async () => {
-    const { categories } = await dataLayer.query({
-      type: "search-based-project-categories",
-    });
+    const categories = await dataLayer.getSearchBasedCategories();
     return categories;
   });
 };
@@ -25,10 +23,7 @@ export const useCategory = (
       throw new Error("Bug");
     }
 
-    const { category } = await dataLayer.query({
-      type: "search-based-project-category",
-      id,
-    });
+    const category = await dataLayer.getSearchBasedCategoryById(id);
     return category === null ? undefined : category;
   });
 };

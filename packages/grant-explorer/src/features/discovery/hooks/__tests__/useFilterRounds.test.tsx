@@ -50,7 +50,7 @@ describe("useFilterRounds", () => {
     );
 
     const mockDataLayer = {
-      query: vi.fn().mockResolvedValueOnce({
+      getLegacyRounds: vi.fn().mockResolvedValueOnce({
         rounds: mockedRoundsOverAllChains,
       }),
     } as unknown as DataLayer;

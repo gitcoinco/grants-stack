@@ -29,8 +29,7 @@ describe("applications search", () => {
         search: { baseUrl: "https://example.com" },
       });
 
-      const { results } = await dataLayer.query({
-        type: "applications-search",
+      const { results } = await dataLayer.searchApplications({
         queryString: "open source",
         page: 0,
       });
@@ -82,8 +81,7 @@ describe("applications search", () => {
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
 
-      const { results, pagination } = await dataLayer.query({
-        type: "applications-search",
+      const { results, pagination } = await dataLayer.searchApplications({
         queryString: "open source",
         page: 0,
       });
@@ -130,10 +128,10 @@ describe("applications search", () => {
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
-      const { applications, pagination } = await dataLayer.query({
-        type: "applications-paginated",
-        page: 0,
-      });
+      const { applications, pagination } =
+        await dataLayer.getApplicationsPaginated({
+          page: 0,
+        });
 
       expect(pagination).toEqual({
         totalItems: 5,
@@ -165,10 +163,10 @@ describe("applications search", () => {
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
-      const { applications, pagination } = await dataLayer.query({
-        type: "applications-paginated",
-        page: 2,
-      });
+      const { applications, pagination } =
+        await dataLayer.getApplicationsPaginated({
+          page: 2,
+        });
 
       expect(pagination).toEqual({
         totalItems: 5,
@@ -199,10 +197,10 @@ describe("applications search", () => {
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
-      const { applications, pagination } = await dataLayer.query({
-        type: "applications-paginated",
-        page: 10,
-      });
+      const { applications, pagination } =
+        await dataLayer.getApplicationsPaginated({
+          page: 10,
+        });
 
       expect(pagination).toEqual({
         totalItems: 5,
@@ -237,11 +235,11 @@ describe("applications search", () => {
       });
 
       for (let i = 0; i < 10; i++) {
-        const { applications, pagination } = await dataLayer.query({
-          type: "applications-paginated",
-          page: 0,
-          order: { type: "random", seed: 42 },
-        });
+        const { applications, pagination } =
+          await dataLayer.getApplicationsPaginated({
+            page: 0,
+            order: { type: "random", seed: 42 },
+          });
 
         expect(pagination).toEqual({
           totalItems: 9,
@@ -286,11 +284,11 @@ describe("applications search", () => {
       });
 
       for (let i = 0; i < 10; i++) {
-        const { applications, pagination } = await dataLayer.query({
-          type: "applications-paginated",
-          page: 0,
-          order: { type: "createdAtBlock", direction: "asc" },
-        });
+        const { applications, pagination } =
+          await dataLayer.getApplicationsPaginated({
+            page: 0,
+            order: { type: "createdAtBlock", direction: "asc" },
+          });
 
         expect(pagination).toEqual({
           totalItems: 3,
@@ -342,11 +340,11 @@ describe("applications search", () => {
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
 
-      const { applications, pagination } = await dataLayer.query({
-        type: "applications-paginated",
-        page: 0,
-        order: { type: "contributorCount", direction: "asc" },
-      });
+      const { applications, pagination } =
+        await dataLayer.getApplicationsPaginated({
+          page: 0,
+          order: { type: "contributorCount", direction: "asc" },
+        });
 
       expect(pagination).toEqual({
         totalItems: 3,
@@ -397,11 +395,11 @@ describe("applications search", () => {
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
       });
 
-      const { applications, pagination } = await dataLayer.query({
-        type: "applications-paginated",
-        page: 0,
-        filter: { type: "chains", chainIds: [1] },
-      });
+      const { applications, pagination } =
+        await dataLayer.getApplicationsPaginated({
+          page: 0,
+          filter: { type: "chains", chainIds: [1] },
+        });
 
       expect(pagination).toEqual({
         totalItems: 2,
@@ -440,8 +438,7 @@ describe("applications search", () => {
         fetch: fetchMock,
         search: { baseUrl: "https://example.com" },
       });
-      const { applications } = await dataLayer.query({
-        type: "applications-paginated",
+      const { applications } = await dataLayer.getApplicationsPaginated({
         page: 0,
         filter: {
           type: "refs",
@@ -476,16 +473,13 @@ describe("passport verification", () => {
       passport: { verifier: mockPassportVerifier },
     });
 
-    const { isVerified } = await dataLayer.query({
-      type: "verify-passport-credential",
-      credential: {
-        "@context": ["https://www.w3.org/2018/credentials/v1"],
-        type: ["VerifiableCredential"],
-        credentialSubject: {
-          id: "did:pkh:eip155:1:subject",
-        },
-      } as VerifiableCredential,
-    });
+    const { isVerified } = await dataLayer.verifyPassportCredential({
+      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      type: ["VerifiableCredential"],
+      credentialSubject: {
+        id: "did:pkh:eip155:1:subject",
+      },
+    } as VerifiableCredential);
 
     expect(isVerified).toBe(true);
     expect(mockPassportVerifier.verifyCredential).toBeCalledWith({
@@ -504,9 +498,7 @@ describe("categories", () => {
       search: { baseUrl: "https://example.com" },
     });
 
-    const { categories } = await dataLayer.query({
-      type: "search-based-project-categories",
-    });
+    const categories = await dataLayer.getSearchBasedCategories();
 
     expect(categories[0]).toMatchObject({
       id: expect.any(String),
@@ -522,10 +514,7 @@ describe("categories", () => {
       search: { baseUrl: "https://example.com" },
     });
 
-    const { category } = await dataLayer.query({
-      type: "search-based-project-category",
-      id: "open-source",
-    });
+    const category = await dataLayer.getSearchBasedCategoryById("open-source");
 
     expect(category).toMatchObject({
       id: "open-source",
@@ -547,9 +536,7 @@ describe("collections", () => {
       search: { baseUrl: "https://example.com" },
     });
 
-    const { collections } = await dataLayer.query({
-      type: "project-collections",
-    });
+    const collections = await dataLayer.getProjectCollections();
 
     expect(collections[0]).toMatchObject({
       id: expect.any(String),
@@ -566,10 +553,9 @@ describe("collections", () => {
       search: { baseUrl: "https://example.com" },
     });
 
-    const { collection } = await dataLayer.query({
-      type: "project-collection",
-      id: "first-time-grantees",
-    });
+    const collection = await dataLayer.getProjectCollectionById(
+      "first-time-grantees",
+    );
 
     expect(collection).toMatchObject({
       id: "first-time-grantees",
@@ -593,10 +579,7 @@ describe("collections", () => {
       search: { baseUrl: "https://example.com" },
     });
 
-    const { collections } = await dataLayer.query({
-      type: "project-collections",
-    });
-
+    const collections = await dataLayer.getProjectCollections();
     for (const collection of collections) {
       for (const applicationRef of collection.applicationRefs) {
         const address = applicationRef.split(":")[1];

@@ -1,7 +1,4 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import PublicGoodsNetworkIcon from "./icons/PublicGoodsNetwork.svg";
-import zkSyncIcon from "./icons/zksync-logo.svg";
-import BaseLogo from "./icons/base-logo.svg";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,
@@ -11,9 +8,17 @@ import {
   zkSync as zkSyncOriginal,
   base as baseOriginal,
 } from "@wagmi/chains";
-import FantomFTMLogo from "./assets/fantom-ftm-logo.png";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
+
+export const PublicGoodsNetworkIcon =
+  "https://ipfs.io/ipfs/Qmagrvn2SY5TEoLgqUtcc1745ABZTFoPmod37tW37u7HYo";
+export const ZkSyncIcon =
+  "https://ipfs.io/ipfs/QmUcGLhpBWRXD3CMbXZQT99adetptxXPqQYA6Pghb4WKSR";
+export const BaseLogo =
+  "https://ipfs.io/ipfs/QmQaAsfJpUuKmpX3eJEzgdZjqqFWmWHXnDy3MpPVJyDzcj";
+export const FantomFTMLogo =
+  "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9";
 
 const config = getConfig();
 
@@ -88,7 +93,7 @@ export const avalanche: Chain = {
 
 export const zkSyncEraTestnet: Chain = {
   ...zkSyncTestnetOriginal,
-  iconUrl: zkSyncIcon,
+  iconUrl: ZkSyncIcon,
   rpcUrls: {
     default: {
       http: ["https://testnet.era.zksync.dev"],
@@ -101,7 +106,7 @@ export const zkSyncEraTestnet: Chain = {
 
 export const zkSyncEraMainnet: Chain = {
   ...zkSyncOriginal,
-  iconUrl: zkSyncIcon,
+  iconUrl: ZkSyncIcon,
   rpcUrls: {
     default: {
       http: ["https://mainnet.era.zksync.io"],

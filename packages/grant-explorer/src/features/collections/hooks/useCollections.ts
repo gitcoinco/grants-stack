@@ -5,10 +5,7 @@ export const useCollections = (): SWRResponse<Collection[]> => {
   const dataLayer = useDataLayer();
 
   return useSWR(["collections"], async () => {
-    const { collections } = await dataLayer.query({
-      type: "project-collections",
-    });
-
+    const collections = await dataLayer.getProjectCollections();
     return collections;
   });
 };
@@ -25,11 +22,8 @@ export const useCollection = (
       // clearly.
       throw new Error("Bug");
     }
-    const { collection } = await dataLayer.query({
-      type: "project-collection",
-      id,
-    });
 
+    const collection = await dataLayer.getProjectCollectionById(id);
     return collection === null ? undefined : collection;
   });
 };

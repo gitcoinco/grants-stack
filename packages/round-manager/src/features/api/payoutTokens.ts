@@ -1,10 +1,11 @@
 import { ChainId, RedstoneTokenIds } from "common";
 import { ethers } from "ethers";
+import { Address } from "wagmi";
 
 export type PayoutToken = {
   name: string;
   chainId: number;
-  address: string;
+  address: Address;
   logo?: string;
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
   redstoneTokenId?: string;
@@ -27,6 +28,7 @@ export const TokenNamesAndLogos = {
   USDT: "/logos/usdt-logo.svg",
   LUSD: "/logos/lusd-logo.svg",
   MUTE: "/logos/mute-logo.svg",
+  mkUSD: "/logos/mkusd-logo.svg", // Prisma mkUSD
 } as const;
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -52,6 +54,14 @@ const MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["CVP"],
     redstoneTokenId: RedstoneTokenIds["CVP"],
+  },
+  {
+    name: "mkUSD",
+    chainId: ChainId.MAINNET,
+    address: "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28",
+    decimal: 18,
+    logo: TokenNamesAndLogos["mkUSD"],
+    redstoneTokenId: RedstoneTokenIds["mkUSD"],
   },
 ];
 const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
@@ -168,14 +178,6 @@ const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
-  },
-  {
-    name: "USDC",
-    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    address: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
-    decimal: 6,
-    logo: TokenNamesAndLogos["USDC"],
-    redstoneTokenId: RedstoneTokenIds["USDC"],
   },
   {
     name: "USDT",

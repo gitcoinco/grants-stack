@@ -144,6 +144,7 @@ describe("View Fund Grantees", () => {
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
       paid: [matchingStatsData[0], matchingStatsData[1]],
       unpaid: [matchingStatsData[2], matchingStatsData[3]],
+      all: matchingStatsData,
     });
 
     (useParams as jest.Mock).mockImplementation(() => {

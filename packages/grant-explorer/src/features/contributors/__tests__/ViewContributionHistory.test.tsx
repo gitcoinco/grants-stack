@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import {
   ViewContributionHistory,
@@ -125,6 +125,10 @@ vi.mock("wagmi", async () => {
   };
 });
 
+Object.assign(navigator, {
+  clipboard: { writeText: vi.fn() },
+});
+
 describe("<ViewContributionHistory/>", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -191,5 +195,10 @@ describe("<ViewContributionHistoryWithoutDonations/>", () => {
       screen.getByText(mockAddress.slice(0, 6) + "..." + mockAddress.slice(-6))
     ).toBeInTheDocument();
     expect(screen.getByText("Share Profile")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Share Profile"));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      expect.stringMatching("http://localhost:3000/#/contributors/")
+    );
   });
 });

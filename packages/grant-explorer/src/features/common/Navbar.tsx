@@ -40,7 +40,7 @@ export default function Navbar(props: NavbarProps) {
 
   return (
     <nav
-      className={`bg-white/5 backdrop-blur-md fixed w-full z-20 shadow-[0_4px_24px_0px_rgba(0,0,0,0.08)] ${props.customBackground}`}
+      className={`blurred fixed w-full z-20 shadow-[0_4px_24px_0px_rgba(0,0,0,0.08)] ${props.customBackground}`}
     >
       <div className="mx-auto px-4 sm:px-4">
         <div className="flex justify-between h-16">
