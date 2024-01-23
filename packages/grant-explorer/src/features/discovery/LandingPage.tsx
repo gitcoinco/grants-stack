@@ -1,4 +1,4 @@
-import { DefaultLayout } from "../common/DefaultLayout";
+import { GradientLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
@@ -22,7 +22,7 @@ const LandingPage = () => {
   );
 
   return (
-    <DefaultLayout showWalletInteraction>
+    <GradientLayout showWalletInteraction>
       <LandingHero />
       <LandingSection
         title="Donate now"
@@ -63,7 +63,7 @@ const LandingPage = () => {
           roundType="endingSoon"
         />
       </LandingSection>
-    </DefaultLayout>
+    </GradientLayout>
   );
 };
 

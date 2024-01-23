@@ -13,21 +13,21 @@ interface BreadcrumbProps {
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
   return (
-    <nav className="flex flex-wrap items-center text-sm text-gray-400 font-bold">
+    <nav className="flex flex-wrap items-center text-sm text-grey-400 font-bold">
       {items.map((item, index) => (
         <React.Fragment key={index}>
           <Link
             to={item.path}
             className={`hover:text-violet-400 transition duration-150 ease-in-out ${
-              index === items.length - 1 ? "text-gray-400" : ""
+              index === items.length - 1 ? "text-grey-400" : ""
             }`}
           >
             {item.name}
           </Link>
           {index < items.length - 1 && (
-            <span className="mx-2 text-gray-400">
+            <span className="mx-2 text-grey-400">
               <svg
-                className="flex-shrink-0 mx-2 h-3 w-3 text-gray-400"
+                className="flex-shrink-0 mx-2 h-3 w-3 text-grey-400"
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
