@@ -112,6 +112,8 @@ export const getProjectsAndRolesByAddress = gql`
         projectId
       }
       name
+      registryAddress
+      chainId
       metadata
       metadataCid
       projectNumber

@@ -205,24 +205,16 @@ export class DataLayer {
         requestVariables,
       );
 
-      console.log("roles response", response);
+      const projects: v2Project[] = response.projects;
 
-      const projectRoles: ProjectRole[] = response.projectRoles;
-
-      if (!projectRoles) return undefined;
+      if (!projects) return undefined;
 
       let projectEventsMap: ProjectEventsMap = {};
 
-      for (const projectRole of projectRoles) {
-        const project = projectRole.project;
-
-        console.log("projectRole", projectRole);
-
+      for (const project of projects) {
         projectEventsMap[
-          `${project.chainId}:${project.registryAddress}:${
-            alloVersion === "allo-v2"
-              ? projectRole.projectId
-              : project.projectNumber
+          `${chainId}:${project.registryAddress}:${
+            alloVersion === "allo-v2" ? project.id : project.projectNumber
           }`
         ] = {
           createdAtBlock: Number(project.createdAtBlock),

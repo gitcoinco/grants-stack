@@ -83,6 +83,8 @@ export type v2Project = {
   projectNumber: number;
   registryAddress: string;
   tags: [string];
+  createdAtBlock: number;
+  updatedAtBlock: number;
 };
 
 export type v2ProjectNew = {
