@@ -194,8 +194,8 @@ export class DataLayer {
   }): Promise<ProjectEventsMap | undefined> {
     const requestVariables = {
       address: address.toLowerCase(),
+      version: alloVersion,
       chainId,
-      alloVersion,
     };
 
     try {

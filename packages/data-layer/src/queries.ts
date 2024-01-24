@@ -96,39 +96,32 @@ export const getProjectsByAddress = gql`
 export const getProjectsAndRolesByAddress = gql`
   query getProjectsAndRolesByAddressQuery(
     $address: String!
-    $version: String!
+    $version: [String!]!
     $chainId: Int!
   ) {
-        {
-          projects(
-            filter: {
-              roles: {
-                every: {
-                  address: { equalTo: $address }
-                }
-              }
-              tags: { equalTo: $version }
-              chainId: { equalTo: $chainId }
-            }
-          ) {
-            roles {
-              address
-              role
-              projectId
-            }
-            name
-            chainId
-            metadata
-            metadataCid
-            projectNumber
-            tags
-            id
-            createdAtBlock
-            applications {
-              id
-              metadata
-            }
-          }
-        }
+    projects(
+      filter: {
+        roles: { every: { address: { equalTo: $address } } }
+        tags: { contains: $version }
+        chainId: { equalTo: $chainId }
+      }
+    ) {
+      roles {
+        role
+        address
+        projectId
+      }
+      name
+      metadata
+      metadataCid
+      projectNumber
+      tags
+      id
+      createdAtBlock
+      applications {
+        id
+        metadata
+      }
     }
+  }
 `;
