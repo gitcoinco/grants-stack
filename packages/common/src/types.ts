@@ -1,5 +1,4 @@
 import { Round } from "data-layer";
-import { AnyJson } from "./index";
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
@@ -43,22 +42,6 @@ export enum RoundCategory {
   Direct,
 }
 
-function fun(j: AnyJson) {}
-
-const mockSchemaQuestion: SchemaQuestion = {
-  id: 1,
-  title: "Example Question",
-  type: "text", // Assuming "text" is a valid value for InputType
-  required: true,
-  hidden: false,
-  choices: ["Option 1", "Option 2", "Option 3"], // Optional, can be omitted
-  encrypted: true,
-  fixed: false, // Optional, can be omitted
-  metadataExcluded: true, // Optional, can be omitted
-};
-
-fun([mockSchemaQuestion]);
-
 export type InputType =
   | "email"
   | "address"
@@ -70,3 +53,7 @@ export type InputType =
   | "checkbox"
   | "dropdown"
   | "link";
+
+export type DeepRequired<T> = {
+  [K in keyof T]: Required<DeepRequired<T[K]>>;
+};

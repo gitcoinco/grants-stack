@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { ProgressStatus } from "../features/api/types";
 import { Address } from "viem";
-import { CreateRoundData } from "common/dist/types";
 import { Allo } from "common";
 import { Result } from "common/src/allo/common";
+import { CreateRoundArguments } from "common/src/allo/backends/allo-v1";
 
 type CreateRoundStoreState = {
   ipfsStatus: ProgressStatus;
@@ -12,8 +12,12 @@ type CreateRoundStoreState = {
   round: Address | undefined;
   createRound: (
     allo: Allo,
-    createRoundData: CreateRoundData
-  ) => Promise<Result<Address>>;
+    createRoundData: CreateRoundArguments
+  ) => Promise<
+    Result<{
+      roundId: Address;
+    }>
+  >;
 };
 
 export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
@@ -26,7 +30,7 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
     });
   },
   round: undefined,
-  createRound: async (allo: Allo, createRoundData: CreateRoundData) => {
+  createRound: async (allo: Allo, createRoundData: CreateRoundArguments) => {
     set({
       indexingStatus: ProgressStatus.IN_PROGRESS,
       contractDeploymentStatus: ProgressStatus.IN_PROGRESS,
@@ -34,9 +38,7 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
     });
 
     const round = await allo
-      .createRound({
-        roundData: createRoundData,
-      })
+      .createRound(createRoundData)
       .on("ipfsStatus", (res) => {
         if (res.type === "success") {
           set({

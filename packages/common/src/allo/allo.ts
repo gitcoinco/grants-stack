@@ -3,7 +3,7 @@ import { AlloOperation } from "./operation";
 import { Result } from "./common";
 import { TransactionReceipt } from "./transaction-sender";
 import { AnyJson } from "..";
-import { CreateRoundData } from "../types";
+import { CreateRoundArguments } from "./backends/allo-v1";
 
 /**
  * Represents the common interface for interacting with Allo contracts.
@@ -75,7 +75,7 @@ export interface Allo {
     }
   >;
 
-  createRound: (args: { roundData: CreateRoundData }) => AlloOperation<
+  createRound: (args: CreateRoundArguments) => AlloOperation<
     Result<{ roundId: Hex }>,
     {
       ipfsStatus: Result<string>;

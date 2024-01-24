@@ -18,7 +18,6 @@ import { ApplicationProvider } from "./context/application/ApplicationContext";
 import { BulkUpdateGrantApplicationProvider } from "./context/application/BulkUpdateGrantApplicationContext";
 import { CreateProgramProvider } from "./context/program/CreateProgramContext";
 import { ReadProgramProvider } from "./context/program/ReadProgramContext";
-import { CreateRoundProvider } from "./context/round/CreateRoundContext";
 import { FinalizeRoundProvider } from "./context/round/FinalizeRoundContext";
 import { FundContractProvider } from "./context/round/FundContractContext";
 import { ReclaimFundsProvider } from "./context/round/ReclaimFundsContext";
@@ -71,9 +70,7 @@ root.render(
                 path="/round/create"
                 element={
                   <ReadProgramProvider>
-                    <CreateRoundProvider>
-                      <CreateRound />
-                    </CreateRoundProvider>
+                    <CreateRound />
                   </ReadProgramProvider>
                 }
               />

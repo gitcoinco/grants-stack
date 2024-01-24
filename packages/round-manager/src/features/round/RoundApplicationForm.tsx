@@ -8,7 +8,12 @@ import {
 import { PencilIcon, PlusSmIcon, XIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useContext, useEffect, useState } from "react";
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import {
+  DeepRequired,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 import { errorModalDelayMs } from "../../constants";
 import {
@@ -201,8 +206,7 @@ export function RoundApplicationForm(props: {
     ? initialQuestionsQF
     : initialQuestionsDirect;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { control, handleSubmit, register, getValues } = useForm<Round>({
+  const { control, handleSubmit } = useForm<Round>({
     defaultValues: {
       ...formData,
       applicationMetadata: {
@@ -216,13 +220,13 @@ export function RoundApplicationForm(props: {
     control,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [projectRequirements, setProjectRequirements] =
     useState<ProjectRequirements>({ ...initialRequirements });
 
   const { createRound, ipfsStatus, contractDeploymentStatus, indexingStatus } =
     useCreateRoundStore();
 
+  /** Upon succesful creation of round, redirect to program details */
   useEffect(() => {
     const isSuccess =
       ipfsStatus === ProgressStatus.IS_SUCCESS &&
@@ -241,6 +245,7 @@ export function RoundApplicationForm(props: {
     roundCategory,
   ]);
 
+  /** If there's an error, show an error dialog and redirect to program */
   useEffect(() => {
     if (
       ipfsStatus === ProgressStatus.IS_ERROR ||
@@ -269,12 +274,12 @@ export function RoundApplicationForm(props: {
   const next: SubmitHandler<Round> = async (values) => {
     try {
       setOpenProgressModal(true);
-      const data: Partial<Round> = _.merge(formData, values);
+      const data = _.merge(formData, values);
 
-      const roundMetadataWithProgramContractAddress: Round["roundMetadata"] = {
+      const roundMetadataWithProgramContractAddress = {
         ...(data.roundMetadata as Round["roundMetadata"]),
         programContractAddress: programId,
-      };
+      } as DeepRequired<Round["roundMetadata"]>;
 
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
@@ -289,13 +294,12 @@ export function RoundApplicationForm(props: {
         ...data,
         ownedBy: programId,
         operatorWallets: props.initialData.program.operatorWallets,
-      } as Round;
+      } as DeepRequired<Round>;
 
-      /*TODO(bhargav): fix types (ideally validate that we're passing in the right data instead of casting) */
       await createRound(allo, {
         roundMetadataWithProgramContractAddress,
-        applicationQuestions,
         round,
+        applicationQuestions,
         roundCategory,
       });
     } catch (error) {
