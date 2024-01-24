@@ -51,6 +51,17 @@ export type Project = {
   applicationIndex: number;
 };
 
+export type ProjectRole = {
+  project: {
+    chainId: number;
+    createdAtBlock: number;
+    registryAddress: string;
+    projectNumber: number;
+    tags: string[];
+  };
+  projectId: string;
+}
+
 export type v2Project = {
   id: string;
   chainId: number;

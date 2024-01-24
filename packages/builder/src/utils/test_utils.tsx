@@ -2,14 +2,15 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
-import { Provider } from "react-redux";
+import { DataLayerProvider } from "data-layer";
 import { ethers } from "ethers";
+import { Provider } from "react-redux";
+import { dataLayerConfig } from "..";
+import AlloWrapper from "../components/AlloWrapper";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
 import { Alert } from "../types/alert";
-import { DataLayerProvider } from "data-layer";
-import { dataLayerConfig } from "..";
 
 export function addressFrom(n: number): string {
   const bn = ethers.BigNumber.from(n);
@@ -114,11 +115,13 @@ export const renderWrapped = (
   const wrapped = (
     <ChakraProvider>
       <Provider store={store}>
-        <DataLayerProvider client={dataLayerConfig}>
-          <ReduxRouter store={store} history={history}>
-            {ui}
-          </ReduxRouter>
-        </DataLayerProvider>
+        <AlloWrapper>
+          <DataLayerProvider client={dataLayerConfig}>
+            <ReduxRouter store={store} history={history}>
+              {ui}
+            </ReduxRouter>
+          </DataLayerProvider>
+        </AlloWrapper>
       </Provider>
     </ChakraProvider>
   );

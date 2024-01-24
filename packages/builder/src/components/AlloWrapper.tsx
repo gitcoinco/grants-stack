@@ -1,8 +1,8 @@
 import {
   Allo,
-  // AlloV2,
   AlloProvider,
   AlloV1,
+  AlloV2,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   waitForSubgraphSyncTo,
@@ -25,34 +25,45 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     if (!web3Provider || !signer || !chainID) {
       setBackend(null);
     } else {
-      // todo: if v2: load this
-      // const alloBackend: Allo = new AlloV2({
-      //   chainId: chainID,
-      //   transactionSender: createEthersTransactionSender(signer, web3Provider),
-      //   projectRegistryAddress: "0x0000000000000000000000000000000000000000",
-      //   ipfsUploader: createPinataIpfsUploader({
-      //     token: getConfig().pinata.jwt,
-      //     endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
-      //   }),
-      //   waitUntilIndexerSynced: waitForSubgraphSyncTo,
-      // });
-
       const addresses = addressesByChainID(chainID!);
+      const config = getConfig();
+      let alloBackend: Allo;
 
-      const alloBackend: Allo = new AlloV1({
-        chainId: chainID,
-        transactionSender: createEthersTransactionSender(signer, web3Provider),
-        projectRegistryAddress: addresses?.projectRegistry! as `0x${string}`,
-        ipfsUploader: createPinataIpfsUploader({
-          token: getConfig().pinata.jwt,
-          endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
-        }),
-        waitUntilIndexerSynced: waitForSubgraphSyncTo,
-      });
+      if (config.allo.version === "allo-v2") {
+        alloBackend = new AlloV2({
+          chainId: chainID,
+          transactionSender: createEthersTransactionSender(
+            signer,
+            web3Provider
+          ),
+          projectRegistryAddress: "0x0000000000000000000000000000000000000000",
+          ipfsUploader: createPinataIpfsUploader({
+            token: getConfig().pinata.jwt,
+            endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
+          }),
+          waitUntilIndexerSynced: waitForSubgraphSyncTo,
+        });
+      } else {
+        alloBackend = new AlloV1({
+          chainId: chainID,
+          transactionSender: createEthersTransactionSender(
+            signer,
+            web3Provider
+          ),
+          projectRegistryAddress: addresses?.projectRegistry! as `0x${string}`,
+          ipfsUploader: createPinataIpfsUploader({
+            token: getConfig().pinata.jwt,
+            endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
+          }),
+          waitUntilIndexerSynced: waitForSubgraphSyncTo,
+        });
 
-      setBackend(alloBackend);
+        setBackend(alloBackend);
+      }
     }
   }, [web3Provider, signer, chainID]);
+
+  console.log("AlloWrapper: backend", backend);
 
   return <AlloProvider backend={backend}>{children}</AlloProvider>;
 }

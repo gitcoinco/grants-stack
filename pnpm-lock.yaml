@@ -335,8 +335,8 @@ importers:
   packages/common:
     dependencies:
       '@allo-team/allo-v2-sdk':
-        specifier: ^1.0.36
-        version: 1.0.36(typescript@5.3.3)(zod@3.22.4)
+        specifier: ^1.0.38
+        version: 1.0.39(typescript@5.3.3)(zod@3.22.4)
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -1174,8 +1174,8 @@ packages:
     resolution: {integrity: sha512-UK0bHA7hh9cR39V+4gl2/NnBBjoXIxkuWAPCaY4X7fbH4L/azIi7ilWOCjMUYfpJgraLUAqkRi2BqrjME8Rynw==}
     dev: false
 
-  /@allo-team/allo-v2-sdk@1.0.36(typescript@5.3.3)(zod@3.22.4):
-    resolution: {integrity: sha512-/OdPHFnRlJ97Y4l98q1VHGM1V15U3aSlRNFmOoJ2y6YNbipNykrbQAmhroSwLTyHXj2qqjMlPUBVX3V4m/RjAQ==}
+  /@allo-team/allo-v2-sdk@1.0.39(typescript@5.3.3)(zod@3.22.4):
+    resolution: {integrity: sha512-t6mxj/sGOuQjb95hvsqKBT6SADyEbgCfXiIFlVmuft95In6YbeRKyzNEx2OZKrNZA9vze3vEkCIx8v0wVtplOA==}
     dependencies:
       dotenv: 16.3.1
       events: 3.3.0

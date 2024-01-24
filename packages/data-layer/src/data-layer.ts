@@ -10,6 +10,7 @@ import { PaginationInfo } from "./data-layer.types";
 import {
   Collection,
   ProjectEventsMap,
+  ProjectRole,
   Round,
   RoundOverview,
   SearchBasedProjectCategory,
@@ -91,7 +92,7 @@ export class DataLayer {
    * @param projectId
    * @param chainId
    * @param alloVersion
-   * @returns v2Project
+   * @returns v2Project | Project
    */
   async getProjectById({
     projectId,
@@ -108,6 +109,8 @@ export class DataLayer {
       chainId,
     };
 
+    console.log("requestVariables", requestVariables);
+
     // fixme: any
     const response: any = await request(
       this.gsIndexerEndpoint,
@@ -115,7 +118,13 @@ export class DataLayer {
       requestVariables,
     );
 
+    // todo: response is null ^ the variables are fine. why is the response null?
+    // I noticed when we set the env to v2, on creation it still created a v1 project.
+    console.log("response", response);
+
     const project = response.projects[0];
+
+    console.log("project", project);
 
     if (!project) return null;
 
@@ -128,7 +137,8 @@ export class DataLayer {
    * @param chainIds
    * @param first
    * @param alloVersion
-   * @returns v2Projects[]
+   *
+   * @returns v2Projects[] | null
    */
   async getProjects({
     chainIds,
@@ -186,31 +196,44 @@ export class DataLayer {
       role,
     };
 
-    const response: any = await request(
-      this.gsIndexerEndpoint,
-      getProjectsByAddress,
-      requestVariables,
-    );
+    try {
+      const response: any = await request(
+        this.gsIndexerEndpoint,
+        getProjectsByAddress,
+        requestVariables,
+      );
 
-    const projectRoles = response.projectRoles;
+      console.log("roles response", response);
 
-    if (!projectRoles) return undefined;
+      const projectRoles: ProjectRole[] = response.projectRoles;
 
-    let projectEventsMap: ProjectEventsMap = {};
+      if (!projectRoles) return undefined;
 
-    for (const projectRole of projectRoles) {
-      const project = projectRole.project;
-      projectEventsMap[
-        `${project.chainId}:${project.registryAddress}:${
-          alloVersion === "allo-v2" ? project.id : project.projectNumber
-        }`
-      ] = {
-        createdAtBlock: Number(project.createdAtBlock),
-        updatedAtBlock: Number(project.createdAtBlock), // todo: fix once updatedAtBlock is available
-      };
+      let projectEventsMap: ProjectEventsMap = {};
+
+      for (const projectRole of projectRoles) {
+        const project = projectRole.project;
+
+        console.log("projectRole", projectRole);
+
+        projectEventsMap[
+          `${project.chainId}:${project.registryAddress}:${
+            alloVersion === "allo-v2"
+              ? projectRole.projectId
+              : project.projectNumber
+          }`
+        ] = {
+          createdAtBlock: Number(project.createdAtBlock),
+          updatedAtBlock: Number(project.createdAtBlock), // todo: fix once updatedAtBlock is available
+        };
+      }
+
+      return projectEventsMap;
+    } catch (error) {
+      console.error("Error fetching project roles", error);
+
+      return undefined;
     }
-
-    return projectEventsMap;
   }
 
   /**

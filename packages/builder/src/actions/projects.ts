@@ -1,24 +1,24 @@
-import { DataLayer, ProjectEventsMap } from "data-layer";
-import { getConfig } from "common/src/config";
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
 import {
   ChainId,
-  convertStatusToText,
   ROUND_PAYOUT_MERKLE,
   RoundPayoutType,
+  convertStatusToText,
 } from "common";
+import { getConfig } from "common/src/config";
+import { DataLayer, ProjectEventsMap } from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { AppStatus, Application, ProjectStats } from "../reducers/projects";
+import { getEnabledChainsAndProviders } from "../utils/chains";
 import { graphqlFetch } from "../utils/graphql";
 import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getProjectURIComponents } from "../utils/utils";
-import { getEnabledChainsAndProviders } from "../utils/chains";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
@@ -162,13 +162,11 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
   },
 });
 
-// todo: remove this
+// todo: update this with indexer call
 export const loadProjectOwners =
   (projectID: string) => async (dispatch: Dispatch) => {
     const { chainId, id } = getProjectURIComponents(projectID);
-
     const owners = await fetchProjectOwners(Number(chainId), id);
-
     dispatch(projectOwnersLoaded(projectID, owners));
   };
 
@@ -180,11 +178,13 @@ export const loadProjects =
       const { account } = state.web3;
 
       const projectEventsMap = await dataLayer.getProjectsByAddress({
-        address: account!,
+        address: account!.toLowerCase(),
         chainId: chainID,
         role: "OWNER",
         alloVersion: getConfig().allo.version,
       });
+
+      console.log("projectEventsMap", projectEventsMap);
 
       if (!projectEventsMap) {
         dispatch(projectsLoaded(chainID, {}));
@@ -193,6 +193,7 @@ export const loadProjects =
 
       if (withMetaData) {
         Object.keys(projectEventsMap).forEach(async (id) => {
+          console.log("mapping", id);
           dispatch<any>(fetchGrantData(id, dataLayer));
         });
       }
@@ -310,6 +311,9 @@ export const fetchProjectApplications =
       web3Provider.chains.map(async (chain: { id: number }) => {
         try {
           const addresses = addressesByChainID(projectChainId);
+
+          // check if v1 or v2
+
           const projectApplicationID = generateUniqueRoundApplicationID(
             projectChainId,
             projectID,
@@ -397,6 +401,7 @@ export const loadProjectStats =
     }>
   ) =>
   async (dispatch: Dispatch) => {
+    // todo: need to check whether v1 or v2
     const uniqueProjectID = generateUniqueRoundApplicationID(
       Number(projectChainId),
       projectID,

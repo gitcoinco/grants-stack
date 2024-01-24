@@ -3,22 +3,19 @@ import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import {
-  loadAllChainsProjects,
-  loadProjectOwners,
-} from "../../actions/projects";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
-import { getProjectImage, ImgTypes } from "../../utils/components";
+import { ImgTypes, getProjectImage } from "../../utils/components";
 import { getProjectURIComponents } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
+import PageNotFound from "../base/PageNotFound";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
-import PageNotFound from "../base/PageNotFound";
 
 function Project() {
   const dataLayer = useDataLayer();
@@ -78,10 +75,10 @@ function Project() {
       dispatch(loadAllChainsProjects(dataLayer, true));
     }
 
-    if (props.owners === undefined) {
-      dispatch(loadProjectOwners(props.id));
-    }
-  }, [props.id, props.projectEvents, global, dispatch]);
+    // if (props.owners === undefined) {
+    //   dispatch(loadProjectOwners(props.id));
+    // }
+  }, [props.projectEvents, global, dispatch]);
 
   if (
     props.currentProject === undefined &&

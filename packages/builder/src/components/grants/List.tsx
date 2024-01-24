@@ -81,7 +81,7 @@ function ProjectsList() {
   useEffect(() => {
     if (props.status !== Status.Undefined) return;
 
-    dispatch(loadAllChainsProjects(dataLayer));
+    dispatch(loadAllChainsProjects(dataLayer, true));
   }, [dispatch, props.status]);
 
   useEffect(() => {

@@ -1,6 +1,13 @@
 import { gql } from "graphql-request";
 
-// todo: owner address was removed, and moved to projectRoles
+/**
+ * Get a project by its ID
+ * @param $alloVersion - The version of Allo
+ * @param $projectId - The ID of the project
+ * @param $chainId - The network ID of the chain
+ * 
+ * @returns The project
+ */
 export const getProjectById = gql`
   query ($alloVersion: [String!]!, $projectId: String!, $chainId: Int!) {
     projects(
@@ -23,6 +30,14 @@ export const getProjectById = gql`
   }
 `;
 
+/**
+ * Get projects by their address
+ * @param $alloVersion - The version of Allo
+ * @param $first - The number of projects to return
+ * @param $chainId - The network ID of the chain
+ * 
+ * @returns The project[]
+ */
 export const getProjects = gql`
   query getProjectsQuery(
     $alloVersion: [String!]!
@@ -47,6 +62,14 @@ export const getProjects = gql`
   }
 `;
 
+/**
+ * Get projects by their address
+ * @param $address - The address of the project
+ * @param $chainId - The network ID of the chain
+ * @param $role - The role of the project
+ * 
+ * @returns The project[]
+ */
 export const getProjectsByAddress = gql`
   query getProjectsByAddressQuery(
     $address: String!

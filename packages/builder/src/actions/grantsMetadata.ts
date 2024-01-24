@@ -1,5 +1,6 @@
-import { DataLayer } from "data-layer";
 import { datadogRum } from "@datadog/browser-rum";
+import { getConfig } from "common/src/config";
+import { DataLayer } from "data-layer";
 import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 import { Metadata } from "../types";
@@ -74,15 +75,23 @@ export const fetchGrantData =
   (id: string, dataLayer: DataLayer) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(grantMetadataLoadingURI(id));
-
+    const config = getConfig();
     const { chainId } = getProjectURIComponents(id);
+    const projectId = id.split(":")[2];
+
+    console.log("fetching grant data", { id, projectId });
 
     try {
       const result = await dataLayer.getProjectById({
-        projectId: getV1HashedProjectId(id), // todo: v2? => v2 project id
+        projectId:
+          config.allo.version === "allo-v1"
+            ? getV1HashedProjectId(id)
+            : projectId,
         chainId: Number(chainId),
-        alloVersion: "allo-v1", // todo: update hardcoded versions to getConfig
+        alloVersion: config.allo.version,
       });
+
+      console.log("result", result);
 
       if (!result?.project) {
         return;

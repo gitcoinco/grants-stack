@@ -1,17 +1,18 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
+import { ProjectEventsMap } from "data-layer";
 import { when } from "jest-when";
 import { Store } from "redux";
 import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
-import { loadRound } from "../../../actions/rounds";
 import { checkRoundApplications } from "../../../actions/roundApplication";
+import { loadRound } from "../../../actions/rounds";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import List from "../../../components/grants/List";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { RootState } from "../../../reducers";
 import { ApplicationModalStatus } from "../../../reducers/roundApplication";
 import setupStore from "../../../store";
-import { Metadata, ProjectEventsMap } from "../../../types";
+import { Metadata } from "../../../types";
 import {
   addressFrom,
   buildRound,
