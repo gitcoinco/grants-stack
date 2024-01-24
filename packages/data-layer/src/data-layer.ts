@@ -23,7 +23,11 @@ import {
   Configuration as SearchApiConfiguration,
   SearchResult,
 } from "./openapi-search-client/index";
-import { getProjectById, getProjects, getProjectsByAddress } from "./queries";
+import {
+  getProjectById,
+  getProjects,
+  getProjectsAndRolesByAddress,
+} from "./queries";
 
 export class DataLayer {
   private searchResultsPageSize: number;
@@ -181,25 +185,23 @@ export class DataLayer {
    */
   async getProjectsByAddress({
     address,
-    chainId,
-    role,
     alloVersion,
+    chainId,
   }: {
     address: string;
+    alloVersion: string;
     chainId: number;
-    role: string;
-    alloVersion?: string;
   }): Promise<ProjectEventsMap | undefined> {
     const requestVariables = {
       address: address.toLowerCase(),
       chainId,
-      role,
+      alloVersion,
     };
 
     try {
       const response: any = await request(
         this.gsIndexerEndpoint,
-        getProjectsByAddress,
+        getProjectsAndRolesByAddress,
         requestVariables,
       );
 

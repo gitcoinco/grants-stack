@@ -179,9 +179,8 @@ export const loadProjects =
 
       const projectEventsMap = await dataLayer.getProjectsByAddress({
         address: account!.toLowerCase(),
-        chainId: chainID,
-        role: "OWNER",
         alloVersion: getConfig().allo.version,
+        chainId: chainID.valueOf(),
       });
 
       console.log("projectEventsMap", projectEventsMap);
@@ -312,7 +311,8 @@ export const fetchProjectApplications =
         try {
           const addresses = addressesByChainID(projectChainId);
 
-          // check if v1 or v2
+          // TODO: check if v1 or v2
+          // todo:
 
           const projectApplicationID = generateUniqueRoundApplicationID(
             projectChainId,

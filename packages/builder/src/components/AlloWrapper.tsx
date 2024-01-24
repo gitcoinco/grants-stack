@@ -43,6 +43,8 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
           }),
           waitUntilIndexerSynced: waitForSubgraphSyncTo,
         });
+
+        setBackend(alloBackend);
       } else {
         alloBackend = new AlloV1({
           chainId: chainID,
