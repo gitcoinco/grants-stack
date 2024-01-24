@@ -91,6 +91,20 @@ export const fetchGrantData =
         alloVersion: config.allo.version,
       });
 
+      // fixme: this is what the indexer is returning: the tag should be "allo-v2"
+      // @0xKurt
+      // {
+      //   "projectId": "0xf35fc48409c20afbeebdb9935c30c1200e1995c209b51aafe8e32d58642c256b",
+      //   "project": {
+      //     "chainId": 11155111,
+      //     "createdAtBlock": "5142663",
+      //     "registryAddress": "0x2420eabfa2c0e6f77e435b0b7615c848bf4963af",
+      //     "projectNumber": 4,
+      //     "tags": [
+      //       "allo-v1"
+      //     ]
+      // }
+
       console.log("result", result);
 
       if (!result?.project) {
