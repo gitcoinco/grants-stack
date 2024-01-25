@@ -30,6 +30,12 @@ const mockProjects: v2Project[] = [
     projectNumber: null,
     registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
     tags: ["allo-v2"],
+    roles: [
+      {
+        address: "0x8a79249b63395c25bd121ba6ff280198c399d4fb",
+        role: "OWNER",
+      },
+    ],
   },
 ];
 

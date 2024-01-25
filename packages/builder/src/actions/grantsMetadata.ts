@@ -1,9 +1,10 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { getConfig } from "common/src/config";
-import { DataLayer } from "data-layer";
+import { AddressAndRole, DataLayer } from "data-layer";
 import { Dispatch } from "redux";
 import { Metadata } from "../types";
 import { getProjectURIComponents, getV1HashedProjectId } from "../utils/utils";
+import { projectOwnersLoaded } from "./projects";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -125,6 +126,12 @@ export const fetchGrantData =
       if (item === null) {
         throw new Error("metadata is null");
       }
+
+      const ownerAddresses = project.roles
+        .filter((role: AddressAndRole) => role.role === "OWNER")
+        .map((role) => role.address);
+
+      dispatch(projectOwnersLoaded(id, ownerAddresses));
 
       dispatch(grantMetadataFetched(item));
     } catch (e) {

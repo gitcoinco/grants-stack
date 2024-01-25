@@ -41,6 +41,11 @@ export type ProjectMetadata = {
   createdAt?: number;
 };
 
+export type AddressAndRole = {
+  address: string;
+  role: string;
+};
+
 /**
  * The project type for v1
  *
@@ -157,6 +162,7 @@ export type v2Project = {
    * The block the project was updated at
    */
   updatedAtBlock: number;
+  roles: AddressAndRole[];
 };
 
 export type ProjectEvents = {

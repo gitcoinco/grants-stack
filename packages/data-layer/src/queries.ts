@@ -26,6 +26,10 @@ export const getProjectById = gql`
       projectNumber
       registryAddress
       tags
+      roles {
+        address
+        role
+      }
     }
   }
 `;
