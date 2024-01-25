@@ -476,11 +476,16 @@ describe("<ViewRound /> in case of after the round start date", () => {
     it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-cart is clicked", () => {
       renderWithContext(<ViewRound />, {
         roundState: {
-          rounds: [roundWithProjects],
+          rounds: [
+            {
+              ...roundWithProjects,
+              approvedProjects: [makeApprovedProjectData()],
+            },
+          ],
           isLoading: false,
         },
       });
-
+      screen.logTestingPlaygroundURL();
       // click add to cart
       const addToCart = screen.getByTestId("add-to-cart");
       fireEvent.click(addToCart);
