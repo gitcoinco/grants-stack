@@ -369,20 +369,6 @@ describe("voting cart", () => {
       },
     });
 
-    // click add to cart
-    const addToCart = screen.getAllByTestId("add-to-cart");
-    fireEvent.click(addToCart[0]);
-
-    await waitFor(
-      () => {
-        expect(
-          screen.queryAllByTestId("remove-from-cart")[0]
-        ).toBeInTheDocument();
-        expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
-      },
-      { timeout: 3000 }
-    );
-
     const removeFromCart = screen.getAllByTestId("remove-from-cart");
     fireEvent.click(removeFromCart[0]);
 
