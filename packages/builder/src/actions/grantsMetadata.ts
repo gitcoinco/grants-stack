@@ -71,6 +71,19 @@ export const grantMetadataFetchingError = (
   error,
 });
 
+/**
+ * Fetches the data for a project
+ *
+ * @remarks
+ *
+ * This function is a thunk action creator. It fetches the data for a project and dispatches the
+ * appropriate actions to the store.
+ *
+ * @param id
+ * @param dataLayer
+ *
+ * @returns The data for a project
+ */
 export const fetchGrantData =
   (id: string, dataLayer: DataLayer) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
@@ -78,8 +91,6 @@ export const fetchGrantData =
     const config = getConfig();
     const { chainId } = getProjectURIComponents(id);
     const projectId = id.split(":")[2];
-
-    console.log("fetching grant data", { id, projectId });
 
     try {
       const result = await dataLayer.getProjectById({
@@ -91,14 +102,13 @@ export const fetchGrantData =
         alloVersion: config.allo.version,
       });
 
-      console.log("result", result);
-
       if (!result?.project) {
         return;
       }
 
       const { project } = result;
 
+      // fixme: this is here bc of param / linter issue
       console.log(getState());
 
       const item: Metadata = {
@@ -115,11 +125,11 @@ export const fetchGrantData =
         pointer: project.metadataCid,
       };
 
+      // note: should we return an empty meatadata object here? then the app wont fail on
+      // metadata being null.
       if (item === null) {
-        throw new Error("item is null");
+        throw new Error("metadata is null");
       }
-
-      console.log("item", item);
 
       dispatch(grantMetadataFetched(item));
     } catch (e) {

@@ -21,7 +21,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const [backend, setBackend] = useState<Allo | null>(null);
 
   useEffect(() => {
-    console.log("AlloWrapper: useEffect", web3Provider, signer, chainID);
     if (!web3Provider || !signer || !chainID) {
       setBackend(null);
     } else {
@@ -65,7 +64,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     }
   }, [web3Provider, signer, chainID]);
 
-  console.log("AlloWrapper: backend", backend);
+  console.log("✅ Backend set to ", backend);
 
   return <AlloProvider backend={backend}>{children}</AlloProvider>;
 }

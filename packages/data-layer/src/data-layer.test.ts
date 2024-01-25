@@ -2,23 +2,32 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { getAddress } from "viem";
 import { describe, expect, test, vi } from "vitest";
-import { v2ProjectNew } from ".";
+import { v2Project } from ".";
 import { DataLayer } from "./data-layer";
 
-const mockProjects: v2ProjectNew[] = [
+const mockProjects: v2Project[] = [
   {
-    id: "0x00490de473481e6883b7a13f582ee8e927dce1bafa924c28407edd425aac916e",
-    chainId: 5,
+    id: "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+    chainId: 11155111,
     metadata: {
-      name: "Random Round",
+      title: "Jax v2 test 4",
+      logoImg: "",
+      website: "https://test.com",
+      bannerImg: "",
+      createdAt: 1706114867213,
+      credentials: {},
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat",
+        "Sint laborum minus debitis nulla nesciunt perferendis officia delectus. Explicabo saepe similique excepturi dolores architecto. Nesciunt perspiciatis praesentium porro facere aliquam voluptate quasi iusto.",
+      logoImgData: new Blob(),
+      bannerImgData: new Blob(),
     },
-    metadataCid: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi",
-    name: "Allo Workshop",
+    metadataCid: "bafkreie4ra5mdxumvxhsjpvawhvtdovlgjk4v74zsgvpqrs2ehdk5srtl4",
+    name: "Jax v2 test 4",
     nodeId:
-      "WyJwcm9qZWN0cyIsIjB4MDA0OTBkZTQ3MzQ4MWU2ODgzYjdhMTNmNTgyZWU4ZTkyN2RjZTFiYWZhOTI0YzI4NDA3ZWRkNDI1YWFjOTE2ZSIsNV0=",
-    projectNumber: 0,
+      "WyJwcm9qZWN0cyIsIjB4OGE3OTI0OWI2MzM5NWMyNWJkMTIxYmE2ZmYyODAxOThjMzk5ZDRmYjNmOTUxZmMzYzQyMTk3YjU0YTZkYjZhNiIsMTExNTUxMTFd",
+    createdAtBlock: 5146499,
+    updatedAtBlock: 5146499,
+    projectNumber: null,
     registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
     tags: ["allo-v2"],
   },
@@ -544,13 +553,13 @@ describe("projects retrieval", () => {
 
     const project = await dataLayer.getProjectById({
       projectId:
-        "0x00490de473481e6883b7a13f582ee8e927dce1bafa924c28407edd425aac916e",
-      chainId: 5,
+        "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+      chainId: 11155111,
       alloVersion: "allo-v2",
     });
 
-    // fixme: not working
-    // expect(project).toEqual(mockProject);
+    // fixme: not working / I updated the object and got it close but still failing @0xKurt
+    // expect(project).toEqual({ project: mockProject });
   });
 
   test("can retrieve all projects for a network", async () => {

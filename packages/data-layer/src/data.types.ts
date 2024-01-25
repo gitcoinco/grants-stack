@@ -41,6 +41,15 @@ export type ProjectMetadata = {
   createdAt?: number;
 };
 
+/**
+ * The project type for v1
+ *
+ * @remarks
+ *
+ * This is more of the Application snapshot of the project at the time of the application.
+ *
+ * @deprecated - This type is deprecated and should not be used for new projects.
+ */
 export type Project = {
   grantApplicationId: string;
   projectRegistryId: string;
@@ -51,6 +60,29 @@ export type Project = {
   applicationIndex: number;
 };
 
+/**
+ * The project role type for v2
+ *
+ * @remarks
+ *
+ * This is the type for v2 project roles which get created on Allo as `Profiles`.
+ *
+ * @example
+ *
+ * ```ts
+ * const projectRole: ProjectRole = {
+ *  project: {
+ *   chainId: 1,
+ *   createdAtBlock: 1,
+ *   registryAddress: "0x123",
+ *   projectNumber: 1,
+ *   tags: ["allo-v2"],
+ *  },
+ *   projectId: "0x123",
+ * };
+ *
+ * ```
+ */
 export type ProjectRole = {
   project: {
     chainId: number;
@@ -60,11 +92,28 @@ export type ProjectRole = {
     tags: string[];
   };
   projectId: string;
-}
+};
 
+/**
+ * The project type for v2
+ *
+ * @remarks
+ *
+ * This is the type for v2 projects which get created on Allo as `Profiles`.
+ *
+ */
 export type v2Project = {
+  /**
+   * The on-chain unique project ID - `bytes32` string.
+   */
   id: string;
+  /**
+   * The chain ID of the network
+   */
   chainId: number;
+  /**
+   * The metadata of the project
+   */
   metadata: {
     title: string;
     logoImg: string;
@@ -76,30 +125,38 @@ export type v2Project = {
     logoImgData: Blob;
     bannerImgData: Blob;
   };
+  /**
+   * The metadata CID of the project
+   */
   metadataCid: string;
   name: string;
   nodeId: string;
-  ownerAddresses: [string];
-  projectNumber: number;
+  /**
+   * The project number from v1
+   *
+   * @deprecated - This is deprecated and will return `null` for v2 projects.
+   */
+  projectNumber: number | null;
+  /**
+   * The registry address of the project
+   */
   registryAddress: string;
+  /**
+   * The tags of the project
+   *
+   * @remarks
+   *
+   * The tags are used to filter the projects based on the version of Allo.
+   */
   tags: [string];
+  /**
+   * The block the project was created at
+   */
   createdAtBlock: number;
+  /**
+   * The block the project was updated at
+   */
   updatedAtBlock: number;
-};
-
-export type v2ProjectNew = {
-  id: string;
-  chainId: number;
-  metadata: {
-    name: string;
-    description: string;
-  };
-  metadataCid: string;
-  name: string;
-  nodeId: string;
-  projectNumber: number;
-  registryAddress: string;
-  tags: [string];
 };
 
 export type ProjectEvents = {

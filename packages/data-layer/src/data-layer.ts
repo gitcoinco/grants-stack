@@ -10,7 +10,6 @@ import { PaginationInfo } from "./data-layer.types";
 import {
   Collection,
   ProjectEventsMap,
-  ProjectRole,
   Round,
   RoundOverview,
   SearchBasedProjectCategory,
@@ -29,6 +28,23 @@ import {
   getProjectsAndRolesByAddress,
 } from "./queries";
 
+/**
+ * DataLayer is a class that provides a unified interface to the various data sources.
+ *
+ * @remarks
+ *
+ * @public
+ *
+ * @param fetch - The fetch implementation to use for making HTTP requests.
+ * @param search - The configuration for the search API.
+ * @param subgraph - The configuration for the subgraph API.
+ * @param indexer - The configuration for the indexer API.
+ * @param ipfs - The configuration for the IPFS gateway.
+ * @param passport - The configuration for the Passport verifier.
+ * @param collections - The configuration for the collections source.
+ *
+ * @returns The DataLayer instance.
+ */
 export class DataLayer {
   private searchResultsPageSize: number;
   private searchApiClient: SearchApi;
@@ -91,11 +107,21 @@ export class DataLayer {
    */
 
   /**
-   * getProjectById() returns a project by its ID.
+   * Gets a project by its ID.
    *
-   * @param projectId
-   * @param chainId
-   * @param alloVersion
+   * @example
+   * Here is an example:
+   * ```
+   * const project = await dataLayer.getProjectById({
+   *  projectId: "0x1234",
+   *  chainId: 1,
+   *  alloVersion: "allo-v2",
+   * });
+   * ```
+   * @param projectId - the ID of the project to return.
+   * @param chainId - the network ID of the chain.
+   * @param alloVersion - the version of Allo to use.
+   *
    * @returns v2Project | Project
    */
   async getProjectById({
@@ -113,8 +139,6 @@ export class DataLayer {
       chainId,
     };
 
-    console.log("requestVariables", requestVariables);
-
     // fixme: any
     const response: any = await request(
       this.gsIndexerEndpoint,
@@ -122,13 +146,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    // todo: response is null ^ the variables are fine. why is the response null?
-    // I noticed when we set the env to v2, on creation it still created a v1 project.
-    console.log("response", response);
-
     const project = response.projects[0];
-
-    console.log("project", project);
 
     if (!project) return null;
 
@@ -218,7 +236,8 @@ export class DataLayer {
           }`
         ] = {
           createdAtBlock: Number(project.createdAtBlock),
-          updatedAtBlock: Number(project.createdAtBlock), // todo: fix once updatedAtBlock is available
+          // todo: fix once updatedAtBlock is available
+          updatedAtBlock: Number(project.createdAtBlock),
         };
       }
 

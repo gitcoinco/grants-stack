@@ -16,9 +16,7 @@ import { RootState } from "../reducers";
 import { AppStatus, Application, ProjectStats } from "../reducers/projects";
 import { getEnabledChainsAndProviders } from "../utils/chains";
 import { graphqlFetch } from "../utils/graphql";
-import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getProjectURIComponents } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
@@ -121,6 +119,9 @@ interface ProjectStatsLoadedAction {
   stats: ProjectStats[];
 }
 
+/** Actions */
+
+/** Project Action Types */
 export type ProjectsActions =
   | ProjectsLoadingAction
   | ProjectsLoadedAction
@@ -134,6 +135,7 @@ export type ProjectsActions =
   | ProjectStatsLoadingAction
   | ProjectStatsLoadedAction;
 
+/** Action Creators */
 export const projectsLoading = (chainID: ChainId): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
   payload: chainID,
@@ -162,14 +164,20 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
   },
 });
 
-// todo: update this with indexer call
-export const loadProjectOwners =
-  (projectID: string) => async (dispatch: Dispatch) => {
-    const { chainId, id } = getProjectURIComponents(projectID);
-    const owners = await fetchProjectOwners(Number(chainId), id);
-    dispatch(projectOwnersLoaded(projectID, owners));
-  };
-
+/**
+ * Load projects for a given chain
+ *
+ * @remarks
+ *
+ * This function is a thunk action creator. It loads projects for a given chain and dispatches the
+ * appropriate actions to the store.
+ *
+ * @param chainID
+ * @param dataLayer
+ * @param withMetaData
+ *
+ * @returns All projects for a given chain
+ */
 export const loadProjects =
   (chainID: ChainId, dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
@@ -192,7 +200,6 @@ export const loadProjects =
 
       if (withMetaData) {
         Object.keys(projectEventsMap).forEach(async (id) => {
-          console.log("mapping", id);
           dispatch<any>(fetchGrantData(id, dataLayer));
         });
       }
@@ -225,6 +232,22 @@ export const loadProjects =
     }
   };
 
+/**
+ * Load all projects for all networks
+ *
+ * @remarks
+ * This function is a thunk action creator. It loads all projects for all supported networks and dispatches the
+ * appropriate actions to the store.
+ *
+ * Calls `loadProjects()` for each network or chainID supported.
+ *
+ * {@link loadProjects}
+ *
+ * @param dataLayer
+ * @param withMetaData
+ *
+ * @returns All projects for all supported networks
+ */
 export const loadAllChainsProjects =
   (dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch) => {

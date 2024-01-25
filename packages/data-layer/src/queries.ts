@@ -40,7 +40,7 @@ export const getProjectById = gql`
  */
 export const getProjects = gql`
   query getProjectsQuery(
-    $alloVersion: String!
+    $alloVersion: [String!]!
     $first: Int!
     $chainId: Int!
   ) {

@@ -157,7 +157,4 @@ export const publishGrant =
         }
       })
       .execute();
-
-    console.log("result");
-    console.log(result);
   };

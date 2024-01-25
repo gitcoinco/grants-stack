@@ -74,10 +74,6 @@ function Project() {
     if (props.projectEvents === undefined) {
       dispatch(loadAllChainsProjects(dataLayer, true));
     }
-
-    // if (props.owners === undefined) {
-    //   dispatch(loadProjectOwners(props.id));
-    // }
   }, [props.projectEvents, global, dispatch]);
 
   if (
