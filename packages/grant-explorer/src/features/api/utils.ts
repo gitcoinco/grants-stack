@@ -132,6 +132,7 @@ export const TokenNamesAndLogos = {
   USDT: "./logos/usdt-logo.svg",
   LUSD: "./logos/lusd-logo.svg",
   MUTE: "./logos/mute-logo.svg",
+  DATA: "./logos/data-logo.svg",
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -461,6 +462,16 @@ const POLYGON_TOKENS: VotingToken[] = [
     defaultForVoting: false,
     canVote: true,
     permitVersion: "2",
+  },
+  {
+    name: "DATA",
+    chainId: ChainId.POLYGON,
+    address: "0x3a9A81d576d83FF21f26f325066054540720fC34",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DATA"],
+    redstoneTokenId: RedstoneTokenIds["DATA"],
+    defaultForVoting: false,
+    canVote: true,
   },
 ];
 
