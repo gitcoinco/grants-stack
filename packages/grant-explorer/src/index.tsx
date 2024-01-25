@@ -12,7 +12,7 @@ import { initTagmanager } from "./tagmanager";
 import { initPosthog } from "./posthog";
 import { chains, config } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
-import { DataLayerProvider, DataLayer } from "data-layer";
+import { DataLayer, DataLayerProvider } from "data-layer";
 import { getConfig } from "common/src/config";
 
 import "./index.css";
@@ -22,11 +22,11 @@ import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
 import LandingPage from "./features/discovery/LandingPage";
-import ThankYou from "./features/round/ThankYou";
+import ThankYou from "./features/cart/ThankYou";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import { ViewContributionHistoryPage } from "./features/contributors/ViewContributionHistory";
-import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
+import ViewCart from "./features/cart/ViewCartPage/ViewCartPage";
 import { ChakraProvider } from "@chakra-ui/react";
 import ExploreRoundsPage from "./features/discovery/ExploreRoundsPage";
 

@@ -78,7 +78,7 @@ describe("<ErrorModal />", () => {
     expect(setIsOpenFn).toBeCalledWith(false);
   });
 
-  it.skip("should close the modal if close on background click is enabled and background is clicked", () => {
+  it("should close the modal if close on background click is enabled and background is clicked", () => {
     const doneFn = vi.fn();
     const setIsOpenFn = vi.fn();
 
