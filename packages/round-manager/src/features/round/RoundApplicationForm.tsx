@@ -40,7 +40,8 @@ import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
 import _ from "lodash";
 import { useCreateRoundStore } from "../../stores/createRoundStore";
-import { useAllo } from "common";
+import { useAllo, useWallet } from "common";
+import { getAddress } from "viem";
 
 export const initialQuestionsQF: SchemaQuestion[] = [
   {
@@ -183,6 +184,7 @@ export function RoundApplicationForm(props: {
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
   const [toEdit, setToEdit] = useState<EditQuestion | undefined>();
+  const { signer: walletSigner } = useWallet();
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
@@ -297,10 +299,21 @@ export function RoundApplicationForm(props: {
       } as DeepRequired<Round>;
 
       await createRound(allo, {
-        roundMetadataWithProgramContractAddress,
-        round,
-        applicationQuestions,
-        roundCategory,
+        roundData: {
+          roundCategory: roundCategory,
+          roundMetadataWithProgramContractAddress,
+          applicationQuestions,
+          roundStartTime: round.roundStartTime,
+          roundEndTime: round.roundEndTime,
+          applicationsStartTime: round.applicationsStartTime,
+          applicationsEndTime: round.applicationsEndTime,
+          token: round.token,
+          matchingFundsAvailable:
+            round.roundMetadata.quadraticFundingConfig.matchingFundsAvailable,
+          roundOperators: round.operatorWallets.map(getAddress),
+        },
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        walletSigner: walletSigner!,
       });
     } catch (error) {
       datadogLogs.logger.error(

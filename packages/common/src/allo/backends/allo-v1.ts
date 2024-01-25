@@ -60,7 +60,7 @@ export type CreateRoundArguments = {
     applicationsStartTime: Date;
     applicationsEndTime: Date;
     token: string;
-    matchingFundsAvailable: bigint;
+    matchingFundsAvailable: number;
     roundOperators: Address[];
   };
   walletSigner: Signer;
