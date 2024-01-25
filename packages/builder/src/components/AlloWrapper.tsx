@@ -40,7 +40,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
             token: getConfig().pinata.jwt,
             endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
           }),
-          waitUntilIndexerSynced: waitForSubgraphSyncTo,
+          waitUntilIndexerSynced: waitForSubgraphSyncTo, // todo: replace with actual indexer
         });
 
         setBackend(alloBackend);
@@ -63,8 +63,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       }
     }
   }, [web3Provider, signer, chainID]);
-
-  console.log("✅ Backend set to ", backend);
 
   return <AlloProvider backend={backend}>{children}</AlloProvider>;
 }

@@ -2,7 +2,6 @@ import { datadogRum } from "@datadog/browser-rum";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
 import { Dispatch } from "redux";
-import { RootState } from "../reducers";
 import { Metadata } from "../types";
 import { getProjectURIComponents, getV1HashedProjectId } from "../utils/utils";
 
@@ -85,8 +84,7 @@ export const grantMetadataFetchingError = (
  * @returns The data for a project
  */
 export const fetchGrantData =
-  (id: string, dataLayer: DataLayer) =>
-  async (dispatch: Dispatch, getState: () => RootState) => {
+  (id: string, dataLayer: DataLayer) => async (dispatch: Dispatch) => {
     dispatch(grantMetadataLoadingURI(id));
     const config = getConfig();
     const { chainId } = getProjectURIComponents(id);
@@ -107,9 +105,6 @@ export const fetchGrantData =
       }
 
       const { project } = result;
-
-      // fixme: this is here bc of param / linter issue
-      console.log(getState());
 
       const item: Metadata = {
         id,

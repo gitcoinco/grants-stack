@@ -30,7 +30,7 @@ import initTagmanager from "./tagmanager";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
 
-export const dataLayerConfig = new DataLayer({
+const dataLayerConfig = new DataLayer({
   search: {
     baseUrl: getConfig().dataLayer.searchServiceBaseUrl,
     pagination: {

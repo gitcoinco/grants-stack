@@ -191,8 +191,6 @@ export const loadProjects =
         chainId: chainID.valueOf(),
       });
 
-      console.log("projectEventsMap", projectEventsMap);
-
       if (!projectEventsMap) {
         dispatch(projectsLoaded(chainID, {}));
         return;

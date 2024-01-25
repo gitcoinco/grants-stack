@@ -1,12 +1,16 @@
+import {
+  AlloProvider,
+  AlloV2,
+  AnyJson,
+  createMockTransactionSender,
+} from "common";
 import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
-import { DataLayerProvider } from "data-layer";
+import { DataLayer, DataLayerProvider } from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
-import { dataLayerConfig } from "..";
-import AlloWrapper from "../components/AlloWrapper";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
@@ -108,6 +112,34 @@ export const buildProjectApplication = (application: any): any => ({
   ...application,
 });
 
+const alloBackend = new AlloV2({
+  chainId: 5,
+  projectRegistryAddress: ethers.constants.AddressZero,
+  ipfsUploader: async (file: Blob | AnyJson) =>
+    Promise.resolve({
+      type: "success",
+      value: "ipfsHash",
+    }),
+  waitUntilIndexerSynced: async () => Promise.resolve(BigInt(1)),
+  transactionSender: createMockTransactionSender(),
+});
+
+// todo: introduce mock data layer?
+const dataLayerConfig = new DataLayer({
+  search: {
+    baseUrl: "http://localhost/",
+    pagination: {
+      pageSize: 50,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: "http://localhost/",
+  },
+  indexer: {
+    baseUrl: "http://localhost/",
+  },
+});
+
 export const renderWrapped = (
   ui: React.ReactElement,
   store = setupStore()
@@ -115,13 +147,13 @@ export const renderWrapped = (
   const wrapped = (
     <ChakraProvider>
       <Provider store={store}>
-        <AlloWrapper>
+        <AlloProvider backend={alloBackend}>
           <DataLayerProvider client={dataLayerConfig}>
             <ReduxRouter store={store} history={history}>
               {ui}
             </ReduxRouter>
           </DataLayerProvider>
-        </AlloWrapper>
+        </AlloProvider>
       </Provider>
     </ChakraProvider>
   );
