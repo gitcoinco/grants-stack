@@ -485,7 +485,6 @@ describe("<ViewRound /> in case of after the round start date", () => {
           isLoading: false,
         },
       });
-      screen.logTestingPlaygroundURL();
       // click add to cart
       const addToCart = screen.getByTestId("add-to-cart");
       fireEvent.click(addToCart);
