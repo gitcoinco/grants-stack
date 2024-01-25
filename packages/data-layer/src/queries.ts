@@ -29,6 +29,7 @@ export const getProjectById = gql`
       roles {
         address
         role
+        createdAtBlock
       }
     }
   }

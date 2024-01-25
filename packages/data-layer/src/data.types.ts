@@ -44,6 +44,8 @@ export type ProjectMetadata = {
 export type AddressAndRole = {
   address: string;
   role: string;
+  createdAtBlock: string;
+  // updatedAtBlock: string;
 };
 
 /**
@@ -157,11 +159,11 @@ export type v2Project = {
   /**
    * The block the project was created at
    */
-  createdAtBlock: number;
+  createdAtBlock: string;
   /**
    * The block the project was updated at
    */
-  updatedAtBlock: number;
+  updatedAtBlock: string;
   roles: AddressAndRole[];
 };
 

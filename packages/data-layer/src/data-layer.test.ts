@@ -5,6 +5,7 @@ import { describe, expect, test, vi } from "vitest";
 import { v2Project } from ".";
 import { DataLayer } from "./data-layer";
 
+// This is mocked from an acutal project on Sepolia
 const mockProjects: v2Project[] = [
   {
     id: "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
@@ -25,15 +26,17 @@ const mockProjects: v2Project[] = [
     name: "Jax v2 test 4",
     nodeId:
       "WyJwcm9qZWN0cyIsIjB4OGE3OTI0OWI2MzM5NWMyNWJkMTIxYmE2ZmYyODAxOThjMzk5ZDRmYjNmOTUxZmMzYzQyMTk3YjU0YTZkYjZhNiIsMTExNTUxMTFd",
-    createdAtBlock: 5146499,
-    updatedAtBlock: 5146499,
+    // note: This is moved to roles also
+    createdAtBlock: "5146499",
+    updatedAtBlock: "5146499",
     projectNumber: null,
     registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
     tags: ["allo-v2"],
     roles: [
       {
-        address: "0x8a79249b63395c25bd121ba6ff280198c399d4fb",
+        address: "0xe849b2a694184b8739a04c915518330757cdb18b",
         role: "OWNER",
+        createdAtBlock: "5146499",
       },
     ],
   },
@@ -564,8 +567,23 @@ describe("projects retrieval", () => {
       alloVersion: "allo-v2",
     });
 
-    // fixme: not working / I updated the object and got it close but still failing @0xKurt
-    // expect(project).toEqual({ project: mockProject });
+    // todo: update to test the entire object when the missing fields are added
+    // to the indexer. @0xKurt
+    // {
+    //   bannerImg: "",
+    //   bannerImgData: new Blob(),
+    //   logoImg: "",
+    //   logoImgData: new Blob(),
+    // }
+    expect(project?.project.id).toEqual(mockProject.id);
+    expect(project?.project.nodeId).toEqual(mockProject.nodeId);
+    expect(project?.project.chainId).toEqual(mockProject.chainId);
+    expect(project?.project.registryAddress).toEqual(mockProject.registryAddress);
+    expect(project?.project.projectNumber).toEqual(mockProject.projectNumber);
+    expect(project?.project.tags).toEqual(mockProject.tags);
+    expect(project?.project.roles).toEqual(mockProject.roles);
+    expect(project?.project.name).toEqual(mockProject.name);
+    expect(project?.project.metadata.description).toEqual(mockProject.metadata.description);
   });
 
   test("can retrieve all projects for a network", async () => {
