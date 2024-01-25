@@ -26,17 +26,13 @@ function Project() {
 
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
-
     const grantMetadata = state.grantsMetadata[fullId];
     const owners = state.projects.owners[fullId];
-
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
-
     const loadingFailed =
       grantMetadata && grantMetadata.status === Status.Error;
-
     const bannerImg = getProjectImage(
       loading,
       ImgTypes.bannerImg,
@@ -74,6 +70,8 @@ function Project() {
     if (props.projectEvents === undefined) {
       dispatch(loadAllChainsProjects(dataLayer, true));
     }
+
+    console.log("props.owners", props.owners);
   }, [props.projectEvents, global, dispatch]);
 
   if (
@@ -112,7 +110,7 @@ function Project() {
             </Link>
             {props.id &&
               props.owners &&
-              props.owners.includes(props.signerAddress!) && (
+              props.owners.includes(props.signerAddress!.toLowerCase()) && (
                 <Link
                   to={createEditPath()}
                   className="sm:w-auto mx-w-full ml-0"

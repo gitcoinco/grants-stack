@@ -4,8 +4,12 @@ import { web3AccountLoaded, web3ChainIDLoaded } from "../../../actions/web3";
 import setupStore from "../../../store";
 import {
   addressFrom,
-  buildProjectMetadata
+  buildProjectMetadata,
+  // renderWrapped,
 } from "../../../utils/test_utils";
+// import { Show } from "@chakra-ui/react";
+// import { waitFor } from "@testing-library/react";
+// import { fetchProjectOwners } from "../../../utils/projects";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -51,14 +55,10 @@ describe("<Show />", () => {
   describe("edit button", () => {
     it("shows when the user is an owner", async () => {
       // (fetchProjectOwners as jest.Mock).mockResolvedValue(["0x123"]);
-
       // const dom = renderWrapped(<Show />, store);
-
       // await waitFor(() => expect(fetchProjectOwners).toBeCalled());
-
       // expect((fetchProjectOwners as jest.Mock).mock.calls[0][0]).toBe(1);
       // expect((fetchProjectOwners as jest.Mock).mock.calls[0][1]).toBe("1");
-
       // await waitFor(() => {
       //   expect(dom.getByText("Edit")).toBeInTheDocument();
       // });
@@ -66,14 +66,10 @@ describe("<Show />", () => {
 
     it("hides when the user is not an owner", async () => {
       // (fetchProjectOwners as jest.Mock).mockResolvedValue(["0x321"]);
-
       // const dom = renderWrapped(<Show />, store);
-
       // await waitFor(() => expect(fetchProjectOwners).toBeCalled());
-
       // expect((fetchProjectOwners as jest.Mock).mock.calls[0][0]).toBe(1);
       // expect((fetchProjectOwners as jest.Mock).mock.calls[0][1]).toBe("1");
-
       // await waitFor(() => {
       //   expect(dom.queryByText("Edit")).not.toBeInTheDocument();
       // });
