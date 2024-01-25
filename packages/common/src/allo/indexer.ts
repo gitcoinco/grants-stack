@@ -8,6 +8,8 @@ export interface WaitUntilIndexerSynced {
   }): Promise<bigint>;
 }
 
+// todo: add waitForIndexerSynced
+
 export const waitForSubgraphSyncTo: WaitUntilIndexerSynced = async (args) => {
   const { chainId, blockNumber, pollIntervalInMs = 1000 } = args;
   let currentBlockNumber = await getCurrentSubgraphBlockNumber(chainId);

@@ -4,7 +4,7 @@ import { DataLayer } from "./data-layer";
 export const DataLayerContext = createContext<DataLayer | null>(null);
 
 interface DataLayerProps extends React.PropsWithChildren {
-  client: DataLayer;
+  client: DataLayer | null;
 }
 
 export const DataLayerProvider: React.FC<DataLayerProps> = ({

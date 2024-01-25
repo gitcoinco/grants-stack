@@ -115,6 +115,7 @@ export const buildProjectApplication = (application: any): any => ({
 const alloBackend = new AlloV2({
   chainId: 5,
   projectRegistryAddress: ethers.constants.AddressZero,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ipfsUploader: async (file: Blob | AnyJson) =>
     Promise.resolve({
       type: "success",
