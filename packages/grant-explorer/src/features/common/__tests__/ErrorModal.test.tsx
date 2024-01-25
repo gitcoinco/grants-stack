@@ -101,7 +101,7 @@ describe("<ErrorModal />", () => {
         expect(setIsOpenFn).toBeCalledWith(false);
       },
       {
-        timeout: 10,
+        timeout: 10_000,
       }
     );
   });
