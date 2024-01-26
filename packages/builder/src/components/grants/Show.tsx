@@ -70,7 +70,6 @@ function Project() {
     if (props.projectEvents === undefined) {
       dispatch(loadAllChainsProjects(dataLayer, true));
     }
-
   }, [props.projectEvents, global, dispatch]);
 
   if (
