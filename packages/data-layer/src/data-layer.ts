@@ -6,7 +6,7 @@ import shuffle from "knuth-shuffle-seeded";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
 import * as legacy from "./backends/legacy";
-import { PaginationInfo } from "./data-layer.types";
+import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Collection,
   ProjectEventsMap,
@@ -131,7 +131,7 @@ export class DataLayer {
   }: {
     projectId: string;
     chainId: number;
-    alloVersion: string;
+    alloVersion: AlloVersion;
   }): Promise<{ project: v2Project } | null> {
     const requestVariables = {
       alloVersion,
@@ -169,7 +169,7 @@ export class DataLayer {
   }: {
     chainIds: number[];
     first: number;
-    alloVersion: string;
+    alloVersion: AlloVersion;
   }): Promise<{ projects: v2Project[] } | null> {
     const projects: v2Project[] = [];
 
@@ -207,7 +207,7 @@ export class DataLayer {
     chainId,
   }: {
     address: string;
-    alloVersion: string;
+    alloVersion: AlloVersion;
     chainId: number;
   }): Promise<ProjectEventsMap | undefined> {
     const requestVariables = {

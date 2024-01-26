@@ -1,3 +1,4 @@
+import { AlloVersion } from "data-layer/dist/data-layer.types";
 import { z } from "zod";
 import { ChainId } from "./chain-ids";
 
@@ -10,11 +11,6 @@ function parseStringToBoolean(value: string) {
   }
 
   return false;
-}
-
-export enum AlloVersion {
-  v1 = "allo-v1",
-  v2 = "allo-v2",
 }
 
 export type Config = {
@@ -40,7 +36,7 @@ export type Config = {
     disableEstimates: boolean;
   };
   allo: {
-    version: string;
+    version: AlloVersion;
   };
 };
 
@@ -156,8 +152,8 @@ export function getConfig(): Config {
     },
     allo: {
       version: z
-        .string()
-        .default(AlloVersion.v1)
+        .enum(["allo-v1", "allo-v2"])
+        .default("allo-v1")
         .parse(process.env.REACT_APP_ALLO_VERSION),
     },
   };
