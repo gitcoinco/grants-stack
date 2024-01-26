@@ -82,6 +82,9 @@ export const getProviderByChainId = (chainId: ChainId) => {
 
 export const getV1HashedProjectId = (projectId: string) => {
   const { chainId, registryAddress, id } = getProjectURIComponents(projectId);
+  console.log("chainId", chainId);
+  console.log("registryAddress", registryAddress);
+  console.log("id", id);
   const generatedProjectId = generateUniqueRoundApplicationID(
     Number(chainId),
     id,
