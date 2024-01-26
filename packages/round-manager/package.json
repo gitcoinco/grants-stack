@@ -36,7 +36,7 @@
     "@heroicons/react": "^1.0.6",
     "@hookform/resolvers": "^2.9.2",
     "@openzeppelin/merkle-tree": "^1.0.2",
-    "@rainbow-me/rainbowkit": "0.12.16",
+    "@rainbow-me/rainbowkit": "0.12.18",
     "@reduxjs/toolkit": "^1.8.1",
     "@sentry/integrations": "^7.28.0",
     "@sentry/react": "^7.27.0",

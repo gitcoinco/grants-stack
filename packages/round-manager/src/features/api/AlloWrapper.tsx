@@ -1,0 +1,53 @@
+import { useEffect, useState } from "react";
+import {
+  Allo,
+  AlloProvider,
+  AlloV1,
+  createEthersTransactionSender,
+  createPinataIpfsUploader,
+  waitForSubgraphSyncTo,
+} from "common";
+import { useNetwork, useProvider, useSigner } from "wagmi";
+import { getConfig } from "common/src/config";
+
+function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
+  const { chain } = useNetwork();
+  const web3Provider = useProvider();
+  const { data: signer } = useSigner();
+  const chainID = chain?.id;
+
+  const [backend, setBackend] = useState<Allo | null>(null);
+
+  useEffect(() => {
+    console.log("AlloWrapper: useEffect", web3Provider, signer, chainID);
+    if (!web3Provider || !signer || !chainID) {
+      setBackend(null);
+    } else {
+      // const alloBackend: Allo = new AlloV2({
+      //   chainId: chainID,
+      //   transactionSender: createEthersTransactionSender(signer, web3Provider),
+      //   ipfsUploader: createPinataIpfsUploader({
+      //     token: getConfig().pinata.jwt,
+      //     endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
+      //   }),
+      //   waitUntilIndexerSynced: waitForSubgraphSyncTo,
+      // });
+
+      const alloBackend: Allo = new AlloV1({
+        chainId: chainID,
+        transactionSender: createEthersTransactionSender(signer, web3Provider),
+        ipfsUploader: createPinataIpfsUploader({
+          token: getConfig().pinata.jwt,
+          endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
+        }),
+        waitUntilIndexerSynced: waitForSubgraphSyncTo,
+      });
+
+      setBackend(alloBackend);
+    }
+  }, [web3Provider, signer, chainID]);
+
+  return <AlloProvider backend={backend}>{children}</AlloProvider>;
+}
+
+export default AlloWrapper;

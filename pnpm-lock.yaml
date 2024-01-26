@@ -896,8 +896,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.5
       '@rainbow-me/rainbowkit':
-        specifier: 0.12.16
-        version: 0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.19)
+        specifier: 0.12.18
+        version: 0.12.18(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.19)
       '@reduxjs/toolkit':
         specifier: ^1.8.1
         version: 1.9.5(react-redux@8.1.2)(react@18.2.0)
