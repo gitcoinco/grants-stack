@@ -121,12 +121,6 @@ export const fetchGrantData =
         pointer: project.metadataCid,
       };
 
-      // note: should we return an empty meatadata object here? then the app wont fail on
-      // metadata being null.
-      if (item === null) {
-        throw new Error("metadata is null");
-      }
-
       const ownerAddresses = project.roles
         .filter((role: AddressAndRole) => role.role === "OWNER")
         .map((role) => role.address);

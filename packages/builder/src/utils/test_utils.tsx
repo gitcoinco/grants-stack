@@ -1,13 +1,8 @@
-import {
-  AlloProvider,
-  AlloV2,
-  AnyJson,
-  createMockTransactionSender,
-} from "common";
 import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
+import { AlloProvider, AlloV2, createMockTransactionSender } from "common";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
@@ -115,7 +110,7 @@ export const buildProjectApplication = (application: any): any => ({
 const alloBackend = new AlloV2({
   chainId: 5,
   projectRegistryAddress: ethers.constants.AddressZero,
-  ipfsUploader: async (_file: Blob | AnyJson) =>
+  ipfsUploader: async () =>
     Promise.resolve({
       type: "success",
       value: "ipfsHash",
