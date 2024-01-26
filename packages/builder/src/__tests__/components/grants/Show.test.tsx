@@ -5,11 +5,10 @@ import setupStore from "../../../store";
 import {
   addressFrom,
   buildProjectMetadata,
-  // renderWrapped,
+  renderWrapped,
 } from "../../../utils/test_utils";
-// import { Show } from "@chakra-ui/react";
-// import { waitFor } from "@testing-library/react";
-// import { fetchProjectOwners } from "../../../utils/projects";
+import Project from "../../../components/grants/Show";
+import { projectOwnersLoaded } from "../../../actions/projects";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -37,42 +36,33 @@ jest.mock("../../../utils/projects", () => ({
 
 describe("<Show />", () => {
   let store: any;
+  let projectId = `1:${addressFrom(1)}:1`;
 
   beforeEach(() => {
     store = setupStore();
     store.dispatch(
       grantMetadataFetched(
         buildProjectMetadata({
-          id: `1:${addressFrom(1)}:1`,
+          id: projectId,
           credentials: {},
         })
       )
     );
+    store.dispatch(projectOwnersLoaded(projectId, ["0x123"]));
     store.dispatch(web3ChainIDLoaded(5));
-    store.dispatch(web3AccountLoaded("0x123"));
   });
 
   describe("edit button", () => {
     it("shows when the user is an owner", async () => {
-      // (fetchProjectOwners as jest.Mock).mockResolvedValue(["0x123"]);
-      // const dom = renderWrapped(<Show />, store);
-      // await waitFor(() => expect(fetchProjectOwners).toBeCalled());
-      // expect((fetchProjectOwners as jest.Mock).mock.calls[0][0]).toBe(1);
-      // expect((fetchProjectOwners as jest.Mock).mock.calls[0][1]).toBe("1");
-      // await waitFor(() => {
-      //   expect(dom.getByText("Edit")).toBeInTheDocument();
-      // });
+      store.dispatch(web3AccountLoaded("0x123"));
+      const dom = renderWrapped(<Project />, store);
+      expect(dom.getByText("Edit")).toBeInTheDocument();
     });
 
     it("hides when the user is not an owner", async () => {
-      // (fetchProjectOwners as jest.Mock).mockResolvedValue(["0x321"]);
-      // const dom = renderWrapped(<Show />, store);
-      // await waitFor(() => expect(fetchProjectOwners).toBeCalled());
-      // expect((fetchProjectOwners as jest.Mock).mock.calls[0][0]).toBe(1);
-      // expect((fetchProjectOwners as jest.Mock).mock.calls[0][1]).toBe("1");
-      // await waitFor(() => {
-      //   expect(dom.queryByText("Edit")).not.toBeInTheDocument();
-      // });
+      store.dispatch(web3AccountLoaded("0x456"));
+      const dom = renderWrapped(<Project />, store);
+      expect(dom.queryByText("Edit")).not.toBeInTheDocument();
     });
   });
 });
