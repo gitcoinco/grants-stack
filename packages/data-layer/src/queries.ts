@@ -109,6 +109,7 @@ export const getProjectsAndRolesByAddress = gql`
         roles: { every: { address: { equalTo: $address } } }
         tags: { contains: $version }
         chainId: { equalTo: $chainId }
+        rolesExist: true
       }
     ) {
       roles {
