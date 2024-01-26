@@ -256,6 +256,18 @@ export const loadAllChainsProjects =
     });
   };
 
+/**
+ * Load project applications for a given round
+ *
+ * @remarks
+ *
+ * This returns whether the project has applied to a given round.
+ *
+ * @param roundID
+ * @param roundChainId
+ *
+ * @returns boolean
+ */
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
   roundID: string,
@@ -313,6 +325,19 @@ export const fetchProjectApplicationInRound = async (
   }
 };
 
+/**
+ * Load project applications for a given project on a given chain
+ *
+ * @remarks
+ *
+ * This loads project applications for a given project and network and dispatches the
+ * appropriate actions to the store.
+ *
+ * @param projectID
+ * @param projectChainId
+ *
+ * @returns All applications for a given project
+ */
 export const fetchProjectApplications =
   (projectID: string, projectChainId: ChainId) =>
   async (dispatch: Dispatch) => {
@@ -331,10 +356,6 @@ export const fetchProjectApplications =
       web3Provider.chains.map(async (chain: { id: number }) => {
         try {
           const addresses = addressesByChainID(projectChainId);
-
-          // TODO: check if v1 or v2
-          // todo:
-
           const projectApplicationID = generateUniqueRoundApplicationID(
             projectChainId,
             projectID,
@@ -410,6 +431,16 @@ export const fetchProjectApplications =
     });
   };
 
+/**
+ * Load project stats for a given project and network
+ *
+ * @param projectID
+ * @param projectRegistryAddress
+ * @param projectChainId
+ * @param rounds
+ *
+ * @returns
+ */
 export const loadProjectStats =
   (
     projectID: string,
@@ -422,7 +453,6 @@ export const loadProjectStats =
     }>
   ) =>
   async (dispatch: Dispatch) => {
-    // todo: need to check whether v1 or v2
     const uniqueProjectID = generateUniqueRoundApplicationID(
       Number(projectChainId),
       projectID,
