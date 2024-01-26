@@ -13,6 +13,7 @@ export const getProjectById = gql`
     projects(
       filter: {
         tags: { equalTo: $alloVersion }
+        not: { tags: { contains: "program" } }
         id: { equalTo: $projectId }
         and: { chainId: { equalTo: $chainId } }
       }
@@ -50,7 +51,10 @@ export const getProjects = gql`
     $chainId: Int!
   ) {
     projects(
-      filter: { tags: { equalTo: $alloVersion } }
+      filter: {
+        tags: { equalTo: $alloVersion }
+        not: { tags: { contains: "program" } }
+      }
       first: $first
       condition: { chainId: $chainId }
     ) {
@@ -108,6 +112,7 @@ export const getProjectsAndRolesByAddress = gql`
       filter: {
         roles: { every: { address: { equalTo: $address } } }
         tags: { contains: $version }
+        not: { tags: { contains: "program" } }
         chainId: { equalTo: $chainId }
         rolesExist: true
       }
