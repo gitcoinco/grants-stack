@@ -319,7 +319,7 @@ export class AlloV1 implements Allo {
       const txResult = await sendTransaction(this.transactionSender, {
         address: this.roundFactoryAddress,
         abi: RoundFactoryABI,
-        functionName: "createRound",
+        functionName: "create",
         args: [
           constructCreateRoundArgs({
             initTimes: initRoundTimes,

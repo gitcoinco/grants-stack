@@ -4,7 +4,6 @@ import { fetchFromIPFS } from "../utils";
 import { GrantApplication } from "../types";
 import { Contract } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
-import { graphql_fetch } from "common";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),

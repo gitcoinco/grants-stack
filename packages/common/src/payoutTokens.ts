@@ -1,4 +1,4 @@
-import { ChainId, RedstoneTokenIds } from "./index";
+import { ChainId, RedstoneTokenIds } from "./chain-ids";
 import { ethers } from "ethers";
 import { Address } from "wagmi";
 
