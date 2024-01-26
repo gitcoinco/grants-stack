@@ -71,7 +71,6 @@ function Project() {
       dispatch(loadAllChainsProjects(dataLayer, true));
     }
 
-    console.log("props.owners", props.owners);
   }, [props.projectEvents, global, dispatch]);
 
   if (
