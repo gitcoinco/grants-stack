@@ -35,7 +35,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
             signer,
             web3Provider
           ),
-          projectRegistryAddress: "0x0000000000000000000000000000000000000000",
           ipfsUploader: createPinataIpfsUploader({
             token: getConfig().pinata.jwt,
             endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,

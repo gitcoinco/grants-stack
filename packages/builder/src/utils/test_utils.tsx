@@ -109,7 +109,6 @@ export const buildProjectApplication = (application: any): any => ({
 
 const alloBackend = new AlloV2({
   chainId: 5,
-  projectRegistryAddress: ethers.constants.AddressZero,
   ipfsUploader: async () =>
     Promise.resolve({
       type: "success",

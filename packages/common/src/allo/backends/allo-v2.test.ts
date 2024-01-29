@@ -30,7 +30,6 @@ describe("AlloV2", () => {
   beforeEach(() => {
     allo = new AlloV2({
       chainId,
-      projectRegistryAddress, // todo: not used
       ipfsUploader,
       transactionSender,
       waitUntilIndexerSynced,

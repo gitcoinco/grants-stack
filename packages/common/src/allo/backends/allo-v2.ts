@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Hex } from "viem";
 import RegistryABI from "../abis/allo-v2/Registry";
 import { Allo, AlloError, AlloOperation } from "../allo";
 import { Result, error, success } from "../common";
@@ -28,7 +28,6 @@ export class AlloV2 implements Allo {
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
-    projectRegistryAddress: Address; // todo: not used, handled by sdk
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
