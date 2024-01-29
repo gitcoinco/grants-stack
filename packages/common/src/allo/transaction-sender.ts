@@ -2,6 +2,7 @@ import { Abi, ExtractAbiEventNames } from "abitype";
 import ethers from "ethers";
 import {
   Address,
+  EncodeFunctionDataParameters,
   GetEventArgs,
   Hex,
   Log,
