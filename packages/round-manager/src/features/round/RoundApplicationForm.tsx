@@ -40,8 +40,9 @@ import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
 import _ from "lodash";
 import { useCreateRoundStore } from "../../stores/createRoundStore";
-import { useAllo, useWallet } from "common";
+import { useAllo } from "common";
 import { getAddress } from "viem";
+import { useWallet } from "../common/Auth";
 
 export const initialQuestionsQF: SchemaQuestion[] = [
   {

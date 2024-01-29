@@ -5,7 +5,7 @@ import { Allo } from "common";
 import { Result } from "common/src/allo/common";
 import { CreateRoundArguments } from "common/src/allo/backends/allo-v1";
 
-type CreateRoundStoreState = {
+export type CreateRoundStoreState = {
   ipfsStatus: ProgressStatus;
   contractDeploymentStatus: ProgressStatus;
   indexingStatus: ProgressStatus;
