@@ -1,7 +1,7 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
-    "target": "es2021",
+    "target": "es2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "dist",
     "allowJs": true,

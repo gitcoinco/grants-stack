@@ -112,7 +112,7 @@ export class AlloV1 implements Allo {
         address: this.projectRegistryAddress,
         abi: ProjectRegistryABI,
         functionName: "createProject",
-        args: [{ protocol: 1n, pointer: ipfsResult.value }],
+        args: [{ protocol: BigInt(1), pointer: ipfsResult.value }],
       });
 
       emit("transaction", txResult);
@@ -186,7 +186,10 @@ export class AlloV1 implements Allo {
         address: this.projectRegistryAddress,
         abi: ProjectRegistryABI,
         functionName: "updateProjectMetadata",
-        args: [projectIndex, { protocol: 1n, pointer: ipfsResult.value }],
+        args: [
+          projectIndex,
+          { protocol: BigInt(1), pointer: ipfsResult.value },
+        ],
       });
 
       emit("transaction", txResult);
@@ -333,11 +336,11 @@ export class AlloV1 implements Allo {
             payoutStrategyFactory,
             votingStrategyFactory,
             roundMetadata: {
-              protocol: 1n,
+              protocol: BigInt(1),
               pointer: roundIpfsResult.value,
             },
             applicationMetadata: {
-              protocol: 1n,
+              protocol: BigInt(1),
               pointer: applicationMetadataIpfsResult.value,
             },
           }),
