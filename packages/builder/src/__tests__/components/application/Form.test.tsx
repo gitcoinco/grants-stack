@@ -275,8 +275,6 @@ describe("<Form />", () => {
         });
       });
 
-      screen.logTestingPlaygroundURL();
-
       await waitFor(() =>
         expect(
           screen.getByText(

@@ -12,7 +12,7 @@ import { initTagmanager } from "./tagmanager";
 import { initPosthog } from "./posthog";
 import { chains, config } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
-import { DataLayerProvider, DataLayer } from "data-layer";
+import { DataLayer, DataLayerProvider } from "data-layer";
 import { getConfig } from "common/src/config";
 
 import "./index.css";
