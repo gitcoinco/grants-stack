@@ -4,6 +4,7 @@ import {
   encodePacked,
   getAddress,
   Hex,
+  hexToBigInt,
   keccak256,
   maxUint256,
   parseAbiParameters,
@@ -340,6 +341,7 @@ export class AlloV1 implements Allo {
               pointer: applicationMetadataIpfsResult.value,
             },
           }),
+          admins[0],
         ],
       });
 

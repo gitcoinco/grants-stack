@@ -32,8 +32,8 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
   round: undefined,
   createRound: async (allo: Allo, createRoundData: CreateRoundArguments) => {
     set({
-      indexingStatus: ProgressStatus.IN_PROGRESS,
-      contractDeploymentStatus: ProgressStatus.IN_PROGRESS,
+      indexingStatus: ProgressStatus.NOT_STARTED,
+      contractDeploymentStatus: ProgressStatus.NOT_STARTED,
       ipfsStatus: ProgressStatus.IN_PROGRESS,
     });
 
@@ -43,6 +43,7 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
         if (res.type === "success") {
           set({
             ipfsStatus: ProgressStatus.IS_SUCCESS,
+            contractDeploymentStatus: ProgressStatus.IN_PROGRESS,
           });
         } else {
           set({
@@ -65,6 +66,18 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
         if (res.type === "success") {
           set({
             contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
+            indexingStatus: ProgressStatus.IN_PROGRESS,
+          });
+        } else {
+          set({
+            contractDeploymentStatus: ProgressStatus.IS_ERROR,
+          });
+        }
+      })
+      .on("transactionStatus", (res) => {
+        if (res.type === "success") {
+          set({
+            contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
           });
         } else {
           set({
@@ -73,6 +86,12 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
         }
       })
       .execute();
+
+    if (round.type === "success") {
+      set({
+        round: round.value.roundId,
+      });
+    }
 
     return round;
   },
