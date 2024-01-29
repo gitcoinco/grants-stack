@@ -235,9 +235,12 @@ export async function sendRawTransaction(
   }
 }
 
-export async function sendTransaction(
+export async function sendTransaction<
+  TAbi extends Abi,
+  TFunctionName extends string,
+>(
   sender: TransactionSender,
-  args: Parameters<typeof encodeFunctionData>[0] & { address: Address }
+  args: EncodeFunctionDataParameters<TAbi, TFunctionName> & { address: Address }
 ): Promise<Result<Hex>> {
   try {
     const data = encodeFunctionData(args);
