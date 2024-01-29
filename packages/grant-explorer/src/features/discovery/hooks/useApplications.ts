@@ -1,8 +1,7 @@
+import { Collection } from "data-layer";
 import useSWRInfinite from "swr/infinite";
-import { useDataLayer } from "data-layer";
+import { useDataLayer, SearchBasedProjectCategory } from "data-layer";
 import { useMemo } from "react";
-import { Category } from "../../categories/hooks/useCategories";
-import { Collection } from "../../collections/hooks/useCollections";
 
 export type ApplicationFilter =
   | {
@@ -25,14 +24,19 @@ export type ApplicationFetchOptions =
       order?: { type: "random"; seed: number };
     };
 
-export function useApplications(options: ApplicationFetchOptions) {
+export function useApplications(options: ApplicationFetchOptions | null) {
   const dataLayer = useDataLayer();
 
   const { data, error, size, setSize } = useSWRInfinite(
-    (pageIndex) => [pageIndex, options, "/applications"],
+    (pageIndex) =>
+      options === null ? null : [pageIndex, options, "/applications"],
     async ([pageIndex]) => {
-      // TODO: Improve this - would be great if we could query like this without the switch:
-      // const res = await grantsStackDataClient.query({ page, ...options })
+      // The first argument to useSRWInfinite will ensure that this function
+      // never gets called if options is `null`. If it's still called, we fail
+      // early and clearly.
+      if (options === null) {
+        throw new Error("Bug");
+      }
       switch (options.type) {
         case "applications-search": {
           const { results, pagination } = await dataLayer.searchApplications({
@@ -110,7 +114,7 @@ export function createApplicationFetchOptions({
   filters,
 }: {
   searchQuery?: string;
-  category?: Category;
+  category?: SearchBasedProjectCategory;
   collection?: Collection;
   filters: Filter[];
 }): ApplicationFetchOptions {
@@ -136,7 +140,7 @@ export function createApplicationFetchOptions({
   } else if (collection !== undefined) {
     applicationsFetchOptions = {
       type: "applications-paginated",
-      filter: { type: "refs", refs: collection.projects },
+      filter: { type: "refs", refs: collection.applicationRefs },
       order: {
         type: "random",
         seed: PROJECTS_SORTING_SEED,

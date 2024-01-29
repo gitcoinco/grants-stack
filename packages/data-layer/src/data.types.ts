@@ -203,3 +203,19 @@ export type RoundMetadata = {
   eligibility: Eligibility;
   programContractAddress: string;
 };
+
+export type SearchBasedProjectCategory = {
+  id: string;
+  name: string;
+  images: string[];
+  searchQuery: string;
+};
+
+export type Collection = {
+  id: string;
+  author: string;
+  name: string;
+  images: string[];
+  description: string;
+  applicationRefs: string[];
+};

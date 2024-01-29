@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { DefaultLayout } from "../common/DefaultLayout";
+import { GradientLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
 import { LandingSection } from "./LandingSection";
 import {
@@ -21,7 +21,7 @@ const ExploreRoundsPage = () => {
   const sectionTitle = getExplorerPageTitle(filter);
 
   return (
-    <DefaultLayout showWalletInteraction>
+    <GradientLayout showWalletInteraction>
       <LandingHero />
 
       <LandingSection
@@ -31,7 +31,7 @@ const ExploreRoundsPage = () => {
       >
         <RoundsGrid {...rounds} loadingCount={6} roundType="all" />
       </LandingSection>
-    </DefaultLayout>
+    </GradientLayout>
   );
 };
 

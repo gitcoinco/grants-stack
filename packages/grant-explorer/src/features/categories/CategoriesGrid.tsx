@@ -1,9 +1,9 @@
+import { SearchBasedProjectCategory } from "data-layer";
 import CategoryCard from "./CategoryCard";
-import { Category } from "./hooks/useCategories";
 
 type Props = {
   isLoading?: boolean;
-  data?: Category[];
+  data?: SearchBasedProjectCategory[];
   loadingCount: number;
   maxCount?: number;
 };

@@ -178,12 +178,14 @@ export class AlloV1 implements Allo {
         return ipfsResult;
       }
 
+      const projectIndex = hexToBigInt(args.projectId);
+
       // --- send transaction to update project metadata
       const txResult = await sendTransaction(this.transactionSender, {
-        address: args.projectId,
+        address: this.projectRegistryAddress,
         abi: ProjectRegistryABI,
         functionName: "updateProjectMetadata",
-        args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
+        args: [projectIndex, { protocol: 1n, pointer: ipfsResult.value }],
       });
 
       emit("transaction", txResult);
