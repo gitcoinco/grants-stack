@@ -138,3 +138,14 @@ export const getProjectsAndRolesByAddress = gql`
     }
   }
 `;
+
+// export const getBlockNumberQuery = gql`
+//   {
+//     subscriptions(
+//       filter: { chainId: { equalTo: 1 }, toBlock: { equalTo: "latest" } }
+//     ) {
+//       chainId
+//       indexedToBlock
+//     }
+//   }
+// `;

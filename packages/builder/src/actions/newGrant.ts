@@ -1,6 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { Allo, AnyJson } from "common";
+import { waitForIndexerSyncedTo } from "common/dist/allo/indexer";
 import { getConfig } from "common/src/config";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
@@ -147,9 +148,25 @@ export const publishGrant =
           dispatch(grantError("transaction error", Status.Error));
         }
       })
-      .on("transactionStatus", (res) => {
+      .on("transactionStatus", async (res) => {
+        console.log("Transaction Status", res);
         if (res.type === "success") {
-          dispatch(grantStatus(Status.Completed));
+          const txBlock = res.value.blockNumber;
+          const futureBlock = BigInt((Number(txBlock) + 1).toString());
+          console.log("waiting for indexer to sync to ", txBlock);
+
+          // todo: add Indexing status?
+          // dispatch(grantStatus(Status.Indexing));
+          const blockNumber = await waitForIndexerSyncedTo({
+            chainId: 11155111,
+            blockNumber: txBlock,
+          });
+
+          if (blockNumber > futureBlock) {
+            console.log("synced.. redirecting", futureBlock);
+            dispatch(grantStatus(Status.Completed));
+          }
+
           console.log("Transaction Status", res.value);
         } else {
           dispatch(grantStatus(Status.Error));
