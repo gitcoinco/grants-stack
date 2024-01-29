@@ -1,4 +1,4 @@
-import { Address, Hex, encodePacked, keccak256 } from "viem";
+import { Address, Hex, encodePacked, keccak256, hexToBigInt } from "viem";
 import { AnyJson } from "../..";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import { Allo, AlloError, AlloOperation } from "../allo";
@@ -136,12 +136,14 @@ export class AlloV1 implements Allo {
         return ipfsResult;
       }
 
+      const projectIndex = hexToBigInt(args.projectId);
+
       // --- send transaction to update project metadata
       const txResult = await sendTransaction(this.transactionSender, {
         address: this.projectRegistryAddress,
         abi: ProjectRegistryABI,
         functionName: "updateProjectMetadata",
-        args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
+        args: [projectIndex, { protocol: 1n, pointer: ipfsResult.value }],
       });
 
       emit("transaction", txResult);
