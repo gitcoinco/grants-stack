@@ -139,13 +139,15 @@ export const getProjectsAndRolesByAddress = gql`
   }
 `;
 
-// export const getBlockNumberQuery = gql`
-//   {
-//     subscriptions(
-//       filter: { chainId: { equalTo: 1 }, toBlock: { equalTo: "latest" } }
-//     ) {
-//       chainId
-//       indexedToBlock
-//     }
-//   }
-// `;
+export const getBlockNumberQuery = gql`
+  query getBlockNumberQuery($chainId: Int!) {
+    {
+      subscriptions(
+        filter: { chainId: { equalTo: $chainId }, toBlock: { equalTo: "latest" } }
+      ) {
+        chainId
+        indexedToBlock
+      }
+    }
+  }
+`;

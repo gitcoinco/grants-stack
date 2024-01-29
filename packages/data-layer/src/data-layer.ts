@@ -249,6 +249,25 @@ export class DataLayer {
     }
   }
 
+  // todo: can we do this here and not in common?
+  async getIndexerBlockNumberTo(chainId: number) {
+    const res: any = await request(
+      this.gsIndexerEndpoint,
+      `
+        {
+          _meta {
+            block {
+              number,
+              hash
+            }
+          }
+        }
+      `,
+      { chainId },
+    );
+    return BigInt(res.data._meta.block.number);
+  }
+
   /**
    * Legacy - Allo v1 queries
    */

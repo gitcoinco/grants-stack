@@ -9,18 +9,19 @@ export interface WaitUntilIndexerSynced {
 }
 
 // todo: add waitForIndexerSynced
-export const waitForIndexerSyncedTo: WaitUntilIndexerSynced = async (args) => {
-  const { chainId, blockNumber, pollIntervalInMs = 1000 } = args;
-  let currentBlockNumber = await getIndexedToBlockNumber(chainId);
+// todo: if we move this call to the data layer we need to create an instance of it here.
+// export const waitForIndexerSyncedTo: WaitUntilIndexerSynced = async (args) => {
+//   const { chainId, blockNumber, pollIntervalInMs = 1000 } = args;
+//   let currentBlockNumber = await getIndexedToBlockNumber(chainId);
 
-  console.log("currentBlockNumber", currentBlockNumber);
+//   console.log("currentBlockNumber", currentBlockNumber);
 
-  while (currentBlockNumber < blockNumber) {
-    await wait(pollIntervalInMs);
-    currentBlockNumber = await getIndexedToBlockNumber(chainId);
-  }
-  return currentBlockNumber;
-};
+//   while (currentBlockNumber < blockNumber) {
+//     await wait(pollIntervalInMs);
+//     currentBlockNumber = await getIndexedToBlockNumber(chainId);
+//   }
+//   return currentBlockNumber;
+// };
 
 export const waitForSubgraphSyncTo: WaitUntilIndexerSynced = async (args) => {
   const { chainId, blockNumber, pollIntervalInMs = 1000 } = args;
@@ -58,20 +59,11 @@ export async function getCurrentSubgraphBlockNumber(
   return BigInt(res.data._meta.block.number);
 }
 
-const getBlockNumberQuery = `
-  {
-    subscriptions(
-      filter: { chainId: { equalTo: 1 }, toBlock: { equalTo: "latest" } }
-    ) {
-      chainId
-      indexedToBlock
-    }
-  }
-`;
+// export async function getIndexedToBlockNumber(
+//   chainId: number
+// ): Promise<bigint> {
+//   const res = dataLayer.getIndexerBlockNumberTo(chainId);
 
-export async function getIndexedToBlockNumber(
-  chainId: number
-): Promise<bigint> {
-  const res = await graphql_fetch(getBlockNumberQuery, chainId);
-  return BigInt(res.data.subscriptions[0].indexedToBlock);
-}
+//   console.log("res from query", res);
+//   return BigInt((await res).toString());
+// }
