@@ -5,7 +5,7 @@ import {
   AlloV2,
   createEthersTransactionSender,
   createPinataIpfsUploader,
-  waitForSubgraphSyncTo,
+  createWaitForIndexerSyncTo,
 } from "common";
 import { getConfig } from "common/src/config";
 import { useEffect, useState } from "react";
@@ -39,7 +39,9 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
             token: getConfig().pinata.jwt,
             endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
           }),
-          waitUntilIndexerSynced: waitForSubgraphSyncTo, // todo: replace with actual indexer
+          waitUntilIndexerSynced: createWaitForIndexerSyncTo(
+            `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
+          ),
         });
 
         setBackend(alloBackend);
@@ -55,7 +57,9 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
             token: getConfig().pinata.jwt,
             endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
           }),
-          waitUntilIndexerSynced: waitForSubgraphSyncTo,
+          waitUntilIndexerSynced: createWaitForIndexerSyncTo(
+            `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
+          ),
         });
 
         setBackend(alloBackend);

@@ -139,16 +139,15 @@ export class DataLayer {
       chainId,
     };
 
-    // fixme: any
-    const response: any = await request(
+    const response: { projects: v2Project[] } = await request(
       this.gsIndexerEndpoint,
       getProjectById,
       requestVariables,
     );
 
-    const project = response.projects[0];
+    if (response.projects.length === 0) return null;
 
-    if (!project) return null;
+    const project = response.projects[0];
 
     return { project };
   }
@@ -216,56 +215,31 @@ export class DataLayer {
       chainId,
     };
 
-    try {
-      const response: any = await request(
-        this.gsIndexerEndpoint,
-        getProjectsAndRolesByAddress,
-        requestVariables,
-      );
-
-      const projects: v2Project[] = response.projects;
-
-      if (!projects) return undefined;
-
-      let projectEventsMap: ProjectEventsMap = {};
-
-      for (const project of projects) {
-        projectEventsMap[
-          `${chainId}:${project.registryAddress}:${
-            alloVersion === "allo-v2" ? project.id : project.projectNumber
-          }`
-        ] = {
-          createdAtBlock: Number(project.createdAtBlock),
-          // todo: fix once updatedAtBlock is available
-          updatedAtBlock: Number(project.createdAtBlock),
-        };
-      }
-
-      return projectEventsMap;
-    } catch (error) {
-      console.error("Error fetching project roles", error);
-
-      return undefined;
-    }
-  }
-
-  // todo: can we do this here and not in common?
-  async getIndexerBlockNumberTo(chainId: number) {
-    const res: any = await request(
+    const response: { projects: v2Project[] } = await request(
       this.gsIndexerEndpoint,
-      `
-        {
-          _meta {
-            block {
-              number,
-              hash
-            }
-          }
-        }
-      `,
-      { chainId },
+      getProjectsAndRolesByAddress,
+      requestVariables,
     );
-    return BigInt(res.data._meta.block.number);
+
+    const projects: v2Project[] = response.projects;
+
+    if (projects.length === 0) return undefined;
+
+    const projectEventsMap: ProjectEventsMap = {};
+
+    for (const project of projects) {
+      projectEventsMap[
+        `${chainId}:${project.registryAddress}:${
+          alloVersion === "allo-v2" ? project.id : project.projectNumber
+        }`
+      ] = {
+        createdAtBlock: Number(project.createdAtBlock),
+        // todo: fix once updatedAtBlock is available
+        updatedAtBlock: Number(project.createdAtBlock),
+      };
+    }
+
+    return projectEventsMap;
   }
 
   /**

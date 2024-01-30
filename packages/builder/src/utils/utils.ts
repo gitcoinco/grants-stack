@@ -106,7 +106,8 @@ export const getProviderByChainId = (chainId: ChainId) => {
   );
 
   if (!chainConfig) {
-    throw new Error(`chainConfig not found for chain ID ${chainId}`);
+    console.log(`chainConfig not found for chain ID ${chainId}`);
+    return undefined;
   }
 
   // TODO: Create a more robust RPC here to avoid fails

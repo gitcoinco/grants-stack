@@ -399,14 +399,20 @@ export type { Allo, AlloError, AlloOperation } from "./allo/allo";
 export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
 export {
-  getCurrentSubgraphBlockNumber, waitForSubgraphSyncTo
+  getCurrentSubgraphBlockNumber,
+  waitForSubgraphSyncTo,
+  createWaitForIndexerSyncTo,
 } from "./allo/indexer";
+export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
 export { AlloContext, AlloProvider, useAllo } from "./allo/react";
 export {
-  createEthersTransactionSender, createMockTransactionSender, createViemTransactionSender,
-  decodeEventFromReceipt, sendRawTransaction,
-  sendTransaction
+  createEthersTransactionSender,
+  createMockTransactionSender,
+  createViemTransactionSender,
+  decodeEventFromReceipt,
+  sendRawTransaction,
+  sendTransaction,
 } from "./allo/transaction-sender";
 
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap;

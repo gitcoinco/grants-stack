@@ -1,7 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { Allo, AnyJson } from "common";
-import { waitForIndexerSyncedTo } from "common/dist/allo/indexer";
 import { getConfig } from "common/src/config";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";

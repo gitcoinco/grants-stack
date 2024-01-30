@@ -86,6 +86,8 @@ export const loadRound =
     const { chainID: stateChainID } = state.web3;
     const chainId = roundChainId || stateChainID;
     const appProvider = getProviderByChainId(chainId!);
+    if (!appProvider) return;
+
     const contract = new ethers.Contract(address, RoundABI, appProvider);
     const pinataClient = new PinataClient(getConfig());
 

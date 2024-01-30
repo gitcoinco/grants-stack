@@ -83,6 +83,10 @@ export class AlloV1 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -90,11 +94,6 @@ export class AlloV1 implements Allo {
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: ProjectRegistryABI,
