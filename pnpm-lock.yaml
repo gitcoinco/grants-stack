@@ -424,9 +424,6 @@ importers:
       '@gitcoinco/passport-sdk-verifier':
         specifier: ^0.2.2
         version: 0.2.2(debug@4.3.4)
-      common:
-        specifier: workspace:*
-        version: link:../common
       cross-fetch:
         specifier: ^4.0.0
         version: 4.0.0
@@ -7115,7 +7112,7 @@ packages:
       '@tanstack/react-query': ^4.35.0
     dependencies:
       '@tanstack/query-persist-client-core': 4.35.0
-      '@tanstack/react-query': 4.35.0(react@18.2.0)
+      '@tanstack/react-query': 4.35.0(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /@tanstack/react-query@4.35.0(react-dom@18.2.0)(react@18.2.0):
