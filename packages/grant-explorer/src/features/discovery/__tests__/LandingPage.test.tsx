@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import {
   makeRoundOverviewData,
   mockBalance,
@@ -7,8 +7,6 @@ import {
   mockSigner,
   renderWithContext,
 } from "../../../test-utils";
-import { __deprecated_RoundMetadata } from "../../api/round";
-import { __deprecated_RoundOverview } from "../../api/rounds";
 import LandingPage from "../LandingPage";
 import { vi } from "vitest";
 import { DataLayer } from "data-layer";
@@ -113,54 +111,6 @@ describe("LandingPage", () => {
           screen.getByText(round.roundMetadata?.name ?? "")
         ).toBeInTheDocument();
       });
-    });
-  });
-
-  it.skip("filters active rounds based on search query", async () => {
-    const roundMetadata: __deprecated_RoundMetadata = {
-      name: "gitcoin",
-      roundType: "private",
-      eligibility: {
-        description: faker.lorem.sentence(),
-        requirements: [],
-      },
-      programContractAddress: faker.finance.ethereumAddress(),
-    };
-
-    const activeRounds: __deprecated_RoundOverview[] = [
-      makeRoundOverviewData(),
-      makeRoundOverviewData(),
-      makeRoundOverviewData({ roundMetadata }),
-      makeRoundOverviewData({
-        roundMetadata: {
-          ...roundMetadata,
-          name: "gitcoin pro",
-        },
-      }),
-    ];
-
-    renderWithContext(<LandingPage />);
-
-    await waitFor(async () => {
-      // Make sure all active rounds are displayed initially
-      activeRounds.forEach((round) => {
-        expect(
-          screen.getByText(round.roundMetadata?.name ?? "")
-        ).toBeInTheDocument();
-      });
-    });
-
-    const searchInput = screen.getByPlaceholderText("Search...");
-    const roundCards = screen.getAllByTestId("round-card");
-    expect(roundCards.length).toEqual(activeRounds.length);
-
-    const searchQuery = "gitcoin";
-    fireEvent.change(searchInput, { target: { value: searchQuery } });
-
-    await waitFor(() => {
-      const filteredRoundCards = screen.getAllByTestId("round-name");
-      expect(filteredRoundCards.length).toEqual(2);
-      expect(filteredRoundCards[0].textContent).toEqual(searchQuery);
     });
   });
 });
