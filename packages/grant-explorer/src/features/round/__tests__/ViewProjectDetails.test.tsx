@@ -1,7 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import { SWRConfig } from "swr";
 import {
   makeApprovedProjectData,
   makeRoundData,
@@ -362,7 +361,7 @@ describe("voting cart", () => {
     }, 3000);
   });
 
-  it.skip("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", async () => {
+  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-cart is clicked", async () => {
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
         rounds: [roundWithProjects],
@@ -370,40 +369,17 @@ describe("voting cart", () => {
       },
     });
 
-    // mock screen size
-    setWindowDimensions(1200, 800);
-
-    expect(renderComponentsBasedOnDeviceSize()).toBe("desktop");
-
-    // click add to cart
-    const addToCart = screen.getAllByTestId("add-to-cart");
-    fireEvent.click(addToCart[1]);
-
-    await act(async () => {
-      await waitFor(
-        () => {
-          expect(
-            screen.queryAllByTestId("remove-from-cart")[1]
-          ).toBeInTheDocument();
-          expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
-    });
-
     const removeFromCart = screen.getAllByTestId("remove-from-cart");
-    fireEvent.click(removeFromCart[1]);
+    fireEvent.click(removeFromCart[0]);
 
-    await act(async () => {
-      await waitFor(
-        () => {
-          expect(screen.queryAllByTestId("add-to-cart")[1]).toBeInTheDocument();
-          expect(
-            screen.queryByTestId("remove-from-cart")
-          ).not.toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
-    });
+    await waitFor(
+      () => {
+        expect(screen.queryAllByTestId("add-to-cart")[0]).toBeInTheDocument();
+        expect(
+          screen.queryByTestId("remove-from-cart")
+        ).not.toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 });
