@@ -134,7 +134,7 @@ export class DataLayer {
     address: string;
     chainId: number;
     alloVersion: AlloVersion;
-  }): Promise<{ program: Program } | null> {
+  }): Promise<{ programs: Program[] } | null> {
     const requestVariables = {
       alloVersion,
       address,
@@ -149,11 +149,11 @@ export class DataLayer {
       requestVariables,
     );
 
-    const program = response.program[0];
+    const programs = response.projects[0];
 
-    if (!program) return null;
+    if (!programs) return null;
 
-    return { program };
+    return { programs };
   }
 
   /**

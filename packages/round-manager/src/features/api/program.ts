@@ -5,6 +5,9 @@ import { ethers } from "ethers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ChainId, graphql_fetch } from "common";
+import { DataLayer } from "data-layer";
+import { Program as ProgramV1 } from "data-layer/src/data.types";
+import { getConfig } from "common/src/config";
 
 /**
  * Fetch a list of programs
@@ -14,62 +17,32 @@ import { ChainId, graphql_fetch } from "common";
  */
 export async function listPrograms(
   address: string,
-  signerOrProvider: Web3Instance["provider"]
-): Promise<Program[]> {
+  signerOrProvider: Web3Instance["provider"],
+  dataLayer: DataLayer
+): Promise<ProgramV1[]> {
   try {
     // fetch chain id
     const { chainId } = (await signerOrProvider.getNetwork()) as {
       chainId: ChainId;
     };
 
-    // get the subgraph for all programs owned by the given address
-    const res = await graphql_fetch(
-      `
-              query GetPrograms($address: String!) {
-                programs(where: {
-                  accounts_: {
-                    address: $address
-                  }
-                }) {
-                  id
-                  metaPtr {
-                    protocol
-                    pointer
-                  }
-                  roles(where: {
-                    role: "0xaa630204f2780b6f080cc77cc0e9c0a5c21e92eb0c6771e709255dd27d6de132"
-                  }) {
-                    accounts {
-                      address
-                    }
-                  }
-                }
-              }
-            `,
-      chainId,
-      { address: address.toLowerCase() }
-    );
+    const config = getConfig();
 
-    const programs: Program[] = [];
+    // fetch programs from indexer
 
-    for (const program of res.data.programs) {
-      const metadata = await fetchFromIPFS(program.metaPtr.pointer);
+    const programs = await dataLayer.getProgramsByUser({
+      address: address,
+      chainId: chainId,
+      alloVersion: config.allo.version,
+    });
 
-      programs.push({
-        id: program.id,
-        metadata,
-        operatorWallets: program.roles[0].accounts.map(
-          (account: { address: string }) => account.address
-        ),
-        chain: {
-          id: chainId,
-          name: CHAINS[chainId]?.name,
-          logo: CHAINS[chainId]?.logo,
-        },
-      });
+    console.log("programs", programs);
+
+    if (!programs) {
+      throw Error("Unable to fetch programs");
     }
 
-    return programs;
+    return programs?.programs;
   } catch (error) {
     datadogLogs.logger.error(`error: listPrograms - ${error}`);
     console.error("listPrograms", error);
