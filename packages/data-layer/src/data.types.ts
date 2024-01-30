@@ -102,6 +102,21 @@ export type ProjectRole = {
 };
 
 /**
+ * The program type for v1
+ **/
+
+export type Program = {
+  id: string;
+  chainId: number;
+  metadata: {
+    name: string;
+  };
+  metadataCid?: MetadataPointer;
+  tags: [string];
+  roles: AddressAndRole[];
+};
+
+/**
  * The project type for v2
  *
  * @remarks
