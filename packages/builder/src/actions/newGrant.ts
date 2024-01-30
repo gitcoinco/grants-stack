@@ -151,22 +151,7 @@ export const publishGrant =
       .on("transactionStatus", async (res) => {
         console.log("Transaction Status", res);
         if (res.type === "success") {
-          const txBlock = res.value.blockNumber;
-          const futureBlock = BigInt((Number(txBlock) + 1).toString());
-          console.log("waiting for indexer to sync to ", txBlock);
-
-          // todo: add Indexing status?
-          // dispatch(grantStatus(Status.Indexing));
-          const blockNumber = await waitForIndexerSyncedTo({
-            chainId: 11155111,
-            blockNumber: txBlock,
-          });
-
-          if (blockNumber > futureBlock) {
-            console.log("synced.. redirecting", futureBlock);
-            dispatch(grantStatus(Status.Completed));
-          }
-
+          dispatch(grantStatus(Status.Completed));
           console.log("Transaction Status", res.value);
         } else {
           dispatch(grantStatus(Status.Error));
