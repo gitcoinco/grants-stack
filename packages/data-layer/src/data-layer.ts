@@ -9,6 +9,7 @@ import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Collection,
+  Program,
   ProjectEventsMap,
   Round,
   RoundOverview,
@@ -23,6 +24,7 @@ import {
   SearchResult,
 } from "./openapi-search-client/index";
 import {
+  getProgramsByUser,
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
@@ -100,6 +102,58 @@ export class DataLayer {
         ? { type: "hardcoded" }
         : { type: "google-sheet", url: collections.googleSheetsUrl };
     this.gsIndexerEndpoint = indexer.baseUrl;
+  }
+
+  /**
+   * Allo v1 & v2 manager queries
+   */
+
+  /**
+   * Gets profiles/programs linked to an operator or user.
+   *
+   * @example
+   * Here is an example:
+   * ```
+   * const program = await dataLayer.getProgramByUser({
+   *  address: "0x1234",
+   *  chainId: 1,
+   *  alloVersion: "allo-v1",
+   * });
+   * ```
+   * @param address - the address of the user.
+   * @param chainId - the network ID of the chain.
+   * @param alloVersion - the version of Allo to use.
+   *
+   * @returns Program
+   */
+  async getProgramsByUser({
+    address,
+    chainId,
+    alloVersion,
+  }: {
+    address: string;
+    chainId: number;
+    alloVersion: AlloVersion;
+  }): Promise<{ program: Program } | null> {
+    const requestVariables = {
+      alloVersion,
+      address,
+      chainId,
+    };
+
+    // fixme: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response: any = await request(
+      this.gsIndexerEndpoint,
+      getProgramsByUser,
+      requestVariables,
+    );
+
+    const program = response.program[0];
+
+    if (!program) return null;
+
+    return { program };
   }
 
   /**
