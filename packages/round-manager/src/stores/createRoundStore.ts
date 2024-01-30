@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { ProgressStatus } from "../features/api/types";
 import { Address } from "viem";
 import { Allo } from "common";
-import { Result } from "common/src/allo/common";
+import { error, Result } from "common/src/allo/common";
 import { CreateRoundArguments } from "common/src/allo/backends/allo-v1";
 
 export type CreateRoundStoreState = {
@@ -37,62 +37,72 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
       ipfsStatus: ProgressStatus.IN_PROGRESS,
     });
 
-    const round = await allo
-      .createRound(createRoundData)
-      .on("ipfsStatus", (res) => {
-        if (res.type === "success") {
-          set({
-            ipfsStatus: ProgressStatus.IS_SUCCESS,
-            contractDeploymentStatus: ProgressStatus.IN_PROGRESS,
-          });
-        } else {
-          set({
-            ipfsStatus: ProgressStatus.IS_ERROR,
-          });
-        }
-      })
-      .on("indexingStatus", (res) => {
-        if (res.type === "success") {
-          set({
-            indexingStatus: ProgressStatus.IS_SUCCESS,
-          });
-        } else {
-          set({
-            indexingStatus: ProgressStatus.IS_ERROR,
-          });
-        }
-      })
-      .on("transactionStatus", (res) => {
-        if (res.type === "success") {
-          set({
-            contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
-            indexingStatus: ProgressStatus.IN_PROGRESS,
-          });
-        } else {
-          set({
-            contractDeploymentStatus: ProgressStatus.IS_ERROR,
-          });
-        }
-      })
-      .on("transactionStatus", (res) => {
-        if (res.type === "success") {
-          set({
-            contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
-          });
-        } else {
-          set({
-            contractDeploymentStatus: ProgressStatus.IS_ERROR,
-          });
-        }
-      })
-      .execute();
+    try {
+      const round = await allo
+        .createRound(createRoundData)
+        .on("ipfsStatus", (res) => {
+          if (res.type === "success") {
+            set({
+              ipfsStatus: ProgressStatus.IS_SUCCESS,
+              contractDeploymentStatus: ProgressStatus.IN_PROGRESS,
+            });
+          } else {
+            set({
+              ipfsStatus: ProgressStatus.IS_ERROR,
+            });
+          }
+        })
+        .on("indexingStatus", (res) => {
+          if (res.type === "success") {
+            set({
+              indexingStatus: ProgressStatus.IS_SUCCESS,
+            });
+          } else {
+            set({
+              indexingStatus: ProgressStatus.IS_ERROR,
+            });
+          }
+        })
+        .on("transaction", (res) => {
+          if (res.type === "success") {
+            set({
+              contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
+              indexingStatus: ProgressStatus.IN_PROGRESS,
+            });
+          } else {
+            set({
+              contractDeploymentStatus: ProgressStatus.IS_ERROR,
+            });
+          }
+        })
+        .on("transactionStatus", (res) => {
+          if (res.type === "success") {
+            set({
+              contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
+            });
+          } else {
+            set({
+              contractDeploymentStatus: ProgressStatus.IS_ERROR,
+            });
+          }
+        })
+        .execute();
 
-    if (round.type === "success") {
+      if (round.type === "success") {
+        set({
+          round: round.value.roundId,
+        });
+      }
+
+      return round;
+    } catch (e) {
       set({
-        round: round.value.roundId,
+        indexingStatus: ProgressStatus.IS_ERROR,
+        contractDeploymentStatus: ProgressStatus.IS_ERROR,
+        ipfsStatus: ProgressStatus.IS_ERROR,
       });
-    }
 
-    return round;
+      return error(e as Error);
+    }
   },
 }));

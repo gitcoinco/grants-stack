@@ -259,9 +259,9 @@ export function RoundApplicationForm(props: {
       }, errorModalDelayMs);
     }
 
-    if (indexingStatus === ProgressStatus.IS_ERROR) {
-      redirectToProgramDetails(navigate, 5000, programId);
-    }
+    // if (indexingStatus === ProgressStatus.IS_ERROR) {
+    //   redirectToProgramDetails(navigate, 5000, programId);
+    // }
   }, [
     contractDeploymentStatus,
     indexingStatus,
@@ -310,7 +310,8 @@ export function RoundApplicationForm(props: {
           applicationsEndTime: round.applicationsEndTime,
           token: round.token,
           matchingFundsAvailable:
-            round.roundMetadata.quadraticFundingConfig.matchingFundsAvailable,
+            round.roundMetadata.quadraticFundingConfig
+              ?.matchingFundsAvailable ?? 0,
           roundOperators: round.operatorWallets.map(getAddress),
         },
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

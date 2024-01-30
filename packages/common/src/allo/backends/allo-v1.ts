@@ -233,156 +233,163 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      const isQF =
-        args.roundData?.roundCategory === RoundCategory.QuadraticFunding;
+      try {
+        const isQF =
+          args.roundData?.roundCategory === RoundCategory.QuadraticFunding;
 
-      const votingStrategyFactory = isQF
-        ? qfVotingStrategyFactoryMap[this.chainId]
-        : dgVotingStrategyDummyContractMap[this.chainId];
-      const payoutStrategyFactory = isQF
-        ? merklePayoutStrategyFactoryMap[this.chainId]
-        : directPayoutStrategyFactoryContractMap[this.chainId];
+        const votingStrategyFactory = isQF
+          ? qfVotingStrategyFactoryMap[this.chainId]
+          : dgVotingStrategyDummyContractMap[this.chainId];
+        const payoutStrategyFactory = isQF
+          ? merklePayoutStrategyFactoryMap[this.chainId]
+          : directPayoutStrategyFactoryContractMap[this.chainId];
 
-      // --- upload metadata to IPFS
-      const [roundIpfsResult, applicationMetadataIpfsResult] =
-        await Promise.all([
-          this.ipfsUploader(
-            args.roundData.roundMetadataWithProgramContractAddress
-          ),
-          this.ipfsUploader(args.roundData.applicationQuestions),
-        ]);
+        // --- upload metadata to IPFS
+        const [roundIpfsResult, applicationMetadataIpfsResult] =
+          await Promise.all([
+            this.ipfsUploader(
+              args.roundData.roundMetadataWithProgramContractAddress
+            ),
+            this.ipfsUploader(args.roundData.applicationQuestions),
+          ]);
 
-      emit(
-        "ipfsStatus",
-        [roundIpfsResult, applicationMetadataIpfsResult].every(
-          (status) => status.type === "success"
-        )
-          ? success("")
-          : error(new Error("ipfs error"))
-      );
+        emit(
+          "ipfsStatus",
+          [roundIpfsResult, applicationMetadataIpfsResult].every(
+            (status) => status.type === "success"
+          )
+            ? success("")
+            : error(new Error("ipfs error"))
+        );
 
-      if (roundIpfsResult.type === "error") {
-        return roundIpfsResult;
-      }
-
-      if (applicationMetadataIpfsResult.type === "error") {
-        return applicationMetadataIpfsResult;
-      }
-
-      let initRoundTimes: bigint[] = [];
-      let operators: Address[] | undefined = [];
-      let admins: Address[] | undefined = [];
-
-      if (isQF) {
-        if (args.roundData.applicationsEndTime === undefined) {
-          args.roundData.applicationsEndTime = args.roundData.roundStartTime;
+        if (roundIpfsResult.type === "error") {
+          return roundIpfsResult;
         }
 
+        if (applicationMetadataIpfsResult.type === "error") {
+          return applicationMetadataIpfsResult;
+        }
+
+        let initRoundTimes: bigint[] = [];
+        let operators: Address[] | undefined = [];
+        let admins: Address[] | undefined = [];
         admins = [getAddress(await args.walletSigner.getAddress())];
+        if (isQF) {
+          if (args.roundData.applicationsEndTime === undefined) {
+            args.roundData.applicationsEndTime = args.roundData.roundStartTime;
+          }
 
-        initRoundTimes = [
-          dateToBigInt(args.roundData.applicationsStartTime),
-          dateToBigInt(args.roundData.applicationsEndTime),
-          dateToBigInt(args.roundData.roundStartTime),
-          dateToBigInt(args.roundData.roundEndTime),
-        ];
-      } else {
-        // note: DirectRounds does not set application dates.
-        // in those cases, we set:
-        // application start time with the round start time
-        // application end time with MaxUint256.
-        // if the round has not end time, we set it with MaxUint256.
+          initRoundTimes = [
+            dateToBigInt(args.roundData.applicationsStartTime),
+            dateToBigInt(args.roundData.applicationsEndTime),
+            dateToBigInt(args.roundData.roundStartTime),
+            dateToBigInt(args.roundData.roundEndTime),
+          ];
+        } else {
+          // note: DirectRounds does not set application dates.
+          // in those cases, we set:
+          // application start time with the round start time
+          // application end time with MaxUint256.
+          // if the round has not end time, we set it with MaxUint256.
 
-        initRoundTimes = [
-          dateToBigInt(
-            args.roundData.applicationsStartTime ??
-              args.roundData.roundStartTime
-          ),
-          args.roundData.applicationsEndTime
-            ? dateToBigInt(args.roundData.applicationsEndTime)
-            : dateToBigInt(args.roundData.roundEndTime)
-            ? dateToBigInt(args.roundData.roundEndTime)
-            : maxUint256,
-          dateToBigInt(args.roundData.roundStartTime),
-          args.roundData.roundEndTime
-            ? dateToBigInt(args.roundData.roundEndTime)
-            : maxUint256,
-        ];
+          initRoundTimes = [
+            dateToBigInt(
+              args.roundData.applicationsStartTime ??
+                args.roundData.roundStartTime
+            ),
+            args.roundData.applicationsEndTime
+              ? dateToBigInt(args.roundData.applicationsEndTime)
+              : args.roundData.roundEndTime
+              ? dateToBigInt(args.roundData.roundEndTime)
+              : maxUint256,
+            dateToBigInt(args.roundData.roundStartTime),
+            args.roundData.roundEndTime
+              ? dateToBigInt(args.roundData.roundEndTime)
+              : maxUint256,
+          ];
+        }
+
+        let parsedTokenAmount = 0n;
+
+        if (isQF) {
+          // Ensure tokenAmount is normalized to token decimals
+          const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
+          const pyToken = payoutTokens.filter(
+            (t) =>
+              t.address.toLowerCase() === args.roundData.token.toLowerCase()
+          )[0];
+          parsedTokenAmount = parseUnits(
+            tokenAmount.toString(),
+            pyToken.decimal
+          );
+        }
+        console.log("CREATING A ROUND !!!!!");
+        debugger;
+        const createRoundArguments = constructCreateRoundArgs({
+          initTimes: initRoundTimes,
+          matchingAmount: parsedTokenAmount,
+          roundOperators: operators ?? [],
+          roundAdmins: admins ?? [],
+          roundToken: getAddress(args.roundData.token ?? zeroAddress),
+          payoutStrategyFactory,
+          votingStrategyFactory,
+          roundMetadata: {
+            protocol: BigInt(1),
+            pointer: roundIpfsResult.value,
+          },
+          applicationMetadata: {
+            protocol: BigInt(1),
+            pointer: applicationMetadataIpfsResult.value,
+          },
+        });
+        alert("hi");
+        // --- send transaction to create round
+        const txResult = await sendTransaction(this.transactionSender, {
+          address: this.roundFactoryAddress,
+          abi: RoundFactoryABI,
+          functionName: "create",
+          args: [createRoundArguments, admins[0]],
+        });
+        debugger;
+        emit("transaction", txResult);
+
+        if (txResult.type === "error") {
+          return txResult;
+        }
+
+        // --- wait for transaction to be mined
+        let receipt: TransactionReceipt;
+
+        try {
+          receipt = await this.transactionSender.wait(txResult.value);
+
+          emit("transactionStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to create round");
+          emit("transactionStatus", error(result));
+          return error(result);
+        }
+
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("indexingStatus", success(void 0));
+
+        const roundCreatedEvent = decodeEventFromReceipt({
+          abi: RoundFactoryABI,
+          receipt,
+          event: "RoundCreated",
+        });
+
+        return success({
+          roundId: roundCreatedEvent.roundAddress,
+        });
+      } catch (e) {
+        alert(e);
+        return error(e as Error);
       }
-
-      let parsedTokenAmount = 0n;
-
-      if (isQF) {
-        // Ensure tokenAmount is normalized to token decimals
-        const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
-        const pyToken = payoutTokens.filter(
-          (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
-        )[0];
-        parsedTokenAmount = parseUnits(tokenAmount.toString(), pyToken.decimal);
-      }
-
-      // --- send transaction to create round
-      const txResult = await sendTransaction(this.transactionSender, {
-        address: this.roundFactoryAddress,
-        abi: RoundFactoryABI,
-        functionName: "create",
-        args: [
-          constructCreateRoundArgs({
-            initTimes: initRoundTimes,
-            matchingAmount: parsedTokenAmount,
-            roundOperators: operators ?? [],
-            roundAdmins: admins ?? [],
-            roundToken: getAddress(args.roundData.token),
-            payoutStrategyFactory,
-            votingStrategyFactory,
-            roundMetadata: {
-              protocol: BigInt(1),
-              pointer: roundIpfsResult.value,
-            },
-            applicationMetadata: {
-              protocol: BigInt(1),
-              pointer: applicationMetadataIpfsResult.value,
-            },
-          }),
-          admins[0],
-        ],
-      });
-
-      emit("transaction", txResult);
-
-      if (txResult.type === "error") {
-        return txResult;
-      }
-
-      // --- wait for transaction to be mined
-      let receipt: TransactionReceipt;
-
-      try {
-        receipt = await this.transactionSender.wait(txResult.value);
-
-        emit("transactionStatus", success(receipt));
-      } catch (err) {
-        const result = new AlloError("Failed to create round");
-        emit("transactionStatus", error(result));
-        return error(result);
-      }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
-
-      emit("indexingStatus", success(void 0));
-
-      const roundCreatedEvent = decodeEventFromReceipt({
-        abi: RoundFactoryABI,
-        receipt,
-        event: "RoundCreated",
-      });
-
-      return success({
-        roundId: roundCreatedEvent.roundAddress,
-      });
     });
   }
 }
@@ -425,7 +432,7 @@ function constructCreateRoundArgs({
       roundEndTime: initTimes[3],
     },
     matchingAmount,
-    getAddress(roundToken),
+    getAddress(roundToken ?? zeroAddress),
     0,
     zeroAddress,
     [roundMetadata, applicationMetadata],
