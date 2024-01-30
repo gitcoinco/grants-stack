@@ -119,6 +119,9 @@ export const fetchGrantData =
         credentials: project.metadata.credentials,
         protocol: 1,
         pointer: project.metadataCid,
+        userGithub: project.metadata.userGithub,
+        projectGithub: project.metadata.projectGithub,
+        projectTwitter: project.metadata.projectTwitter,
       };
 
       const ownerAddresses = project.roles

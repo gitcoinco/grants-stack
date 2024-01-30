@@ -122,15 +122,22 @@ export type v2Project = {
    * The metadata of the project
    */
   metadata: {
+    protocol: number;
+    pointer: string;
+    id: string;
     title: string;
-    logoImg: string;
-    website: string;
-    bannerImg: string;
-    createdAt: number;
-    credentials: ProjectCredentials;
     description: string;
-    logoImgData: Blob;
-    bannerImgData: Blob;
+    logoImg?: string;
+    website: string;
+    bannerImg?: string;
+    logoImgData?: Blob;
+    bannerImgData?: Blob;
+    userGithub?: string;
+    projectGithub?: string;
+    projectTwitter?: string;
+    credentials?: ProjectCredentials;
+    createdAt?: number;
+    updatedAt?: number;
   };
   /**
    * The metadata CID of the project
