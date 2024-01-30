@@ -9,10 +9,9 @@ import { gql } from "graphql-request";
  * @returns The programs
  */
 export const getProgramsByUser = gql`
-  query ($alloVersion: [String!]!, $address: String!, $chainId: Int!) {
+  query ($address: String!, $chainId: Int!) {
     projects(
       filter: {
-        tags: { equalTo: $alloVersion }
         tags: { contains: "program" }
         roles: { every: { address: { equalTo: $address } } }
         and: { chainId: { equalTo: $chainId } }

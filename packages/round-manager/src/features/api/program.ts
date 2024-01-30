@@ -6,7 +6,6 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ChainId, graphql_fetch } from "common";
 import { DataLayer } from "data-layer";
-import { Program as ProgramV1 } from "data-layer/src/data.types";
 import { getConfig } from "common/src/config";
 
 /**
@@ -19,7 +18,7 @@ export async function listPrograms(
   address: string,
   signerOrProvider: Web3Instance["provider"],
   dataLayer: DataLayer
-): Promise<ProgramV1[]> {
+): Promise<Program[]> {
   try {
     // fetch chain id
     const { chainId } = (await signerOrProvider.getNetwork()) as {
@@ -30,19 +29,34 @@ export async function listPrograms(
 
     // fetch programs from indexer
 
-    const programs = await dataLayer.getProgramsByUser({
+    const programsRes = await dataLayer.getProgramsByUser({
       address: address,
       chainId: chainId,
       alloVersion: config.allo.version,
     });
 
-    console.log("programs", programs);
-
-    if (!programs) {
+    if (!programsRes) {
       throw Error("Unable to fetch programs");
     }
 
-    return programs?.programs;
+    const programs: Program[] = [];
+
+    for (const program of programsRes.programs) {
+      programs.push({
+        id: program.id,
+        metadata: program.metadata,
+        operatorWallets: program.roles.map(
+          (role: { address: string }) => role.address
+        ),
+        chain: {
+          id: chainId,
+          name: CHAINS[chainId]?.name,
+          logo: CHAINS[chainId]?.logo,
+        },
+      });
+    }
+
+    return programs;
   } catch (error) {
     datadogLogs.logger.error(`error: listPrograms - ${error}`);
     console.error("listPrograms", error);

@@ -149,7 +149,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    const programs = response.projects[0];
+    const programs = response.projects;
 
     if (!programs) return null;
 
