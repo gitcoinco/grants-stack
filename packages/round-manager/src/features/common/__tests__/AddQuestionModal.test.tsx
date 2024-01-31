@@ -1,10 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import {
-  CreateRoundContext,
-  CreateRoundState,
-  initialCreateRoundState,
-} from "../../../context/round/CreateRoundContext";
 import { EditQuestion } from "../../api/types";
 import AddQuestionModal from "../AddQuestionModal";
 
@@ -111,16 +106,5 @@ describe("AddQuestionModal", () => {
   });
 });
 
-export const renderWithContext = (
-  ui: JSX.Element,
-  createRoundStateOverrides: Partial<CreateRoundState> = {}
-) =>
-  render(
-    <MemoryRouter>
-      <CreateRoundContext.Provider
-        value={{ ...initialCreateRoundState, ...createRoundStateOverrides }}
-      >
-        {ui}
-      </CreateRoundContext.Provider>
-    </MemoryRouter>
-  );
+export const renderWithContext = (ui: JSX.Element) =>
+  render(<MemoryRouter>{ui}</MemoryRouter>);
