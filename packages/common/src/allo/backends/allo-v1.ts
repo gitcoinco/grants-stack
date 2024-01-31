@@ -270,9 +270,8 @@ export class AlloV1 implements Allo {
           return applicationMetadataIpfsResult;
         }
 
-        let initRoundTimes: bigint[] = [];
-        let operators: Address[] | undefined = [];
-        let admins: Address[] | undefined = [];
+        let initRoundTimes: bigint[];
+        let admins: Address[] | undefined;
         admins = [getAddress(await args.walletSigner.getAddress())];
         if (isQF) {
           if (args.roundData.applicationsEndTime === undefined) {
@@ -323,12 +322,11 @@ export class AlloV1 implements Allo {
             pyToken.decimal
           );
         }
-        console.log("CREATING A ROUND !!!!!");
-        debugger;
+
         const createRoundArguments = constructCreateRoundArgs({
           initTimes: initRoundTimes,
           matchingAmount: parsedTokenAmount,
-          roundOperators: operators ?? [],
+          roundOperators: args.roundData.roundOperators ?? [],
           roundAdmins: admins ?? [],
           roundToken: getAddress(args.roundData.token ?? zeroAddress),
           payoutStrategyFactory,
@@ -342,15 +340,19 @@ export class AlloV1 implements Allo {
             pointer: applicationMetadataIpfsResult.value,
           },
         });
-        alert("hi");
+
         // --- send transaction to create round
         const txResult = await sendTransaction(this.transactionSender, {
           address: this.roundFactoryAddress,
           abi: RoundFactoryABI,
           functionName: "create",
-          args: [createRoundArguments, admins[0]],
+          args: [
+            createRoundArguments,
+            args.roundData.roundMetadataWithProgramContractAddress
+              ?.programContractAddress as Address,
+          ],
         });
-        debugger;
+
         emit("transaction", txResult);
 
         if (txResult.type === "error") {
