@@ -156,7 +156,7 @@ export const usePrograms = (): ReadProgramState & { dispatch: Dispatch } => {
   useEffect(() => {
     fetchProgramsByAddress(
       context.dispatch,
-      address,
+      address.toLowerCase(),
       dataLayer,
       walletProvider
     );

@@ -13,7 +13,7 @@ export const getProgramsByUser = gql`
     projects(
       filter: {
         tags: { contains: "program" }
-        roles: { every: { address: { equalTo: $address } } }
+        roles: { some: { address: { equalTo: $address } } }
         and: { chainId: { equalTo: $chainId } }
       }
     ) {
