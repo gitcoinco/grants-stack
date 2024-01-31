@@ -493,7 +493,7 @@ export const loadProjectStats =
       // NOTE: Consider finding a way for singleton Client to be used
       const client = new AlloClient(
         boundFetch,
-        process.env.REACT_APP_ALLO_API_URL ?? "",
+        process.env.REACT_APP_INDEXER_V2_API_URL ?? "",
         round.chainId
       );
 
