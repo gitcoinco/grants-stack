@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -116,6 +117,7 @@ function ApplyButton(props: ApplyButtonProps) {
 
 function ShowRound() {
   const [roundData, setRoundData] = useState<any>();
+  const dataLayer = useDataLayer();
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -234,7 +236,7 @@ function ShowRound() {
 
   useEffect(() => {
     if (props.projectsStatus === ProjectStatus.Undefined) {
-      dispatch(loadAllChainsProjects(true));
+      dispatch(loadAllChainsProjects(dataLayer, true));
     }
   }, [props.projectsStatus, dispatch]);
 

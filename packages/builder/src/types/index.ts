@@ -1,8 +1,8 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
 import { ReactNode } from "react";
-import { RoundApplicationMetadata } from "./roundApplication";
 import { Application } from "../reducers/projects";
+import { RoundApplicationMetadata } from "./roundApplication";
 
 export type Images = {
   bannerImg?: Blob;
@@ -100,15 +100,6 @@ export type AddressInputProps = {
     type: string;
     message: string;
   };
-};
-
-export type ProjectEvents = {
-  createdAtBlock: number | undefined;
-  updatedAtBlock: number | undefined;
-};
-
-export type ProjectEventsMap = {
-  [projectID: string]: ProjectEvents;
 };
 
 export interface MetaPtr {
@@ -246,7 +237,7 @@ export enum CredentialProvider {
 }
 
 export type {
+  ProjectRequirements,
   RoundApplicationMetadata,
   RoundApplicationQuestion,
-  ProjectRequirements,
 } from "./roundApplication";

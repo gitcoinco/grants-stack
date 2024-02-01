@@ -1,16 +1,15 @@
-import { Address, Hex } from "viem";
+import { Hex } from "viem";
 import { Allo, AlloError, AlloOperation } from "../allo";
+import { Result, error, success } from "../common";
+import { WaitUntilIndexerSynced } from "../indexer";
+import { IpfsUploader } from "../ipfs";
 import {
   decodeEventFromReceipt,
   sendRawTransaction,
   TransactionReceipt,
   TransactionSender,
 } from "../transaction-sender";
-import { error, Result, success } from "../common";
 import RegistryABI from "../abis/allo-v2/Registry";
-import { IpfsUploader } from "../ipfs";
-import { WaitUntilIndexerSynced } from "../indexer";
-
 import {
   CreateProfileArgs,
   TransactionData,
@@ -100,17 +99,17 @@ export class AlloV2 implements Allo {
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to create project");
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: RegistryABI,
@@ -176,6 +175,10 @@ export class AlloV2 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -183,11 +186,6 @@ export class AlloV2 implements Allo {
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       return success({
         projectId: projectId,

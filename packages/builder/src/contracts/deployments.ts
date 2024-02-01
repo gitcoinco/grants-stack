@@ -3,6 +3,7 @@ import { ChainId } from "common";
 export const chains = {
   1: "mainnet",
   10: "optimism",
+  11155111: "sepolia",
   250: "fantom",
   280: "zkSyncEraTestnet",
   324: "zkSyncEraMainnet",
@@ -91,6 +92,9 @@ export const addresses: DeploymentAddressesMap = {
   },
   base: {
     projectRegistry: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
+  },
+  sepolia: {
+    projectRegistry: "0x2420EABfA2C0e6f77E435B0B7615c848bF4963AF",
   },
 };
 

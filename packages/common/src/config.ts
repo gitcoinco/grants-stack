@@ -1,3 +1,4 @@
+import { AlloVersion } from "data-layer/dist/data-layer.types";
 import { z } from "zod";
 import { ChainId } from "./chain-ids";
 
@@ -20,6 +21,7 @@ export type Config = {
   dataLayer: {
     searchServiceBaseUrl: string;
     subgraphEndpoints: Record<number, string>;
+    gsIndexerEndpoint: string;
   };
   pinata: {
     jwt: string;
@@ -32,6 +34,9 @@ export type Config = {
   };
   explorer: {
     disableEstimates: boolean;
+  };
+  allo: {
+    version: AlloVersion;
   };
 };
 
@@ -110,6 +115,11 @@ export function getConfig(): Config {
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_BASE_API),
       },
+      gsIndexerEndpoint: z
+        .string()
+        .url()
+        .default("http://localhost")
+        .parse(process.env.REACT_APP_INDEXER_V2_API_URL),
     },
     pinata: {
       jwt: z
@@ -139,6 +149,12 @@ export function getConfig(): Config {
           .default("false")
           .parse(process.env.REACT_APP_EXPLORER_DISABLE_MATCHING_ESTIMATES)
       ),
+    },
+    allo: {
+      version: z
+        .enum(["allo-v1", "allo-v2"])
+        .default("allo-v1")
+        .parse(process.env.REACT_APP_ALLO_VERSION),
     },
   };
 

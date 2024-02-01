@@ -1,3 +1,4 @@
+import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ import Globe from "../icons/Globe";
 import Card from "./Card";
 
 function ProjectsList() {
+  const dataLayer = useDataLayer();
   const dispatch = useDispatch();
   const [showErrorModal, setShowErrorModal] = useState<boolean>(true);
 
@@ -79,7 +81,7 @@ function ProjectsList() {
   useEffect(() => {
     if (props.status !== Status.Undefined) return;
 
-    dispatch(loadAllChainsProjects());
+    dispatch(loadAllChainsProjects(dataLayer, true));
   }, [dispatch, props.status]);
 
   useEffect(() => {

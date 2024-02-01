@@ -1,8 +1,54 @@
-import { getAddress } from "viem";
-import { describe, test, expect, vi } from "vitest";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import { getAddress } from "viem";
+import { describe, expect, test, vi } from "vitest";
+import { v2Project } from ".";
 import { DataLayer } from "./data-layer";
+
+// This is mocked from an acutal project on Sepolia
+const mockProjects: v2Project[] = [
+  {
+    id: "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+    chainId: 11155111,
+    metadata: {
+      protocol: 1,
+      pointer: "QmS9XiFsCq2Ng6buJmBLvNWNpcsHs4uYBhVmBfSK2DFpsm",
+      id: "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+      title: "Jax v2 test 4",
+      logoImg: "",
+      website: "https://test.com",
+      bannerImg: "",
+      createdAt: 1706114867213,
+      credentials: {},
+      description:
+        "Sint laborum minus debitis nulla nesciunt perferendis officia delectus. Explicabo saepe similique excepturi dolores architecto. Nesciunt perspiciatis praesentium porro facere aliquam voluptate quasi iusto.",
+      logoImgData: new Blob(),
+      bannerImgData: new Blob(),
+      userGithub: "",
+      projectGithub: "",
+      projectTwitter: "",
+    },
+    metadataCid: "bafkreie4ra5mdxumvxhsjpvawhvtdovlgjk4v74zsgvpqrs2ehdk5srtl4",
+    name: "Jax v2 test 4",
+    nodeId:
+      "WyJwcm9qZWN0cyIsIjB4OGE3OTI0OWI2MzM5NWMyNWJkMTIxYmE2ZmYyODAxOThjMzk5ZDRmYjNmOTUxZmMzYzQyMTk3YjU0YTZkYjZhNiIsMTExNTUxMTFd",
+    // note: This is moved to roles also
+    createdAtBlock: "5146499",
+    updatedAtBlock: "5146499",
+    projectNumber: null,
+    registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
+    tags: ["allo-v2"],
+    roles: [
+      {
+        address: "0xe849b2a694184b8739a04c915518330757cdb18b",
+        role: "OWNER",
+        createdAtBlock: "5146499",
+      },
+    ],
+  },
+];
+
+const mockProject = mockProjects[0];
 
 describe("applications search", () => {
   describe("can retrieve multiple applications by search query", () => {
@@ -27,6 +73,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com" },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       const { results } = await dataLayer.searchApplications({
@@ -79,6 +126,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       const { results, pagination } = await dataLayer.searchApplications({
@@ -127,6 +175,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
       const { applications, pagination } =
         await dataLayer.getApplicationsPaginated({
@@ -162,6 +211,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
       const { applications, pagination } =
         await dataLayer.getApplicationsPaginated({
@@ -196,6 +246,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
       const { applications, pagination } =
         await dataLayer.getApplicationsPaginated({
@@ -232,6 +283,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       for (let i = 0; i < 10; i++) {
@@ -281,6 +333,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       for (let i = 0; i < 10; i++) {
@@ -338,6 +391,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       const { applications, pagination } =
@@ -393,6 +447,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com", pagination: { pageSize: 2 } },
+        indexer: { baseUrl: "https://example.com" },
       });
 
       const { applications, pagination } =
@@ -437,6 +492,7 @@ describe("applications search", () => {
       const dataLayer = new DataLayer({
         fetch: fetchMock,
         search: { baseUrl: "https://example.com" },
+        indexer: { baseUrl: "https://example.com" },
       });
       const { applications } = await dataLayer.getApplicationsPaginated({
         page: 0,
@@ -471,6 +527,7 @@ describe("passport verification", () => {
       search: { baseUrl: "https://example.com" },
       subgraph: { endpointsByChainId: {} },
       passport: { verifier: mockPassportVerifier },
+      indexer: { baseUrl: "https://example.com" },
     });
 
     const { isVerified } = await dataLayer.verifyPassportCredential({
@@ -492,10 +549,80 @@ describe("passport verification", () => {
   });
 });
 
+describe("projects retrieval", () => {
+  test("can retrieve project by id", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        project: mockProject,
+      }),
+    });
+
+    const dataLayer = new DataLayer({
+      fetch: fetchMock,
+      search: { baseUrl: "https://example.com" },
+      subgraph: { endpointsByChainId: {} },
+      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+    });
+
+    const project = await dataLayer.getProjectById({
+      projectId:
+        "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+      chainId: 11155111,
+      alloVersion: "allo-v2",
+    });
+
+    // todo: update to test the entire object when the missing fields are added
+    // to the indexer. @0xKurt
+    // {
+    //   bannerImg: "",
+    //   bannerImgData: new Blob(),
+    //   logoImg: "",
+    //   logoImgData: new Blob(),
+    // }
+    expect(project?.project.id).toEqual(mockProject.id);
+    expect(project?.project.nodeId).toEqual(mockProject.nodeId);
+    expect(project?.project.chainId).toEqual(mockProject.chainId);
+    expect(project?.project.registryAddress).toEqual(mockProject.registryAddress);
+    expect(project?.project.projectNumber).toEqual(mockProject.projectNumber);
+    expect(project?.project.tags).toEqual(mockProject.tags);
+    expect(project?.project.roles).toEqual(mockProject.roles);
+    expect(project?.project.name).toEqual(mockProject.name);
+    expect(project?.project.metadata.description).toEqual(mockProject.metadata.description);
+  });
+
+  test("can retrieve all projects for a network", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        projects: mockProjects,
+      }),
+    });
+
+    const dataLayer = new DataLayer({
+      fetch: fetchMock,
+      search: { baseUrl: "https://example.com" },
+      subgraph: { endpointsByChainId: {} },
+      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+    });
+
+    const data = await dataLayer.getProjects({
+      chainIds: [5],
+      first: 10,
+      alloVersion: "allo-v2",
+    });
+
+    if (data?.projects) expect(data.projects.length).toBeGreaterThan(0);
+  });
+});
+
 describe("categories", () => {
   test("can be retrieved collectively", async () => {
     const dataLayer = new DataLayer({
       search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
     });
 
     const categories = await dataLayer.getSearchBasedCategories();
@@ -512,6 +639,7 @@ describe("categories", () => {
   test("can be retrieved individually", async () => {
     const dataLayer = new DataLayer({
       search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
     });
 
     const category = await dataLayer.getSearchBasedCategoryById("open-source");
@@ -534,6 +662,7 @@ describe("collections", () => {
   test("can be retrieved collectively", async () => {
     const dataLayer = new DataLayer({
       search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
     });
 
     const collections = await dataLayer.getProjectCollections();
@@ -551,6 +680,7 @@ describe("collections", () => {
   test("can be retrieved individually", async () => {
     const dataLayer = new DataLayer({
       search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
     });
 
     const collection = await dataLayer.getProjectCollectionById(
@@ -577,6 +707,7 @@ describe("collections", () => {
   test("ensures that the address component of the application ref is in checksummed format", async () => {
     const dataLayer = new DataLayer({
       search: { baseUrl: "https://example.com" },
+      indexer: { baseUrl: "https://example.com" },
     });
 
     const collections = await dataLayer.getProjectCollections();
