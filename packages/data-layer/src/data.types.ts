@@ -162,7 +162,7 @@ export type v2Project = {
    *
    * The tags are used to filter the projects based on the version of Allo.
    */
-  tags: [string];
+  tags: string[];
   /**
    * The block the project was created at
    */

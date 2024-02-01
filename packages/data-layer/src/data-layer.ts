@@ -221,7 +221,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    const projects: v2Project[] = response.projects;
+    const projects = response.projects;
 
     if (projects.length === 0) return undefined;
 
