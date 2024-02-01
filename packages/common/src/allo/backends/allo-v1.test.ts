@@ -1,12 +1,12 @@
-import { describe, test, expect, vi, beforeEach } from "vitest";
-import { AlloV1 } from "./allo-v1";
-import { zeroAddress, Hex, encodeEventTopics } from "viem";
+import { Hex, encodeEventTopics, zeroAddress } from "viem";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import ProjectRegistry from "../abis/allo-v1/ProjectRegistry";
+import { Result, success } from "../common";
 import {
   TransactionReceipt,
   createMockTransactionSender,
 } from "../transaction-sender";
-import { Result, success } from "../common";
-import ProjectRegistry from "../abis/allo-v1/ProjectRegistry";
+import { AlloV1 } from "./allo-v1";
 
 const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
@@ -17,6 +17,9 @@ const chainId = 1;
 
 describe("AlloV1", () => {
   let allo: AlloV1;
+  let ipfsResult: Result<string>;
+  let txResult: Result<`0x${string}`>;
+  let txStatusResult: Result<TransactionReceipt>;
   beforeEach(() => {
     allo = new AlloV1({
       chainId,
@@ -28,10 +31,6 @@ describe("AlloV1", () => {
   });
 
   test("createProject", async () => {
-    let ipfsResult: Result<string>;
-    let txResult: Result<`0x${string}`>;
-    let txStatusResult: Result<TransactionReceipt>;
-
     const result = await allo
       .createProject({
         name: "My Project",
@@ -77,5 +76,29 @@ describe("AlloV1", () => {
       projectRegistryAddress
     );
     expect(txStatusResult!).toBeTruthy();
+  });
+
+  test("applyToRound", async () => {
+    const result = await allo
+      .applyToRoundV1({
+        projectId: "0x123",
+        roundId: "0x456",
+        metadata: { foo: "bar" },
+      })
+      .on("ipfs", (r) => (ipfsResult = r))
+      .on("transaction", (r) => {
+        txResult = r;
+
+        /** mock transaction receipt */
+        transactionSender.wait = vi.fn().mockResolvedValueOnce({
+          transactionHash: zeroTxHash,
+          blockNumber: 1n,
+          blockHash: "0x0",
+          // todo: finish this
+          logs: [],
+        });
+      })
+      .on("transactionStatus", (r) => (txStatusResult = r))
+      .execute();
   });
 });

@@ -325,7 +325,6 @@ export const submitApplication =
     );
 
     try {
-      // todo: add to wrapper
       const tx = await contract.applyToRound(projectUniqueID, metaPtr);
       // FIXME: check return value of tx.wait() ??
       await tx.wait();

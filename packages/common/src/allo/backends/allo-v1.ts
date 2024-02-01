@@ -13,6 +13,17 @@ import {
   sendTransaction,
 } from "../transaction-sender";
 
+/**
+ * Create the project Id
+ *
+ * @remarks
+ *
+ * This is only used for Allo v1 projects
+ *
+ * @param args
+ *
+ * @returns
+ */
 function createProjectId(args: {
   chainId: number;
   registryAddress: Address;
@@ -26,6 +37,29 @@ function createProjectId(args: {
   );
 }
 
+/**
+ * Allo v1 implementation of Allo
+ * 
+ * @public
+ *
+ * @implements Allo
+ *
+ * @remarks
+ *
+ * This class is the implementation of Allo for Allo v1
+ *
+ * @example
+ * 
+ * ```typescript
+ * const allo = new AlloV1({
+ *   chainId: 1,
+ *   transactionSender: new TransactionSender(),
+ *   projectRegistryAddress: "0x123",
+ *   ipfsUploader: new IpfsUploader(),
+ *   waitUntilIndexerSynced: new WaitUntilIndexerSynced(),
+ * });
+ * ```
+ */
 export class AlloV1 implements Allo {
   private projectRegistryAddress: Address;
   private transactionSender: TransactionSender;
@@ -56,7 +90,6 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      // --- upload metadata to IPFS
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
@@ -65,7 +98,6 @@ export class AlloV1 implements Allo {
         return ipfsResult;
       }
 
-      // --- send transaction to create project
       const txResult = await sendTransaction(this.transactionSender, {
         address: this.projectRegistryAddress,
         abi: ProjectRegistryABI,
@@ -79,7 +111,6 @@ export class AlloV1 implements Allo {
         return txResult;
       }
 
-      // --- wait for transaction to be mined
       let receipt: TransactionReceipt;
 
       try {
@@ -114,7 +145,17 @@ export class AlloV1 implements Allo {
     });
   }
 
-  // projectId is the grantId and not the fullProjectId as computed by createProjectId
+  /**
+   * Updates the metadata of a project
+   *
+   * @remarks
+   *
+   * `projectId` is the `grantId` and not the `fullProjectId` as computed by `createProjectId`
+   *
+   * @param args
+   *
+   * @returns Result<{ projectId: Hex }>
+   */
   updateProjectMetadata(args: {
     projectId: Hex; // Note: this is projectIndex
     metadata: AnyJson;
@@ -137,8 +178,6 @@ export class AlloV1 implements Allo {
       }
 
       const projectIndex = hexToBigInt(args.projectId);
-
-      // --- send transaction to update project metadata
       const txResult = await sendTransaction(this.transactionSender, {
         address: this.projectRegistryAddress,
         abi: ProjectRegistryABI,
@@ -152,9 +191,7 @@ export class AlloV1 implements Allo {
         return txResult;
       }
 
-      // --- wait for transaction to be mined
       let receipt: TransactionReceipt;
-
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
@@ -176,9 +213,17 @@ export class AlloV1 implements Allo {
     });
   }
 
+  /**
+   * Applies to a round for Allo v1
+   *
+   * @param args { projectId: Hex; roundId: Hex; metadata: AnyJson }
+   *
+   * @public
+   *
+   * @returns AllotOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
+   */
   applyToRoundV1(args: {
     projectId: Hex;
-    strategy?: Hex;
     roundId: Hex;
     metadata: AnyJson;
   }): AlloOperation<
@@ -190,7 +235,6 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      // --- upload metadata to IPFS
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
@@ -199,8 +243,6 @@ export class AlloV1 implements Allo {
         return ipfsResult;
       }
 
-      // --- send transaction to apply to round
-      // Note: updated
       const txResult = await sendTransaction(this.transactionSender, {
         address: this.projectRegistryAddress,
         abi: RoundImplementation,
@@ -214,9 +256,7 @@ export class AlloV1 implements Allo {
         return txResult;
       }
 
-      // --- wait for transaction to be mined
       let receipt: TransactionReceipt;
-
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 

@@ -26,6 +26,7 @@ export interface Allo {
    * Creates a new project
    *
    * @param args { name: string; metadata: AnyJson }
+   * 
    * @returns AllotOperation<Result<{ projectId: Hex }>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
    */
   createProject: (args: { name: string; metadata: AnyJson }) => AlloOperation<

@@ -1,4 +1,4 @@
-import { Hex, encodeEventTopics, zeroAddress } from "viem";
+import { Hex, encodeEventTopics } from "viem";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import RegistryABI from "../abis/allo-v2/Registry";
 import { Result, success } from "../common";
@@ -12,7 +12,6 @@ const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
 const waitUntilIndexerSynced = vi.fn().mockResolvedValue(success(null));
 const transactionSender = createMockTransactionSender();
-const projectRegistryAddress = zeroAddress;
 const chainId = 1;
 
 const alloV2RegistryAddress = "0x4AAcca72145e1dF2aeC137E1f3C5E3D75DB8b5f3";
@@ -27,6 +26,10 @@ const profileCreationEvent = {
 
 describe("AlloV2", () => {
   let allo: AlloV2;
+  let ipfsResult: Result<string>;
+  let txResult: Result<`0x${string}`>;
+  let txStatusResult: Result<TransactionReceipt>;
+
   beforeEach(() => {
     allo = new AlloV2({
       chainId,
@@ -37,10 +40,6 @@ describe("AlloV2", () => {
   });
 
   test("createProject", async () => {
-    let ipfsResult: Result<string>;
-    let txResult: Result<`0x${string}`>;
-    let txStatusResult: Result<TransactionReceipt>;
-
     const result = await allo
       .createProject({
         name: "My Project",
@@ -50,7 +49,7 @@ describe("AlloV2", () => {
       .on("transaction", (r) => {
         txResult = r;
 
-        // mock transaction receipt
+        /** mock transaction receipt */
         transactionSender.wait = vi.fn().mockResolvedValueOnce({
           transactionHash: zeroTxHash,
           blockNumber: 1n,
@@ -84,5 +83,29 @@ describe("AlloV2", () => {
       alloV2RegistryAddress.toLocaleLowerCase()
     );
     expect(txStatusResult!).toBeTruthy();
+  });
+
+  test("applyToRound", async () => {
+    const result = await allo
+      .applyToRoundV2({
+        projectId: "0x123",
+        strategy: "0x456",
+        metadata: { foo: "bar" },
+      })
+      .on("ipfs", (r) => (ipfsResult = r))
+      .on("transaction", (r) => {
+        txResult = r;
+
+        /** mock transaction receipt */
+        transactionSender.wait = vi.fn().mockResolvedValueOnce({
+          transactionHash: zeroTxHash,
+          blockNumber: 1n,
+          blockHash: "0x0",
+          // todo: finish this
+          logs: [],
+        });
+      })
+      .on("transactionStatus", (r) => (txStatusResult = r))
+      .execute();
   });
 });
