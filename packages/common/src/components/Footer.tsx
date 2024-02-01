@@ -2,6 +2,7 @@ import Discord from "../icons/Discord";
 import Support from "../icons/Support";
 import Github from "../icons/Github";
 import Gitbook from "../icons/Gitbook";
+import { getConfig } from "../config";
 
 const navigation = [
   {
@@ -31,12 +32,16 @@ const navigation = [
 ];
 
 const COMMIT_HASH = process.env.REACT_APP_GIT_SHA ?? "localhost";
+const ALLO_VERSION = getConfig().allo.version;
 
 export default function Footer() {
   return (
     <footer className={"p-3 px-8 flex flex-row justify-between items-center"}>
       <div className={"text-gray-500 text-xs"}>
-        build <pre className={"inline"}>{COMMIT_HASH}</pre>
+        build{" "}
+        <pre className={"inline"}>
+          {COMMIT_HASH} {ALLO_VERSION}
+        </pre>
       </div>
       <div className="flex flex-row-reverse justify-between py-12 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">

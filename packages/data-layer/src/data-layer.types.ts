@@ -1,5 +1,7 @@
 import { CustomError } from "ts-custom-error";
 
+export type AlloVersion = "allo-v1" | "allo-v2";
+
 export interface PaginationInfo {
   currentPage: number;
   totalPages: number;

@@ -1,20 +1,23 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
+import { getConfig } from "common/src/config";
+import { DataLayer, DataLayerProvider } from "data-layer";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
 import { WagmiConfig } from "wagmi";
 import "./browserPatches";
-import PageNotFound from "./components/base/PageNotFound";
+import AlloWrapper from "./components/AlloWrapper";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Layout from "./components/Layout";
+import PageNotFound from "./components/base/PageNotFound";
 import EditProject from "./components/grants/Edit";
 import ProjectsList from "./components/grants/List";
 import NewProject from "./components/grants/New";
 import Project from "./components/grants/Show";
-import Layout from "./components/Layout";
 import RoundApply from "./components/rounds/Apply";
 import RoundShow from "./components/rounds/Show";
 import ViewApplication from "./components/rounds/ViewApplication";
@@ -23,10 +26,24 @@ import reportWebVitals from "./reportWebVitals";
 import { slugs } from "./routes";
 import setupStore from "./store";
 import "./styles/index.css";
+import initTagmanager from "./tagmanager";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
-import initTagmanager from "./tagmanager";
-import AlloWrapper from "./components/AlloWrapper";
+
+const dataLayerConfig = new DataLayer({
+  search: {
+    baseUrl: getConfig().dataLayer.searchServiceBaseUrl,
+    pagination: {
+      pageSize: 50,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
+  },
+  indexer: {
+    baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
+  },
+});
 
 const store = setupStore();
 const root = ReactDOM.createRoot(
@@ -95,30 +112,32 @@ root.render(
         <ChakraProvider resetCSS={false}>
           <Provider store={store}>
             <AlloWrapper>
-              <ReduxRouter history={history} store={store}>
-                <Layout>
-                  <Routes>
-                    <Route
-                      path={slugs.root}
-                      element={<Navigate to={slugs.grants} />}
-                    />
-                    <Route path={slugs.grants} element={<ProjectsList />} />
-                    <Route path={slugs.project} element={<Project />} />
-                    <Route path={slugs.newGrant} element={<NewProject />} />
-                    <Route path={slugs.edit} element={<EditProject />} />
-                    <Route path={slugs.round} element={<RoundShow />} />
-                    <Route
-                      path={slugs.roundApplication}
-                      element={<RoundApply />}
-                    />
-                    <Route
-                      path={slugs.roundApplicationView}
-                      element={<ViewApplication />}
-                    />
-                    <Route path="*" element={<PageNotFound />} />
-                  </Routes>
-                </Layout>
-              </ReduxRouter>
+              <DataLayerProvider client={dataLayerConfig}>
+                <ReduxRouter history={history} store={store}>
+                  <Layout>
+                    <Routes>
+                      <Route
+                        path={slugs.root}
+                        element={<Navigate to={slugs.grants} />}
+                      />
+                      <Route path={slugs.grants} element={<ProjectsList />} />
+                      <Route path={slugs.project} element={<Project />} />
+                      <Route path={slugs.newGrant} element={<NewProject />} />
+                      <Route path={slugs.edit} element={<EditProject />} />
+                      <Route path={slugs.round} element={<RoundShow />} />
+                      <Route
+                        path={slugs.roundApplication}
+                        element={<RoundApply />}
+                      />
+                      <Route
+                        path={slugs.roundApplicationView}
+                        element={<ViewApplication />}
+                      />
+                      <Route path="*" element={<PageNotFound />} />
+                    </Routes>
+                  </Layout>
+                </ReduxRouter>
+              </DataLayerProvider>
             </AlloWrapper>
           </Provider>
         </ChakraProvider>

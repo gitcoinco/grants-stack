@@ -41,6 +41,22 @@ export type ProjectMetadata = {
   createdAt?: number;
 };
 
+export type AddressAndRole = {
+  address: string;
+  role: string;
+  createdAtBlock: string;
+  // updatedAtBlock: string;
+};
+
+/**
+ * The project type for v1
+ *
+ * @remarks
+ *
+ * This is more of the Application snapshot of the project at the time of the application.
+ *
+ * @deprecated - This type is deprecated and should not be used for new projects.
+ */
 export type Project = {
   grantApplicationId: string;
   projectRegistryId: string;
@@ -49,6 +65,122 @@ export type Project = {
   grantApplicationFormAnswers: GrantApplicationFormAnswer[];
   status: ApplicationStatus;
   applicationIndex: number;
+};
+
+/**
+ * The project role type for v2
+ *
+ * @remarks
+ *
+ * This is the type for v2 project roles which get created on Allo as `Profiles`.
+ *
+ * @example
+ *
+ * ```ts
+ * const projectRole: ProjectRole = {
+ *  project: {
+ *   chainId: 1,
+ *   createdAtBlock: 1,
+ *   registryAddress: "0x123",
+ *   projectNumber: 1,
+ *   tags: ["allo-v2"],
+ *  },
+ *   projectId: "0x123",
+ * };
+ *
+ * ```
+ */
+export type ProjectRole = {
+  project: {
+    chainId: number;
+    createdAtBlock: number;
+    registryAddress: string;
+    projectNumber: number;
+    tags: string[];
+  };
+  projectId: string;
+};
+
+/**
+ * The project type for v2
+ *
+ * @remarks
+ *
+ * This is the type for v2 projects which get created on Allo as `Profiles`.
+ *
+ */
+export type v2Project = {
+  /**
+   * The on-chain unique project ID - `bytes32` string.
+   */
+  id: string;
+  /**
+   * The chain ID of the network
+   */
+  chainId: number;
+  /**
+   * The metadata of the project
+   */
+  metadata: {
+    protocol: number;
+    pointer: string;
+    id: string;
+    title: string;
+    description: string;
+    logoImg?: string;
+    website: string;
+    bannerImg?: string;
+    logoImgData?: Blob;
+    bannerImgData?: Blob;
+    userGithub?: string;
+    projectGithub?: string;
+    projectTwitter?: string;
+    credentials?: ProjectCredentials;
+    createdAt?: number;
+    updatedAt?: number;
+  };
+  /**
+   * The metadata CID of the project
+   */
+  metadataCid: string;
+  name: string;
+  nodeId: string;
+  /**
+   * The project number from v1
+   *
+   * @deprecated - This is deprecated and will return `null` for v2 projects.
+   */
+  projectNumber: number | null;
+  /**
+   * The registry address of the project
+   */
+  registryAddress: string;
+  /**
+   * The tags of the project
+   *
+   * @remarks
+   *
+   * The tags are used to filter the projects based on the version of Allo.
+   */
+  tags: string[];
+  /**
+   * The block the project was created at
+   */
+  createdAtBlock: string;
+  /**
+   * The block the project was updated at
+   */
+  updatedAtBlock: string;
+  roles: AddressAndRole[];
+};
+
+export type ProjectEvents = {
+  createdAtBlock: number | undefined;
+  updatedAtBlock: number | undefined;
+};
+
+export type ProjectEventsMap = {
+  [projectID: string]: ProjectEvents;
 };
 
 export interface PayoutStrategy {

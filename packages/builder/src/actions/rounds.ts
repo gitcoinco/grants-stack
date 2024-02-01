@@ -2,18 +2,18 @@ import { Dispatch } from "redux";
 // import { RootState } from "../reducers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { BigNumber, ethers } from "ethers";
 import { getConfig } from "common/src/config";
-import { graphqlFetch } from "../utils/graphql";
+import { BigNumber, ethers } from "ethers";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { RootState } from "../reducers";
 import { PayoutStrategy, Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
 import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
-import { getProviderByChainId } from "../utils/utils";
 import { RoundApplicationMetadata } from "../types/roundApplication";
+import { graphqlFetch } from "../utils/graphql";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
+import { getProviderByChainId } from "../utils/utils";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -84,10 +84,9 @@ export const loadRound =
 
     const state = getState();
     const { chainID: stateChainID } = state.web3;
-
     const chainId = roundChainId || stateChainID;
-
     const appProvider = getProviderByChainId(chainId!);
+    if (!appProvider) return;
 
     const contract = new ethers.Contract(address, RoundABI, appProvider);
     const pinataClient = new PinataClient(getConfig());

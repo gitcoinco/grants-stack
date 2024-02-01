@@ -46,6 +46,7 @@
     "common": "workspace:*",
     "craco-esbuild": "^0.5.2",
     "crypto-browserify": "^3.12.0",
+    "data-layer": "workspace:*",
     "dompurify": "^2.4.3",
     "ethers": "^5.7.2",
     "framer-motion": "^6",

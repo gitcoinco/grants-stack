@@ -56,6 +56,7 @@
     "cross-fetch": "^4.0.0",
     "debug": "^4.3.4",
     "dotenv-flow": "^3.3.0",
+    "graphql-request": "^6.1.0",
     "knuth-shuffle-seeded": "^1.0.6",
     "papaparse": "^5.4.1",
     "ts-custom-error": "^3.3.1",

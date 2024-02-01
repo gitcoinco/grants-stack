@@ -1,17 +1,16 @@
-import { Address, Hex, hexToBigInt } from "viem";
+import { Address, Hex, encodePacked, hexToBigInt, keccak256 } from "viem";
+import { AnyJson } from "../..";
+import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import { Allo, AlloError, AlloOperation } from "../allo";
+import { Result, error, success } from "../common";
+import { WaitUntilIndexerSynced } from "../indexer";
+import { IpfsUploader } from "../ipfs";
 import {
   TransactionReceipt,
   TransactionSender,
   decodeEventFromReceipt,
   sendTransaction,
 } from "../transaction-sender";
-import { Result, error, success } from "../common";
-import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
-import { IpfsUploader } from "../ipfs";
-import { WaitUntilIndexerSynced } from "../indexer";
-import { keccak256, encodePacked } from "viem";
-import { AnyJson } from "../..";
 
 function createProjectId(args: {
   chainId: number;
@@ -84,6 +83,10 @@ export class AlloV1 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -91,11 +94,6 @@ export class AlloV1 implements Allo {
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: ProjectRegistryABI,
@@ -159,17 +157,17 @@ export class AlloV1 implements Allo {
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to update project metadata");
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       return success({
         projectId: args.projectId,

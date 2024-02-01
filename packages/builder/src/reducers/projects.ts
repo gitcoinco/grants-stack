@@ -1,4 +1,5 @@
 import { ChainId } from "common";
+import { ProjectEventsMap } from "data-layer";
 import {
   ProjectsActions,
   PROJECTS_ERROR,
@@ -13,7 +14,6 @@ import {
   PROJECT_STATS_LOADED,
   PROJECT_STATS_LOADING,
 } from "../actions/projects";
-import { ProjectEventsMap } from "../types";
 
 export enum Status {
   Undefined = 0,

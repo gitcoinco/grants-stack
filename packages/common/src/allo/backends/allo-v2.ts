@@ -1,21 +1,21 @@
-import { Address, Hex } from "viem";
+import { Hex } from "viem";
+import RegistryABI from "../abis/allo-v2/Registry";
 import { Allo, AlloError, AlloOperation } from "../allo";
+import { Result, error, success } from "../common";
+import { WaitUntilIndexerSynced } from "../indexer";
+import { IpfsUploader } from "../ipfs";
 import {
   TransactionReceipt,
   TransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
 } from "../transaction-sender";
-import { Result, error, success } from "../common";
-import RegistryABI from "../abis/allo-v2/Registry";
-import { IpfsUploader } from "../ipfs";
-import { WaitUntilIndexerSynced } from "../indexer";
 
-import {
-  TransactionData,
-  CreateProfileArgs,
-} from "@allo-team/allo-v2-sdk/dist/types";
 import { Registry } from "@allo-team/allo-v2-sdk/";
+import {
+  CreateProfileArgs,
+  TransactionData,
+} from "@allo-team/allo-v2-sdk/dist/types";
 import { AnyJson } from "../..";
 
 export class AlloV2 implements Allo {
@@ -28,7 +28,6 @@ export class AlloV2 implements Allo {
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
-    projectRegistryAddress: Address; // todo: not used, handled by sdk
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
@@ -95,17 +94,17 @@ export class AlloV2 implements Allo {
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to create project");
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: RegistryABI,
@@ -171,6 +170,10 @@ export class AlloV2 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -178,11 +181,6 @@ export class AlloV2 implements Allo {
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       return success({
         projectId: projectId,

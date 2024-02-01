@@ -6,7 +6,7 @@ import {
 } from "../types/roundApplication";
 
 const generateUniqueRoundApplicationID = (
-  projectChainId: ChainId,
+  projectChainId: ChainId | number,
   projectNumber: string,
   projectRegistryAddress: string
 ) =>

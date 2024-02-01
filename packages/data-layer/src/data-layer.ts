@@ -1,25 +1,50 @@
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import shuffle from "knuth-shuffle-seeded";
-import _fetch from "cross-fetch";
 import { VerifiableCredential as PassportVerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import {
-  Collection,
-  Round,
-  RoundOverview,
-  TimestampVariables,
-  SearchBasedProjectCategory,
-} from "./data.types";
-import {
-  SearchResult,
-  DefaultApi as SearchApi,
-  Configuration as SearchApiConfiguration,
-  ApplicationSummary,
-} from "./openapi-search-client/index";
-import * as legacy from "./backends/legacy";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import _fetch from "cross-fetch";
+import { request } from "graphql-request";
+import shuffle from "knuth-shuffle-seeded";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
-import { PaginationInfo } from "./data-layer.types";
+import * as legacy from "./backends/legacy";
+import { AlloVersion, PaginationInfo } from "./data-layer.types";
+import {
+  Collection,
+  ProjectEventsMap,
+  Round,
+  RoundOverview,
+  SearchBasedProjectCategory,
+  TimestampVariables,
+  v2Project,
+} from "./data.types";
+import {
+  ApplicationSummary,
+  DefaultApi as SearchApi,
+  Configuration as SearchApiConfiguration,
+  SearchResult,
+} from "./openapi-search-client/index";
+import {
+  getProjectById,
+  getProjects,
+  getProjectsAndRolesByAddress,
+} from "./queries";
 
+/**
+ * DataLayer is a class that provides a unified interface to the various data sources.
+ *
+ * @remarks
+ *
+ * @public
+ *
+ * @param fetch - The fetch implementation to use for making HTTP requests.
+ * @param search - The configuration for the search API.
+ * @param subgraph - The configuration for the subgraph API.
+ * @param indexer - The configuration for the indexer API.
+ * @param ipfs - The configuration for the IPFS gateway.
+ * @param passport - The configuration for the Passport verifier.
+ * @param collections - The configuration for the collections source.
+ *
+ * @returns The DataLayer instance.
+ */
 export class DataLayer {
   private searchResultsPageSize: number;
   private searchApiClient: SearchApi;
@@ -27,11 +52,13 @@ export class DataLayer {
   private ipfsGateway: string;
   private passportVerifier: PassportVerifier;
   private collectionsSource: collections.CollectionsSource;
+  private gsIndexerEndpoint: string;
 
   constructor({
     fetch,
     search,
     subgraph,
+    indexer,
     ipfs,
     passport,
     collections,
@@ -43,6 +70,9 @@ export class DataLayer {
     };
     subgraph?: {
       endpointsByChainId: Record<number, string>;
+    };
+    indexer: {
+      baseUrl: string;
     };
     // TODO reflect that we specifically require Pinata?
     ipfs?: {
@@ -69,7 +99,152 @@ export class DataLayer {
       collections?.googleSheetsUrl === undefined
         ? { type: "hardcoded" }
         : { type: "google-sheet", url: collections.googleSheetsUrl };
+    this.gsIndexerEndpoint = indexer.baseUrl;
   }
+
+  /**
+   * Allo v1 & v2 builder queries
+   */
+
+  /**
+   * Gets a project by its ID.
+   *
+   * @example
+   * Here is an example:
+   * ```
+   * const project = await dataLayer.getProjectById({
+   *  projectId: "0x1234",
+   *  chainId: 1,
+   *  alloVersion: "allo-v2",
+   * });
+   * ```
+   * @param projectId - the ID of the project to return.
+   * @param chainId - the network ID of the chain.
+   * @param alloVersion - the version of Allo to use.
+   *
+   * @returns v2Project | Project
+   */
+  async getProjectById({
+    projectId,
+    chainId,
+    alloVersion,
+  }: {
+    projectId: string;
+    chainId: number;
+    alloVersion: AlloVersion;
+  }): Promise<{ project: v2Project } | null> {
+    const requestVariables = {
+      alloVersion,
+      projectId,
+      chainId,
+    };
+
+    const response: { projects: v2Project[] } = await request(
+      this.gsIndexerEndpoint,
+      getProjectById,
+      requestVariables,
+    );
+
+    if (response.projects.length === 0) return null;
+
+    const project = response.projects[0];
+
+    return { project };
+  }
+
+  /**
+   * getProjects() returns a list of projects.
+   *
+   * @param chainIds
+   * @param first
+   * @param alloVersion
+   *
+   * @returns v2Projects[] | null
+   */
+  async getProjects({
+    chainIds,
+    first,
+    alloVersion,
+  }: {
+    chainIds: number[];
+    first: number;
+    alloVersion: AlloVersion;
+  }): Promise<{ projects: v2Project[] } | null> {
+    const projects: v2Project[] = [];
+
+    for (const chainId of chainIds) {
+      const requestVariables = {
+        alloVersion,
+        first,
+        chainId,
+      };
+
+      const profilesData: v2Project = await request(
+        this.gsIndexerEndpoint,
+        getProjects,
+        requestVariables,
+      );
+
+      projects.push(profilesData);
+    }
+
+    return {
+      projects,
+    };
+  }
+
+  // getProjectsByAddress
+  /**
+   * getProjectsByAddress() returns a list of projects by address.
+   * @param address
+   * @param chainId
+   * @param role
+   */
+  async getProjectsByAddress({
+    address,
+    alloVersion,
+    chainId,
+  }: {
+    address: string;
+    alloVersion: AlloVersion;
+    chainId: number;
+  }): Promise<ProjectEventsMap | null> {
+    const requestVariables = {
+      address: address.toLowerCase(),
+      version: alloVersion,
+      chainId,
+    };
+
+    const response: { projects: v2Project[] } = await request(
+      this.gsIndexerEndpoint,
+      getProjectsAndRolesByAddress,
+      requestVariables,
+    );
+
+    const projects = response.projects;
+
+    if (projects.length === 0) return null;
+
+    const projectEventsMap: ProjectEventsMap = {};
+
+    for (const project of projects) {
+      projectEventsMap[
+        `${chainId}:${project.registryAddress}:${
+          alloVersion === "allo-v2" ? project.id : project.projectNumber
+        }`
+      ] = {
+        createdAtBlock: Number(project.createdAtBlock),
+        // todo: fix once updatedAtBlock is available
+        updatedAtBlock: Number(project.createdAtBlock),
+      };
+    }
+
+    return projectEventsMap;
+  }
+
+  /**
+   * Legacy - Allo v1 queries
+   */
 
   async searchApplications({
     queryString,

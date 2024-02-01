@@ -2,22 +2,21 @@ import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
 import {
   ChainId,
-  convertStatusToText,
   ROUND_PAYOUT_MERKLE,
   RoundPayoutType,
+  convertStatusToText,
 } from "common";
-import { ethers, utils } from "ethers";
+import { getConfig } from "common/src/config";
+import { DataLayer, ProjectEventsMap } from "data-layer";
+import { utils } from "ethers";
 import { Dispatch } from "redux";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { AppStatus, Application, ProjectStats } from "../reducers/projects";
-import { ProjectEvents, ProjectEventsMap } from "../types";
-import { graphqlFetch } from "../utils/graphql";
-import { fetchProjectOwners } from "../utils/projects";
-import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
 import { getEnabledChainsAndProviders } from "../utils/chains";
+import { graphqlFetch } from "../utils/graphql";
+import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
@@ -120,6 +119,9 @@ interface ProjectStatsLoadedAction {
   stats: ProjectStats[];
 }
 
+/** Actions */
+
+/** Project Action Types */
 export type ProjectsActions =
   | ProjectsLoadingAction
   | ProjectsLoadedAction
@@ -133,6 +135,7 @@ export type ProjectsActions =
   | ProjectStatsLoadingAction
   | ProjectStatsLoadedAction;
 
+/** Action Creators */
 export const projectsLoading = (chainID: ChainId): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
   payload: chainID,
@@ -153,148 +156,6 @@ const projectsUnload = () => ({
   type: PROJECTS_UNLOADED,
 });
 
-const fetchProjectCreatedUpdatedEvents = async (
-  chainID: ChainId,
-  account: string
-) => {
-  const addresses = addressesByChainID(chainID!);
-
-  const appProvider = getProviderByChainId(chainID);
-
-  // FIXME: use contract filters when fantom bug is fixed
-  // const contract = new ethers.Contract(
-  //   addresses.projectRegistry,
-  //   ProjectRegistryABI,
-  //   global.web3Provider!
-  // );
-
-  // FIXME: use this line when the fantom RPC bug has been fixed
-  // const createdFilter = contract.filters.ProjectCreated(null, account) as any;
-  const createdEventSig = ethers.utils.id("ProjectCreated(uint256,address)");
-  const createdFilter = {
-    address: addresses.projectRegistry,
-    fromBlock: chainID === ChainId.POLYGON ? "0x2D01F56" : "0x00",
-    toBlock: "latest",
-    topics: [createdEventSig, null, ethers.utils.hexZeroPad(account, 32)],
-  };
-
-  // FIXME: remove when the fantom RPC bug has been fixed
-  if (chainID === 250 || chainID === 4002) {
-    createdFilter.address = undefined;
-  }
-
-  // FIXME: use queryFilter when the fantom RPC bug has been fixed
-  // const createdEvents = await contract.queryFilter(createdFilter);
-  let createdEvents = await appProvider!.getLogs(createdFilter);
-
-  // FIXME: remove when the fantom RPC bug has been fixed
-  createdEvents = createdEvents.filter(
-    (e) => e.address === addresses.projectRegistry
-  );
-
-  if (createdEvents.length === 0) {
-    return {
-      createdEvents: [],
-      updatedEvents: [],
-      ids: [],
-    };
-  }
-
-  // FIXME: use this line when the fantom RPC bug has been fixed
-  // const ids = createdEvents.map((event) => event.args!.projectID!.toNumber());
-  const ids = createdEvents.map((event) => parseInt(event.topics[1], 16));
-
-  const fullIds = ids.map(
-    (id) => `${chainID}:${addresses.projectRegistry}:${id}`
-  );
-
-  // FIXME: use this line when the fantom RPC bug has been fixed
-  // const hexIDs = createdEvents.map((event) =>
-  //   event.args!.projectID!.toHexString()
-  // );
-  const hexIDs = createdEvents.map((event) => event.topics[1]);
-
-  // FIXME: use this after fantom bug is fixed
-  // const updatedFilter = contract.filters.MetadataUpdated(hexIDs);
-  // const updatedEvents = await contract.queryFilter(updatedFilter);
-
-  // FIXME: remove when fantom bug is fixed
-  const updatedEventSig = ethers.utils.id(
-    "MetadataUpdated(uint256,(uint256,string))"
-  );
-  const updatedFilter = {
-    address: addresses.projectRegistry,
-    fromBlock: chainID === ChainId.POLYGON ? "0x2D01F56" : "0x00",
-    toBlock: "latest",
-    topics: [updatedEventSig, hexIDs],
-  };
-
-  // FIXME: remove when the fantom RPC bug has been fixed
-  if (chainID === 250 || chainID === 4002) {
-    updatedFilter.address = undefined;
-  }
-
-  let updatedEvents = await appProvider!.getLogs(updatedFilter);
-
-  // FIXME: remove when the fantom RPC bug has been fixed
-  updatedEvents = updatedEvents.filter(
-    (e) => e.address === addresses.projectRegistry
-  );
-
-  return {
-    createdEvents,
-    updatedEvents,
-    ids: fullIds,
-  };
-};
-
-export const extractProjectEvents = (
-  createdEvents: ethers.providers.Log[],
-  updatedEvents: ethers.providers.Log[],
-  chainId: ChainId
-) => {
-  const chainAddresses = addressesByChainID(chainId);
-  const eventList: { [key: string]: ProjectEvents } = {};
-  const projectEventsMap: ProjectEventsMap = {};
-
-  createdEvents.forEach((createEvent) => {
-    // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
-    // const id = createEvent.args!.projectID!;
-    const id = `${chainId}:${chainAddresses.projectRegistry}:${parseInt(
-      createEvent.topics[1],
-      16
-    )}`;
-
-    // eslint-disable-next-line no-param-reassign
-    eventList[id] = {
-      createdAtBlock: createEvent.blockNumber,
-      updatedAtBlock: undefined,
-    };
-
-    projectEventsMap[id] = {
-      ...eventList[id],
-    };
-  });
-
-  updatedEvents.forEach((updateEvent) => {
-    // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
-    // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
-    const id = `${chainId}:${chainAddresses.projectRegistry}:${parseInt(
-      updateEvent.topics[1],
-      16
-    )}`;
-    if (eventList[id] !== undefined) {
-      // eslint-disable-next-line no-param-reassign
-      eventList[id].updatedAtBlock = updateEvent.blockNumber;
-    }
-    projectEventsMap[id] = {
-      ...eventList[id],
-    };
-  });
-
-  return projectEventsMap;
-};
-
 export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
   type: PROJECT_OWNERS_LOADED,
   payload: {
@@ -303,39 +164,41 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
   },
 });
 
-export const loadProjectOwners =
-  (projectID: string) => async (dispatch: Dispatch) => {
-    const { chainId, id } = getProjectURIComponents(projectID);
-
-    const owners = await fetchProjectOwners(Number(chainId), id);
-
-    dispatch(projectOwnersLoaded(projectID, owners));
-  };
-
+/**
+ * Load projects for a given chain
+ *
+ * @remarks
+ *
+ * This function is a thunk action creator. It loads projects for a given chain and dispatches the
+ * appropriate actions to the store.
+ *
+ * @param chainID
+ * @param dataLayer
+ * @param withMetaData
+ *
+ * @returns All projects for a given chain
+ */
 export const loadProjects =
-  (chainID: ChainId, withMetaData?: boolean) =>
+  (chainID: ChainId, dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     try {
       const state = getState();
       const { account } = state.web3;
-      const project = await fetchProjectCreatedUpdatedEvents(chainID, account!);
 
-      if (project.ids.length === 0) {
-        // No projects found for this address on this chain
-        // This is not necessarily an error now that we fetch on all chains
+      const projectEventsMap = await dataLayer.getProjectsByAddress({
+        address: account!.toLowerCase(),
+        alloVersion: getConfig().allo.version,
+        chainId: chainID.valueOf(),
+      });
+
+      if (!projectEventsMap) {
         dispatch(projectsLoaded(chainID, {}));
         return;
       }
 
-      const projectEventsMap = extractProjectEvents(
-        project.createdEvents,
-        project.updatedEvents,
-        chainID
-      );
-
       if (withMetaData) {
         Object.keys(projectEventsMap).forEach(async (id) => {
-          dispatch<any>(fetchGrantData(id));
+          dispatch<any>(fetchGrantData(id, dataLayer));
         });
       }
 
@@ -367,15 +230,44 @@ export const loadProjects =
     }
   };
 
+/**
+ * Load all projects for all networks
+ *
+ * @remarks
+ * This function is a thunk action creator. It loads all projects for all supported networks and dispatches the
+ * appropriate actions to the store.
+ *
+ * Calls `loadProjects()` for each network or chainID supported.
+ *
+ * {@link loadProjects}
+ *
+ * @param dataLayer
+ * @param withMetaData
+ *
+ * @returns All projects for all supported networks
+ */
 export const loadAllChainsProjects =
-  (withMetaData?: boolean) => async (dispatch: Dispatch) => {
+  (dataLayer: DataLayer, withMetaData?: boolean) =>
+  async (dispatch: Dispatch) => {
     const { web3Provider } = global;
     web3Provider?.chains?.forEach((chainID: { id: number }) => {
       dispatch(projectsLoading(chainID.id));
-      dispatch<any>(loadProjects(chainID.id, withMetaData));
+      dispatch<any>(loadProjects(chainID.id, dataLayer, withMetaData));
     });
   };
 
+/**
+ * Load project applications for a given round
+ *
+ * @remarks
+ *
+ * This returns whether the project has applied to a given round.
+ *
+ * @param roundID
+ * @param roundChainId
+ *
+ * @returns boolean
+ */
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
   roundID: string,
@@ -433,6 +325,19 @@ export const fetchProjectApplicationInRound = async (
   }
 };
 
+/**
+ * Load project applications for a given project on a given chain
+ *
+ * @remarks
+ *
+ * This loads project applications for a given project and network and dispatches the
+ * appropriate actions to the store.
+ *
+ * @param projectID
+ * @param projectChainId
+ *
+ * @returns All applications for a given project
+ */
 export const fetchProjectApplications =
   (projectID: string, projectChainId: ChainId) =>
   async (dispatch: Dispatch) => {
@@ -526,6 +431,16 @@ export const fetchProjectApplications =
     });
   };
 
+/**
+ * Load project stats for a given project and network
+ *
+ * @param projectID
+ * @param projectRegistryAddress
+ * @param projectChainId
+ * @param rounds
+ *
+ * @returns
+ */
 export const loadProjectStats =
   (
     projectID: string,
@@ -578,7 +493,7 @@ export const loadProjectStats =
       // NOTE: Consider finding a way for singleton Client to be used
       const client = new AlloClient(
         boundFetch,
-        process.env.REACT_APP_ALLO_API_URL ?? "",
+        process.env.REACT_APP_INDEXER_V2_API_URL ?? "",
         round.chainId
       );
 
