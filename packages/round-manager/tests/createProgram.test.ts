@@ -1,5 +1,8 @@
 import { test } from "../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
+import { faker } from "@faker-js/faker";
+import { v4 } from "uuid";
+import { abbreviateAddress } from "../src/features/api/utils";
 
 test.beforeEach(async ({ page }) => {
   // baseUrl is set in playwright.config.ts
@@ -7,6 +10,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("create a program", async ({ page }) => {
+  const programName = faker.company.name() + v4();
   await page.getByRole("navigation").getByTestId("rk-connect-button").click();
   await page.getByText("Metamask").click();
   await metamask.acceptAccess();
@@ -15,8 +19,10 @@ test("create a program", async ({ page }) => {
   await metamask.allowToAddAndSwitchNetwork();
   await page.getByTestId("create-program").click();
   await page.getByTestId("program-name").click();
-  await page.getByTestId("program-name").fill("Testing from Playwright");
+  await page.getByTestId("program-name").fill(programName);
   await page.getByTestId("save").click();
   await metamask.confirmTransaction();
-  await page.getByText("Testing from Playwright").waitFor();
+  await page.getByText(programName).waitFor();
+  await page.getByText(programName).click();
+  await page.getByText(abbreviateAddress(metamask.walletAddress())).waitFor();
 });
