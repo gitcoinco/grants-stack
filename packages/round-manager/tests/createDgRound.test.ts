@@ -19,7 +19,7 @@ test("connect wallet, create a program, create a dg round", async ({
   await page.getByRole("button", { name: "Direct Grants Choose this" }).click();
   await page.getByRole("button", { name: "Create round" }).click();
   await page.getByLabel("Round Name").click();
-  await page.getByLabel("Round Name").fill("Testing Round from Playwright");
+  await page.getByLabel("Round Name").fill("Testing Program from Playwright");
   await page.getByTestId("support-type-select").click();
   await page.getByRole("option", { name: "Email" }).locator("div").click();
   await page.getByPlaceholder("Enter desired form of contact").click();
@@ -41,5 +41,5 @@ test("connect wallet, create a program, create a dg round", async ({
   await page.getByTestId("requirement-input").fill("Be a bot!");
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("button", { name: "Launch" }).click();
-  await page.pause();
+  await page.getByText("Testing Program from Playwright").waitFor();
 });
