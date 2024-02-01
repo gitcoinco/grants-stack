@@ -21,7 +21,7 @@ export type Config = {
   dataLayer: {
     searchServiceBaseUrl: string;
     subgraphEndpoints: Record<number, string>;
-    gsIndexerEndpoint?: string;
+    gsIndexerEndpoint: string;
   };
   pinata: {
     jwt: string;
