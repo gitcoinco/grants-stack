@@ -215,7 +215,7 @@ function convertStatus(status: string | number): ApplicationStatus {
     case 2:
       return "REJECTED";
     case 3:
-      return "CANCELLED";
+      return "APPEAL";
     default:
       // XXX should this not throw an error?
       return "PENDING";

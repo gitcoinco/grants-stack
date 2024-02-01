@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { useDataLayer } from "data-layer";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import {
   fetchApplicationData,
   submitApplication,
@@ -16,7 +18,6 @@ import Form from "../application/Form";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import Cross from "../icons/Cross";
-import { RoundApplicationAnswers } from "../../types/roundApplication";
 import { isInfinite } from "../../utils/components";
 import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 
@@ -27,6 +28,8 @@ function ViewApplication() {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const dataLayer = useDataLayer();
 
   const { chainId, roundId, ipfsHash } = params;
 
@@ -82,7 +85,7 @@ function ViewApplication() {
   useEffect(() => {
     if (roundId !== undefined) {
       dispatch(unloadRounds());
-      dispatch(loadRound(roundId, props.roundChainId));
+      dispatch(loadRound(roundId, dataLayer, props.roundChainId));
     }
   }, [dispatch, roundId]);
 

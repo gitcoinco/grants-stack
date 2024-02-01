@@ -1,6 +1,9 @@
+import {
+  RoundApplicationAnswers,
+  RoundApplicationMetadata,
+} from "data-layer/dist/roundApplication.types";
 import Lit from "../services/lit";
-import { RoundApplicationMetadata, Project, RoundApplication } from "../types";
-import { RoundApplicationAnswers } from "../types/roundApplication";
+import { Project, RoundApplication } from "../types";
 
 export default class RoundApplicationBuilder {
   enableEncryption: boolean;

@@ -1,6 +1,6 @@
+import { ApplicationStatus } from "data-layer";
 import { Button } from "@chakra-ui/react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
-import { AppStatus } from "../../../reducers/projects";
 import { RoundDisplayType } from "../../../types";
 
 export type LinkProps = {
@@ -8,7 +8,7 @@ export type LinkProps = {
   link: string;
   text: string;
   enableStats?: boolean;
-  applicationStatus: AppStatus;
+  applicationStatus: ApplicationStatus;
 };
 
 export default function LinkManager({ linkProps }: { linkProps: LinkProps }) {

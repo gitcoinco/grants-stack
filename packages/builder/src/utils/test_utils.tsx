@@ -2,8 +2,13 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
-import { AlloProvider, AlloV2, createMockTransactionSender } from "common";
-import { DataLayer, DataLayerProvider } from "data-layer";
+import {
+  AlloProvider,
+  AlloV2,
+  RoundVisibilityType,
+  createMockTransactionSender,
+} from "common";
+import { DataLayer, DataLayerProvider, ProjectApplication } from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
 import { zeroAddress } from "viem";
@@ -27,10 +32,10 @@ export const buildAlert = (attrs = {}): Alert => ({
 
 export const buildRound = (round: any): Round => ({
   address: addressFrom(1),
-  applicationsStartTime: 1663751953,
-  applicationsEndTime: Date.now() / 1000 + 36000,
-  roundStartTime: 1663751953,
-  roundEndTime: Date.now() / 1000 + 36000,
+  applicationsStartTime: new Date(1663751953000),
+  applicationsEndTime: new Date(Date.now() + 36000000),
+  roundStartTime: new Date(1663751953000),
+  roundEndTime: new Date(Date.now() + 36000000),
   token: "0x0000000000000000000000000000000000000000",
   roundMetaPtr: {},
   roundMetadata: {},
@@ -101,10 +106,36 @@ export const buildFormMetadata = (metadata: any): FormInputs => ({
   ...metadata,
 });
 
-export const buildProjectApplication = (application: any): any => ({
+export const buildProjectApplication = (
+  application: any
+): ProjectApplication => ({
   chainId: 5,
-  roundID: addressFrom(1),
+  roundId: addressFrom(1),
   status: "APPROVED",
+  inReview: false,
+  id: "1",
+  metadataCid: "0x1",
+  metadata: {},
+  round: {
+    applicationsStartTime: "0",
+    applicationsEndTime: "0",
+    donationsStartTime: "0",
+    donationsEndTime: "0",
+    roundMetadata: {
+      name: "Round 1",
+      roundType: "public" as RoundVisibilityType,
+      eligibility: {
+        description: "Eligibility description",
+        requirements: [{ requirement: "Requirement 1" }],
+      },
+      programContractAddress: "0x1",
+      support: {
+        info: "https://support.com",
+        type: "WEBSITE",
+      },
+    },
+    name: "Round 1",
+  },
   ...application,
 });
 

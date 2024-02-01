@@ -1,4 +1,5 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { useDataLayer } from "data-layer";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -29,25 +30,26 @@ export default function Details({
 }) {
   const params = useParams();
   const dispatch = useDispatch();
+  const dataLayer = useDataLayer();
   const props = useSelector((state: RootState) => {
-    const { chainId } = params;
+    const { chainId, id } = params;
 
-    const applications = state.projects.applications[params.id!] || [];
+    const applications = state.projects.applications?.[params.id!] ?? [];
 
     return {
       chainId,
-      projectID: params.id!,
+      projectID: id!,
       applications,
     };
   });
 
   useEffect(() => {
-    if (props.projectID) {
+    if (params.id! && params.chainId) {
       dispatch(
-        fetchProjectApplications(props.projectID, Number(props.chainId))
+        fetchProjectApplications(params.id!, Number(params.chainId), dataLayer)
       );
     }
-  }, [dispatch, props.projectID, props.chainId]);
+  }, [params.id!, params.chainId]);
 
   return (
     <>
@@ -94,6 +96,7 @@ export default function Details({
             <TabPanel>
               <About
                 project={project}
+                applications={props.applications}
                 showApplications={showApplications}
                 createdAt={createdAt}
                 updatedAt={updatedAt}
@@ -103,13 +106,14 @@ export default function Details({
               <Stats />
             </TabPanel>
             <TabPanel>
-              <Rounds />
+              <Rounds applications={props.applications} />
             </TabPanel>
           </TabPanels>
         </Tabs>
       ) : (
         <About
           project={project}
+          applications={props.applications}
           showApplications={showApplications}
           createdAt={createdAt}
           updatedAt={updatedAt}

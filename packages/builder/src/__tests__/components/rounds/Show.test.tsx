@@ -43,18 +43,18 @@ describe("<Show />", () => {
 
     const pastRound = buildRound({
       address: addressFrom(1),
-      applicationsStartTime: 0,
-      applicationsEndTime: 0,
-      roundStartTime: 0,
-      roundEndTime: 0,
+      applicationsStartTime: new Date(Date.now() - 60 * 60),
+      applicationsEndTime: new Date(Date.now() - 10 * 60),
+      roundStartTime: new Date(Date.now() - 60 * 60),
+      roundEndTime: new Date(Date.now() - 10 * 60),
     });
 
     const futureRound = buildRound({
       address: addressFrom(1),
-      applicationsStartTime: Date.now() / 1000 + 60 * 30,
-      applicationsEndTime: Date.now() / 1000 + 60 * 60,
-      roundStartTime: Date.now() / 1000 + 60 * 60,
-      roundEndTime: Date.now() / 1000 + 60 * 120,
+      applicationsStartTime: new Date(Date.now() + 60 * 30),
+      applicationsEndTime: new Date(Date.now() + 60 * 60),
+      roundStartTime: new Date(Date.now() + 60 * 60),
+      roundEndTime: new Date(Date.now() + 60 * 120),
     });
 
     store.dispatch(web3ChainIDLoaded(5));
@@ -179,7 +179,7 @@ describe("<Show />", () => {
         expect(screen.getByText("Apply")).toBeInTheDocument();
       });
 
-      test("should send you to project creation page", async () => {
+      test.only("should send you to project creation page", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
         (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });

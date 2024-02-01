@@ -10,11 +10,13 @@ import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Collection,
   Program,
+  ProjectApplication,
   ProjectEventsMap,
   Round,
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
+  V2Round,
   v2Project,
 } from "./data.types";
 import {
@@ -24,10 +26,13 @@ import {
   SearchResult,
 } from "./openapi-search-client/index";
 import {
+  getApplicationsByProjectId,
+  getProgramName,
   getProgramsByUser,
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
+  getRoundByIdAndChainId,
 } from "./queries";
 
 /**
@@ -292,6 +297,70 @@ export class DataLayer {
     }
 
     return projectEventsMap;
+  }
+
+  // getApplicationsByProjectId
+  /**
+   * getApplicationsByProjectId() returns a list of projects by address.
+   * @param projectId
+   */
+  async getApplicationsByProjectId({
+    projectId,
+    chainIds,
+  }: {
+    projectId: string;
+    chainIds: number[];
+  }): Promise<ProjectApplication[]> {
+    const requestVariables = {
+      projectId: projectId,
+      chainIds: chainIds,
+    };
+
+    const response: { applications: ProjectApplication[] } = await request(
+      this.gsIndexerEndpoint,
+      getApplicationsByProjectId,
+      requestVariables,
+    );
+
+    return response.applications ?? [];
+  }
+
+  async getProgramName({
+    projectId,
+  }: {
+    projectId: string;
+  }): Promise<string | null> {
+    const requestVariables = {
+      projectId,
+    };
+
+    const response: { projects: { metadata: { name: string } }[] } =
+      await request(this.gsIndexerEndpoint, getProgramName, requestVariables);
+
+    if (response.projects.length === 0) return null;
+
+    const project = response.projects[0];
+
+    return project.metadata.name;
+  }
+
+  async getRoundByIdAndChainId({
+    roundId,
+    chainId,
+  }: {
+    roundId: string;
+    chainId: number;
+  }): Promise<V2Round> {
+
+    const requestVariables = {
+      roundId,
+      chainId
+    };
+
+    const response : {rounds: V2Round[]} = 
+    await request(this.gsIndexerEndpoint, getRoundByIdAndChainId, requestVariables);
+
+    return response.rounds[0] ?? [];
   }
 
   /**
