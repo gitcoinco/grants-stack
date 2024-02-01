@@ -122,7 +122,7 @@ export const zkSyncEraMainnet: Chain = {
 };
 
 export const scroll: Chain = {
-  id: 424,
+  id: 534352,
   name: "Scroll",
   network: "scroll",
   iconUrl: ScrollIcon,
