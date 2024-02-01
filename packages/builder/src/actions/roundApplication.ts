@@ -1,9 +1,9 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ChainId, isJestRunning } from "common";
+import { getConfig } from "common/src/config";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { getConfig } from "common/src/config";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -11,12 +11,12 @@ import { Status } from "../reducers/roundApplication";
 import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
 import { RoundApplicationAnswers } from "../types/roundApplication";
-import { objectToDeterministicJSON } from "../utils/deterministicJSON";
-import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
+import { objectToDeterministicJSON } from "../utils/deterministicJSON";
+import { graphqlFetch } from "../utils/graphql";
+import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
 import { fetchProjectApplications } from "./projects";
-import { graphqlFetch } from "../utils/graphql";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 
@@ -325,6 +325,7 @@ export const submitApplication =
     );
 
     try {
+      // todo: add to wrapper
       const tx = await contract.applyToRound(projectUniqueID, metaPtr);
       // FIXME: check return value of tx.wait() ??
       await tx.wait();

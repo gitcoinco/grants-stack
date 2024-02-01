@@ -187,4 +187,68 @@ export class AlloV2 implements Allo {
       });
     });
   }
+
+  applyToRoundV2(args: {
+    projectId: Hex;
+    strategy: Hex;
+    roundId?: Hex;
+    metadata: AnyJson;
+  }): AlloOperation<
+    Result<Hex>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      const data = {
+        projectId: args.projectId,
+        strategy: args.strategy,
+        metadata: ipfsResult.value,
+      };
+
+      const txApplyToRound: any = this.applyToRoundV2(data);
+
+      // --- send transaction to create project
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txApplyToRound.to,
+        data: txApplyToRound.data,
+        value: BigInt(txApplyToRound.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      // --- wait for transaction to be mined
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to apply to round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      return success(receipt.transactionHash);
+    });
+  }
 }

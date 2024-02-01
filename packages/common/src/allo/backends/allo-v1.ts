@@ -1,6 +1,7 @@
 import { Address, Hex, encodePacked, hexToBigInt, keccak256 } from "viem";
 import { AnyJson } from "../..";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
+import RoundImplementation from "../abis/allo-v1/RoundImplementation";
 import { Allo, AlloError, AlloOperation } from "../allo";
 import { Result, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -172,6 +173,66 @@ export class AlloV1 implements Allo {
       return success({
         projectId: args.projectId,
       });
+    });
+  }
+
+  applyToRoundV1(args: {
+    projectId: Hex;
+    strategy?: Hex;
+    roundId: Hex;
+    metadata: AnyJson;
+  }): AlloOperation<
+    Result<Hex>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      // --- upload metadata to IPFS
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      // --- send transaction to apply to round
+      // Note: updated
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: this.projectRegistryAddress,
+        abi: RoundImplementation,
+        functionName: "applyToRound",
+        args: [args.roundId, { protocol: 1n, pointer: ipfsResult.value }],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      // --- wait for transaction to be mined
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to apply to round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      return success(args.projectId);
     });
   }
 }
