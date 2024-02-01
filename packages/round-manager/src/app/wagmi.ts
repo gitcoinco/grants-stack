@@ -26,6 +26,7 @@ import {
   pgn,
   pgnTestnet,
   base,
+  scroll,
   zkSyncEraMainnet,
   zkSyncEraTestnet,
 } from "common/src/chains";
@@ -54,6 +55,7 @@ const mainnetChains = () => {
     polygon,
     zkSyncEraMainnet,
     base,
+    scroll,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
   ];
 };

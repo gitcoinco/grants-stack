@@ -312,7 +312,7 @@ export { AlloV2 } from "./allo/backends/allo-v2";
 export {
   createWaitForIndexerSyncTo,
   getCurrentSubgraphBlockNumber,
-  waitForSubgraphSyncTo
+  waitForSubgraphSyncTo,
 } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
@@ -323,7 +323,7 @@ export {
   createViemTransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
-  sendTransaction
+  sendTransaction,
 } from "./allo/transaction-sender";
 
 export type AnyJson =

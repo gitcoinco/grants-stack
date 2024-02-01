@@ -115,6 +115,11 @@ export const CHAINS: Record<
     name: "Base",
     logo: "./logos/base-logo.svg",
   },
+  [ChainId.SCROLL]: {
+    id: ChainId.SCROLL,
+    name: "Scroll",
+    logo: "./logos/scroll-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos = {
@@ -548,6 +553,30 @@ const FUJI_TOKENS: VotingToken[] = [
   },
 ];
 
+const SCROLL_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.SCROLL,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.SCROLL,
+    address: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
+    permitVersion: "2",
+    defaultForVoting: false,
+    canVote: true,
+  },
+];
+
 export const votingTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -564,6 +593,7 @@ export const votingTokens = [
   ...ZKSYNC_ERA_TESTNET_TOKENS,
   ...ZKSYNC_ERA_MAINNET_TOKENS,
   ...BASE_TOKENS,
+  ...SCROLL_TOKENS,
 ];
 
 type VotingTokensMap = Record<ChainId, VotingToken[]>;
@@ -587,6 +617,7 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: ZKSYNC_ERA_TESTNET_TOKENS,
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: ZKSYNC_ERA_MAINNET_TOKENS,
   [ChainId.BASE]: BASE_TOKENS,
+  [ChainId.SCROLL]: SCROLL_TOKENS,
 };
 
 export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
@@ -621,6 +652,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
     "https://goerli.explorer.zksync.io/tx/",
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
   [ChainId.BASE]: "https://basescan.org/tx/",
+  [ChainId.SCROLL]: "https://scrollscan.com/tx/",
 };
 
 /**

@@ -156,6 +156,9 @@ export function getConfig(): Config {
         [ChainId.BASE]: z
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_BASE_API),
+        [ChainId.SCROLL]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_SCROLL_API),
       },
       gsIndexerEndpoint: z
         .string()

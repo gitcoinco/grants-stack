@@ -11,6 +11,7 @@ import {
 } from "@wagmi/chains";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
+import ScrollIcon from "./icons/scroll-logo.svg";
 
 export const PublicGoodsNetworkIcon =
   "https://ipfs.io/ipfs/Qmagrvn2SY5TEoLgqUtcc1745ABZTFoPmod37tW37u7HYo";
@@ -114,6 +115,32 @@ export const zkSyncEraMainnet: Chain = {
     },
     public: {
       http: ["https://mainnet.era.zksync.io"],
+    },
+  },
+};
+
+export const scroll: Chain = {
+  id: 424,
+  name: "Scroll",
+  network: "scroll",
+  iconUrl: ScrollIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.scroll.io"],
+    },
+    public: {
+      http: ["https://rpc.scroll.io"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Scrollscan",
+      url: "https://scrollscan.com/",
     },
   },
 };
