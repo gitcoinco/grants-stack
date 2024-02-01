@@ -226,8 +226,13 @@ export function RoundApplicationForm(props: {
   const [projectRequirements, setProjectRequirements] =
     useState<ProjectRequirements>({ ...initialRequirements });
 
-  const { createRound, ipfsStatus, contractDeploymentStatus, indexingStatus } =
-    useCreateRoundStore();
+  const {
+    createRound,
+    clearStatuses,
+    ipfsStatus,
+    contractDeploymentStatus,
+    indexingStatus,
+  } = useCreateRoundStore();
 
   /** Upon succesful creation of round, redirect to program details */
   useEffect(() => {
@@ -238,6 +243,11 @@ export function RoundApplicationForm(props: {
 
     if (isSuccess) {
       redirectToProgramDetails(navigate, 2000, programId);
+      /* Clear the store progress statuses in order to not redirect when creating another round */
+      /*The delay is to prevent clearing the statuses before the user is redirected */
+      setTimeout(() => {
+        clearStatuses();
+      }, 3_000);
     }
   }, [
     contractDeploymentStatus,
@@ -246,9 +256,10 @@ export function RoundApplicationForm(props: {
     programId,
     navigate,
     roundCategory,
+    clearStatuses,
   ]);
 
-  /** If there's an error, show an error dialog and redirect to program */
+  /** If there's an error, show an error dialog and redirect back to program */
   useEffect(() => {
     if (
       ipfsStatus === ProgressStatus.IS_ERROR ||
@@ -259,9 +270,9 @@ export function RoundApplicationForm(props: {
       }, errorModalDelayMs);
     }
 
-    // if (indexingStatus === ProgressStatus.IS_ERROR) {
-    //   redirectToProgramDetails(navigate, 5000, programId);
-    // }
+    if (indexingStatus === ProgressStatus.IS_ERROR) {
+      redirectToProgramDetails(navigate, 5000, programId);
+    }
   }, [
     contractDeploymentStatus,
     indexingStatus,

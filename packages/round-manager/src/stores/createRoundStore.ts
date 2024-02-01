@@ -18,15 +18,18 @@ export type CreateRoundStoreState = {
       roundId: Address;
     }>
   >;
+  clearStatuses: () => void;
 };
 
 export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
   ipfsStatus: ProgressStatus.NOT_STARTED,
   contractDeploymentStatus: ProgressStatus.NOT_STARTED,
   indexingStatus: ProgressStatus.NOT_STARTED,
-  setIndexingStatus: (status: ProgressStatus) => {
+  clearStatuses: () => {
     set({
-      indexingStatus: status,
+      indexingStatus: ProgressStatus.NOT_STARTED,
+      contractDeploymentStatus: ProgressStatus.NOT_STARTED,
+      ipfsStatus: ProgressStatus.NOT_STARTED,
     });
   },
   round: undefined,
