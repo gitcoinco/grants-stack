@@ -1,6 +1,6 @@
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 import { Allo, AlloError, AlloOperation } from "../allo";
-import { Result, error, success } from "../common";
+import { error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
