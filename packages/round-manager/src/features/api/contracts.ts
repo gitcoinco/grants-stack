@@ -2,7 +2,6 @@
  * This file contains all contract definitions for Gitcoin Grants Round Manager
  */
 
-import { ca } from "date-fns/locale";
 import abi from "./abi";
 import { Contract } from "./types";
 import { ChainId } from "common";
