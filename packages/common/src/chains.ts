@@ -11,7 +11,6 @@ import {
 } from "@wagmi/chains";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
-import ScrollIcon from "./icons/scroll-logo.svg";
 
 export const PublicGoodsNetworkIcon =
   "https://ipfs.io/ipfs/Qmagrvn2SY5TEoLgqUtcc1745ABZTFoPmod37tW37u7HYo";
@@ -21,6 +20,9 @@ export const BaseLogo =
   "https://ipfs.io/ipfs/QmQaAsfJpUuKmpX3eJEzgdZjqqFWmWHXnDy3MpPVJyDzcj";
 export const FantomFTMLogo =
   "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9";
+
+export const ScrollIcon =
+  "https://ipfs.io/ipfs/QmQaAsfJpUuKmpX3eJEzgdZjqqFWmWHXnDy3MpPVJyDzcj"; // fixme: need to be updated
 
 const config = getConfig();
 
