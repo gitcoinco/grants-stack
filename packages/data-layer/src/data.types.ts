@@ -101,6 +101,8 @@ export type ProjectRole = {
   projectId: string;
 };
 
+export type Tags = "allo-v1" | "program update";
+
 /**
  * The program type for v1
  **/
@@ -112,7 +114,7 @@ export type Program = {
     name: string;
   };
   metadataCid?: MetadataPointer;
-  tags: [string];
+  tags: Tags[];
   roles: AddressAndRole[];
 };
 

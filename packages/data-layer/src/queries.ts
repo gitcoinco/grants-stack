@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 
 /**
- * Get a programs by its User
+ * Get all the programs that a user is a part of
  * @param $alloVersion - The version of Allo
  * @param $address - The address of the user
  * @param $chainId - The network ID of the chain
