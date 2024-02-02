@@ -1,8 +1,7 @@
 import { gql } from "graphql-request";
 
 /**
- * Get all the programs that a user is a part of
- * @param $alloVersion - The version of Allo
+ * Get all the programs that a user is a part of in allo v1
  * @param $address - The address of the user
  * @param $chainId - The network ID of the chain
  *
@@ -13,6 +12,37 @@ export const getProgramsByUser = gql`
     projects(
       filter: {
         tags: { contains: "program" }
+        roles: { some: { address: { equalTo: $address } } }
+        and: { chainId: { equalTo: $chainId } }
+      }
+    ) {
+      id
+      chainId
+      metadata
+      metadataCid
+      tags
+      roles {
+        address
+        role
+        createdAtBlock
+      }
+    }
+  }
+`;
+
+/**
+ * Get all the profiles that a user is a part of in allo v2
+ * @param $alloVersion - The version of Allo
+ * @param $address - The address of the user
+ * @param $chainId - The network ID of the chain
+ *
+ * @returns The programs
+ */
+export const getProfilesByUser = gql`
+  query ($address: String!, $chainId: Int!) {
+    projects(
+      filter: {
+        tags: { contains: "allo-v2" }
         roles: { some: { address: { equalTo: $address } } }
         and: { chainId: { equalTo: $chainId } }
       }
