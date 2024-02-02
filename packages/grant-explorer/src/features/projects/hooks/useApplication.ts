@@ -50,7 +50,7 @@ query Application($chainId: Int!, $applicationId: String!, $roundId: String!) {
 }
 `;
 
-type Application = {
+export type Application = {
   id: string;
   chainId: string;
   roundId: string;

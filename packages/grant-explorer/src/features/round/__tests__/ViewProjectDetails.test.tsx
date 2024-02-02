@@ -11,6 +11,11 @@ import {
 import ViewProjectDetails from "../ViewProjectDetails";
 import { truncate } from "../../common/utils/truncate";
 import { formatDateWithOrdinal } from "common";
+import {
+  Application,
+  useApplication,
+} from "../../projects/hooks/useApplication";
+import { expect, Mock } from "vitest";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -50,23 +55,77 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
+vi.mock("../../projects/hooks/useApplication", async () => {
+  const actual = await vi.importActual<
+    typeof import("../../projects/hooks/useApplication")
+  >("../../projects/hooks/useApplication");
+
+  return {
+    ...actual,
+    useApplication: vi.fn().mockResolvedValue({ data: "" }),
+  };
+});
+
 describe("<ViewProjectDetails/>", () => {
   it("shows project name", async () => {
-    const expectedProject = makeApprovedProjectData({ grantApplicationId });
-    const expectedProjectName = expectedProject.projectMetadata.title;
+    const expectedProject: Application = {
+      chainId: "1",
+      id: faker.finance.ethereumAddress(),
+      metadata: {
+        application: {
+          answers: [],
+          recipient: faker.finance.ethereumAddress(),
+        },
+      },
+      project: {
+        id: faker.finance.ethereumAddress(),
+        metadata: {
+          title: "Project test",
+          description: "",
+          website: "",
+          owners: [],
+        },
+      },
+      projectId: faker.finance.ethereumAddress(),
+      round: {
+        applicationsEndTime: new Date().valueOf().toString(),
+        applicationsStartTime: new Date().valueOf().toString(),
+        donationsEndTime: new Date().valueOf().toString(),
+        donationsStartTime: new Date().valueOf().toString(),
+        matchTokenAddress: faker.finance.ethereumAddress(),
+        roundMetadata: {
+          name: "",
+          roundType: "public",
+          eligibility: {
+            description: "",
+          },
+          programContractAddress: "",
+        },
+      },
+      roundId: faker.finance.ethereumAddress(),
+      status: "APPROVED",
+      totalAmountDonatedInUsd: "",
+      totalDonationsCount: "",
+    };
 
     const roundWithProjects = makeRoundData({
       id: roundId,
-      approvedProjects: [expectedProject],
+      approvedProjects: [],
     });
+    (useApplication as Mock).mockResolvedValue({
+      data: expectedProject,
+    });
+
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
         rounds: [roundWithProjects],
         isLoading: false,
       },
     });
-
-    expect(await screen.findByText(expectedProjectName)).toBeInTheDocument();
+    screen.logTestingPlaygroundURL();
+    expect(
+      await screen.findByText(expectedProject.project.metadata.title)
+    ).toBeInTheDocument();
   });
 
   describe("Show project details", () => {

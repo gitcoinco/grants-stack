@@ -99,6 +99,8 @@ export default function ViewProjectDetails() {
     applicationId: applicationId?.split("-")[1],
   });
 
+  console.log(application);
+
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
 
