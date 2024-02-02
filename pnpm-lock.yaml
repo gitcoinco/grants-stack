@@ -169,8 +169,8 @@ importers:
         specifier: ^6
         version: 6.5.1(react-dom@18.2.0)(react@18.2.0)
       gitcoin-lit-js-sdk:
-        specifier: ^1.2.9
-        version: 1.2.9
+        specifier: ^1.3.0
+        version: 1.3.0
       history:
         specifier: ^5.3.0
         version: 5.3.0
@@ -998,8 +998,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       lit-js-sdk-old-w-pgn:
-        specifier: ^1.1.256
-        version: 1.1.256
+        specifier: ^1.1.257
+        version: 1.1.257
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -14832,8 +14832,8 @@ packages:
       through2: 4.0.2
     dev: true
 
-  /gitcoin-lit-js-sdk@1.2.9:
-    resolution: {integrity: sha512-tRnLR7ihhLOQ7cWBxPI1kQDJxZ7lHTYBxEoUYsVZw1zpMYB6mjKykXC0IT79yRGcjpkhQRNjnXcWZRVOVogNcw==}
+  /gitcoin-lit-js-sdk@1.3.0:
+    resolution: {integrity: sha512-ZmPemXvIgHwwYvFmCFPub8OjYHLumoL519rIA4OdBHWPCR8VZ1KSVJbrZN8MYr549+X6EN+Ed40/j4fJx9i4Yw==}
     dependencies:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0
@@ -18194,8 +18194,8 @@ packages:
       '@types/trusted-types': 2.0.3
     dev: false
 
-  /lit-js-sdk-old-w-pgn@1.1.256:
-    resolution: {integrity: sha512-9drOhHcSS41FWBk2Hfnzt3j2tO1QhjtURR04Z7rBo20x80bSMO0yKcX4igo5+qApEIUFFbQI1nPxSp4skfl9Pw==}
+  /lit-js-sdk-old-w-pgn@1.1.257:
+    resolution: {integrity: sha512-6PRmkpfPoI5jz2/Ps8lwXuiBjE8Nezb/lvQXppwA13GEvRH/uw/AIElEMU09Rh5XDqHUkZadJFcvanIOfWD5Lw==}
     dependencies:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0
