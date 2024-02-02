@@ -25,6 +25,11 @@ jest.mock("wagmi");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({
+    getProgramsByUser: jest.fn(),
+  }),
+}));
 
 describe("<ReadProgramProvider />", () => {
   beforeEach(() => {

@@ -8,6 +8,7 @@ import { useWallet } from "../../features/common/Auth";
 import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Web3Provider } from "@ethersproject/providers";
+import { DataLayer, useDataLayer } from "data-layer";
 
 export interface ReadProgramState {
   programs: Program[];
@@ -45,6 +46,7 @@ export const ReadProgramContext = createContext<ProgramContextType>(undefined);
 const fetchProgramsByAddress = async (
   dispatch: Dispatch,
   address: string,
+  dataLayer: DataLayer,
   walletProvider: Web3Instance["provider"]
 ) => {
   datadogLogs.logger.info(`fetchProgramsByAddress: address - ${address}`);
@@ -54,7 +56,7 @@ const fetchProgramsByAddress = async (
     payload: ProgressStatus.IN_PROGRESS,
   });
   try {
-    const programs = await listPrograms(address, walletProvider);
+    const programs = await listPrograms(address, walletProvider, dataLayer);
     dispatch({ type: ActionType.SET_PROGRAMS, payload: programs });
     dispatch({
       type: ActionType.SET_FETCH_PROGRAM_STATUS,
@@ -149,9 +151,15 @@ export const usePrograms = (): ReadProgramState & { dispatch: Dispatch } => {
   }
 
   const { address, provider: walletProvider } = useWallet();
+  const dataLayer = useDataLayer();
 
   useEffect(() => {
-    fetchProgramsByAddress(context.dispatch, address, walletProvider);
+    fetchProgramsByAddress(
+      context.dispatch,
+      address.toLowerCase(),
+      dataLayer,
+      walletProvider
+    );
   }, [address, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { ...context.state, dispatch: context.dispatch };

@@ -5,6 +5,8 @@ import { ethers } from "ethers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ChainId, graphql_fetch } from "common";
+import { DataLayer } from "data-layer";
+import { getConfig } from "common/src/config";
 
 /**
  * Fetch a list of programs
@@ -14,7 +16,8 @@ import { ChainId, graphql_fetch } from "common";
  */
 export async function listPrograms(
   address: string,
-  signerOrProvider: Web3Instance["provider"]
+  signerOrProvider: Web3Instance["provider"],
+  dataLayer: DataLayer
 ): Promise<Program[]> {
   try {
     // fetch chain id
@@ -22,44 +25,28 @@ export async function listPrograms(
       chainId: ChainId;
     };
 
-    // get the subgraph for all programs owned by the given address
-    const res = await graphql_fetch(
-      `
-              query GetPrograms($address: String!) {
-                programs(where: {
-                  accounts_: {
-                    address: $address
-                  }
-                }) {
-                  id
-                  metaPtr {
-                    protocol
-                    pointer
-                  }
-                  roles(where: {
-                    role: "0xaa630204f2780b6f080cc77cc0e9c0a5c21e92eb0c6771e709255dd27d6de132"
-                  }) {
-                    accounts {
-                      address
-                    }
-                  }
-                }
-              }
-            `,
-      chainId,
-      { address: address.toLowerCase() }
-    );
+    const config = getConfig();
+
+    // fetch programs from indexer
+
+    const programsRes = await dataLayer.getProgramsByUser({
+      address: address,
+      chainId: chainId,
+      alloVersion: config.allo.version,
+    });
+
+    if (!programsRes) {
+      throw Error("Unable to fetch programs");
+    }
 
     const programs: Program[] = [];
 
-    for (const program of res.data.programs) {
-      const metadata = await fetchFromIPFS(program.metaPtr.pointer);
-
+    for (const program of programsRes.programs) {
       programs.push({
         id: program.id,
-        metadata,
-        operatorWallets: program.roles[0].accounts.map(
-          (account: { address: string }) => account.address
+        metadata: program.metadata,
+        operatorWallets: program.roles.map(
+          (role: { address: string }) => role.address
         ),
         chain: {
           id: chainId,
