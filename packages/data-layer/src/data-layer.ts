@@ -141,9 +141,7 @@ export class DataLayer {
       chainId,
     };
 
-    // fixme: any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const response: any = await request(
+    const response: { projects: Program[] } = await request(
       this.gsIndexerEndpoint,
       getProgramsByUser,
       requestVariables,
