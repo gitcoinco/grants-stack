@@ -1,4 +1,4 @@
-import { stringify as stringifyCsv } from "csv-stringify";
+import { stringify as stringifyCsv } from "csv-stringify/browser/esm";
 import { Lit } from "./lit";
 import { Application } from "allo-indexer-client";
 

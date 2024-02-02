@@ -5,6 +5,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "tsc --watch",
+    "start": "node -r dotenv-flow/config dist/index.js",
     "lint": "eslint --cache --max-warnings=0",
     "lint:fix": "eslint --cache --max-warnings=0 --fix",
     "lint:all:fix": "eslint --fix --cache --max-warnings=0 src",
