@@ -5,6 +5,8 @@ import {
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { formatDateWithOrdinal, renderToHTML } from "common";
+import { getConfig } from "common/src/config";
+
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
   ComponentProps,
@@ -73,6 +75,10 @@ enum VerifiedCredentialState {
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
+const {
+  allo: { version },
+} = getConfig();
+
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -99,10 +105,8 @@ export default function ViewProjectDetails() {
     (isInfiniteDate(round.roundEndTime)
       ? false
       : round && round.roundEndTime <= currentTime);
-  const isBeforeRoundEndDate =
-    round &&
-    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
 
+  const disableAddToCartButton = version === "allo-v2" || isAfterRoundEndDate;
   const { projects, add, remove } = useCartStorage();
 
   const isAlreadyInCart = projects.some(
@@ -117,6 +121,8 @@ export default function ViewProjectDetails() {
     cartProject.roundId = roundId!;
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
     cartProject.chainId = Number(chainId!);
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+    cartProject.grantApplicationId = applicationId!;
   }
 
   const breadCrumbs = [
@@ -195,9 +201,9 @@ export default function ViewProjectDetails() {
           {round && !isDirectRound(round) && (
             <Sidebar
               isAlreadyInCart={isAlreadyInCart}
-              isBeforeRoundEndDate={isBeforeRoundEndDate}
+              isBeforeRoundEndDate={!disableAddToCartButton}
               removeFromCart={() => {
-                remove(cartProject.grantApplicationId);
+                remove(applicationId!);
               }}
               addToCart={() => {
                 add(cartProject);

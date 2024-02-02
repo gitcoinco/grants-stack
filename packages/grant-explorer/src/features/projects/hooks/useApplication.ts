@@ -17,6 +17,7 @@ type Params = {
 
 const {
   dataLayer: { gsIndexerEndpoint },
+  allo: { version },
 } = getConfig();
 
 const allo_v2_url = gsIndexerEndpoint + "/graphql";
@@ -41,6 +42,7 @@ query Application($chainId: Int!, $applicationId: String!, $roundId: String!) {
     }
     metadata
     project {
+      tags
       id
       metadata
     }
@@ -82,7 +84,18 @@ export function useApplication(params: Params) {
     return request(allo_v2_url, {
       query: APPLICATION_QUERY,
       variables: params,
-    }).then((r) => r.data?.application);
+    })
+      .then((r) => r.data?.application)
+      .then((application) => {
+        /* Don't fetch v2 rounds when allo version is set to v1 */
+        if (
+          version === "allo-v1" &&
+          application.project.tags.includes("allo-v2")
+        ) {
+          return;
+        }
+        return application;
+      });
   });
 }
 
