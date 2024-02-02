@@ -2,42 +2,9 @@ import useSWR, { useSWRConfig, Cache, SWRResponse } from "swr";
 import { ChainId, RoundPayoutType } from "common";
 import { __deprecated_RoundMetadata } from "./round";
 import { MetadataPointer } from "./types";
-import { __deprecated_fetchFromIPFS, useDebugMode } from "./utils";
+import { __deprecated_fetchFromIPFS } from "./utils";
 import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 import { useDataLayer } from "data-layer";
-
-const validRounds = [
-  "0x35c9d05558da3a3f3cddbf34a8e364e59b857004", // "Metacamp Onda 2023 FINAL
-  "0x984e29dcb4286c2d9cbaa2c238afdd8a191eefbc", // Gitcoin Citizens Round #1
-  "0x4195cd3cd76cc13faeb94fdad66911b4e0996f38", // Greenpill Q2 2023
-].map((a) => a.toLowerCase());
-
-const invalidRounds = [
-  "0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef", // Meg hello
-
-  // https://github.com/gitcoinco/grants-stack/issues/2569
-  "0x7c1104c39e09e7c6114f3d4e30a180a714deac7d",
-  "0x79715bf10dab457e06020ec41efae3484cff59dc",
-  "0x4632ea15ba3c1a7e072996fb316efefb8280381b",
-  "0xfe36ff9c59788a6a9ad7a979f459d69372dad0e6",
-  "0xa7149a073db99cd9ac267daf0c4f7767e50acf3f",
-  "0x4abc6f3322158bcec933f18998709322de7152c2",
-  "0xae53557089a1d771cd5cebeaf6accbe8f064ff4c",
-  "0xee3ed186939af2c55d33d242c4588426e368c8d0",
-  "0x8011e814439b44aa340bc3373df06233f45e3202",
-  "0xf3cd7429e863a39a9ecab60adc4676c1934076f2",
-  "0x88fc9d6695bedd34bbbe4ea0e2510573200713c7",
-  "0xae18f327ce481a7316d28a625d4c378c1f8b03a2",
-  "0x9b3b1e7edf9c5eea07fb3c7270220be1c3fea111",
-  "0x4c19261ff6e5736a2677a06741bf1e68995e7c95",
-  "0x1ebac14c3b3e539b0c1334415c70a923eb7c736f",
-  "0x3979611e7ca6db8f45b4a768079a88d9138622c1",
-  "0x0b1e3459cdadc52fca8977cede34f28bc298e3df",
-  "0x1427a0e71a222b0229a910dc72da01f8f04c7441",
-  "0xc25994667632d55a8e3dae88737e36f496600434",
-  "0x21d264139d66dd281dcb0177bbdca5ceeb71ad69",
-  "0x822742805c0596e883aba99ba2f3117e8c49b94a",
-].map((a) => a.toLowerCase());
 
 export type __deprecated_RoundOverview = {
   id: string;
@@ -94,7 +61,6 @@ export const useRounds = (
   chainIds: ChainId[]
 ): SWRResponse<__deprecated_RoundOverview[]> => {
   const { cache, mutate } = useSWRConfig();
-  const isDebugModeEnabled = useDebugMode();
   const dataLayer = useDataLayer();
 
   const prewarmSwrCacheWithRoundsMetadata = async (
@@ -137,6 +103,7 @@ export const useRounds = (
         first: 100,
         chainIds,
       });
+      console.log("getLegacyRounds", rounds);
 
       await prewarmSwrCacheWithRoundsMetadata(rounds);
 
@@ -148,9 +115,7 @@ export const useRounds = (
     }
   );
 
-  const data = (
-    isDebugModeEnabled ? query.data : filterRounds(cache, query.data)
-  )
+  const data = query.data
     // Limit final results returned
     ?.slice(0, variables.first ?? query.data?.length);
 
