@@ -23,6 +23,10 @@ const LandingPage = () => {
   );
 
   const filteredActiveRounds: typeof activeRounds.data = useMemo(() => {
+    if (activeRounds.data === undefined) {
+      return undefined;
+    }
+
     const rounds =
       activeRounds.data?.filter((round) => {
         return (round.projects?.length ?? 0) > 1;
