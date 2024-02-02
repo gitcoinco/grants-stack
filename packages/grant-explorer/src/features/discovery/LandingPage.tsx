@@ -32,7 +32,7 @@ const LandingPage = () => {
       return (b.projects?.length ?? 0) - (a.projects?.length ?? 0);
     });
 
-    return filteredActiveRounds;
+    return rounds;
   }, [activeRounds.data]);
 
   return (
