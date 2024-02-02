@@ -21,14 +21,20 @@ const LandingPage = () => {
     getEnabledChains()
   );
 
+  console.log("activeRounds", activeRounds);
+
   const filteredActiveRounds =
     activeRounds.data?.filter((round) => {
       return (round.projects?.length ?? 0) > 1;
     }) ?? [];
 
+  console.log("filteredActiveRounds", [...filteredActiveRounds]);
+
   filteredActiveRounds.sort((a, b) => {
     return (b.projects?.length ?? 0) - (a.projects?.length ?? 0);
   });
+
+  console.log("sorted filteredActiveRounds", [...filteredActiveRounds]);
 
   return (
     <GradientLayout showWalletInteraction>
