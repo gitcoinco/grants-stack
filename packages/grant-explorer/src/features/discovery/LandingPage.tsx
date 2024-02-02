@@ -23,11 +23,12 @@ const LandingPage = () => {
 
   const filteredActiveRounds =
     activeRounds.data?.filter((round) => {
-      return (
-        (round.projects?.length ?? 0) > 1 &&
-        round.id !== "0x48d2aaaefb338b813a28af627bda1b8aa70890f5"
-      );
+      return (round.projects?.length ?? 0) > 1;
     }) ?? [];
+
+  filteredActiveRounds.sort((a, b) => {
+    return (b.projects?.length ?? 0) - (a.projects?.length ?? 0);
+  });
 
   return (
     <GradientLayout showWalletInteraction>
