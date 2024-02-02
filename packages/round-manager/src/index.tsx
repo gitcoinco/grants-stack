@@ -71,90 +71,90 @@ root.render(
       <RainbowKitProvider coolMode chains={chains}>
         <AlloWrapper>
           <DataLayerProvider client={dataLayerConfig}>
-          <HashRouter>
-            <Routes>
-              {/* Protected Routes */}
-              <Route element={<Auth />}>
-                {/* Default Route */}
-                <Route
-                  path="/"
-                  element={
-                    <ReadProgramProvider>
-                      <Program />
-                    </ReadProgramProvider>
-                  }
-                />
-
-                {/* Round Routes */}
-                <Route
-                  path="/round/create"
-                  element={
-                    <ReadProgramProvider>
-                      <CreateRound />
-                    </ReadProgramProvider>
-                  }
-                />
-                <Route
-                  path="/round/:id"
-                  element={
-                    <RoundProvider>
-                      <ApplicationProvider>
-                        <BulkUpdateGrantApplicationProvider>
-                          <FinalizeRoundProvider>
-                            <FundContractProvider>
-                              <ReclaimFundsProvider>
-                                <UpdateRoundProvider>
-                                  <ViewRoundPage />
-                                </UpdateRoundProvider>
-                              </ReclaimFundsProvider>
-                            </FundContractProvider>
-                          </FinalizeRoundProvider>
-                        </BulkUpdateGrantApplicationProvider>
-                      </ApplicationProvider>
-                    </RoundProvider>
-                  }
-                />
-                <Route
-                  path="/round/:roundId/application/:id"
-                  element={
-                    <RoundProvider>
-                      <ApplicationProvider>
-                        <BulkUpdateGrantApplicationProvider>
-                          <ViewApplication />
-                        </BulkUpdateGrantApplicationProvider>
-                      </ApplicationProvider>
-                    </RoundProvider>
-                  }
-                />
-
-                {/* Program Routes */}
-                <Route
-                  path="/program/create"
-                  element={
-                    <CreateProgramProvider>
-                      <CreateProgram />
-                    </CreateProgramProvider>
-                  }
-                />
-                <Route
-                  path="/program/:id"
-                  element={
-                    <RoundProvider>
+            <HashRouter>
+              <Routes>
+                {/* Protected Routes */}
+                <Route element={<Auth />}>
+                  {/* Default Route */}
+                  <Route
+                    path="/"
+                    element={
                       <ReadProgramProvider>
-                        <ViewProgram />
+                        <Program />
                       </ReadProgramProvider>
-                    </RoundProvider>
-                  }
-                />
+                    }
+                  />
 
-                {/* Access Denied */}
-                <Route path="/access-denied" element={<AccessDenied />} />
+                  {/* Round Routes */}
+                  <Route
+                    path="/round/create"
+                    element={
+                      <ReadProgramProvider>
+                        <CreateRound />
+                      </ReadProgramProvider>
+                    }
+                  />
+                  <Route
+                    path="/round/:id"
+                    element={
+                      <RoundProvider>
+                        <ApplicationProvider>
+                          <BulkUpdateGrantApplicationProvider>
+                            <FinalizeRoundProvider>
+                              <FundContractProvider>
+                                <ReclaimFundsProvider>
+                                  <UpdateRoundProvider>
+                                    <ViewRoundPage />
+                                  </UpdateRoundProvider>
+                                </ReclaimFundsProvider>
+                              </FundContractProvider>
+                            </FinalizeRoundProvider>
+                          </BulkUpdateGrantApplicationProvider>
+                        </ApplicationProvider>
+                      </RoundProvider>
+                    }
+                  />
+                  <Route
+                    path="/round/:roundId/application/:id"
+                    element={
+                      <RoundProvider>
+                        <ApplicationProvider>
+                          <BulkUpdateGrantApplicationProvider>
+                            <ViewApplication />
+                          </BulkUpdateGrantApplicationProvider>
+                        </ApplicationProvider>
+                      </RoundProvider>
+                    }
+                  />
 
-                {/* 404 */}
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </HashRouter>
+                  {/* Program Routes */}
+                  <Route
+                    path="/program/create"
+                    element={
+                      <CreateProgramProvider>
+                        <CreateProgram />
+                      </CreateProgramProvider>
+                    }
+                  />
+                  <Route
+                    path="/program/:id"
+                    element={
+                      <RoundProvider>
+                        <ReadProgramProvider>
+                          <ViewProgram />
+                        </ReadProgramProvider>
+                      </RoundProvider>
+                    }
+                  />
+
+                  {/* Access Denied */}
+                  <Route path="/access-denied" element={<AccessDenied />} />
+
+                  {/* 404 */}
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </HashRouter>
           </DataLayerProvider>
         </AlloWrapper>
       </RainbowKitProvider>
