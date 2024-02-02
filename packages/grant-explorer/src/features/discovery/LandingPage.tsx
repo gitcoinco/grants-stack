@@ -21,7 +21,7 @@ const LandingPage = () => {
   //   getEnabledChains()
   // );
   //
-  const roundsEndingSoon = { data: undefined };
+  const roundsEndingSoon = { isLoading: false, data: undefined };
 
   console.log("activeRounds", activeRounds);
 
