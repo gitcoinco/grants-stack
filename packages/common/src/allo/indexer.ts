@@ -1,4 +1,4 @@
-import { graphql_fetch } from "../graphql_fetch";
+import { graphql_fetch } from "..";
 
 export interface WaitUntilIndexerSynced {
   (args: {

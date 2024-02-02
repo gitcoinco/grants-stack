@@ -7,10 +7,10 @@ import {
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
 } from "common";
+import { getConfig } from "common/src/config";
 import { useEffect, useState } from "react";
 import { useNetwork, useProvider, useSigner } from "wagmi";
-import { getConfig } from "common/src/config";
-import { addressesByChainID } from "./deployments";
+import { addressesByChainID } from "../contracts/deployments";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -24,7 +24,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     if (!web3Provider || !signer || !chainID) {
       setBackend(null);
     } else {
-      const addresses = addressesByChainID(chainID);
+      const addresses = addressesByChainID(chainID!);
       const config = getConfig();
       let alloBackend: Allo;
 
@@ -42,7 +42,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
           waitUntilIndexerSynced: createWaitForIndexerSyncTo(
             `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
           ),
-          allo: addresses.projectRegistry as `0x${string}`,
         });
 
         setBackend(alloBackend);
@@ -53,6 +52,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
             signer,
             web3Provider
           ),
+          projectRegistryAddress: addresses?.projectRegistry! as `0x${string}`,
           ipfsUploader: createPinataIpfsUploader({
             token: getConfig().pinata.jwt,
             endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,

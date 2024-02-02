@@ -9,7 +9,11 @@ import {
 import { randomInt } from "crypto";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
-
+import {
+  CreateRoundContext,
+  CreateRoundState,
+  initialCreateRoundState,
+} from "../../../context/round/CreateRoundContext";
 import { saveToIPFS } from "../../api/ipfs";
 import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
@@ -22,11 +26,10 @@ import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
-  initialQuestionsQF,
   RoundApplicationForm,
+  initialQuestionsQF,
 } from "../RoundApplicationForm";
 import { errorModalDelayMs } from "../../../constants";
-import { useCreateRoundStore } from "../../../stores/createRoundStore";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
@@ -36,30 +39,10 @@ jest.mock("../../api/payoutStrategy/payoutStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
-jest.mock("wagmi", () => ({
-  useNetwork: () => ({
-    chain: jest.fn(),
-    chains: [
-      {
-        id: 10,
-        name: "Optimism",
-      },
-    ],
-  }),
-  useProvider: () => ({}),
-}));
+
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
-}));
-
-jest.mock("common", () => ({
-  ...jest.requireActual("common"),
-  useAllo: () => ({}),
-}));
-
-jest.mock("../../../stores/createRoundStore", () => ({
-  ...jest.requireActual("../../../stores/createRoundStore"),
 }));
 
 beforeEach(() => {
@@ -109,12 +92,10 @@ describe("<RoundApplicationForm />", () => {
           }}
           stepper={FormStepper}
           configuration={{ roundCategory: RoundCategory.QuadraticFunding }}
-        />
+        />,
+        { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
       await startProgressModal();
-      useCreateRoundStore.setState({
-        ipfsStatus: ProgressStatus.IS_ERROR,
-      });
       await waitFor(
         async () =>
           expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
@@ -132,12 +113,10 @@ describe("<RoundApplicationForm />", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
+        { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
       await startProgressModal();
-      useCreateRoundStore.setState({
-        ipfsStatus: ProgressStatus.IS_ERROR,
-      });
 
       const done = await screen.findByTestId("done");
       fireEvent.click(done);
@@ -155,27 +134,37 @@ describe("<RoundApplicationForm />", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
+        { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
       await startProgressModal();
-      useCreateRoundStore.setState({
-        ipfsStatus: ProgressStatus.IS_ERROR,
-      });
 
       await waitFor(
         async () =>
           expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
         { timeout: errorModalDelayMs + 1000 }
       );
+      const saveToIpfsCalls = (saveToIPFS as jest.Mock).mock.calls.length;
+      expect(saveToIpfsCalls).toEqual(2);
 
       const errorModalTryAgain = await screen.findByTestId("tryAgain");
       fireEvent.click(errorModalTryAgain);
 
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect((saveToIPFS as jest.Mock).mock.calls.length).toEqual(
+          saveToIpfsCalls + 2
+        );
+      });
     });
   });
 
   describe("when saving round application metadata succeeds but create round transaction fails", () => {
+    const createRoundStateOverride = {
+      IPFSCurrentStatus: ProgressStatus.IS_SUCCESS,
+      roundContractDeploymentStatus: ProgressStatus.IS_ERROR,
+    };
+
     const startProgressModal = async () => {
       const launch = screen.getByRole("button", { name: /Launch/i });
       fireEvent.click(launch);
@@ -191,13 +180,10 @@ describe("<RoundApplicationForm />", () => {
             },
           }}
           stepper={FormStepper}
-        />
+        />,
+        createRoundStateOverride
       );
       await startProgressModal();
-      useCreateRoundStore.setState({
-        ipfsStatus: ProgressStatus.IS_SUCCESS,
-        contractDeploymentStatus: ProgressStatus.IS_ERROR,
-      });
       await waitFor(
         async () =>
           expect(await screen.findByTestId("error-modal")).toBeInTheDocument(),
@@ -876,5 +862,16 @@ describe("Application Form Builder", () => {
   });
 });
 
-export const renderWithContext = (ui: JSX.Element) =>
-  render(<MemoryRouter>{ui}</MemoryRouter>);
+export const renderWithContext = (
+  ui: JSX.Element,
+  createRoundStateOverrides: Partial<CreateRoundState> = {}
+) =>
+  render(
+    <MemoryRouter>
+      <CreateRoundContext.Provider
+        value={{ ...initialCreateRoundState, ...createRoundStateOverrides }}
+      >
+        {ui}
+      </CreateRoundContext.Provider>
+    </MemoryRouter>
+  );

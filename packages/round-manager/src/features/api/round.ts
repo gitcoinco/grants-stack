@@ -346,10 +346,6 @@ export async function listRounds(
         fetchFromIPFS(round.applicationMetaPtr.pointer),
       ]);
 
-      if (round.roles.length === 0) {
-        continue;
-      }
-
       const operatorWallets = round.roles[0].accounts.map(
         (account: { address: string }) => account.address
       );

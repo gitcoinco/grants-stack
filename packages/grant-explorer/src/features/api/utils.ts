@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CartProject, IPFSObject, Round, VotingToken } from "./types";
+import { CartProject, IPFSObject, VotingToken, Round } from "./types";
 import {
   ChainId,
   graphQlEndpoints,
-  ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE,
+  RedstoneTokenIds,
   RoundPayoutType,
 } from "common";
-import { RedstoneTokenIds } from "common/src/chain-ids";
 import { useSearchParams } from "react-router-dom";
+import { ROUND_PAYOUT_MERKLE, ROUND_PAYOUT_DIRECT } from "common";
 import { getAddress, zeroAddress } from "viem";
 import { ethers } from "ethers";
 

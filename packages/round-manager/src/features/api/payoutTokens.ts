@@ -1,7 +1,6 @@
-import { ChainId } from "common";
+import { ChainId, RedstoneTokenIds } from "common";
 import { ethers } from "ethers";
 import { Address } from "wagmi";
-import { RedstoneTokenIds } from "common/src/chain-ids";
 
 export type PayoutToken = {
   name: string;

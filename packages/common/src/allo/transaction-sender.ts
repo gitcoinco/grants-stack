@@ -2,20 +2,20 @@ import { Abi, ExtractAbiEventNames } from "abitype";
 import ethers from "ethers";
 import {
   Address,
-  decodeEventLog,
-  encodeEventTopics,
-  encodeFunctionData,
   EncodeFunctionDataParameters,
   GetEventArgs,
   Hex,
   Log,
   PublicClient,
   WalletClient,
+  decodeEventLog,
+  encodeEventTopics,
+  encodeFunctionData,
   zeroAddress,
 } from "viem";
 
 import { AlloError } from "./allo";
-import { error, Result, success } from "./common";
+import { Result, error, success } from "./common";
 
 export interface TransactionData {
   to: Hex;
@@ -206,7 +206,7 @@ export function createMockTransactionSender(): TransactionSender & {
       return {
         transactionHash: txHash,
         blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
-        blockNumber: BigInt(1),
+        blockNumber: 1n,
         logs: [],
       };
     },

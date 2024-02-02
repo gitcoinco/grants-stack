@@ -1,20 +1,21 @@
-import { Address, Hex } from "viem";
-import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { error, Result, success } from "../common";
+import { Hex } from "viem";
+import RegistryABI from "../abis/allo-v2/Registry";
+import { Allo, AlloError, AlloOperation } from "../allo";
+import { Result, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
-  decodeEventFromReceipt,
-  sendRawTransaction,
   TransactionReceipt,
   TransactionSender,
+  decodeEventFromReceipt,
+  sendRawTransaction,
 } from "../transaction-sender";
-import RegistryABI from "../abis/allo-v2/Registry";
+
+import { Registry } from "@allo-team/allo-v2-sdk/";
 import {
   CreateProfileArgs,
   TransactionData,
 } from "@allo-team/allo-v2-sdk/dist/types";
-import { Allo as AlloV2Contract, Registry } from "@allo-team/allo-v2-sdk/";
 import { AnyJson } from "../..";
 
 export class AlloV2 implements Allo {
@@ -23,12 +24,10 @@ export class AlloV2 implements Allo {
   private waitUntilIndexerSynced: WaitUntilIndexerSynced;
   private chainId: number;
   private registry: Registry;
-  private allo: AlloV2Contract;
 
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
-    allo: Address;
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
@@ -38,9 +37,6 @@ export class AlloV2 implements Allo {
     this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
 
     this.registry = new Registry({
-      chain: this.chainId,
-    });
-    this.allo = new AlloV2Contract({
       chain: this.chainId,
     });
   }
@@ -191,14 +187,4 @@ export class AlloV2 implements Allo {
       });
     });
   }
-
-  createRound!: (args: CreateRoundArguments) => AlloOperation<
-    Result<{ roundId: Hex }>,
-    {
-      ipfsStatus: Result<string>;
-      transaction: Result<Hex>;
-      transactionStatus: Result<TransactionReceipt>;
-      indexingStatus: Result<void>;
-    }
-  >;
 }
