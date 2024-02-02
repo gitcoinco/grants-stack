@@ -406,8 +406,11 @@ export const getRounds = async (
     }),
   );
   rounds = rounds.flat();
+  console.log("rounds1", [...rounds]);
   rounds = cleanRoundData(rounds);
+  console.log("rounds2", [...rounds]);
   rounds = sortRounds(rounds, params);
+  console.log("rounds3", [...rounds]);
   return rounds;
 };
 

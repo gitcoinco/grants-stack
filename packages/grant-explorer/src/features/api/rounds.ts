@@ -128,6 +128,7 @@ export const useRounds = (
     // same, cache will be used instead of new requests)
     ["rounds", chainIds, variables],
     async () => {
+      console.log("Fetching rounds", chainIds, variables);
       const { rounds } = await dataLayer.getLegacyRounds({
         ...variables,
         // We need to overfetch these because many will be filtered out from the

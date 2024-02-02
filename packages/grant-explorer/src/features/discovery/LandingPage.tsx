@@ -16,10 +16,12 @@ const LandingPage = () => {
     ACTIVE_ROUNDS_FILTER,
     getEnabledChains()
   );
-  const roundsEndingSoon = useFilterRounds(
-    ROUNDS_ENDING_SOON_FILTER,
-    getEnabledChains()
-  );
+  // const roundsEndingSoon = useFilterRounds(
+  //   ROUNDS_ENDING_SOON_FILTER,
+  //   getEnabledChains()
+  // );
+  //
+  const roundsEndingSoon = { data: undefined };
 
   console.log("activeRounds", activeRounds);
 
