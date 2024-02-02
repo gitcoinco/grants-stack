@@ -28,6 +28,12 @@ jest.mock("../../../constants", () => ({
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({
+    getProgramsByUser: jest.fn(),
+  }),
+}));
+
 describe("<CreateProgramPage />", () => {
   let consoleErrorSpy: jest.SpyInstance;
 
