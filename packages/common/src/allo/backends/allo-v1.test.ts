@@ -1,9 +1,9 @@
-import { describe, test, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { AlloV1 } from "./allo-v1";
-import { zeroAddress, Hex, encodeEventTopics } from "viem";
+import { encodeEventTopics, Hex, zeroAddress } from "viem";
 import {
-  TransactionReceipt,
   createMockTransactionSender,
+  TransactionReceipt,
 } from "../transaction-sender";
 import { Result, success } from "../common";
 import ProjectRegistry from "../abis/allo-v1/ProjectRegistry";
@@ -12,7 +12,6 @@ const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
 const waitUntilIndexerSynced = vi.fn().mockResolvedValue(success(null));
 const transactionSender = createMockTransactionSender();
-const projectRegistryAddress = zeroAddress;
 const chainId = 1;
 
 describe("AlloV1", () => {
@@ -20,7 +19,6 @@ describe("AlloV1", () => {
   beforeEach(() => {
     allo = new AlloV1({
       chainId,
-      projectRegistryAddress,
       ipfsUploader,
       transactionSender,
       waitUntilIndexerSynced,
@@ -67,15 +65,12 @@ describe("AlloV1", () => {
     expect(result).toEqual(
       success({
         projectId:
-          "0xd0c4b8bf41dcf0607cd6c6d5f7c6423344ce99ddaaa72c31a7d8fb332a218878",
+          "0xa0affa31521afe084aee15c3ff5570c600b014cae2a9c45a9cc1e50b0c9852e5",
       })
     );
     expect(transactionSender.sentTransactions).toHaveLength(1);
     expect(ipfsResult!).toEqual(success("ipfsHash"));
     expect(txResult!).toEqual(success(zeroTxHash));
-    expect(transactionSender.sentTransactions[0].to).toEqual(
-      projectRegistryAddress
-    );
     expect(txStatusResult!).toBeTruthy();
   });
 });
