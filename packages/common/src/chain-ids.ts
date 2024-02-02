@@ -17,21 +17,3 @@ export enum ChainId {
   DEV1 = 313371,
   DEV2 = 313372,
 }
-
-export const RedstoneTokenIds = {
-  FTM: "FTM",
-  USDC: "USDC",
-  DAI: "DAI",
-  ETH: "ETH",
-  ARB: "ARB",
-  BUSD: "BUSD",
-  GTC: "GTC",
-  MATIC: "MATIC",
-  AVAX: "AVAX",
-  CVP: "CVP",
-  USDT: "USDT",
-  LUSD: "LUSD",
-  MUTE: "MUTE",
-  mkUSD: "mkUSD",
-  DATA: "DATA",
-} as const;

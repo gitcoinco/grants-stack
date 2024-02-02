@@ -89,10 +89,10 @@ module.exports = {
         skipEsbuildJest: true,
         esbuildLoaderOptions: {
           loader: "tsx", // Set the value to 'tsx' if you use typescript
-          target: "es2021",
+          target: "es2020",
         },
         esbuildMinimizerOptions: {
-          target: "es2021",
+          target: "es2020",
         },
       },
     },

@@ -222,17 +222,17 @@ export interface MetadataPointer {
   pointer: string;
 }
 
-export type Requirement = {
+export interface Requirement {
   // Requirement for the round
   requirement?: string;
-};
+}
 
-export type Eligibility = {
+export interface Eligibility {
   // Eligibility for the round
   description: string;
   // Requirements for the round
   requirements?: Requirement[];
-};
+}
 
 export interface Round {
   /**
@@ -301,10 +301,6 @@ export interface Round {
    * Contract address of the program to which the round belongs
    */
   ownedBy: string;
-  /**
-   * Addresses of wallets that will have admin privileges to operate the Grant program
-   */
-  operatorWallets?: Array<string>;
   /**
    * List of projects approved for the round
    */

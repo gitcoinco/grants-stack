@@ -36,7 +36,7 @@
     "@heroicons/react": "^1.0.6",
     "@hookform/resolvers": "^2.9.2",
     "@openzeppelin/merkle-tree": "^1.0.2",
-    "@rainbow-me/rainbowkit": "0.12.18",
+    "@rainbow-me/rainbowkit": "0.12.16",
     "@reduxjs/toolkit": "^1.8.1",
     "@sentry/integrations": "^7.28.0",
     "@sentry/react": "^7.27.0",
@@ -91,11 +91,9 @@
     "url": "^0.11.0",
     "util": "^0.12.4",
     "verify-env": "*",
-    "viem": "^2.5.0",
     "wagmi": "0.12.18",
     "web-vitals": "^2.1.0",
-    "yup": "^0.32.11",
-    "zustand": "^4.4.0"
+    "yup": "^0.32.11"
   },
   "jest": {
     "transformIgnorePatterns": [
@@ -132,6 +130,7 @@
     "add": "^2.0.6",
     "autoprefixer": "^10.4.7",
     "craco-esbuild": "^0.5.2",
+    "husky": "^8.0.1",
     "postcss": "^8.4.14",
     "resize-observer-polyfill": "^1.5.1",
     "tailwind-styled-components": "2.1.6",
