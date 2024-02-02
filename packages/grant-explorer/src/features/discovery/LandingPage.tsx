@@ -10,33 +10,30 @@ import {
 } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
 import { getEnabledChains } from "../../app/chainConfig";
+import { useMemo } from "react";
 
 const LandingPage = () => {
   const activeRounds = useFilterRounds(
     ACTIVE_ROUNDS_FILTER,
     getEnabledChains()
   );
-  // const roundsEndingSoon = useFilterRounds(
-  //   ROUNDS_ENDING_SOON_FILTER,
-  //   getEnabledChains()
-  // );
-  //
-  const roundsEndingSoon = { isLoading: false, data: undefined };
+  const roundsEndingSoon = useFilterRounds(
+    ROUNDS_ENDING_SOON_FILTER,
+    getEnabledChains()
+  );
 
-  console.log("activeRounds", activeRounds);
+  const filteredActiveRounds: typeof activeRounds.data = useMemo(() => {
+    const rounds =
+      activeRounds.data?.filter((round) => {
+        return (round.projects?.length ?? 0) > 1;
+      }) ?? [];
 
-  const filteredActiveRounds =
-    activeRounds.data?.filter((round) => {
-      return (round.projects?.length ?? 0) > 1;
-    }) ?? [];
+    rounds.sort((a, b) => {
+      return (b.projects?.length ?? 0) - (a.projects?.length ?? 0);
+    });
 
-  console.log("filteredActiveRounds", [...filteredActiveRounds]);
-
-  filteredActiveRounds.sort((a, b) => {
-    return (b.projects?.length ?? 0) - (a.projects?.length ?? 0);
-  });
-
-  console.log("sorted filteredActiveRounds", [...filteredActiveRounds]);
+    return filteredActiveRounds;
+  }, [activeRounds.data]);
 
   return (
     <GradientLayout showWalletInteraction>
