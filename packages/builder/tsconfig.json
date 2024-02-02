@@ -17,5 +17,5 @@
     "jsx": "react-jsx",
     "sourceMap": true
   },
-  "include": ["src"]
+  "include": ["src", "craco.config.js"]
 }

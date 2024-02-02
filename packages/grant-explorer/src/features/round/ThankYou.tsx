@@ -24,7 +24,9 @@ export function createTwitterShareText(props: TwitterButtonParams) {
 
 export function createTwitterShareUrl(props: TwitterButtonParams) {
   const shareText = createTwitterShareText(props);
-  return `https://twitter.com/share?text=${encodeURIComponent(shareText)}`;
+  return `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    shareText
+  )}`;
 }
 
 type TwitterButtonParams = {
@@ -118,7 +120,7 @@ export default function ThankYou() {
 
   const { round } = useRoundById(
     /* If we don't have a round, pass in invalid params and silently fail */
-    topProject?.chainId.toString() ?? "",
+    Number(topProject?.chainId),
     topProject?.roundId ?? ""
   );
 

@@ -8,7 +8,6 @@ import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useReclaimFunds } from "../../context/round/ReclaimFundsContext";
 import { ProgressStatus, Round } from "../api/types";
-import { payoutTokens } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
@@ -16,6 +15,7 @@ import { Spinner } from "../common/Spinner";
 import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
 import { useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
+import { payoutTokens } from "../api/payoutTokens";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;

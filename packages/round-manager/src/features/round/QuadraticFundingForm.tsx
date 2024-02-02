@@ -21,10 +21,10 @@ import {
 import ReactTooltip from "react-tooltip";
 import * as yup from "yup";
 import { Round } from "../api/types";
-import { PayoutToken, getPayoutTokenOptions } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+import { getPayoutTokenOptions, PayoutToken } from "../api/payoutTokens";
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
@@ -99,7 +99,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
     {
       name: "Choose Payout Token",
       chainId: chain.id,
-      address: "",
+      address: "0x0",
       default: true,
       decimal: 0,
     },

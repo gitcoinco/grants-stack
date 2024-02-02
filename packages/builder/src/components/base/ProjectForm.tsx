@@ -66,10 +66,12 @@ function ProjectForm({
     setBannerImg(banner);
     dispatch(metadataImageSaved(banner, "bannerImgData"));
   };
-
   const validate = async () => {
     try {
-      await validateProjectForm(props.formMetaData);
+      await validateProjectForm({
+        ...props.formMetaData,
+        website: `https://${props.formMetaData.website}`,
+      });
       setFormValidation({
         messages: [],
         valid: true,
@@ -121,6 +123,12 @@ function ProjectForm({
     setSubmitted(true);
     const valid = await validate();
     if (valid) {
+      dispatch(
+        metadataSaved({
+          ...props.formMetaData,
+          website: `https://${props.formMetaData.website}`,
+        })
+      );
       setVerifying(ProjectFormStatus.Verification);
     }
   };

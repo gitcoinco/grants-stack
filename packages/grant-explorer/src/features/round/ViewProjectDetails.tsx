@@ -36,10 +36,11 @@ import { getAddress } from "viem";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { DataLayer, useDataLayer } from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { truncate } from "../common/utils/truncate";
 import tw from "tailwind-styled-components";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import {
   mapApplicationToProject,
   mapApplicationToRound,
@@ -77,8 +78,6 @@ const boundFetch = fetch.bind(window);
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
-const verifier = new PassportVerifier();
-
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -93,6 +92,8 @@ export default function ViewProjectDetails() {
     roundId,
     applicationId,
   });
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { round } = useRoundById(Number(chainId), roundId!);
 
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
@@ -255,6 +256,7 @@ function ProjectDetailsTabs(props: {
 
 function useVerifyProject(project?: Project) {
   const { credentials = {} } = project?.projectMetadata ?? {};
+  const dataLayer = useDataLayer();
 
   // Return data as { twitter?: boolean, ... }
   return useSWR<{ [K in Lowercase<PROVIDER_ID>]?: boolean }>(credentials, () =>
@@ -262,7 +264,12 @@ function useVerifyProject(project?: Project) {
       // Check verifications for all credentials in project metadata
       Object.entries(credentials).map(async ([provider, credential]) => ({
         provider,
-        verified: await isVerified(credential, verifier, provider, project),
+        verified: await isVerified({
+          dataLayer,
+          verifiableCredential: credential,
+          provider,
+          project,
+        }),
       }))
     ).then((verifications) =>
       // Convert to object ({ [provider]: isVerified })
@@ -489,7 +496,7 @@ export function useRoundApprovedApplication(
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(chainId!, roundId!);
+  const { round } = useRoundById(Number(chainId), roundId!);
 
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
@@ -630,13 +637,17 @@ function vcIssuedToAddress(vc: VerifiableCredential, address: string) {
   return addressFromId === address;
 }
 
-async function isVerified(
-  verifiableCredential: VerifiableCredential,
-  verifier: PassportVerifier,
-  provider: string,
-  project: Project | undefined
-) {
-  const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
+async function isVerified(args: {
+  verifiableCredential: VerifiableCredential;
+  provider: string;
+  project: Project | undefined;
+  dataLayer: DataLayer;
+}) {
+  const { verifiableCredential, provider, project, dataLayer } = args;
+
+  const { isVerified: vcHasValidProof } =
+    await dataLayer.verifyPassportCredential(verifiableCredential);
+
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(
     provider,

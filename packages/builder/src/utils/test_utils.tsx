@@ -2,8 +2,10 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
-import { Provider } from "react-redux";
+import { AlloProvider, AlloV2, createMockTransactionSender } from "common";
+import { DataLayer, DataLayerProvider } from "data-layer";
 import { ethers } from "ethers";
+import { Provider } from "react-redux";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
@@ -105,6 +107,33 @@ export const buildProjectApplication = (application: any): any => ({
   ...application,
 });
 
+const alloBackend = new AlloV2({
+  chainId: 5,
+  ipfsUploader: async () =>
+    Promise.resolve({
+      type: "success",
+      value: "ipfsHash",
+    }),
+  waitUntilIndexerSynced: async () => Promise.resolve(BigInt(1)),
+  transactionSender: createMockTransactionSender(),
+});
+
+// todo: introduce mock data layer?
+const dataLayerConfig = new DataLayer({
+  search: {
+    baseUrl: "http://localhost/",
+    pagination: {
+      pageSize: 50,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: "http://localhost/",
+  },
+  indexer: {
+    baseUrl: "http://localhost/",
+  },
+});
+
 export const renderWrapped = (
   ui: React.ReactElement,
   store = setupStore()
@@ -112,9 +141,13 @@ export const renderWrapped = (
   const wrapped = (
     <ChakraProvider>
       <Provider store={store}>
-        <ReduxRouter store={store} history={history}>
-          {ui}
-        </ReduxRouter>
+        <AlloProvider backend={alloBackend}>
+          <DataLayerProvider client={dataLayerConfig}>
+            <ReduxRouter store={store} history={history}>
+              {ui}
+            </ReduxRouter>
+          </DataLayerProvider>
+        </AlloProvider>
       </Provider>
     </ChakraProvider>
   );

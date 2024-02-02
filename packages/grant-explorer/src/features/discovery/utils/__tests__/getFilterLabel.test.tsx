@@ -1,4 +1,4 @@
-import { FilterProps } from "../../FilterDropdown";
+import { RoundFilterParams } from "../../hooks/useFilterRounds";
 import { getFilterLabel } from "../getFilterLabel";
 
 describe("getFilterLabel", () => {
@@ -7,7 +7,7 @@ describe("getFilterLabel", () => {
       "All"
     );
     // Make sure it works if filter object is empty also
-    expect(getFilterLabel({} as FilterProps).label).toEqual("All");
+    expect(getFilterLabel({} as RoundFilterParams).label).toEqual("All");
   });
   it("Returns the label of the item selected (if only one)", async () => {
     expect(

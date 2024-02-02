@@ -1,4 +1,8 @@
-import { FilterOption, filterOptions, FilterProps } from "../FilterDropdown";
+import {
+  RoundFilterUiOption,
+  RoundFilterParams,
+} from "../hooks/useFilterRounds";
+import { FILTER_OPTIONS } from "../FilterDropdown";
 
 const hasManySelections = (arr: string[]) => arr.filter(Boolean).length > 1;
 const findSelection = (value: string, arr: string[]) =>
@@ -15,7 +19,7 @@ export function getFilterLabel({
   status = "",
   network = "",
   type = "",
-}: Partial<FilterProps> = {}): FilterOption {
+}: Partial<RoundFilterParams> = {}): RoundFilterUiOption {
   const selectedFilters = Object.values({ status, network, type }).filter(
     Boolean
   );
@@ -33,7 +37,7 @@ export function getFilterLabel({
     return { label: "Multiple", value: "multiple" };
   }
 
-  const selected = filterOptions.reduce<FilterOption>(
+  const selected = FILTER_OPTIONS.reduce<RoundFilterUiOption>(
     (label, { children }) => {
       // Search for a selected filter
       const match = children?.find((child) =>

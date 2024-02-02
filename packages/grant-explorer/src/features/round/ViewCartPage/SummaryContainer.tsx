@@ -16,7 +16,6 @@ import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor, usePassport } from "../../api/passport";
 import useSWR from "swr";
 import { groupBy, uniqBy } from "lodash-es";
-import { getRoundById } from "../../api/round";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
@@ -29,11 +28,22 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
+import { useDataLayer } from "data-layer";
+import { fetchBalance } from "@wagmi/core";
+import { isPresent } from "ts-is-present";
 
 export function SummaryContainer() {
-  const { projects, getVotingTokenForChain, chainToVotingToken } =
-    useCartStorage();
+  const { data: walletClient } = useWalletClient();
+  const navigate = useNavigate();
+  const { address, isConnected } = useAccount();
+  const {
+    projects,
+    getVotingTokenForChain,
+    chainToVotingToken,
+    remove: removeProjectFromCart,
+  } = useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
+  const dataLayer = useDataLayer();
 
   const { openConnectModal } = useConnectModal();
   const publicClient = usePublicClient();
@@ -42,45 +52,39 @@ export function SummaryContainer() {
     [projects]
   );
 
-  const { data: rounds } = useSWR(projects, (projects) => {
-    const uniqueProjects = uniqBy(projects, "roundId");
-    return Promise.all(
-      uniqueProjects.map((proj) => getRoundById(proj.roundId, proj.chainId))
-    );
-  });
+  /*  This needs to be a useMemo to prevent an infinite loop in the below useEffect */
+  /* TODO: can we remove the useMemo without causing an infinite loop? */
+  const chainIds = useMemo(
+    () => Object.keys(projectsByChain).map(Number),
+    [projectsByChain]
+  );
 
-  const [clickedSubmit, setClickedSubmit] = useState(false);
-
+  /** How much of the voting token for a chain does the address have*/
+  const [tokenBalancesPerChain, setTokenBalancesPerChain] = useState<
+    Map<ChainId, bigint>
+  >(new Map());
   useEffect(() => {
-    clickedSubmit && checkEmptyDonations();
+    const runner = async () => {
+      const newMap = new Map(tokenBalancesPerChain);
+      await Promise.all(
+        chainIds.map(async (chainId) => {
+          const votingToken = getVotingTokenForChain(chainId);
+          const { value } = await fetchBalance({
+            address: address ?? zeroAddress,
+            token:
+              votingToken.address === zeroAddress
+                ? undefined
+                : votingToken.address,
+            chainId,
+          });
+          newMap.set(chainId, value);
+        })
+      );
+      setTokenBalancesPerChain(newMap);
+    };
+    runner();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, clickedSubmit]);
-
-  /** The ids of the chains that will be checked out */
-  const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
-    ChainId[]
-  >(Object.keys(projectsByChain).map(Number));
-
-  /** Keep the chains to be checked out in sync with the projects in the cart */
-  useEffect(() => {
-    const chainIdsFromProjects = Object.keys(projectsByChain).map(Number);
-    if (chainIdsFromProjects.length < chainIdsBeingCheckedOut.length) {
-      setChainIdsBeingCheckedOut(chainIdsFromProjects);
-    }
-  }, [chainIdsBeingCheckedOut, projectsByChain]);
-
-  /** The ID of the current chain (from wallet) */
-  const { data: walletClient } = useWalletClient();
-
-  /** We find the round that ends last, and take its end date as the permit deadline */
-  const currentPermitDeadline =
-    rounds && rounds.length > 0
-      ? [...rounds]
-          .sort(
-            (a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime()
-          )[0]
-          .roundEndTime.getTime()
-      : 0;
+  }, [address, chainIds, getVotingTokenForChain]);
 
   const totalDonationsPerChain = useMemo(() => {
     return Object.fromEntries(
@@ -103,15 +107,86 @@ export function SummaryContainer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getVotingTokenForChain, chainToVotingToken, projectsByChain]);
 
-  const navigate = useNavigate();
-  const { address, isConnected } = useAccount();
+  const enoughFundsToDonatePerChain = useMemo(() => {
+    return Object.fromEntries(
+      chainIds.map((chainId) => {
+        const balanceOfToken = tokenBalancesPerChain.get(chainId);
+        if (balanceOfToken === undefined) {
+          return [chainId, true];
+        }
+        return [chainId, balanceOfToken > totalDonationsPerChain[chainId]];
+      })
+    );
+  }, [chainIds, tokenBalancesPerChain, totalDonationsPerChain]);
+
+  const { data: rounds } = useSWR(projects, (projects) => {
+    const uniqueProjects = uniqBy(projects, "roundId");
+    return Promise.all(
+      uniqueProjects.map(async (proj) => {
+        const { round } = await dataLayer.getLegacyRoundById({
+          roundId: proj.roundId,
+          chainId: proj.chainId,
+        });
+        return round;
+      })
+    );
+  });
+
+  /** useEffect to clear projects from expired rounds (no longer accepting donations) */
+  useEffect(() => {
+    if (!rounds) {
+      return;
+    }
+    /*get rounds that have expired */
+    const expiredRounds = rounds
+      .filter((round) => round.roundEndTime.getTime() < Date.now())
+      .map((round) => round.id)
+      .filter(isPresent);
+
+    const expiredProjects = projects.filter((project) =>
+      expiredRounds.includes(project.roundId)
+    );
+    expiredProjects.forEach((project) => {
+      removeProjectFromCart(project.grantApplicationId);
+    });
+  }, [projects, removeProjectFromCart, rounds]);
+
+  const [clickedSubmit, setClickedSubmit] = useState(false);
+
+  useEffect(() => {
+    clickedSubmit && checkEmptyDonations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projects, clickedSubmit]);
+
+  /** The ids of the chains that will be checked out */
+  const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
+    ChainId[]
+  >(Object.keys(projectsByChain).map(Number));
+
+  /** Keep the chains to be checked out in sync with the projects in the cart */
+  useEffect(() => {
+    const chainIdsFromProjects = Object.keys(projectsByChain).map(Number);
+    setChainIdsBeingCheckedOut(
+      chainIdsFromProjects.filter(
+        (chainId) => enoughFundsToDonatePerChain[chainId]
+      )
+    );
+  }, [enoughFundsToDonatePerChain, projectsByChain]);
+
+  /** We find the round that ends last, and take its end date as the permit deadline */
+  const currentPermitDeadline =
+    rounds && rounds.length > 0
+      ? [...rounds]
+          .sort(
+            (a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime()
+          )[0]
+          .roundEndTime.getTime()
+      : 0;
 
   const [emptyInput, setEmptyInput] = useState(false);
   const [openChainConfirmationModal, setOpenChainConfirmationModal] =
     useState(false);
-
   const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
-
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
@@ -126,18 +201,35 @@ export function SummaryContainer() {
     }
   }, [chainsToCheckout, navigate, voteStatus]);
 
-  function checkEmptyDonations() {
-    const emptyDonations = projects.filter(
-      (project) => !project.amount || Number(project.amount) === 0
-    );
+  const [tokenBalances, setTokenBalances] = useState(new Map());
+  useEffect(() => {
+    const newTokenBalances = new Map(tokenBalances);
+    Object.keys(projectsByChain)
+      .map(parseChainId)
+      .forEach(async (chainId) => {
+        const votingToken = getVotingTokenForChain(chainId);
+        const balance = await fetchBalance({
+          token:
+            votingToken.address === zeroAddress
+              ? undefined
+              : votingToken.address,
+          chainId,
+          address: address ?? zeroAddress,
+        });
+        newTokenBalances.set(chainId, balance.value);
+      });
+    setTokenBalances(newTokenBalances);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectsByChain, address, getVotingTokenForChain]);
 
-    if (emptyDonations.length > 0) {
-      setEmptyInput(true);
-      return true;
-    } else {
-      setEmptyInput(false);
-      return false;
-    }
+  function checkEmptyDonations() {
+    const emptyDonationsExist =
+      projects.filter(
+        (project) => !project.amount || Number(project.amount) === 0
+      ).length > 0;
+
+    setEmptyInput(emptyDonationsExist);
+    return emptyDonationsExist;
   }
 
   function handleConfirmation() {
@@ -147,14 +239,6 @@ export function SummaryContainer() {
     if (emptyDonations) {
       return;
     }
-
-    // TODO: check if signer has enough token balance for the current round
-    // const accountBalance = rounds.find();
-    //
-    // if (!accountBalance || totalDonation.gt(accountBalance)) {
-    //   setInsufficientBalance(true);
-    //   return;
-    // }
 
     setOpenChainConfirmationModal(true);
   }
@@ -248,11 +332,7 @@ export function SummaryContainer() {
   const { passportColor, passportScore, passportState } = usePassport({
     address: address ?? "",
   });
-
   const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
-
-  const [totalDonationAcrossChainsInUSD, setTotalDonationAcrossChainsInUSD] =
-    useState<number | undefined>();
 
   const { data: totalDonationAcrossChainsInUSDData } = useSWR(
     totalDonationsPerChain,
@@ -276,14 +356,8 @@ export function SummaryContainer() {
     }
   );
 
-  /*TODO: this can be a variable */
-  useEffect(() => {
-    if (totalDonationAcrossChainsInUSDData) {
-      setTotalDonationAcrossChainsInUSD(
-        totalDonationAcrossChainsInUSDData.reduce((acc, curr) => acc + curr, 0)
-      );
-    }
-  }, [totalDonationAcrossChainsInUSDData]);
+  const totalDonationAcrossChainsInUSD =
+    totalDonationAcrossChainsInUSDData?.reduce((acc, curr) => acc + curr, 0);
 
   /* Matching estimates are calculated per-round */
   const matchingEstimateParamsPerRound =
@@ -322,9 +396,20 @@ export function SummaryContainer() {
   const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
+  /** Special case where none of the chains to be checked out have enough funds */
+  const notEnoughFunds = Object.values(enoughFundsToDonatePerChain).every(
+    (value) => !value
+  );
+
+  /** If there are no projects, render nothing */
   if (projects.length === 0) {
     return null;
   }
+
+  const noPassportRoundsInCart =
+    rounds?.filter(
+      (round) => round.roundMetadata?.quadraticFundingConfig?.sybilDefense
+    ).length === 0;
 
   return (
     <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold sticky top-20">
@@ -339,7 +424,8 @@ export function SummaryContainer() {
                 <p>Estimated match</p>
                 <MatchingEstimateTooltip
                   isEligible={
-                    passportScore !== undefined && passportScore >= 15
+                    (passportScore !== undefined && passportScore >= 15) ||
+                    noPassportRoundsInCart
                   }
                 />
               </div>
@@ -379,6 +465,7 @@ export function SummaryContainer() {
           $variant="solid"
           data-testid="handle-confirmation"
           type="button"
+          disabled={notEnoughFunds}
           onClick={() => {
             /* If wallet is not connected, display Rainbowkit modal */
             if (!isConnected) {
@@ -388,9 +475,10 @@ export function SummaryContainer() {
 
             /* Check if user hasn't connected passport yet, display the warning modal */
             if (
-              passportState === PassportState.ERROR ||
-              passportState === PassportState.NOT_CONNECTED ||
-              passportState === PassportState.INVALID_PASSPORT
+              (passportState === PassportState.ERROR ||
+                passportState === PassportState.NOT_CONNECTED ||
+                passportState === PassportState.INVALID_PASSPORT) &&
+              !noPassportRoundsInCart
             ) {
               setDonateWarningModalOpen(true);
               return;
@@ -401,19 +489,12 @@ export function SummaryContainer() {
           }}
           className="items-center shadow-sm text-sm rounded w-full mt-4"
         >
-          {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
+          {isConnected
+            ? notEnoughFunds
+              ? "Not enough funds to donate"
+              : "Submit your donation!"
+            : "Connect wallet to continue"}
         </Button>
-        {/*{round.round?.roundMetadata?.quadraticFundingConfig*/}
-        {/*  ?.minDonationThresholdAmount && (*/}
-        {/*  <p className="flex justify-center my-4 text-sm italic">*/}
-        {/*    Your donation to each project must be valued at{" "}*/}
-        {/*    {*/}
-        {/*      round.round?.roundMetadata?.quadraticFundingConfig*/}
-        {/*        ?.minDonationThresholdAmount*/}
-        {/*    }{" "}*/}
-        {/*    USD or more to be eligible for matching.*/}
-        {/*  </p>*/}
-        {/*)}*/}
         {emptyInput && (
           <p
             data-testid="emptyInput"
@@ -421,16 +502,6 @@ export function SummaryContainer() {
           >
             <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
             <span>You must enter donations for all the projects</span>
-          </p>
-        )}
-        {/*TODO: insufficient balance check*/}
-        {false && (
-          <p
-            data-testid="insufficientBalance"
-            className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-          >
-            <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-            <span>You do not have enough funds for these donations</span>
           </p>
         )}
       </div>

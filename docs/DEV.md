@@ -3,13 +3,13 @@
 Welcome to the Grants Stack development repository!
 This repository houses the main three dApps that make up the Grants Stack ecosystem:
 
-
 * [Builder](https://builder.gitcoin.co/)
 * [Explorer](https://explorer.gitcoin.co/#/round/424/0x4473725beb9a9d503547d2fe677f4b5aa39b68f6)
 * [Manager](https://manager.gitcoin.co/)
 
 Each of these dapps is a single-page React application, and you can find their respective source code under the `/packages` folder.
 
+If you are importing external libraries, please use the ones already added in the projects, or consider using one of the preferred options from this document: [LIBRARIES.md](./LIBRARIES.md)
 
 While there is no central backend application, all three dApps rely on various external services for data reading and writing. These dependencies include:
 
@@ -22,7 +22,6 @@ While there is no central backend application, all three dApps rely on various e
 4. **IPFS**: IPFS is utilized for reading metadata files, providing decentralized file storage.
 
 5. **[Pinata](https://www.pinata.cloud/)**: Pinata is used to upload and pin files to IPFS, ensuring the availability of data.
-
 
 
 Depending on the configuration in your local `.env` file, you can choose to use these services directly or opt for a local version of them.

@@ -1,6 +1,7 @@
 import useSWRImmutable from "swr/immutable";
 import { Address, zeroAddress } from "viem";
 import { ChainId } from "common";
+import { getConfig } from "common/src/config";
 
 /* TODO: Rename some of the types to hungarian-style notation once we have shared types between indexer and frontends */
 export type MatchingEstimateResult = {
@@ -37,10 +38,14 @@ interface JSONObject {
   [x: string]: JSONValue;
 }
 
+const config = getConfig();
+
 function getMatchingEstimates(
   params: UseMatchingEstimatesParams
 ): Promise<MatchingEstimateResult[]> {
-  throw new Error("matching estimate temporarily disabled");
+  if (config.explorer.disableEstimates) {
+    throw new Error("matching estimate temporarily disabled");
+  }
 
   const replacer = (_key: string, value: JSONValue) =>
     typeof value === "bigint" ? value.toString() : value;

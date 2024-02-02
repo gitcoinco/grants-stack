@@ -1,6 +1,6 @@
 import { useMemo } from "react";
+import { Collection } from "data-layer";
 import CollectionCard from "./CollectionCard";
-import { Collection } from "./hooks/useCollections";
 
 // Index position of the big cards
 const collectionGridLayout = [0, 5, 6, 11];

@@ -1,0 +1,22 @@
+# Recommended libraries for use within Grants Stack
+
+- data validation: https://github.com/colinhacks/zod
+- unit testing: https://vitest.dev/
+- client-side data fetching: https://swr.vercel.app/
+- server-side fetch: https://github.com/npm/make-fetch-happen
+- server-side sqlite3: https://github.com/WiseLibs/better-sqlite3
+- sql querying: https://kysely.dev/
+- server-side logging: https://github.com/pinojs/pino
+- git hook management: https://github.com/evilmartians/lefthook/
+- nodejs execution in dev: https://github.com/esbuild-kit/tsx
+- nextjs - https://github.com/vercel/next.js
+- tailwind-variants - https://github.com/nextui-org/tailwind-variants
+    - made a utility function Component utility for polymorphic components nextui-org/tailwind-variants#112
+    - merge classNames and easy to apply conditional classes
+- msw - https://github.com/mswjs/msw
+- react-use - https://github.com/streamich/react-use
+    - Lot's of great utility hooks
+- My favorite starter:
+    - create t3 app https://github.com/t3-oss/create-t3-app includes next, tailwind, trpc, zod
+- Linting and formatting: BiomeJS (formerly Rome.tools)
+- UI library for stuff like loading skeletons, dropdowns etc.: Chakra UI
