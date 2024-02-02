@@ -140,6 +140,10 @@ export const useRounds = (
       await prewarmSwrCacheWithRoundsMetadata(rounds);
 
       return rounds;
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
     }
   );
 

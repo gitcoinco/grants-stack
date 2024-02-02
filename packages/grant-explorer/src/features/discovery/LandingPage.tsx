@@ -21,6 +21,14 @@ const LandingPage = () => {
     getEnabledChains()
   );
 
+  const filteredActiveRounds =
+    activeRounds.data?.filter((round) => {
+      return (
+        (round.projects?.length ?? 0) > 1 &&
+        round.id !== "0x48d2aaaefb338b813a28af627bda1b8aa70890f5"
+      );
+    }) ?? [];
+
   return (
     <GradientLayout showWalletInteraction>
       <LandingHero />
@@ -33,7 +41,7 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...activeRounds}
+          {...{ ...activeRounds, data: filteredActiveRounds }}
           loadingCount={4}
           maxCount={6}
           getItemClassName={(_, i) =>
