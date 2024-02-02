@@ -94,17 +94,17 @@ export class AlloV2 implements Allo {
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to create project");
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: RegistryABI,

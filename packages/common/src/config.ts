@@ -21,7 +21,7 @@ export type Config = {
   dataLayer: {
     searchServiceBaseUrl: string;
     subgraphEndpoints: Record<number, string>;
-    gsIndexerEndpoint?: string;
+    gsIndexerEndpoint: string;
   };
   pinata: {
     jwt: string;
@@ -118,8 +118,8 @@ export function getConfig(): Config {
       gsIndexerEndpoint: z
         .string()
         .url()
-        .default("https://indexer-staging.fly.dev/graphql")
-        .parse(process.env.REACT_APP_ALLO_API_URL),
+        .default("http://localhost")
+        .parse(process.env.REACT_APP_INDEXER_V2_API_URL),
     },
     pinata: {
       jwt: z

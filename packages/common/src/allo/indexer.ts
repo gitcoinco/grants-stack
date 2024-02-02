@@ -55,14 +55,12 @@ export async function getCurrentSubgraphBlockNumber(
 export const createWaitForIndexerSyncTo = (
   endpoint: string
 ): WaitUntilIndexerSynced => {
-  // Define the function for recursive calls
+  if (!endpoint) {
+    throw new Error("Missing endpoint.");
+  }
   const waitForIndexerSyncTo: WaitUntilIndexerSynced = async (args) => {
     try {
       const { chainId, blockNumber, pollIntervalInMs = 1000 } = args;
-
-      if (!endpoint) {
-        throw new Error("Missing endpoint.");
-      }
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -90,7 +88,7 @@ export const createWaitForIndexerSyncTo = (
         data,
       }: {
         data: {
-          subscriptions: [{ chainId: number; indexedToBlock: string }];
+          subscriptions: { chainId: number; indexedToBlock: string }[];
         };
       } = await response.json();
 

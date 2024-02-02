@@ -148,10 +148,8 @@ export const publishGrant =
         }
       })
       .on("transactionStatus", async (res) => {
-        console.log("Transaction Status", res);
         if (res.type === "success") {
           dispatch(grantStatus(Status.Completed));
-          console.log("Transaction Status", res.value);
         } else {
           dispatch(grantStatus(Status.Error));
           console.log("Transaction Status Error", res.error);

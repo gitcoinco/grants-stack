@@ -1,4 +1,4 @@
-import { Address, Hex, encodePacked, keccak256, hexToBigInt } from "viem";
+import { Address, Hex, encodePacked, hexToBigInt, keccak256 } from "viem";
 import { AnyJson } from "../..";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import { Allo, AlloError, AlloOperation } from "../allo";
@@ -157,17 +157,17 @@ export class AlloV1 implements Allo {
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to update project metadata");
         emit("transactionStatus", error(result));
         return error(result);
       }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
 
       return success({
         projectId: args.projectId,
