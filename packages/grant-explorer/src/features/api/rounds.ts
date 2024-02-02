@@ -139,14 +139,6 @@ export const filterRounds = (
   rounds?: __deprecated_RoundOverview[]
 ) => {
   return rounds?.filter((round) => {
-    if (validRounds.includes(round.id.toLowerCase())) {
-      return true;
-    }
-
-    if (invalidRounds.includes(round.id.toLowerCase())) {
-      return false;
-    }
-
     // Get the round metadata
     const metadata = cache.get(`@"metadata","${round.roundMetaPtr.pointer}",`);
     if (metadata?.data?.roundType === "public") {
