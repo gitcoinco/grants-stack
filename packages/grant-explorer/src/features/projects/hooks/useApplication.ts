@@ -10,7 +10,7 @@ import {
 import { getConfig } from "common/src/config";
 
 type Params = {
-  chainId?: string;
+  chainId?: number;
   roundId?: string;
   applicationId?: string;
 };
@@ -19,8 +19,10 @@ const {
   dataLayer: { gsIndexerEndpoint },
 } = getConfig();
 
+const allo_v2_url = gsIndexerEndpoint + "/graphql";
+
 const APPLICATION_QUERY = `
-query Application($chainId: String, $applicationId: String, $roundId: String) {
+query Application($chainId: Int!, $applicationId: String!, $roundId: String!) {
   application(chainId: $chainId, id: $applicationId, roundId: $roundId) {
     id
     chainId
@@ -28,7 +30,7 @@ query Application($chainId: String, $applicationId: String, $roundId: String) {
     projectId
     status
     totalAmountDonatedInUsd
-    totalDonationsCount
+    uniqueDonorsCount
     round {
       donationsStartTime
       donationsEndTime
@@ -37,6 +39,7 @@ query Application($chainId: String, $applicationId: String, $roundId: String) {
       matchTokenAddress
       roundMetadata
     }
+    metadata
     project {
       id
       metadata
@@ -76,7 +79,7 @@ type Application = {
 export function useApplication(params: Params) {
   const shouldFetch = Object.values(params).every(Boolean);
   return useSWR(shouldFetch ? ["applications", params] : null, async () => {
-    return request(gsIndexerEndpoint, {
+    return request(allo_v2_url, {
       query: APPLICATION_QUERY,
       variables: params,
     }).then((r) => r.data?.application);
@@ -123,12 +126,12 @@ export function mapApplicationToRound(
 }
 
 async function request(url: string, body: unknown) {
-  return fetch(gsIndexerEndpoint, {
+  return fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      body: JSON.stringify(body),
     },
+    body: JSON.stringify(body),
   }).then(async (res) => {
     if (!res.ok) {
       throw new Error(`${res.status} ${res.statusText}`);

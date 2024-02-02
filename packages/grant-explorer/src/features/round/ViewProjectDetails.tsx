@@ -1,19 +1,17 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import {
-  VerifiableCredential,
   PROVIDER_ID,
+  VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { Client } from "allo-indexer-client";
 import { formatDateWithOrdinal, renderToHTML } from "common";
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
   ComponentProps,
   ComponentPropsWithRef,
+  createElement,
   FunctionComponent,
   PropsWithChildren,
-  createElement,
   useMemo,
   useState,
 } from "react";
@@ -32,7 +30,6 @@ import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
-import { getAddress } from "viem";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
@@ -73,8 +70,6 @@ enum VerifiedCredentialState {
   PENDING,
 }
 
-const boundFetch = fetch.bind(window);
-
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
@@ -88,12 +83,10 @@ export default function ViewProjectDetails() {
   const { chainId, roundId, applicationId } = useParams();
 
   const { data: application } = useApplication({
-    chainId,
+    chainId: Number(chainId as string),
     roundId,
-    applicationId,
+    applicationId: applicationId?.split("-")[1],
   });
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(Number(chainId), roundId!);
 
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
@@ -469,44 +462,17 @@ function Sidebar(props: {
   );
 }
 
-// NOTE: Consider moving this
-export function useRoundApprovedApplication(
-  chainId: number,
-  roundId: string,
-  projectId: string
-) {
-  // use chain id and project id from url params
-  const client = new Client(
-    boundFetch,
-    process.env.REACT_APP_ALLO_API_URL ?? "",
-    chainId
-  );
-
-  return useSWR([roundId, "/projects"], async ([roundId]) => {
-    const applications = await client.getRoundApplications(
-      getAddress(roundId.toLowerCase())
-    );
-
-    return applications.find(
-      (app) => app.projectId === projectId && app.status === "APPROVED"
-    );
-  });
-}
-
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(Number(chainId), roundId!);
 
-  const projectToRender = round?.approvedProjects?.find(
-    (project) => project.grantApplicationId === applicationId
-  );
-
-  const { data: application } = useRoundApprovedApplication(
-    Number(chainId),
-    roundId as string,
-    projectToRender?.projectRegistryId as string
-  );
+  const { data: application } = useApplication({
+    chainId: Number(chainId as string),
+    roundId,
+    applicationId: applicationId?.split("-")[1],
+  });
 
   const timeRemaining =
     round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
@@ -524,11 +490,11 @@ export function ProjectStats() {
     >
       <Stat
         isLoading={!application}
-        value={`$${application?.amountUSD.toFixed(2)}`}
+        value={`$${application?.totalAmountDonatedInUsd.toFixed(2)}`}
       >
         funding received in current round
       </Stat>
-      <Stat isLoading={!application} value={application?.uniqueContributors}>
+      <Stat isLoading={!application} value={application?.uniqueDonorsCount}>
         contributors
       </Stat>
 
