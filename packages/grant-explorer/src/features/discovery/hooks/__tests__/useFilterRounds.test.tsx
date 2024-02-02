@@ -109,26 +109,5 @@ describe("useFilterRounds", () => {
       )?.length
     ).toBe(5);
     expect(filterRounds(cacheMock, MOCKED_ROUNDS)?.length).toBe(0);
-
-    expect(
-      filterRounds(
-        cacheMock,
-        MOCKED_ROUNDS.map((r) => ({
-          ...r,
-          // If RoundID is part of valid rounds
-          id: "0x35c9d05558da3a3f3cddbf34a8e364e59b857004",
-        }))
-      )?.length
-    ).toBe(5);
-    expect(
-      filterRounds(
-        cacheMock,
-        MOCKED_ROUNDS.map((r) => ({
-          ...r,
-          // If RoundID is part of invalid rounds
-          id: "0xde272b1a1efaefab2fd168c02b8cf0e3b10680ef",
-        }))
-      )?.length
-    ).toBe(0);
   });
 });

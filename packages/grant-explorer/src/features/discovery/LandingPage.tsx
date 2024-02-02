@@ -10,6 +10,7 @@ import {
 } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
 import { getEnabledChains } from "../../app/chainConfig";
+import { useMemo } from "react";
 
 const LandingPage = () => {
   const activeRounds = useFilterRounds(
@@ -20,6 +21,19 @@ const LandingPage = () => {
     ROUNDS_ENDING_SOON_FILTER,
     getEnabledChains()
   );
+
+  const filteredActiveRounds: typeof activeRounds.data = useMemo(() => {
+    const rounds =
+      activeRounds.data?.filter((round) => {
+        return (round.projects?.length ?? 0) > 1;
+      }) ?? [];
+
+    rounds.sort((a, b) => {
+      return (b.projects?.length ?? 0) - (a.projects?.length ?? 0);
+    });
+
+    return rounds;
+  }, [activeRounds.data]);
 
   return (
     <GradientLayout showWalletInteraction>
@@ -33,7 +47,7 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...activeRounds}
+          {...{ ...activeRounds, data: filteredActiveRounds }}
           loadingCount={4}
           maxCount={6}
           getItemClassName={(_, i) =>
