@@ -3,7 +3,8 @@ import { ProgressStatus } from "../features/api/types";
 import { Address } from "viem";
 import { Allo } from "common";
 import { error, Result } from "common/src/allo/common";
-import { CreateRoundArguments } from "common/src/allo/backends/allo-v1";
+
+import { CreateRoundArguments } from "common/dist/allo/allo";
 
 export type CreateRoundStoreState = {
   ipfsStatus: ProgressStatus;

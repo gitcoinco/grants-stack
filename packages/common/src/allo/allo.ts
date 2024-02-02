@@ -1,9 +1,27 @@
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 import { AnyJson } from "..";
 import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";
-import { CreateRoundArguments } from "./backends/allo-v1";
+import { CreateRoundData, RoundCategory } from "../types";
+import { Round } from "data-layer";
+import { Signer } from "@ethersproject/abstract-signer";
+
+export type CreateRoundArguments = {
+  roundData: {
+    roundCategory: RoundCategory;
+    roundMetadataWithProgramContractAddress: Round["roundMetadata"];
+    applicationQuestions: CreateRoundData["applicationQuestions"];
+    roundStartTime: Date;
+    roundEndTime: Date;
+    applicationsStartTime: Date;
+    applicationsEndTime: Date;
+    token: string;
+    matchingFundsAvailable: number;
+    roundOperators: Address[];
+  };
+  walletSigner: Signer;
+};
 
 /**
  * Represents the common interface for interacting with Allo contracts.

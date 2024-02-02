@@ -11,7 +11,7 @@ import {
   parseUnits,
   zeroAddress,
 } from "viem";
-import { Allo, AlloError, AlloOperation } from "../allo";
+import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
@@ -24,7 +24,7 @@ import {
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import { AnyJson, ChainId } from "../..";
-import { CreateRoundData, RoundCategory } from "../../types";
+import { RoundCategory } from "../../types";
 import { parseChainId } from "../../chains";
 import {
   dgVotingStrategyDummyContractMap,
@@ -35,8 +35,6 @@ import {
   roundFactoryMap,
 } from "../addresses/allo-v1";
 import { payoutTokens } from "../../payoutTokens";
-import { Round } from "data-layer";
-import { Signer } from "@ethersproject/abstract-signer";
 
 function createProjectId(args: {
   chainId: number;
@@ -50,22 +48,6 @@ function createProjectId(args: {
     )
   );
 }
-
-export type CreateRoundArguments = {
-  roundData: {
-    roundCategory: RoundCategory;
-    roundMetadataWithProgramContractAddress: Round["roundMetadata"];
-    applicationQuestions: CreateRoundData["applicationQuestions"];
-    roundStartTime: Date;
-    roundEndTime: Date;
-    applicationsStartTime: Date;
-    applicationsEndTime: Date;
-    token: string;
-    matchingFundsAvailable: number;
-    roundOperators: Address[];
-  };
-  walletSigner: Signer;
-};
 
 export class AlloV1 implements Allo {
   private readonly projectRegistryAddress: Address;
@@ -270,7 +252,7 @@ export class AlloV1 implements Allo {
         }
 
         let initRoundTimes: bigint[];
-        let admins: Address[] | undefined;
+        let admins: Address[];
         admins = [getAddress(await args.walletSigner.getAddress())];
         if (isQF) {
           if (args.roundData.applicationsEndTime === undefined) {
@@ -278,10 +260,10 @@ export class AlloV1 implements Allo {
           }
 
           initRoundTimes = [
-            dateToBigInt(args.roundData.applicationsStartTime),
-            dateToBigInt(args.roundData.applicationsEndTime),
-            dateToBigInt(args.roundData.roundStartTime),
-            dateToBigInt(args.roundData.roundEndTime),
+            dateToEthereumTimestamp(args.roundData.applicationsStartTime),
+            dateToEthereumTimestamp(args.roundData.applicationsEndTime),
+            dateToEthereumTimestamp(args.roundData.roundStartTime),
+            dateToEthereumTimestamp(args.roundData.roundEndTime),
           ];
         } else {
           // note: DirectRounds does not set application dates.
@@ -291,18 +273,18 @@ export class AlloV1 implements Allo {
           // if the round has not end time, we set it with MaxUint256.
 
           initRoundTimes = [
-            dateToBigInt(
+            dateToEthereumTimestamp(
               args.roundData.applicationsStartTime ??
                 args.roundData.roundStartTime
             ),
             args.roundData.applicationsEndTime
-              ? dateToBigInt(args.roundData.applicationsEndTime)
+              ? dateToEthereumTimestamp(args.roundData.applicationsEndTime)
               : args.roundData.roundEndTime
-              ? dateToBigInt(args.roundData.roundEndTime)
+              ? dateToEthereumTimestamp(args.roundData.roundEndTime)
               : maxUint256,
-            dateToBigInt(args.roundData.roundStartTime),
+            dateToEthereumTimestamp(args.roundData.roundStartTime),
             args.roundData.roundEndTime
-              ? dateToBigInt(args.roundData.roundEndTime)
+              ? dateToEthereumTimestamp(args.roundData.roundEndTime)
               : maxUint256,
           ];
         }
@@ -444,4 +426,5 @@ function constructCreateRoundArgs({
   ]);
 }
 
-const dateToBigInt = (date: Date) => BigInt(Math.floor(date.getTime() / 1000));
+const dateToEthereumTimestamp = (date: Date) =>
+  BigInt(Math.floor(date.getTime() / 1000));
