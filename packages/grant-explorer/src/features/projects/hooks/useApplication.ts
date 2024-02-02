@@ -1,19 +1,23 @@
 import useSWR from "swr";
-import { applicationData } from "./__tests__/data/application";
 import {
   ApplicationStatus,
   GrantApplicationFormAnswer,
   Project,
   ProjectMetadata,
   Round,
-} from "../../api/types";
-import { RoundMetadata } from "../../api/round";
+  RoundMetadata,
+} from "data-layer";
+import { getConfig } from "common/src/config";
 
 type Params = {
   chainId?: string;
   roundId?: string;
   applicationId?: string;
 };
+
+const {
+  dataLayer: { gsIndexerEndpoint },
+} = getConfig();
 
 const APPLICATION_QUERY = `
 query Application($chainId: String, $applicationId: String, $roundId: String) {
@@ -69,12 +73,10 @@ type Application = {
   };
 };
 
-const indexerUrl = ""; // process.env.GC_INDEXER_URL
-
 export function useApplication(params: Params) {
   const shouldFetch = Object.values(params).every(Boolean);
   return useSWR(shouldFetch ? ["applications", params] : null, async () => {
-    return request(indexerUrl, {
+    return request(gsIndexerEndpoint, {
       query: APPLICATION_QUERY,
       variables: params,
     }).then((r) => r.data?.application);
@@ -121,9 +123,7 @@ export function mapApplicationToRound(
 }
 
 async function request(url: string, body: unknown) {
-  // Temporarily mock the application data instead of calling the indexer
-  return { data: applicationData };
-  return fetch(indexerUrl, {
+  return fetch(gsIndexerEndpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
