@@ -2,10 +2,16 @@ import { useMemo, useState } from "react";
 import useSWR from "swr";
 import z from "zod";
 import { ChainId } from "./chain-ids";
+import { useParams as useRouterParams } from "react-router";
+
 export * from "./icons";
 export * from "./markdown";
 
 export { ChainId };
+
+export function useParams<T extends Record<string, string> = never>() {
+  return useRouterParams<T>() as T;
+}
 
 export enum PassportState {
   NOT_CONNECTED,
@@ -401,7 +407,7 @@ export { AlloV2 } from "./allo/backends/allo-v2";
 export {
   createWaitForIndexerSyncTo,
   getCurrentSubgraphBlockNumber,
-  waitForSubgraphSyncTo
+  waitForSubgraphSyncTo,
 } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
@@ -412,7 +418,7 @@ export {
   createViemTransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
-  sendTransaction
+  sendTransaction,
 } from "./allo/transaction-sender";
 
 export type AnyJson = boolean | number | string | null | JsonArray | JsonMap;

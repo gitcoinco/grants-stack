@@ -4,7 +4,7 @@ import {
   VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { formatDateWithOrdinal, renderToHTML } from "common";
+import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
 import { getConfig } from "common/src/config";
 
 import { formatDistanceToNowStrict } from "date-fns";
@@ -17,7 +17,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
@@ -79,6 +78,12 @@ const {
   allo: { version },
 } = getConfig();
 
+const useProjectDetailsParams = useParams<{
+  chainId: string;
+  roundId: string;
+  applicationId: string;
+}>;
+
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -86,7 +91,7 @@ export default function ViewProjectDetails() {
     "====> Route: /round/:chainId/:roundId/:applicationId"
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-  const { chainId, roundId, applicationId } = useParams();
+  const { chainId, roundId, applicationId } = useProjectDetailsParams();
 
   const { data: application } = useApplication({
     chainId: Number(chainId as string),
@@ -117,12 +122,9 @@ export default function ViewProjectDetails() {
   const cartProject = projectToRender as CartProject;
 
   if (cartProject !== undefined) {
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    cartProject.roundId = roundId!;
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    cartProject.chainId = Number(chainId!);
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    cartProject.grantApplicationId = applicationId!;
+    cartProject.roundId = roundId;
+    cartProject.chainId = Number(chainId);
+    cartProject.grantApplicationId = applicationId;
   }
 
   const breadCrumbs = [
@@ -203,8 +205,7 @@ export default function ViewProjectDetails() {
               isAlreadyInCart={isAlreadyInCart}
               isBeforeRoundEndDate={!disableAddToCartButton}
               removeFromCart={() => {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                remove(applicationId!);
+                remove(applicationId);
               }}
               addToCart={() => {
                 add(cartProject);
@@ -470,15 +471,13 @@ function Sidebar(props: {
 }
 
 export function ProjectStats() {
-  const { chainId, roundId, applicationId } = useParams();
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(Number(chainId), roundId!);
+  const { chainId, roundId, applicationId } = useProjectDetailsParams();
+  const { round } = useRoundById(Number(chainId), roundId);
 
   const { data: application } = useApplication({
     chainId: Number(chainId as string),
     roundId,
-    applicationId: applicationId?.split("-")[1],
+    applicationId: applicationId.split("-")[1],
   });
 
   const timeRemaining =
