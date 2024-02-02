@@ -26,6 +26,12 @@ jest.mock("react-router-dom", () => ({
   useParams: useParamsFn,
 }));
 
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({
+    getProgramsByUser: jest.fn(),
+  }),
+}));
+
 describe("<ViewProgram />", () => {
   let stubProgram: Program;
 

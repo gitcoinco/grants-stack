@@ -34,6 +34,9 @@ import ViewRoundPage from "./features/round/ViewRoundPage";
 import { initSentry } from "./sentry";
 import { UpdateRoundProvider } from "./context/round/UpdateRoundContext";
 import AlloWrapper from "./features/api/AlloWrapper";
+import { DataLayer, DataLayerProvider } from "data-layer";
+import { getConfig } from "common/src/config";
+
 // Initialize sentry
 initSentry();
 
@@ -47,11 +50,27 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
+const dataLayerConfig = new DataLayer({
+  search: {
+    baseUrl: getConfig().dataLayer.searchServiceBaseUrl,
+    pagination: {
+      pageSize: 50,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
+  },
+  indexer: {
+    baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
+  },
+});
+
 root.render(
   <React.StrictMode>
     <WagmiConfig client={WagmiClient}>
       <RainbowKitProvider coolMode chains={chains}>
         <AlloWrapper>
+          <DataLayerProvider client={dataLayerConfig}>
           <HashRouter>
             <Routes>
               {/* Protected Routes */}
@@ -136,6 +155,7 @@ root.render(
               </Route>
             </Routes>
           </HashRouter>
+          </DataLayerProvider>
         </AlloWrapper>
       </RainbowKitProvider>
     </WagmiConfig>

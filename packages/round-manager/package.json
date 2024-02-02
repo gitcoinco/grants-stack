@@ -53,6 +53,7 @@
     "allo-indexer-client": "github:gitcoinco/allo-indexer-client",
     "buffer": "^6.0.3",
     "common": "workspace:*",
+    "data-layer": "workspace:*",
     "crypto-browserify": "^3.12.0",
     "csv-parse": "^5.3.8",
     "csv-stringify": "^6.3.2",
