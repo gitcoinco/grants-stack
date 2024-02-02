@@ -203,6 +203,7 @@ export default function ViewProjectDetails() {
               isAlreadyInCart={isAlreadyInCart}
               isBeforeRoundEndDate={!disableAddToCartButton}
               removeFromCart={() => {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 remove(applicationId!);
               }}
               addToCart={() => {
