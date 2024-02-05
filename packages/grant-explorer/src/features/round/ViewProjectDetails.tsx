@@ -412,9 +412,12 @@ function ApplicationFormAnswers(props: {
                   className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
                 ></p>
               ) : (
-                <p className="text-base text-black">
-                  {answerText.replace(/\n/g, "<br/>")}
-                </p>
+                <p
+                  className="text-base text-black"
+                  dangerouslySetInnerHTML={{
+                    __html: renderToHTML(answerText.replace(/\n/g, "\n\n")),
+                  }}
+                ></p>
               )}
             </div>
           );
