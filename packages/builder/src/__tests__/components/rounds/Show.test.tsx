@@ -11,6 +11,7 @@ import {
   addressFrom,
   buildProjectMetadata,
   buildRound,
+  now,
   renderWrapped,
 } from "../../../utils/test_utils";
 
@@ -42,19 +43,19 @@ describe("<Show />", () => {
     });
 
     const pastRound = buildRound({
-      address: addressFrom(1),
-      applicationsStartTime: new Date(Date.now() - 60 * 60),
-      applicationsEndTime: new Date(Date.now() - 10 * 60),
-      roundStartTime: new Date(Date.now() - 60 * 60),
-      roundEndTime: new Date(Date.now() - 10 * 60),
+      address: addressFrom(2),
+      applicationsStartTime: now - 7200,
+      applicationsEndTime: now - 3600,
+      roundStartTime: now - 3600,
+      roundEndTime: now - 600,
     });
 
     const futureRound = buildRound({
-      address: addressFrom(1),
-      applicationsStartTime: new Date(Date.now() + 60 * 30),
-      applicationsEndTime: new Date(Date.now() + 60 * 60),
-      roundStartTime: new Date(Date.now() + 60 * 60),
-      roundEndTime: new Date(Date.now() + 60 * 120),
+      address: addressFrom(3),
+      applicationsStartTime: now + 3600,
+      applicationsEndTime: now + 7200,
+      roundStartTime: now + 7200,
+      roundEndTime: now + 12000,
     });
 
     store.dispatch(web3ChainIDLoaded(5));
@@ -179,7 +180,7 @@ describe("<Show />", () => {
         expect(screen.getByText("Apply")).toBeInTheDocument();
       });
 
-      test.only("should send you to project creation page", async () => {
+      test("should send you to project creation page", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
         (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });

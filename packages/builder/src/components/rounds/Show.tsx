@@ -136,7 +136,7 @@ function ShowRound() {
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
 
-    const now = new Date();
+    const now = new Date().getTime() / 1000;
 
     let applicationsHaveStarted = false;
     let applicationsHaveEnded = false;
@@ -149,18 +149,16 @@ function ShowRound() {
       roundState?.round?.applicationsStartTime !== undefined &&
       roundState?.round?.roundStartTime !== undefined
     ) {
-      applicationsHaveStarted =
-        new Date(roundState.round?.applicationsStartTime) <= now;
-      votingHasStarted = new Date(roundState.round?.roundStartTime) <= now;
+      applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
+      votingHasStarted = roundState.round?.roundStartTime <= now;
     }
     if (
       roundState?.round &&
       roundState?.round?.applicationsEndTime !== undefined &&
       roundState?.round?.roundEndTime !== undefined
     ) {
-      applicationsHaveEnded =
-        new Date(roundState.round?.applicationsEndTime) <= now;
-      votingHasEnded = new Date(roundState.round?.roundEndTime) <= now;
+      applicationsHaveEnded = roundState.round?.applicationsEndTime <= now;
+      votingHasEnded = roundState.round?.roundEndTime <= now;
     }
 
     return {
@@ -208,8 +206,6 @@ function ShowRound() {
     );
 
   const isOnRoundChain = props.web3ChainId === props.roundChainId;
-
-  console.log("props", props);
 
   useEffect(() => {
     if (!isOnRoundChain) return;

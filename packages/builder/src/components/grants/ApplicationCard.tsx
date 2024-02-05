@@ -189,6 +189,10 @@ export default function ApplicationCard({
     applicationData.application.inReview ||
     applicationData.application.status === "APPROVED";
 
+  if (!props.round?.roundMetadata) {
+    return null;
+  }
+
   return (
     <Box
       p={2}

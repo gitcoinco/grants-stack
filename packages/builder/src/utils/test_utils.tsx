@@ -30,12 +30,14 @@ export const buildAlert = (attrs = {}): Alert => ({
   ...attrs,
 });
 
+export const now = new Date().getTime() / 1000;
+
 export const buildRound = (round: any): Round => ({
   address: addressFrom(1),
-  applicationsStartTime: new Date(1663751953000),
-  applicationsEndTime: new Date(Date.now() + 36000000),
-  roundStartTime: new Date(1663751953000),
-  roundEndTime: new Date(Date.now() + 36000000),
+  applicationsStartTime: now,
+  applicationsEndTime: now + 3600,
+  roundStartTime: now + 3600,
+  roundEndTime: now + 7200,
   token: "0x0000000000000000000000000000000000000000",
   roundMetaPtr: {},
   roundMetadata: {},
