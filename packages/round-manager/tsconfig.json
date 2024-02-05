@@ -17,6 +17,5 @@
     "jsx": "react-jsx",
     "types": ["@testing-library/jest-dom", "jest", "node"]
   },
-  "include": ["src",
-    "e2e", "fixtures.ts"]
+  "include": ["src"]
 }

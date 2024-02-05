@@ -17,6 +17,5 @@
     "jsx": "react-jsx",
     "sourceMap": true
   },
-  "include": ["src", "craco.config.js", "fixtures.ts",
-    "e2e", "playwright.config.js", ".eslintrc.js"]
+  "include": ["src", "craco.config.js", "playwright.config.js", ".eslintrc.js"]
 }
