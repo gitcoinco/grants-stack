@@ -8,10 +8,14 @@ import {
 import { PencilIcon, PlusSmIcon, XIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useContext, useEffect, useState } from "react";
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import {
+  DeepRequired,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 import { errorModalDelayMs } from "../../constants";
-import { useCreateRound } from "../../context/round/CreateRoundContext";
 import {
   ApplicationMetadata,
   EditQuestion,
@@ -35,6 +39,10 @@ import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
 import _ from "lodash";
+import { useCreateRoundStore } from "../../stores/createRoundStore";
+import { useAllo } from "common";
+import { getAddress } from "viem";
+import { useWallet } from "../common/Auth";
 
 export const initialQuestionsQF: SchemaQuestion[] = [
   {
@@ -177,6 +185,7 @@ export function RoundApplicationForm(props: {
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
   const [toEdit, setToEdit] = useState<EditQuestion | undefined>();
+  const { signer: walletSigner } = useWallet();
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
@@ -200,8 +209,7 @@ export function RoundApplicationForm(props: {
     ? initialQuestionsQF
     : initialQuestionsDirect;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { control, handleSubmit, register, getValues } = useForm<Round>({
+  const { control, handleSubmit } = useForm<Round>({
     defaultValues: {
       ...formData,
       applicationMetadata: {
@@ -215,47 +223,47 @@ export function RoundApplicationForm(props: {
     control,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [projectRequirements, setProjectRequirements] =
     useState<ProjectRequirements>({ ...initialRequirements });
 
   const {
     createRound,
-    IPFSCurrentStatus,
-    votingContractDeploymentStatus,
-    payoutContractDeploymentStatus,
-    roundContractDeploymentStatus,
+    clearStatuses,
+    ipfsStatus,
+    contractDeploymentStatus,
     indexingStatus,
-  } = useCreateRound();
+  } = useCreateRoundStore();
 
+  /** Upon succesful creation of round, redirect to program details */
   useEffect(() => {
     const isSuccess =
-      IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
-      votingContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
-      payoutContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
-      roundContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
+      ipfsStatus === ProgressStatus.IS_SUCCESS &&
+      contractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
       indexingStatus === ProgressStatus.IS_SUCCESS;
 
     if (isSuccess) {
       redirectToProgramDetails(navigate, 2000, programId);
+      /* Clear the store progress statuses in order to not redirect when creating another round */
+      /*The delay is to prevent clearing the statuses before the user is redirected */
+      setTimeout(() => {
+        clearStatuses();
+      }, 3_000);
     }
   }, [
-    IPFSCurrentStatus,
-    votingContractDeploymentStatus,
-    payoutContractDeploymentStatus,
-    roundContractDeploymentStatus,
+    contractDeploymentStatus,
+    ipfsStatus,
     indexingStatus,
     programId,
     navigate,
     roundCategory,
+    clearStatuses,
   ]);
 
+  /** If there's an error, show an error dialog and redirect back to program */
   useEffect(() => {
     if (
-      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
-      votingContractDeploymentStatus === ProgressStatus.IS_ERROR ||
-      payoutContractDeploymentStatus === ProgressStatus.IS_ERROR ||
-      roundContractDeploymentStatus === ProgressStatus.IS_ERROR
+      ipfsStatus === ProgressStatus.IS_ERROR ||
+      contractDeploymentStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
         setOpenErrorModal(true);
@@ -266,26 +274,26 @@ export function RoundApplicationForm(props: {
       redirectToProgramDetails(navigate, 5000, programId);
     }
   }, [
-    IPFSCurrentStatus,
-    votingContractDeploymentStatus,
-    payoutContractDeploymentStatus,
-    roundContractDeploymentStatus,
+    contractDeploymentStatus,
     indexingStatus,
+    ipfsStatus,
     navigate,
     programId,
   ]);
 
   const prev = () => setCurrentStep(currentStep - 1);
 
+  const allo = useAllo();
+
   const next: SubmitHandler<Round> = async (values) => {
     try {
       setOpenProgressModal(true);
-      const data: Partial<Round> = _.merge(formData, values);
+      const data = _.merge(formData, values);
 
-      const roundMetadataWithProgramContractAddress: Round["roundMetadata"] = {
+      const roundMetadataWithProgramContractAddress = {
         ...(data.roundMetadata as Round["roundMetadata"]),
         programContractAddress: programId,
-      };
+      } as DeepRequired<Round["roundMetadata"]>;
 
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
@@ -300,13 +308,25 @@ export function RoundApplicationForm(props: {
         ...data,
         ownedBy: programId,
         operatorWallets: props.initialData.program.operatorWallets,
-      } as Round;
+      } as DeepRequired<Round>;
 
-      await createRound({
-        roundMetadataWithProgramContractAddress,
-        applicationQuestions,
-        round,
-        roundCategory,
+      await createRound(allo, {
+        roundData: {
+          roundCategory: roundCategory,
+          roundMetadataWithProgramContractAddress,
+          applicationQuestions,
+          roundStartTime: round.roundStartTime,
+          roundEndTime: round.roundEndTime,
+          applicationsStartTime: round.applicationsStartTime,
+          applicationsEndTime: round.applicationsEndTime,
+          token: round.token,
+          matchingFundsAvailable:
+            round.roundMetadata.quadraticFundingConfig
+              ?.matchingFundsAvailable ?? 0,
+          roundOperators: round.operatorWallets.map(getAddress),
+        },
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        walletSigner: walletSigner!,
       });
     } catch (error) {
       datadogLogs.logger.error(
@@ -320,22 +340,12 @@ export function RoundApplicationForm(props: {
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
-      status: IPFSCurrentStatus,
-    },
-    {
-      name: "Deploying",
-      description: "The voting contract is being deployed.",
-      status: votingContractDeploymentStatus,
-    },
-    {
-      name: "Deploying",
-      description: "The payout contract is being deployed.",
-      status: payoutContractDeploymentStatus,
+      status: ipfsStatus,
     },
     {
       name: "Deploying",
       description: "The round contract is being deployed.",
-      status: roundContractDeploymentStatus,
+      status: contractDeploymentStatus,
     },
     {
       name: "Indexing",
@@ -353,10 +363,8 @@ export function RoundApplicationForm(props: {
   ];
 
   const disableNext: boolean =
-    IPFSCurrentStatus === ProgressStatus.IN_PROGRESS ||
-    votingContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
-    payoutContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
-    roundContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
+    ipfsStatus === ProgressStatus.IN_PROGRESS ||
+    contractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IS_SUCCESS ||
     !props.initialData.program;
@@ -365,7 +373,7 @@ export function RoundApplicationForm(props: {
     data: [
       keyof ProjectRequirements,
       keyof ProjectRequirements[keyof ProjectRequirements],
-      boolean
+      boolean,
     ][]
   ) => {
     let tmpRequirements = { ...projectRequirements };
@@ -576,7 +584,7 @@ const ProjectSocials = ({
     data: [
       keyof ProjectRequirements,
       keyof ProjectRequirements[keyof ProjectRequirements],
-      boolean
+      boolean,
     ][]
   ) => void;
   requirements: ProjectRequirements;

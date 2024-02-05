@@ -1,7 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
+import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getConfig } from "common/src/config";
 import { DataLayer, DataLayerProvider } from "data-layer";
@@ -9,8 +9,8 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
 import { WagmiConfig } from "wagmi";
+import AlloWrapper from "./utils/AlloWrapper";
 import "./browserPatches";
-import AlloWrapper from "./components/AlloWrapper";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
 import PageNotFound from "./components/base/PageNotFound";
@@ -26,9 +26,9 @@ import reportWebVitals from "./reportWebVitals";
 import { slugs } from "./routes";
 import setupStore from "./store";
 import "./styles/index.css";
-import initTagmanager from "./tagmanager";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
+import initTagmanager from "./tagmanager";
 
 const dataLayerConfig = new DataLayer({
   search: {

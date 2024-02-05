@@ -16,7 +16,6 @@ export const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 
 export const alloV1: Allo = new AlloV1({
   chainId,
-  projectRegistryAddress,
   ipfsUploader,
   transactionSender,
   waitUntilIndexerSynced,
@@ -27,6 +26,7 @@ export const alloV2: Allo = new AlloV2({
   ipfsUploader,
   transactionSender,
   waitUntilIndexerSynced,
+  allo: projectRegistryAddress,
 });
 
 export const getAllo = (version: string): Allo => {
