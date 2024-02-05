@@ -9,7 +9,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
 import { WagmiConfig } from "wagmi";
-import AlloWrapper from "common/src/AlloWrapper";
+import AlloWrapper from "./utils/AlloWrapper";
 import "./browserPatches";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
