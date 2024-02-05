@@ -988,6 +988,9 @@ importers:
       csv-stringify:
         specifier: ^6.3.2
         version: 6.4.2
+      data-layer:
+        specifier: workspace:*
+        version: link:../data-layer
       date-fns:
         specifier: ^2.29.3
         version: 2.30.0

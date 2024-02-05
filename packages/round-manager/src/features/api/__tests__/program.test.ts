@@ -15,46 +15,43 @@ jest.mock("common", () => ({
   graphql_fetch: jest.fn(),
 }));
 
+jest.mock("data-layer", () => ({
+  DataLayer: jest.fn().mockImplementation(() => ({
+    getProgramsByUser: jest.fn().mockResolvedValue({
+      programs: [],
+    }),
+  })),
+}));
+
 describe("listPrograms", () => {
-  it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
+  it("calls the indexer endpoint", async () => {
     // const address = "0x0"
     const expectedProgram = makeProgramData({
       chain: CHAINS[ChainId.MAINNET],
     });
     const expectedPrograms: Program[] = [expectedProgram];
-    (graphql_fetch as jest.Mock).mockResolvedValue({
-      data: {
-        programs: [
-          {
-            id: expectedProgram.id,
-            roles: [
-              {
-                accounts: [
-                  {
-                    address: expectedProgram.operatorWallets[0],
-                  },
-                ],
-              },
-            ],
-            metaPtr: {
-              protocol: 1,
-              pointer:
-                "uwijkhxkpkdgkszraqzqvhssqulctxzvntxwconznfkelzbtgtqysrzkehl",
-            },
-          },
-        ],
+
+    const actualPrograms = await listPrograms(
+      "0x0",
+      {
+        getNetwork: async () =>
+          // @ts-expect-error Test file
+          Promise.resolve({ chainId: ChainId.MAINNET }),
       },
-    });
-
-    (fetchFromIPFS as jest.Mock).mockResolvedValue({
-      name: expectedProgram.metadata?.name,
-    });
-
-    const actualPrograms = await listPrograms("0x0", {
-      getNetwork: async () =>
-        // @ts-expect-error Test file
-        Promise.resolve({ chainId: ChainId.MAINNET }),
-    });
+      {
+        getProgramsByUser: jest.fn().mockResolvedValue({
+          programs: [
+            {
+              id: expectedProgram.id,
+              roles: [{ address: expectedProgram.operatorWallets[0] }],
+              metadata: {
+                name: expectedProgram.metadata?.name,
+              },
+            },
+          ],
+        }),
+      }
+    );
 
     expect(actualPrograms).toEqual(expectedPrograms);
   });
