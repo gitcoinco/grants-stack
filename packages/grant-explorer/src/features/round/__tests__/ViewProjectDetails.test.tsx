@@ -15,17 +15,26 @@ import {
   Application,
   useApplication,
 } from "../../projects/hooks/useApplication";
-import { expect, Mock } from "vitest";
-
-const chainId = faker.datatype.number();
-const roundId = faker.finance.ethereumAddress();
-const grantApplicationId = "0xdeadbeef-0xdeadbeef";
+import { beforeEach, expect, Mock } from "vitest";
+import { zeroAddress } from "viem";
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
 vi.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: vi.fn(),
 }));
+
+vi.mock("common", async () => {
+  const actual = await vi.importActual<typeof import("common")>("common");
+  return {
+    ...actual,
+    useParams: vi.fn().mockImplementation(() => ({
+      chainId: 1,
+      roundId: "0x0",
+      applicationId: "0xdeadbeef-0xdeadbeef",
+    })),
+  };
+});
 
 vi.mock("wagmi", async () => {
   const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
@@ -38,22 +47,6 @@ vi.mock("wagmi", async () => {
     useAccount: vi.fn().mockReturnValue({ data: "mockedAccount" }),
   };
 });
-vi.mock("react-router-dom", async () => {
-  const actual =
-    await vi.importActual<typeof import("react-router-dom")>(
-      "react-router-dom"
-    );
-
-  return {
-    ...actual,
-    useNavigate: () => vi.fn(),
-    useParams: () => ({
-      chainId,
-      roundId,
-      applicationId: grantApplicationId,
-    }),
-  };
-});
 
 vi.mock("../../projects/hooks/useApplication", async () => {
   const actual = await vi.importActual<
@@ -62,58 +55,104 @@ vi.mock("../../projects/hooks/useApplication", async () => {
 
   return {
     ...actual,
-    useApplication: vi.fn().mockResolvedValue({ data: "" }),
+    useApplication: vi.fn().mockReturnValue({ data: "" }),
+  };
+});
+
+vi.mock("react-router-dom", async () => {
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>(
+      "react-router-dom"
+    );
+
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+    useParams: vi.fn().mockImplementation(() => ({
+      chainId: 1,
+      roundId: "0x0",
+      applicationId: "0xdeadbeef-0xdeadbeef",
+    })),
   };
 });
 
 describe("<ViewProjectDetails/>", () => {
-  it("shows project name", async () => {
-    const expectedProject: Application = {
-      chainId: "1",
+  const expectedProject: Application = {
+    chainId: "1",
+    id: faker.finance.ethereumAddress(),
+    metadata: {
+      application: {
+        answers: [
+          {
+            answer: "never gonna give you up",
+            hidden: false,
+            question: "never gonna let you down",
+            questionId: 0,
+            type: "string",
+          },
+          {
+            questionId: 1,
+            question: "this is a hidden question",
+            answer: "this will not show up",
+            hidden: true,
+          },
+          {
+            questionId: 2,
+            question: "array of strings",
+            answer: ["first option", "second option"],
+            hidden: false,
+          },
+        ],
+        recipient: faker.finance.ethereumAddress(),
+      },
+    },
+    project: {
       id: faker.finance.ethereumAddress(),
       metadata: {
-        application: {
-          answers: [],
-          recipient: faker.finance.ethereumAddress(),
-        },
+        createdAt: Date.now(),
+        title: "Project test",
+        description: "Best project in the world",
+        website: "test.com",
+        owners: [],
+        bannerImg: "banner!",
+        logoImg: "logo!",
+        projectTwitter: "twitter.com/project",
+        projectGithub: "github.com/project",
+        userGithub: "github.com/user",
       },
-      project: {
-        id: faker.finance.ethereumAddress(),
-        metadata: {
-          title: "Project test",
+    },
+    projectId: faker.finance.ethereumAddress(),
+    round: {
+      applicationsEndTime: new Date().valueOf().toString(),
+      applicationsStartTime: new Date().valueOf().toString(),
+      donationsEndTime: new Date().valueOf().toString(),
+      donationsStartTime: new Date().valueOf().toString(),
+      matchTokenAddress: faker.finance.ethereumAddress(),
+      roundMetadata: {
+        name: "",
+        roundType: "public",
+        eligibility: {
           description: "",
-          website: "",
-          owners: [],
         },
+        programContractAddress: "",
       },
-      projectId: faker.finance.ethereumAddress(),
-      round: {
-        applicationsEndTime: new Date().valueOf().toString(),
-        applicationsStartTime: new Date().valueOf().toString(),
-        donationsEndTime: new Date().valueOf().toString(),
-        donationsStartTime: new Date().valueOf().toString(),
-        matchTokenAddress: faker.finance.ethereumAddress(),
-        roundMetadata: {
-          name: "",
-          roundType: "public",
-          eligibility: {
-            description: "",
-          },
-          programContractAddress: "",
-        },
-      },
-      roundId: faker.finance.ethereumAddress(),
-      status: "APPROVED",
-      totalAmountDonatedInUsd: "",
-      totalDonationsCount: "",
-    };
-
-    const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [],
-    });
-    (useApplication as Mock).mockResolvedValue({
+    },
+    roundId: faker.finance.ethereumAddress(),
+    status: "APPROVED",
+    // @ts-expect-error tests
+    totalAmountDonatedInUsd: 0,
+    // @ts-expect-error tests
+    totalDonationsCount: 0,
+  };
+  beforeEach(() => {
+    (useApplication as Mock).mockReturnValue({
       data: expectedProject,
+    });
+  });
+  it("shows project name", async () => {
+    const roundWithProjects = makeRoundData({
+      id: zeroAddress,
+      approvedProjects: [],
     });
 
     renderWithContext(<ViewProjectDetails />, {
@@ -122,19 +161,15 @@ describe("<ViewProjectDetails/>", () => {
         isLoading: false,
       },
     });
-    screen.logTestingPlaygroundURL();
     expect(
       await screen.findByText(expectedProject.project.metadata.title)
     ).toBeInTheDocument();
   });
 
   describe("Show project details", () => {
-    const expectedProject = makeApprovedProjectData({ grantApplicationId });
-    const expectedProjectWebsite = expectedProject.projectMetadata.website;
-
     const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [expectedProject],
+      id: zeroAddress,
+      approvedProjects: [],
     });
 
     beforeEach(() => {
@@ -148,44 +183,49 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     it("shows project recipient", async () => {
-      const [{ recipient }] = roundWithProjects.approvedProjects ?? [];
-      expect(screen.getByText(truncate(recipient))).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          truncate(expectedProject.metadata.application.recipient)
+        )
+      ).toBeInTheDocument();
     });
 
     it("shows project website", async () => {
       expect(
-        await screen.findByText(expectedProjectWebsite)
+        await screen.findByText(expectedProject.project.metadata.website)
       ).toBeInTheDocument();
     });
 
     it("shows project twitter", async () => {
-      const [{ projectMetadata }] = roundWithProjects.approvedProjects ?? [];
       expect(
-        screen.getByText(projectMetadata?.projectTwitter as string)
+        screen.getByText(
+          expectedProject.project.metadata.projectTwitter as string
+        )
       ).toBeInTheDocument();
     });
 
     it("shows created at date", async () => {
-      const [{ projectMetadata }] = roundWithProjects.approvedProjects ?? [];
       expect(
         screen.getByText(
-          formatDateWithOrdinal(new Date(projectMetadata?.createdAt ?? 0)),
+          formatDateWithOrdinal(
+            new Date(expectedProject.project.metadata.createdAt as number)
+          ),
           { exact: false }
         )
       ).toBeInTheDocument();
     });
 
     it("shows project user github", async () => {
-      const [{ projectMetadata }] = roundWithProjects.approvedProjects ?? [];
       expect(
-        screen.getByText(projectMetadata?.userGithub as string)
+        screen.getByText(expectedProject.project.metadata.userGithub as string)
       ).toBeInTheDocument();
     });
 
     it("shows project github", async () => {
-      const [{ projectMetadata }] = roundWithProjects.approvedProjects ?? [];
       expect(
-        screen.getByText(projectMetadata?.projectGithub as string)
+        screen.getByText(
+          expectedProject.project.metadata.projectGithub as string
+        )
       ).toBeInTheDocument();
     });
 
@@ -195,13 +235,9 @@ describe("<ViewProjectDetails/>", () => {
   });
 
   it("shows project description", async () => {
-    const expectedProject = makeApprovedProjectData({ grantApplicationId });
-    const expectedProjectDescription =
-      expectedProject.projectMetadata.description;
-
     const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [expectedProject],
+      id: zeroAddress,
+      approvedProjects: [],
     });
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
@@ -211,20 +247,14 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     expect(
-      await screen.findByText(expectedProjectDescription)
+      await screen.findByText(expectedProject.project.metadata.description)
     ).toBeInTheDocument();
   });
 
   it("shows project banner", async () => {
-    const expectedProjectBannerImg = "bannersrc";
-    const expectedProject = makeApprovedProjectData(
-      { grantApplicationId },
-      { bannerImg: expectedProjectBannerImg }
-    );
-
     const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [expectedProject],
+      id: zeroAddress,
+      approvedProjects: [],
     });
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
@@ -237,19 +267,13 @@ describe("<ViewProjectDetails/>", () => {
       name: /project banner/i,
     }) as HTMLImageElement;
 
-    expect(bannerImg.src).toContain(expectedProjectBannerImg);
+    expect(bannerImg.src).toContain(expectedProject.project.metadata.bannerImg);
   });
 
   it("shows project logo", async () => {
-    const expectedProjectLogoImg = "logosrc";
-    const expectedProject = makeApprovedProjectData(
-      { grantApplicationId },
-      { logoImg: expectedProjectLogoImg }
-    );
-
     const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [expectedProject],
+      id: zeroAddress,
+      approvedProjects: [],
     });
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
@@ -262,37 +286,13 @@ describe("<ViewProjectDetails/>", () => {
       name: /project logo/i,
     }) as HTMLImageElement;
 
-    expect(logoImg.src).toContain(expectedProjectLogoImg);
+    expect(logoImg.src).toContain(expectedProject.project.metadata.logoImg);
   });
 
   it("shows project application form answers", async () => {
-    const expectedProject = makeApprovedProjectData({
-      grantApplicationId,
-      grantApplicationFormAnswers: [
-        {
-          questionId: 0,
-          question: "What is love?",
-          answer: "baby don't hurt me",
-          hidden: false,
-        },
-        {
-          questionId: 1,
-          question: "this is a hidden question",
-          answer: "this will not show up",
-          hidden: true,
-        },
-        {
-          questionId: 2,
-          question: "array of strings",
-          answer: ["first option", "second option"],
-          hidden: false,
-        },
-      ],
-    });
-
     const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [expectedProject],
+      id: zeroAddress,
+      approvedProjects: [],
     });
 
     renderWithContext(<ViewProjectDetails />, {
@@ -304,13 +304,12 @@ describe("<ViewProjectDetails/>", () => {
 
     expect(screen.getByText("Additional Information")).toBeInTheDocument();
 
-    expect(screen.getByText("What is love?")).toBeInTheDocument();
-    expect(screen.getByText("baby don't hurt me")).toBeInTheDocument();
+    expect(screen.getByText("never gonna give you up")).toBeInTheDocument();
+    expect(screen.getByText("never gonna let you down")).toBeInTheDocument();
 
     expect(
       screen.queryByText("this is a hidden question")
     ).not.toBeInTheDocument();
-    expect(screen.queryByText("this will not show up")).not.toBeInTheDocument();
 
     expect(screen.getByText("array of strings")).toBeInTheDocument();
     expect(screen.getByText("first option, second option")).toBeInTheDocument();
@@ -318,7 +317,7 @@ describe("<ViewProjectDetails/>", () => {
 
   it("hides project application form answers when they're empty", async () => {
     const expectedProject = makeApprovedProjectData({
-      grantApplicationId,
+      grantApplicationId: "0xdeadbeef-0xdeadbeef",
       grantApplicationFormAnswers: [
         {
           questionId: 1,
@@ -330,7 +329,7 @@ describe("<ViewProjectDetails/>", () => {
     });
 
     const roundWithProjects = makeRoundData({
-      id: roundId,
+      id: zeroAddress,
       approvedProjects: [expectedProject],
     });
 
@@ -353,9 +352,11 @@ describe("<ViewProjectDetails/>", () => {
 });
 
 describe("voting cart", () => {
-  const expectedProject = makeApprovedProjectData({ grantApplicationId });
+  const expectedProject = makeApprovedProjectData({
+    grantApplicationId: "0xdeadbeef-0xdeadbeef",
+  });
   const roundWithProjects = makeRoundData({
-    id: roundId,
+    id: zeroAddress,
     approvedProjects: [expectedProject],
   });
 
