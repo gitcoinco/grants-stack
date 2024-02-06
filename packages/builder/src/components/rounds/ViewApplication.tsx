@@ -1,25 +1,25 @@
+import { useDataLayer } from "data-layer";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDataLayer } from "data-layer";
-import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import {
   fetchApplicationData,
   submitApplication,
 } from "../../actions/roundApplication";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import { RootState } from "../../reducers";
-import Button, { ButtonVariants } from "../base/Button";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantsPath, projectPathByID } from "../../routes";
 import colors from "../../styles/colors";
+import { isInfinite } from "../../utils/components";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import Form from "../application/Form";
+import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import Cross from "../icons/Cross";
-import { isInfinite } from "../../utils/components";
-import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -52,11 +52,10 @@ function ViewApplication() {
 
     const publishedApplicationMetadata = applicationState
       ? applicationState.metadataFromIpfs![ipfsHash!]
-      : null;
+      : undefined;
 
     const roundApplicationStatus =
-      applicationState?.metadataFromIpfs![ipfsHash!].publishedApplicationData
-        .status;
+      publishedApplicationMetadata?.status ?? "IN_REVIEW";
 
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
@@ -83,9 +82,9 @@ function ViewApplication() {
   }, shallowEqual);
 
   useEffect(() => {
-    if (roundId !== undefined) {
+    if (roundId !== undefined || !props.publishedApplicationMetadata) {
       dispatch(unloadRounds());
-      dispatch(loadRound(roundId, dataLayer, props.roundChainId));
+      dispatch(loadRound(roundId!, dataLayer, props.roundChainId));
     }
   }, [dispatch, roundId]);
 
@@ -123,7 +122,6 @@ function ViewApplication() {
   }
 
   const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
-
   const roundInReview = props.roundApplicationStatus === "IN_REVIEW";
   const roundApproved = props.roundApplicationStatus === "APPROVED";
   const hasProperStatus = roundInReview || roundApproved;
@@ -131,7 +129,7 @@ function ViewApplication() {
   if (
     props.roundState === undefined ||
     props.round === undefined ||
-    props.publishedApplicationMetadata === null
+    props.publishedApplicationMetadata === undefined
   ) {
     return (
       <LoadingSpinner
