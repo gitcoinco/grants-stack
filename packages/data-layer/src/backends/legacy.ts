@@ -328,7 +328,7 @@ async function getProjectOwners(
 
 const ROUNDS_QUERY = `
 query GetRounds(
-  $first: Int, 
+  $first: Int,
   $orderBy: String,
   $orderDirection: String,
   $where: Round_filter,
@@ -390,8 +390,8 @@ export const getRounds = async (
   },
   { graphqlEndpoints }: { graphqlEndpoints: Record<number, string> },
 ): Promise<RoundOverview[]> => {
-  let rounds: RoundOverview[] = await Promise.all(
-    params.chainIds.flatMap(async (chainId) => {
+  let roundsPromise: Promise<RoundOverview[]>[] = params.chainIds.flatMap(
+    async (chainId) => {
       const round = await graphql_fetch(
         ROUNDS_QUERY,
         graphqlEndpoints[chainId],
@@ -403,15 +403,28 @@ export const getRounds = async (
           chainId,
         })) ?? []
       );
-    }),
+    },
   );
-  rounds = rounds.flat();
+
+  let spamRounds: SpamRoundsMaps = {};
+  try {
+    spamRounds = await fetchSpamRounds();
+  } catch (e) {
+    console.error("Failed to fetch spam rounds", e);
+  }
+
+  let rounds = (await Promise.all(roundsPromise)).flat();
   rounds = cleanRoundData(rounds);
   rounds = sortRounds(rounds, params);
+  rounds = rounds.filter((round) => {
+    const isSpam = spamRounds[round.chainId]?.[round.id.toLowerCase()] === true;
+    return !isSpam;
+  });
+
   return rounds;
 };
 
-/* 
+/*
 Some timestamps are in milliseconds and others in overflowed values (115792089237316195423570985008687907853269984665640564039457584007913129639935)
 See this query: https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet/graphql?query=query+%7B%0A+++rounds%28first%3A+3%2C%0A++++++orderBy%3A+roundEndTime%2C%0A++++++orderDirection%3A+asc%0A++++%29+%7B%0A++++++id%0A++++++roundEndTime%0A+++++%0A++++%7D%0A%7D
 */
@@ -482,3 +495,39 @@ export const sortRounds = (
     compareFn(a, b) ? dir[orderDirection] : -dir[orderDirection],
   );
 };
+
+type SpamRoundsMaps = {
+  [chainId: number]: {
+    [roundId: string]: boolean;
+  };
+};
+
+// Temporary round curation to avoid spam
+async function fetchSpamRounds(): Promise<SpamRoundsMaps> {
+  const spam: SpamRoundsMaps = {};
+
+  const csvContent = await fetch(
+    "https://docs.google.com/spreadsheets/d/10jekVhMuFg6IQ0sYAN_dxh_U-OxU7EAuGMNvTtlpraM/export?format=tsv",
+  ).then((res) => res.text());
+
+  const rows = csvContent.split("\n");
+  rows
+    // skip the header row
+    .slice(1)
+    .forEach((line) => {
+      const columns = line.split("\t");
+      const url = columns[1];
+      // extract chainId and roundId
+      const regex =
+        /https:\/\/explorer\.gitcoin\.co\/#\/round\/(\d+)\/([0-9a-fA-Fx]+)/;
+      const match = url.match(regex);
+      if (match) {
+        const chainId = parseInt(match[1]);
+        const roundId = match[2].toLowerCase();
+        spam[chainId] ||= {};
+        spam[chainId][roundId] = true;
+      }
+    });
+
+  return spam;
+}
