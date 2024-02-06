@@ -6,6 +6,7 @@ import { AlloProvider, AlloV2, createMockTransactionSender } from "common";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
+import { zeroAddress } from "viem";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
@@ -116,6 +117,7 @@ const alloBackend = new AlloV2({
     }),
   waitUntilIndexerSynced: async () => Promise.resolve(BigInt(1)),
   transactionSender: createMockTransactionSender(),
+  allo: zeroAddress,
 });
 
 // todo: introduce mock data layer?

@@ -226,7 +226,9 @@ export default function ViewProjectDetails() {
               onChange={handleTabChange}
               tabs={projectDetailsTabs.map((tab) => tab.name)}
             />
-            <div>{projectDetailsTabs[selectedTab].content}</div>
+            <div className="[&_a]:underline">
+              {projectDetailsTabs[selectedTab].content}
+            </div>
           </div>
         </div>
       </DefaultLayout>
@@ -322,23 +324,29 @@ function ProjectLinks({ project }: { project?: Project }) {
       <ProjectLink url={website} icon={GlobeIcon}>
         {website}
       </ProjectLink>
-      <ProjectLink
-        url={projectTwitter}
-        icon={TwitterIcon}
-        isVerified={verified.data?.twitter}
-      >
-        {projectTwitter}
-      </ProjectLink>
-      <ProjectLink
-        url={projectGithub}
-        icon={GithubIcon}
-        isVerified={verified.data?.github}
-      >
-        {projectGithub}
-      </ProjectLink>
-      <ProjectLink url={userGithub} icon={GithubIcon}>
-        {userGithub}
-      </ProjectLink>
+      {projectTwitter !== undefined && (
+        <ProjectLink
+          url={`https://twitter.com/${projectTwitter}`}
+          icon={TwitterIcon}
+          isVerified={verified.data?.twitter}
+        >
+          {projectTwitter}
+        </ProjectLink>
+      )}
+      {projectGithub !== undefined && (
+        <ProjectLink
+          url={`https://github.com/${projectGithub}`}
+          icon={GithubIcon}
+          isVerified={verified.data?.github}
+        >
+          {projectGithub}
+        </ProjectLink>
+      )}
+      {userGithub !== undefined && (
+        <ProjectLink url={`https://github.com/${userGithub}`} icon={GithubIcon}>
+          {userGithub}
+        </ProjectLink>
+      )}
     </div>
   );
 }
@@ -425,9 +433,12 @@ function ApplicationFormAnswers(props: {
                   className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
                 ></p>
               ) : (
-                <p className="text-base text-black">
-                  {answerText.replace(/\n/g, "<br/>")}
-                </p>
+                <p
+                  className="text-base text-black"
+                  dangerouslySetInnerHTML={{
+                    __html: renderToHTML(answerText.replace(/\n/g, "\n\n")),
+                  }}
+                ></p>
               )}
             </div>
           );
