@@ -416,8 +416,9 @@ export const getRounds = async (
   let rounds = (await Promise.all(roundsPromise)).flat();
   rounds = cleanRoundData(rounds);
   rounds = sortRounds(rounds, params);
-  rounds.filter((round) => {
-    return spamRounds[round.chainId]?.[round.id.toLowerCase()] !== true;
+  rounds = rounds.filter((round) => {
+    const isSpam = spamRounds[round.chainId]?.[round.id.toLowerCase()] === true;
+    return !isSpam;
   });
 
   return rounds;
