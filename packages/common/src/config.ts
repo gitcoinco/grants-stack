@@ -45,14 +45,26 @@ type LocalStorageConfigOverrides = Record<string, string>;
 let config: Config | null = null;
 
 function getLocalStorageConfigOverrides(): LocalStorageConfigOverrides {
-  const configOverrides = localStorage.getItem("configOverrides") || "{}";
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const configOverrides =
+    window.localStorage.getItem("configOverrides") || "{}";
   return JSON.parse(configOverrides);
 }
 
 export function setLocalStorageConfigOverride(key: string, value: string) {
+  if (typeof window === "undefined") {
+    throw new Error("window is not defined");
+  }
+
   const configOverrides = getLocalStorageConfigOverrides();
   configOverrides[key] = value;
-  localStorage.setItem("configOverrides", JSON.stringify(configOverrides));
+  window.localStorage.setItem(
+    "configOverrides",
+    JSON.stringify(configOverrides)
+  );
 }
 
 function overrideConfigFromLocalStorage(config: Config): Config {
