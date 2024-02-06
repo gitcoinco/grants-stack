@@ -213,7 +213,9 @@ export default function ViewProjectDetails() {
               onChange={handleTabChange}
               tabs={projectDetailsTabs.map((tab) => tab.name)}
             />
-            <div>{projectDetailsTabs[selectedTab].content}</div>
+            <div className="[&_a]:underline">
+              {projectDetailsTabs[selectedTab].content}
+            </div>
           </div>
         </div>
       </DefaultLayout>
