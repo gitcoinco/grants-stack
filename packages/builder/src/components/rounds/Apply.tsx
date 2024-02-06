@@ -67,7 +67,6 @@ function Apply() {
       : undefined;
     const showErrorModal =
       applicationError && applicationStatus === ApplicationStatus.Error;
-    console.log("===> props application", round?.applicationsEndTime);
 
     return {
       roundState,

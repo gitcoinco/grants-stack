@@ -37,7 +37,6 @@ export default function ApplicationCard({
     );
 
     const isDirectRound = payoutStrategy === ROUND_PAYOUT_DIRECT;
-    console.log("===> props application", round?.applicationsEndTime);
 
     return {
       round,
