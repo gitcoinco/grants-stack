@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
 
 @font-face {
-    font-family: "Modern Era Regular";
+    font-family: "Modern Era";
     font-weight: 400;
     src: local("ModernEraRegular"),
     url("../public/modern-era-regular.otf") format('opentype');
@@ -16,7 +16,7 @@
 }
 
 @font-face {
-    font-family: "Modern Era";
+    font-family: "Modern Era Bold";
     font-weight: 600;
     src: local("ModernEraBold"),
     url("../public/modern-era-bold.otf") format('opentype');
