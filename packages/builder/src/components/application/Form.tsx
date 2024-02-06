@@ -5,6 +5,10 @@ import {
   ExclamationTriangleIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
+import {
+  RoundApplicationAnswers,
+  RoundApplicationMetadata,
+} from "data-layer/dist/roundApplication.types";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -22,10 +26,6 @@ import {
   ProjectOption,
   Round,
 } from "../../types";
-import {
-  RoundApplicationAnswers,
-  RoundApplicationMetadata,
-} from "../../types/roundApplication";
 import {
   ROUND_PAYOUT_DIRECT,
   getProjectURIComponents,
@@ -359,7 +359,7 @@ export default function Form({
         }`}
       >
         <form onSubmit={(e) => e.preventDefault()}>
-          {schema.questions.map((input) => {
+          {schema.questions.map((input: any) => {
             if (
               needsProject &&
               input.type !== "project" &&
@@ -619,7 +619,7 @@ export default function Form({
                         }
                         name={`${input.id}`}
                         value={answers[input.id] as string}
-                        options={input.options.map((o) => ({
+                        options={input.options.map((o: any) => ({
                           id: o,
                           title: o,
                         }))}

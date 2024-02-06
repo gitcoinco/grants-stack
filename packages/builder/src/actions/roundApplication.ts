@@ -4,18 +4,17 @@ import { ChainId, isJestRunning } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";
 import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
-import { RoundApplicationAnswers } from "../types/roundApplication";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
-import { fetchProjectApplications } from "./projects";
 import { graphqlFetch } from "../utils/graphql";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
@@ -179,7 +178,7 @@ export const submitApplication =
 
     const projectQuestion =
       roundApplicationMetadata.applicationSchema.questions.find(
-        (q) => q.type === "project"
+        (q: { type: string }) => q.type === "project"
       );
 
     if (!projectQuestion) {
@@ -333,9 +332,10 @@ export const submitApplication =
         roundAddress,
         projectId: projectID,
       });
-      dispatch<any>(
-        fetchProjectApplications(projectID, Number(projectChainId))
-      );
+      // TODO-FIX
+      // dispatch<any>(
+      //   fetchProjectApplications(projectID, Number(projectChainId))
+      // );
     } catch (e: any) {
       dispatchAndLogApplicationError(
         dispatch,

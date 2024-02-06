@@ -72,14 +72,6 @@ function Project() {
     }
   }, [props.projectEvents, global, dispatch]);
 
-  if (
-    props.currentProject === undefined &&
-    props.loading &&
-    props.currentProject
-  ) {
-    return <>Loading grant data from IPFS... </>;
-  }
-
   function createEditPath() {
     const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
     return editPath(chainId, registryAddress, id);

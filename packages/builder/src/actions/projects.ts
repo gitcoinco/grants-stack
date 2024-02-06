@@ -1,22 +1,23 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
-import {
-  ChainId,
-  ROUND_PAYOUT_MERKLE,
-  RoundPayoutType,
-  convertStatusToText,
-} from "common";
+import { ChainId, ROUND_PAYOUT_MERKLE, RoundPayoutType } from "common";
 import { getConfig } from "common/src/config";
-import { DataLayer, ProjectEventsMap } from "data-layer";
+import {
+  ApplicationStatus,
+  DataLayer,
+  ProjectApplication,
+  ProjectEventsMap,
+} from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
-import { AppStatus, Application, ProjectStats } from "../reducers/projects";
+import { ProjectStats } from "../reducers/projects";
 import { getEnabledChainsAndProviders } from "../utils/chains";
 import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
+import { getV1HashedProjectId } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
@@ -25,7 +26,7 @@ export const PROJECTS_LOADING = "PROJECTS_LOADING";
 
 export type SubgraphApplication = {
   round: { id: string };
-  status: AppStatus;
+  status: ApplicationStatus;
   inReview: boolean;
   chainId: ChainId;
   metaPtr?: {
@@ -74,7 +75,7 @@ export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
 interface ProjectApplicationsLoadedAction {
   type: typeof PROJECT_APPLICATIONS_LOADED;
   projectID: string;
-  applications: Application[];
+  applications: ProjectApplication[];
 }
 
 export const PROJECT_APPLICATION_UPDATED = "PROJECT_APPLICATION_UPDATED";
@@ -83,7 +84,7 @@ interface ProjectApplicationUpdatedAction {
   type: typeof PROJECT_APPLICATION_UPDATED;
   projectID: string;
   roundID: string;
-  status: AppStatus;
+  status: ApplicationStatus;
 }
 
 export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
@@ -333,102 +334,64 @@ export const fetchProjectApplicationInRound = async (
  * This loads project applications for a given project and network and dispatches the
  * appropriate actions to the store.
  *
- * @param projectID
- * @param projectChainId
+ * @param projectId
+ * @param dataLayer
  *
  * @returns All applications for a given project
  */
 export const fetchProjectApplications =
-  (projectID: string, projectChainId: ChainId) =>
+  (projectId: string, chainId: ChainId, dataLayer: DataLayer) =>
   async (dispatch: Dispatch) => {
+    const config = getConfig();
+
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
-      projectID,
+      projectID: projectId,
     });
 
-    const { web3Provider } = global;
+    try {
+      const { web3Provider } = global;
+      if (!web3Provider?.chains) {
+        return;
+      }
 
-    if (!web3Provider?.chains) {
-      return;
+      const id =
+        config.allo.version === "allo-v1"
+          ? getV1HashedProjectId(
+              `${chainId}:${
+                addressesByChainID(chainId).projectRegistry
+              }:${projectId}`
+            )
+          : projectId;
+
+      const chainIds = web3Provider.chains.map((chain) => chain.id);
+      const applications = await dataLayer.getApplicationsByProjectId({
+        projectId: id,
+        chainIds,
+      });
+
+      applications?.forEach(async (application, index) => {
+        const programName = await dataLayer.getProgramName({
+          projectId: application.round.roundMetadata.programContractAddress,
+        });
+
+        applications[index].round.name = programName || "";
+      });
+
+      dispatch({
+        type: PROJECT_APPLICATIONS_LOADED,
+        projectID: projectId,
+        applications,
+      });
+    } catch (error: any) {
+      console.error(
+        "failed fetchProjectApplications for",
+        "Project Id",
+        projectId,
+        error
+      );
+      datadogRum.addError(error, { projectId });
     }
-
-    const apps = await Promise.all(
-      web3Provider.chains.map(async (chain: { id: number }) => {
-        try {
-          const addresses = addressesByChainID(projectChainId);
-          const projectApplicationID = generateUniqueRoundApplicationID(
-            projectChainId,
-            projectID,
-            addresses.projectRegistry!
-          );
-
-          const response: any = await graphqlFetch(
-            `query roundApplications($projectApplicationID: String) {
-            roundApplications(where: { project: $projectApplicationID }) {
-              status
-              round {
-                id
-              }
-              inReview
-              metaPtr {
-                pointer
-                protocol
-              }
-            }
-          }
-          `,
-            chain.id,
-            {
-              projectApplicationID,
-            }
-          );
-
-          if (response.errors) {
-            throw response.errors;
-          }
-
-          const applications: Application[] =
-            response.data.roundApplications.map(
-              (application: SubgraphApplication) => ({
-                status: convertStatusToText(application.status),
-                roundID: application.round.id,
-                inReview: application.inReview,
-                chainId: chain.id,
-                metaPtr: application.metaPtr,
-              })
-            );
-
-          if (applications.length === 0) {
-            return [];
-          }
-
-          dispatch({
-            type: PROJECT_APPLICATIONS_LOADED,
-            projectID,
-            applications,
-          });
-
-          return applications;
-        } catch (error: any) {
-          console.error(
-            "failed fetchProjectApplications for",
-            "Project Id",
-            projectID,
-            "in Chain Id",
-            chain.id,
-            error
-          );
-          datadogRum.addError(error, { projectID });
-
-          return [];
-        }
-      })
-    );
-    dispatch({
-      type: PROJECT_APPLICATIONS_LOADED,
-      projectID,
-      applications: apps.flat(),
-    });
   };
 
 /**
