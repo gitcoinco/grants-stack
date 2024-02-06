@@ -1,4 +1,4 @@
-import { Mock, describe } from "vitest";
+import { describe, Mock } from "vitest";
 import { useApplication } from "../useApplication";
 import { renderWithContext } from "../../../../test-utils";
 import { createElement } from "react";
@@ -17,7 +17,7 @@ describe("useApplication", () => {
   );
 
   it("fetch application data", async () => {
-    const variables = { chainId: "424", roundId: "1", id: "1" };
+    const variables = { chainId: 1, roundId: "1", id: "1" };
     renderWithContext(
       createElement(() => {
         const { data } = useApplication(variables);
