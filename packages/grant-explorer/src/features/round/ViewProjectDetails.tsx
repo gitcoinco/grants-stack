@@ -311,23 +311,29 @@ function ProjectLinks({ project }: { project?: Project }) {
       <ProjectLink url={website} icon={GlobeIcon}>
         {website}
       </ProjectLink>
-      <ProjectLink
-        url={projectTwitter}
-        icon={TwitterIcon}
-        isVerified={verified.data?.twitter}
-      >
-        {projectTwitter}
-      </ProjectLink>
-      <ProjectLink
-        url={projectGithub}
-        icon={GithubIcon}
-        isVerified={verified.data?.github}
-      >
-        {projectGithub}
-      </ProjectLink>
-      <ProjectLink url={userGithub} icon={GithubIcon}>
-        {userGithub}
-      </ProjectLink>
+      {projectTwitter !== undefined && (
+        <ProjectLink
+          url={`https://twitter.com/${projectTwitter}`}
+          icon={TwitterIcon}
+          isVerified={verified.data?.twitter}
+        >
+          {projectTwitter}
+        </ProjectLink>
+      )}
+      {projectGithub !== undefined && (
+        <ProjectLink
+          url={`https://github.com/${projectGithub}`}
+          icon={GithubIcon}
+          isVerified={verified.data?.github}
+        >
+          {projectGithub}
+        </ProjectLink>
+      )}
+      {userGithub !== undefined && (
+        <ProjectLink url={`https://github.com/${userGithub}`} icon={GithubIcon}>
+          {userGithub}
+        </ProjectLink>
+      )}
     </div>
   );
 }
