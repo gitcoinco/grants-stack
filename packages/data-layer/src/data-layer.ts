@@ -32,6 +32,8 @@ import {
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
+  getV1ProjectsByUser,
+  getV2ProjectsByUser,
   getRoundByIdAndChainId,
 } from "./queries";
 
@@ -146,11 +148,12 @@ export class DataLayer {
       chainId,
     };
 
-    const response: { projects: Program[] } = await request(
-      this.gsIndexerEndpoint,
-      getProgramsByUser,
-      requestVariables,
-    );
+    let response: { projects: Program[] } = { projects: [] };
+
+    const query =
+      alloVersion === "allo-v1" ? getV1ProjectsByUser : getV2ProjectsByUser;
+
+    response = await request(this.gsIndexerEndpoint, query, requestVariables);
 
     const programs = response.projects;
 
@@ -351,14 +354,16 @@ export class DataLayer {
     roundId: string;
     chainId: number;
   }): Promise<V2Round> {
-
     const requestVariables = {
       roundId,
-      chainId
+      chainId,
     };
 
-    const response : {rounds: V2Round[]} = 
-    await request(this.gsIndexerEndpoint, getRoundByIdAndChainId, requestVariables);
+    const response: { rounds: V2Round[] } = await request(
+      this.gsIndexerEndpoint,
+      getRoundByIdAndChainId,
+      requestVariables,
+    );
 
     return response.rounds[0] ?? [];
   }

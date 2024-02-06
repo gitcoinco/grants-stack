@@ -1,13 +1,13 @@
 import { gql } from "graphql-request";
 
 /**
- * Get all the programs that a user is a part of in allo v1
+ * Manager: Get all the programs that a user is a part of in allo v1
  * @param $address - The address of the user
  * @param $chainId - The network ID of the chain
  *
  * @returns The programs
  */
-export const getProgramsByUser = gql`
+export const getV1ProjectsByUser = gql`
   query ($address: String!, $chainId: Int!) {
     projects(
       filter: {
@@ -31,14 +31,13 @@ export const getProgramsByUser = gql`
 `;
 
 /**
- * Get all the profiles that a user is a part of in allo v2
- * @param $alloVersion - The version of Allo
+ * Manager: Get all the projects that a user is a part of in allo v2
  * @param $address - The address of the user
  * @param $chainId - The network ID of the chain
  *
  * @returns The programs
  */
-export const getProfilesByUser = gql`
+export const getV2ProjectsByUser = gql`
   query ($address: String!, $chainId: Int!) {
     projects(
       filter: {
