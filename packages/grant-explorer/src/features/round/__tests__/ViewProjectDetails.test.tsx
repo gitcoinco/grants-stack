@@ -2,8 +2,6 @@ import { faker } from "@faker-js/faker";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import {
-  makeApprovedProjectData,
-  makeRoundData,
   renderComponentsBasedOnDeviceSize,
   renderWithContext,
   setWindowDimensions,
@@ -16,7 +14,6 @@ import {
   useApplication,
 } from "../../projects/hooks/useApplication";
 import { beforeEach, expect, Mock } from "vitest";
-import { zeroAddress } from "viem";
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
@@ -150,14 +147,9 @@ describe("<ViewProjectDetails/>", () => {
     });
   });
   it("shows project name", async () => {
-    const roundWithProjects = makeRoundData({
-      id: zeroAddress,
-      approvedProjects: [],
-    });
-
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
@@ -167,16 +159,11 @@ describe("<ViewProjectDetails/>", () => {
   });
 
   describe("Show project details", () => {
-    const roundWithProjects = makeRoundData({
-      id: zeroAddress,
-      approvedProjects: [],
-    });
-
     beforeEach(() => {
       vi.clearAllMocks();
       renderWithContext(<ViewProjectDetails />, {
         roundState: {
-          rounds: [roundWithProjects],
+          rounds: [],
           isLoading: false,
         },
       });
@@ -235,13 +222,9 @@ describe("<ViewProjectDetails/>", () => {
   });
 
   it("shows project description", async () => {
-    const roundWithProjects = makeRoundData({
-      id: zeroAddress,
-      approvedProjects: [],
-    });
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
@@ -252,13 +235,9 @@ describe("<ViewProjectDetails/>", () => {
   });
 
   it("shows project banner", async () => {
-    const roundWithProjects = makeRoundData({
-      id: zeroAddress,
-      approvedProjects: [],
-    });
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
@@ -271,13 +250,9 @@ describe("<ViewProjectDetails/>", () => {
   });
 
   it("shows project logo", async () => {
-    const roundWithProjects = makeRoundData({
-      id: zeroAddress,
-      approvedProjects: [],
-    });
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
@@ -290,14 +265,9 @@ describe("<ViewProjectDetails/>", () => {
   });
 
   it("shows project application form answers", async () => {
-    const roundWithProjects = makeRoundData({
-      id: zeroAddress,
-      approvedProjects: [],
-    });
-
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
@@ -316,26 +286,17 @@ describe("<ViewProjectDetails/>", () => {
   });
 
   it("hides project application form answers when they're empty", async () => {
-    const expectedProject = makeApprovedProjectData({
-      grantApplicationId: "0xdeadbeef-0xdeadbeef",
-      grantApplicationFormAnswers: [
-        {
-          questionId: 1,
-          question: "this is a hidden question",
-          answer: "this will not show up",
-          hidden: true,
+    (useApplication as Mock).mockImplementation(() => ({
+      ...expectedProject,
+      metadata: {
+        application: {
+          answers: [],
         },
-      ],
-    });
-
-    const roundWithProjects = makeRoundData({
-      id: zeroAddress,
-      approvedProjects: [expectedProject],
-    });
-
+      },
+    }));
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
@@ -352,18 +313,10 @@ describe("<ViewProjectDetails/>", () => {
 });
 
 describe("voting cart", () => {
-  const expectedProject = makeApprovedProjectData({
-    grantApplicationId: "0xdeadbeef-0xdeadbeef",
-  });
-  const roundWithProjects = makeRoundData({
-    id: zeroAddress,
-    approvedProjects: [expectedProject],
-  });
-
   it("shows an add-to-cart button", async () => {
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
@@ -408,7 +361,7 @@ describe("voting cart", () => {
   it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked", () => {
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
@@ -424,7 +377,7 @@ describe("voting cart", () => {
   it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-cart is clicked", async () => {
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
-        rounds: [roundWithProjects],
+        rounds: [],
         isLoading: false,
       },
     });
