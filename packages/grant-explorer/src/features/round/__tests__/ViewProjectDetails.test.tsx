@@ -72,80 +72,81 @@ vi.mock("react-router-dom", async () => {
     })),
   };
 });
-
-describe("<ViewProjectDetails/>", () => {
-  const expectedProject: Application = {
-    chainId: "1",
+const expectedProject: Application = {
+  chainId: "1",
+  id: faker.finance.ethereumAddress(),
+  metadata: {
+    application: {
+      answers: [
+        {
+          answer: "never gonna give you up",
+          hidden: false,
+          question: "never gonna let you down",
+          questionId: 0,
+          type: "string",
+        },
+        {
+          questionId: 1,
+          question: "this is a hidden question",
+          answer: "this will not show up",
+          hidden: true,
+        },
+        {
+          questionId: 2,
+          question: "array of strings",
+          answer: ["first option", "second option"],
+          hidden: false,
+        },
+      ],
+      recipient: faker.finance.ethereumAddress(),
+    },
+  },
+  project: {
     id: faker.finance.ethereumAddress(),
     metadata: {
-      application: {
-        answers: [
-          {
-            answer: "never gonna give you up",
-            hidden: false,
-            question: "never gonna let you down",
-            questionId: 0,
-            type: "string",
-          },
-          {
-            questionId: 1,
-            question: "this is a hidden question",
-            answer: "this will not show up",
-            hidden: true,
-          },
-          {
-            questionId: 2,
-            question: "array of strings",
-            answer: ["first option", "second option"],
-            hidden: false,
-          },
-        ],
-        recipient: faker.finance.ethereumAddress(),
-      },
+      createdAt: Date.now(),
+      title: "Project test",
+      description: "Best project in the world",
+      website: "test.com",
+      owners: [],
+      bannerImg: "banner!",
+      logoImg: "logo!",
+      projectTwitter: "twitter.com/project",
+      projectGithub: "github.com/project",
+      userGithub: "github.com/user",
     },
-    project: {
-      id: faker.finance.ethereumAddress(),
-      metadata: {
-        createdAt: Date.now(),
-        title: "Project test",
-        description: "Best project in the world",
-        website: "test.com",
-        owners: [],
-        bannerImg: "banner!",
-        logoImg: "logo!",
-        projectTwitter: "twitter.com/project",
-        projectGithub: "github.com/project",
-        userGithub: "github.com/user",
+  },
+  projectId: faker.finance.ethereumAddress(),
+  round: {
+    applicationsEndTime: new Date().valueOf().toString(),
+    applicationsStartTime: new Date().valueOf().toString(),
+    donationsEndTime: new Date().valueOf().toString(),
+    donationsStartTime: new Date().valueOf().toString(),
+    matchTokenAddress: faker.finance.ethereumAddress(),
+    roundMetadata: {
+      name: "",
+      roundType: "public",
+      eligibility: {
+        description: "",
       },
+      programContractAddress: "",
     },
-    projectId: faker.finance.ethereumAddress(),
-    round: {
-      applicationsEndTime: new Date().valueOf().toString(),
-      applicationsStartTime: new Date().valueOf().toString(),
-      donationsEndTime: new Date().valueOf().toString(),
-      donationsStartTime: new Date().valueOf().toString(),
-      matchTokenAddress: faker.finance.ethereumAddress(),
-      roundMetadata: {
-        name: "",
-        roundType: "public",
-        eligibility: {
-          description: "",
-        },
-        programContractAddress: "",
-      },
-    },
-    roundId: faker.finance.ethereumAddress(),
-    status: "APPROVED",
-    // @ts-expect-error tests
-    totalAmountDonatedInUsd: 0,
-    // @ts-expect-error tests
-    totalDonationsCount: 0,
-  };
+  },
+  roundId: faker.finance.ethereumAddress(),
+  status: "APPROVED",
+  // @ts-expect-error tests
+  totalAmountDonatedInUsd: 0,
+  // @ts-expect-error tests
+  totalDonationsCount: 0,
+};
+
+describe("<ViewProjectDetails/>", () => {
   beforeEach(() => {
     (useApplication as Mock).mockReturnValue({
       data: expectedProject,
     });
   });
+
   it("shows project name", async () => {
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
@@ -287,10 +288,12 @@ describe("<ViewProjectDetails/>", () => {
 
   it("hides project application form answers when they're empty", async () => {
     (useApplication as Mock).mockImplementation(() => ({
-      ...expectedProject,
-      metadata: {
-        application: {
-          answers: [],
+      data: {
+        ...expectedProject,
+        metadata: {
+          application: {
+            answers: [],
+          },
         },
       },
     }));
@@ -313,6 +316,11 @@ describe("<ViewProjectDetails/>", () => {
 });
 
 describe("voting cart", () => {
+  beforeEach(() => {
+    (useApplication as Mock).mockReturnValue({
+      data: expectedProject,
+    });
+  });
   it("shows an add-to-cart button", async () => {
     renderWithContext(<ViewProjectDetails />, {
       roundState: {
@@ -320,6 +328,7 @@ describe("voting cart", () => {
         isLoading: false,
       },
     });
+    screen.logTestingPlaygroundURL();
 
     // mock screen size
     setWindowDimensions(320, 480);
