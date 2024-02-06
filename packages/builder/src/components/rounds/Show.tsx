@@ -181,7 +181,8 @@ function ShowRound() {
     roundData && (
       <>
         {formatTimeUTC(roundData.applicationsStartTime)} -{" "}
-        {isInfinite(roundData.applicationsEndTime)
+        {isInfinite(roundData.applicationsEndTime) ||
+        !roundData.applicationsEndTime
           ? "No End Date"
           : formatTimeUTC(roundData.applicationsEndTime)}
       </>
@@ -191,7 +192,7 @@ function ShowRound() {
     roundData && (
       <>
         {formatTimeUTC(roundData.roundStartTime)} -{" "}
-        {isInfinite(roundData.roundEndTime)
+        {isInfinite(roundData.roundEndTime) || !roundData.roundEndTime
           ? "No End Date"
           : formatTimeUTC(roundData.roundEndTime)}
         {}

@@ -53,7 +53,8 @@ export default function RoundListItem({
     roundData && (
       <>
         {formatDateFromSecs(roundData.applicationsStartTime)} -{" "}
-        {!isInfinite(roundData.applicationsEndTime)
+        {!isInfinite(roundData.applicationsEndTime) &&
+        roundData.applicationsEndTime
           ? formatDateFromSecs(roundData.applicationsEndTime)
           : "No End Date"}
       </>

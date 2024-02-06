@@ -37,6 +37,7 @@ export default function ApplicationCard({
     );
 
     const isDirectRound = payoutStrategy === ROUND_PAYOUT_DIRECT;
+    console.log("===> props application", round?.applicationsEndTime);
 
     return {
       round,
@@ -60,7 +61,8 @@ export default function ApplicationCard({
     props.round && (
       <>
         {formatDateFromSecs(props.round?.applicationsStartTime!)} -{" "}
-        {!isInfinite(Number(props.round?.applicationsEndTime!))
+        {!isInfinite(Number(props.round?.applicationsEndTime!)) &&
+        props.round?.applicationsEndTime
           ? formatDateFromSecs(props.round?.applicationsEndTime!)
           : "No End Date"}
       </>

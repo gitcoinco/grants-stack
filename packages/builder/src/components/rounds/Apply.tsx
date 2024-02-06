@@ -67,6 +67,7 @@ function Apply() {
       : undefined;
     const showErrorModal =
       applicationError && applicationStatus === ApplicationStatus.Error;
+    console.log("===> props application", round?.applicationsEndTime);
 
     return {
       roundState,
@@ -249,7 +250,8 @@ function Apply() {
                 <p className="font-semibold mt-4">Application Period:</p>
                 <p>
                   {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
-                  {isInfinite(props.round.applicationsEndTime)
+                  {isInfinite(props.round.applicationsEndTime) ||
+                  !props.round.applicationsEndTime
                     ? "No End Date"
                     : formatDate(props.round.applicationsEndTime * 1000)}
                 </p>
@@ -258,7 +260,8 @@ function Apply() {
             <p className="font-semibold mt-4">Round Dates:</p>
             <p>
               {formatDate(props.round.roundStartTime * 1000)} -{" "}
-              {isInfinite(props.round.applicationsEndTime)
+              {isInfinite(props.round.applicationsEndTime) ||
+              !props.round.applicationsEndTime
                 ? "No End Date"
                 : formatDate(props.round.roundEndTime * 1000)}
             </p>
