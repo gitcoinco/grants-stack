@@ -40,7 +40,49 @@ export type Config = {
   };
 };
 
+type LocalStorageConfigOverrides = Record<string, string>;
+
 let config: Config | null = null;
+
+function getLocalStorageConfigOverrides(): LocalStorageConfigOverrides {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const configOverrides =
+    window.localStorage.getItem("configOverrides") || "{}";
+  return JSON.parse(configOverrides);
+}
+
+export function setLocalStorageConfigOverride(key: string, value: string) {
+  if (typeof window === "undefined") {
+    throw new Error("window is not defined");
+  }
+
+  const configOverrides = getLocalStorageConfigOverrides();
+  configOverrides[key] = value;
+  window.localStorage.setItem(
+    "configOverrides",
+    JSON.stringify(configOverrides)
+  );
+}
+
+function overrideConfigFromLocalStorage(config: Config): Config {
+  const configOverrides = getLocalStorageConfigOverrides();
+
+  const alloVersion = z
+    .enum(["allo-v1", "allo-v2"])
+    .catch(() => config.allo.version)
+    .parse(configOverrides["allo-version"]);
+
+  return {
+    ...config,
+    allo: {
+      ...config.allo,
+      version: alloVersion,
+    },
+  };
+}
 
 export function getConfig(): Config {
   if (config !== null) {
@@ -157,6 +199,10 @@ export function getConfig(): Config {
         .parse(process.env.REACT_APP_ALLO_VERSION),
     },
   };
+
+  if (config.appEnv === "development") {
+    config = overrideConfigFromLocalStorage(config);
+  }
 
   return config;
 }
