@@ -74,18 +74,3 @@ export function mapApplicationToRound(
     ownedBy: "",
   };
 }
-
-async function request(url: string, body: unknown) {
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  }).then(async (res) => {
-    if (!res.ok) {
-      throw new Error(`${res.status} ${res.statusText}`);
-    }
-    return await res.json();
-  });
-}
