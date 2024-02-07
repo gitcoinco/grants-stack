@@ -1,5 +1,3 @@
-import { AlloError } from "./allo";
-
 export type Result<T> =
   | { type: "success"; value: T }
   | { type: "error"; error: Error };

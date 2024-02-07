@@ -1,28 +1,33 @@
 import { Badge, Box, Button, Image, Spinner } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { ApplicationStatus, useDataLayer } from "data-layer";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { loadRound } from "../../actions/rounds";
 import { RootState } from "../../reducers";
-import { AppStatus } from "../../reducers/projects";
-import { roundApplicationViewPath } from "../../routes";
-import { Round, RoundSupport, ApplicationCardType } from "../../types";
-import { formatDateFromSecs, isInfinite } from "../../utils/components";
-import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import { PayoutStrategy } from "../../reducers/rounds";
+import { roundApplicationViewPath } from "../../routes";
+import { ApplicationCardType, RoundSupport } from "../../types";
+import { formatDateFromSecs, isInfinite } from "../../utils/components";
 import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
+import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 
 export default function ApplicationCard({
   applicationData,
 }: {
   applicationData: ApplicationCardType;
 }) {
-  const [roundData, setRoundData] = useState<Round>();
+  // const [roundData, setRoundData] = useState<Round>();
+  const dataLayer = useDataLayer();
   const dispatch = useDispatch();
+
   const props = useSelector((state: RootState) => {
     const roundState = state.rounds[applicationData.roundID];
     const round = roundState ? roundState.round : undefined;
+
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
+
+    const payoutStrategy = round?.payoutStrategy;
 
     const applicationChainName = networkPrettyName(
       Number(applicationData.chainId)
@@ -31,38 +36,36 @@ export default function ApplicationCard({
       Number(applicationData.chainId)
     );
 
-    const isDirectRound = round && round.payoutStrategy === ROUND_PAYOUT_DIRECT;
+    const isDirectRound = payoutStrategy === ROUND_PAYOUT_DIRECT;
 
     return {
       round,
       isDirectRound,
       support,
+      payoutStrategy,
       applicationChainName,
       applicationChainIconUri,
     };
   });
 
-  const renderApplicationDate = () =>
-    roundData && (
-      <>
-        {formatDateFromSecs(roundData.applicationsStartTime)} -{" "}
-        {!isInfinite(roundData.applicationsEndTime)
-          ? formatDateFromSecs(roundData.applicationsEndTime)
-          : "No End Date"}
-      </>
-    );
-
   useEffect(() => {
     if (applicationData.roundID !== undefined) {
-      dispatch(loadRound(applicationData.roundID, applicationData.chainId));
+      dispatch(
+        loadRound(applicationData.roundID, dataLayer, applicationData.chainId)
+      );
     }
   }, [dispatch, applicationData.roundID]);
 
-  useEffect(() => {
-    if (props.round) {
-      setRoundData(props.round);
-    }
-  }, [props.round]);
+  const renderApplicationDate = () =>
+    props.round && (
+      <>
+        {formatDateFromSecs(props.round?.applicationsStartTime!)} -{" "}
+        {!isInfinite(Number(props.round?.applicationsEndTime!)) &&
+        props.round?.applicationsEndTime
+          ? formatDateFromSecs(props.round?.applicationsEndTime!)
+          : "No End Date"}
+      </>
+    );
 
   const renderRoundBadge = () => {
     let colorScheme:
@@ -72,7 +75,7 @@ export default function ApplicationCard({
         }
       | undefined;
 
-    switch (roundData?.payoutStrategy as PayoutStrategy) {
+    switch (props.payoutStrategy as PayoutStrategy) {
       case "MERKLE":
         colorScheme = {
           bg: "#E6FFF9",
@@ -90,7 +93,7 @@ export default function ApplicationCard({
         break;
     }
 
-    const roundPayoutStrategy = roundData?.payoutStrategy;
+    const roundPayoutStrategy = props.payoutStrategy;
 
     return (
       <span>
@@ -123,7 +126,7 @@ export default function ApplicationCard({
           text: string;
         }
       | undefined;
-    switch (applicationData.application.status as AppStatus) {
+    switch (applicationData.application.status as ApplicationStatus) {
       case "APPROVED":
         colorScheme = {
           bg: "#E6FFF9",
@@ -154,7 +157,6 @@ export default function ApplicationCard({
     }
 
     const applicationStatus = applicationData.application.status;
-    const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
     const applicationInReview = applicationData.application.inReview;
 
     return (
@@ -166,12 +168,12 @@ export default function ApplicationCard({
         textTransform="inherit"
       >
         {applicationStatus === "PENDING" &&
-        isDirectRound &&
+        props.isDirectRound &&
         !applicationInReview ? (
           <span className={`text-${colorScheme?.text} text-sm`}>Received</span>
         ) : null}
-        {(applicationStatus === "PENDING" && !isDirectRound) ||
-        (isDirectRound && applicationInReview) ? (
+        {(applicationStatus === "PENDING" && !props.isDirectRound) ||
+        (props.isDirectRound && applicationInReview) ? (
           <span className={`text-${colorScheme?.text} text-sm`}>In Review</span>
         ) : null}
         {applicationStatus === "REJECTED" ? (
@@ -188,6 +190,10 @@ export default function ApplicationCard({
     applicationData.application.inReview ||
     applicationData.application.status === "APPROVED";
 
+  if (!props.round?.roundMetadata) {
+    return null;
+  }
+
   return (
     <Box
       p={2}
@@ -197,7 +203,7 @@ export default function ApplicationCard({
     >
       <Box p={2} mb={1}>
         <span className="text-sm text-gitcoin-gray-400">
-          {props.round?.programName}
+          {props.round?.roundMetadata.name}
         </span>
       </Box>
       <div className="flex justify-end w-fit mr-1 align-middle mb-2">
@@ -211,7 +217,7 @@ export default function ApplicationCard({
       <div className="flex flex-1 flex-col md:flex-row justify-between">
         <Box className="pl-2 text-gitcoin-gray-400">
           <div className="mb-1 text-sm">{props.round?.roundMetadata.name}</div>
-          {roundData ? <span>{renderApplicationDate()}</span> : <Spinner />}
+          {props.round ? <span>{renderApplicationDate()}</span> : <Spinner />}
         </Box>
         <Box className="pl-2 mt-2 md:mt-0">{renderRoundBadge()}</Box>
         <Box className="pl-2 mt-2 md:mt-0">{renderApplicationBadge()}</Box>
@@ -229,7 +235,7 @@ export default function ApplicationCard({
                 }`}
                 rel="noreferrer"
               >
-                Contact the {props.round?.programName} support team.
+                Contact the {props.round?.roundMetadata.name} support team.
               </a>
             </p>
           )}
@@ -237,7 +243,7 @@ export default function ApplicationCard({
             to={roundApplicationViewPath(
               applicationData.chainId.toString(),
               applicationData.roundID,
-              applicationData.application.metaPtr?.pointer || ""
+              applicationData.application.metadataCid || ""
             )}
           >
             <Button

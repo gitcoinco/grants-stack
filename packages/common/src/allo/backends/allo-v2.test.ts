@@ -12,8 +12,8 @@ const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
 const waitUntilIndexerSynced = vi.fn().mockResolvedValue(success(null));
 const transactionSender = createMockTransactionSender();
-const projectRegistryAddress = zeroAddress;
 const chainId = 1;
+const alloContractAddress = zeroAddress;
 
 const alloV2RegistryAddress = "0x4AAcca72145e1dF2aeC137E1f3C5E3D75DB8b5f3";
 
@@ -30,6 +30,7 @@ describe("AlloV2", () => {
   beforeEach(() => {
     allo = new AlloV2({
       chainId,
+      allo: alloV2RegistryAddress,
       ipfsUploader,
       transactionSender,
       waitUntilIndexerSynced,

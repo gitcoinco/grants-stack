@@ -1,5 +1,7 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-
+import { 
+  RoundApplicationMetadata,
+} from './roundApplication.types';
 // TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
 // avoid further spaghetti dependencies. They should probably be relocated here.
 export type RoundPayoutType = "MERKLE" | "DIRECT";
@@ -9,7 +11,9 @@ export type ApplicationStatus =
   | "PENDING"
   | "APPROVED"
   | "REJECTED"
-  | "CANCELLED";
+  | "APPEAL"
+  | "FRAUD"
+  | "RECEIVED";
 
 export type GrantApplicationFormAnswer = {
   questionId: number;
@@ -191,6 +195,46 @@ export type v2Project = {
   roles: AddressAndRole[];
 };
 
+/**
+ * The project application type for v2
+ *
+ */
+export type ProjectApplication = {
+  id: string;
+  chainId: number;
+  roundId: string;
+  status: ApplicationStatus;
+  metadataCid: string;
+  metadata: any; // TODO: fix
+  inReview: boolean;
+  round: {
+    applicationsStartTime: string;
+    applicationsEndTime: string;
+    donationsStartTime: string;
+    donationsEndTime: string;
+    roundMetadata: RoundMetadata;
+    name: string;
+  };
+};
+
+/**
+ * The round type for v2
+ *
+ */
+export type V2Round = {
+  id: string;
+  chainId: number;
+  applicationsStartTime: string;
+  applicationsEndTime: string;
+  donationsStartTime: string;
+  donationsEndTime: string;
+  matchTokenAddress: string;
+  roundMetadata: any;
+  roundMetadataCid: string;
+  applicationMetadata: RoundApplicationMetadata;
+  applicationMetadataCid: string;
+}
+
 export type ProjectEvents = {
   createdAtBlock: number | undefined;
   updatedAtBlock: number | undefined;
@@ -222,17 +266,17 @@ export interface MetadataPointer {
   pointer: string;
 }
 
-export interface Requirement {
+export type Requirement = {
   // Requirement for the round
   requirement?: string;
-}
+};
 
-export interface Eligibility {
+export type Eligibility = {
   // Eligibility for the round
   description: string;
   // Requirements for the round
   requirements?: Requirement[];
-}
+};
 
 export interface Round {
   /**
@@ -302,6 +346,10 @@ export interface Round {
    */
   ownedBy: string;
   /**
+   * Addresses of wallets that will have admin privileges to operate the Grant program
+   */
+  operatorWallets?: Array<string>;
+  /**
    * List of projects approved for the round
    */
   approvedProjects?: Project[];
@@ -347,6 +395,10 @@ export type RoundMetadata = {
   roundType: RoundVisibilityType;
   eligibility: Eligibility;
   programContractAddress: string;
+  support?: {
+    info: string;
+    type: string;
+  };
 };
 
 export type SearchBasedProjectCategory = {

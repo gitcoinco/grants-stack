@@ -1,7 +1,6 @@
-import { ChainId } from "common";
+import { ChainId, RedstoneTokenIds } from "./chain-ids";
 import { ethers } from "ethers";
 import { Address } from "wagmi";
-import { RedstoneTokenIds } from "common/src/chain-ids";
 
 export type PayoutToken = {
   name: string;
@@ -30,8 +29,7 @@ export const TokenNamesAndLogos = {
   LUSD: "/logos/lusd-logo.svg",
   MUTE: "/logos/mute-logo.svg",
   mkUSD: "/logos/mkusd-logo.svg", // Prisma mkUSD
-  DATA: "/logos/data-logo.svg", // Streamr DATA
-  USDGLO: "/logos/usdglo-logo.svg", // USDGLO
+  USDGLO: "/logos/usdglo-logo.svg",
 } as const;
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -374,14 +372,6 @@ const POLYGON_TOKENS: PayoutToken[] = [
     decimal: 6,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
-  },
-  {
-    name: "DATA",
-    chainId: ChainId.POLYGON,
-    address: "0x3a9A81d576d83FF21f26f325066054540720fC34",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DATA"],
-    redstoneTokenId: RedstoneTokenIds["DATA"],
   },
 ];
 const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
