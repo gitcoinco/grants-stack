@@ -92,12 +92,17 @@ export default function ViewProjectDetails() {
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const { chainId, roundId, applicationId } = useProjectDetailsParams();
+  const dataLayer = useDataLayer();
 
-  const { data: application } = useApplication({
-    chainId: Number(chainId as string),
-    roundId,
-    applicationId: applicationId?.split("-")[1],
-  });
+  const { data: application, error } = useApplication(
+    {
+      chainId: Number(chainId as string),
+      roundId,
+      applicationId: applicationId?.split("-")[1],
+    },
+    dataLayer
+  );
+  console.log(error);
 
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
@@ -484,12 +489,15 @@ function Sidebar(props: {
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useProjectDetailsParams();
   const { round } = useRoundById(Number(chainId), roundId);
-
-  const { data: application } = useApplication({
-    chainId: Number(chainId as string),
-    roundId,
-    applicationId: applicationId.split("-")[1],
-  });
+  const dataLayer = useDataLayer();
+  const { data: application } = useApplication(
+    {
+      chainId: Number(chainId as string),
+      roundId,
+      applicationId: applicationId.split("-")[1],
+    },
+    dataLayer
+  );
 
   const timeRemaining =
     round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
