@@ -328,7 +328,6 @@ describe("voting cart", () => {
         isLoading: false,
       },
     });
-    screen.logTestingPlaygroundURL();
 
     // mock screen size
     setWindowDimensions(320, 480);
