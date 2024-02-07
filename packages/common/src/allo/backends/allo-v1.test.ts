@@ -1,6 +1,7 @@
 import { Hex, encodeEventTopics, zeroAddress } from "viem";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import ProjectRegistry from "../abis/allo-v1/ProjectRegistry";
+import RoundImplementation from "../abis/allo-v1/RoundImplementation";
 import { Result, success } from "../common";
 import {
   TransactionReceipt,
@@ -30,10 +31,6 @@ describe("AlloV1", () => {
   });
 
   test("createProject", async () => {
-    let ipfsResult: Result<string>;
-    let txResult: Result<`0x${string}`>;
-    let txStatusResult: Result<TransactionReceipt>;
-
     const result = await allo
       .createProject({
         name: "My Project",
@@ -95,10 +92,31 @@ describe("AlloV1", () => {
           blockNumber: 1n,
           blockHash: "0x0",
           // todo: finish this
-          logs: [],
+          logs: [
+            {
+              topics: encodeEventTopics({
+                abi: RoundImplementation,
+                eventName: "NewProjectApplication",
+                args: {
+                  projectID:
+                    "0xa0affa31521afe084aee15c3ff5570c600b014cae2a9c45a9cc1e50b0c9852e5",
+                },
+              }),
+              data: "0x0",
+            },
+          ],
         });
       })
       .on("transactionStatus", (r) => (txStatusResult = r))
       .execute();
+
+    // expect(result).toEqual(
+    //   success({
+    //     projectID:
+    //       "0xa0affa31521afe084aee15c3ff5570c600b014cae2a9c45a9cc1e50b0c9852e5",
+    //   })
+    // );
+    expect(transactionSender.sentTransactions).toHaveLength(1);
+    expect(txStatusResult).toBeTruthy();
   });
 });
