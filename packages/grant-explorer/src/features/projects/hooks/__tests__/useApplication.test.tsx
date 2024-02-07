@@ -20,7 +20,8 @@ describe("useApplication", () => {
     const variables = { chainId: 1, roundId: "1", id: "1" };
     renderWithContext(
       createElement(() => {
-        const { data } = useApplication(variables);
+        // @ts-expect-error tests
+        const { data } = useApplication(variables, {});
         if (data) {
           // Expect the hook to return the data
           expect(data).toEqual(applicationData.application);
