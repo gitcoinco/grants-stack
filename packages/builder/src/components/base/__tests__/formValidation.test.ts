@@ -1,5 +1,5 @@
 import { ValidationError } from "yup";
-import { RoundApplicationQuestion } from "../../../types";
+import { RoundApplicationQuestion } from "data-layer";
 import { validateApplication, validateProjectForm } from "../formValidation";
 
 const validInputs = {

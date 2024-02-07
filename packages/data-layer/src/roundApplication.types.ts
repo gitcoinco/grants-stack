@@ -63,6 +63,15 @@ export type RoundApplicationQuestion =
   | DropdownQuestion
   | NumberQuestion;
 
+export interface RoundApplicationMetadata {
+  version: string;
+  lastUpdatedOn: number;
+  applicationSchema: {
+    questions: RoundApplicationQuestion[];
+    requirements: ProjectRequirements;
+  };
+}
+
 export interface ProjectRequirements {
   twitter: {
     required: boolean;
@@ -71,15 +80,6 @@ export interface ProjectRequirements {
   github: {
     required: boolean;
     verification: boolean;
-  };
-}
-
-export interface RoundApplicationMetadata {
-  version: string;
-  lastUpdatedOn: number;
-  applicationSchema: {
-    questions: RoundApplicationQuestion[];
-    requirements: ProjectRequirements;
   };
 }
 

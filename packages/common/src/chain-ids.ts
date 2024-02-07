@@ -34,4 +34,5 @@ export const RedstoneTokenIds = {
   MUTE: "MUTE",
   mkUSD: "mkUSD",
   DATA: "DATA",
+  USDGLO: "USDGLO",
 } as const;
