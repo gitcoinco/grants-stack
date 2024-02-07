@@ -811,6 +811,7 @@ export function getChainIds(): number[] {
       Number(ChainId.POLYGON),
       Number(ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID),
       Number(ChainId.BASE),
+      Number(ChainId.SCROLL),
     ];
   } else {
     return Object.values(ChainId)
