@@ -1,21 +1,21 @@
-import { Address, Hex } from "viem";
-import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { error, Result, success } from "../common";
-import { WaitUntilIndexerSynced } from "../indexer";
-import { IpfsUploader } from "../ipfs";
-import {
-  decodeEventFromReceipt,
-  sendRawTransaction,
-  TransactionReceipt,
-  TransactionSender,
-} from "../transaction-sender";
-import RegistryABI from "../abis/allo-v2/Registry";
+import { Allo as AlloV2Contract, Registry } from "@allo-team/allo-v2-sdk/";
 import {
   CreateProfileArgs,
   TransactionData,
 } from "@allo-team/allo-v2-sdk/dist/types";
-import { Allo as AlloV2Contract, Registry } from "@allo-team/allo-v2-sdk/";
+import { Address, Hex } from "viem";
 import { AnyJson } from "../..";
+import RegistryABI from "../abis/allo-v2/Registry";
+import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
+import { Result, error, success } from "../common";
+import { WaitUntilIndexerSynced } from "../indexer";
+import { IpfsUploader } from "../ipfs";
+import {
+  TransactionReceipt,
+  TransactionSender,
+  decodeEventFromReceipt,
+  sendRawTransaction,
+} from "../transaction-sender";
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -201,4 +201,87 @@ export class AlloV2 implements Allo {
       indexingStatus: Result<void>;
     }
   >;
+
+  /**
+   * Applies to a round for Allo v2
+   *
+   * @param args
+   *
+   * @public
+   *
+   * @returns AllotOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
+   */
+  applyToRoundV2(args: {
+    projectId: Hex;
+    strategy: Hex;
+    metadata: AnyJson;
+  }): AlloOperation<
+    Result<Hex>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      console.log("ipfsResult", ipfsResult);
+
+      //   const metadata = {
+      //     name: data.name,
+      //     website: data.website,
+      //     description: data.description,
+      //     email: data.email,
+      //     base64Image: data.base64Image,
+      //   };
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      // const data = {
+      //   projectId: args.projectId,
+      //   strategy: args.strategy,
+      //   metadata: ipfsResult.value,
+      // };
+
+      // todo: finish updating to use SDK to apply to round
+      // note: we need the poolId to apply to a round for v2 and for
+      // grants stack we don't have support for DirectGrants yet in our SDK.
+      const txApplyToRound: any = this.allo.registerRecipient(1, "0x");
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txApplyToRound.to,
+        data: txApplyToRound.data,
+        value: txApplyToRound.value,
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to apply to round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      return success(receipt.transactionHash);
+    });
+  }
 }

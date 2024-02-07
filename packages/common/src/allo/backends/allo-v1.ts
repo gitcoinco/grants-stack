@@ -11,6 +11,21 @@ import {
   parseUnits,
   zeroAddress,
 } from "viem";
+import { AnyJson, ChainId } from "../..";
+import { parseChainId } from "../../chains";
+import { payoutTokens } from "../../payoutTokens";
+import { RoundCategory } from "../../types";
+import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
+import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
+import RoundImplementation from "../abis/allo-v1/RoundImplementation";
+import {
+  dgVotingStrategyDummyContractMap,
+  directPayoutStrategyFactoryContractMap,
+  merklePayoutStrategyFactoryMap,
+  projectRegistryMap,
+  qfVotingStrategyFactoryMap,
+  roundFactoryMap,
+} from "../addresses/allo-v1";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -21,20 +36,6 @@ import {
   TransactionReceipt,
   TransactionSender,
 } from "../transaction-sender";
-import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
-import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
-import { AnyJson, ChainId } from "../..";
-import { RoundCategory } from "../../types";
-import { parseChainId } from "../../chains";
-import {
-  dgVotingStrategyDummyContractMap,
-  directPayoutStrategyFactoryContractMap,
-  merklePayoutStrategyFactoryMap,
-  projectRegistryMap,
-  qfVotingStrategyFactoryMap,
-  roundFactoryMap,
-} from "../addresses/allo-v1";
-import { payoutTokens } from "../../payoutTokens";
 
 function createProjectId(args: {
   chainId: number;
@@ -373,6 +374,69 @@ export class AlloV1 implements Allo {
         alert(e);
         return error(e as Error);
       }
+    });
+  }
+
+  /**
+   * Applies to a round for Allo v1
+   *
+   * @param args { projectId: Hex; roundId: Hex; metadata: AnyJson }
+   *
+   * @public
+   *
+   * @returns AllotOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
+   */
+  applyToRoundV1(args: {
+    projectId: Hex;
+    roundId: Hex;
+    metadata: AnyJson;
+  }): AlloOperation<
+    Result<Hex>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: this.projectRegistryAddress,
+        abi: RoundImplementation,
+        functionName: "applyToRound",
+        args: [args.roundId, { protocol: 1n, pointer: ipfsResult.value }],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to apply to round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      return success(args.projectId);
     });
   }
 }

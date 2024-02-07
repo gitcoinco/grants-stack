@@ -27,6 +27,10 @@ const profileCreationEvent = {
 
 describe("AlloV2", () => {
   let allo: AlloV2;
+  let ipfsResult: Result<string>;
+  let txResult: Result<`0x${string}`>;
+  let txStatusResult: Result<TransactionReceipt>;
+
   beforeEach(() => {
     allo = new AlloV2({
       chainId,
@@ -38,10 +42,6 @@ describe("AlloV2", () => {
   });
 
   test("createProject", async () => {
-    let ipfsResult: Result<string>;
-    let txResult: Result<`0x${string}`>;
-    let txStatusResult: Result<TransactionReceipt>;
-
     const result = await allo
       .createProject({
         name: "My Project",
@@ -85,5 +85,29 @@ describe("AlloV2", () => {
       alloV2RegistryAddress.toLocaleLowerCase()
     );
     expect(txStatusResult!).toBeTruthy();
+  });
+
+  test("applyToRound", async () => {
+    const result = await allo
+      .applyToRoundV2({
+        projectId: "0x123",
+        strategy: "0x456",
+        metadata: { foo: "bar" },
+      })
+      .on("ipfs", (r) => (ipfsResult = r))
+      .on("transaction", (r) => {
+        txResult = r;
+
+        /** mock transaction receipt */
+        transactionSender.wait = vi.fn().mockResolvedValueOnce({
+          transactionHash: zeroTxHash,
+          blockNumber: 1n,
+          blockHash: "0x0",
+          // todo: finish this
+          logs: [],
+        });
+      })
+      .on("transactionStatus", (r) => (txStatusResult = r))
+      .execute();
   });
 });
