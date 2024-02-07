@@ -36,6 +36,12 @@ export function GradientLayout({
       </div>
 
       <Footer />
+
+      {
+        // FIXME: this is the wrong way to make a gradient for the main content
+        // since it's a div that's covering the full page and any other content
+        // without a higher z-index is not clickable.
+      }
       <div
         className="min-h-screen absolute inset-0"
         style={{
