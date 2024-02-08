@@ -11,7 +11,7 @@ export const test = base.extend<{
   // eslint-disable-next-line no-empty-pattern
   context: async ({}, use) => {
     config({
-      path: "./.env.local",
+      path: ["./.env.local", ".env", ".env.test"],
     });
 
     // required for synpress as it shares same expect instance as playwright
