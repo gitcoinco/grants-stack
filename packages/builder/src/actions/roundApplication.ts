@@ -5,6 +5,7 @@ import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
+import { Hex } from "viem";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -16,7 +17,6 @@ import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
 import { graphqlFetch } from "../utils/graphql";
-import { Hex } from "viem";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 
@@ -146,7 +146,6 @@ export function chainIdToChainName(chainId: number): string {
 
 export const submitApplication =
   (roundAddress: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
-  
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const roundState = state.rounds[roundAddress];
@@ -293,17 +292,17 @@ export const submitApplication =
       projectNumber,
       projectRegistryAddress
     ) as Hex;
-  
+
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
       status: Status.UploadingMetadata,
     });
-  
+
     const result = allo.applyToRound({
       projectId: projectUniqueID,
       roundId: roundAddress as Hex,
-      metadata: signedApplication as unknown as AnyJson
+      metadata: signedApplication as unknown as AnyJson,
     });
 
     await result
@@ -355,7 +354,6 @@ export const submitApplication =
         }
       })
       .execute();
-
   };
 
 export const checkRoundApplications =
