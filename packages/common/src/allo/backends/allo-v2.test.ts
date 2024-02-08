@@ -100,7 +100,10 @@ describe("AlloV2", () => {
       .applyToRound({
         projectId: "0x123",
         roundId: "0x456",
-        metadata: { foo: "bar" },
+        metadata: {
+          application: {
+          recipient: "0x789",
+        } },
       })
       .on("ipfs", (r) => (ipfsResult = r))
       .on("transaction", (r) => {
