@@ -8,9 +8,9 @@ import {
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
 } from "common";
-import { useEffect, useState } from "react";
-import { useNetwork, useProvider, useSigner } from "wagmi";
 import { getConfig } from "common/src/config";
+import React, { useEffect, useState } from "react";
+import { useNetwork, useProvider, useSigner } from "wagmi";
 import { addressesByChainID } from "../contracts/deployments";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
