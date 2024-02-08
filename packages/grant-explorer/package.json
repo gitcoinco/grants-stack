@@ -5,6 +5,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
+    "synpress:test": "playwright test --project=chromium",
     "lint:local": "eslint",
     "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix",

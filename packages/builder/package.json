@@ -95,7 +95,8 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
     "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix --cache",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "synpress:test": "playwright test --project=chromium"
   },
   "eslintConfig": {
     "extends": [
