@@ -16,7 +16,7 @@ const transactionSender = createMockTransactionSender();
 const chainId = 1;
 const alloContractAddress = zeroAddress;
 
-const alloV2RegistryAddress = "0x4AAcca72145e1dF2aeC137E1f3C5E3D75DB8b5f3";
+const alloV2RegistryAddress = "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3";
 
 const profileCreationEvent = {
   indexed: {
@@ -134,9 +134,9 @@ describe("AlloV2", () => {
     // expect(result).toEqual(
     //   success({ recipientId: roundApplicationEvent.indexed.recipientId as Hex })
     // );
-    expect(transactionSender.sentTransactions).toHaveLength(2);
-    expect(transactionSender.sentTransactions[1].to.toLowerCase()).toEqual(
-      "0x1133ea7af70876e64665ecd07c0a0476d09465a1".toLocaleLowerCase()
+    expect(transactionSender.sentTransactions).toHaveLength(1);
+    expect(transactionSender.sentTransactions[0].to.toLowerCase()).toEqual(
+      "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3".toLocaleLowerCase()
     );
     expect(txResult!).toEqual(success(zeroTxHash));
     expect(txStatusResult).toBeTruthy();
