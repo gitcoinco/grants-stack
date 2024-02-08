@@ -148,6 +148,20 @@ component route
 
 Find more information about routing [here](https://reactrouter.com/docs/en/v6).
 
+## Running E2E tests using Synpress
+
+Synpress is an E2E testing framework for testing dApps. It works by setting up metamask before every run.
+
+### Running Synpress
+
+1. Put `TEST_PRIVATE_KEY` in `.env.local` in the respective directory (e.g. `packages/round-manager`)
+2. Start the dev server `pnpm start`
+3. Download playwright with `pnpm exec playwright install`
+4. Run tests with `pnpm synpress:test`
+
+NOTE: some tests require you to be part of a testing program and have some gas in your wallet. Please use a private key that has some gas on Fantom Testnet and Optimism Mainnet, and is part of the "GS Optimism Program 10 Round" Program on Optimism Mainnet.
+
+
 ## Submitting a PR
 
 Please always submit draft PRs at first, and make sure they pass the following conditions before you mark them as Ready for review.
