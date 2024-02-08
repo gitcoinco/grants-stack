@@ -1,7 +1,5 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { 
-  RoundApplicationMetadata,
-} from './roundApplication.types';
+import { RoundApplicationMetadata } from "./roundApplication.types";
 // TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
 // avoid further spaghetti dependencies. They should probably be relocated here.
 export type RoundPayoutType = "MERKLE" | "DIRECT";
@@ -229,11 +227,16 @@ export type V2Round = {
   donationsStartTime: string;
   donationsEndTime: string;
   matchTokenAddress: string;
-  roundMetadata: any;
+  roundMetadata: unknown;
   roundMetadataCid: string;
   applicationMetadata: RoundApplicationMetadata;
   applicationMetadataCid: string;
-}
+  projectId: string;
+};
+
+export type V2RoundWithRoles = V2Round & {
+  roles: AddressAndRole[];
+};
 
 export type ProjectEvents = {
   createdAtBlock: number | undefined;

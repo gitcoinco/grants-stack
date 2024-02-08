@@ -17,6 +17,7 @@ import {
   SearchBasedProjectCategory,
   TimestampVariables,
   V2Round,
+  V2RoundWithRoles,
   v2Project,
 } from "./data.types";
 import {
@@ -33,7 +34,9 @@ import {
   getProjects,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
+  getRoundsByProgramIdAndUserAddress,
 } from "./queries";
+import { Address } from "viem";
 
 /**
  * DataLayer is a class that provides a unified interface to the various data sources.
@@ -351,16 +354,32 @@ export class DataLayer {
     roundId: string;
     chainId: number;
   }): Promise<V2Round> {
-
     const requestVariables = {
       roundId,
-      chainId
+      chainId,
     };
 
-    const response : {rounds: V2Round[]} = 
-    await request(this.gsIndexerEndpoint, getRoundByIdAndChainId, requestVariables);
+    const response: { rounds: V2Round[] } = await request(
+      this.gsIndexerEndpoint,
+      getRoundByIdAndChainId,
+      requestVariables,
+    );
 
     return response.rounds[0] ?? [];
+  }
+
+  async getRoundsByProgramIdAndUserAddress(args: {
+    chainId: number;
+    programId: string;
+    userAddress: Address;
+  }): Promise<V2RoundWithRoles[]> {
+    const response: { rounds: V2RoundWithRoles[] } = await request(
+      this.gsIndexerEndpoint,
+      getRoundsByProgramIdAndUserAddress,
+      { ...args, userAddress: args.userAddress.toLowerCase() },
+    );
+
+    return response.rounds;
   }
 
   /**

@@ -249,7 +249,9 @@ export const getBlockNumberQuery = gql`
 
 export const getRoundByIdAndChainId = gql`
   query getRoundByIdAndChainId($roundId: String!, $chainId: Int!) {
-    rounds(filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
       id
       chainId
       applicationsStartTime
@@ -261,6 +263,39 @@ export const getRoundByIdAndChainId = gql`
       roundMetadataCid
       applicationMetadata
       applicationMetadataCid
+    }
+  }
+`;
+
+export const getRoundsByProgramIdAndUserAddress = gql`
+  query getRoundsByProgramIdAndMemberAddress(
+    $chainId: Int!
+    $programId: String!
+    $userAddress: String!
+  ) {
+    rounds(
+      filter: {
+        chainId: { equalTo: $chainId }
+        projectId: { equalTo: $programId }
+        roles: { some: { address: { equalTo: $userAddress } } }
+      }
+    ) {
+      id
+      chainId
+      applicationsStartTime
+      applicationsEndTime
+      donationsStartTime
+      donationsEndTime
+      matchTokenAddress
+      roundMetadata
+      roundMetadataCid
+      applicationMetadata
+      applicationMetadataCid
+      roles {
+        role
+        address
+        createdAtBlock
+      }
     }
   }
 `;
