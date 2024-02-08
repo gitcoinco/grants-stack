@@ -1,13 +1,13 @@
 import { Hex, encodeEventTopics, zeroAddress } from "viem";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import RegistryABI from "../abis/allo-v2/Registry";
 import { Result, success } from "../common";
 import {
   TransactionReceipt,
   createMockTransactionSender,
 } from "../transaction-sender";
 import { AlloV2 } from "./allo-v2";
-import { DonationVotingMerkleDistributionDirectTransferStrategyAbi } from "@allo-team/allo-v2-sdk";
+import { abi as RegistryAbi } from "@allo-team/allo-v2-sdk/src/Registry/registry.config";
+import { abi as DonationVotingMerkleDistributionDirectTransferStrategyAbi } from "@allo-team/allo-v2-sdk/src/Registry/registry.config";
 
 const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
@@ -67,7 +67,7 @@ describe("AlloV2", () => {
           logs: [
             {
               topics: encodeEventTopics({
-                abi: RegistryABI,
+                abi: RegistryAbi,
                 eventName: "ProfileCreated",
                 args: {
                   profileId: profileCreationEvent.indexed.profileId as Hex,
