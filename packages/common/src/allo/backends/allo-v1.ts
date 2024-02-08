@@ -36,6 +36,7 @@ import {
   TransactionReceipt,
   TransactionSender,
 } from "../transaction-sender";
+import { number } from "zod";
 
 function createProjectId(args: {
   chainId: number;
@@ -386,9 +387,9 @@ export class AlloV1 implements Allo {
    *
    * @returns AllotOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
    */
-  applyToRoundV1(args: {
+  applyToRound(args: {
     projectId: Hex;
-    roundId: Hex;
+    roundId: Hex|number;
     metadata: AnyJson;
   }): AlloOperation<
     Result<Hex>,
@@ -399,6 +400,13 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
+
+      if (typeof args.roundId == "number") {
+        return error(
+          new AlloError("roundId must be Hex")
+        );
+      }
+
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
@@ -408,10 +416,10 @@ export class AlloV1 implements Allo {
       }
 
       const txResult = await sendTransaction(this.transactionSender, {
-        address: this.projectRegistryAddress,
+        address: args.roundId,
         abi: RoundImplementation,
         functionName: "applyToRound",
-        args: [args.roundId, { protocol: 1n, pointer: ipfsResult.value }],
+        args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
       });
 
       emit("transaction", txResult);

@@ -77,7 +77,7 @@ describe("AlloV1", () => {
 
   test("applyToRound", async () => {
     const result = await allo
-      .applyToRoundV1({
+      .applyToRound({
         projectId: "0x123",
         roundId: "0x456",
         metadata: { foo: "bar" },

@@ -211,9 +211,9 @@ export class AlloV2 implements Allo {
    *
    * @returns AllotOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
    */
-  applyToRoundV2(args: {
+  applyToRound(args: {
     projectId: Hex;
-    strategy: Hex;
+    roundId: Hex|number;
     metadata: AnyJson;
   }): AlloOperation<
     Result<Hex>,
@@ -224,6 +224,14 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
+
+      if (typeof args.roundId != "number") {
+        return error(
+          new AlloError("roundId must be number")
+        );
+      }
+
+
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       console.log("ipfsResult", ipfsResult);
