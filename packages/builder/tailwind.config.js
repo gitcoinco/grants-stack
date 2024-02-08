@@ -1,7 +1,7 @@
 module.exports = {
   // if this is not set it will default to user's operating system preferences
   darkMode: "class",
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  content: ["./src/**/*.{js,jsx,ts,tsx}", "../common/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       boxShadow: {
