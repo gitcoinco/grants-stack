@@ -99,7 +99,7 @@ describe("AlloV2", () => {
     const result = await allo
       .applyToRound({
         projectId: "0x123",
-        strategy: "0x456",
+        roundId: "0x456",
         metadata: { foo: "bar" },
       })
       .on("ipfs", (r) => (ipfsResult = r))
