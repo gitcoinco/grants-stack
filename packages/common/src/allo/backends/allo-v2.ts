@@ -1,8 +1,5 @@
-import { Allo as AlloV2Contract, Registry } from "@allo-team/allo-v2-sdk/";
-import {
-  CreateProfileArgs,
-  TransactionData,
-} from "@allo-team/allo-v2-sdk/dist/types";
+import { Allo as AlloV2Contract, CreateProfileArgs, DonationVotingMerkleDistributionStrategy, Registry, TransactionData } from "@allo-team/allo-v2-sdk/";
+
 import { Address, Hex } from "viem";
 import { AnyJson } from "../..";
 import RegistryABI from "../abis/allo-v2/Registry";
@@ -231,40 +228,36 @@ export class AlloV2 implements Allo {
         );
       }
 
+      const strategyInstance = new DonationVotingMerkleDistributionStrategy({
+        chain: this.chainId,
+        poolId: args.roundId,
+      });
 
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       console.log("ipfsResult", ipfsResult);
-
-      //   const metadata = {
-      //     name: data.name,
-      //     website: data.website,
-      //     description: data.description,
-      //     email: data.email,
-      //     base64Image: data.base64Image,
-      //   };
 
       emit("ipfs", ipfsResult);
 
       if (ipfsResult.type === "error") {
         return ipfsResult;
       }
+      
+      const metadata = args.metadata as unknown as {application: {recipient: Hex}}; 
 
-      // const data = {
-      //   projectId: args.projectId,
-      //   strategy: args.strategy,
-      //   metadata: ipfsResult.value,
-      // };
-
-      // todo: finish updating to use SDK to apply to round
-      // note: we need the poolId to apply to a round for v2 and for
-      // grants stack we don't have support for DirectGrants yet in our SDK.
-      const txApplyToRound: any = this.allo.registerRecipient(1, "0x");
+      const registerRecipientTx = strategyInstance.getRegisterRecipientData({
+        registryAnchor: args.projectId,
+        recipientAddress: metadata.application.recipient,
+        metadata: {
+          protocol: 1n,
+          pointer: ipfsResult.value,
+        }
+      })
 
       const txResult = await sendRawTransaction(this.transactionSender, {
-        to: txApplyToRound.to,
-        data: txApplyToRound.data,
-        value: txApplyToRound.value,
+        to: registerRecipientTx.to,
+        data: registerRecipientTx.data,
+        value: BigInt(registerRecipientTx.value),
       });
 
       emit("transaction", txResult);
