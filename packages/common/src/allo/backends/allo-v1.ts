@@ -36,7 +36,6 @@ import {
   TransactionReceipt,
   TransactionSender,
 } from "../transaction-sender";
-import { number } from "zod";
 
 function createProjectId(args: {
   chainId: number;

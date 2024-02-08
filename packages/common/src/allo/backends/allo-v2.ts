@@ -116,7 +116,7 @@ export class AlloV2 implements Allo {
         abi: RegistryAbi as Abi,
         receipt,
         event: "ProfileCreated",
-      });
+      }) as { profileId: Hex };
 
       return success({
         projectId: projectCreatedEvent.profileId,
