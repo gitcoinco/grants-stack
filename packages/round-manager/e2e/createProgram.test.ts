@@ -2,7 +2,9 @@ import { test } from "../fixtures";
 import * as metamask from "@synthetixio/synpress/commands/metamask";
 import { faker } from "@faker-js/faker";
 import { v4 } from "uuid";
-import { abbreviateAddress } from "../src/features/api/utils";
+
+export const abbreviateAddress = (address: string) =>
+  `${address.slice(0, 8)}...${address.slice(-4)}`;
 
 test.beforeEach(async ({ page }) => {
   // baseUrl is set in playwright.config.ts
