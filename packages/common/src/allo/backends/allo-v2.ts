@@ -1,8 +1,13 @@
-import { Allo as AlloV2Contract, CreateProfileArgs, DonationVotingMerkleDistributionStrategy, Registry, TransactionData } from "@allo-team/allo-v2-sdk/";
-
-import { Address, Hex } from "viem";
+import {
+  Allo as AlloV2Contract,
+  CreateProfileArgs,
+  DonationVotingMerkleDistributionStrategy,
+  Registry,
+  RegistryAbi,
+  TransactionData,
+} from "@allo-team/allo-v2-sdk/";
+import { Abi, Address, Hex } from "viem";
 import { AnyJson } from "../..";
-import RegistryABI from "../abis/allo-v2/Registry";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -108,7 +113,7 @@ export class AlloV2 implements Allo {
       }
 
       const projectCreatedEvent = decodeEventFromReceipt({
-        abi: RegistryABI,
+        abi: RegistryAbi as Abi,
         receipt,
         event: "ProfileCreated",
       });
@@ -210,7 +215,7 @@ export class AlloV2 implements Allo {
    */
   applyToRound(args: {
     projectId: Hex;
-    roundId: Hex|number;
+    roundId: Hex | number;
     metadata: AnyJson;
   }): AlloOperation<
     Result<Hex>,
@@ -221,11 +226,8 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-
       if (typeof args.roundId != "number") {
-        return error(
-          new AlloError("roundId must be number")
-        );
+        return error(new AlloError("roundId must be number"));
       }
 
       const strategyInstance = new DonationVotingMerkleDistributionStrategy({
@@ -242,8 +244,10 @@ export class AlloV2 implements Allo {
       if (ipfsResult.type === "error") {
         return ipfsResult;
       }
-      
-      const metadata = args.metadata as unknown as {application: {recipient: Hex}}; 
+
+      const metadata = args.metadata as unknown as {
+        application: { recipient: Hex };
+      };
 
       const registerRecipientTx = strategyInstance.getRegisterRecipientData({
         registryAnchor: args.projectId,
@@ -251,8 +255,8 @@ export class AlloV2 implements Allo {
         metadata: {
           protocol: 1n,
           pointer: ipfsResult.value,
-        }
-      })
+        },
+      });
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: registerRecipientTx.to,
