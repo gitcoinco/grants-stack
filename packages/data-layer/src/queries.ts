@@ -214,3 +214,5 @@ export const getBlockNumberQuery = gql`
     }
   }
 `;
+
+export const getRoundsQuery = gql``;

@@ -19,8 +19,8 @@ import {
 } from "./data.types";
 import {
   ApplicationSummary,
-  DefaultApi as SearchApi,
   Configuration as SearchApiConfiguration,
+  DefaultApi as SearchApi,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
@@ -418,6 +418,46 @@ export class DataLayer {
   }
 
   async getLegacyRounds({
+    chainIds,
+    first,
+    orderBy,
+    orderDirection,
+    where,
+  }: {
+    chainIds: number[];
+    first: number;
+    orderBy?:
+      | "createdAt"
+      | "matchAmount"
+      | "roundStartTime"
+      | "roundEndTime"
+      | "applicationsStartTime"
+      | "applicationsEndTime";
+    orderDirection?: "asc" | "desc";
+    where?: {
+      and: [
+        { or: TimestampVariables[] },
+        { payoutStrategy_?: { or: { strategyName: string }[] } },
+      ];
+    };
+  }): Promise<{ rounds: RoundOverview[] }> {
+    return {
+      rounds: await legacy.getRounds(
+        {
+          chainIds,
+          first,
+          orderBy,
+          orderDirection,
+          where,
+        },
+        {
+          graphqlEndpoints: this.subgraphEndpointsByChainId,
+        },
+      ),
+    };
+  }
+
+  async getRounds({
     chainIds,
     first,
     orderBy,
