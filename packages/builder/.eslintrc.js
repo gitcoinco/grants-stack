@@ -36,5 +36,5 @@ module.exports = {
     "eol-last": ["error", "always"],
     "react/require-default-props": "off",
   },
-  ignorePatterns: ["node_modules/"],
+  ignorePatterns: ["node_modules/", "./fixtures.ts"],
 };
