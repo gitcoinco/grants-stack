@@ -56,6 +56,6 @@ export const formatDateFromString = (ts: string) =>
   new Date(ts).toLocaleDateString();
 
 export const isInfinite = (number: Number) =>
-  number === Number.MAX_SAFE_INTEGER;
+  number === Number.MAX_SAFE_INTEGER || !number;
 
 export const formatDateAsNumber = (ts: string) => Date.parse(ts) / 1000;
