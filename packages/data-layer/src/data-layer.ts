@@ -15,6 +15,7 @@ import {
   Round,
   RoundOverview,
   SearchBasedProjectCategory,
+  Tags,
   TimestampVariables,
   V2Round,
   v2Project,
@@ -147,14 +148,41 @@ export class DataLayer {
       chainId,
     };
 
-    let response: { projects: Program[] } = { projects: [] };
+    let programs: Program[] = [];
 
-    const query =
-      alloVersion === "allo-v1" ? getV1ProjectsByUser : getV2ProjectsByUser;
+    if (alloVersion === "allo-v1") {
+      let response: { projects: Program[] } = { projects: [] };
 
-    response = await request(this.gsIndexerEndpoint, query, requestVariables);
+      response = await request(
+        this.gsIndexerEndpoint,
+        getV1ProjectsByUser,
+        requestVariables,
+      );
 
-    const programs = response.projects;
+      programs = response.projects;
+    } else if (alloVersion === "allo-v2") {
+      let response: { projects: v2Project[] } = { projects: [] };
+
+      response = await request(
+        this.gsIndexerEndpoint,
+        getV2ProjectsByUser,
+        requestVariables,
+      );
+
+      const projects = response.projects;
+
+      programs = projects.map((project) => {
+        return {
+          id: project.id,
+          chainId: project.chainId,
+          metadata: {
+            name: project.metadata?.title,
+          },
+          tags: project.tags as Tags[],
+          roles: project.roles,
+        };
+      });
+    }
 
     if (!programs) return null;
 
