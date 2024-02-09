@@ -44,5 +44,6 @@
     "overrides": {
       "webpack": "^5"
     }
-  }
+  },
+  "workspaces": ["packages/*"]
 }

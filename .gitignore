@@ -10,3 +10,4 @@ dist/
 coverage/
 .eslintcache
 
+bun.lockb

@@ -8,6 +8,7 @@
   "scripts": {
     "test": "vitest --run",
     "prepare": "tsc",
+    "dev:fast": "esbuild src/**/*.ts src/**/*.tsx src/*.ts src/*.tsx --outdir=dist --watch",
     "build": "tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
