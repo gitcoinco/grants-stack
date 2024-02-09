@@ -43,25 +43,49 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
     matchTokenAddress,
   } = round ?? {};
 
+  const donationsStartTimeTimestampSec =
+    donationsStartTime !== null
+      ? Math.round(new Date(donationsStartTime).getTime() / 1000).toString()
+      : Number.MAX_SAFE_INTEGER;
+  const donationsEndTimeTimestampSec =
+    donationsEndTime !== null
+      ? Math.round(new Date(donationsEndTime).getTime() / 1000).toString()
+      : Number.MAX_SAFE_INTEGER;
+  const applicationsEndTimeTimestampSec =
+    applicationsEndTime !== null
+      ? Math.round(new Date(applicationsEndTime).getTime() / 1000).toString()
+      : Number.MAX_SAFE_INTEGER;
   const roundEndsIn =
-    donationsEndTime === undefined ? undefined : getDaysLeft(donationsEndTime);
+    donationsEndTime === null
+      ? undefined
+      : getDaysLeft(
+          Math.round(new Date(donationsEndTime).getTime() / 1000).toString()
+        );
   const roundStartsIn =
-    donationsStartTime === undefined
+    donationsStartTime === null
       ? undefined
-      : getDaysLeft(donationsStartTime);
+      : getDaysLeft(
+          Math.round(new Date(donationsStartTime).getTime() / 1000).toString()
+        );
   const applicationsStartsIn =
-    applicationsStartTime === undefined
+    applicationsStartTime === null
       ? undefined
-      : getDaysLeft(applicationsStartTime);
+      : getDaysLeft(
+          Math.round(
+            new Date(applicationsStartTime).getTime() / 1000
+          ).toString()
+        );
   const applicationsEndsIn =
-    applicationsEndTime === undefined
+    applicationsEndTime === null
       ? undefined
-      : getDaysLeft(applicationsEndTime);
+      : getDaysLeft(
+          Math.round(new Date(applicationsEndTime).getTime() / 1000).toString()
+        );
 
   const roundStates = getRoundStates({
-    roundStartTimeInSecsStr: donationsStartTime,
-    roundEndTimeInSecsStr: donationsEndTime,
-    applicationsEndTimeInSecsStr: applicationsEndTime,
+    roundStartTimeInSecsStr: donationsStartTimeTimestampSec?.toString(),
+    roundEndTimeInSecsStr: donationsEndTimeTimestampSec?.toString(),
+    applicationsEndTimeInSecsStr: applicationsEndTimeTimestampSec?.toString(),
     atTimeMs: Date.now(),
   });
 
