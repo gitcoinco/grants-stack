@@ -372,6 +372,7 @@ export type Collection = {
 export type RoundGetRound = {
   id: string;
   chainId: number;
+  createdAtBlock: number;
   roundMetadataCid: string;
   roundMetadata: RoundMetadataGetRound;
   applicationsStartTime: string;
@@ -381,7 +382,7 @@ export type RoundGetRound = {
   matchAmount: string;
   matchTokenAddress: string;
   strategyId: string;
-  strategyName: string;
+  strategyName: RoundPayoutType;
   strategyAddress: string;
   applications: Application[];
 };

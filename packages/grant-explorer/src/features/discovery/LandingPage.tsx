@@ -3,9 +3,9 @@ import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { RoundsGrid } from "./RoundsGrid";
 import {
-  RoundStatus,
   ACTIVE_ROUNDS_FILTER,
   ROUNDS_ENDING_SOON_FILTER,
+  RoundStatus,
   useFilterRounds,
 } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
@@ -29,11 +29,11 @@ const LandingPage = () => {
 
     const rounds =
       activeRounds.data?.filter((round) => {
-        return (round.projects?.length ?? 0) > 1;
+        return (round.applications?.length ?? 0) > 1;
       }) ?? [];
 
     rounds.sort((a, b) => {
-      return (b.projects?.length ?? 0) - (a.projects?.length ?? 0);
+      return (b.applications?.length ?? 0) - (a.applications?.length ?? 0);
     });
 
     return rounds;
@@ -66,7 +66,6 @@ const LandingPage = () => {
           <ViewAllLink
             to={`/rounds?${toQueryString({
               orderBy: ROUNDS_ENDING_SOON_FILTER.orderBy,
-              orderDirection: ROUNDS_ENDING_SOON_FILTER.orderDirection,
               status: RoundStatus.active,
             })}`}
           >

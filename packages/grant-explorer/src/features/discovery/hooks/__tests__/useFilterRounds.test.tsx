@@ -36,8 +36,7 @@ describe("useFilterRounds", () => {
   );
 
   const DEFAULT_FILTER = {
-    orderBy: "",
-    orderDirection: "",
+    orderBy: "NATURAL",
     status: "",
     network: "",
     type: "",
@@ -82,7 +81,7 @@ describe("useFilterRounds", () => {
           ...MOCKED_ROUNDS[0],
           // Only if end time is before now
           applicationsEndTime: "0",
-          projects: [],
+          applications: [],
         },
       ]).length
     ).toBe(0);
@@ -90,7 +89,7 @@ describe("useFilterRounds", () => {
       filterRoundsWithProjects([
         {
           ...MOCKED_ROUNDS[0],
-          projects: [],
+          applications: [],
         },
       ]).length
     ).toBe(1);

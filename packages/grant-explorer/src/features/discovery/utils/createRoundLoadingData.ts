@@ -5,6 +5,7 @@ export function createRoundLoadingData(length = 4): RoundGetRound[] {
   return Array.from({ length }).map((_, i) => ({
     id: String(i),
     chainId: ChainId.MAINNET,
+    createdAtBlock: 1,
     applicationMetaPtr: {
       protocol: 1,
       pointer: "",
@@ -18,6 +19,10 @@ export function createRoundLoadingData(length = 4): RoundGetRound[] {
     strategyName: "MERKLE",
     roundMetadata: {
       name: "Round",
+      eligibility: {
+        description: "",
+      },
+      programContractAddress: "",
     },
     roundMetadataCid: "",
     applications: [],

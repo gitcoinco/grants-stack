@@ -120,27 +120,19 @@ export const makeRoundOverviewData = (
   return {
     id: faker.finance.ethereumAddress(),
     chainId: ChainId.MAINNET,
-    createdAt: makeTimestamp(),
-    roundMetaPtr: {
-      protocol: 1,
-      pointer: generateIpfsCid(),
-    },
-    applicationMetaPtr: {
-      protocol: 1,
-      pointer: generateIpfsCid(),
-    },
+    createdAtBlock: 1,
+    roundMetadataCid: generateIpfsCid(),
     applicationsStartTime: makeTimestamp(),
     applicationsEndTime: makeTimestamp(10),
-    roundStartTime: makeTimestamp(20),
-    roundEndTime: makeTimestamp(30),
+    donationsStartTime: makeTimestamp(20),
+    donationsEndTime: makeTimestamp(30),
     matchAmount: "1000000000000000000000000",
-    token: faker.finance.ethereumAddress(),
+    matchTokenAddress: faker.finance.ethereumAddress(),
     roundMetadata: makeRoundMetadata(roundMetadataOverrides),
-    projects: Array.from({ length: 2 }).map((_, i) => ({ id: String(i) })),
-    payoutStrategy: {
-      id: "someid",
-      strategyName: "MERKLE",
-    },
+    applications: Array.from({ length: 2 }).map((_, i) => ({ id: String(i) })),
+    strategyName: "MERKLE",
+    strategyAddress: faker.finance.ethereumAddress(),
+    strategyId: "",
     ...overrides,
   };
 };

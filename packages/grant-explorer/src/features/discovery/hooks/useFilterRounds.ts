@@ -58,21 +58,21 @@ export const ROUNDS_ENDING_SOON_FILTER: RoundSelectionParams & {
 };
 
 export const useFilterRounds = (
-  filter: RoundSelectionParams,
+  where: RoundSelectionParams,
   chains: Chain[]
 ): SWRResponse<RoundGetRound[]> => {
   const chainIds =
-    filter.network === undefined || filter.network.trim() === ""
+    where.network === undefined || where.network.trim() === ""
       ? chains.map((c) => c.id)
-      : filter.network.split(",").map(parseInt);
-  const statusFilter = createRoundsStatusFilter(filter.status);
+      : where.network.split(",").map(parseInt);
+  const statusFilter = createRoundsStatusFilter(where.status);
   const strategyNames =
-    filter.type === undefined || filter.type.trim() === ""
+    where.type === undefined || where.type.trim() === ""
       ? []
-      : filter.type.split(",");
-  const where = createRoundWhereFilter(statusFilter, strategyNames);
+      : where.type.split(",");
+  const filter = createRoundWhereFilter(statusFilter, strategyNames);
   const orderBy =
-    filter.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : filter.orderBy;
+    where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
 
   return useRounds({ orderBy, filter }, chainIds);
 };
@@ -98,8 +98,5 @@ export const getRoundSelectionParamsFromUrlParams = (
   params: URLSearchParams
 ): RoundSelectionParams => {
   // TODO parse url params explicitly
-  const filter = Object.fromEntries(params) as RoundSortParams &
-    RoundFilterParams;
-
-  return filter;
+  return Object.fromEntries(params) as RoundSortParams & RoundFilterParams;
 };

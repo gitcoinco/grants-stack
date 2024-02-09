@@ -98,7 +98,7 @@ describe("LandingPage", () => {
 
     // Return the same metadata that was created by the mock
     __deprecated_fetchFromIPFS.mockImplementation(async (cid: string) => {
-      return mockedRounds.find((round) => round.roundMetaPtr.pointer === cid)
+      return mockedRounds.find((round) => round.roundMetadataCid === cid)
         ?.roundMetadata;
     });
 
