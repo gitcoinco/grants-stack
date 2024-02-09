@@ -1,42 +1,14 @@
-import useSWR, { useSWRConfig, Cache, SWRResponse } from "swr";
-import { ChainId, RoundPayoutType } from "common";
+import useSWR, { Cache, SWRResponse, useSWRConfig } from "swr";
+import { ChainId } from "common";
 import { __deprecated_RoundMetadata } from "./round";
-import { MetadataPointer } from "./types";
 import { __deprecated_fetchFromIPFS } from "./utils";
 import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
-import { useDataLayer } from "data-layer";
-
-export type __deprecated_RoundOverview = {
-  id: string;
-  chainId: ChainId;
-  createdAt: string;
-  roundMetaPtr: MetadataPointer;
-  applicationMetaPtr: MetadataPointer;
-  applicationsStartTime: string;
-  applicationsEndTime: string;
-  roundStartTime: string;
-  roundEndTime: string;
-  matchAmount: string;
-  token: string;
-  roundMetadata?: __deprecated_RoundMetadata;
-  projects?: { id: string }[];
-  payoutStrategy: {
-    id: string;
-    strategyName: RoundPayoutType;
-  };
-};
+import { OrderByRounds, RoundGetRound, useDataLayer } from "data-layer";
 
 export type __deprecated_RoundsQueryVariables = {
   first?: number;
-  orderBy?:
-    | "createdAt"
-    | "matchAmount"
-    | "roundStartTime"
-    | "roundEndTime"
-    | "applicationsStartTime"
-    | "applicationsEndTime";
-  orderDirection?: "asc" | "desc";
-  where?: {
+  orderBy?: OrderByRounds;
+  filter?: {
     and: [
       { or: __deprecated_TimestampVariables[] },
       { payoutStrategy_?: { or: { strategyName: string }[] } },
@@ -59,21 +31,21 @@ export type __deprecated_TimestampVariables = {
 export const useRounds = (
   variables: __deprecated_RoundsQueryVariables,
   chainIds: ChainId[]
-): SWRResponse<__deprecated_RoundOverview[]> => {
+): SWRResponse<RoundGetRound[]> => {
   const { cache, mutate } = useSWRConfig();
   const dataLayer = useDataLayer();
 
   const prewarmSwrCacheWithRoundsMetadata = async (
-    rounds: __deprecated_RoundOverview[]
+    rounds: RoundGetRound[]
   ): Promise<void> => {
     const roundsWithUncachedMetadata = rounds.filter(
       (round) =>
-        cache.get(`@"metadata","${round.roundMetaPtr.pointer}",`) === undefined
+        cache.get(`@"metadata","${round.roundMetadataCid}",`) === undefined
     );
 
     const uncachedMetadata = await Promise.all(
       roundsWithUncachedMetadata.map(async (round) => {
-        const cid = round.roundMetaPtr.pointer;
+        const cid = round.roundMetadataCid;
         const metadata = await __deprecated_fetchFromIPFS(cid);
         return [cid, metadata];
       })
@@ -94,7 +66,7 @@ export const useRounds = (
     // same, cache will be used instead of new requests)
     ["rounds", chainIds, variables],
     async () => {
-      const { rounds } = await dataLayer.getLegacyRounds({
+      const { rounds } = await dataLayer.getRounds({
         ...variables,
         // We need to overfetch these because many will be filtered out from the
         // metadata.roundType === "public" The `first` param in the arguments
@@ -120,25 +92,25 @@ export const useRounds = (
   return { ...query, data };
 };
 
-export function filterRoundsWithProjects(rounds: __deprecated_RoundOverview[]) {
+export function filterRoundsWithProjects(rounds: RoundGetRound[]) {
   /*
-0 projects + application period is still open: show 
+0 projects + application period is still open: show
 0 projects + application period has closed: hide
   */
   const currentTimestamp = createTimestamp();
   return rounds.filter((round) => {
     if (round.applicationsEndTime > currentTimestamp) return true;
-    return round?.projects?.length;
+    return round?.applications?.length;
   });
 }
 
 export const filterRounds = (
   cache: Cache<{ roundType: string }>,
-  rounds?: __deprecated_RoundOverview[]
+  rounds?: RoundGetRound[]
 ) => {
   return rounds?.filter((round) => {
     // Get the round metadata
-    const metadata = cache.get(`@"metadata","${round.roundMetaPtr.pointer}",`);
+    const metadata = cache.get(`@"metadata","${round.roundMetadataCid}",`);
     if (metadata?.data?.roundType === "public") {
       return true;
     }
@@ -150,7 +122,7 @@ export function useMetadata(cid: string) {
   return useSWR(["metadata", cid], () => __deprecated_fetchFromIPFS(cid));
 }
 
-/* 
+/*
 Search round metadata
 Builds a results object and filters round name on a search query
 */

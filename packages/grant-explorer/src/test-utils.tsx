@@ -4,16 +4,15 @@ import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import {
+  initialRoundState,
   RoundContext,
   RoundState,
-  initialRoundState,
 } from "./context/RoundContext";
 import { __deprecated_RoundMetadata } from "./features/api/round";
-import { __deprecated_RoundOverview } from "./features/api/rounds";
 import { CartProject, ProjectMetadata, Round } from "./features/api/types";
 import { parseUnits } from "viem";
 import { ChainId } from "common";
-import { DataLayer, DataLayerProvider } from "data-layer";
+import { DataLayer, DataLayerProvider, RoundGetRound } from "data-layer";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -115,9 +114,9 @@ export const makeRoundMetadata = (
 });
 
 export const makeRoundOverviewData = (
-  overrides?: Partial<__deprecated_RoundOverview>,
+  overrides?: Partial<RoundGetRound>,
   roundMetadataOverrides?: Partial<__deprecated_RoundMetadata>
-): __deprecated_RoundOverview => {
+): RoundGetRound => {
   return {
     id: faker.finance.ethereumAddress(),
     chainId: ChainId.MAINNET,

@@ -215,4 +215,29 @@ export const getBlockNumberQuery = gql`
   }
 `;
 
-export const getRoundsQuery = gql``;
+export const getRoundsQuery = gql`
+  query GetRounds($first: Int, $orderBy: [RoundsOrderBy!], $chainIds: [Int!]) {
+    rounds(
+      first: $first
+      orderBy: $orderBy
+      filter: { chainId: { in: $chainIds } }
+    ) {
+      id
+      chainId
+      roundMetadata
+      roundMetadataCid
+      applicationsStartTime
+      applicationsEndTime
+      donationsStartTime
+      donationsEndTime
+      matchAmount
+      matchTokenAddress
+      strategyId
+      strategyName
+      strategyAddress
+      applications(first: 1000, filter: { status: { equalTo: APPROVED } }) {
+        id
+      }
+    }
+  }
+`;

@@ -1,6 +1,5 @@
 import { Chain } from "wagmi/chains";
 import {
-  __deprecated_RoundOverview,
   __deprecated_RoundsQueryVariables,
   __deprecated_TimestampVariables,
   useRounds,
@@ -8,6 +7,7 @@ import {
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
 import { ROUND_PAYOUT_MERKLE } from "common";
 import { SWRResponse } from "swr";
+import { OrderByRounds, RoundGetRound } from "data-layer";
 
 export type RoundFilterParams = {
   type: string;
@@ -16,16 +16,14 @@ export type RoundFilterParams = {
 };
 
 export type RoundSortParams = {
-  orderBy: RoundSortUiOption["orderBy"];
-  orderDirection: RoundSortUiOption["orderDirection"];
+  orderBy: OrderByRounds;
 };
 
 export type RoundSelectionParams = RoundSortParams & RoundFilterParams;
 
 export type RoundSortUiOption = {
   label: string;
-  orderBy: __deprecated_RoundsQueryVariables["orderBy"] | "";
-  orderDirection: __deprecated_RoundsQueryVariables["orderDirection"] | "";
+  orderBy: OrderByRounds;
 };
 
 export type RoundFilterUiOption = {
@@ -43,8 +41,7 @@ export enum RoundStatus {
 }
 
 export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
-  orderBy: "matchAmount",
-  orderDirection: "desc",
+  orderBy: "MATCH_AMOUNT_DESC",
   status: RoundStatus.active,
   type: ROUND_PAYOUT_MERKLE,
   network: "",
@@ -54,8 +51,7 @@ export const ROUNDS_ENDING_SOON_FILTER: RoundSelectionParams & {
   first: number;
 } = {
   first: 3,
-  orderBy: "roundEndTime",
-  orderDirection: "asc",
+  orderBy: "DONATIONS_END_TIME_ASC",
   type: "",
   network: "",
   status: RoundStatus.ending_soon,
@@ -64,7 +60,7 @@ export const ROUNDS_ENDING_SOON_FILTER: RoundSelectionParams & {
 export const useFilterRounds = (
   filter: RoundSelectionParams,
   chains: Chain[]
-): SWRResponse<__deprecated_RoundOverview[]> => {
+): SWRResponse<RoundGetRound[]> => {
   const chainIds =
     filter.network === undefined || filter.network.trim() === ""
       ? chains.map((c) => c.id)
@@ -76,21 +72,15 @@ export const useFilterRounds = (
       : filter.type.split(",");
   const where = createRoundWhereFilter(statusFilter, strategyNames);
   const orderBy =
-    filter.orderBy === undefined || filter.orderBy === ""
-      ? "createdAt"
-      : filter.orderBy;
-  const orderDirection =
-    filter.orderDirection === undefined || filter.orderDirection === ""
-      ? "desc"
-      : filter.orderDirection;
+    filter.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : filter.orderBy;
 
-  return useRounds({ orderBy, orderDirection, where }, chainIds);
+  return useRounds({ orderBy, filter }, chainIds);
 };
 
 const createRoundWhereFilter = (
   statusFilter: __deprecated_TimestampVariables[],
   strategyNames: string[]
-): __deprecated_RoundsQueryVariables["where"] => {
+): __deprecated_RoundsQueryVariables["filter"] => {
   const payoutStrategy = strategyNames.length
     ? strategyNames.map((strategyName) => ({ strategyName }))
     : undefined;

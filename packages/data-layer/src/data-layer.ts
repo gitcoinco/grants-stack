@@ -9,9 +9,11 @@ import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Collection,
+  OrderByRounds,
   Program,
   ProjectEventsMap,
   Round,
+  RoundGetRound,
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
@@ -28,6 +30,7 @@ import {
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
+  getRoundsQuery,
 } from "./queries";
 
 /**
@@ -461,40 +464,25 @@ export class DataLayer {
     chainIds,
     first,
     orderBy,
-    orderDirection,
-    where,
+    filter,
   }: {
     chainIds: number[];
     first: number;
-    orderBy?:
-      | "createdAt"
-      | "matchAmount"
-      | "roundStartTime"
-      | "roundEndTime"
-      | "applicationsStartTime"
-      | "applicationsEndTime";
+    orderBy?: OrderByRounds;
     orderDirection?: "asc" | "desc";
-    where?: {
+    filter?: {
       and: [
         { or: TimestampVariables[] },
         { payoutStrategy_?: { or: { strategyName: string }[] } },
       ];
     };
-  }): Promise<{ rounds: RoundOverview[] }> {
-    return {
-      rounds: await legacy.getRounds(
-        {
-          chainIds,
-          first,
-          orderBy,
-          orderDirection,
-          where,
-        },
-        {
-          graphqlEndpoints: this.subgraphEndpointsByChainId,
-        },
-      ),
-    };
+  }): Promise<{ rounds: RoundGetRound[] }> {
+    return await request(this.gsIndexerEndpoint, getRoundsQuery, {
+      orderBy: orderBy ?? "NATURAL",
+      chainIds,
+      first,
+      filter,
+    });
   }
 
   async verifyPassportCredential(

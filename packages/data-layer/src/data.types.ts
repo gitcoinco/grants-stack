@@ -368,3 +368,109 @@ export type Collection = {
   description: string;
   applicationRefs: string[];
 };
+
+export type RoundGetRound = {
+  id: string;
+  chainId: number;
+  roundMetadataCid: string;
+  roundMetadata: RoundMetadataGetRound;
+  applicationsStartTime: string;
+  applicationsEndTime: string;
+  donationsStartTime: string;
+  donationsEndTime: string;
+  matchAmount: string;
+  matchTokenAddress: string;
+  strategyId: string;
+  strategyName: string;
+  strategyAddress: string;
+  applications: Application[];
+};
+
+export interface RoundMetadataGetRound {
+  name?: string;
+  support?: Support;
+  eligibility: Eligibility;
+  feesAddress?: string;
+  matchingFunds?: MatchingFunds;
+  feesPercentage?: number;
+  programContractAddress: string;
+  quadraticFundingConfig?: QuadraticFundingConfig;
+}
+
+export interface Support {
+  info: string;
+  type: string;
+}
+
+export interface MatchingFunds {
+  matchingCap: boolean;
+  matchingFundsAvailable: number;
+}
+
+export interface QuadraticFundingConfig {
+  matchingCap: boolean;
+  sybilDefense: boolean;
+  matchingCapAmount?: number;
+  minDonationThreshold: boolean;
+  matchingFundsAvailable: number;
+  minDonationThresholdAmount?: number;
+}
+
+export interface Application {
+  id: string;
+}
+
+export type OrderByRounds =
+  | "NATURAL"
+  | "ID_ASC"
+  | "ID_DESC"
+  | "CHAIN_ID_ASC"
+  | "CHAIN_ID_DESC"
+  | "TAGS_ASC"
+  | "TAGS_DESC"
+  | "MATCH_AMOUNT_ASC"
+  | "MATCH_AMOUNT_DESC"
+  | "MATCH_TOKEN_ADDRESS_ASC"
+  | "MATCH_TOKEN_ADDRESS_DESC"
+  | "MATCH_AMOUNT_IN_USD_ASC"
+  | "MATCH_AMOUNT_IN_USD_DESC"
+  | "APPLICATION_METADATA_CID_ASC"
+  | "APPLICATION_METADATA_CID_DESC"
+  | "APPLICATION_METADATA_ASC"
+  | "APPLICATION_METADATA_DESC"
+  | "ROUND_METADATA_CID_ASC"
+  | "ROUND_METADATA_CID_DESC"
+  | "ROUND_METADATA_ASC"
+  | "ROUND_METADATA_DESC"
+  | "APPLICATIONS_START_TIME_ASC"
+  | "APPLICATIONS_START_TIME_DESC"
+  | "APPLICATIONS_END_TIME_ASC"
+  | "APPLICATIONS_END_TIME_DESC"
+  | "DONATIONS_START_TIME_ASC"
+  | "DONATIONS_START_TIME_DESC"
+  | "DONATIONS_END_TIME_ASC"
+  | "DONATIONS_END_TIME_DESC"
+  | "CREATED_AT_BLOCK_ASC"
+  | "CREATED_AT_BLOCK_DESC"
+  | "UPDATED_AT_BLOCK_ASC"
+  | "UPDATED_AT_BLOCK_DESC"
+  | "MANAGER_ROLE_ASC"
+  | "MANAGER_ROLE_DESC"
+  | "ADMIN_ROLE_ASC"
+  | "ADMIN_ROLE_DESC"
+  | "STRATEGY_ADDRESS_ASC"
+  | "STRATEGY_ADDRESS_DESC"
+  | "STRATEGY_ID_ASC"
+  | "STRATEGY_ID_DESC"
+  | "STRATEGY_NAME_ASC"
+  | "STRATEGY_NAME_DESC"
+  | "PROJECT_ID_ASC"
+  | "PROJECT_ID_DESC"
+  | "TOTAL_AMOUNT_DONATED_IN_USD_ASC"
+  | "TOTAL_AMOUNT_DONATED_IN_USD_DESC"
+  | "TOTAL_DONATIONS_COUNT_ASC"
+  | "TOTAL_DONATIONS_COUNT_DESC"
+  | "UNIQUE_DONORS_COUNT_ASC"
+  | "UNIQUE_DONORS_COUNT_DESC"
+  | "PRIMARY_KEY_ASC"
+  | "PRIMARY_KEY_DESC";
