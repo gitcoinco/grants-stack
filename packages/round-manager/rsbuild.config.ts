@@ -23,6 +23,7 @@ export default defineConfig({
       ),
       jszip: path.resolve(__dirname, "./node_modules/jszip/lib/index.js"),
       "readable-stream": require.resolve("readable-stream"),
+      "csv-stringify": "csv-stringify/browser/esm",
     },
   },
   tools: {
