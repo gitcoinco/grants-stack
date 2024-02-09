@@ -28,7 +28,6 @@ import {
 import {
   getApplicationsByProjectId,
   getProgramName,
-  getProgramsByUser,
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
