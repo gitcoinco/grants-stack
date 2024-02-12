@@ -249,7 +249,9 @@ export const getBlockNumberQuery = gql`
 
 export const getRoundByIdAndChainId = gql`
   query getRoundByIdAndChainId($roundId: String!, $chainId: Int!) {
-    rounds(filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
       id
       chainId
       applicationsStartTime
@@ -261,6 +263,7 @@ export const getRoundByIdAndChainId = gql`
       roundMetadataCid
       applicationMetadata
       applicationMetadataCid
+      strategyId
     }
   }
 `;

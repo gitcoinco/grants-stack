@@ -104,6 +104,8 @@ export default function Form({
     const allProjectMetadata = state.grantsMetadata;
     const { chainID } = state.web3;
 
+    console.log("state.projects", state.projects);
+    console.log("allGrantsMetadata", allProjectMetadata);
     return {
       projectIDs: state.projects.ids,
       allProjectMetadata,
@@ -286,6 +288,7 @@ export default function Form({
     });
     currentOptions.unshift({ id: undefined, title: "", chainInfo: undefined });
 
+    console.log("currentOptions", currentOptions);
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 

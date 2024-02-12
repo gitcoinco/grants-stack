@@ -379,7 +379,8 @@ function ShowRound() {
           <ApplyButton
             round={props.round}
             applicationsHaveStarted={props.applicationsHaveStarted}
-            applicationsHaveEnded={props.applicationsHaveEnded}
+            // applicationsHaveEnded={props.applicationsHaveEnded}
+            applicationsHaveEnded={false} // todo: until indexer is fixed
             projects={props.projects}
             roundId={roundId}
             chainId={props.roundChainId}

@@ -3,7 +3,7 @@ import { ApplicationStatus, ProjectApplication } from "data-layer";
 import { Badge, Box, Spinner } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE, RoundType } from "common";
 import { RootState } from "../../../reducers";
 import { roundApplicationPathForProject } from "../../../routes";
 import { Round, RoundDisplayType } from "../../../types";
@@ -11,7 +11,6 @@ import { formatDateFromSecs, isInfinite } from "../../../utils/components";
 import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
 import { getProjectURIComponents } from "../../../utils/utils";
 import LinkManager from "./LinkManager";
-import { PayoutStrategy } from "../../../reducers/rounds";
 
 export default function RoundListItem({
   applicationData,
@@ -68,7 +67,7 @@ export default function RoundListItem({
         }
       | undefined;
 
-    switch (roundData?.payoutStrategy as PayoutStrategy) {
+    switch (roundData?.payoutStrategy as RoundType) {
       case "MERKLE":
         colorScheme = {
           bg: "#E6FFF9",

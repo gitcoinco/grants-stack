@@ -370,3 +370,5 @@ export interface Web3Instance {
 }
 
 export { graphql_fetch, graphQlEndpoints } from "./graphql_fetch";
+
+export * from "./allo/roundIdentifier";

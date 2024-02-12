@@ -233,7 +233,8 @@ export type V2Round = {
   roundMetadataCid: string;
   applicationMetadata: RoundApplicationMetadata;
   applicationMetadataCid: string;
-}
+  strategyId: string;
+};
 
 export type ProjectEvents = {
   createdAtBlock: number | undefined;
