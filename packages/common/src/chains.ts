@@ -338,8 +338,8 @@ export const devChain1: Chain = {
     symbol: "ETH",
   },
   rpcUrls: {
-    default: { http: ["http://localhost:3005"] },
-    public: { http: ["http://localhost:3005"] },
+    default: { http: ["http://localhost:8545"] },
+    public: { http: ["http://localhost:8545"] },
   },
   blockExplorers: {
     default: {
@@ -360,8 +360,8 @@ export const devChain2: Chain = {
     symbol: "ETH",
   },
   rpcUrls: {
-    default: { http: ["http://localhost:3007"] },
-    public: { http: ["http://localhost:3007"] },
+    default: { http: ["http://localhost:8546"] },
+    public: { http: ["http://localhost:8546"] },
   },
   blockExplorers: {
     default: {
