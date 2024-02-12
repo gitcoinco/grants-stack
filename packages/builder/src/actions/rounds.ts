@@ -1,7 +1,7 @@
-import { RoundType, getV2RoundType } from "common";
-import { getConfig } from "common/src/config";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
+import { RoundType, getV2RoundType } from "common";
+import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
@@ -64,12 +64,17 @@ export const loadRound =
   (roundId: string, dataLayer: DataLayer, chainId: number) =>
   async (dispatch: Dispatch) => {
     const { version } = getConfig().allo;
+
+    console.log("loading round", { roundId, version });
+
     try {
       // address validation
       if (version === "allo-v1") {
         ethers.utils.getAddress(roundId);
+
+        console.log("allo-v1 roundId", roundId);
       } else if (roundId.includes("0x")) {
-        throw new Error("Invalid roundId");
+        throw new Error(`Invalid roundId ${roundId}`);
       }
     } catch (e) {
       datadogRum.addError(e);

@@ -120,6 +120,16 @@ interface ProjectStatsLoadedAction {
   stats: ProjectStats[];
 }
 
+export const PROJECT_ANCHORS_LOADED = "PROJECT_ANCHORS_LOADED";
+
+interface ProjectAnchorsLoadedAction {
+  type: typeof PROJECT_ANCHORS_LOADED;
+  payload: {
+    projectID: string;
+    anchors: string[];
+  };
+}
+
 /** Actions */
 
 /** Project Action Types */
@@ -134,7 +144,8 @@ export type ProjectsActions =
   | ProjectApplicationUpdatedAction
   | ProjectOwnersLoadedAction
   | ProjectStatsLoadingAction
-  | ProjectStatsLoadedAction;
+  | ProjectStatsLoadedAction
+  | ProjectAnchorsLoadedAction;
 
 /** Action Creators */
 export const projectsLoading = (chainID: ChainId): ProjectsLoadingAction => ({
@@ -162,6 +173,14 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
   payload: {
     projectID,
     owners,
+  },
+});
+
+export const projectAnchorsLoaded = (projectID: string, anchors: string[]) => ({
+  type: PROJECT_ANCHORS_LOADED,
+  payload: {
+    projectID,
+    anchors,
   },
 });
 
