@@ -120,13 +120,13 @@ populate_v2() {
     bash -c "npx hardhat run scripts/dev/populate.ts --no-compile --network dev2"
 }
 
-start_services() {
+start() {
   echo "Starting all services..."
   docker-compose up -d
   docker-compose logs -f
 }
 
-stop_services() {
+stop() {
   echo "Stopping all services..."
   docker-compose down
 }
@@ -146,8 +146,8 @@ print_help() {
   echo "  deploy-v2      Deploy Allo V2 contracts"
   echo "  populate-v1    Populate Allo V1 contracts"
   echo "  populate-v2    Populate Allo V2 contracts"
-  echo "  start-services Start all Docker Compose services and follow logs"
-  echo "  stop-services  Stop all Docker Compose services"
+  echo "  start          Start all Docker Compose services and follow logs"
+  echo "  stop           Stop all Docker Compose services"
   echo "  help           Display this help message"
 }
 
@@ -168,11 +168,11 @@ main() {
     populate-v2)
       populate_v2
       ;;
-    start-services)
-      start_services
+    start)
+      start
       ;;
-    stop-services)
-      stop_services
+    stop)
+      stop
       ;;
     help)
       print_help
