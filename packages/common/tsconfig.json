@@ -17,6 +17,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "incremental": true
   },
 }

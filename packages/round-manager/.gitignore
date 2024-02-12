@@ -31,3 +31,4 @@ npm-debug.log*
 /src/types/generated
 .vercel
 .env*.local
+/playwright-report/

@@ -1,5 +1,6 @@
+import { RoundApplicationMetadata } from "data-layer";
 import RoundApplicationBuilder from "../../utils/RoundApplicationBuilder";
-import { RoundApplicationMetadata, Project } from "../../types";
+import { Project } from "../../types";
 import Lit from "../../services/lit";
 
 jest.mock("../../services/lit");

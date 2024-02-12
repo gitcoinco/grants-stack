@@ -1,10 +1,10 @@
 // eslint-disable max-len
+import { ApplicationStatus, ProjectApplication } from "data-layer";
 import { Badge, Box, Spinner } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { RootState } from "../../../reducers";
-import { Application, AppStatus } from "../../../reducers/projects";
 import { roundApplicationPathForProject } from "../../../routes";
 import { Round, RoundDisplayType } from "../../../types";
 import { formatDateFromSecs, isInfinite } from "../../../utils/components";
@@ -18,13 +18,13 @@ export default function RoundListItem({
   displayType,
   projectId,
 }: {
-  applicationData?: Application;
+  applicationData?: ProjectApplication;
   displayType?: RoundDisplayType;
   projectId: string;
 }) {
   const [roundData, setRoundData] = useState<Round>();
   const props = useSelector((state: RootState) => {
-    const { roundID: roundId, chainId: projectChainId } = applicationData!;
+    const { roundId, chainId: projectChainId } = applicationData!;
     const roundState = state.rounds[roundId];
     const round = roundState ? roundState.round : undefined;
     const roundAddress = round?.address;
@@ -53,7 +53,8 @@ export default function RoundListItem({
     roundData && (
       <>
         {formatDateFromSecs(roundData.applicationsStartTime)} -{" "}
-        {!isInfinite(roundData.applicationsEndTime)
+        {!isInfinite(roundData.applicationsEndTime) &&
+        roundData.applicationsEndTime
           ? formatDateFromSecs(roundData.applicationsEndTime)
           : "No End Date"}
       </>
@@ -118,7 +119,7 @@ export default function RoundListItem({
           text: string;
         }
       | undefined;
-    switch (applicationData?.status as AppStatus) {
+    switch (applicationData?.status as ApplicationStatus) {
       case "APPROVED":
         colorScheme = {
           bg: "#E6FFF9",

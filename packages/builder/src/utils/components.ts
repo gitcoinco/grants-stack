@@ -1,7 +1,7 @@
 import { getConfig } from "common/src/config";
-import { Metadata, Project } from "../types";
-import PinataClient from "../services/pinata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../assets";
+import PinataClient from "../services/pinata";
+import { Metadata, Project } from "../types";
 
 export enum ImgTypes {
   bannerImg = "bannerImg",
@@ -52,5 +52,10 @@ export const formatTimeUTC = (ts: number) => {
   return date.toUTCString().replace("GMT", "UTC");
 };
 
+export const formatDateFromString = (ts: string) =>
+  new Date(ts).toLocaleDateString();
+
 export const isInfinite = (number: Number) =>
-  number === Number.MAX_SAFE_INTEGER;
+  number === Number.MAX_SAFE_INTEGER || !number;
+
+export const formatDateAsNumber = (ts: string) => Date.parse(ts) / 1000;

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
+import { useAllo } from "common";
 import {
   resetApplication,
   submitApplication,
@@ -16,7 +18,6 @@ import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantsPath, projectPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
-import { RoundApplicationAnswers } from "../../types/roundApplication";
 import { applicationSteps } from "../../utils/steps";
 import {
   ROUND_PAYOUT_DIRECT,
@@ -38,6 +39,7 @@ function Apply() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const allo = useAllo();
 
   const [modalOpen, toggleModal] = useState(false);
   const [roundData, setRoundData] = useState<Round>();
@@ -249,7 +251,8 @@ function Apply() {
                 <p className="font-semibold mt-4">Application Period:</p>
                 <p>
                   {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
-                  {isInfinite(props.round.applicationsEndTime)
+                  {isInfinite(props.round.applicationsEndTime) ||
+                  !props.round.applicationsEndTime
                     ? "No End Date"
                     : formatDate(props.round.applicationsEndTime * 1000)}
                 </p>
@@ -258,7 +261,8 @@ function Apply() {
             <p className="font-semibold mt-4">Round Dates:</p>
             <p>
               {formatDate(props.round.roundStartTime * 1000)} -{" "}
-              {isInfinite(props.round.applicationsEndTime)
+              {isInfinite(props.round.applicationsEndTime) ||
+              !props.round.applicationsEndTime
                 ? "No End Date"
                 : formatDate(props.round.roundEndTime * 1000)}
             </p>
@@ -289,7 +293,9 @@ function Apply() {
                 showErrorModal={props.showErrorModal || false}
                 round={props.round}
                 onSubmit={(answers: RoundApplicationAnswers) => {
-                  dispatch(submitApplication(props.round!.address, answers));
+                  dispatch(
+                    submitApplication(props.round!.address, answers, allo)
+                  );
                   toggleStatusModal(true);
                 }}
               />

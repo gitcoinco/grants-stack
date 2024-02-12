@@ -31,6 +31,7 @@ export const TokenNamesAndLogos = {
   MUTE: "/logos/mute-logo.svg",
   mkUSD: "/logos/mkusd-logo.svg", // Prisma mkUSD
   DATA: "/logos/data-logo.svg", // Streamr DATA
+  USDGLO: "/logos/usdglo-logo.svg", // USDGLO
 } as const;
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -82,6 +83,14 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "USDGLO",
+    chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+    address: "0x4f604735c1cf31399c6e711d5962b2b3e0225ad3",
+    decimal: 18,
+    logo: TokenNamesAndLogos["USDGLO"],
+    redstoneTokenId: RedstoneTokenIds["USDGLO"],
   },
 ];
 const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
@@ -303,6 +312,14 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
     decimal: 18,
     logo: TokenNamesAndLogos["ARB"],
     redstoneTokenId: RedstoneTokenIds["ARB"],
+  },
+  {
+    name: "USDGLO",
+    chainId: ChainId.ARBITRUM,
+    address: "0x4f604735c1cf31399c6e711d5962b2b3e0225ad3",
+    decimal: 18,
+    logo: TokenNamesAndLogos["USDGLO"],
+    redstoneTokenId: RedstoneTokenIds["USDGLO"],
   },
 ];
 const AVALANCHE_TOKENS: PayoutToken[] = [
