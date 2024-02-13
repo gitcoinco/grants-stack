@@ -4,8 +4,7 @@ import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
 import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
-import { DataLayer, V2RoundWithRoles, useDataLayer } from "data-layer";
-import { maxDateForUint256 } from "../../constants";
+import { DataLayer, useDataLayer } from "data-layer";
 import { Address } from "viem";
 
 export interface RoundState {
