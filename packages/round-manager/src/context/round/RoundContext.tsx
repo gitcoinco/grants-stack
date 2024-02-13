@@ -1,10 +1,10 @@
 import { ProgressStatus, Round } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
-import { getRoundById, listRounds } from "../../features/api/round";
+import { getRoundById } from "../../features/api/round";
 import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
-import { DataLayer, V2Round, V2RoundWithRoles, useDataLayer } from "data-layer";
+import { DataLayer, V2RoundWithRoles, useDataLayer } from "data-layer";
 import { maxDateForUint256 } from "../../constants";
 
 export interface RoundState {
@@ -59,9 +59,10 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
     token: round.matchTokenAddress,
     votingStrategy: "unknown",
     payoutStrategy: {
-      id: "0x0",
+      id: round.strategyAddress,
       isReadyForPayout: false,
-      strategyName: "unknown",
+      strategyName:
+        round.strategyName === "allov1.Direct" ? "DIRECT" : "MERKLE",
     },
     ownedBy: round.projectId,
     operatorWallets: operatorWallets,

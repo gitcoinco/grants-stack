@@ -232,6 +232,8 @@ export type V2Round = {
   applicationMetadata: RoundApplicationMetadata;
   applicationMetadataCid: string;
   projectId: string;
+  strategyAddress: string;
+  strategyName: string;
 };
 
 export type V2RoundWithRoles = V2Round & {
