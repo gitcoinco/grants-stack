@@ -3,13 +3,14 @@ import {
   AlloProvider,
   AlloV1,
   AlloV2,
+  ChainId,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
 } from "common";
-import { useEffect, useState } from "react";
-import { useNetwork, useProvider, useSigner } from "wagmi";
 import { getConfig } from "common/src/config";
+import React, { useEffect, useState } from "react";
+import { useNetwork, useProvider, useSigner } from "wagmi";
 import { addressesByChainID } from "../contracts/deployments";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
@@ -24,13 +25,16 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     if (!web3Provider || !signer || !chainID) {
       setBackend(null);
     } else {
-      const addresses = addressesByChainID(chainID);
+      const addresses = addressesByChainID(chainID) ?? addressesByChainID(1);
+
+      const chainIdSupported = Object.values(ChainId).includes(chainID);
+
       const config = getConfig();
       let alloBackend: Allo;
 
       if (config.allo.version === "allo-v2") {
         alloBackend = new AlloV2({
-          chainId: chainID,
+          chainId: chainIdSupported ? chainID : 1,
           transactionSender: createEthersTransactionSender(
             signer,
             web3Provider
@@ -48,7 +52,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
         setBackend(alloBackend);
       } else {
         alloBackend = new AlloV1({
-          chainId: chainID,
+          chainId: chainIdSupported ? chainID : 1,
           transactionSender: createEthersTransactionSender(
             signer,
             web3Provider

@@ -2,6 +2,7 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
+    jest: true,
   },
   parser: "@typescript-eslint/parser",
   extends: ["airbnb", "airbnb-typescript", "prettier"],
@@ -35,5 +36,5 @@ module.exports = {
     "eol-last": ["error", "always"],
     "react/require-default-props": "off",
   },
-  ignorePatterns: ["node_modules/"],
+  ignorePatterns: ["node_modules/", "./fixtures.ts"],
 };
