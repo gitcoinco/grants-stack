@@ -8,8 +8,8 @@ import {
   useRoundMatchingFunds,
 } from "../../hooks";
 import { getUTCDate } from "common";
-import { payoutTokens } from "../api/utils";
 import { useChainId } from "wagmi";
+import { payoutTokens } from "../api/payoutTokens";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
@@ -29,7 +29,7 @@ export default function ViewRoundStats() {
     payoutTokens.find(
       (t) =>
         t.address.toLowerCase() == round.token.toLowerCase() &&
-        t.chainId === chainId,
+        t.chainId === chainId
     );
 
   return (
@@ -52,7 +52,7 @@ export default function ViewRoundStats() {
             round &&
             `${utils.formatUnits(
               round.matchAmount,
-              matchToken?.decimal,
+              matchToken?.decimal
             )} ${matchToken?.name}`
           }
           title={"Matching Funds Available"}
@@ -102,7 +102,7 @@ export default function ViewRoundStats() {
                 matches.map((match: Match) => {
                   const percentage =
                     Number(
-                      (BigInt(1000000) * match.matched) / round.matchAmount,
+                      (BigInt(1000000) * match.matched) / round.matchAmount
                     ) / 10000;
 
                   return (

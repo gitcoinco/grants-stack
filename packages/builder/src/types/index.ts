@@ -1,8 +1,8 @@
+import { ProjectApplication } from "data-layer";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
 import { ReactNode } from "react";
-import { RoundApplicationMetadata } from "./roundApplication";
-import { Application } from "../reducers/projects";
+import { RoundApplicationMetadata } from "data-layer/dist/roundApplication.types";
 
 export type Images = {
   bannerImg?: Blob;
@@ -102,15 +102,6 @@ export type AddressInputProps = {
   };
 };
 
-export type ProjectEvents = {
-  createdAtBlock: number | undefined;
-  updatedAtBlock: number | undefined;
-};
-
-export type ProjectEventsMap = {
-  [projectID: string]: ProjectEvents;
-};
-
 export interface MetaPtr {
   protocol: string;
   pointer: string;
@@ -162,7 +153,7 @@ export enum RoundDisplayType {
 }
 
 export type ApplicationCardType = {
-  application: Application;
+  application: ProjectApplication;
   roundID: string;
   chainId: ChainId;
 };
@@ -244,9 +235,3 @@ export enum CredentialProvider {
   Twitter = "ClearTextTwitter",
   Github = "ClearTextGithubOrg",
 }
-
-export type {
-  RoundApplicationMetadata,
-  RoundApplicationQuestion,
-  ProjectRequirements,
-} from "./roundApplication";

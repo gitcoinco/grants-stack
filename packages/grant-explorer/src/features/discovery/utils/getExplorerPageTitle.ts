@@ -1,9 +1,8 @@
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
-import { FilterProps } from "../FilterDropdown";
 import { getFilterLabel } from "./getFilterLabel";
-import { FilterStatus } from "../hooks/useFilterRounds";
+import { RoundFilterParams, RoundStatus } from "../hooks/useFilterRounds";
 
-export function getExplorerPageTitle(filter: FilterProps) {
+export function getExplorerPageTitle(filter: RoundFilterParams): string {
   const { value, label } = getFilterLabel(filter);
 
   switch (value) {
@@ -13,13 +12,13 @@ export function getExplorerPageTitle(filter: FilterProps) {
       return "Quadratic Funding rounds";
     case ROUND_PAYOUT_DIRECT:
       return "Direct Grants rounds";
-    case FilterStatus.active:
+    case RoundStatus.active:
       return "Active rounds";
-    case FilterStatus.taking_applications:
+    case RoundStatus.taking_applications:
       return "Rounds taking applications";
-    case FilterStatus.finished:
+    case RoundStatus.finished:
       return "Rounds finished";
-    case FilterStatus.ending_soon:
+    case RoundStatus.ending_soon:
       return "Ending soon";
     case "multiple":
       return "Multiple filters";

@@ -1,38 +1,34 @@
 import "./browserPatches";
 
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { getConfig } from "common/src/config";
+import { DataLayer, DataLayerProvider } from "data-layer";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
+import { chains, config } from "./app/wagmi";
 import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
+import { initPosthog } from "./posthog";
+import reportWebVitals from "./reportWebVitals";
 import { initSentry } from "./sentry";
 import { initTagmanager } from "./tagmanager";
-import { initPosthog } from "./posthog";
-import { chains, config } from "./app/wagmi";
-import reportWebVitals from "./reportWebVitals";
-import {
-  GrantsStackDataProvider,
-  GrantsStackDataClient,
-} from "common/src/grantsStackDataClientContext";
-import { getConfig } from "common/src/config";
 
 import "./index.css";
 
 // Routes
+import { ChakraProvider } from "@chakra-ui/react";
 import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
+import { ViewContributionHistoryPage } from "./features/contributors/ViewContributionHistory";
+import ExploreRoundsPage from "./features/discovery/ExploreRoundsPage";
 import LandingPage from "./features/discovery/LandingPage";
 import ThankYou from "./features/round/ThankYou";
+import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
-import { ViewContributionHistoryPage } from "./features/contributors/ViewContributionHistory";
-import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
-import { ChakraProvider } from "@chakra-ui/react";
-import ExploreRoundsPage from "./features/discovery/ExploreRoundsPage";
-import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 
 initSentry();
 initDatadog();
@@ -45,10 +41,21 @@ const root = ReactDOM.createRoot(
 
 const GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE = 50;
 
-const grantsStackDataClient = new GrantsStackDataClient({
-  baseUrl: getConfig().grantsStackDataClient.baseUrl,
-  pagination: {
-    pageSize: GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE,
+const dataLayer = new DataLayer({
+  search: {
+    baseUrl: getConfig().dataLayer.searchServiceBaseUrl,
+    pagination: {
+      pageSize: GRANTS_STACK_DATA_APPLICATIONS_PAGE_SIZE,
+    },
+  },
+  ipfs: {
+    gateway: getConfig().ipfs.baseUrl,
+  },
+  subgraph: {
+    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
+  },
+  indexer: {
+    baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
   },
 });
 
@@ -58,7 +65,7 @@ root.render(
       <WagmiConfig config={config}>
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
-            <GrantsStackDataProvider client={grantsStackDataClient}>
+            <DataLayerProvider client={dataLayer}>
               <HashRouter>
                 <Routes>
                   {/* Protected Routes */}
@@ -68,7 +75,6 @@ root.render(
                   <Route path="/" element={<LandingPage />} />
 
                   <Route path="/rounds" element={<ExploreRoundsPage />} />
-                  <Route path="/projects" element={<ExploreProjectsPage />} />
 
                   {/* Round Routes */}
                   <Route
@@ -96,7 +102,7 @@ root.render(
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </HashRouter>
-            </GrantsStackDataProvider>
+            </DataLayerProvider>
           </RoundProvider>
         </RainbowKitProvider>
       </WagmiConfig>

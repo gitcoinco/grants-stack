@@ -1,42 +1,38 @@
+import { useDataLayer } from "data-layer";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import {
-  loadAllChainsProjects,
-  loadProjectOwners,
-} from "../../actions/projects";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
-import { getProjectImage, ImgTypes } from "../../utils/components";
+import { ImgTypes, getProjectImage } from "../../utils/components";
 import { getProjectURIComponents } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
+import PageNotFound from "../base/PageNotFound";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
-import PageNotFound from "../base/PageNotFound";
 
 function Project() {
+  const dataLayer = useDataLayer();
+
   const dispatch = useDispatch();
   // FIXME: params.id doesn't change if the location hash is changed manually.
   const params = useParams();
 
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
-
     const grantMetadata = state.grantsMetadata[fullId];
     const owners = state.projects.owners[fullId];
-
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
-
     const loadingFailed =
       grantMetadata && grantMetadata.status === Status.Error;
-
     const bannerImg = getProjectImage(
       loading,
       ImgTypes.bannerImg,
@@ -66,27 +62,15 @@ function Project() {
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
     // 2 - when ipfs is initialized (it fetches it if not loaded yet)
     if (props.id !== undefined && props.currentProject === undefined) {
-      dispatch(fetchGrantData(props.id));
+      dispatch(fetchGrantData(props.id, dataLayer));
     }
   }, [dispatch, props.id, props.currentProject]);
 
   useEffect(() => {
     if (props.projectEvents === undefined) {
-      dispatch(loadAllChainsProjects(true));
+      dispatch(loadAllChainsProjects(dataLayer, true));
     }
-
-    if (props.owners === undefined) {
-      dispatch(loadProjectOwners(props.id));
-    }
-  }, [props.id, props.projectEvents, global, dispatch]);
-
-  if (
-    props.currentProject === undefined &&
-    props.loading &&
-    props.currentProject
-  ) {
-    return <>Loading grant data from IPFS... </>;
-  }
+  }, [props.projectEvents, global, dispatch]);
 
   function createEditPath() {
     const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
@@ -116,7 +100,7 @@ function Project() {
             </Link>
             {props.id &&
               props.owners &&
-              props.owners.includes(props.signerAddress!) && (
+              props.owners.includes(props.signerAddress!.toLowerCase()) && (
                 <Link
                   to={createEditPath()}
                   className="sm:w-auto mx-w-full ml-0"

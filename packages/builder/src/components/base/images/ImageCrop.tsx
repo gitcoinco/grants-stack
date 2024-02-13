@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import ReactCrop, {
   centerCrop,
@@ -103,6 +103,9 @@ export default function ImageCrop({
             />
           </ReactCrop>
         )}
+        <div className="flex w-full" />
+        Note: Transparent sections in images will default to black when
+        uploaded. Please consider using a non-transparent background.
         <div className="flex w-full">
           <Button
             styles={["w-1/2 justify-center"]}

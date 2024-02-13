@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -116,6 +117,7 @@ function ApplyButton(props: ApplyButtonProps) {
 
 function ShowRound() {
   const [roundData, setRoundData] = useState<any>();
+  const dataLayer = useDataLayer();
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -134,7 +136,7 @@ function ShowRound() {
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
 
-    const now = Math.trunc(Date.now() / 1000);
+    const now = new Date().getTime() / 1000;
 
     let applicationsHaveStarted = false;
     let applicationsHaveEnded = false;
@@ -179,7 +181,8 @@ function ShowRound() {
     roundData && (
       <>
         {formatTimeUTC(roundData.applicationsStartTime)} -{" "}
-        {isInfinite(roundData.applicationsEndTime)
+        {isInfinite(roundData.applicationsEndTime) ||
+        !roundData.applicationsEndTime
           ? "No End Date"
           : formatTimeUTC(roundData.applicationsEndTime)}
       </>
@@ -189,7 +192,7 @@ function ShowRound() {
     roundData && (
       <>
         {formatTimeUTC(roundData.roundStartTime)} -{" "}
-        {isInfinite(roundData.roundEndTime)
+        {isInfinite(roundData.roundEndTime) || !roundData.roundEndTime
           ? "No End Date"
           : formatTimeUTC(roundData.roundEndTime)}
         {}
@@ -221,7 +224,11 @@ function ShowRound() {
     if (roundId !== undefined) {
       dispatch(unloadRounds());
       dispatch(
-        loadRound(roundId, Number(props.roundChainId || props.web3ChainId))
+        loadRound(
+          roundId,
+          dataLayer,
+          Number(props.roundChainId || props.web3ChainId)
+        )
       );
     }
   }, [dispatch, roundId]);
@@ -234,7 +241,7 @@ function ShowRound() {
 
   useEffect(() => {
     if (props.projectsStatus === ProjectStatus.Undefined) {
-      dispatch(loadAllChainsProjects(true));
+      dispatch(loadAllChainsProjects(dataLayer, true));
     }
   }, [props.projectsStatus, dispatch]);
 

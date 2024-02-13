@@ -87,6 +87,13 @@ module.exports = {
       options: {
         includePaths: [path.join(__dirname, `../common/src`)],
         skipEsbuildJest: true,
+        esbuildLoaderOptions: {
+          loader: "tsx", // Set the value to 'tsx' if you use typescript
+          target: "es2021",
+        },
+        esbuildMinimizerOptions: {
+          target: "es2021",
+        },
       },
     },
   ],

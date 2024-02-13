@@ -55,7 +55,7 @@ export default function ViewRound() {
   const { chainId, roundId } = useParams();
 
   const { round, isLoading } = useRoundById(
-    chainId as string,
+    Number(chainId),
     roundId?.toLowerCase() as string
   );
 
@@ -250,7 +250,7 @@ function AfterRoundStart(props: {
       {showCartNotification && renderCartNotification()}
       <Navbar />
       {props.isAfterRoundEndDate && (
-        <div>
+        <div className="relative top-16">
           <RoundEndedBanner />
         </div>
       )}

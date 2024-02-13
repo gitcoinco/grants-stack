@@ -131,8 +131,8 @@ export default function ViewRoundPage() {
             </header>
             <main className="px-3 md:px-20 pt-6">
               <Tab.Group vertical>
-                <div className="flex flex-row">
-                  <div className="w-24 basis-1/6 border-r">
+                <div className="flex">
+                  <div className="border-r md:pr-12 pr-4">
                     <Tab.List
                       className="flex flex-col h-max"
                       data-testid="side-nav-bar"
@@ -308,7 +308,7 @@ export default function ViewRoundPage() {
                       )}
                     </Tab.List>
                   </div>
-                  <Tab.Panels className="basis-5/6 ml-6">
+                  <Tab.Panels className="flex-grow ml-6">
                     <Tab.Panel>
                       <GrantApplications
                         isDirectRound={

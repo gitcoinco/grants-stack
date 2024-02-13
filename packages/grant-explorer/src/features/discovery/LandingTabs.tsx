@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { Tab, Tabs } from "../common/styles";
 import { toQueryString } from "./RoundsFilter";
-import { FilterStatus } from "./hooks/useFilterRounds";
+import { RoundStatus } from "./hooks/useFilterRounds";
 import { useMediaQuery } from "@chakra-ui/react";
 
 type Tab = {
@@ -13,7 +13,7 @@ type Tab = {
 export const exploreRoundsLink = `/rounds?${toQueryString({
   orderBy: "matchAmount",
   orderDirection: "desc",
-  status: [FilterStatus.active, FilterStatus.taking_applications].join(","),
+  status: [RoundStatus.active, RoundStatus.taking_applications].join(","),
 })}`;
 
 export default function LandingTabs() {
@@ -30,17 +30,10 @@ export default function LandingTabs() {
       to: `/rounds?${toQueryString({
         orderBy: "matchAmount",
         orderDirection: "desc",
-        status: [FilterStatus.active, FilterStatus.taking_applications].join(
-          ","
-        ),
+        status: [RoundStatus.active, RoundStatus.taking_applications].join(","),
       })}`,
       children: isDesktop ? "Explore rounds" : "Rounds",
       tabName: "home-rounds-tab",
-    },
-    {
-      to: "/projects",
-      children: isDesktop ? "Explore projects" : "Projects",
-      tabName: "home-projects-tab",
     },
   ];
 
@@ -52,7 +45,11 @@ export default function LandingTabs() {
         // Set the data-track-event attribute when the tab is active
         const tabProps = isActive ? { "data-track-event": tab.tabName } : {};
 
-        return <Tab key={tab.to} active={isActive} {...tab} {...tabProps} />;
+        return (
+          <Tab key={tab.to} to={tab.to} active={isActive} {...tabProps}>
+            {tab.children}
+          </Tab>
+        );
       })}
     </Tabs>
   );

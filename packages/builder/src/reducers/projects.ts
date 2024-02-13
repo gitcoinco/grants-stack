@@ -1,6 +1,6 @@
-import { ChainId } from "common";
+import { ProjectApplication, ProjectEventsMap } from "data-layer";
+
 import {
-  ProjectsActions,
   PROJECTS_ERROR,
   PROJECTS_LOADED,
   PROJECTS_LOADING,
@@ -12,8 +12,8 @@ import {
   PROJECT_OWNERS_LOADED,
   PROJECT_STATS_LOADED,
   PROJECT_STATS_LOADING,
+  ProjectsActions,
 } from "../actions/projects";
-import { ProjectEventsMap } from "../types";
 
 export enum Status {
   Undefined = 0,
@@ -22,27 +22,7 @@ export enum Status {
   Error,
 }
 
-export type AppStatus =
-  | "PENDING"
-  | "APPROVED"
-  | "REJECTED"
-  | "APPEAL"
-  | "FRAUD"
-  | "RECEIVED";
-
-export type Application = {
-  roundID: string;
-  status: AppStatus;
-  inReview: boolean;
-  chainId: ChainId;
-  metaPtr?: {
-    protocol: string;
-    pointer: string;
-  };
-};
-
 export type ProjectOwners = { [projectID: string]: string[] };
-
 export interface ProjectsState {
   status: Status;
   loadingChains: number[];
@@ -50,8 +30,8 @@ export interface ProjectsState {
   ids: string[];
   events: ProjectEventsMap;
   owners: ProjectOwners;
-  applications: {
-    [projectID: string]: Application[];
+  applications?: {
+    [projectID: string]: ProjectApplication[];
   };
   stats: {
     [projectID: string]: ProjectStats[];
@@ -136,7 +116,7 @@ export const projectsReducer = (
     case PROJECT_APPLICATIONS_LOADING: {
       // Remove the project applications key
       const { [action.projectID]: projectApplications, ...applications } =
-        state.applications;
+        state.applications || {};
 
       return {
         ...state,
@@ -156,9 +136,9 @@ export const projectsReducer = (
     }
 
     case PROJECT_APPLICATION_UPDATED: {
-      const projectApplications = state.applications[action.projectID] || [];
+      const projectApplications = state.applications?.[action.projectID] || [];
       const index = projectApplications.findIndex(
-        (app: Application) => app.roundID === action.roundID
+        (app: ProjectApplication) => app.roundId === action.roundID
       );
 
       if (index < 0) {

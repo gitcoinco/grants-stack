@@ -1,3 +1,4 @@
+import { useDataLayer } from "data-layer";
 import { Badge, Image } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -14,6 +15,7 @@ import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import LoadingCard from "./LoadingCard";
 
 function Card({ projectId }: { projectId: string }) {
+  const dataLayer = useDataLayer();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[projectId];
@@ -31,6 +33,7 @@ function Card({ projectId }: { projectId: string }) {
 
     return {
       id,
+      chainId,
       loading,
       currentProject: project,
       projectChainName,
@@ -43,7 +46,7 @@ function Card({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     if (projectId !== undefined && props.status === Status.Undefined) {
-      dispatch(fetchGrantData(projectId));
+      dispatch(fetchGrantData(projectId, dataLayer));
     }
   }, [dispatch, projectId, props.currentProject, props.status]);
 

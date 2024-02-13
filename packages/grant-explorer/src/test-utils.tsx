@@ -1,3 +1,4 @@
+import { Mocked } from "vitest";
 import { faker } from "@faker-js/faker";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
@@ -7,16 +8,12 @@ import {
   RoundState,
   initialRoundState,
 } from "./context/RoundContext";
-import { RoundMetadata } from "./features/api/round";
-import { RoundOverview } from "./features/api/rounds";
-import {
-  ApplicationStatus,
-  CartProject,
-  ProjectMetadata,
-  Round,
-} from "./features/api/types";
+import { __deprecated_RoundMetadata } from "./features/api/round";
+import { __deprecated_RoundOverview } from "./features/api/rounds";
+import { CartProject, ProjectMetadata, Round } from "./features/api/types";
 import { parseUnits } from "viem";
 import { ChainId } from "common";
+import { DataLayer, DataLayerProvider } from "data-layer";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -90,7 +87,7 @@ export const makeApprovedProjectData = (
       owners: [{ address: faker.finance.ethereumAddress() }],
       ...projectMetadataOverrides,
     },
-    status: ApplicationStatus.APPROVED,
+    status: "APPROVED",
     applicationIndex: faker.datatype.number(),
     roundId: faker.finance.ethereumAddress(),
     chainId: ChainId.MAINNET,
@@ -102,8 +99,8 @@ const makeTimestamp = (days?: number) =>
   Math.floor(Number(faker.date.soon(days)) / 1000).toString();
 
 export const makeRoundMetadata = (
-  overrides?: Partial<RoundMetadata>
-): RoundMetadata => ({
+  overrides?: Partial<__deprecated_RoundMetadata>
+): __deprecated_RoundMetadata => ({
   name: faker.company.name(),
   roundType: "public",
   eligibility: {
@@ -118,9 +115,9 @@ export const makeRoundMetadata = (
 });
 
 export const makeRoundOverviewData = (
-  overrides?: Partial<RoundOverview>,
-  roundMetadataOverrides?: Partial<RoundMetadata>
-): RoundOverview => {
+  overrides?: Partial<__deprecated_RoundOverview>,
+  roundMetadataOverrides?: Partial<__deprecated_RoundMetadata>
+): __deprecated_RoundOverview => {
   return {
     id: faker.finance.ethereumAddress(),
     chainId: ChainId.MAINNET,
@@ -154,26 +151,90 @@ export function generateIpfsCid() {
 }
 
 export const renderWithContext = (
-  ui: JSX.Element,
-  roundStateOverrides: Partial<RoundState> = {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = vi.fn()
-) =>
-  render(
+  ui: React.ReactNode,
+  overrides?: {
+    dispatch?: () => void;
+    dataLayer?: DataLayer;
+    roundState?: Partial<RoundState>;
+  }
+) => {
+  const dispatch = overrides?.dispatch ?? vi.fn();
+  const dataLayerMock =
+    overrides?.dataLayer ??
+    ({
+      getSearchBasedProjectCategories: vi.fn().mockResolvedValue([
+        {
+          id: "open-source",
+          name: "Open source",
+          images: [
+            "/assets/categories/category_01.jpg",
+            "/assets/categories/category_02.jpg",
+            "/assets/categories/category_03.jpg",
+            "/assets/categories/category_04.jpg",
+          ],
+          searchQuery: "open source, open source software",
+        },
+      ]),
+      getProjectCollections: vi.fn().mockResolvedValue([
+        {
+          id: "first-time-grantees",
+          author: "Gitcoin",
+          name: "First Time Grantees",
+          images: [
+            "/assets/collections/collection_01.jpg",
+            "/assets/collections/collection_02.jpg",
+            "/assets/collections/collection_03.jpg",
+            "/assets/collections/collection_04.jpg",
+          ],
+          description:
+            "This collection showcases all grantees in GG19 that have not participated in a past round on Grants Stack! Give these first-time grantees some love (and maybe some donations, too!).",
+          applicationRefs: [
+            "10:0x36f548e082b09b0cec5b3f5a7b78953c75de5e74:2",
+            "10:0x36f548e082b09b0cec5b3f5a7b78953c75de5e74:8",
+          ],
+        },
+        {
+          id: "grants-stack-veterans",
+          author: "Gitcoin",
+          name: "Grants Stack Veterans",
+          images: [
+            "/assets/collections/collection_05.jpg",
+            "/assets/collections/collection_06.jpg",
+          ],
+          description:
+            "This collection showcases all grantees in GG19 that have participated in a past GG18 and/or Beta Round! Give these Grants Stack Veterans some love (and maybe some donations, too!).",
+          applicationRefs: [
+            "10:0x36f548e082b09b0cec5b3f5a7b78953c75de5e74:1",
+            "10:0x4727e3265706c59dbc31e7c518960f4f843bb4da:16",
+          ],
+        },
+      ]),
+      getLegacyRoundById: vi.fn().mockResolvedValue({
+        round:
+          overrides?.roundState?.rounds !== undefined &&
+          overrides?.roundState?.rounds.length > 0
+            ? overrides?.roundState?.rounds[0]
+            : undefined,
+      }),
+    } as unknown as Mocked<DataLayer>);
+
+  return render(
     <ChakraProvider>
       <MemoryRouter>
-        <RoundContext.Provider
-          value={{
-            state: { ...initialRoundState, ...roundStateOverrides },
-            dispatch,
-          }}
-        >
-          {ui}
-        </RoundContext.Provider>
+        <DataLayerProvider client={dataLayerMock}>
+          <RoundContext.Provider
+            value={{
+              state: { ...initialRoundState, ...overrides?.roundState },
+              dispatch,
+            }}
+          >
+            {ui}
+          </RoundContext.Provider>
+        </DataLayerProvider>
       </MemoryRouter>
     </ChakraProvider>
   );
-
+};
 export const mockBalance = {
   data: {
     value: parseUnits("10", 18),

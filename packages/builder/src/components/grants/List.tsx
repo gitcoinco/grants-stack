@@ -1,3 +1,4 @@
+import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ import Globe from "../icons/Globe";
 import Card from "./Card";
 
 function ProjectsList() {
+  const dataLayer = useDataLayer();
   const dispatch = useDispatch();
   const [showErrorModal, setShowErrorModal] = useState<boolean>(true);
 
@@ -50,8 +52,8 @@ function ProjectsList() {
 
     const showRoundModal =
       roundToApply &&
-      state.projects.ids.length === 1 &&
-      toggleModal === ApplicationModalStatus.NotApplied &&
+      state.projects.ids.length > 0 &&
+      toggleModal <= ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
 
     const applicationStartTime = round?.applicationsStartTime ?? 0;
@@ -79,13 +81,13 @@ function ProjectsList() {
   useEffect(() => {
     if (props.status !== Status.Undefined) return;
 
-    dispatch(loadAllChainsProjects());
+    dispatch(loadAllChainsProjects(dataLayer, true));
   }, [dispatch, props.status]);
 
   useEffect(() => {
     if (roundToApply) {
       const [chainId, roundId] = roundToApply.split(":");
-      dispatch(loadRound(roundId, Number(chainId)));
+      dispatch(loadRound(roundId, dataLayer, Number(chainId)));
     }
   }, [roundToApply]);
 

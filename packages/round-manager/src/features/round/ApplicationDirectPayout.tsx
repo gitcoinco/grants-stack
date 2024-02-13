@@ -9,7 +9,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { ExternalLinkIcon } from "@heroicons/react/outline";
-import { getPayoutTokenOptions } from "../api/utils";
 import { Erc20__factory } from "../../types/generated/typechain";
 import { usePayout } from "../../context/application/usePayout";
 import { Button, Input } from "common/src/styles";
@@ -18,6 +17,7 @@ import { AnswerBlock, GrantApplication, Round } from "../api/types";
 import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
+import { getPayoutTokenOptions } from "../api/payoutTokens";
 
 const schema = yup.object().shape({
   amount: yup
@@ -298,16 +298,16 @@ export default function ApplicationDirectPayout({
                 </p>
               </label>
               <div className="relative mt-2 rounded-md shadow-sm">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2 pr-2">
                   <span className="text-gray-400 sm:text-sm">
                     {tokenInfo.name}
                   </span>
                 </div>
                 <Input
                   {...register("amount")}
-                  className={
-                    "block w-full rounded-md border-gray-300 pl-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10"
-                  }
+                  className={`block w-full rounded-md border-gray-300   ${
+                    tokenInfo.name.length <= 4 ? "pl-12" : "pl-16"
+                  } focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10`}
                   type="number"
                   placeholder="Enter payout amount"
                   aria-describedby="token-symbol"

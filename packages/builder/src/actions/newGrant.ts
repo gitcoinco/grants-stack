@@ -1,11 +1,9 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
+import { Allo, AnyJson } from "common";
+import { getConfig } from "common/src/config";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { getConfig } from "common/src/config";
-import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import { addressesByChainID } from "../contracts/deployments";
-import { global } from "../global";
 import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
@@ -66,10 +64,12 @@ export const grantCreated = ({
   owner,
 });
 
+// todo: wire in metadata update
 export const publishGrant =
-  (fullId?: string) =>
+  (allo: Allo, fullId?: string) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
+
     const { metadata: formMetaData, credentials: formCredentials } =
       state.projectForm;
 
@@ -114,67 +114,46 @@ export const publishGrant =
       : Date.now();
 
     dispatch(grantStatus(Status.UploadingJSON));
-    let resp;
-    try {
-      resp = await pinataClient.pinJSON(application);
-    } catch (e) {
-      datadogRum.addError(e);
-      datadogLogs.logger.error("ipfs: error uploading metadata");
-      console.error("ipfs: error uploading metadata", e);
-    }
 
-    const metadataCID = resp.IpfsHash;
-    const { chainID } = state.web3;
-    const addresses = addressesByChainID(chainID!);
-    const { signer } = global;
-    const projectRegistry = new ethers.Contract(
-      addresses.projectRegistry!,
-      ProjectRegistryABI,
-      signer
-    );
+    const result = grantId
+      ? allo.updateProjectMetadata({
+          projectId: ethers.utils.hexlify(Number(grantId)) as `0x${string}`,
+          metadata: application as unknown as AnyJson,
+        })
+      : allo.createProject({
+          name: application.title,
+          metadata: application as unknown as AnyJson,
+        });
 
-    dispatch(grantStatus(Status.WaitingForSignature));
-    let projectTx;
-    try {
-      if (grantId !== undefined) {
-        try {
-          projectTx = await projectRegistry.updateProjectMetadata(grantId, {
-            protocol: 1,
-            pointer: metadataCID,
-          });
-        } catch (e) {
-          datadogRum.addError(e);
+    await result
+      .on("ipfs", (res) => {
+        if (res.type === "success") {
+          console.log("IPFS CID", res.value);
+          dispatch(grantStatus(Status.WaitingForSignature));
+        } else {
+          console.error("IPFS Error", res.error);
+          datadogRum.addError(res.error);
+          datadogLogs.logger.error("ipfs: error uploading metadata");
+        }
+      })
+      .on("transaction", (res) => {
+        if (res.type === "success") {
+          dispatch(grantStatus(Status.TransactionInitiated));
+          console.log("Transaction", res.value);
+        } else {
+          console.error("Transaction Error", res.error);
+          datadogRum.addError(res.error);
           datadogLogs.logger.warn("transaction error");
           dispatch(grantError("transaction error", Status.Error));
-          console.error("tx error", e);
-          return;
         }
-      } else {
-        try {
-          projectTx = await projectRegistry.createProject({
-            protocol: 1,
-            pointer: metadataCID,
-          });
-        } catch (e) {
-          datadogRum.addError(e);
-          datadogLogs.logger.warn("transaction error");
-          dispatch(grantError("transaction error", Status.Error));
-          console.error("tx error", e);
-          return;
+      })
+      .on("transactionStatus", async (res) => {
+        if (res.type === "success") {
+          dispatch(grantStatus(Status.Completed));
+        } else {
+          dispatch(grantStatus(Status.Error));
+          console.log("Transaction Status Error", res.error);
         }
-      }
-    } catch (e) {
-      datadogRum.addError(e);
-      datadogLogs.logger.warn("transaction error");
-      dispatch(grantError("transaction error", Status.Error));
-      console.error("tx error", e);
-      return;
-    }
-
-    dispatch(grantStatus(Status.TransactionInitiated));
-    const txStatus = await projectTx.wait();
-
-    if (txStatus.status) {
-      dispatch(grantStatus(Status.Completed));
-    }
+      })
+      .execute();
   };

@@ -1,14 +1,26 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { BigNumberish, ethers } from "ethers";
 import { ChainId } from "common";
+import { BigNumberish, ethers } from "ethers";
+import gnosisABI from "../contracts/abis/gnosis.json";
 import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
-import gnosisABI from "../contracts/abis/gnosis.json";
+import generateUniqueRoundApplicationID from "./roundApplication";
 
 export const ROUND_PAYOUT_MERKLE = "MERKLE";
 export const ROUND_PAYOUT_DIRECT = "DIRECT";
 
+/**
+ * Parse a round to apply string
+ *
+ * @remarks
+ *
+ * This function parses a round to apply string into its components.
+ *
+ * @param s The round to apply string
+ *
+ * @returns The chain ID and round address
+ */
 export const parseRoundToApply = (
   s?: string
 ): { chainID?: string; roundAddress?: string } => {
@@ -22,6 +34,14 @@ export const parseRoundToApply = (
   return { chainID, roundAddress };
 };
 
+/**
+ * Converts a metadata object to a project object
+ *
+ * @param m The metadata object
+ * @param lastUpdated The last updated timestamp
+ *
+ * @returns The project object
+ */
 export const metadataToProject = (
   m: Metadata,
   lastUpdated: number
@@ -48,6 +68,13 @@ export const metadataToProject = (
   return p;
 };
 
+/**
+ * Get the components of a project URI
+ *
+ * @param id
+ *
+ * @returns { ChainId, registryAddress, id }
+ */
 export const getProjectURIComponents = (id: string) => {
   const split = id.split(":");
   if (split.length < 3) {
@@ -62,6 +89,13 @@ export const getProjectURIComponents = (id: string) => {
   };
 };
 
+/**
+ * Get the provider for a given chain ID
+ *
+ * @param chainId
+ *
+ * @returns The provider
+ */
 export const getProviderByChainId = (chainId: ChainId) => {
   const { web3Provider } = global;
 
@@ -72,13 +106,44 @@ export const getProviderByChainId = (chainId: ChainId) => {
   );
 
   if (!chainConfig) {
-    throw new Error(`chainConfig not found for chain ID ${chainId}`);
+    console.log(`chainConfig not found for chain ID ${chainId}`);
+    return undefined;
   }
 
   // TODO: Create a more robust RPC here to avoid fails
   return ethers.getDefaultProvider(chainConfig.rpcUrls.default.http[0]);
 };
 
+/**
+ * Get the V1 hashed project ID
+ *
+ * @param projectId
+ *
+ * @returns The hashed project ID for V1 projects
+ */
+export const getV1HashedProjectId = (projectId: string) => {
+  const { chainId, registryAddress, id } = getProjectURIComponents(projectId);
+
+  const generatedProjectId = generateUniqueRoundApplicationID(
+    Number(chainId),
+    id,
+    registryAddress
+  );
+
+  return generatedProjectId;
+};
+
+/**
+ * Get the address type of an address
+ *
+ * @remarks
+ *
+ * This function checks if the address is a contract and if it is a safe.
+ *
+ * @param address
+ *
+ * @returns The address type
+ */
 export const getAddressType = async (address: string): Promise<AddressType> => {
   const { web3Provider } = global;
 

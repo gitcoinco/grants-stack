@@ -3,18 +3,21 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
+import { getConfig } from "common/src/config";
+import { DataLayer, DataLayerProvider } from "data-layer";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
 import { WagmiConfig } from "wagmi";
+import AlloWrapper from "./utils/AlloWrapper";
 import "./browserPatches";
-import PageNotFound from "./components/base/PageNotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Layout from "./components/Layout";
+import PageNotFound from "./components/base/PageNotFound";
 import EditProject from "./components/grants/Edit";
 import ProjectsList from "./components/grants/List";
 import NewProject from "./components/grants/New";
 import Project from "./components/grants/Show";
-import Layout from "./components/Layout";
 import RoundApply from "./components/rounds/Apply";
 import RoundShow from "./components/rounds/Show";
 import ViewApplication from "./components/rounds/ViewApplication";
@@ -26,6 +29,21 @@ import "./styles/index.css";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
 import initTagmanager from "./tagmanager";
+
+const dataLayerConfig = new DataLayer({
+  search: {
+    baseUrl: getConfig().dataLayer.searchServiceBaseUrl,
+    pagination: {
+      pageSize: 50,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
+  },
+  indexer: {
+    baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
+  },
+});
 
 const store = setupStore();
 const root = ReactDOM.createRoot(
@@ -93,30 +111,34 @@ root.render(
       <RainbowKitProvider chains={chains} theme={gtcLightTheme} coolMode>
         <ChakraProvider resetCSS={false}>
           <Provider store={store}>
-            <ReduxRouter history={history} store={store}>
-              <Layout>
-                <Routes>
-                  <Route
-                    path={slugs.root}
-                    element={<Navigate to={slugs.grants} />}
-                  />
-                  <Route path={slugs.grants} element={<ProjectsList />} />
-                  <Route path={slugs.project} element={<Project />} />
-                  <Route path={slugs.newGrant} element={<NewProject />} />
-                  <Route path={slugs.edit} element={<EditProject />} />
-                  <Route path={slugs.round} element={<RoundShow />} />
-                  <Route
-                    path={slugs.roundApplication}
-                    element={<RoundApply />}
-                  />
-                  <Route
-                    path={slugs.roundApplicationView}
-                    element={<ViewApplication />}
-                  />
-                  <Route path="*" element={<PageNotFound />} />
-                </Routes>
-              </Layout>
-            </ReduxRouter>
+            <AlloWrapper>
+              <DataLayerProvider client={dataLayerConfig}>
+                <ReduxRouter history={history} store={store}>
+                  <Layout>
+                    <Routes>
+                      <Route
+                        path={slugs.root}
+                        element={<Navigate to={slugs.grants} />}
+                      />
+                      <Route path={slugs.grants} element={<ProjectsList />} />
+                      <Route path={slugs.project} element={<Project />} />
+                      <Route path={slugs.newGrant} element={<NewProject />} />
+                      <Route path={slugs.edit} element={<EditProject />} />
+                      <Route path={slugs.round} element={<RoundShow />} />
+                      <Route
+                        path={slugs.roundApplication}
+                        element={<RoundApply />}
+                      />
+                      <Route
+                        path={slugs.roundApplicationView}
+                        element={<ViewApplication />}
+                      />
+                      <Route path="*" element={<PageNotFound />} />
+                    </Routes>
+                  </Layout>
+                </ReduxRouter>
+              </DataLayerProvider>
+            </AlloWrapper>
           </Provider>
         </ChakraProvider>
       </RainbowKitProvider>
@@ -124,7 +146,4 @@ root.render(
   </ErrorBoundary>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

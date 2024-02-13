@@ -2,8 +2,16 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
-import { Provider } from "react-redux";
+import {
+  AlloProvider,
+  AlloV2,
+  RoundVisibilityType,
+  createMockTransactionSender,
+} from "common";
+import { DataLayer, DataLayerProvider, ProjectApplication } from "data-layer";
 import { ethers } from "ethers";
+import { Provider } from "react-redux";
+import { zeroAddress } from "viem";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
@@ -22,12 +30,14 @@ export const buildAlert = (attrs = {}): Alert => ({
   ...attrs,
 });
 
+export const now = new Date().getTime() / 1000;
+
 export const buildRound = (round: any): Round => ({
   address: addressFrom(1),
-  applicationsStartTime: 1663751953,
-  applicationsEndTime: Date.now() / 1000 + 36000,
-  roundStartTime: 1663751953,
-  roundEndTime: Date.now() / 1000 + 36000,
+  applicationsStartTime: now,
+  applicationsEndTime: now + 3600,
+  roundStartTime: now + 3600,
+  roundEndTime: now + 7200,
   token: "0x0000000000000000000000000000000000000000",
   roundMetaPtr: {},
   roundMetadata: {},
@@ -98,11 +108,65 @@ export const buildFormMetadata = (metadata: any): FormInputs => ({
   ...metadata,
 });
 
-export const buildProjectApplication = (application: any): any => ({
+export const buildProjectApplication = (
+  application: any
+): ProjectApplication => ({
   chainId: 5,
-  roundID: addressFrom(1),
+  roundId: addressFrom(1),
   status: "APPROVED",
+  inReview: false,
+  id: "1",
+  metadataCid: "0x1",
+  metadata: {},
+  round: {
+    applicationsStartTime: "0",
+    applicationsEndTime: "0",
+    donationsStartTime: "0",
+    donationsEndTime: "0",
+    roundMetadata: {
+      name: "Round 1",
+      roundType: "public" as RoundVisibilityType,
+      eligibility: {
+        description: "Eligibility description",
+        requirements: [{ requirement: "Requirement 1" }],
+      },
+      programContractAddress: "0x1",
+      support: {
+        info: "https://support.com",
+        type: "WEBSITE",
+      },
+    },
+    name: "Round 1",
+  },
   ...application,
+});
+
+const alloBackend = new AlloV2({
+  chainId: 5,
+  ipfsUploader: async () =>
+    Promise.resolve({
+      type: "success",
+      value: "ipfsHash",
+    }),
+  waitUntilIndexerSynced: async () => Promise.resolve(BigInt(1)),
+  transactionSender: createMockTransactionSender(),
+  allo: zeroAddress,
+});
+
+// todo: introduce mock data layer?
+const dataLayerConfig = new DataLayer({
+  search: {
+    baseUrl: "http://localhost/",
+    pagination: {
+      pageSize: 50,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: "http://localhost/",
+  },
+  indexer: {
+    baseUrl: "http://localhost/",
+  },
 });
 
 export const renderWrapped = (
@@ -112,9 +176,13 @@ export const renderWrapped = (
   const wrapped = (
     <ChakraProvider>
       <Provider store={store}>
-        <ReduxRouter store={store} history={history}>
-          {ui}
-        </ReduxRouter>
+        <AlloProvider backend={alloBackend}>
+          <DataLayerProvider client={dataLayerConfig}>
+            <ReduxRouter store={store} history={history}>
+              {ui}
+            </ReduxRouter>
+          </DataLayerProvider>
+        </AlloProvider>
       </Provider>
     </ChakraProvider>
   );

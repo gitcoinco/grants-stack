@@ -1,12 +1,12 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { ProgressStatus, ProgressStep } from "../../features/api/types";
-import { PayoutToken } from "../../features/api/utils";
 import {
   DirectPayoutStrategy__factory,
   Erc20__factory,
 } from "../../types/generated/typechain";
 import { BigNumber, ethers } from "ethers";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
+import { PayoutToken } from "../../features/api/payoutTokens";
 
 export function usePayout() {
   const [contractApproveSpendStatus, setContractApproveSpendStatus] =

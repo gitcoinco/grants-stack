@@ -14,6 +14,11 @@ jest.mock("wagmi");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({
+    getProgramsByUser: jest.fn(),
+  }),
+}));
 
 describe("<ListProgramPage />", () => {
   it("does not render a list of programs when no programs have been created", () => {

@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
+import { ApplicationStatus, RoundVisibilityType } from "data-layer";
 import {
-  AppStatus,
-  projectsReducer,
   ProjectsState,
   Status,
   initialState as initialProjectsState,
+  projectsReducer,
 } from "../../reducers/projects";
 import { addressFrom } from "../../utils/test_utils";
 
@@ -21,18 +21,64 @@ describe("projects reducer", () => {
       applications: {
         "1": [
           {
-            roundID: addressFrom(1),
-            status: "PENDING" as AppStatus,
-            inReview: false,
+            id: "1",
             chainId: 1,
+            roundId: addressFrom(1),
+            status: "PENDING" as ApplicationStatus,
+            metadataCid: "0x1",
+            metadata: {},
+            inReview: false,
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 1",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 1",
+            },
           },
         ],
         "2": [
           {
-            roundID: addressFrom(2),
-            status: "PENDING" as AppStatus,
-            inReview: false,
+            id: "1",
             chainId: 1,
+            roundId: addressFrom(2),
+            status: "PENDING" as ApplicationStatus,
+            metadataCid: "0x1",
+            metadata: {},
+            inReview: false,
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 2",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 2",
+            },
           },
         ],
       },
@@ -46,10 +92,33 @@ describe("projects reducer", () => {
     expect(newState.applications).toEqual({
       "1": [
         {
-          roundID: addressFrom(1),
-          status: "PENDING",
+          roundId: addressFrom(1),
+          status: "PENDING" as ApplicationStatus,
           inReview: false,
           chainId: 1,
+          id: "1",
+          metadataCid: "0x1",
+          metadata: {},
+          round: {
+            applicationsStartTime: "0",
+            applicationsEndTime: "0",
+            donationsStartTime: "0",
+            donationsEndTime: "0",
+            roundMetadata: {
+              name: "Round 1",
+              roundType: "public" as RoundVisibilityType,
+              eligibility: {
+                description: "Eligibility description",
+                requirements: [{ requirement: "Requirement 1" }],
+              },
+              programContractAddress: "0x1",
+              support: {
+                info: "https://support.com",
+                type: "WEBSITE",
+              },
+            },
+            name: "Round 1",
+          },
         },
       ],
     });
@@ -61,10 +130,33 @@ describe("projects reducer", () => {
       applications: {
         "1": [
           {
-            roundID: addressFrom(1),
-            status: "PENDING" as AppStatus,
+            roundId: addressFrom(1),
+            status: "PENDING" as ApplicationStatus,
             inReview: false,
             chainId: 1,
+            id: "1",
+            metadataCid: "0x1",
+            metadata: {},
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 1",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 1",
+            },
           },
         ],
       },
@@ -75,10 +167,33 @@ describe("projects reducer", () => {
       projectID: "2",
       applications: [
         {
-          roundID: addressFrom(2),
-          status: "APPROVED",
+          roundId: addressFrom(2),
+          status: "APPROVED" as ApplicationStatus,
           inReview: false,
           chainId: 1,
+          id: "2",
+          metadataCid: "0x2",
+          metadata: {},
+          round: {
+            applicationsStartTime: "0",
+            applicationsEndTime: "0",
+            donationsStartTime: "0",
+            donationsEndTime: "0",
+            roundMetadata: {
+              name: "Round 2",
+              roundType: "public" as RoundVisibilityType,
+              eligibility: {
+                description: "Eligibility description",
+                requirements: [{ requirement: "Requirement 1" }],
+              },
+              programContractAddress: "0x1",
+              support: {
+                info: "https://support.com",
+                type: "WEBSITE",
+              },
+            },
+            name: "Round 2",
+          },
         },
       ],
     });
@@ -86,18 +201,64 @@ describe("projects reducer", () => {
     expect(newState.applications).toEqual({
       "1": [
         {
-          roundID: addressFrom(1),
-          status: "PENDING",
+          roundId: addressFrom(1),
+          status: "PENDING" as ApplicationStatus,
           inReview: false,
           chainId: 1,
+          id: "1",
+          metadataCid: "0x1",
+          metadata: {},
+          round: {
+            applicationsStartTime: "0",
+            applicationsEndTime: "0",
+            donationsStartTime: "0",
+            donationsEndTime: "0",
+            roundMetadata: {
+              name: "Round 1",
+              roundType: "public" as RoundVisibilityType,
+              eligibility: {
+                description: "Eligibility description",
+                requirements: [{ requirement: "Requirement 1" }],
+              },
+              programContractAddress: "0x1",
+              support: {
+                info: "https://support.com",
+                type: "WEBSITE",
+              },
+            },
+            name: "Round 1",
+          },
         },
       ],
       "2": [
         {
-          roundID: addressFrom(2),
-          status: "APPROVED",
+          roundId: addressFrom(2),
+          status: "APPROVED" as ApplicationStatus,
           inReview: false,
           chainId: 1,
+          id: "2",
+          metadataCid: "0x2",
+          metadata: {},
+          round: {
+            applicationsStartTime: "0",
+            applicationsEndTime: "0",
+            donationsStartTime: "0",
+            donationsEndTime: "0",
+            roundMetadata: {
+              name: "Round 2",
+              roundType: "public" as RoundVisibilityType,
+              eligibility: {
+                description: "Eligibility description",
+                requirements: [{ requirement: "Requirement 1" }],
+              },
+              programContractAddress: "0x1",
+              support: {
+                info: "https://support.com",
+                type: "WEBSITE",
+              },
+            },
+            name: "Round 2",
+          },
         },
       ],
     });
@@ -119,44 +280,182 @@ describe("projects reducer", () => {
       applications: {
         "1": [
           {
-            roundID: "0x1",
-            status: "PENDING" as AppStatus,
+            roundId: "0x1",
+            status: "PENDING" as ApplicationStatus,
             inReview: false,
             chainId: 1,
+            id: "1",
+            metadataCid: "0x1",
+            metadata: {},
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 1",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 1",
+            },
           },
         ],
         "2": [
           {
-            roundID: "0x1",
-            status: "PENDING" as AppStatus,
+            roundId: "0x1",
+            status: "PENDING" as ApplicationStatus,
             inReview: false,
             chainId: 1,
+            id: "1",
+            metadataCid: "0x1",
+            metadata: {},
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 1",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 1",
+            },
           },
           {
-            roundID: "0x2",
-            status: "PENDING" as AppStatus,
+            roundId: "0x2",
+            status: "PENDING" as ApplicationStatus,
             inReview: false,
             chainId: 1,
+            id: "2",
+            metadataCid: "0x2",
+            metadata: {},
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 2",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 2",
+            },
           },
           {
-            roundID: "0x3",
-            status: "PENDING" as AppStatus,
+            roundId: "0x3",
+            status: "PENDING" as ApplicationStatus,
             inReview: false,
             chainId: 1,
+            id: "3",
+            metadataCid: "0x3",
+            metadata: {},
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 3",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 3",
+            },
           },
           {
-            roundID: "0x4",
-            status: "PENDING" as AppStatus,
+            roundId: "0x4",
+            status: "PENDING" as ApplicationStatus,
             inReview: false,
             chainId: 1,
+            id: "4",
+            metadataCid: "0x4",
+            metadata: {},
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 4",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 4",
+            },
           },
         ],
         "3": [
           {
-            roundID: "0x3",
-            status: "PENDING" as AppStatus,
+            roundId: "0x3",
+            status: "PENDING" as ApplicationStatus,
             inReview: false,
             chainId: 1,
+            id: "1",
+            metadataCid: "0x1",
+            metadata: {},
+            round: {
+              applicationsStartTime: "0",
+              applicationsEndTime: "0",
+              donationsStartTime: "0",
+              donationsEndTime: "0",
+              roundMetadata: {
+                name: "Round 3",
+                roundType: "public" as RoundVisibilityType,
+                eligibility: {
+                  description: "Eligibility description",
+                  requirements: [{ requirement: "Requirement 1" }],
+                },
+                programContractAddress: "0x1",
+                support: {
+                  info: "https://support.com",
+                  type: "WEBSITE",
+                },
+              },
+              name: "Round 3",
+            },
           },
         ],
       },
@@ -169,49 +468,34 @@ describe("projects reducer", () => {
       status: "APPROVED",
     });
 
-    expect(newState.applications).toEqual({
-      "1": [
-        {
-          roundID: "0x1",
-          status: "PENDING" as AppStatus,
-          inReview: false,
-          chainId: 1,
+    expect(newState.applications!["2"][2]).toEqual({
+      roundId: "0x3",
+      status: "APPROVED" as ApplicationStatus,
+      inReview: false,
+      chainId: 1,
+      id: "3",
+      metadataCid: "0x3",
+      metadata: {},
+      round: {
+        applicationsStartTime: "0",
+        applicationsEndTime: "0",
+        donationsStartTime: "0",
+        donationsEndTime: "0",
+        roundMetadata: {
+          name: "Round 3",
+          roundType: "public" as RoundVisibilityType,
+          eligibility: {
+            description: "Eligibility description",
+            requirements: [{ requirement: "Requirement 1" }],
+          },
+          programContractAddress: "0x1",
+          support: {
+            info: "https://support.com",
+            type: "WEBSITE",
+          },
         },
-      ],
-      "2": [
-        {
-          roundID: "0x1",
-          status: "PENDING" as AppStatus,
-          inReview: false,
-          chainId: 1,
-        },
-        {
-          roundID: "0x2",
-          status: "PENDING" as AppStatus,
-          inReview: false,
-          chainId: 1,
-        },
-        {
-          roundID: "0x3",
-          status: "APPROVED" as AppStatus,
-          inReview: false,
-          chainId: 1,
-        },
-        {
-          roundID: "0x4",
-          status: "PENDING" as AppStatus,
-          inReview: false,
-          chainId: 1,
-        },
-      ],
-      "3": [
-        {
-          roundID: "0x3",
-          status: "PENDING" as AppStatus,
-          inReview: false,
-          chainId: 1,
-        },
-      ],
+        name: "Round 3",
+      },
     });
   });
 
@@ -219,7 +503,7 @@ describe("projects reducer", () => {
     // start loading chain 0
     const state1: ProjectsState = projectsReducer(state, {
       type: "PROJECTS_LOADING",
-      payload: 0,
+      payload: 10,
     });
 
     expect(state1.status).toEqual(Status.Loading);
@@ -250,7 +534,7 @@ describe("projects reducer", () => {
     const state4: ProjectsState = projectsReducer(state3, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 0,
+        chainID: 10,
         events: {},
       },
     });

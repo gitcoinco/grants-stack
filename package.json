@@ -13,39 +13,37 @@
     "test": "pnpm turbo run test --no-cache --concurrency=50%",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write",
-    "// round manager script": "====== packages/round-manager specific ======",
-    "rm-build": "pnpm --filter round-manager run build",
-    "rm-test": "turbo run test --filter=round-manager",
-    "rm-start": "pnpm --filter round-manager run start",
-    "rm-lint": "turbo run lint:ci --filter=round-manager",
-    "rm-typecheck": "turbo run typecheck --filter=round-manager",
-    "// grant explorer script": "====== packages/grant-explorer specific ======",
-    "ge-build": "turbo run build --filter=grant-explorer",
-    "ge-test": "turbo run test --filter=grant-explorer",
-    "ge-start": "pnpm --filter grant-explorer run start",
-    "ge-typecheck": "turbo run typecheck --filter=grant-explorer",
-    "ge-lint": "turbo run lint:ci --filter=grant-explorer",
-    "// builder script": "====== packages/builder specific ======",
-    "b-start": "pnpm --filter builder run start",
-    "b-lint": "turbo run lint:ci --filter=builder",
-    "b-test": "pnpm test --filter=builder",
-    "b-typecheck": "turbo run typecheck --filter=builder",
-    "c-test": "turbo run test --filter=common",
-    "ve-test": "turbo run test --filter=verify-env",
-    "// data client script": "====== packages/builder specific ======",
-    "dc-test": "turbo run test --filter=grants-stack-data-client"
+    "build:manager": "pnpm --filter round-manager run build",
+    "test:manager": "turbo run test --filter=round-manager",
+    "start:manager": "pnpm --filter round-manager run start",
+    "lint:manager": "turbo run lint:ci --filter=round-manager",
+    "typecheck:manager": "turbo run typecheck --filter=round-manager",
+    "build:explorer": "turbo run build --filter=grant-explorer",
+    "test:explorer": "turbo run test --filter=grant-explorer",
+    "start:explorer": "pnpm --filter grant-explorer run start",
+    "typecheck:explorer": "turbo run typecheck --filter=grant-explorer",
+    "lint:explorer": "turbo run lint:ci --filter=grant-explorer",
+    "start:builder": "pnpm --filter builder run start",
+    "lint:builder": "turbo run lint:ci --filter=builder",
+    "test:builder": "pnpm test --filter=builder",
+    "typecheck:builder": "turbo run typecheck --filter=builder",
+    "test:common": "turbo run test --filter=common",
+    "typecheck:common": "turbo run typecheck --filter=common",
+    "test:verify-env": "turbo run test --filter=verify-env",
+    "test:data-layer": "turbo run test --filter=data-layer"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
-    "@commitlint/config-conventional": "^17.7.0"
+    "@commitlint/config-conventional": "^17.7.0",
+    "turbo": "^1.12.2"
   },
   "dependencies": {
-    "prettier": "^3.0.3",
-    "turbo": "^1.10.15"
+    "prettier": "^3.0.3"
   },
   "pnpm": {
     "overrides": {
       "webpack": "^5"
     }
-  }
+  },
+  "workspaces": ["packages/*"]
 }

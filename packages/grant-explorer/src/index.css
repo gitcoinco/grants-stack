@@ -2,23 +2,23 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
 
 @font-face {
-  font-family: "Modern Era"; 
-  font-weight: 400;
-  src: local("ModernEraRegular"),
-  url("../public/modern-era-regular.otf") format('opentype');
+    font-family: "Modern Era";
+    font-weight: 400;
+    src: local("ModernEraRegular"),
+    url("../public/modern-era-regular.otf") format('opentype');
 }
 
 @font-face {
-  font-family: "Modern Era"; 
-  font-weight: 500;
-  src: local("ModernEraMedium"),
-  url("../public/modern-era-medium.otf") format('opentype');
+    font-family: "Modern Era Medium";
+    font-weight: 500;
+    src: local("ModernEraMedium"),
+    url("../public/modern-era-medium.otf") format('opentype');
 }
 
 @font-face {
-  font-family: "Modern Era"; 
-  font-weight: 600;
-  src: local("ModernEraBold"),
+    font-family: "Modern Era Bold";
+    font-weight: 600;
+    src: local("ModernEraBold"),
     url("../public/modern-era-bold.otf") format('opentype');
 }
 
@@ -29,54 +29,65 @@
 @tailwind utilities;
 
 .font-dm-mono {
-  font-family: 'DM Mono', monospace;
+    font-family: 'DM Mono', monospace;
 }
 
 .font-modern-era-medium {
-  font-family: 'ModernEraMedium', serif;
+    font-family: 'Modern Era Medium', serif;
 }
+
 .font-modern-era-regular {
-  font-family: 'ModernEraRegular', serif;
+    font-family: 'Modern Era Regular', serif;
+}
+
+.blurred::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(22px);
+    z-index: -1;
+    background-color: rgba(255 255 255 / 3%);
 }
 
 @layer base {
-  html {
-    @apply text-grey-500;
-  }
-
-  h1 {
-    @apply text-7xl;
-  }
-
-  h2 {
-    @apply text-5xl;
-  }
-
-  h3 {
-    @apply text-3xl;
-  }
-
-  h4 {
-    @apply text-2xl;
-  }
-
-  h5 {
-    @apply text-base;
-  }
-
-  h6 {
-    @apply text-sm;
-  }
-
-  p {
-    @apply text-base;
-  }
-
-  .quick-view-summary {
-    margin-right: 0rem;
-
-    @media (max-width: 768px) {
-      margin-right: -4rem;
+    html {
+        @apply text-grey-500;
     }
-  }
+
+    h1 {
+        @apply text-7xl;
+    }
+
+    h2 {
+        @apply text-5xl;
+    }
+
+    h3 {
+        @apply text-3xl;
+    }
+
+    h4 {
+        @apply text-2xl;
+    }
+
+    h5 {
+        @apply text-base;
+    }
+
+    h6 {
+        @apply text-sm;
+    }
+
+    p {
+        @apply text-base;
+    }
+
+    .quick-view-summary {
+        margin-right: 0rem;
+
+        @media (max-width: 768px) {
+            margin-right: -4rem;
+        }
+    }
 }

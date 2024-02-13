@@ -3,13 +3,13 @@
 Welcome to the Grants Stack development repository!
 This repository houses the main three dApps that make up the Grants Stack ecosystem:
 
-
 * [Builder](https://builder.gitcoin.co/)
 * [Explorer](https://explorer.gitcoin.co/#/round/424/0x4473725beb9a9d503547d2fe677f4b5aa39b68f6)
 * [Manager](https://manager.gitcoin.co/)
 
 Each of these dapps is a single-page React application, and you can find their respective source code under the `/packages` folder.
 
+If you are importing external libraries, please use the ones already added in the projects, or consider using one of the preferred options from this document: [LIBRARIES.md](./LIBRARIES.md)
 
 While there is no central backend application, all three dApps rely on various external services for data reading and writing. These dependencies include:
 
@@ -22,7 +22,6 @@ While there is no central backend application, all three dApps rely on various e
 4. **IPFS**: IPFS is utilized for reading metadata files, providing decentralized file storage.
 
 5. **[Pinata](https://www.pinata.cloud/)**: Pinata is used to upload and pin files to IPFS, ensuring the availability of data.
-
 
 
 Depending on the configuration in your local `.env` file, you can choose to use these services directly or opt for a local version of them.
@@ -148,6 +147,20 @@ component route
 ```
 
 Find more information about routing [here](https://reactrouter.com/docs/en/v6).
+
+## Running E2E tests using Synpress
+
+Synpress is an E2E testing framework for testing dApps. It works by setting up metamask before every run.
+
+### Running Synpress
+
+1. Put `TEST_PRIVATE_KEY` in `.env.local` in the respective directory (e.g. `packages/round-manager`)
+2. Start the dev server `pnpm start`
+3. Download playwright with `pnpm exec playwright install`
+4. Run tests with `pnpm synpress:test`
+
+NOTE: some tests require you to be part of a testing program and have some gas in your wallet. Please use a private key that has some gas on Fantom Testnet and Optimism Mainnet, and is part of the "GS Optimism Program 10 Round" Program on Optimism Mainnet.
+
 
 ## Submitting a PR
 

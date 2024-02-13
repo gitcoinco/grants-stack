@@ -234,15 +234,9 @@ export function WebsiteInput({
 }: InputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
   const { borderClass, feedbackColor } = styleInfo;
-
-  const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const validatedEvent = event;
-    validatedEvent.target.value = `https://${event.target.value.trim()}`;
-
-    changeHandler(event);
-  };
-
-  const sanitizedInput = (value as string).replace(/(^\w+:|^)\/\//, "");
+  const sanitizedInput = (value as string)
+    .replace(/(^\w+:|^)\/\//, "")
+    .replaceAll(" ", "");
 
   return (
     <div className="mt-6 w-full sm:max-w-md relative">
@@ -268,9 +262,14 @@ export function WebsiteInput({
           id={name}
           name={name}
           value={sanitizedInput ?? ""}
+          onKeyDown={(e) => {
+            if (e.key === " ") {
+              e.preventDefault();
+            }
+          }}
           placeholder={placeholder}
           disabled={disabled}
-          onChange={removeWhiteSpace}
+          onChange={changeHandler}
           className={borderClass}
         />
       </div>

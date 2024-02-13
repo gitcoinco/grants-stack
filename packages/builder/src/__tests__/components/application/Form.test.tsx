@@ -1,11 +1,12 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { Store } from "redux";
+import { RoundApplicationMetadata } from "data-layer";
 import * as projects from "../../../actions/projects";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
-import { Metadata, Round, RoundApplicationMetadata } from "../../../types";
+import { Metadata, Round } from "../../../types";
 import { addressFrom, renderWrapped } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
 
@@ -274,8 +275,6 @@ describe("<Form />", () => {
           target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
         });
       });
-
-      screen.logTestingPlaygroundURL();
 
       await waitFor(() =>
         expect(

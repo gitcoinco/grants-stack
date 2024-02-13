@@ -1,23 +1,24 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { ChainId } from "common";
+import { Allo, AnyJson, ChainId, isJestRunning } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
+import { Hex } from "viem";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
-import { chains } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";
 import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
-import { RoundApplicationAnswers } from "../types/roundApplication";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
-import { fetchProjectApplications } from "./projects";
 import { graphqlFetch } from "../utils/graphql";
+
+const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
@@ -132,8 +133,19 @@ const dispatchAndLogApplicationError = (
   dispatch(applicationError(roundAddress, error, step));
 };
 
+export function chainIdToChainName(chainId: number): string {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const name in LitJsSdk.LIT_CHAINS) {
+    if (LitJsSdk.LIT_CHAINS[name].chainId === chainId) {
+      return name;
+    }
+  }
+
+  throw new Error(`couldn't find LIT chain name for chainId ${chainId}`);
+}
+
 export const submitApplication =
-  (roundAddress: string, formInputs: RoundApplicationAnswers) =>
+  (roundAddress: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const roundState = state.rounds[roundAddress];
@@ -167,7 +179,7 @@ export const submitApplication =
 
     const projectQuestion =
       roundApplicationMetadata.applicationSchema.questions.find(
-        (q) => q.type === "project"
+        (q: { type: string }) => q.type === "project"
       );
 
     if (!projectQuestion) {
@@ -211,7 +223,7 @@ export const submitApplication =
       );
       return;
     }
-    const chainName = chains[chainID];
+    const chainName = chainIdToChainName(chainID);
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
@@ -222,23 +234,13 @@ export const submitApplication =
     let application: RoundApplication;
     let deterministicApplication: string;
 
-    let chain: string = "";
-
-    if (chainName === "mainnet") {
-      chain = "ethereum";
-    } else if (chainName === "pgn") {
-      chain = "publicGoodsNetwork";
-    } else {
-      chain = chainName;
-    }
-
     try {
       const builder = new RoundApplicationBuilder(
         true,
         project,
         roundApplicationMetadata,
         roundAddress,
-        chain
+        chainName
       );
 
       application = await builder.build(roundAddress, formInputs);
@@ -285,63 +287,73 @@ export const submitApplication =
       application,
     };
 
-    const pinataClient = new PinataClient(getConfig());
+    const projectUniqueID = generateUniqueRoundApplicationID(
+      Number(projectChainId),
+      projectNumber,
+      projectRegistryAddress
+    ) as Hex;
+
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
       status: Status.UploadingMetadata,
     });
 
-    let resp;
-    try {
-      resp = await pinataClient.pinJSON(signedApplication);
-    } catch (e) {
-      dispatchAndLogApplicationError(
-        dispatch,
-        roundAddress,
-        "error uploading round application metadata",
-        Status.UploadingMetadata
-      );
-      return;
-    }
-    const metaPtr = {
-      protocol: "1",
-      pointer: resp.IpfsHash,
-    };
-    dispatch({
-      type: ROUND_APPLICATION_LOADING,
-      roundAddress,
-      status: Status.SendingTx,
+    const result = allo.applyToRound({
+      projectId: projectUniqueID,
+      roundId: roundAddress as Hex,
+      metadata: signedApplication as unknown as AnyJson,
     });
 
-    const contract = new ethers.Contract(roundAddress, RoundABI, signer);
-
-    const projectUniqueID = generateUniqueRoundApplicationID(
-      Number(projectChainId),
-      projectNumber,
-      projectRegistryAddress
-    );
-
-    try {
-      const tx = await contract.applyToRound(projectUniqueID, metaPtr);
-      // FIXME: check return value of tx.wait() ??
-      await tx.wait();
-      dispatch({
-        type: ROUND_APPLICATION_LOADED,
-        roundAddress,
-        projectId: projectID,
-      });
-      dispatch<any>(
-        fetchProjectApplications(projectID, Number(projectChainId))
-      );
-    } catch (e: any) {
-      dispatchAndLogApplicationError(
-        dispatch,
-        roundAddress,
-        "error calling applyToRound",
-        Status.SendingTx
-      );
-    }
+    await result
+      .on("ipfs", (res) => {
+        if (res.type === "success") {
+          console.log("IPFS CID", res.value);
+          dispatch({
+            type: ROUND_APPLICATION_LOADING,
+            roundAddress,
+            status: Status.SendingTx,
+          });
+        } else {
+          console.error("IPFS Error", res.error);
+          datadogRum.addError(res.error);
+          datadogLogs.logger.error("ipfs: error uploading metadata");
+          dispatchAndLogApplicationError(
+            dispatch,
+            roundAddress,
+            "error uploading round application metadata",
+            Status.UploadingMetadata
+          );
+        }
+      })
+      .on("transaction", (res) => {
+        // Note: Not handled by UI
+        if (res.type === "success") {
+          console.log("Transaction", res.value);
+        } else {
+          console.error("Transaction Error", res.error);
+          datadogRum.addError(res.error);
+          datadogLogs.logger.warn("transaction error");
+        }
+      })
+      .on("transactionStatus", async (res) => {
+        if (res.type === "success") {
+          dispatch({
+            type: ROUND_APPLICATION_LOADED,
+            roundAddress,
+            projectId: projectID,
+          });
+        } else {
+          dispatchAndLogApplicationError(
+            dispatch,
+            roundAddress,
+            "error calling applyToRound",
+            Status.SendingTx
+          );
+          console.log("Transaction Status Error", res.error);
+        }
+      })
+      .execute();
   };
 
 export const checkRoundApplications =

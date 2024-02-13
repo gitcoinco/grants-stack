@@ -11,6 +11,7 @@ import {
   addressFrom,
   buildProjectMetadata,
   buildRound,
+  now,
   renderWrapped,
 } from "../../../utils/test_utils";
 
@@ -42,19 +43,19 @@ describe("<Show />", () => {
     });
 
     const pastRound = buildRound({
-      address: addressFrom(1),
-      applicationsStartTime: 0,
-      applicationsEndTime: 0,
-      roundStartTime: 0,
-      roundEndTime: 0,
+      address: addressFrom(2),
+      applicationsStartTime: now - 7200,
+      applicationsEndTime: now - 3600,
+      roundStartTime: now - 3600,
+      roundEndTime: now - 600,
     });
 
     const futureRound = buildRound({
-      address: addressFrom(1),
-      applicationsStartTime: Date.now() / 1000 + 60 * 30,
-      applicationsEndTime: Date.now() / 1000 + 60 * 60,
-      roundStartTime: Date.now() / 1000 + 60 * 60,
-      roundEndTime: Date.now() / 1000 + 60 * 120,
+      address: addressFrom(3),
+      applicationsStartTime: now + 3600,
+      applicationsEndTime: now + 7200,
+      roundStartTime: now + 7200,
+      roundEndTime: now + 12000,
     });
 
     store.dispatch(web3ChainIDLoaded(5));
@@ -145,7 +146,7 @@ describe("<Show />", () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
 
-        store.dispatch({ type: "PROJECTS_LOADING", payload: 0 });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
 
         renderWrapped(<Show />, store);
 
@@ -169,7 +170,7 @@ describe("<Show />", () => {
         store.dispatch({
           type: "PROJECTS_LOADED",
           payload: {
-            chainID: 0,
+            chainID: 10,
             events: {},
           },
         });
@@ -187,7 +188,7 @@ describe("<Show />", () => {
         store.dispatch({
           type: "PROJECTS_LOADED",
           payload: {
-            chainID: 0,
+            chainID: 10,
             events: {},
           },
         });
@@ -224,7 +225,7 @@ describe("<Show />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 0,
+          chainID: 10,
           events: {},
         },
       });
@@ -257,7 +258,7 @@ describe("<Show />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 0,
+          chainID: 10,
           events: {},
         },
       });

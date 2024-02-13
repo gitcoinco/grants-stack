@@ -18,7 +18,6 @@ import { ApplicationProvider } from "./context/application/ApplicationContext";
 import { BulkUpdateGrantApplicationProvider } from "./context/application/BulkUpdateGrantApplicationContext";
 import { CreateProgramProvider } from "./context/program/CreateProgramContext";
 import { ReadProgramProvider } from "./context/program/ReadProgramContext";
-import { CreateRoundProvider } from "./context/round/CreateRoundContext";
 import { FinalizeRoundProvider } from "./context/round/FinalizeRoundContext";
 import { FundContractProvider } from "./context/round/FundContractContext";
 import { ReclaimFundsProvider } from "./context/round/ReclaimFundsContext";
@@ -34,6 +33,9 @@ import ViewApplication from "./features/round/ViewApplicationPage";
 import ViewRoundPage from "./features/round/ViewRoundPage";
 import { initSentry } from "./sentry";
 import { UpdateRoundProvider } from "./context/round/UpdateRoundContext";
+import AlloWrapper from "./features/api/AlloWrapper";
+import { DataLayer, DataLayerProvider } from "data-layer";
+import { getConfig } from "common/src/config";
 
 // Initialize sentry
 initSentry();
@@ -48,96 +50,113 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
+const dataLayerConfig = new DataLayer({
+  search: {
+    baseUrl: getConfig().dataLayer.searchServiceBaseUrl,
+    pagination: {
+      pageSize: 50,
+    },
+  },
+  subgraph: {
+    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
+  },
+  indexer: {
+    baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
+  },
+});
+
 root.render(
   <React.StrictMode>
     <WagmiConfig client={WagmiClient}>
       <RainbowKitProvider coolMode chains={chains}>
-        <HashRouter>
-          <Routes>
-            {/* Protected Routes */}
-            <Route element={<Auth />}>
-              {/* Default Route */}
-              <Route
-                path="/"
-                element={
-                  <ReadProgramProvider>
-                    <Program />
-                  </ReadProgramProvider>
-                }
-              />
+        <AlloWrapper>
+          <DataLayerProvider client={dataLayerConfig}>
+            <HashRouter>
+              <Routes>
+                {/* Protected Routes */}
+                <Route element={<Auth />}>
+                  {/* Default Route */}
+                  <Route
+                    path="/"
+                    element={
+                      <ReadProgramProvider>
+                        <Program />
+                      </ReadProgramProvider>
+                    }
+                  />
 
-              {/* Round Routes */}
-              <Route
-                path="/round/create"
-                element={
-                  <ReadProgramProvider>
-                    <CreateRoundProvider>
-                      <CreateRound />
-                    </CreateRoundProvider>
-                  </ReadProgramProvider>
-                }
-              />
-              <Route
-                path="/round/:id"
-                element={
-                  <RoundProvider>
-                    <ApplicationProvider>
-                      <BulkUpdateGrantApplicationProvider>
-                        <FinalizeRoundProvider>
-                          <FundContractProvider>
-                            <ReclaimFundsProvider>
-                              <UpdateRoundProvider>
-                                <ViewRoundPage />
-                              </UpdateRoundProvider>
-                            </ReclaimFundsProvider>
-                          </FundContractProvider>
-                        </FinalizeRoundProvider>
-                      </BulkUpdateGrantApplicationProvider>
-                    </ApplicationProvider>
-                  </RoundProvider>
-                }
-              />
-              <Route
-                path="/round/:roundId/application/:id"
-                element={
-                  <RoundProvider>
-                    <ApplicationProvider>
-                      <BulkUpdateGrantApplicationProvider>
-                        <ViewApplication />
-                      </BulkUpdateGrantApplicationProvider>
-                    </ApplicationProvider>
-                  </RoundProvider>
-                }
-              />
+                  {/* Round Routes */}
+                  <Route
+                    path="/round/create"
+                    element={
+                      <ReadProgramProvider>
+                        <CreateRound />
+                      </ReadProgramProvider>
+                    }
+                  />
+                  <Route
+                    path="/round/:id"
+                    element={
+                      <RoundProvider>
+                        <ApplicationProvider>
+                          <BulkUpdateGrantApplicationProvider>
+                            <FinalizeRoundProvider>
+                              <FundContractProvider>
+                                <ReclaimFundsProvider>
+                                  <UpdateRoundProvider>
+                                    <ViewRoundPage />
+                                  </UpdateRoundProvider>
+                                </ReclaimFundsProvider>
+                              </FundContractProvider>
+                            </FinalizeRoundProvider>
+                          </BulkUpdateGrantApplicationProvider>
+                        </ApplicationProvider>
+                      </RoundProvider>
+                    }
+                  />
+                  <Route
+                    path="/round/:roundId/application/:id"
+                    element={
+                      <RoundProvider>
+                        <ApplicationProvider>
+                          <BulkUpdateGrantApplicationProvider>
+                            <ViewApplication />
+                          </BulkUpdateGrantApplicationProvider>
+                        </ApplicationProvider>
+                      </RoundProvider>
+                    }
+                  />
 
-              {/* Program Routes */}
-              <Route
-                path="/program/create"
-                element={
-                  <CreateProgramProvider>
-                    <CreateProgram />
-                  </CreateProgramProvider>
-                }
-              />
-              <Route
-                path="/program/:id"
-                element={
-                  <RoundProvider>
-                    <ReadProgramProvider>
-                      <ViewProgram />
-                    </ReadProgramProvider>
-                  </RoundProvider>
-                }
-              />
+                  {/* Program Routes */}
+                  <Route
+                    path="/program/create"
+                    element={
+                      <CreateProgramProvider>
+                        <CreateProgram />
+                      </CreateProgramProvider>
+                    }
+                  />
+                  <Route
+                    path="/program/:id"
+                    element={
+                      <RoundProvider>
+                        <ReadProgramProvider>
+                          <ViewProgram />
+                        </ReadProgramProvider>
+                      </RoundProvider>
+                    }
+                  />
 
-              {/* Access Denied */}
-              <Route path="/access-denied" element={<AccessDenied />} />
+                  {/* Access Denied */}
+                  <Route path="/access-denied" element={<AccessDenied />} />
 
-              {/* 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </HashRouter>
+                  {/* 404 */}
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </HashRouter>
+          </DataLayerProvider>
+        </AlloWrapper>
       </RainbowKitProvider>
     </WagmiConfig>
   </React.StrictMode>

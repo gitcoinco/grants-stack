@@ -1,11 +1,21 @@
-import useSWR from "swr";
 import { useMemo, useState } from "react";
-import { ChainId } from "./chains";
+import useSWR from "swr";
 import z from "zod";
+import { useOutletContext } from "react-router-dom";
+import { Network, Web3Provider } from "@ethersproject/providers";
+import { Signer } from "@ethersproject/abstract-signer";
+import { graphql_fetch } from "./graphql_fetch";
+import { ChainId } from "./chain-ids";
+import { useParams as useRouterParams } from "react-router";
+
 export * from "./icons";
 export * from "./markdown";
 
 export { ChainId };
+
+export function useParams<T extends Record<string, string> = never>() {
+  return useRouterParams<T>() as T;
+}
 
 export enum PassportState {
   NOT_CONNECTED,
@@ -95,75 +105,6 @@ export type Payout = {
   token: string;
   version: string;
   createdAt: string;
-};
-
-export const graphQlEndpoints: Record<ChainId, string> = {
-  [ChainId.DEV1]: process.env.REACT_APP_SUBGRAPH_DEV1_API!,
-  [ChainId.DEV2]: process.env.REACT_APP_SUBGRAPH_DEV2_API!,
-  [ChainId.PGN]: process.env.REACT_APP_SUBGRAPH_PGN_API!,
-  [ChainId.PGN_TESTNET]: process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API!,
-  [ChainId.MAINNET]: process.env.REACT_APP_SUBGRAPH_MAINNET_API!,
-  [ChainId.SEPOLIA]: process.env.REACT_APP_SUBGRAPH_SEPOLIA_API!,
-  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API!,
-  [ChainId.FANTOM_MAINNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API!,
-  [ChainId.FANTOM_TESTNET_CHAIN_ID]:
-    process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API!,
-  [ChainId.ARBITRUM_GOERLI]:
-    process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API!,
-  [ChainId.ARBITRUM]: process.env.REACT_APP_SUBGRAPH_ARBITRUM_API!,
-  [ChainId.FUJI]: process.env.REACT_APP_SUBGRAPH_FUJI_API!,
-  [ChainId.AVALANCHE]: process.env.REACT_APP_SUBGRAPH_AVALANCHE_API!,
-  [ChainId.POLYGON]: process.env.REACT_APP_SUBGRAPH_POLYGON_API!,
-  [ChainId.POLYGON_MUMBAI]: process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API!,
-};
-
-/**
- * Fetch subgraph network for provided web3 network.
- * The backticks are here to work around a failure of a test that tetsts graphql_fetch,
- * and fails if the endpoint is undefined, so we convert the undefined to a string here in order not to fail the test.
- *
- * @param chainId - The chain ID of the blockchain
- * @returns the subgraph endpoint
- */
-const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
-
-/**
- * Fetch data from a GraphQL endpoint
- *
- * @param query - The query to be executed
- * @param chainId - The chain ID of the blockchain indexed by the subgraph
- * @param variables - The variables to be used in the query
- * @param fromProjectRegistry - Override to fetch from grant hub project registry subgraph
- * @returns The result of the query
- */
-export const graphql_fetch = async (
-  query: string,
-  chainId: ChainId,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  variables: object = {},
-  fromProjectRegistry = false
-) => {
-  let endpoint = getGraphQLEndpoint(chainId);
-
-  if (fromProjectRegistry) {
-    endpoint = endpoint.replace("grants-round", "grants-hub");
-  }
-
-  return fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query, variables }),
-  }).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
-
-    return Promise.reject(resp);
-  });
 };
 
 /**
@@ -311,19 +252,6 @@ export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
 };
 
-export const RedstoneTokenIds = {
-  FTM: "FTM",
-  USDC: "USDC",
-  DAI: "DAI",
-  ETH: "ETH",
-  ARB: "ARB",
-  BUSD: "BUSD",
-  GTC: "GTC",
-  MATIC: "MATIC",
-  AVAX: "AVAX",
-  CVP: "CVP",
-} as const;
-
 export const useTokenPrice = (tokenId: string | undefined) => {
   const [tokenPrice, setTokenPrice] = useState<number>();
   const [error, setError] = useState<Response | undefined>();
@@ -383,3 +311,62 @@ export const ROUND_PAYOUT_MERKLE = "MERKLE";
 export const ROUND_PAYOUT_DIRECT = "DIRECT";
 export type RoundPayoutType = "MERKLE" | "DIRECT";
 export type RoundVisibilityType = "public" | "private";
+
+export type { Allo, AlloError, AlloOperation } from "./allo/allo";
+export { AlloV1 } from "./allo/backends/allo-v1";
+export { AlloV2 } from "./allo/backends/allo-v2";
+export {
+  createWaitForIndexerSyncTo,
+  getCurrentSubgraphBlockNumber,
+  waitForSubgraphSyncTo,
+} from "./allo/indexer";
+export type { WaitUntilIndexerSynced } from "./allo/indexer";
+export { createPinataIpfsUploader } from "./allo/ipfs";
+export { AlloContext, AlloProvider, useAllo } from "./allo/react";
+export {
+  createEthersTransactionSender,
+  createMockTransactionSender,
+  createViemTransactionSender,
+  decodeEventFromReceipt,
+  sendRawTransaction,
+  sendTransaction,
+} from "./allo/transaction-sender";
+
+export type AnyJson =
+  | boolean
+  | number
+  | string
+  | null
+  | undefined
+  | JsonArray
+  | JsonMap;
+interface JsonMap {
+  [key: string]: AnyJson;
+}
+interface JsonArray extends Array<AnyJson> {}
+
+/**
+ * Wrapper hook to expose wallet auth information to other components
+ */
+export function useWallet() {
+  return useOutletContext<Web3Instance>();
+}
+
+export interface Web3Instance {
+  /**
+   * Currently selected address in ETH format i.e 0x...
+   */
+  address: string;
+  /**
+   * Chain ID & name of the currently connected network
+   */
+  chain: {
+    id: number;
+    name: string;
+    network: Network;
+  };
+  provider: Web3Provider;
+  signer?: Signer;
+}
+
+export { graphql_fetch, graphQlEndpoints } from "./graphql_fetch";

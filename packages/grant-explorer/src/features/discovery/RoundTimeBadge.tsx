@@ -1,26 +1,27 @@
 import { Badge } from "../common/styles";
 
-type Props = {
-  roundEndsIn?: number;
-  applicationsEndsIn?: number;
-};
+interface RoundTimeBadgeProps {
+  roundStates: Array<"active" | "accepting-applications" | "ended"> | undefined;
+}
 
-const style = { rounded: "full", className: "absolute top-3 right-3" } as const;
+const STYLE = { rounded: "full", className: "absolute top-3 right-3" } as const;
 
-export function RoundTimeBadge({ roundEndsIn, applicationsEndsIn }: Props) {
-  if (roundEndsIn !== undefined && roundEndsIn < 0) {
+export const RoundTimeBadge: React.FC<RoundTimeBadgeProps> = ({
+  roundStates,
+}) => {
+  if (roundStates?.includes("accepting-applications")) {
     return (
-      <Badge color="orange" {...style}>
-        Round ended
-      </Badge>
-    );
-  }
-  if (applicationsEndsIn !== undefined && applicationsEndsIn > 0) {
-    return (
-      <Badge color="green" {...style}>
+      <Badge color="green" {...STYLE}>
         Apply!
       </Badge>
     );
+  } else if (roundStates?.includes("ended")) {
+    return (
+      <Badge color="orange" {...STYLE}>
+        Round ended
+      </Badge>
+    );
+  } else {
+    return null;
   }
-  return null;
-}
+};

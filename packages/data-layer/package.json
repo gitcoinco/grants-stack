@@ -1,0 +1,71 @@
+{
+  "name": "data-layer",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsc --watch",
+    "start": "node -r dotenv-flow/config dist/index.js",
+    "lint": "eslint --cache --max-warnings=0",
+    "lint:fix": "eslint --cache --max-warnings=0 --fix",
+    "lint:all:fix": "eslint --fix --cache --max-warnings=0 src",
+    "lint:all": "eslint --cache --max-warnings=0 src",
+    "generate:openapi": "openapi-generator-cli generate -i https://gitcoin-search-dev.fly.dev/openapi.json -o src/openapi-search-client -g typescript-fetch --additional-properties=importFileExtension=.js",
+    "generate:openapi:local": "openapi-generator-cli generate -i http://localhost:8000/openapi.json -o src/openapi-search-client -g typescript-fetch --additional-properties=importFileExtension=.js",
+    "format": "prettier --write",
+    "lint:unused-exports": "ts-unused-exports ./tsconfig.json --maxIssues=0",
+    "test": "vitest run --coverage",
+    "build": "tsc",
+    "test:watch": "vitest watch",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
+    "todo": "leasot 'src/**/*.ts'",
+    "prepare": "tsc"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@tsconfig/node18": "^18.2.2",
+    "@types/debug": "^4.1.8",
+    "@types/knuth-shuffle-seeded": "^1.0.1",
+    "@types/node": "^20.6.2",
+    "@types/papaparse": "^5.3.14",
+    "@types/react": "^18.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "@vitest/coverage-v8": "^0.34.4",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-vitest": "^0.3.10",
+    "leasot": "^13.3.0",
+    "lefthook": "^1.4.11",
+    "prettier": "^3.0.3",
+    "react": "^18.1.0",
+    "ts-unused-exports": "^10.0.1",
+    "tsx": "^3.12.10",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@gitcoinco/passport-sdk-types": "^0.2.0",
+    "@gitcoinco/passport-sdk-verifier": "^0.2.2",
+    "cross-fetch": "^4.0.0",
+    "debug": "^4.3.4",
+    "dotenv-flow": "^3.3.0",
+    "graphql-request": "^6.1.0",
+    "knuth-shuffle-seeded": "^1.0.6",
+    "papaparse": "^5.4.1",
+    "ts-custom-error": "^3.3.1",
+    "ts-essentials": "^9.4.1",
+    "viem": "^1.5.3",
+    "zod": "^3.22.2"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  }
+}

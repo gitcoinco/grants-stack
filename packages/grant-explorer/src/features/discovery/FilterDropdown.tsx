@@ -5,18 +5,16 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toQueryString } from "./RoundsFilter";
-import { FilterStatus, parseFilterParams } from "./hooks/useFilterRounds";
+import {
+  RoundFilterUiOption,
+  RoundStatus,
+  getRoundSelectionParamsFromUrlParams,
+} from "./hooks/useFilterRounds";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import { getFilterLabel } from "./utils/getFilterLabel";
-import { allChains } from "../../app/chainConfig";
+import { getEnabledChains } from "../../app/chainConfig";
 
-export type FilterOption = {
-  label: string;
-  value: string;
-  hide?: boolean;
-  children?: FilterOption[];
-};
-export const filterOptions: FilterOption[] = [
+export const FILTER_OPTIONS: RoundFilterUiOption[] = [
   {
     label: "All",
     value: "",
@@ -43,45 +41,39 @@ export const filterOptions: FilterOption[] = [
     children: [
       {
         label: "Active",
-        value: FilterStatus.active,
+        value: RoundStatus.active,
       },
       {
         label: "Taking applications",
-        value: FilterStatus.taking_applications,
+        value: RoundStatus.taking_applications,
       },
       {
         label: "Finished",
-        value: FilterStatus.finished,
+        value: RoundStatus.finished,
       },
     ],
   },
   {
     label: "Network",
     value: "network",
-    children: allChains.map(({ id, name }) => ({
+    children: getEnabledChains().map(({ id, name }) => ({
       label: `Rounds on ${name}`,
       value: String(id),
     })),
   },
 ];
 
-export type FilterProps = {
-  type: string;
-  status: string;
-  network: string;
-};
-
 export function FilterDropdown() {
   const [params] = useSearchParams();
 
-  const filter = parseFilterParams(params);
+  const filter = getRoundSelectionParamsFromUrlParams(params);
   const { status = "", type = "", network = "" } = filter;
 
   const selected = getFilterLabel({ status, type, network });
   return (
     <Dropdown
       label={selected?.label}
-      options={filterOptions}
+      options={FILTER_OPTIONS}
       keepOpen
       renderItem={({ label, value: filterKey, children, close }) => {
         // Filters can be multi selected (ie many networks)

@@ -90,9 +90,10 @@ export function RoundBanner(props: { roundId: string }) {
 export function CollectionBanner({ images }: { images: string[] }) {
   return (
     <div className="overflow-hidden h-[192px]">
-      {images.map((image) => {
+      {images.map((image, i) => {
         return (
           <div
+            key={i}
             className={`bg-grey-100 h-[48px] bg-no-repeat bg-center w-full bg-cover`}
             style={{
               backgroundImage: `url(${image})`,
@@ -107,9 +108,10 @@ export function CollectionBanner({ images }: { images: string[] }) {
 export function CategoryBanner({ images }: { images: string[] }) {
   return (
     <div className="overflow-hidden grid grid-cols-2">
-      {images.map((image) => {
+      {images.map((image, i) => {
         return (
           <div
+            key={i}
             className={`bg-grey-100 aspect-square w-full bg-no-repeat bg-cover`}
             style={{
               backgroundImage: `url(${image})`,

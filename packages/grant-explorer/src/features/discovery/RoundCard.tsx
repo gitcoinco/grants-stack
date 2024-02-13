@@ -3,8 +3,8 @@ import {
   ROUND_PAYOUT_DIRECT,
   truncateDescription,
 } from "common";
-import { RoundOverview, useMetadata } from "../api/rounds";
-import { CHAINS, getDaysLeft } from "../api/utils";
+import { __deprecated_RoundOverview, useMetadata } from "../api/rounds";
+import { CHAINS, getDaysLeft, getRoundStates } from "../api/utils";
 import {
   Badge,
   BasicCard,
@@ -23,7 +23,7 @@ import { RoundTimeBadge } from "./RoundTimeBadge";
 type RoundType = "all" | "endingSoon" | "active";
 
 type RoundCardProps = {
-  round: RoundOverview;
+  round: __deprecated_RoundOverview;
   index: number;
   roundType: RoundType;
 };
@@ -44,10 +44,26 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
   } = round ?? {};
 
   const { data: metadata, isLoading } = useMetadata(roundMetaPtr?.pointer);
-  const roundEndsIn = getDaysLeft(roundEndTime);
-  const roundStartsIn = getDaysLeft(roundStartTime);
-  const applicationsStartsIn = getDaysLeft(applicationsStartTime);
-  const applicationsEndsIn = getDaysLeft(applicationsEndTime);
+
+  const roundEndsIn =
+    roundEndTime === undefined ? undefined : getDaysLeft(roundEndTime);
+  const roundStartsIn =
+    roundStartTime === undefined ? undefined : getDaysLeft(roundStartTime);
+  const applicationsStartsIn =
+    applicationsStartTime === undefined
+      ? undefined
+      : getDaysLeft(applicationsStartTime);
+  const applicationsEndsIn =
+    applicationsEndTime === undefined
+      ? undefined
+      : getDaysLeft(applicationsEndTime);
+
+  const roundStates = getRoundStates({
+    roundStartTimeInSecsStr: roundStartTime,
+    roundEndTimeInSecsStr: roundEndTime,
+    applicationsEndTimeInSecsStr: applicationsEndTime,
+    atTimeMs: Date.now(),
+  });
 
   const approvedApplicationsCount = projects?.length ?? 0;
 
@@ -78,10 +94,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
-          <RoundTimeBadge
-            roundEndsIn={roundEndsIn}
-            applicationsEndsIn={applicationsEndsIn}
-          />
+          <RoundTimeBadge roundStates={roundStates} />
           <CardTitle
             data-testid="round-name"
             className="absolute bottom-1 px-2 text-white"

@@ -1,22 +1,30 @@
 {
   "name": "common",
   "version": "1.0.0",
-  "description": "Common code shared between GE and RM",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "author": "Josef Vacek",
-  "license": "MIT",
+  "description": "Common package for Grants Stack",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "private": false,
   "scripts": {
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "prepare": "tsc",
+    "dev:fast": "esbuild src/**/*.ts src/**/*.tsx src/*.ts src/*.tsx --outdir=dist --watch",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
+    "@allo-team/allo-v2-sdk": "^1.0.46",
     "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/abstract-signer": "^5.7.0",
     "@rainbow-me/rainbowkit": "^0.12.16",
+    "@wagmi/chains": "^1.8.0",
+    "abitype": "^0.10.3",
+    "data-layer": "workspace:*",
     "dompurify": "^2.4.3",
     "ethers": "^5.6.5",
     "framer-motion": "^10.12.7",
-    "grants-stack-data-client": "workspace:*",
     "markdown-it": "^13.0.1",
     "react": "^18.2.0",
     "react-hook-form": "^7.42.1",
@@ -24,7 +32,9 @@
     "react-router-dom": "^6.11.1",
     "swr": "^2.0.1",
     "tailwind-styled-components": "^2.2.0",
+    "tiny-emitter": "^2.1.0",
     "typescript": "latest",
+    "viem": "^1.5.3",
     "wagmi": "0.12.19",
     "zod": "^3.22.4"
   },
@@ -34,6 +44,7 @@
     "@types/node": "^18.15.5",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
+    "dotenv-flow": "^3.3.0",
     "vitest": "^0.34.6"
   }
 }
