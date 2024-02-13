@@ -29,6 +29,11 @@ export const getProjectImage = (
   return pinataClient.fileUrl(img);
 };
 
+export const getFileUrl = (cid: string): string => {
+  const pinataClient = new PinataClient(getConfig());
+  return pinataClient.fileUrl(cid);
+};
+
 export const formatDateFromMs = (ts: number) => {
   const date = new Date(ts);
   return date.toLocaleDateString("en-US", {
