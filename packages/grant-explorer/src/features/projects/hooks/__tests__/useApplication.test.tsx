@@ -1,4 +1,5 @@
 import { describe, Mock } from "vitest";
+import { DataLayer } from "data-layer";
 import { useApplication } from "../useApplication";
 import { renderWithContext } from "../../../../test-utils";
 import { createElement } from "react";
@@ -20,7 +21,13 @@ describe("useApplication", () => {
     const variables = { chainId: 1, roundId: "1", id: "1" };
     renderWithContext(
       createElement(() => {
-        const { data } = useApplication(variables, {});
+        const dataLayer = new DataLayer({
+          fetch: vi.fn().mockResolvedValue({}),
+          search: { baseUrl: "https://example.com" },
+          indexer: { baseUrl: "https://example.com" },
+        });
+
+        const { data } = useApplication(variables, dataLayer);
         if (data) {
           // Expect the hook to return the data
           expect(data).toEqual(applicationData.application);
