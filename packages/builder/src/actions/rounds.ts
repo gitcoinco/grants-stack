@@ -65,14 +65,10 @@ export const loadRound =
   async (dispatch: Dispatch) => {
     const { version } = getConfig().allo;
 
-    console.log("loading round", { roundId, version });
-
     try {
       // address validation
       if (version === "allo-v1") {
         ethers.utils.getAddress(roundId);
-
-        console.log("allo-v1 roundId", roundId);
       } else if (roundId.includes("0x")) {
         throw new Error(`Invalid roundId ${roundId}`);
       }
@@ -93,8 +89,6 @@ export const loadRound =
       dispatch(loadingError(roundId, "round not found"));
       return;
     }
-
-    console.log(v2Round);
 
     const applicationMetadata = parseRoundApplicationMetadata(
       v2Round.applicationMetadata
@@ -141,7 +135,8 @@ export const loadRound =
     }
 
     const round = {
-      address: roundId,
+      id: version === "allo-v1" ? roundId : v2Round.id,
+      address: version === "allo-v1" ? roundId : v2Round.strategyAddress,
       applicationsStartTime:
         Date.parse(`${v2Round.applicationsStartTime}Z`) / 1000,
       applicationsEndTime: Date.parse(`${v2Round.applicationsEndTime}Z`) / 1000,

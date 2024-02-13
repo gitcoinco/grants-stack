@@ -144,35 +144,23 @@ export function chainIdToChainName(chainId: number): string {
   throw new Error(`couldn't find LIT chain name for chainId ${chainId}`);
 }
 
-// todo: in v2 roundAddress is actually the id of the round
-// which breaks the `RoundApplicationBuilder` since it expects an address
-// we need to fetch and store the roundAddress from indexer, and use it instead of the id for the `RoundApplicationBuilder`
 export const submitApplication =
-  (roundAddress: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
+  (roundId: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
-    const roundState = state.rounds[roundAddress];
+    const roundState = state.rounds[roundId];
     const isV2 = getConfig().allo.version === "allo-v2";
-
-    console.log("formInputs", formInputs);
-    console.log(isV2, "isV2");
-
-    console.log("log: 1");
-    console.log("roundState", roundState);
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundAddress: roundId, // todo: roundAddress is misleading
       status: Status.BuildingApplication,
     });
 
-    console.log("log: 2");
-
     if (roundState === undefined) {
-      console.log("log: 3");
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot load round data",
         Status.BuildingApplication
       );
@@ -183,14 +171,12 @@ export const submitApplication =
     if (roundApplicationMetadata === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot load round application metadata",
         Status.BuildingApplication
       );
       return;
     }
-
-    console.log("log: 4");
 
     const projectQuestion =
       roundApplicationMetadata.applicationSchema.questions.find(
@@ -198,10 +184,9 @@ export const submitApplication =
       );
 
     if (!projectQuestion) {
-      console.log("log: 5");
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find project question id",
         Status.BuildingApplication
       );
@@ -210,7 +195,6 @@ export const submitApplication =
 
     const projectID = formInputs[projectQuestion.id] as string;
 
-    console.log("log: 6", projectID);
     const {
       id: projectNumber,
       registryAddress: projectRegistryAddress,
@@ -221,7 +205,7 @@ export const submitApplication =
     if (projectMetadata === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find selected project metadata",
         Status.BuildingApplication
       );
@@ -230,13 +214,11 @@ export const submitApplication =
 
     const project: Project = metadataToProject(projectMetadata, 0);
 
-    console.log("log: 7", project);
-
     const { chainID } = state.web3;
     if (chainID === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find chain id",
         Status.BuildingApplication
       );
@@ -246,16 +228,16 @@ export const submitApplication =
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundId,
       status: Status.LitAuthentication,
     });
-
-    console.log("log: 8");
 
     let application: RoundApplication;
     let deterministicApplication: string;
 
     try {
+      const roundAddress = roundState.round!.address;
+
       const builder = new RoundApplicationBuilder(
         true,
         project,
@@ -264,20 +246,13 @@ export const submitApplication =
         chainName
       );
 
-      console.log("log: 9");
-
       application = await builder.build(roundAddress, formInputs);
 
-      console.log("log: 10");
-
       deterministicApplication = objectToDeterministicJSON(application as any);
-
-      console.log("log: 11");
     } catch (error) {
-      console.log("log: 12", error);
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "error building round application",
         Status.LitAuthentication
       );
@@ -291,24 +266,19 @@ export const submitApplication =
       [deterministicApplication]
     );
 
-    console.log("log: 13", hash);
-
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundId,
       status: Status.SigningApplication,
     });
-
-    console.log("log: 14");
 
     let signature: string;
     try {
       signature = await signer.signMessage(hash);
     } catch (e) {
-      console.log("log: 14", e);
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "error signing round application",
         Status.SigningApplication
       );
@@ -320,8 +290,6 @@ export const submitApplication =
       application,
     };
 
-    console.log("log: 15", signedApplication);
-
     const projectUniqueID = isV2
       ? state.projects.anchor![projectID]
       : (generateUniqueRoundApplicationID(
@@ -330,25 +298,32 @@ export const submitApplication =
           projectRegistryAddress
         ) as Hex);
 
+    // todo: i think we're stuck here somewhere <=====================
+
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundAddress: roundId,
       status: Status.UploadingMetadata,
     });
 
+    // todo: i think we're stuck here somewhere <=====================
+
     const result = allo.applyToRound({
       projectId: projectUniqueID as Hex,
-      roundId: roundAddress as Hex,
+      roundId: roundId as Hex,
       metadata: signedApplication as unknown as AnyJson,
     });
+
+    // todo: i think we're stuck here somewhere <=====================
 
     await result
       .on("ipfs", (res) => {
         if (res.type === "success") {
-          console.log("IPFS CID", res.value);
+          // todo: i think we're stuck here somewhere <=====================
+
           dispatch({
             type: ROUND_APPLICATION_LOADING,
-            roundAddress,
+            roundAddress: roundId,
             status: Status.SendingTx,
           });
         } else {
@@ -357,7 +332,7 @@ export const submitApplication =
           datadogLogs.logger.error("ipfs: error uploading metadata");
           dispatchAndLogApplicationError(
             dispatch,
-            roundAddress,
+            roundId,
             "error uploading round application metadata",
             Status.UploadingMetadata
           );
@@ -377,13 +352,13 @@ export const submitApplication =
         if (res.type === "success") {
           dispatch({
             type: ROUND_APPLICATION_LOADED,
-            roundAddress,
+            roundAddress: roundId,
             projectId: projectID,
           });
         } else {
           dispatchAndLogApplicationError(
             dispatch,
-            roundAddress,
+            roundId,
             "error calling applyToRound",
             Status.SendingTx
           );

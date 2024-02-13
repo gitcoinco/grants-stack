@@ -131,13 +131,7 @@ export const fetchGrantData =
 
       dispatch(projectOwnersLoaded(id, ownerAddresses));
 
-      // fetch the anchor addresses
-      // Note: placeholder
-      // todo: update when the indexer supports fetching anchors by project id
       const anchorAddress = project.anchor!;
-
-      console.log("anchorAddress", anchorAddress);
-
       dispatch(projectAnchorsLoaded(id, anchorAddress));
 
       dispatch(grantMetadataFetched(item));

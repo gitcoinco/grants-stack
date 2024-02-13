@@ -236,6 +236,7 @@ export type V2Round = {
   applicationMetadata: RoundApplicationMetadata;
   applicationMetadataCid: string;
   strategyId: string;
+  strategyAddress: string;
 };
 
 export type ProjectEvents = {

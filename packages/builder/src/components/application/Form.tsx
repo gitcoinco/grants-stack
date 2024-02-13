@@ -104,8 +104,6 @@ export default function Form({
     const allProjectMetadata = state.grantsMetadata;
     const { chainID } = state.web3;
 
-    console.log("state.projects", state.projects);
-    console.log("allGrantsMetadata", allProjectMetadata);
     return {
       anchors: state.projects.anchor,
       projectIDs: state.projects.ids,
@@ -273,7 +271,6 @@ export default function Form({
   };
 
   useEffect(() => {
-    console.log("props.anchors", props.anchors);
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
       const { chainId } = getProjectURIComponents(id);
       const projectChainIconUri = getNetworkIcon(Number(chainId));
@@ -290,7 +287,6 @@ export default function Form({
     });
     currentOptions.unshift({ id: undefined, title: "", chainInfo: undefined });
 
-    console.log("currentOptions", currentOptions);
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
@@ -343,12 +339,6 @@ export default function Form({
 
   const needsProject = !schema.questions.find((q) => q.type === "project");
   const now = new Date().getTime() / 1000;
-  console.log("round", round);
-  console.log("now", now);
-  console.log(
-    "is round.applicationsEndTime < now ",
-    round.applicationsEndTime < now
-  );
 
   return (
     <>

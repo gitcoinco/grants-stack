@@ -132,6 +132,7 @@ export interface JWK {
 }
 
 export type Round = {
+  id: string;
   address: string;
   applicationsStartTime: number;
   applicationsEndTime: number;
