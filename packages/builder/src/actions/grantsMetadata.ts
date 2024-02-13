@@ -131,7 +131,7 @@ export const fetchGrantData =
 
       dispatch(projectOwnersLoaded(id, ownerAddresses));
 
-      const anchorAddress = project.anchor!;
+      const anchorAddress = project.anchorAddress!;
       dispatch(projectAnchorsLoaded(id, anchorAddress));
 
       dispatch(grantMetadataFetched(item));

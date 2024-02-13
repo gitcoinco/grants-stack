@@ -291,14 +291,12 @@ export const submitApplication =
     };
 
     const projectUniqueID = isV2
-      ? state.projects.anchor![projectID]
+      ? (state.projects.anchor![projectID] as Hex)
       : (generateUniqueRoundApplicationID(
           Number(projectChainId),
           projectNumber,
           projectRegistryAddress
         ) as Hex);
-
-    // todo: i think we're stuck here somewhere <=====================
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
@@ -306,21 +304,15 @@ export const submitApplication =
       status: Status.UploadingMetadata,
     });
 
-    // todo: i think we're stuck here somewhere <=====================
-
     const result = allo.applyToRound({
-      projectId: projectUniqueID as Hex,
-      roundId: roundId as Hex,
+      projectId: projectUniqueID,
+      roundId: isV2 ? Number(roundId) : (roundId as Hex),
       metadata: signedApplication as unknown as AnyJson,
     });
-
-    // todo: i think we're stuck here somewhere <=====================
 
     await result
       .on("ipfs", (res) => {
         if (res.type === "success") {
-          // todo: i think we're stuck here somewhere <=====================
-
           dispatch({
             type: ROUND_APPLICATION_LOADING,
             roundAddress: roundId,
