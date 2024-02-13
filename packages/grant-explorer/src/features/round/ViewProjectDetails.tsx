@@ -92,12 +92,16 @@ export default function ViewProjectDetails() {
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const { chainId, roundId, applicationId } = useProjectDetailsParams();
+  const dataLayer = useDataLayer();
 
-  const { data: application } = useApplication({
-    chainId: Number(chainId as string),
-    roundId,
-    applicationId: applicationId?.split("-")[1],
-  });
+  const { data: application, error } = useApplication(
+    {
+      chainId: Number(chainId as string),
+      roundId,
+      applicationId: applicationId?.split("-")[1],
+    },
+    dataLayer
+  );
 
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
@@ -213,20 +217,26 @@ export default function ViewProjectDetails() {
             />
           )}
           <div className="flex-1">
-            <Skeleton isLoaded={Boolean(title)}>
-              <h1 className="text-4xl font-medium tracking-tight text-black">
-                {title}
-              </h1>
-            </Skeleton>
-            <ProjectLinks project={projectToRender} />
-            <ProjectDetailsTabs
-              selected={selectedTab}
-              onChange={handleTabChange}
-              tabs={projectDetailsTabs.map((tab) => tab.name)}
-            />
-            <div className="[&_a]:underline">
-              {projectDetailsTabs[selectedTab].content}
-            </div>
+            {error === undefined ? (
+              <>
+                <Skeleton isLoaded={Boolean(title)}>
+                  <h1 className="text-4xl font-medium tracking-tight text-black">
+                    {title}
+                  </h1>
+                </Skeleton>
+                <ProjectLinks project={projectToRender} />
+                <ProjectDetailsTabs
+                  selected={selectedTab}
+                  onChange={handleTabChange}
+                  tabs={projectDetailsTabs.map((tab) => tab.name)}
+                />
+                <div className="[&_a]:underline">
+                  {projectDetailsTabs[selectedTab].content}
+                </div>
+              </>
+            ) : (
+              <p>Couldn't load project data.</p>
+            )}
           </div>
         </div>
       </DefaultLayout>
@@ -484,12 +494,15 @@ function Sidebar(props: {
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useProjectDetailsParams();
   const { round } = useRoundById(Number(chainId), roundId);
-
-  const { data: application } = useApplication({
-    chainId: Number(chainId as string),
-    roundId,
-    applicationId: applicationId.split("-")[1],
-  });
+  const dataLayer = useDataLayer();
+  const { data: application } = useApplication(
+    {
+      chainId: Number(chainId as string),
+      roundId,
+      applicationId: applicationId.split("-")[1],
+    },
+    dataLayer
+  );
 
   const timeRemaining =
     round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
