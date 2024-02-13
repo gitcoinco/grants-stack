@@ -91,7 +91,7 @@ export const getProjectById = gql`
       registryAddress
       tags
       nonce
-      anchor
+      anchorAddress
       roles {
         address
         role
@@ -133,7 +133,7 @@ export const getProjects = gql`
       registryAddress
       tags
       nonce
-      anchor
+      anchorAddress
     }
   }
 `;
@@ -197,7 +197,7 @@ export const getProjectsByAddress = gql`
         projectNumber
         tags
         nonce
-        anchor
+        anchorAddress
       }
     }
   }
@@ -232,7 +232,7 @@ export const getProjectsAndRolesByAddress = gql`
       tags
       id
       nonce
-      anchor
+      anchorAddress
       createdAtBlock
       applications {
         id

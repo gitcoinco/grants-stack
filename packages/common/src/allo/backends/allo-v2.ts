@@ -226,6 +226,7 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
+
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
       }
@@ -236,8 +237,6 @@ export class AlloV2 implements Allo {
       });
 
       const ipfsResult = await this.ipfsUploader(args.metadata);
-
-      console.log("ipfsResult", ipfsResult);
 
       emit("ipfs", ipfsResult);
 

@@ -194,7 +194,7 @@ export type v2Project = {
   updatedAtBlock: string;
   roles: AddressAndRole[];
   nonce?: bigint;
-  anchor?: string;
+  anchorAddress?: string;
 };
 
 /**
