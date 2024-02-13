@@ -18,6 +18,8 @@ import {
 import { fetchFromIPFS } from "./utils";
 import { maxDateForUint256 } from "../../constants";
 import { payoutTokens } from "./payoutTokens";
+import { Address } from "wagmi";
+import { DataLayer, V2RoundWithRoles } from "data-layer";
 
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
@@ -275,6 +277,62 @@ export async function getRoundById(
     console.error("getRoundById", error);
     throw "Unable to fetch round";
   }
+}
+
+function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
+  const operatorWallets = round.roles.map(
+    (account: { address: string }) => account.address
+  );
+
+  return {
+    id: round.id,
+    roundMetadata: round.roundMetadata as Round["roundMetadata"],
+    applicationMetadata:
+      round.applicationMetadata as unknown as Round["applicationMetadata"],
+    applicationsStartTime: new Date(round.applicationsStartTime),
+    applicationsEndTime:
+      round.applicationsEndTime === null
+        ? maxDateForUint256
+        : new Date(round.applicationsEndTime),
+    roundStartTime: new Date(round.donationsStartTime),
+    roundEndTime:
+      round.donationsEndTime === null
+        ? maxDateForUint256
+        : new Date(round.donationsEndTime),
+    token: round.matchTokenAddress,
+    votingStrategy: "unknown",
+    payoutStrategy: {
+      id: round.strategyAddress,
+      isReadyForPayout: false,
+      strategyName:
+        round.strategyName === "allov1.Direct" ? "DIRECT" : "MERKLE",
+    },
+    ownedBy: round.projectId,
+    operatorWallets: operatorWallets,
+    finalized: false,
+  };
+}
+
+/**
+ * Fetch a list of rounds
+ */
+export async function listRounds(args: {
+  chainId: number;
+  userAddress: Address;
+  dataLayer: DataLayer;
+  programId: string;
+}): Promise<{ rounds: Round[] }> {
+  const { chainId, userAddress, dataLayer, programId } = args;
+
+  const rounds = await dataLayer
+    .getRoundsByProgramIdAndUserAddress({
+      chainId: chainId,
+      programId,
+      userAddress,
+    })
+    .then((rounds) => rounds.map(indexerV2RoundToRound));
+
+  return { rounds };
 }
 
 /**

@@ -1,11 +1,12 @@
 import { ProgressStatus, Round } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
-import { getRoundById } from "../../features/api/round";
+import { getRoundById, listRounds } from "../../features/api/round";
 import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer, V2RoundWithRoles, useDataLayer } from "data-layer";
 import { maxDateForUint256 } from "../../constants";
+import { Address } from "viem";
 
 export interface RoundState {
   data: Round[];
@@ -36,44 +37,10 @@ export const RoundContext = createContext<
   { state: RoundState; dispatch: Dispatch } | undefined
 >(undefined);
 
-function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
-  const operatorWallets = round.roles.map(
-    (account: { address: string }) => account.address
-  );
-
-  return {
-    id: round.id,
-    roundMetadata: round.roundMetadata as Round["roundMetadata"],
-    applicationMetadata:
-      round.applicationMetadata as unknown as Round["applicationMetadata"],
-    applicationsStartTime: new Date(round.applicationsStartTime),
-    applicationsEndTime:
-      round.applicationsEndTime === null
-        ? maxDateForUint256
-        : new Date(round.applicationsEndTime),
-    roundStartTime: new Date(round.donationsStartTime),
-    roundEndTime:
-      round.donationsEndTime === null
-        ? maxDateForUint256
-        : new Date(round.donationsEndTime),
-    token: round.matchTokenAddress,
-    votingStrategy: "unknown",
-    payoutStrategy: {
-      id: round.strategyAddress,
-      isReadyForPayout: false,
-      strategyName:
-        round.strategyName === "allov1.Direct" ? "DIRECT" : "MERKLE",
-    },
-    ownedBy: round.projectId,
-    operatorWallets: operatorWallets,
-    finalized: false,
-  };
-}
-
 const fetchRounds = async (
   dispatch: Dispatch,
   dataLayer: DataLayer,
-  address: string,
+  address: Address,
   chainId: number,
   programId: string
 ) => {
@@ -85,15 +52,13 @@ const fetchRounds = async (
   });
 
   try {
-    const rounds = await dataLayer
-      .getRoundsByProgramIdAndUserAddress({
-        chainId: chainId,
-        programId,
-        userAddress: address as `0x${string}`,
-      })
-      .then((rounds) => rounds.map(indexerV2RoundToRound));
+    const { rounds } = await listRounds({
+      chainId: chainId,
+      dataLayer,
+      programId,
+      userAddress: address,
+    });
 
-    // const { rounds } = await listRounds(address, walletProvider, programId);
     dispatch({ type: ActionType.SET_ROUNDS, payload: rounds });
     dispatch({
       type: ActionType.SET_FETCH_ROUNDS_STATUS,
@@ -189,8 +154,15 @@ export const useRounds = (programId?: string) => {
 
   useEffect(() => {
     if (programId) {
-      const chainId = provider.network.chainId;
-      fetchRounds(context.dispatch, dataLayer, address, chainId, programId);
+      provider.getNetwork().then((network) => {
+        fetchRounds(
+          context.dispatch,
+          dataLayer,
+          address,
+          network.chainId,
+          programId
+        );
+      });
     }
   }, [address, dataLayer, provider, programId, context.dispatch]);
 
