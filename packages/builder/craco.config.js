@@ -29,6 +29,7 @@ module.exports = {
           require.resolve("jest-transform-stub"),
       },
       setupFilesAfterEnv: ["./src/setupTests.ts"],
+      testPathIgnorePatterns: ["/e2e/"],
     }),
   },
   webpack: {

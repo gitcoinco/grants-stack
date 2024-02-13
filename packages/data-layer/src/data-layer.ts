@@ -8,6 +8,7 @@ import * as collections from "./backends/collections";
 import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
+  Application,
   Collection,
   Program,
   ProjectApplication,
@@ -16,17 +17,18 @@ import {
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
-  V2Round,
   V2RoundWithRoles,
   v2Project,
+  V2Round,
 } from "./data.types";
 import {
   ApplicationSummary,
-  DefaultApi as SearchApi,
   Configuration as SearchApiConfiguration,
+  DefaultApi as SearchApi,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
+  getApplication,
   getApplicationsByProjectId,
   getProgramName,
   getProgramsByUser,
@@ -302,10 +304,10 @@ export class DataLayer {
     return projectEventsMap;
   }
 
-  // getApplicationsByProjectId
   /**
    * getApplicationsByProjectId() returns a list of projects by address.
    * @param projectId
+   * @param chainIds
    */
   async getApplicationsByProjectId({
     projectId,
@@ -326,6 +328,34 @@ export class DataLayer {
     );
 
     return response.applications ?? [];
+  }
+
+  /**
+   * Returns a single application as identified by its id, round name and chain name
+   * @param projectId
+   */
+  async getApplication({
+    roundId,
+    chainId,
+    applicationId,
+  }: {
+    roundId: Lowercase<Address>;
+    chainId: number;
+    applicationId: string;
+  }): Promise<Application | undefined> {
+    const requestVariables = {
+      roundId,
+      chainId,
+      applicationId,
+    };
+
+    const response: { application: Application } = await request(
+      this.gsIndexerEndpoint,
+      getApplication,
+      requestVariables,
+    );
+
+    return response.application ?? [];
   }
 
   async getProgramName({

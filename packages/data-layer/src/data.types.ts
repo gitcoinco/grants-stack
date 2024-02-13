@@ -421,3 +421,33 @@ export type Collection = {
   description: string;
   applicationRefs: string[];
 };
+
+export type Application = {
+  id: string;
+  chainId: string;
+  roundId: string;
+  projectId: string;
+  status: ApplicationStatus;
+  totalAmountDonatedInUsd: number;
+  totalDonationsCount: string;
+  uniqueDonorsCount: number;
+  round: {
+    donationsStartTime: string;
+    donationsEndTime: string;
+    applicationsStartTime: string;
+    applicationsEndTime: string;
+    roundMetadata: RoundMetadata;
+    matchTokenAddress: string;
+    tags: string[];
+  };
+  project: {
+    id: string;
+    metadata: ProjectMetadata;
+  };
+  metadata: {
+    application: {
+      recipient: string;
+      answers: GrantApplicationFormAnswer[];
+    };
+  };
+};
