@@ -160,6 +160,7 @@ export type ApplicationCardType = {
 
 export type ProjectOption = {
   id: string | undefined;
+  anchor?: string;
   title?: string;
   chainInfo?: {
     chainId: ChainId;

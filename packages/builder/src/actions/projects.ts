@@ -126,7 +126,7 @@ interface ProjectAnchorsLoadedAction {
   type: typeof PROJECT_ANCHORS_LOADED;
   payload: {
     projectID: string;
-    anchors: string[];
+    anchor: string;
   };
 }
 
@@ -176,11 +176,11 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
   },
 });
 
-export const projectAnchorsLoaded = (projectID: string, anchors: string[]) => ({
+export const projectAnchorsLoaded = (projectID: string, anchor: string) => ({
   type: PROJECT_ANCHORS_LOADED,
   payload: {
     projectID,
-    anchors,
+    anchor,
   },
 });
 

@@ -107,6 +107,7 @@ export default function Form({
     console.log("state.projects", state.projects);
     console.log("allGrantsMetadata", allProjectMetadata);
     return {
+      anchors: state.projects.anchor,
       projectIDs: state.projects.ids,
       allProjectMetadata,
       chainID,
@@ -272,6 +273,7 @@ export default function Form({
   };
 
   useEffect(() => {
+    console.log("props.anchors", props.anchors);
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
       const { chainId } = getProjectURIComponents(id);
       const projectChainIconUri = getNetworkIcon(Number(chainId));
@@ -341,6 +343,12 @@ export default function Form({
 
   const needsProject = !schema.questions.find((q) => q.type === "project");
   const now = new Date().getTime() / 1000;
+  console.log("round", round);
+  console.log("now", now);
+  console.log(
+    "is round.applicationsEndTime < now ",
+    round.applicationsEndTime < now
+  );
 
   return (
     <>
@@ -851,7 +859,7 @@ export default function Form({
           open={showErrorModal}
           onClose={closeErrorModal}
           onRetry={handleSubmitApplicationRetry}
-          title="Round Application Period Closed"
+          title="Round Application Error"
         >
           {round.applicationsEndTime < now ? (
             <div className="my-2">

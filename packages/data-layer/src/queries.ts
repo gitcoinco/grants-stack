@@ -90,6 +90,8 @@ export const getProjectById = gql`
       projectNumber
       registryAddress
       tags
+      nonce
+      anchor
       roles {
         address
         role
@@ -130,6 +132,8 @@ export const getProjects = gql`
       projectNumber
       registryAddress
       tags
+      nonce
+      anchor
     }
   }
 `;
@@ -192,6 +196,8 @@ export const getProjectsByAddress = gql`
         registryAddress
         projectNumber
         tags
+        nonce
+        anchor
       }
     }
   }
@@ -225,6 +231,8 @@ export const getProjectsAndRolesByAddress = gql`
       projectNumber
       tags
       id
+      nonce
+      anchor
       createdAtBlock
       applications {
         id

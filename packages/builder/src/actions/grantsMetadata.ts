@@ -134,11 +134,9 @@ export const fetchGrantData =
       // fetch the anchor addresses
       // Note: placeholder
       // todo: update when the indexer supports fetching anchors by project id
-      const anchorAddress: `0x${string}`[] = project.roles
-        .filter((role: AddressAndRole) => role.role === "ANCHOR")
-        .map((role) => ethers.utils.getAddress(role.address));
+      const anchorAddress = project.anchor!;
 
-      console.log("anchorAddresses", anchorAddress);
+      console.log("anchorAddress", anchorAddress);
 
       dispatch(projectAnchorsLoaded(id, anchorAddress));
 

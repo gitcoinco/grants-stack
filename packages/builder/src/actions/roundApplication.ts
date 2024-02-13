@@ -144,11 +144,21 @@ export function chainIdToChainName(chainId: number): string {
   throw new Error(`couldn't find LIT chain name for chainId ${chainId}`);
 }
 
+// todo: in v2 roundAddress is actually the id of the round
+// which breaks the `RoundApplicationBuilder` since it expects an address
+// we need to fetch and store the roundAddress from indexer, and use it instead of the id for the `RoundApplicationBuilder`
 export const submitApplication =
   (roundAddress: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const roundState = state.rounds[roundAddress];
+    const isV2 = getConfig().allo.version === "allo-v2";
+
+    console.log("formInputs", formInputs);
+    console.log(isV2, "isV2");
+
+    console.log("log: 1");
+    console.log("roundState", roundState);
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
@@ -156,7 +166,10 @@ export const submitApplication =
       status: Status.BuildingApplication,
     });
 
+    console.log("log: 2");
+
     if (roundState === undefined) {
+      console.log("log: 3");
       dispatchAndLogApplicationError(
         dispatch,
         roundAddress,
@@ -177,12 +190,15 @@ export const submitApplication =
       return;
     }
 
+    console.log("log: 4");
+
     const projectQuestion =
       roundApplicationMetadata.applicationSchema.questions.find(
         (q: { type: string }) => q.type === "project"
       );
 
     if (!projectQuestion) {
+      console.log("log: 5");
       dispatchAndLogApplicationError(
         dispatch,
         roundAddress,
@@ -194,6 +210,7 @@ export const submitApplication =
 
     const projectID = formInputs[projectQuestion.id] as string;
 
+    console.log("log: 6", projectID);
     const {
       id: projectNumber,
       registryAddress: projectRegistryAddress,
@@ -213,6 +230,8 @@ export const submitApplication =
 
     const project: Project = metadataToProject(projectMetadata, 0);
 
+    console.log("log: 7", project);
+
     const { chainID } = state.web3;
     if (chainID === undefined) {
       dispatchAndLogApplicationError(
@@ -231,6 +250,8 @@ export const submitApplication =
       status: Status.LitAuthentication,
     });
 
+    console.log("log: 8");
+
     let application: RoundApplication;
     let deterministicApplication: string;
 
@@ -243,10 +264,17 @@ export const submitApplication =
         chainName
       );
 
+      console.log("log: 9");
+
       application = await builder.build(roundAddress, formInputs);
 
+      console.log("log: 10");
+
       deterministicApplication = objectToDeterministicJSON(application as any);
+
+      console.log("log: 11");
     } catch (error) {
+      console.log("log: 12", error);
       dispatchAndLogApplicationError(
         dispatch,
         roundAddress,
@@ -263,16 +291,21 @@ export const submitApplication =
       [deterministicApplication]
     );
 
+    console.log("log: 13", hash);
+
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
       status: Status.SigningApplication,
     });
 
+    console.log("log: 14");
+
     let signature: string;
     try {
       signature = await signer.signMessage(hash);
     } catch (e) {
+      console.log("log: 14", e);
       dispatchAndLogApplicationError(
         dispatch,
         roundAddress,
@@ -287,11 +320,15 @@ export const submitApplication =
       application,
     };
 
-    const projectUniqueID = generateUniqueRoundApplicationID(
-      Number(projectChainId),
-      projectNumber,
-      projectRegistryAddress
-    ) as Hex;
+    console.log("log: 15", signedApplication);
+
+    const projectUniqueID = isV2
+      ? state.projects.anchor![projectID]
+      : (generateUniqueRoundApplicationID(
+          Number(projectChainId),
+          projectNumber,
+          projectRegistryAddress
+        ) as Hex);
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
@@ -300,7 +337,7 @@ export const submitApplication =
     });
 
     const result = allo.applyToRound({
-      projectId: projectUniqueID,
+      projectId: projectUniqueID as Hex,
       roundId: roundAddress as Hex,
       metadata: signedApplication as unknown as AnyJson,
     });
