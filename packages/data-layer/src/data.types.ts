@@ -227,9 +227,9 @@ export type V2Round = {
   donationsStartTime: string;
   donationsEndTime: string;
   matchTokenAddress: string;
-  roundMetadata: unknown;
+  roundMetadata: RoundMetadata | null;
   roundMetadataCid: string;
-  applicationMetadata: RoundApplicationMetadata;
+  applicationMetadata: RoundApplicationMetadata | null;
   applicationMetadataCid: string;
   projectId: string;
   strategyAddress: string;
