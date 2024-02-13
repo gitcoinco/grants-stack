@@ -1,19 +1,7 @@
 import useSWR from "swr";
-<<<<<<< HEAD
 import { Application, DataLayer, Project, Round } from "data-layer";
 import { getConfig } from "common/src/config";
 import { Address, getAddress, zeroAddress } from "viem";
-=======
-import {
-  ApplicationStatus,
-  GrantApplicationFormAnswer,
-  Project,
-  ProjectMetadata,
-  Round,
-  RoundMetadata,
-} from "data-layer";
-import { getConfig } from "common/src/config";
->>>>>>> main
 
 type Params = {
   chainId?: number;
@@ -22,7 +10,6 @@ type Params = {
 };
 
 const {
-<<<<<<< HEAD
   allo: { version },
 } = getConfig();
 
@@ -46,88 +33,6 @@ export function useApplication(params: Params, dataLayer: DataLayer) {
       }
       return application;
     });
-=======
-  dataLayer: { gsIndexerEndpoint },
-  allo: { version },
-} = getConfig();
-
-const allo_v2_url = gsIndexerEndpoint + "/graphql";
-
-const APPLICATION_QUERY = `
-query Application($chainId: Int!, $applicationId: String!, $roundId: String!) {
-  application(chainId: $chainId, id: $applicationId, roundId: $roundId) {
-    id
-    chainId
-    roundId
-    projectId
-    status
-    totalAmountDonatedInUsd
-    uniqueDonorsCount
-    round {
-      donationsStartTime
-      donationsEndTime
-      applicationsStartTime
-      applicationsEndTime
-      matchTokenAddress
-      roundMetadata
-    }
-    metadata
-    project {
-      tags
-      id
-      metadata
-    }
-  }
-}
-`;
-
-export type Application = {
-  id: string;
-  chainId: string;
-  roundId: string;
-  projectId: string;
-  status: ApplicationStatus;
-  totalAmountDonatedInUsd: string;
-  totalDonationsCount: string;
-  round: {
-    donationsStartTime: string;
-    donationsEndTime: string;
-    applicationsStartTime: string;
-    applicationsEndTime: string;
-    roundMetadata: RoundMetadata;
-    matchTokenAddress: string;
-  };
-  project: {
-    id: string;
-    metadata: ProjectMetadata;
-  };
-  metadata: {
-    application: {
-      recipient: string;
-      answers: GrantApplicationFormAnswer[];
-    };
-  };
-};
-
-export function useApplication(params: Params) {
-  const shouldFetch = Object.values(params).every(Boolean);
-  return useSWR(shouldFetch ? ["applications", params] : null, async () => {
-    return request(allo_v2_url, {
-      query: APPLICATION_QUERY,
-      variables: params,
-    })
-      .then((r) => r.data?.application)
-      .then((application) => {
-        /* Don't fetch v2 rounds when allo version is set to v1 */
-        if (
-          version === "allo-v1" &&
-          application.project.tags.includes("allo-v2")
-        ) {
-          return;
-        }
-        return application;
-      });
->>>>>>> main
   });
 }
 
@@ -169,21 +74,3 @@ export function mapApplicationToRound(
     ownedBy: "",
   };
 }
-<<<<<<< HEAD
-=======
-
-async function request(url: string, body: unknown) {
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  }).then(async (res) => {
-    if (!res.ok) {
-      throw new Error(`${res.status} ${res.statusText}`);
-    }
-    return await res.json();
-  });
-}
->>>>>>> main
