@@ -1,4 +1,4 @@
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { ROUND_PAYOUT_DIRECT_OLD, ROUND_PAYOUT_MERKLE_OLD } from "common";
 import { getFilterLabel } from "./getFilterLabel";
 import { RoundFilterParams, RoundStatus } from "../hooks/useFilterRounds";
 
@@ -8,9 +8,9 @@ export function getExplorerPageTitle(filter: RoundFilterParams): string {
   switch (value) {
     case "":
       return "All rounds";
-    case ROUND_PAYOUT_MERKLE:
+    case ROUND_PAYOUT_MERKLE_OLD:
       return "Quadratic Funding rounds";
-    case ROUND_PAYOUT_DIRECT:
+    case ROUND_PAYOUT_DIRECT_OLD:
       return "Direct Grants rounds";
     case RoundStatus.active:
       return "Active rounds";
