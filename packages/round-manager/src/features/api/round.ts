@@ -18,6 +18,8 @@ import {
 import { fetchFromIPFS } from "./utils";
 import { maxDateForUint256 } from "../../constants";
 import { payoutTokens } from "./payoutTokens";
+import { Address } from "wagmi";
+import { DataLayer, V2RoundWithRoles } from "data-layer";
 
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
@@ -277,115 +279,60 @@ export async function getRoundById(
   }
 }
 
+function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
+  const operatorWallets = round.roles.map(
+    (account: { address: string }) => account.address
+  );
+
+  return {
+    id: round.id,
+    roundMetadata: round.roundMetadata as Round["roundMetadata"],
+    applicationMetadata:
+      round.applicationMetadata as unknown as Round["applicationMetadata"],
+    applicationsStartTime: new Date(round.applicationsStartTime),
+    applicationsEndTime:
+      round.applicationsEndTime === null
+        ? maxDateForUint256
+        : new Date(round.applicationsEndTime),
+    roundStartTime: new Date(round.donationsStartTime),
+    roundEndTime:
+      round.donationsEndTime === null
+        ? maxDateForUint256
+        : new Date(round.donationsEndTime),
+    token: round.matchTokenAddress,
+    votingStrategy: "unknown",
+    payoutStrategy: {
+      id: round.strategyAddress,
+      isReadyForPayout: false,
+      strategyName:
+        round.strategyName === "allov1.Direct" ? "DIRECT" : "MERKLE",
+    },
+    ownedBy: round.projectId,
+    operatorWallets: operatorWallets,
+    finalized: false,
+  };
+}
+
 /**
  * Fetch a list of rounds
- * @param address - a valid round operator
- * @param signerOrProvider - provider
- * @param programId - the ID of the program the round belongs to
- * @param roundId - the ID of a specific round for detail
  */
-export async function listRounds(
-  address: string,
-  signerOrProvider: Web3Provider,
-  programId: string,
-  roundId?: string
-): Promise<{ rounds: Round[] }> {
-  try {
-    // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork();
+export async function listRounds(args: {
+  chainId: number;
+  userAddress: Address;
+  dataLayer: DataLayer;
+  programId: string;
+}): Promise<{ rounds: Round[] }> {
+  const { chainId, userAddress, dataLayer, programId } = args;
 
-    // query the subgraph for all rounds by the given address in the given program
-    const res = await graphql_fetch(
-      `
-          query GetRounds($address: String, $programId: String, $roundId: String) {
-            rounds(where: {
-        ${address ? `accounts_: { address: $address } ` : ``}
-        ${programId ? `program: $programId` : ``}
-        ${roundId ? `id: $roundId` : ``}
-            }) {
-              id
-              program {
-                id
-              }
-              payoutStrategy {
-                id
-                strategyName
-              }
-              roundMetaPtr {
-                protocol
-                pointer
-              }
-              applicationMetaPtr {
-                protocol
-                pointer
-              }
-              applicationsStartTime
-              applicationsEndTime
-              roundStartTime
-              roundEndTime
-              roles(where: {
-                role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
-              }) {
-                accounts {
-                  address
-                }
-              }
-            }
-          }
-        `,
-      chainId,
-      { address: address?.toLowerCase(), programId, roundId }
-    );
+  const rounds = await dataLayer
+    .getRoundsByProgramIdAndUserAddress({
+      chainId: chainId,
+      programId,
+      userAddress,
+    })
+    .then((rounds) => rounds.map(indexerV2RoundToRound));
 
-    const rounds: Round[] = [];
-
-    for (const round of res.data.rounds) {
-      // fetch round and application metadata from IPFS
-      const [roundMetadata, applicationMetadata] = await Promise.all([
-        fetchFromIPFS(round.roundMetaPtr.pointer),
-        fetchFromIPFS(round.applicationMetaPtr.pointer),
-      ]);
-
-      if (round.roles.length === 0) {
-        continue;
-      }
-
-      const operatorWallets = round.roles[0].accounts.map(
-        (account: { address: string }) => account.address
-      );
-
-      rounds.push({
-        id: round.id,
-        roundMetadata,
-        applicationMetadata,
-        applicationsStartTime: new Date(round.applicationsStartTime * 1000),
-        applicationsEndTime:
-          round.applicationsEndTime === ethers.constants.MaxUint256.toString()
-            ? maxDateForUint256
-            : new Date(round.applicationsEndTime * 1000),
-        roundStartTime: new Date(round.roundStartTime * 1000),
-        roundEndTime:
-          round.roundEndTime === ethers.constants.MaxUint256.toString()
-            ? maxDateForUint256
-            : new Date(round.roundEndTime * 1000),
-        token: round.token,
-        votingStrategy: round.votingStrategy,
-        payoutStrategy: {
-          id: round.payoutStrategy?.id || "",
-          isReadyForPayout: false,
-          strategyName: round.payoutStrategy?.strategyName || "unknown",
-        },
-        ownedBy: round.program.id,
-        operatorWallets: operatorWallets,
-        finalized: false,
-      });
-    }
-
-    return { rounds };
-  } catch (error) {
-    console.error("listRounds", error);
-    throw new Error("Unable to fetch rounds");
-  }
+  return { rounds };
 }
 
 /**

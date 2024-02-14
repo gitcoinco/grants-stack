@@ -7,6 +7,7 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
 import { RoundVisibilityType } from "common";
+import { Address } from  "viem";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -14,7 +15,7 @@ export interface Web3Instance {
   /**
    * Currently selected address in ETH format i.e 0x...
    */
-  address: string;
+  address: Address;
   /**
    * Chain ID & name of the currently connected network
    */

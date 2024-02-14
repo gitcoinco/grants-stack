@@ -4,6 +4,8 @@ import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
 import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
+import { DataLayer, useDataLayer } from "data-layer";
+import { Address } from "viem";
 
 export interface RoundState {
   data: Round[];
@@ -36,8 +38,9 @@ export const RoundContext = createContext<
 
 const fetchRounds = async (
   dispatch: Dispatch,
-  address: string,
-  walletProvider: Web3Provider,
+  dataLayer: DataLayer,
+  address: Address,
+  chainId: number,
   programId: string
 ) => {
   datadogLogs.logger.info(`fetchRounds: program - ${programId}`);
@@ -48,7 +51,13 @@ const fetchRounds = async (
   });
 
   try {
-    const { rounds } = await listRounds(address, walletProvider, programId);
+    const { rounds } = await listRounds({
+      chainId: chainId,
+      dataLayer,
+      programId,
+      userAddress: address,
+    });
+
     dispatch({ type: ActionType.SET_ROUNDS, payload: rounds });
     dispatch({
       type: ActionType.SET_FETCH_ROUNDS_STATUS,
@@ -135,6 +144,8 @@ export const RoundProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useRounds = (programId?: string) => {
   const context = useContext(RoundContext);
+  const dataLayer = useDataLayer();
+
   if (context === undefined) {
     throw new Error("useRounds must be used within a RoundProvider");
   }
@@ -142,9 +153,17 @@ export const useRounds = (programId?: string) => {
 
   useEffect(() => {
     if (programId) {
-      fetchRounds(context.dispatch, address, provider, programId);
+      provider.getNetwork().then((network) => {
+        fetchRounds(
+          context.dispatch,
+          dataLayer,
+          address,
+          network.chainId,
+          programId
+        );
+      });
     }
-  }, [address, provider, programId, context.dispatch]);
+  }, [address, dataLayer, provider, programId, context.dispatch]);
 
   return { ...context.state, dispatch: context.dispatch };
 };
