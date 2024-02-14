@@ -67,7 +67,7 @@ export function mapApplicationToRound(
     // This is missing from the indexer
     payoutStrategy: {
       id: "id",
-      strategyName: "MERKLE",
+      strategyName: application.round.strategyName,
     },
     // These might not be used anywhere in the app
     votingStrategy: "",

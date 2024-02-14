@@ -173,6 +173,7 @@ export const getApplication = gql`
       totalAmountDonatedInUsd
       uniqueDonorsCount
       round {
+        strategyName
         donationsStartTime
         donationsEndTime
         applicationsStartTime
