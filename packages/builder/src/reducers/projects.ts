@@ -5,6 +5,7 @@ import {
   PROJECTS_LOADED,
   PROJECTS_LOADING,
   PROJECTS_UNLOADED,
+  PROJECT_ANCHORS_LOADED,
   PROJECT_APPLICATIONS_ERROR,
   PROJECT_APPLICATIONS_LOADED,
   PROJECT_APPLICATIONS_LOADING,
@@ -30,6 +31,7 @@ export interface ProjectsState {
   ids: string[];
   events: ProjectEventsMap;
   owners: ProjectOwners;
+  anchor?: { [anchor: string]: string };
   applications?: {
     [projectID: string]: ProjectApplication[];
   };
@@ -45,6 +47,7 @@ export const initialState: ProjectsState = {
   ids: [],
   owners: {},
   events: {},
+  anchor: {},
   applications: {},
   stats: {},
 };
@@ -190,6 +193,16 @@ export const projectsReducer = (
       return {
         ...state,
         error: action.error,
+      };
+    }
+
+    case PROJECT_ANCHORS_LOADED: {
+      return {
+        ...state,
+        anchor: {
+          ...state.anchor,
+          [action.payload.projectID]: action.payload.anchor,
+        },
       };
     }
 

@@ -1,7 +1,5 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { 
-  RoundApplicationMetadata,
-} from './roundApplication.types';
+import { RoundApplicationMetadata } from "./roundApplication.types";
 // TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
 // avoid further spaghetti dependencies. They should probably be relocated here.
 export type RoundPayoutType = "MERKLE" | "DIRECT";
@@ -193,6 +191,8 @@ export type v2Project = {
    */
   updatedAtBlock: string;
   roles: AddressAndRole[];
+  nonce?: bigint;
+  anchorAddress?: string;
 };
 
 /**
@@ -229,11 +229,19 @@ export type V2Round = {
   donationsStartTime: string;
   donationsEndTime: string;
   matchTokenAddress: string;
-  roundMetadata: any;
+  roundMetadata: RoundMetadata | null;
   roundMetadataCid: string;
-  applicationMetadata: RoundApplicationMetadata;
+  applicationMetadata: RoundApplicationMetadata | null;
   applicationMetadataCid: string;
-}
+  strategyId: string;
+  projectId: string;
+  strategyAddress: string;
+  strategyName: string;
+};
+
+export type V2RoundWithRoles = V2Round & {
+  roles: AddressAndRole[];
+};
 
 export type ProjectEvents = {
   createdAtBlock: number | undefined;
@@ -415,4 +423,34 @@ export type Collection = {
   images: string[];
   description: string;
   applicationRefs: string[];
+};
+
+export type Application = {
+  id: string;
+  chainId: string;
+  roundId: string;
+  projectId: string;
+  status: ApplicationStatus;
+  totalAmountDonatedInUsd: number;
+  totalDonationsCount: string;
+  uniqueDonorsCount: number;
+  round: {
+    donationsStartTime: string;
+    donationsEndTime: string;
+    applicationsStartTime: string;
+    applicationsEndTime: string;
+    roundMetadata: RoundMetadata;
+    matchTokenAddress: string;
+    tags: string[];
+  };
+  project: {
+    id: string;
+    metadata: ProjectMetadata;
+  };
+  metadata: {
+    application: {
+      recipient: string;
+      answers: GrantApplicationFormAnswer[];
+    };
+  };
 };

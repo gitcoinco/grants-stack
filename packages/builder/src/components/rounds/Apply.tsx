@@ -293,9 +293,7 @@ function Apply() {
                 showErrorModal={props.showErrorModal || false}
                 round={props.round}
                 onSubmit={(answers: RoundApplicationAnswers) => {
-                  dispatch(
-                    submitApplication(props.round!.address, answers, allo)
-                  );
+                  dispatch(submitApplication(props.round!.id, answers, allo));
                   toggleStatusModal(true);
                 }}
               />

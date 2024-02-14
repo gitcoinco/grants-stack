@@ -43,7 +43,7 @@ describe("<ViewProgram />", () => {
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},
       address: stubProgram.operatorWallets[0],
-      provider: { getNetwork: () => ({ chainId: "0x0" }) },
+      provider: { getNetwork: () => Promise.resolve({ chainId: "0x0" }) },
     });
   });
 
@@ -62,7 +62,7 @@ describe("<ViewProgram />", () => {
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},
       address: faker.finance.ethereumAddress(),
-      provider: { getNetwork: () => ({ chainId: "0x0" }) },
+      provider: { getNetwork: () => Promise.resolve({ chainId: "0x0" }) },
     });
 
     render(
@@ -108,7 +108,7 @@ describe("<ViewProgram />", () => {
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},
       address: stubProgram.operatorWallets[0],
-      provider: { getNetwork: () => ({ chainId: "0x0" }) },
+      provider: { getNetwork: () => Promise.resolve({ chainId: "0x0" }) },
     });
 
     render(

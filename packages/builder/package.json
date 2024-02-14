@@ -56,7 +56,7 @@
     "dompurify": "^2.4.3",
     "ethers": "^5.7.2",
     "framer-motion": "^6",
-    "gitcoin-lit-js-sdk": "^1.2.9",
+    "gitcoin-lit-js-sdk": "^1.3.1",
     "history": "^5.3.0",
     "https-browserify": "^1.0.0",
     "jest": "^27.0",
