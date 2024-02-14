@@ -8,6 +8,7 @@ import * as collections from "./backends/collections";
 import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
+  Application,
   Collection,
   Program,
   ProjectApplication,
@@ -17,16 +18,17 @@ import {
   SearchBasedProjectCategory,
   Tags,
   TimestampVariables,
-  V2Round,
   v2Project,
+  V2Round,
 } from "./data.types";
 import {
   ApplicationSummary,
-  DefaultApi as SearchApi,
   Configuration as SearchApiConfiguration,
+  DefaultApi as SearchApi,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
+  getApplication,
   getApplicationsByProjectId,
   getProgramName,
   getProjectById,
@@ -35,6 +37,7 @@ import {
   getProgramByUserAndTag,
   getRoundByIdAndChainId,
 } from "./queries";
+import { Address } from "viem";
 
 /**
  * DataLayer is a class that provides a unified interface to the various data sources.
@@ -330,10 +333,10 @@ export class DataLayer {
     return projectEventsMap;
   }
 
-  // getApplicationsByProjectId
   /**
    * getApplicationsByProjectId() returns a list of projects by address.
    * @param projectId
+   * @param chainIds
    */
   async getApplicationsByProjectId({
     projectId,
@@ -354,6 +357,34 @@ export class DataLayer {
     );
 
     return response.applications ?? [];
+  }
+
+  /**
+   * Returns a single application as identified by its id, round name and chain name
+   * @param projectId
+   */
+  async getApplication({
+    roundId,
+    chainId,
+    applicationId,
+  }: {
+    roundId: Lowercase<Address>;
+    chainId: number;
+    applicationId: string;
+  }): Promise<Application | undefined> {
+    const requestVariables = {
+      roundId,
+      chainId,
+      applicationId,
+    };
+
+    const response: { application: Application } = await request(
+      this.gsIndexerEndpoint,
+      getApplication,
+      requestVariables,
+    );
+
+    return response.application ?? [];
   }
 
   async getProgramName({

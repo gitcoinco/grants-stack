@@ -15,7 +15,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "sourceMap": true
+    "sourceMap": true,
+    "incremental": true
   },
   "include": ["src", "craco.config.js", ".eslintrc.js"]
 }
