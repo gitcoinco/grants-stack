@@ -52,8 +52,8 @@ function ProjectsList() {
 
     const showRoundModal =
       roundToApply &&
-      state.projects.ids.length === 1 &&
-      toggleModal === ApplicationModalStatus.NotApplied &&
+      state.projects.ids.length > 0 &&
+      toggleModal <= ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
 
     const applicationStartTime = round?.applicationsStartTime ?? 0;
@@ -87,7 +87,7 @@ function ProjectsList() {
   useEffect(() => {
     if (roundToApply) {
       const [chainId, roundId] = roundToApply.split(":");
-      dispatch(loadRound(roundId, Number(chainId)));
+      dispatch(loadRound(roundId, dataLayer, Number(chainId)));
     }
   }, [roundToApply]);
 

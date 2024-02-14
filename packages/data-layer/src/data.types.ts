@@ -1,5 +1,5 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-
+import { RoundApplicationMetadata } from "./roundApplication.types";
 // TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
 // avoid further spaghetti dependencies. They should probably be relocated here.
 export type RoundPayoutType = "MERKLE" | "DIRECT";
@@ -9,7 +9,9 @@ export type ApplicationStatus =
   | "PENDING"
   | "APPROVED"
   | "REJECTED"
-  | "CANCELLED";
+  | "APPEAL"
+  | "FRAUD"
+  | "RECEIVED";
 
 export type GrantApplicationFormAnswer = {
   questionId: number;
@@ -191,6 +193,53 @@ export type v2Project = {
   roles: AddressAndRole[];
 };
 
+/**
+ * The project application type for v2
+ *
+ */
+export type ProjectApplication = {
+  id: string;
+  chainId: number;
+  roundId: string;
+  status: ApplicationStatus;
+  metadataCid: string;
+  metadata: any; // TODO: fix
+  inReview: boolean;
+  round: {
+    applicationsStartTime: string;
+    applicationsEndTime: string;
+    donationsStartTime: string;
+    donationsEndTime: string;
+    roundMetadata: RoundMetadata;
+    name: string;
+  };
+};
+
+/**
+ * The round type for v2
+ *
+ */
+export type V2Round = {
+  id: string;
+  chainId: number;
+  applicationsStartTime: string;
+  applicationsEndTime: string;
+  donationsStartTime: string;
+  donationsEndTime: string;
+  matchTokenAddress: string;
+  roundMetadata: RoundMetadata | null;
+  roundMetadataCid: string;
+  applicationMetadata: RoundApplicationMetadata | null;
+  applicationMetadataCid: string;
+  projectId: string;
+  strategyAddress: string;
+  strategyName: string;
+};
+
+export type V2RoundWithRoles = V2Round & {
+  roles: AddressAndRole[];
+};
+
 export type ProjectEvents = {
   createdAtBlock: number | undefined;
   updatedAtBlock: number | undefined;
@@ -351,6 +400,10 @@ export type RoundMetadata = {
   roundType: RoundVisibilityType;
   eligibility: Eligibility;
   programContractAddress: string;
+  support?: {
+    info: string;
+    type: string;
+  };
 };
 
 export type SearchBasedProjectCategory = {
@@ -384,7 +437,7 @@ export type RoundGetRound = {
   strategyId: string;
   strategyName: RoundPayoutType;
   strategyAddress: string;
-  applications: Application[];
+  applications: ApplicationWithId[];
 };
 
 export interface RoundMetadataGetRound {
@@ -417,7 +470,7 @@ export interface QuadraticFundingConfig {
   minDonationThresholdAmount?: number;
 }
 
-export interface Application {
+export interface ApplicationWithId {
   id: string;
 }
 
@@ -475,3 +528,33 @@ export type OrderByRounds =
   | "UNIQUE_DONORS_COUNT_DESC"
   | "PRIMARY_KEY_ASC"
   | "PRIMARY_KEY_DESC";
+
+export type Application = {
+  id: string;
+  chainId: string;
+  roundId: string;
+  projectId: string;
+  status: ApplicationStatus;
+  totalAmountDonatedInUsd: number;
+  totalDonationsCount: string;
+  uniqueDonorsCount: number;
+  round: {
+    donationsStartTime: string;
+    donationsEndTime: string;
+    applicationsStartTime: string;
+    applicationsEndTime: string;
+    roundMetadata: RoundMetadata;
+    matchTokenAddress: string;
+    tags: string[];
+  };
+  project: {
+    id: string;
+    metadata: ProjectMetadata;
+  };
+  metadata: {
+    application: {
+      recipient: string;
+      answers: GrantApplicationFormAnswer[];
+    };
+  };
+};

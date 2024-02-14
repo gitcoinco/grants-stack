@@ -35,7 +35,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
-    "turbo": "^1.11.0"
+    "turbo": "^1.12.2"
   },
   "dependencies": {
     "prettier": "^3.0.3"
@@ -44,5 +44,6 @@
     "overrides": {
       "webpack": "^5"
     }
-  }
+  },
+  "workspaces": ["packages/*"]
 }

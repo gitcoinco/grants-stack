@@ -1,21 +1,23 @@
-import { Address, Hex } from "viem";
+import {
+  Allo as AlloV2Contract,
+  CreateProfileArgs,
+  DonationVotingMerkleDistributionStrategy,
+  Registry,
+  RegistryAbi,
+  TransactionData,
+} from "@allo-team/allo-v2-sdk/";
+import { Abi, Address, Hex } from "viem";
+import { AnyJson } from "../..";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { error, Result, success } from "../common";
+import { Result, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
-  decodeEventFromReceipt,
-  sendRawTransaction,
   TransactionReceipt,
   TransactionSender,
+  decodeEventFromReceipt,
+  sendRawTransaction,
 } from "../transaction-sender";
-import RegistryABI from "../abis/allo-v2/Registry";
-import {
-  CreateProfileArgs,
-  TransactionData,
-} from "@allo-team/allo-v2-sdk/dist/types";
-import { Allo as AlloV2Contract, Registry } from "@allo-team/allo-v2-sdk/";
-import { AnyJson } from "../..";
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -111,10 +113,10 @@ export class AlloV2 implements Allo {
       }
 
       const projectCreatedEvent = decodeEventFromReceipt({
-        abi: RegistryABI,
+        abi: RegistryAbi as Abi,
         receipt,
         event: "ProfileCreated",
-      });
+      }) as { profileId: Hex };
 
       return success({
         projectId: projectCreatedEvent.profileId,
@@ -201,4 +203,90 @@ export class AlloV2 implements Allo {
       indexingStatus: Result<void>;
     }
   >;
+
+  /**
+   * Applies to a round for Allo v2
+   *
+   * @param args
+   *
+   * @public
+   *
+   * @returns AllotOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
+   */
+  applyToRound(args: {
+    projectId: Hex;
+    roundId: Hex | number;
+    metadata: AnyJson;
+  }): AlloOperation<
+    Result<Hex>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (typeof args.roundId != "number") {
+        return error(new AlloError("roundId must be number"));
+      }
+
+      const strategyInstance = new DonationVotingMerkleDistributionStrategy({
+        chain: this.chainId,
+        poolId: args.roundId,
+      });
+
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      console.log("ipfsResult", ipfsResult);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      const metadata = args.metadata as unknown as {
+        application: { recipient: Hex };
+      };
+
+      const registerRecipientTx = strategyInstance.getRegisterRecipientData({
+        registryAnchor: args.projectId,
+        recipientAddress: metadata.application.recipient,
+        metadata: {
+          protocol: 1n,
+          pointer: ipfsResult.value,
+        },
+      });
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: registerRecipientTx.to,
+        data: registerRecipientTx.data,
+        value: BigInt(registerRecipientTx.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to apply to round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      return success(receipt.transactionHash);
+    });
+  }
 }

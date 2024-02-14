@@ -342,7 +342,7 @@ describe("<List />", () => {
 
           renderWrapped(<List />, store);
 
-          expect(screen.getByText("Apply")).toBeInTheDocument();
+          expect(screen.getByText("Apply to Grant Round")).toBeInTheDocument();
         });
 
         test("should not be visible if user already applied", async () => {

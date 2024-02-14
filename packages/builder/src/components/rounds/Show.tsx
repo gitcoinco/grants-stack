@@ -136,7 +136,7 @@ function ShowRound() {
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
 
-    const now = Math.trunc(Date.now() / 1000);
+    const now = new Date().getTime() / 1000;
 
     let applicationsHaveStarted = false;
     let applicationsHaveEnded = false;
@@ -181,7 +181,8 @@ function ShowRound() {
     roundData && (
       <>
         {formatTimeUTC(roundData.applicationsStartTime)} -{" "}
-        {isInfinite(roundData.applicationsEndTime)
+        {isInfinite(roundData.applicationsEndTime) ||
+        !roundData.applicationsEndTime
           ? "No End Date"
           : formatTimeUTC(roundData.applicationsEndTime)}
       </>
@@ -191,7 +192,7 @@ function ShowRound() {
     roundData && (
       <>
         {formatTimeUTC(roundData.roundStartTime)} -{" "}
-        {isInfinite(roundData.roundEndTime)
+        {isInfinite(roundData.roundEndTime) || !roundData.roundEndTime
           ? "No End Date"
           : formatTimeUTC(roundData.roundEndTime)}
         {}
@@ -223,7 +224,11 @@ function ShowRound() {
     if (roundId !== undefined) {
       dispatch(unloadRounds());
       dispatch(
-        loadRound(roundId, Number(props.roundChainId || props.web3ChainId))
+        loadRound(
+          roundId,
+          dataLayer,
+          Number(props.roundChainId || props.web3ChainId)
+        )
       );
     }
   }, [dispatch, roundId]);

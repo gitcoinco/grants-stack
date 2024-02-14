@@ -1,24 +1,26 @@
+import { useDataLayer } from "data-layer";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAllo } from "common";
 import {
   fetchApplicationData,
   submitApplication,
 } from "../../actions/roundApplication";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import { RootState } from "../../reducers";
-import Button, { ButtonVariants } from "../base/Button";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantsPath, projectPathByID } from "../../routes";
 import colors from "../../styles/colors";
+import { isInfinite } from "../../utils/components";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import Form from "../application/Form";
+import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import Cross from "../icons/Cross";
-import { RoundApplicationAnswers } from "../../types/roundApplication";
-import { isInfinite } from "../../utils/components";
-import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -27,6 +29,9 @@ function ViewApplication() {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const allo = useAllo();
+
+  const dataLayer = useDataLayer();
 
   const { chainId, roundId, ipfsHash } = params;
 
@@ -49,11 +54,10 @@ function ViewApplication() {
 
     const publishedApplicationMetadata = applicationState
       ? applicationState.metadataFromIpfs![ipfsHash!]
-      : null;
+      : undefined;
 
     const roundApplicationStatus =
-      applicationState?.metadataFromIpfs![ipfsHash!].publishedApplicationData
-        .status;
+      publishedApplicationMetadata?.status ?? "IN_REVIEW";
 
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
@@ -80,9 +84,9 @@ function ViewApplication() {
   }, shallowEqual);
 
   useEffect(() => {
-    if (roundId !== undefined) {
+    if (roundId !== undefined || !props.publishedApplicationMetadata) {
       dispatch(unloadRounds());
-      dispatch(loadRound(roundId, props.roundChainId));
+      dispatch(loadRound(roundId!, dataLayer, props.roundChainId));
     }
   }, [dispatch, roundId]);
 
@@ -120,7 +124,6 @@ function ViewApplication() {
   }
 
   const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
-
   const roundInReview = props.roundApplicationStatus === "IN_REVIEW";
   const roundApproved = props.roundApplicationStatus === "APPROVED";
   const hasProperStatus = roundInReview || roundApproved;
@@ -128,7 +131,7 @@ function ViewApplication() {
   if (
     props.roundState === undefined ||
     props.round === undefined ||
-    props.publishedApplicationMetadata === null
+    props.publishedApplicationMetadata === undefined
   ) {
     return (
       <LoadingSpinner
@@ -192,7 +195,8 @@ function ViewApplication() {
               <p className="font-semibold mt-4">Application Period:</p>
               <p>
                 {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
-                {isInfinite(props.round.applicationsEndTime)
+                {isInfinite(props.round.applicationsEndTime) ||
+                !props.round.applicationsEndTime
                   ? "No End Date"
                   : formatDate(props.round.applicationsEndTime * 1000)}
               </p>
@@ -201,7 +205,8 @@ function ViewApplication() {
           <p className="font-semibold mt-4">Round Dates:</p>
           <p>
             {formatDate(props.round.roundStartTime * 1000)} -{" "}
-            {isInfinite(props.round.applicationsEndTime)
+            {isInfinite(props.round.applicationsEndTime) ||
+            !props.round.applicationsEndTime
               ? "No End Date"
               : formatDate(props.round.roundEndTime * 1000)}
           </p>
@@ -235,7 +240,9 @@ function ViewApplication() {
               showErrorModal={props.showErrorModal || false}
               round={props.round}
               onSubmit={(answers: RoundApplicationAnswers) => {
-                dispatch(submitApplication(props.round!.address, answers));
+                dispatch(
+                  submitApplication(props.round!.address, answers, allo)
+                );
               }}
               readOnly
             />

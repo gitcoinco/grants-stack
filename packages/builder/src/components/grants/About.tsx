@@ -1,10 +1,8 @@
 import { Box } from "@chakra-ui/react";
 import { renderToHTML } from "common";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { ProjectApplication } from "data-layer";
 import { GithubLogo, TwitterLogo } from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
-import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import {
   ApplicationCardType,
@@ -13,37 +11,25 @@ import {
   Project,
 } from "../../types";
 import { formatDateFromMs } from "../../utils/components";
+import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import ApplicationCard from "./ApplicationCard";
-import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 
 export default function About({
   project,
+  applications,
   showApplications,
   createdAt,
   updatedAt,
 }: {
   project?: Metadata | FormInputs | Project;
+  applications: ProjectApplication[];
   showApplications: boolean;
   createdAt: number;
   updatedAt: number;
 }) {
-  const params = useParams();
-  const props = useSelector((state: RootState) => {
-    const { chainId } = params;
-
-    const applications = state.projects.applications[params.id!] || [];
-
-    return {
-      chainId,
-      projectID: params.id!,
-      applications,
-    };
-  });
-
-  const canShowApplications =
-    props.applications.length !== 0 && showApplications;
+  const canShowApplications = applications.length !== 0 && showApplications;
 
   const { isValid: validTwitterCredential } = useValidateCredential(
     project?.credentials?.twitter,
@@ -61,8 +47,8 @@ export default function About({
         <span className="text-[20px]">My Applications</span>
       </Box>
       <Box>
-        {props.applications.map((application, index) => {
-          const roundID = application?.roundID;
+        {applications.map((application, index) => {
+          const roundID = application?.roundId;
           const cardData: ApplicationCardType = {
             application,
             roundID,

@@ -76,9 +76,10 @@ describe("<RoundApplicationForm />", () => {
     (useWallet as jest.Mock).mockReturnValue({
       chain: { name: "my blockchain" },
       provider: {
-        getNetwork: () => ({
-          chainId: 5,
-        }),
+        getNetwork: () =>
+          Promise.resolve({
+            chainId: 5,
+          }),
       },
       signer: {
         getChainId: () => 5,

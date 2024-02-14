@@ -26,14 +26,6 @@ export async function validateCredential(
 
   const validIssuer = IAM_SERVER === credential.issuer;
 
-  // console.log(
-  //   "validating",
-  //   credential,
-  //   validCredentialProvider,
-  //   validCredential,
-  //   validIssuer
-  // );
-
   return validCredentialProvider && validCredential && validIssuer;
 }
 
