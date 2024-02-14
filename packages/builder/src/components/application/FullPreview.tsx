@@ -10,6 +10,7 @@ import { Metadata } from "../../types";
 import Button, { ButtonVariants } from "../base/Button";
 import { AboutProject } from "./AboutProject";
 import { ProjectTitle } from "./ProjectTitle";
+import { getFileUrl } from "../../utils/components";
 
 export function FullPreview(props: {
   project: Metadata;
@@ -31,8 +32,6 @@ export function FullPreview(props: {
     disableSubmit,
     chainId,
   } = props;
-  const ipfsPrefix = `${process.env.REACT_APP_PINATA_GATEWAY!}/ipfs/`;
-
   useEffect(() => {
     document.getElementById("root")!.scrollTo(0, 0);
   }, []);
@@ -56,7 +55,7 @@ export function FullPreview(props: {
               className="h-32 w-full object-cover lg:h-80 rounded"
               src={`${
                 project.bannerImg
-                  ? ipfsPrefix + project.bannerImg
+                  ? getFileUrl(project.bannerImg)
                   : DefaultProjectBanner
               }?img-height=320`}
               alt="Project Banner"
@@ -72,7 +71,7 @@ export function FullPreview(props: {
                         className="h-16 w-16 rounded-full ring-4 ring-white bg-white"
                         src={
                           project.logoImg
-                            ? ipfsPrefix + project.logoImg
+                            ? getFileUrl(project.logoImg)
                             : DefaultProjectLogo
                         }
                         alt="Project Logo"

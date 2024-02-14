@@ -191,6 +191,8 @@ export type v2Project = {
    */
   updatedAtBlock: string;
   roles: AddressAndRole[];
+  nonce?: bigint;
+  anchorAddress?: string;
 };
 
 /**
@@ -231,6 +233,7 @@ export type V2Round = {
   roundMetadataCid: string;
   applicationMetadata: RoundApplicationMetadata | null;
   applicationMetadataCid: string;
+  strategyId: string;
   projectId: string;
   strategyAddress: string;
   strategyName: string;

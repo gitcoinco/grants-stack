@@ -132,6 +132,7 @@ export interface JWK {
 }
 
 export type Round = {
+  id: string;
   address: string;
   applicationsStartTime: number;
   applicationsEndTime: number;
@@ -160,6 +161,7 @@ export type ApplicationCardType = {
 
 export type ProjectOption = {
   id: string | undefined;
+  anchor?: string;
   title?: string;
   chainInfo?: {
     chainId: ChainId;

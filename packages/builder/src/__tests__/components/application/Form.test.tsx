@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { Store } from "redux";
 import { RoundApplicationMetadata } from "data-layer";
+import { Store } from "redux";
 import * as projects from "../../../actions/projects";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
@@ -45,6 +45,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
 };
 
 const round: Round = {
+  id: `1:${addressFrom(1)}:1`,
   address: "0x123",
   applicationsStartTime: 123,
   applicationsEndTime: 123,

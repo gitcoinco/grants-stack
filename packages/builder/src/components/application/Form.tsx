@@ -105,6 +105,7 @@ export default function Form({
     const { chainID } = state.web3;
 
     return {
+      anchors: state.projects.anchor,
       projectIDs: state.projects.ids,
       allProjectMetadata,
       chainID,
@@ -848,7 +849,7 @@ export default function Form({
           open={showErrorModal}
           onClose={closeErrorModal}
           onRetry={handleSubmitApplicationRetry}
-          title="Round Application Period Closed"
+          title="Round Application Error"
         >
           {round.applicationsEndTime < now ? (
             <div className="my-2">
