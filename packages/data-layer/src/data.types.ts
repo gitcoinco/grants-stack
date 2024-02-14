@@ -436,6 +436,7 @@ export type Application = {
   totalDonationsCount: string;
   uniqueDonorsCount: number;
   round: {
+    strategyName: RoundPayoutType;
     donationsStartTime: string;
     donationsEndTime: string;
     applicationsStartTime: string;
