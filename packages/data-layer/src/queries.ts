@@ -298,3 +298,38 @@ export const getRoundByIdAndChainId = gql`
     }
   }
 `;
+
+export const getRoundsByProgramIdAndUserAddress = gql`
+  query getRoundsByProgramIdAndMemberAddress(
+    $chainId: Int!
+    $programId: String!
+    $userAddress: String!
+  ) {
+    rounds(
+      filter: {
+        chainId: { equalTo: $chainId }
+        projectId: { equalTo: $programId }
+        roles: { some: { address: { equalTo: $userAddress } } }
+      }
+    ) {
+      id
+      chainId
+      applicationsStartTime
+      applicationsEndTime
+      donationsStartTime
+      donationsEndTime
+      matchTokenAddress
+      roundMetadata
+      roundMetadataCid
+      applicationMetadata
+      applicationMetadataCid
+      strategyAddress
+      strategyName
+      roles {
+        role
+        address
+        createdAtBlock
+      }
+    }
+  }
+`;

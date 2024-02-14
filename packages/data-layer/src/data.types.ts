@@ -227,10 +227,17 @@ export type V2Round = {
   donationsStartTime: string;
   donationsEndTime: string;
   matchTokenAddress: string;
-  roundMetadata: any;
+  roundMetadata: RoundMetadata | null;
   roundMetadataCid: string;
-  applicationMetadata: RoundApplicationMetadata;
+  applicationMetadata: RoundApplicationMetadata | null;
   applicationMetadataCid: string;
+  projectId: string;
+  strategyAddress: string;
+  strategyName: string;
+};
+
+export type V2RoundWithRoles = V2Round & {
+  roles: AddressAndRole[];
 };
 
 export type ProjectEvents = {

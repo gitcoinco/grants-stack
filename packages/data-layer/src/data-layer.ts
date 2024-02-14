@@ -17,6 +17,7 @@ import {
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
+  V2RoundWithRoles,
   v2Project,
   V2Round,
 } from "./data.types";
@@ -35,6 +36,7 @@ import {
   getProjects,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
+  getRoundsByProgramIdAndUserAddress,
 } from "./queries";
 import { Address } from "viem";
 
@@ -394,6 +396,20 @@ export class DataLayer {
     );
 
     return response.rounds[0] ?? [];
+  }
+
+  async getRoundsByProgramIdAndUserAddress(args: {
+    chainId: number;
+    programId: string;
+    userAddress: Address;
+  }): Promise<V2RoundWithRoles[]> {
+    const response: { rounds: V2RoundWithRoles[] } = await request(
+      this.gsIndexerEndpoint,
+      getRoundsByProgramIdAndUserAddress,
+      { ...args, userAddress: args.userAddress.toLowerCase() },
+    );
+
+    return response.rounds;
   }
 
   /**
