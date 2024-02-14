@@ -1,16 +1,24 @@
 import { Chain } from "wagmi/chains";
 import {
   __deprecated_RoundsQueryVariables,
-  __deprecated_TimestampVariables,
+  TimeFilterVariables,
   useRounds,
 } from "../../api/rounds";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
-import { ROUND_PAYOUT_MERKLE } from "common";
 import { SWRResponse } from "swr";
 import { OrderByRounds, RoundGetRound } from "data-layer";
 
+export type StrategyName =
+  | ""
+  | "allov1.QF"
+  | "allov1.Direct"
+  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
+  | "allov2.MicroGrantsStrategy"
+  | "allov2.MicroGrantsGovStrategy"
+  | "allov2.SQFSuperFluidStrategy";
+
 export type RoundFilterParams = {
-  type: string;
+  type: StrategyName;
   status: string;
   network: string;
 };
@@ -43,7 +51,7 @@ export enum RoundStatus {
 export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
   orderBy: "MATCH_AMOUNT_DESC",
   status: RoundStatus.active,
-  type: ROUND_PAYOUT_MERKLE,
+  type: "",
   network: "",
 };
 
@@ -78,7 +86,7 @@ export const useFilterRounds = (
 };
 
 const createRoundWhereFilter = (
-  statusFilter: __deprecated_TimestampVariables[],
+  statusFilter: TimeFilterVariables[],
   strategyNames: string[]
 ): __deprecated_RoundsQueryVariables["filter"] => {
   const payoutStrategy = strategyNames.length

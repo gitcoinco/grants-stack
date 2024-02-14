@@ -1,6 +1,5 @@
 import useSWR, { Cache, SWRResponse, useSWRConfig } from "swr";
 import { ChainId } from "common";
-import { __deprecated_RoundMetadata } from "./round";
 import { __deprecated_fetchFromIPFS } from "./utils";
 import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 import { OrderByRounds, RoundGetRound, useDataLayer } from "data-layer";
@@ -9,23 +8,22 @@ export type __deprecated_RoundsQueryVariables = {
   first?: number;
   orderBy?: OrderByRounds;
   filter?: {
-    and: [
-      { or: __deprecated_TimestampVariables[] },
-      { payoutStrategy_?: { or: { strategyName: string }[] } },
-    ];
+    and: [{ or: TimeFilterVariables[] }, { or: { strategyName: {equalTo: } } }[]];
   };
 };
 
-export type __deprecated_TimestampVariables = {
-  applicationsStartTime_lte?: string;
-  applicationsEndTime_gt?: string;
-  applicationsEndTime_lt?: string;
-  applicationsEndTime?: string;
-  applicationsEndTime_gte?: string;
-  roundStartTime_lt?: string;
-  roundStartTime_gt?: string;
-  roundEndTime_gt?: string;
-  roundEndTime_lt?: string;
+type TimeFilter = {
+  greaterThan?: string;
+  lessThan?: string;
+  greaterThanOrEqualTo?: string;
+  lessThanOrEqualTo?: string;
+};
+
+export type TimeFilterVariables = {
+  applicationsStartTime?: TimeFilter;
+  applicationsEndTime?: TimeFilter;
+  donationsStartTime?: TimeFilter;
+  donationsEndTime?: TimeFilter;
 };
 
 export const useRounds = (
@@ -116,35 +114,3 @@ export const filterRounds = (
     }
   });
 };
-
-// Will only make a request if metadata doesn't exist yet
-export function useMetadata(cid: string) {
-  return useSWR(["metadata", cid], () => __deprecated_fetchFromIPFS(cid));
-}
-
-/*
-Search round metadata
-Builds a results object and filters round name on a search query
-*/
-export function useSearchRounds(query = "") {
-  const { cache } = useSWRConfig();
-
-  const results: __deprecated_RoundMetadata[] = [];
-  // Cache is actually a Map but says forEach doesn't exist
-  (cache as Map<string, { data: __deprecated_RoundMetadata }>).forEach(
-    ({ data }, key) => {
-      if (nameContains(data?.name, key)) {
-        results.push(data);
-      }
-    }
-  );
-
-  function nameContains(name: string, key: string) {
-    return (
-      key.startsWith(`@"metadata"`) &&
-      name?.toLowerCase().includes(query.toLowerCase())
-    );
-  }
-
-  return useSWR(["search", { results, query }], () => results);
-}

@@ -1,4 +1,4 @@
-import { __deprecated_TimestampVariables } from "../../api/rounds";
+import { TimeFilterVariables } from "../../api/rounds";
 import { RoundStatus } from "../hooks/useFilterRounds";
 
 export const createTimestamp = (timestamp = 0) => {
@@ -9,7 +9,7 @@ export const createTimestamp = (timestamp = 0) => {
 const ONE_DAY_IN_SECONDS = 3600 * 24;
 const ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365;
 
-function getStatusFilter(status: string): __deprecated_TimestampVariables {
+function getStatusFilter(status: string): TimeFilterVariables {
   const currentTimestamp = createTimestamp();
   const futureTimestamp = createTimestamp(ONE_YEAR_IN_SECONDS);
 
@@ -17,26 +17,31 @@ function getStatusFilter(status: string): __deprecated_TimestampVariables {
     case RoundStatus.active:
       return {
         // Round must have started and not ended yet
-        roundStartTime_lt: currentTimestamp,
-        roundEndTime_gt: currentTimestamp,
-        roundEndTime_lt: futureTimestamp,
+        donationsStartTime: { lessThan: currentTimestamp },
+        donationsEndTime: {
+          greaterThan: currentTimestamp,
+          lessThan: futureTimestamp,
+        },
       };
     case RoundStatus.taking_applications:
       return {
-        applicationsStartTime_lte: currentTimestamp,
-        applicationsEndTime_gte: currentTimestamp,
+        applicationsStartTime: { lessThanOrEqualTo: currentTimestamp },
+        applicationsEndTime: { greaterThanOrEqualTo: currentTimestamp },
       };
 
     case RoundStatus.finished:
       return {
-        roundEndTime_lt: currentTimestamp,
+        donationsEndTime: { lessThan: currentTimestamp },
       };
     case RoundStatus.ending_soon:
       return {
-        roundEndTime_gt: currentTimestamp,
-        roundEndTime_lt: String(
-          Number(currentTimestamp) + ONE_DAY_IN_SECONDS * 30
-        ),
+        donationsEndTime: {
+          greaterThan: currentTimestamp,
+          lessThan: (
+            Number(currentTimestamp) +
+            ONE_DAY_IN_SECONDS * 30
+          ).toString(),
+        },
       };
     default:
       return {};
@@ -45,7 +50,7 @@ function getStatusFilter(status: string): __deprecated_TimestampVariables {
 
 export function createRoundsStatusFilter(
   status: string
-): __deprecated_TimestampVariables[] {
+): TimeFilterVariables[] {
   // Default to all filters
   const selectedFilters =
     status ||

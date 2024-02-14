@@ -288,6 +288,7 @@ export const getRoundsQuery = gql`
     ) {
       id
       chainId
+      tags
       roundMetadata
       roundMetadataCid
       applicationsStartTime

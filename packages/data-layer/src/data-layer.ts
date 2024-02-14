@@ -16,12 +16,11 @@ import {
   ProjectEventsMap,
   Round,
   RoundGetRound,
-  RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
-  V2RoundWithRoles,
   v2Project,
   V2Round,
+  V2RoundWithRoles,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -37,9 +36,9 @@ import {
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
-  getRoundsQuery,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndUserAddress,
+  getRoundsQuery,
 } from "./queries";
 import { Address } from "viem";
 
@@ -534,46 +533,6 @@ export class DataLayer {
       round: await legacy.getRoundById(
         { roundId, chainId },
         { graphqlEndpoint, ipfsGateway: this.ipfsGateway },
-      ),
-    };
-  }
-
-  async getLegacyRounds({
-    chainIds,
-    first,
-    orderBy,
-    orderDirection,
-    where,
-  }: {
-    chainIds: number[];
-    first: number;
-    orderBy?:
-      | "createdAt"
-      | "matchAmount"
-      | "roundStartTime"
-      | "roundEndTime"
-      | "applicationsStartTime"
-      | "applicationsEndTime";
-    orderDirection?: "asc" | "desc";
-    where?: {
-      and: [
-        { or: TimestampVariables[] },
-        { payoutStrategy_?: { or: { strategyName: string }[] } },
-      ];
-    };
-  }): Promise<{ rounds: RoundOverview[] }> {
-    return {
-      rounds: await legacy.getRounds(
-        {
-          chainIds,
-          first,
-          orderBy,
-          orderDirection,
-          where,
-        },
-        {
-          graphqlEndpoints: this.subgraphEndpointsByChainId,
-        },
       ),
     };
   }

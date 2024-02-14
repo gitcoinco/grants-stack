@@ -424,6 +424,7 @@ export type Collection = {
 
 export type RoundGetRound = {
   id: string;
+  tags: string[];
   chainId: number;
   createdAtBlock: number;
   roundMetadataCid: string;
