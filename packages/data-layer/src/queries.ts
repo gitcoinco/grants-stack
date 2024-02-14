@@ -1,47 +1,18 @@
 import { gql } from "graphql-request";
 
 /**
- * Manager: Get all the programs that a user is a part of in allo v1
+ * Manager: Get all the programs that a user is a part of
  * @param $address - The address of the user
  * @param $chainId - The network ID of the chain
+ * @param $tag - The tag of the program
  *
  * @returns The programs
  */
-export const getV1ProjectsByUser = gql`
-  query ($address: String!, $chainId: Int!) {
+export const getProgramByUserAndTag = gql`
+  query ($address: String!, $chainId: Int!, $filterByTag: String!) {
     projects(
       filter: {
-        tags: { contains: "program" }
-        roles: { some: { address: { equalTo: $address } } }
-        and: { chainId: { equalTo: $chainId } }
-      }
-    ) {
-      id
-      chainId
-      metadata
-      metadataCid
-      tags
-      roles {
-        address
-        role
-        createdAtBlock
-      }
-    }
-  }
-`;
-
-/**
- * Manager: Get all the projects that a user is a part of in allo v2
- * @param $address - The address of the user
- * @param $chainId - The network ID of the chain
- *
- * @returns The programs
- */
-export const getV2ProjectsByUser = gql`
-  query ($address: String!, $chainId: Int!) {
-    projects(
-      filter: {
-        tags: { contains: "allo-v2" }
+        tags: { contains: [$filterByTag] }
         roles: { some: { address: { equalTo: $address } } }
         and: { chainId: { equalTo: $chainId } }
       }
@@ -278,7 +249,9 @@ export const getBlockNumberQuery = gql`
 
 export const getRoundByIdAndChainId = gql`
   query getRoundByIdAndChainId($roundId: String!, $chainId: Int!) {
-    rounds(filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
       id
       chainId
       applicationsStartTime
