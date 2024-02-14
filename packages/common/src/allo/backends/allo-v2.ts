@@ -2,14 +2,24 @@ import {
   Allo as AlloV2Contract,
   CreateProfileArgs,
   DonationVotingMerkleDistributionStrategy,
+  DonationVotingMerkleDistributionStrategyTypes,
   Registry,
   RegistryAbi,
+  AlloAbi,
   TransactionData,
-} from "@allo-team/allo-v2-sdk/";
-import { Abi, Address, Hex } from "viem";
+} from "@allo-team/allo-v2-sdk";
+import {
+  Abi,
+  Address,
+  Hex,
+  encodeAbiParameters,
+  parseAbiParameters,
+  parseUnits,
+  zeroAddress,
+} from "viem";
 import { AnyJson } from "../..";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { Result, error, success } from "../common";
+import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
@@ -18,6 +28,9 @@ import {
   decodeEventFromReceipt,
   sendRawTransaction,
 } from "../transaction-sender";
+import { RoundCategory } from "../../types";
+import { CreatePoolArgs } from "@allo-team/allo-v2-sdk/dist/types";
+import { payoutTokens } from "../../payoutTokens";
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -194,7 +207,7 @@ export class AlloV2 implements Allo {
     });
   }
 
-  createRound!: (args: CreateRoundArguments) => AlloOperation<
+  createRound(args: CreateRoundArguments): AlloOperation<
     Result<{ roundId: Hex }>,
     {
       ipfsStatus: Result<string>;
@@ -202,7 +215,128 @@ export class AlloV2 implements Allo {
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<void>;
     }
-  >;
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const isQF =
+        args.roundData?.roundCategory === RoundCategory.QuadraticFunding;
+
+      const roundIpfsResult = await this.ipfsUploader({
+        roundMetadata: args.roundData.roundMetadataWithProgramContractAddress,
+        applicationMetadata: args.roundData.applicationQuestions,
+      });
+
+      emit("ipfsStatus", roundIpfsResult);
+
+      if (roundIpfsResult.type === "error") {
+        return roundIpfsResult;
+      }
+
+      const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
+        {
+          useRegistryAnchor: true,
+          metadataRequired: true,
+          registrationStartTime: dateToEthereumTimestamp(
+            args.roundData.applicationsStartTime
+          ), // in seconds, must be in future
+          registrationEndTime: dateToEthereumTimestamp(
+            args.roundData.applicationsEndTime
+          ), // in seconds, must be after registrationStartTime
+          allocationStartTime: dateToEthereumTimestamp(
+            args.roundData.roundStartTime
+          ), // in seconds, must be after registrationStartTime
+          allocationEndTime: dateToEthereumTimestamp(
+            args.roundData.roundEndTime
+          ), // in seconds, must be after allocationStartTime
+          allowedTokens: [zeroAddress], // allow all tokens
+        };
+
+      const initStrategyDataEncoded: `0x${string}` = encodeAbiParameters(
+        parseAbiParameters(
+          "(bool, bool, uint64, uint64, uint64, uint64, address[])"
+        ),
+        [
+          [
+            initStrategyData.useRegistryAnchor,
+            initStrategyData.metadataRequired,
+            initStrategyData.registrationStartTime,
+            initStrategyData.registrationEndTime,
+            initStrategyData.allocationStartTime,
+            initStrategyData.allocationEndTime,
+            initStrategyData.allowedTokens,
+          ],
+        ]
+      );
+
+      const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
+      const payoutToken = payoutTokens.filter(
+        (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
+      )[0];
+
+      const matchAmount = parseUnits(
+        tokenAmount.toString(),
+        payoutToken.decimal
+      );
+
+      const profileId =
+        args.roundData.roundMetadataWithProgramContractAddress
+          ?.programContractAddress;
+
+      if (!profileId) {
+        throw new Error("Program contract address is required");
+      }
+
+      const createPoolArgs: CreatePoolArgs = {
+        profileId,
+        strategy: "0x0",
+        initStrategyData: initStrategyDataEncoded,
+        token: args.roundData.token,
+        amount: matchAmount,
+        metadata: { protocol: 1n, pointer: roundIpfsResult.value },
+        managers: args.roundData.roundOperators ?? [],
+      };
+
+      const txData = this.allo.createPool(createPoolArgs);
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      // --- wait for transaction to be mined
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to update project metadata");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      const projectCreatedEvent = decodeEventFromReceipt({
+        abi: AlloAbi,
+        receipt,
+        event: "PoolCreated",
+      }) as { poolId: Hex };
+
+      return success({
+        roundId: projectCreatedEvent.poolId,
+      });
+    });
+  }
 
   /**
    * Applies to a round for Allo v2
