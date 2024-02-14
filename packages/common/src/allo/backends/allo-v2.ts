@@ -217,8 +217,11 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      const isQF =
-        args.roundData?.roundCategory === RoundCategory.QuadraticFunding;
+      if (args.roundData?.roundCategory !== RoundCategory.QuadraticFunding) {
+        return error(
+          new AlloError("Only Quadratic Funding rounds are supported")
+        );
+      }
 
       const roundIpfsResult = await this.ipfsUploader({
         roundMetadata: args.roundData.roundMetadataWithProgramContractAddress,
@@ -321,7 +324,7 @@ export class AlloV2 implements Allo {
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
-        const result = new AlloError("Failed to update project metadata");
+        const result = new AlloError("Failed to create Pool");
         emit("transactionStatus", error(result));
         return error(result);
       }
