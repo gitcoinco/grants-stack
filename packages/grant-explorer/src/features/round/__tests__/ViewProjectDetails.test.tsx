@@ -9,11 +9,9 @@ import {
 import ViewProjectDetails from "../ViewProjectDetails";
 import { truncate } from "../../common/utils/truncate";
 import { formatDateWithOrdinal } from "common";
-import {
-  Application,
-  useApplication,
-} from "../../projects/hooks/useApplication";
+import { useApplication } from "../../projects/hooks/useApplication";
 import { beforeEach, expect, Mock } from "vitest";
+import { Application } from "data-layer";
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
@@ -72,7 +70,9 @@ vi.mock("react-router-dom", async () => {
     })),
   };
 });
+
 const expectedProject: Application = {
+  uniqueDonorsCount: 0,
   chainId: "1",
   id: faker.finance.ethereumAddress(),
   metadata: {
@@ -131,13 +131,12 @@ const expectedProject: Application = {
       },
       programContractAddress: "",
     },
+    tags: [],
   },
   roundId: faker.finance.ethereumAddress(),
   status: "APPROVED",
-  // @ts-expect-error tests
   totalAmountDonatedInUsd: 0,
-  // @ts-expect-error tests
-  totalDonationsCount: 0,
+  totalDonationsCount: "0",
 };
 
 describe("<ViewProjectDetails/>", () => {
@@ -328,6 +327,7 @@ describe("voting cart", () => {
         isLoading: false,
       },
     });
+    screen.logTestingPlaygroundURL();
 
     // mock screen size
     setWindowDimensions(320, 480);
