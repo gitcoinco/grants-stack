@@ -95,7 +95,6 @@ export const createWaitForIndexerSyncTo = (
       const subscriptions = data?.subscriptions || [];
 
       if (subscriptions.length > 0) {
-        console.log(subscriptions);
         const currentBlockNumber = BigInt(
           subscriptions.reduce(
             (minBlock, sub) =>
@@ -105,9 +104,6 @@ export const createWaitForIndexerSyncTo = (
             subscriptions[0].indexedToBlock
           )
         );
-
-        console.log("Current block number:", currentBlockNumber);
-        console.log("Target block number:", blockNumber);
 
         if (currentBlockNumber >= BigInt(blockNumber)) {
           return currentBlockNumber;
