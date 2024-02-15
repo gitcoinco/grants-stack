@@ -16,6 +16,7 @@ import {
   Round,
   RoundOverview,
   SearchBasedProjectCategory,
+  Tags,
   TimestampVariables,
   V2RoundWithRoles,
   v2Project,
@@ -31,10 +32,10 @@ import {
   getApplication,
   getApplicationsByProjectId,
   getProgramName,
-  getProgramsByUser,
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
+  getProgramByUserAndTag,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndUserAddress,
 } from "./queries";
@@ -145,19 +146,49 @@ export class DataLayer {
     chainId: number;
     alloVersion: AlloVersion;
   }): Promise<{ programs: Program[] } | null> {
+    const filterByTag = alloVersion === "allo-v1" ? "program" : "allo-v2";
     const requestVariables = {
       alloVersion,
       address,
       chainId,
+      filterByTag,
     };
 
-    const response: { projects: Program[] } = await request(
-      this.gsIndexerEndpoint,
-      getProgramsByUser,
-      requestVariables,
-    );
+    let programs: Program[] = [];
 
-    const programs = response.projects;
+    if (alloVersion === "allo-v1") {
+      let response: { projects: Program[] } = { projects: [] };
+
+      response = await request(
+        this.gsIndexerEndpoint,
+        getProgramByUserAndTag,
+        requestVariables,
+      );
+
+      programs = response.projects;
+    } else if (alloVersion === "allo-v2") {
+      let response: { projects: v2Project[] } = { projects: [] };
+
+      response = await request(
+        this.gsIndexerEndpoint,
+        getProgramByUserAndTag,
+        requestVariables,
+      );
+
+      const projects = response.projects;
+
+      programs = projects.map((project) => {
+        return {
+          id: project.id,
+          chainId: project.chainId,
+          metadata: {
+            name: project.metadata?.title,
+          },
+          tags: project.tags as Tags[],
+          roles: project.roles,
+        };
+      });
+    }
 
     if (!programs) return null;
 
