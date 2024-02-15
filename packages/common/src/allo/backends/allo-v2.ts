@@ -224,8 +224,8 @@ export class AlloV2 implements Allo {
       }
 
       const roundIpfsResult = await this.ipfsUploader({
-        roundMetadata: args.roundData.roundMetadataWithProgramContractAddress,
-        applicationMetadata: args.roundData.applicationQuestions,
+        round: args.roundData.roundMetadataWithProgramContractAddress,
+        application: args.roundData.applicationQuestions,
       });
 
       emit("ipfsStatus", roundIpfsResult);
@@ -290,7 +290,7 @@ export class AlloV2 implements Allo {
 
       const createPoolArgs: CreatePoolArgs = {
         profileId,
-        strategy: zeroAddress,
+        strategy: "0xD13ec67938B5E9Cb05A05D8e160daF02Ed5ea9C9",
         initStrategyData: initStrategyDataEncoded,
         token: args.roundData.token,
         amount: matchAmount,
@@ -298,7 +298,11 @@ export class AlloV2 implements Allo {
         managers: args.roundData.roundOperators ?? [],
       };
 
+      console.log("createPoolArgs", createPoolArgs);
+
       const txData = this.allo.createPool(createPoolArgs);
+
+      console.log("txData", txData);
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: txData.to,
@@ -363,7 +367,6 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
       }
