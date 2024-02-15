@@ -6,7 +6,8 @@ import {
   useRounds,
 } from "../../api/rounds";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
-import { ROUND_PAYOUT_MERKLE } from "common";
+// FIXME: replace with ROUND_PAYOUT_MERKLE when we use the Indexer for the homepage
+import { ROUND_PAYOUT_MERKLE_OLD } from "common";
 import { SWRResponse } from "swr";
 
 export type RoundFilterParams = {
@@ -46,7 +47,7 @@ export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
   orderBy: "matchAmount",
   orderDirection: "desc",
   status: RoundStatus.active,
-  type: ROUND_PAYOUT_MERKLE,
+  type: ROUND_PAYOUT_MERKLE_OLD,
   network: "",
 };
 

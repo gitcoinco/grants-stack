@@ -10,7 +10,7 @@ import {
   RoundStatus,
   getRoundSelectionParamsFromUrlParams,
 } from "./hooks/useFilterRounds";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { ROUND_PAYOUT_DIRECT_OLD, ROUND_PAYOUT_MERKLE_OLD } from "common";
 import { getFilterLabel } from "./utils/getFilterLabel";
 import { getEnabledChains } from "../../app/chainConfig";
 
@@ -26,11 +26,11 @@ export const FILTER_OPTIONS: RoundFilterUiOption[] = [
     children: [
       {
         label: "Quadratic funding",
-        value: ROUND_PAYOUT_MERKLE,
+        value: ROUND_PAYOUT_MERKLE_OLD,
       },
       {
         label: "Direct grants",
-        value: ROUND_PAYOUT_DIRECT,
+        value: ROUND_PAYOUT_DIRECT_OLD,
       },
     ],
   },
