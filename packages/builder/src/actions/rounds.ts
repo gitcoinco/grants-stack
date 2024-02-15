@@ -1,14 +1,14 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { RoundType, getV2RoundType } from "common";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { Status } from "../reducers/rounds";
 import { Round } from "../types";
-import { graphqlFetch } from "../utils/graphql";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
+
+export type RoundType = "MERKLE" | "DIRECT";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -99,39 +99,19 @@ export const loadRound =
         projectId: v2Round.roundMetadata.programContractAddress,
       })) || "";
 
-    // TODO: FETCH FROM INDEXER
     let roundPayoutStrategy: RoundType;
-    try {
-      if (version === "allo-v1") {
-        const resp = await graphqlFetch(
-          `
-          query GetRoundById($roundId: String) {
-            rounds(where: {
-              id: $roundId
-            }) {
-              id
-              payoutStrategy {
-                id
-                strategyName
-              }
-            }
-          }
-        `,
-          chainId!,
-          { roundId: roundId.toLowerCase() }
-        );
-        roundPayoutStrategy = resp.data.rounds[0].payoutStrategy
-          ? resp.data.rounds[0].payoutStrategy.strategyName
-          : "MERKLE";
-      } else {
-        roundPayoutStrategy = getV2RoundType(v2Round.strategyId);
-      }
-    } catch (e) {
-      datadogRum.addError(e);
-      datadogLogs.logger.error("sg: error loading round payoutStrategy");
-      dispatch(loadingError(roundId, "error loading round payoutStrategy"));
-      console.error(e);
-      return;
+
+    switch (v2Round.strategyName) {
+      case "allov1.QF":
+      case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
+        roundPayoutStrategy = "MERKLE";
+        break;
+      case "allov1.Direct":
+      case "allov2.DirectGrantsSimpleStrategy":
+        roundPayoutStrategy = "DIRECT";
+        break;
+      default:
+        roundPayoutStrategy = "DIRECT";
     }
 
     const round = {
