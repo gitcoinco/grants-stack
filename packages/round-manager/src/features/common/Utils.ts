@@ -1,4 +1,4 @@
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { ROUND_PAYOUT_STRATEGY_TITLES } from "common";
 
 export const verticalTabStyles = (selected: boolean) =>
   selected
@@ -11,15 +11,5 @@ export const horizontalTabStyles = (selected: boolean) =>
     : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
 export const getPayoutRoundDescription = (key: string) => {
-  switch (key) {
-    case ROUND_PAYOUT_MERKLE:
-      return "Quadratic Funding";
-      break;
-    case ROUND_PAYOUT_DIRECT:
-      return "Direct Grant";
-      break;
-    default:
-      return key;
-      break;
-  }
+  return ROUND_PAYOUT_STRATEGY_TITLES[key] ?? key;
 };
