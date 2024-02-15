@@ -90,6 +90,8 @@ export const getProjectById = gql`
       projectNumber
       registryAddress
       tags
+      nonce
+      anchorAddress
       roles {
         address
         role
@@ -130,6 +132,8 @@ export const getProjects = gql`
       projectNumber
       registryAddress
       tags
+      nonce
+      anchorAddress
     }
   }
 `;
@@ -173,6 +177,7 @@ export const getApplication = gql`
       totalAmountDonatedInUsd
       uniqueDonorsCount
       round {
+        strategyName
         donationsStartTime
         donationsEndTime
         applicationsStartTime
@@ -224,6 +229,8 @@ export const getProjectsByAddress = gql`
         registryAddress
         projectNumber
         tags
+        nonce
+        anchorAddress
       }
     }
   }
@@ -257,6 +264,8 @@ export const getProjectsAndRolesByAddress = gql`
       projectNumber
       tags
       id
+      nonce
+      anchorAddress
       createdAtBlock
       applications {
         id
@@ -323,6 +332,8 @@ export const getRoundByIdAndChainId = gql`
       roundMetadataCid
       applicationMetadata
       applicationMetadataCid
+      strategyId
+      strategyAddress
     }
   }
 `;

@@ -118,6 +118,7 @@ const expectedProject: Application = {
   },
   projectId: faker.finance.ethereumAddress(),
   round: {
+    strategyName: "allov1.QF",
     applicationsEndTime: new Date().valueOf().toString(),
     applicationsStartTime: new Date().valueOf().toString(),
     donationsEndTime: new Date().valueOf().toString(),

@@ -307,9 +307,16 @@ export async function getTokenPrice(tokenId: string) {
   return data[0].value;
 }
 
-export const ROUND_PAYOUT_MERKLE = "MERKLE";
-export const ROUND_PAYOUT_DIRECT = "DIRECT";
-export type RoundPayoutType = "MERKLE" | "DIRECT";
+//FIXME: remove old types
+export const ROUND_PAYOUT_MERKLE_OLD = "MERKLE";
+export const ROUND_PAYOUT_DIRECT_OLD = "DIRECT";
+export const ROUND_PAYOUT_MERKLE = "allov1.QF";
+export const ROUND_PAYOUT_DIRECT = "allov1.Direct";
+export type RoundPayoutType =
+  | "MERKLE"
+  | "DIRECT"
+  | "allov1.Direct"
+  | "allov1.QF";
 export type RoundVisibilityType = "public" | "private";
 
 export type { Allo, AlloError, AlloOperation } from "./allo/allo";
@@ -370,3 +377,5 @@ export interface Web3Instance {
 }
 
 export { graphql_fetch, graphQlEndpoints } from "./graphql_fetch";
+
+export * from "./allo/roundIdentifier";

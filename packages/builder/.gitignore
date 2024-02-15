@@ -26,3 +26,5 @@ yarn-error.log*
 .eslintcache
 .vercel
 .env*.local
+
+/cache
