@@ -219,7 +219,7 @@ export class AlloV2 implements Allo {
     return new AlloOperation(async ({ emit }) => {
       if (args.roundData?.roundCategory !== RoundCategory.QuadraticFunding) {
         return error(
-          new AlloError("Only Quadratic Funding rounds are supported")
+          new AlloError("Only Quadratic Funding rounds are supported for now")
         );
       }
 
@@ -298,11 +298,7 @@ export class AlloV2 implements Allo {
         managers: args.roundData.roundOperators ?? [],
       };
 
-      console.log("createPoolArgs", createPoolArgs);
-
       const txData = this.allo.createPool(createPoolArgs);
-
-      console.log("txData", txData);
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: txData.to,
@@ -324,7 +320,7 @@ export class AlloV2 implements Allo {
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
-        const result = new AlloError("Failed to create Pool");
+        const result = new AlloError("Failed to create Pool", err);
         emit("transactionStatus", error(result));
         return error(result);
       }
@@ -333,8 +329,6 @@ export class AlloV2 implements Allo {
         chainId: this.chainId,
         blockNumber: receipt.blockNumber,
       });
-
-      console.log("indexed");
 
       emit("indexingStatus", success(void 0));
 
