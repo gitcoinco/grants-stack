@@ -321,10 +321,6 @@ export class AlloV2 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -333,14 +329,23 @@ export class AlloV2 implements Allo {
         return error(result);
       }
 
-      const projectCreatedEvent = decodeEventFromReceipt({
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      console.log("indexed");
+
+      emit("indexingStatus", success(void 0));
+
+      const poolCreatedEvent = decodeEventFromReceipt({
         abi: AlloAbi as Abi,
         receipt,
         event: "PoolCreated",
       }) as { poolId: Hex };
 
       return success({
-        roundId: projectCreatedEvent.poolId,
+        roundId: poolCreatedEvent.poolId,
       });
     });
   }

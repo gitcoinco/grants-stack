@@ -94,18 +94,24 @@ export const createWaitForIndexerSyncTo = (
 
       const subscriptions = data?.subscriptions || [];
 
-      const currentBlockNumber = BigInt(
-        subscriptions.reduce(
-          (minBlock, sub) =>
-            BigInt(sub.indexedToBlock) < BigInt(minBlock)
-              ? sub.indexedToBlock
-              : minBlock,
-          subscriptions[0].indexedToBlock
-        )
-      );
+      if (subscriptions.length > 0) {
+        console.log(subscriptions);
+        const currentBlockNumber = BigInt(
+          subscriptions.reduce(
+            (minBlock, sub) =>
+              BigInt(sub.indexedToBlock) < BigInt(minBlock)
+                ? sub.indexedToBlock
+                : minBlock,
+            subscriptions[0].indexedToBlock
+          )
+        );
 
-      if (currentBlockNumber >= BigInt(blockNumber)) {
-        return currentBlockNumber;
+        console.log("Current block number:", currentBlockNumber);
+        console.log("Target block number:", blockNumber);
+
+        if (currentBlockNumber >= BigInt(blockNumber)) {
+          return currentBlockNumber;
+        }
       }
 
       await wait(pollIntervalInMs);
