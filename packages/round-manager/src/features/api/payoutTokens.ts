@@ -67,6 +67,26 @@ const MAINNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["mkUSD"],
   },
 ];
+
+const SEPOLIA_TOKENS: PayoutToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.SEPOLIA,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.SEPOLIA,
+    address: "0x8db0F9eE54753B91ec1d81Bf68074Be82ED30fEb",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+];
+
 const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
@@ -418,6 +438,7 @@ export const payoutTokens = [
   ...ZKSYNC_ERA_MAINNET_TOKENS,
   ...ZKSYNC_ERA_TESTNET_TOKENS,
   ...BASE_TOKENS,
+  ...SEPOLIA_TOKENS,
 ];
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
