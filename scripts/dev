@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+
+ALLO_V1_SETUP_IMAGE="ghcr.io/gitcoinco/grants-stack-allo-contracts-v1:main"
+ALLO_V2_SETUP_IMAGE="ghcr.io/gitcoinco/grants-stack-allo-contracts-v2:main"
+
+NETWORK_NAME="grants-stack"
+
+# We use the first two accounts from the test mnemonic
+# test test test test test test test test test test test junk
+#
+# Account 0: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+# Account 1: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+#
+# To make sure the addresses of the deployed contracts are deterministic,
+# we use ACCOUNT_0 to deploy V1 and ACCOUNT_1 to deploy V2.
+# We also use ACCOUNT_0 to populate V1 and V2 with test data.
+ACCOUNT_0_PK="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+ACCOUNT_1_PK="0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+
+# Deploy all Allo V1 contracts using the account 0
+deploy_v1() {
+  echo "👷 Deploying V1 contracts to dev chain 1..."
+  docker run \
+    --network $NETWORK_NAME \
+    -e DEPLOYER_PRIVATE_KEY="$ACCOUNT_0_PK" \
+    -e DEV_CHAIN_HOST=${NETWORK_NAME}-local-chain-1-1 \
+    -e DEV_CHAIN_ID=313371 \
+    -e DEV_CHAIN_PORT=8545 \
+    -e INFURA_ID="NOT_USED" \
+    $ALLO_V1_SETUP_IMAGE \
+    bash -c "./docker/deploy-contracts.sh"
+
+  echo "👷 Deploying V1 contracts to dev chain 2..."
+  docker run \
+    --network $NETWORK_NAME \
+    -e DEPLOYER_PRIVATE_KEY="$ACCOUNT_0_PK" \
+    -e DEV_CHAIN_HOST=${NETWORK_NAME}-local-chain-2-1 \
+    -e DEV_CHAIN_ID=313372 \
+    -e DEV_CHAIN_PORT=8545 \
+    -e INFURA_ID="NOT_USED" \
+    $ALLO_V1_SETUP_IMAGE \
+    bash -c "./docker/deploy-contracts.sh"
+}
+
+# Deploy all Allo V2 contracts using the account at index 1
+deploy_v2() {
+  echo "👷 Deploying V2 contracts to dev chain 1 and 2..."
+  docker run \
+    --network $NETWORK_NAME \
+    -e DEPLOYER_PRIVATE_KEY="$ACCOUNT_1_PK" \
+    -e DEV1_CHAIN_ID=313371 \
+    -e DEV1_CHAIN_HOST=${NETWORK_NAME}-local-chain-1-1 \
+    -e DEV1_CHAIN_PORT=8545 \
+    -e DEV2_CHAIN_ID=313372 \
+    -e DEV2_CHAIN_HOST=${NETWORK_NAME}-local-chain-2-1 \
+    -e DEV2_CHAIN_PORT=8545 \
+    $ALLO_V2_SETUP_IMAGE \
+    bash -c "./scripts/dev/deployAllDevNetworks.sh"
+}
+
+# Populate Allo V1 using the account account 0
+populate_v1() {
+  echo "👷 Populating V1 in dev chain 1..."
+  docker run \
+    --network $NETWORK_NAME \
+    -e DEPLOYER_PRIVATE_KEY="$ACCOUNT_0_PK" \
+    -e PINATA_HOST=pina \
+    -e PINATA_PORT=8000 \
+    -e DEV_CHAIN_HOST=${NETWORK_NAME}-local-chain-1-1 \
+    -e DEV_CHAIN_ID=313371 \
+    -e DEV_CHAIN_PORT=8545 \
+    -e INFURA_ID="NOT_USED" \
+    $ALLO_V1_SETUP_IMAGE \
+    pnpm hardhat run scripts/dev/populate/projects.ts --network dev
+
+  echo "👷 Populating V1 in dev chain 2..."
+  docker run \
+    --network $NETWORK_NAME \
+    -e DEPLOYER_PRIVATE_KEY="$ACCOUNT_0_PK" \
+    -e PINATA_HOST=pina \
+    -e PINATA_PORT=8000 \
+    -e DEV_CHAIN_HOST=${NETWORK_NAME}-local-chain-2-1 \
+    -e DEV_CHAIN_ID=313372 \
+    -e DEV_CHAIN_PORT=8545 \
+    -e INFURA_ID="NOT_USED" \
+    $ALLO_V1_SETUP_IMAGE \
+    pnpm hardhat run scripts/dev/populate/projects.ts --network dev
+}
+
+# Populate Allo V2 contracts using account 0
+populate_v2() {
+  echo "👷 Populating V2 on dev chain 1..."
+  docker run \
+    --network $NETWORK_NAME \
+    -e DEPLOYER_PRIVATE_KEY="$ACCOUNT_0_PK" \
+    -e PINATA_HOST=pina \
+    -e PINATA_PORT=8000 \
+    -e DEV1_CHAIN_ID=313371 \
+    -e DEV1_CHAIN_HOST=${NETWORK_NAME}-local-chain-1-1 \
+    -e DEV1_CHAIN_PORT=8545 \
+    -e DEV2_CHAIN_ID=313372 \
+    -e DEV2_CHAIN_HOST=${NETWORK_NAME}-local-chain-2-1 \
+    -e DEV2_CHAIN_PORT=8545 \
+    $ALLO_V2_SETUP_IMAGE \
+    bash -c "npx hardhat run scripts/dev/populate.ts --no-compile --network dev1"
+
+  echo "👷 Populating V2 on dev chain 2..."
+  docker run \
+    --network $NETWORK_NAME \
+    -e DEPLOYER_PRIVATE_KEY="$ACCOUNT_0_PK" \
+    -e PINATA_HOST=pina \
+    -e PINATA_PORT=8000 \
+    -e DEV1_CHAIN_ID=313371 \
+    -e DEV1_CHAIN_HOST=${NETWORK_NAME}-local-chain-1-1 \
+    -e DEV1_CHAIN_PORT=8545 \
+    -e DEV2_CHAIN_ID=313372 \
+    -e DEV2_CHAIN_HOST=${NETWORK_NAME}-local-chain-2-1 \
+    -e DEV2_CHAIN_PORT=8545 \
+    $ALLO_V2_SETUP_IMAGE \
+    bash -c "npx hardhat run scripts/dev/populate.ts --no-compile --network dev2"
+}
+
+start() {
+  echo "Starting all services..."
+  docker-compose up -d
+  docker-compose logs -f
+}
+
+stop() {
+  echo "Stopping all services..."
+  docker-compose down
+}
+
+init() {
+  deploy_v1 &&
+  deploy_v2 &&
+  populate_v1 &&
+  populate_v2
+}
+
+print_help() {
+  echo "Usage: $0 <command>"
+  echo "Commands:"
+  echo "  init           Deploy and populate Allo V1 and V2"
+  echo "  deploy-v1      Deploy Allo V1 contracts"
+  echo "  deploy-v2      Deploy Allo V2 contracts"
+  echo "  populate-v1    Populate Allo V1 contracts"
+  echo "  populate-v2    Populate Allo V2 contracts"
+  echo "  start          Start all Docker Compose services and follow logs"
+  echo "  stop           Stop all Docker Compose services"
+  echo "  help           Display this help message"
+}
+
+main() {
+  case "$1" in
+    init)
+      init
+      ;;
+    deploy-v1)
+      deploy_v1
+      ;;
+    deploy-v2)
+      deploy_v2
+      ;;
+    populate-v1)
+      populate_v1
+      ;;
+    populate-v2)
+      populate_v2
+      ;;
+    start)
+      start
+      ;;
+    stop)
+      stop
+      ;;
+    help)
+      print_help
+      ;;
+    *)
+      echo "Error: Unknown command '$1'"
+      print_help
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
+

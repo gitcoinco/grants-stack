@@ -1,60 +1,87 @@
 version: '3.8'
 
 # Ports
+# Dev chain 1: 8545
+# Dev chain 2: 8546
 # Builder: 3000
 # Explorer: 3001
 # Manager: 3002
 # Pinata: 3003
 # Indexer: 3004
-# Dev chain 1: 3005
-# Subgraph dev chain 1: 3006
-# Dev chain 2: 3007
-# Subgraph dev chain 2: 3008
 
 services:
-  pinata:
+  pina:
     image: ghcr.io/gitcoinco/pina:main
+    networks:
+      - grants-stack
+
     ports:
       - '127.0.0.1:3003:8000'
 
-  localchain-1:
-    image: ghcr.io/gitcoinco/allo-contracts-v1:main
+  local-chain-1:
+    image: ghcr.io/foundry-rs/foundry:nightly-b174c3a4f80938636f18b3c9e49d45e6643f64a9
+    networks:
+      - grants-stack
     ports:
-      - '127.0.0.1:3005:8545'
+      - '127.0.0.1:8545:8545'
     environment:
       - DEV_CHAIN_ID=313371
+    entrypoint: ["anvil", "--host", "0.0.0.0", "--chain-id", "313371"]
 
-  # initializes localchain deploying contracts and populates with test data
-  dev-setup-1:
-    image: ghcr.io/gitcoinco/allo-contracts-v1:main
-    depends_on:
-      - pinata
-      - localchain-1
-    environment:
-      - PINATA_HOST=pinata
-      - PINATA_PORT=8000
-      - DEV_CHAIN_HOST=localchain-1
-      - DEV_CHAIN_ID=313371
-    restart: "no"
-    entrypoint: [ "bash", "-c", "sleep 2 && corepack enable && exec ./docker/deploy-contracts.sh"]
-
-  localchain-2:
-    image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
+  local-chain-2:
+    image: ghcr.io/foundry-rs/foundry:nightly-b174c3a4f80938636f18b3c9e49d45e6643f64a9
+    networks:
+      - grants-stack
     ports:
-      - '127.0.0.1:3007:8545'
+      - '127.0.0.1:8546:8545'
     environment:
       - DEV_CHAIN_ID=313372
+    entrypoint: ["anvil", "--host", "0.0.0.0", "--chain-id", "313372"]
 
-  # initializes localchain deploying contracts and populates with test data
-  dev-setup-2:
-    image: ghcr.io/gitcoinco/allo-contracts-v1:pr-1
-    depends_on:
-      - pinata
-      - localchain-2
+  indexer-db:
+    image: postgres:13
+    networks:
+      - grants-stack
+    ports:
+      - "127.0.0.1:5432:5432"
     environment:
-      - PINATA_HOST=pinata
-      - PINATA_PORT=8000
-      - DEV_CHAIN_HOST=localchain-2
-      - DEV_CHAIN_ID=313372
-    restart: "no"
-    entrypoint: [ "bash", "-c", "sleep 2 && corepack enable && exec ./docker/deploy-contracts.sh"]
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+
+  indexer:
+    image: ghcr.io/gravityblast/grants-stack-indexer:main
+    networks:
+      - grants-stack
+    ports:
+      - '127.0.0.1:3004:4000'
+    depends_on:
+      - indexer-db
+      - pina
+      - local-chain-1
+      - local-chain-2
+    volumes:
+      - ./tmp/indexer/passport_scores.leveldb:/var/indexer/passport_scores.leveldb
+    environment:
+      - STORAGE_DIR=/var/indexer
+      - DATABASE_URL=postgres://postgres:postgres@indexer-db:5432/postgres
+      - INDEXED_CHAINS=dev1,dev2
+      - DEV1_RPC_URL=http://local-chain-1:8545
+      - DEV2_RPC_URL=http://local-chain-2:8545
+      - IPFS_GATEWAY=http://pina:8000
+      - PASSPORT_SCORER_ID=335
+      - PASSPORT_API_KEY=xn9e7AFv.aEfS0ioNhaVtww1jdwnsWtxnrNHspVsS
+      - COINGECKO_API_KEY=CG-9B9jhrcgAbCdN1QX9bVa1o7v
+      - PORT=4000
+      - DEPLOYMENT_ENVIRONMENT=local
+      - LOG_LEVEL=debug
+      - ENABLE_RESOURCE_MONITOR=false
+      - BUILD_TAG=local
+
+    entrypoint: ["bash", "-c", "sleep 2 && node dist/src/index.js --http-wait-for-sync=false --drop-db | ./node_modules/.bin/pino-pretty"]
+
+networks:
+  grants-stack:
+    name: grants-stack
+    driver: bridge
+
