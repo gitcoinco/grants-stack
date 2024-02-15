@@ -160,20 +160,12 @@ export function getConfig(): Config {
       gsIndexerEndpoint: z
         .string()
         .url()
-        .default("http://localhost")
+        .default("http://localhost:4000")
         .parse(process.env.REACT_APP_INDEXER_V2_API_URL),
     },
     pinata: {
-      jwt: z
-        .string()
-        .min(1)
-        .default("test-token")
-        .parse(process.env.REACT_APP_PINATA_JWT),
-      baseUrl: z
-        .string()
-        .url()
-        .default("https://local-pinata.dev")
-        .parse(process.env.REACT_APP_PINATA_BASE_URL),
+      jwt: z.string().min(1).parse(process.env.REACT_APP_PINATA_JWT),
+      baseUrl: z.string().url().parse(process.env.REACT_APP_PINATA_BASE_URL),
     },
     blockchain: {
       chainsOverride: z

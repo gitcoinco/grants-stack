@@ -290,7 +290,7 @@ export class AlloV2 implements Allo {
 
       const createPoolArgs: CreatePoolArgs = {
         profileId,
-        strategy: "0x0",
+        strategy: zeroAddress,
         initStrategyData: initStrategyDataEncoded,
         token: args.roundData.token,
         amount: matchAmount,
@@ -330,7 +330,7 @@ export class AlloV2 implements Allo {
       }
 
       const projectCreatedEvent = decodeEventFromReceipt({
-        abi: AlloAbi,
+        abi: AlloAbi as Abi,
         receipt,
         event: "PoolCreated",
       }) as { poolId: Hex };
