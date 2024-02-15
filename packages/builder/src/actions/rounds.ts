@@ -101,21 +101,16 @@ export const loadRound =
 
     let roundPayoutStrategy: RoundType;
 
-    console.log("v2Round.strategyName", v2Round.strategyName);
-
     switch (v2Round.strategyName) {
       case "allov1.QF":
       case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
-        console.log("MERKLE selected");
         roundPayoutStrategy = "MERKLE";
         break;
       case "allov1.Direct":
       case "allov2.DirectGrantsSimpleStrategy":
-        console.log("DIRECT selected");
         roundPayoutStrategy = "DIRECT";
         break;
       default:
-        console.log("default selected");
         roundPayoutStrategy = "MERKLE";
     }
 

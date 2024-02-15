@@ -52,7 +52,6 @@ export default function RoundStats() {
       applications.forEach((app) => {
         const roundType =
           props.rounds[app.roundId]?.round?.payoutStrategy || "";
-        console.log("roundtype is", roundType);
         if (roundType !== "" && roundType === "MERKLE") {
           rounds.push({
             roundId: app.roundId,
