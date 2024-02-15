@@ -42,6 +42,7 @@ const testnetChains = () => {
     arbitrumGoerli,
     polygonMumbai,
     avalancheFuji,
+    sepolia,
   ];
 };
 
