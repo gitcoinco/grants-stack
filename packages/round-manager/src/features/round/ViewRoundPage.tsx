@@ -51,8 +51,11 @@ import moment from "moment";
 import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
 
-export const isDirectRound = (round: Round) =>
-  round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+export const isDirectRound = (round: Round) => {
+  return (
+    round && round.payoutStrategy.strategyName?.toLowerCase().includes("direct")
+  );
+};
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
