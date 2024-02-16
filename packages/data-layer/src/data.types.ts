@@ -381,6 +381,18 @@ export type RoundsQueryVariables = {
     and: (
       | { or: TimeFilterVariables[] }
       | { or?: { strategyName: { in: string[] } } }
+      | {
+          or: {
+            chainId: {
+              in: number[];
+            };
+          };
+        }
+      | {
+          tags: {
+            contains: "allo-v1" | "allo-v2";
+          };
+        }
     )[];
   };
 };

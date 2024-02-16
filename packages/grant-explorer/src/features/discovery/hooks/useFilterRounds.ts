@@ -11,6 +11,8 @@ import {
 import { isEmpty } from "lodash";
 import { ROUND_PAYOUT_MERKLE } from "common";
 import { useMemo } from "react";
+import { AlloVersion } from "data-layer/dist/data-layer.types";
+import { getConfig } from "common/src/config";
 
 export type StrategyName =
   | ""
@@ -74,21 +76,27 @@ export const useFilterRounds = (
   where: RoundSelectionParams,
   chains: Chain[]
 ): SWRResponse<RoundGetRound[]> => {
+  const config = getConfig();
   const chainIds =
     where.network === undefined || where.network.trim() === ""
       ? chains.map((c) => c.id)
-      : where.network.split(",").map(parseInt);
+      : where.network.split(",").map((id) => parseInt(id));
 
   const statusFilter = useMemo(
     () => createRoundsStatusFilter(where.status),
     [where.status]
   );
-
+  console.log(where.network.split(","));
   const strategyNames =
     where.type === undefined || where.type.trim() === ""
       ? []
       : where.type.split(",");
-  const filter = createRoundWhereFilter(statusFilter, strategyNames);
+  const filter = createRoundWhereFilter(
+    statusFilter,
+    strategyNames,
+    chainIds,
+    config.allo.version
+  );
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
   const vars = { orderBy, filter };
@@ -97,7 +105,9 @@ export const useFilterRounds = (
 
 const createRoundWhereFilter = (
   statusFilter: TimeFilterVariables[],
-  strategyNames: string[]
+  strategyNames: string[],
+  chainIds: number[],
+  version: AlloVersion
 ): RoundsQueryVariables["filter"] => {
   return {
     and: [
@@ -107,6 +117,24 @@ const createRoundWhereFilter = (
         ...(strategyNames.length > 0 && {
           or: {
             strategyName: { in: strategyNames },
+          },
+        }),
+      },
+      {
+        ...(chainIds.length > 0 && {
+          or: {
+            chainId: {
+              in: chainIds,
+            },
+          },
+        }),
+      },
+      {
+        ...(version && {
+          or: {
+            tags: {
+              contains: version,
+            },
           },
         }),
       },
