@@ -37,6 +37,7 @@ describe("listPrograms", () => {
               metadata: {
                 name: expectedProgram.metadata?.name,
               },
+              createdByAddress: expectedProgram.createdByAddress,
             },
           ],
         }),
@@ -70,6 +71,7 @@ describe("getProgramById", () => {
             metadata: {
               name: expectedProgram.metadata?.name,
             },
+            createdByAddress: expectedProgram.createdByAddress,
           },
         }),
       }

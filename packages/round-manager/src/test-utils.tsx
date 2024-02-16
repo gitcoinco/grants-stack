@@ -58,6 +58,7 @@ export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   //   pointer: faker.random.alpha({ count: 59, casing: "lower" })
   // },
   operatorWallets: [mockedOperatorWallet],
+  createdByAddress: faker.finance.ethereumAddress(),
   ...overrides,
 });
 
