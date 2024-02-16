@@ -1,18 +1,18 @@
 import { gql } from "graphql-request";
 
 /**
- * Get all the programs that a user is a part of
- * @param $alloVersion - The version of Allo
+ * Manager: Get all the programs that a user is a part of
  * @param $address - The address of the user
  * @param $chainId - The network ID of the chain
+ * @param $tag - The tag of the program
  *
  * @returns The programs
  */
-export const getProgramsByUser = gql`
-  query ($address: String!, $chainId: Int!) {
+export const getProgramByUserAndTag = gql`
+  query ($address: String!, $chainId: Int!, $filterByTag: String!) {
     projects(
       filter: {
-        tags: { contains: "program" }
+        tags: { contains: [$filterByTag] }
         roles: { some: { address: { equalTo: $address } } }
         and: { chainId: { equalTo: $chainId } }
       }
