@@ -37,7 +37,6 @@ import {
   horizontalTabStyles,
   verticalTabStyles,
 } from "../common/Utils";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
@@ -314,10 +313,7 @@ export default function ViewRoundPage() {
                   <Tab.Panels className="flex-grow ml-6">
                     <Tab.Panel>
                       <GrantApplications
-                        isDirectRound={
-                          round.payoutStrategy.strategyName ==
-                          ROUND_PAYOUT_DIRECT
-                        }
+                        isDirectRound={isDirectRound(round)}
                         applications={applications}
                         isRoundsFetched={isRoundFetched}
                         fetchRoundStatus={fetchRoundStatus}
@@ -641,10 +637,8 @@ export function RoundBadgeStatus({ round }: { round: Round }) {
   const now = moment();
 
   if (
-    (round.payoutStrategy.strategyName == ROUND_PAYOUT_MERKLE &&
-      now.isBefore(applicationEnds)) ||
-    (round.payoutStrategy.strategyName == ROUND_PAYOUT_DIRECT &&
-      now.isBefore(roundEnds))
+    (!isDirectRound(round) && now.isBefore(applicationEnds)) ||
+    (isDirectRound(round) && now.isBefore(roundEnds))
   ) {
     return (
       <div
