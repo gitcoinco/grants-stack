@@ -170,6 +170,10 @@ export type v2Project = {
    */
   tags: ("allo-v1" | "allo-v2" | "program")[];
   /**
+   * Address which created the project
+   */
+  createdByAddress: string;
+  /**
    * The block the project was created at
    */
   createdAtBlock: string;

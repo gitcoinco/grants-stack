@@ -96,6 +96,10 @@ export interface Program {
    */
   operatorWallets: Array<string>;
   /**
+   * Address which created the program
+   */
+  createdByAddress?: string;
+  /**
    * Network Chain Information
    */
   chain?: {

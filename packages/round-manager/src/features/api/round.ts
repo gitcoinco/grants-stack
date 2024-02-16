@@ -333,12 +333,9 @@ export async function listRounds(args: {
     })
     .then((rounds) => rounds.map(indexerV2RoundToRound));
 
-  console.log("rounds", rounds);
-
-  // filter out rounds operatorWallets does not include round.createdByAddress
-
+  // Filter out rounds where operatorWallets does not include round.createdByAddress
+  // This is to filter out spam rounds created by bots
   rounds = rounds.filter((round) => {
-    // Check if createdByAddress is defined and if operatorWallets array includes createdByAddress
     return (
       round.createdByAddress &&
       round.operatorWallets?.includes(round.createdByAddress)
