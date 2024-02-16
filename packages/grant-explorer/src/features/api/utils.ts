@@ -120,7 +120,7 @@ export const CHAINS: Record<
   [ChainId.SEPOLIA]: {
     id: ChainId.SEPOLIA,
     name: "Sepolia",
-    logo: "./logos/ethereum-eth-logo",
+    logo: "./logos/ethereum-eth-logo.svg",
   },
 };
 
