@@ -49,7 +49,7 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...{ ...activeRounds, data: activeRounds.data }}
+          {...{ ...activeRounds, data: filteredActiveRounds }}
           loadingCount={4}
           maxCount={6}
           getItemClassName={(_, i) =>
