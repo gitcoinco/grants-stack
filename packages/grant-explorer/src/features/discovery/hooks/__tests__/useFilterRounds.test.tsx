@@ -1,7 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useFilterRounds } from "../useFilterRounds";
 import { makeRoundOverviewData } from "../../../../test-utils";
-import { filterRounds, filterRoundsWithProjects } from "../../../api/rounds";
+import {
+  filterOutPrivateRounds,
+  filterRoundsWithProjects,
+} from "../../../api/rounds";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { getEnabledChains } from "../../../../app/chainConfig";
 
@@ -102,11 +105,11 @@ describe("useFilterRounds", () => {
     const cacheMock = createCacheMock({ roundType: "private" }) as any;
     // Only show public rounds
     expect(
-      filterRounds(
+      filterOutPrivateRounds(
         createCacheMock({ roundType: "public" }) as any,
         MOCKED_ROUNDS
       )?.length
     ).toBe(5);
-    expect(filterRounds(cacheMock, MOCKED_ROUNDS)?.length).toBe(0);
+    expect(filterOutPrivateRounds(cacheMock, MOCKED_ROUNDS)?.length).toBe(0);
   });
 });

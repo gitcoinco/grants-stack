@@ -387,7 +387,7 @@ export type RoundsQueryVariables = {
   filter?: {
     and: [
       { or: TimeFilterVariables[] },
-      { or: { strategyName: { in: string[] } } },
+      { or?: { strategyName: { in: string[] } } },
     ];
   };
 };
@@ -470,6 +470,7 @@ export interface RoundMetadataGetRound {
   feesPercentage?: number;
   programContractAddress: string;
   quadraticFundingConfig?: QuadraticFundingConfig;
+  roundType?: "public" | "private";
 }
 
 export interface Support {

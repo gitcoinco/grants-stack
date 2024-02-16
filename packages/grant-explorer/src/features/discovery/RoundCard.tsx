@@ -29,6 +29,7 @@ type RoundCardProps = {
 };
 
 const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
+  return null;
   const {
     id,
     chainId,

@@ -1,8 +1,6 @@
 import { Chain } from "wagmi/chains";
 import { useRounds } from "../../api/rounds";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
-// FIXME: replace with ROUND_PAYOUT_MERKLE when we use the Indexer for the homepage
-import { ROUND_PAYOUT_MERKLE_OLD } from "common";
 import { SWRResponse } from "swr";
 import {
   OrderByRounds,
@@ -10,6 +8,8 @@ import {
   RoundsQueryVariables,
   TimeFilterVariables,
 } from "data-layer";
+import { isEmpty } from "lodash";
+import { ROUND_PAYOUT_MERKLE } from "common";
 
 export type StrategyName =
   | ""
@@ -55,7 +55,7 @@ export enum RoundStatus {
 export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
   orderBy: "MATCH_AMOUNT_DESC",
   status: RoundStatus.active,
-  type: ROUND_PAYOUT_MERKLE_OLD,
+  type: ROUND_PAYOUT_MERKLE,
   network: "",
 };
 
@@ -84,9 +84,13 @@ export const useFilterRounds = (
       ? []
       : where.type.split(",");
   const filter = createRoundWhereFilter(statusFilter, strategyNames);
+  console.log(filter);
+  console.log(where);
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
-  return useRounds({ orderBy, filter }, chainIds);
+  console.log({ orderBy, filter }, chainIds);
+  const vars = { orderBy, filter };
+  return useRounds(vars, chainIds);
 };
 
 const createRoundWhereFilter = (
@@ -98,11 +102,13 @@ const createRoundWhereFilter = (
       // Find rounds that match both statusFilter and round type
       { or: statusFilter },
       {
-        or: {
-          strategyName: { in: strategyNames },
-        },
+        ...(strategyNames.length > 0 && {
+          or: {
+            strategyName: { in: strategyNames },
+          },
+        }),
       },
-    ],
+    ].filter((prop) => !isEmpty(prop)),
   };
 };
 
