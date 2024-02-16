@@ -2,15 +2,16 @@ import { Chain } from "@rainbow-me/rainbowkit";
 import {
   avalanche as avalancheOriginal,
   avalancheFuji as avalancheFujiOriginal,
+  base as baseOriginal,
   fantom as fantomOriginal,
   fantomTestnet as fantomTestnetOriginal,
-  zkSyncTestnet as zkSyncTestnetOriginal,
-  zkSync as zkSyncOriginal,
-  base as baseOriginal,
   sepolia as ethereumSepolia,
+  zkSync as zkSyncOriginal,
+  zkSyncTestnet as zkSyncTestnetOriginal,
 } from "@wagmi/chains";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
+import { error, Result, success } from "./allo/common";
 
 export const PublicGoodsNetworkIcon =
   "https://ipfs.io/ipfs/Qmagrvn2SY5TEoLgqUtcc1745ABZTFoPmod37tW37u7HYo";
@@ -305,6 +306,27 @@ export const sepolia: Chain = {
     },
   },
 };
+
+export function parseChainIdIntoResult(
+  input: string | number
+): Result<ChainId> {
+  if (typeof input === "string") {
+    // If the input is a string, try to parse it as a number
+    const parsedInput = parseInt(input, 10);
+    if (!isNaN(parsedInput)) {
+      // If parsing is successful, check if it's a valid enum value
+      if (Object.values(ChainId).includes(parsedInput)) {
+        return success(parsedInput as ChainId);
+      }
+    }
+  } else {
+    // If the input is a number, check if it's a valid enum value
+    if (Object.values(ChainId).includes(input)) {
+      return success(input as ChainId);
+    }
+  }
+  return error(new Error("Invalid chainid"));
+}
 
 export function parseChainId(input: string | number): ChainId {
   if (typeof input === "string") {

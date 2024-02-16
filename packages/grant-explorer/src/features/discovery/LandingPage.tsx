@@ -49,7 +49,7 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...{ ...activeRounds, data: filteredActiveRounds }}
+          {...{ ...activeRounds, data: activeRounds.data }}
           loadingCount={4}
           maxCount={6}
           getItemClassName={(_, i) =>
@@ -72,7 +72,8 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...filteredRoundsEndingSoon}
+          isLoading={roundsEndingSoon.isLoading}
+          data={filteredRoundsEndingSoon}
           loadingCount={ROUNDS_ENDING_SOON_FILTER.first}
           maxCount={ROUNDS_ENDING_SOON_FILTER.first}
           roundType="endingSoon"

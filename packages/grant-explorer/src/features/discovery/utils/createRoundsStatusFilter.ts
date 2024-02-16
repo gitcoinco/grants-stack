@@ -6,12 +6,12 @@ export const createTimestamp = (timestamp = 0) => {
   return new Date(Math.floor(NOW_IN_SECONDS + timestamp)).toISOString();
 };
 
-const ONE_DAY_IN_SECONDS = 3600 * 24;
-const ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365;
+const ONE_DAY_IN_MILISECONDS = 3600 * 24 * 1000;
+const ONE_YEAR_IN_MILISECONDS = ONE_DAY_IN_MILISECONDS * 365 * 1000;
 
 function getStatusFilter(status: string): TimeFilterVariables {
   const currentTimestamp = createTimestamp();
-  const futureTimestamp = createTimestamp(ONE_YEAR_IN_SECONDS);
+  const futureTimestamp = createTimestamp(ONE_YEAR_IN_MILISECONDS);
 
   switch (status) {
     case RoundStatus.active:
@@ -37,7 +37,7 @@ function getStatusFilter(status: string): TimeFilterVariables {
       return {
         donationsEndTime: {
           greaterThan: currentTimestamp,
-          lessThan: createTimestamp(ONE_DAY_IN_SECONDS * 30),
+          lessThan: createTimestamp(ONE_DAY_IN_MILISECONDS * 30),
         },
       };
     default:

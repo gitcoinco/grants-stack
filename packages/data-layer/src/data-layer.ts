@@ -18,10 +18,9 @@ import {
   RoundGetRound,
   RoundsQueryVariables,
   SearchBasedProjectCategory,
-  V2RoundWithRoles,
-  Tags,
   v2Project,
   V2Round,
+  V2RoundWithRoles,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -32,6 +31,7 @@ import {
 import {
   getApplication,
   getApplicationsByProjectId,
+  getProgramByIdAndUser,
   getProgramByUserAndTag,
   getProgramName,
   getProjectById,
@@ -39,7 +39,6 @@ import {
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndUserAddress,
-  getProgramByIdAndUser,
   getRoundsQuery,
 } from "./queries";
 import { Address } from "viem";

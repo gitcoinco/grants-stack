@@ -18,7 +18,7 @@ import { RoundMatchAmountBadge } from "./RoundMatchAmountBadge";
 import { RoundStrategyBadge } from "./RoundStrategyBadge";
 import { RoundTimeBadge } from "./RoundTimeBadge";
 import { RoundGetRound } from "data-layer";
-import { parseChainId } from "common/dist/chains";
+import { parseChainId, parseChainIdIntoResult } from "common/dist/chains";
 
 type RoundType = "all" | "endingSoon" | "active";
 
@@ -42,6 +42,11 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
     applicationsEndTime,
     matchTokenAddress,
   } = round ?? {};
+
+  const parsedChainId = parseChainIdIntoResult(chainId);
+  if (parsedChainId.type === "error") {
+    return null;
+  }
 
   const donationsStartTimeTimestampSec =
     donationsStartTime !== null

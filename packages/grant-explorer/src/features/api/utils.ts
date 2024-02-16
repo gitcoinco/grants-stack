@@ -3,10 +3,10 @@ import { CartProject, IPFSObject, Round, VotingToken } from "./types";
 import {
   ChainId,
   graphQlEndpoints,
-  ROUND_PAYOUT_DIRECT_OLD,
-  ROUND_PAYOUT_MERKLE_OLD,
   ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_DIRECT_OLD,
   ROUND_PAYOUT_MERKLE,
+  ROUND_PAYOUT_MERKLE_OLD,
   RoundPayoutType,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
@@ -833,6 +833,7 @@ export const getRoundType = (payoutStrategyName: RoundPayoutType) => {
       return "Quadratic Funding";
     case ROUND_PAYOUT_DIRECT_OLD:
     case ROUND_PAYOUT_DIRECT:
+    case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
       return "Direct Grants";
     default:
       return payoutStrategyName;

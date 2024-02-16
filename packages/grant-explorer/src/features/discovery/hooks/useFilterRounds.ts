@@ -54,7 +54,7 @@ export enum RoundStatus {
 }
 
 export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
-  orderBy: "MATCH_AMOUNT_DESC",
+  orderBy: "MATCH_AMOUNT_IN_USD_DESC",
   status: RoundStatus.active,
   type: ROUND_PAYOUT_MERKLE,
   network: "",

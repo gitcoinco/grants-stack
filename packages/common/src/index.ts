@@ -316,7 +316,8 @@ export type RoundPayoutType =
   | "MERKLE"
   | "DIRECT"
   | "allov1.Direct"
-  | "allov1.QF";
+  | "allov1.QF"
+  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy";
 export type RoundVisibilityType = "public" | "private";
 
 export type { Allo, AlloError, AlloOperation } from "./allo/allo";
@@ -325,7 +326,7 @@ export { AlloV2 } from "./allo/backends/allo-v2";
 export {
   createWaitForIndexerSyncTo,
   getCurrentSubgraphBlockNumber,
-  waitForSubgraphSyncTo
+  waitForSubgraphSyncTo,
 } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
@@ -336,7 +337,7 @@ export {
   createViemTransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
-  sendTransaction
+  sendTransaction,
 } from "./allo/transaction-sender";
 
 export type AnyJson =

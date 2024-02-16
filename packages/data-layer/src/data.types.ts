@@ -378,10 +378,10 @@ export type RoundsQueryVariables = {
   first?: number;
   orderBy?: OrderByRounds;
   filter?: {
-    and: [
-      { or: TimeFilterVariables[] },
-      { or?: { strategyName: { in: string[] } } },
-    ];
+    and: (
+      | { or: TimeFilterVariables[] }
+      | { or?: { strategyName: { in: string[] } } }
+    )[];
   };
 };
 

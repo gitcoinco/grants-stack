@@ -45,5 +45,5 @@ export function filterRoundsWithProjects(rounds: RoundGetRound[]) {
 }
 
 export const filterOutPrivateRounds = (rounds: RoundGetRound[]) => {
-  return rounds.filter((round) => round.roundMetadata.roundType === "public");
+  return rounds.filter((round) => round.roundMetadata.roundType !== "private");
 };

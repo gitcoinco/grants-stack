@@ -1,7 +1,7 @@
 import {
   ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE,
   ROUND_PAYOUT_DIRECT_OLD,
+  ROUND_PAYOUT_MERKLE,
   ROUND_PAYOUT_MERKLE_OLD,
   RoundPayoutType,
 } from "common";
@@ -21,7 +21,9 @@ export function RoundStrategyBadge({ strategyName }: Props) {
   const color = colorOptions[strategyName];
   return (
     <Badge color={color} data-testid="round-badge">
-      {getRoundType(strategyName) ?? "Unknown"}
+      {getRoundType(strategyName).length > 0
+        ? getRoundType(strategyName)
+        : "Unknown"}
     </Badge>
   );
 }
