@@ -16,6 +16,7 @@ import {
   Round,
   RoundOverview,
   SearchBasedProjectCategory,
+  Tags,
   TimestampVariables,
   V2RoundWithRoles,
   v2Project,
@@ -37,7 +38,6 @@ import {
   getProgramByUserAndTag,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndUserAddress,
-  getProgramByIdAndUser,
 } from "./queries";
 import { Address } from "viem";
 
@@ -125,7 +125,7 @@ export class DataLayer {
    * @example
    * Here is an example:
    * ```
-   * const program = await dataLayer.getProgramsByUser({
+   * const program = await dataLayer.getProgramByUser({
    *  address: "0x1234",
    *  chainId: 1,
    *  alloVersion: "allo-v1",
@@ -145,76 +145,54 @@ export class DataLayer {
     address: string;
     chainId: number;
     alloVersion: AlloVersion;
-  }): Promise<{ programs: Program[] }> {
+  }): Promise<{ programs: Program[] } | null> {
+    const filterByTag = alloVersion === "allo-v1" ? "program" : "allo-v2";
     const requestVariables = {
       alloVersion,
       address,
       chainId,
+      filterByTag,
     };
 
     let programs: Program[] = [];
 
     if (alloVersion === "allo-v1") {
-      const response: { projects: Program[] } = await request(
+      let response: { projects: Program[] } = { projects: [] };
+
+      response = await request(
         this.gsIndexerEndpoint,
         getProgramByUserAndTag,
-        { ...requestVariables, filterByTag: "program" },
+        requestVariables,
       );
 
       programs = response.projects;
     } else if (alloVersion === "allo-v2") {
-      const response: { projects: v2Project[] } = await request(
+      let response: { projects: v2Project[] } = { projects: [] };
+
+      response = await request(
         this.gsIndexerEndpoint,
         getProgramByUserAndTag,
-        { ...requestVariables, filterByTag: "allo-v2" },
+        requestVariables,
       );
 
-      programs = response.projects.map((project) => {
+      const projects = response.projects;
+
+      programs = projects.map((project) => {
         return {
-          ...project,
+          id: project.id,
+          chainId: project.chainId,
           metadata: {
             name: project.metadata?.title,
           },
+          tags: project.tags as Tags[],
+          roles: project.roles,
         };
       });
     }
 
+    if (!programs) return null;
+
     return { programs };
-  }
-
-  async getProgramByIdAndUser({
-    userAddress,
-    programId,
-    chainId,
-  }: {
-    userAddress: string;
-    programId: string;
-    chainId: number;
-  }): Promise<{ program: Program | null }> {
-    const response: { projects: (Program | v2Project)[] } = await request(
-      this.gsIndexerEndpoint,
-      getProgramByIdAndUser,
-      { programId, chainId, userAddress },
-    );
-
-    if (response.projects.length === 0) {
-      return { program: null };
-    }
-
-    const projectOrProgram = response.projects[0];
-
-    if ("name" in projectOrProgram.metadata) {
-      return { program: projectOrProgram as Program };
-    }
-
-    return {
-      program: {
-        ...projectOrProgram,
-        metadata: {
-          name: projectOrProgram.metadata?.title,
-        },
-      },
-    };
   }
 
   /**

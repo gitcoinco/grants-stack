@@ -107,6 +107,23 @@ export type ProjectRole = {
   projectId: string;
 };
 
+export type Tags = "allo-v1" | "program update";
+
+/**
+ * The program type for v1
+ **/
+
+export type Program = {
+  id: string;
+  chainId: number;
+  metadata: {
+    name: string;
+  };
+  metadataCid?: MetadataPointer;
+  tags: Tags[];
+  roles: AddressAndRole[];
+};
+
 /**
  * The project type for v2
  *
@@ -168,7 +185,7 @@ export type v2Project = {
    *
    * The tags are used to filter the projects based on the version of Allo.
    */
-  tags: ("allo-v1" | "allo-v2" | "program")[];
+  tags: [string];
   /**
    * The block the project was created at
    */
@@ -180,16 +197,6 @@ export type v2Project = {
   roles: AddressAndRole[];
   nonce?: bigint;
   anchorAddress?: string;
-};
-
-/**
- * The program type for v1
- **/
-
-export type Program = Omit<v2Project, "metadata"> & {
-  metadata: {
-    name: string;
-  };
 };
 
 /**

@@ -76,9 +76,7 @@ const fetchProgramsByAddress = async (
 
 const fetchProgramsById = async (
   dispatch: Dispatch,
-  address: string,
   programId: string,
-  dataLayer: DataLayer,
   walletProvider: Web3Provider
 ) => {
   datadogLogs.logger.info(`fetchProgramsById: programId - ${programId}`);
@@ -88,12 +86,7 @@ const fetchProgramsById = async (
     payload: ProgressStatus.IN_PROGRESS,
   });
   try {
-    const program = await getProgramById(
-      address,
-      programId,
-      walletProvider,
-      dataLayer
-    );
+    const program = await getProgramById(programId, walletProvider);
     dispatch({ type: ActionType.SET_PROGRAMS, payload: [program] });
     dispatch({
       type: ActionType.SET_FETCH_PROGRAM_STATUS,
@@ -180,13 +173,11 @@ export const useProgramById = (
   getProgramByIdError?: Error;
 } => {
   const context = useContext(ReadProgramContext);
-  const dataLayer = useDataLayer();
   if (context === undefined) {
     throw new Error("useProgramById must be used within a ProgramProvider");
   }
 
-  const { address, provider: walletProvider } = useWallet();
-
+  const { provider: walletProvider } = useWallet();
   useEffect(() => {
     if (id) {
       const existingProgram = context.state.programs.find(
@@ -194,13 +185,7 @@ export const useProgramById = (
       );
 
       if (!existingProgram) {
-        fetchProgramsById(
-          context.dispatch,
-          address.toLowerCase(),
-          id,
-          dataLayer,
-          walletProvider
-        );
+        fetchProgramsById(context.dispatch, id, walletProvider);
       }
     }
   }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps

@@ -14,7 +14,7 @@ export const getProgramByUserAndTag = gql`
       filter: {
         tags: { contains: [$filterByTag] }
         roles: { some: { address: { equalTo: $address } } }
-        chainId: { equalTo: $chainId }
+        and: { chainId: { equalTo: $chainId } }
       }
     ) {
       id
@@ -39,13 +39,14 @@ export const getProgramByUserAndTag = gql`
  *
  * @returns The programs
  */
-export const getProgramByIdAndUser = gql`
-  query ($userAddress: String!, $programId: String!, $chainId: Int!) {
+export const getProgramById = gql`
+  query ($alloVersion: [String!]!, $programId: String!, $chainId: Int!) {
     projects(
       filter: {
+        tags: { equalTo: $alloVersion }
+        tags: { contains: "program" }
         id: { equalTo: $programId }
-        roles: { some: { address: { equalTo: $userAddress } } }
-        chainId: { equalTo: $chainId }
+        and: { chainId: { equalTo: $chainId } }
       }
     ) {
       id
