@@ -10,6 +10,7 @@ import {
 } from "data-layer";
 import { isEmpty } from "lodash";
 import { ROUND_PAYOUT_MERKLE } from "common";
+import { useMemo } from "react";
 
 export type StrategyName =
   | ""
@@ -77,18 +78,19 @@ export const useFilterRounds = (
     where.network === undefined || where.network.trim() === ""
       ? chains.map((c) => c.id)
       : where.network.split(",").map(parseInt);
-  const statusFilter = createRoundsStatusFilter(where.status);
+
+  const statusFilter = useMemo(
+    () => createRoundsStatusFilter(where.status),
+    [where.status]
+  );
 
   const strategyNames =
     where.type === undefined || where.type.trim() === ""
       ? []
       : where.type.split(",");
   const filter = createRoundWhereFilter(statusFilter, strategyNames);
-  console.log(filter);
-  console.log(where);
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
-  console.log({ orderBy, filter }, chainIds);
   const vars = { orderBy, filter };
   return useRounds(vars, chainIds);
 };

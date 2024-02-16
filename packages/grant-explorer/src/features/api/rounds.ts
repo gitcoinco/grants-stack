@@ -37,10 +37,11 @@ export function filterRoundsWithProjects(rounds: RoundGetRound[]) {
 0 projects + application period has closed: hide
   */
   const currentTimestamp = createTimestamp();
-  return rounds.filter((round) => {
-    if (round.applicationsEndTime > currentTimestamp) return true;
-    return round?.applications?.length;
-  });
+  return rounds.filter(
+    (round) =>
+      round.applicationsEndTime > currentTimestamp ||
+      round?.applications?.length > 0
+  );
 }
 
 export const filterOutPrivateRounds = (rounds: RoundGetRound[]) => {
