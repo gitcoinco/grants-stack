@@ -8,7 +8,7 @@ import {
   Round,
   RoundOverview,
   RoundVisibilityType,
-  TimestampVariables,
+  TimeFilterVariables,
 } from "../data.types";
 
 export const getRoundById = async (
@@ -369,7 +369,7 @@ type RoundsQueryVariables = {
   orderDirection?: "asc" | "desc";
   where?: {
     and: [
-      { or: TimestampVariables[] },
+      { or: TimeFilterVariables[] },
       { payoutStrategy_?: { or: { strategyName: string }[] } },
     ];
   };

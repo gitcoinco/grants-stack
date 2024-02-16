@@ -2,32 +2,10 @@ import useSWR, { Cache, SWRResponse, useSWRConfig } from "swr";
 import { ChainId } from "common";
 import { __deprecated_fetchFromIPFS } from "./utils";
 import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
-import { OrderByRounds, RoundGetRound, useDataLayer } from "data-layer";
-
-export type __deprecated_RoundsQueryVariables = {
-  first?: number;
-  orderBy?: OrderByRounds;
-  filter?: {
-    and: [{ or: TimeFilterVariables[] }, { or: { strategyName: {equalTo: } } }[]];
-  };
-};
-
-type TimeFilter = {
-  greaterThan?: string;
-  lessThan?: string;
-  greaterThanOrEqualTo?: string;
-  lessThanOrEqualTo?: string;
-};
-
-export type TimeFilterVariables = {
-  applicationsStartTime?: TimeFilter;
-  applicationsEndTime?: TimeFilter;
-  donationsStartTime?: TimeFilter;
-  donationsEndTime?: TimeFilter;
-};
+import { RoundGetRound, RoundsQueryVariables, useDataLayer } from "data-layer";
 
 export const useRounds = (
-  variables: __deprecated_RoundsQueryVariables,
+  variables: RoundsQueryVariables,
   chainIds: ChainId[]
 ): SWRResponse<RoundGetRound[]> => {
   const { cache, mutate } = useSWRConfig();

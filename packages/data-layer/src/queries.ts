@@ -289,12 +289,12 @@ export const getBlockNumberQuery = gql`
 `;
 
 export const getRoundsQuery = gql`
-  query GetRounds($first: Int, $orderBy: [RoundsOrderBy!], $chainIds: [Int!]) {
-    rounds(
-      first: $first
-      orderBy: $orderBy
-      filter: { chainId: { in: $chainIds } }
-    ) {
+  query GetRounds(
+    $first: Int
+    $orderBy: [RoundsOrderBy!]
+    $filter: RoundFilter
+  ) {
+    rounds(first: $first, orderBy: $orderBy, filter: $filter) {
       id
       chainId
       tags

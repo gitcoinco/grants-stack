@@ -1,19 +1,21 @@
 import { Chain } from "wagmi/chains";
-import {
-  __deprecated_RoundsQueryVariables,
-  TimeFilterVariables,
-  useRounds,
-} from "../../api/rounds";
+import { useRounds } from "../../api/rounds";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
 // FIXME: replace with ROUND_PAYOUT_MERKLE when we use the Indexer for the homepage
 import { ROUND_PAYOUT_MERKLE_OLD } from "common";
 import { SWRResponse } from "swr";
-import { OrderByRounds, RoundGetRound } from "data-layer";
+import {
+  OrderByRounds,
+  RoundGetRound,
+  RoundsQueryVariables,
+  TimeFilterVariables,
+} from "data-layer";
 
 export type StrategyName =
   | ""
   | "allov1.QF"
   | "allov1.Direct"
+  | "MERKLE"
   | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
   | "allov2.MicroGrantsStrategy"
   | "allov2.MicroGrantsGovStrategy"
@@ -76,6 +78,7 @@ export const useFilterRounds = (
       ? chains.map((c) => c.id)
       : where.network.split(",").map(parseInt);
   const statusFilter = createRoundsStatusFilter(where.status);
+
   const strategyNames =
     where.type === undefined || where.type.trim() === ""
       ? []
@@ -83,23 +86,22 @@ export const useFilterRounds = (
   const filter = createRoundWhereFilter(statusFilter, strategyNames);
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
-
   return useRounds({ orderBy, filter }, chainIds);
 };
 
 const createRoundWhereFilter = (
   statusFilter: TimeFilterVariables[],
   strategyNames: string[]
-): __deprecated_RoundsQueryVariables["filter"] => {
-  const payoutStrategy = strategyNames.length
-    ? strategyNames.map((strategyName) => ({ strategyName }))
-    : undefined;
-
+): RoundsQueryVariables["filter"] => {
   return {
     and: [
       // Find rounds that match both statusFilter and round type
       { or: statusFilter },
-      { payoutStrategy_: payoutStrategy ? { or: payoutStrategy } : undefined },
+      {
+        or: {
+          strategyName: { in: strategyNames },
+        },
+      },
     ],
   };
 };

@@ -16,9 +16,9 @@ import {
   ProjectEventsMap,
   Round,
   RoundGetRound,
+  RoundsQueryVariables,
   SearchBasedProjectCategory,
   Tags,
-  TimestampVariables,
   v2Project,
   V2Round,
   V2RoundWithRoles,
@@ -32,11 +32,11 @@ import {
 import {
   getApplication,
   getApplicationsByProjectId,
+  getProgramByUserAndTag,
   getProgramName,
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
-  getProgramByUserAndTag,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndUserAddress,
   getRoundsQuery,
@@ -578,12 +578,7 @@ export class DataLayer {
     first: number;
     orderBy?: OrderByRounds;
     orderDirection?: "asc" | "desc";
-    filter?: {
-      and: [
-        { or: TimestampVariables[] },
-        { payoutStrategy_?: { or: { strategyName: string }[] } },
-      ];
-    };
+    filter?: RoundsQueryVariables["filter"];
   }): Promise<{ rounds: RoundGetRound[] }> {
     return await request(this.gsIndexerEndpoint, getRoundsQuery, {
       orderBy: orderBy ?? "NATURAL",

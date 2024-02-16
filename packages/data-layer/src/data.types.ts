@@ -367,16 +367,29 @@ export interface Round {
   approvedProjects?: Project[];
 }
 
-export type TimestampVariables = {
-  applicationsStartTime_lte?: string;
-  applicationsEndTime_gt?: string;
-  applicationsEndTime_lt?: string;
-  applicationsEndTime?: string;
-  applicationsEndTime_gte?: string;
-  roundStartTime_lt?: string;
-  roundStartTime_gt?: string;
-  roundEndTime_gt?: string;
-  roundEndTime_lt?: string;
+export type TimeFilter = {
+  greaterThan?: string;
+  lessThan?: string;
+  greaterThanOrEqualTo?: string;
+  lessThanOrEqualTo?: string;
+};
+
+export type TimeFilterVariables = {
+  applicationsStartTime?: TimeFilter;
+  applicationsEndTime?: TimeFilter;
+  donationsStartTime?: TimeFilter;
+  donationsEndTime?: TimeFilter;
+};
+
+export type RoundsQueryVariables = {
+  first?: number;
+  orderBy?: OrderByRounds;
+  filter?: {
+    and: [
+      { or: TimeFilterVariables[] },
+      { or: { strategyName: { in: string[] } } },
+    ];
+  };
 };
 
 export type RoundOverview = {

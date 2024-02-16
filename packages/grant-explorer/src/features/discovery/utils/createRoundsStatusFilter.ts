@@ -1,9 +1,9 @@
-import { TimeFilterVariables } from "../../api/rounds";
 import { RoundStatus } from "../hooks/useFilterRounds";
+import { TimeFilterVariables } from "data-layer";
 
 export const createTimestamp = (timestamp = 0) => {
-  const NOW_IN_SECONDS = Date.now() / 1000;
-  return Math.floor(NOW_IN_SECONDS + timestamp).toString();
+  const NOW_IN_SECONDS = Date.now();
+  return new Date(Math.floor(NOW_IN_SECONDS + timestamp)).toISOString();
 };
 
 const ONE_DAY_IN_SECONDS = 3600 * 24;
@@ -37,10 +37,7 @@ function getStatusFilter(status: string): TimeFilterVariables {
       return {
         donationsEndTime: {
           greaterThan: currentTimestamp,
-          lessThan: (
-            Number(currentTimestamp) +
-            ONE_DAY_IN_SECONDS * 30
-          ).toString(),
+          lessThan: createTimestamp(ONE_DAY_IN_SECONDS * 30),
         },
       };
     default:
