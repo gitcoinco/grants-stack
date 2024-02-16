@@ -50,11 +50,11 @@ import moment from "moment";
 import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
 
-export const isDirectRound = (round: Round) => {
-  return (
-    round && round.payoutStrategy.strategyName?.toLowerCase().includes("direct")
-  );
-};
+const ROUND_PAYOUT_DIRECT = "DIRECT";
+const ROUND_PAYOUT_MERKLE = "MERKLE";
+
+export const isDirectRound = (round: Round) =>
+  round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -313,7 +313,10 @@ export default function ViewRoundPage() {
                   <Tab.Panels className="flex-grow ml-6">
                     <Tab.Panel>
                       <GrantApplications
-                        isDirectRound={isDirectRound(round)}
+                        isDirectRound={
+                          round.payoutStrategy.strategyName ==
+                          ROUND_PAYOUT_DIRECT
+                        }
                         applications={applications}
                         isRoundsFetched={isRoundFetched}
                         fetchRoundStatus={fetchRoundStatus}
@@ -637,8 +640,10 @@ export function RoundBadgeStatus({ round }: { round: Round }) {
   const now = moment();
 
   if (
-    (!isDirectRound(round) && now.isBefore(applicationEnds)) ||
-    (isDirectRound(round) && now.isBefore(roundEnds))
+    (round.payoutStrategy.strategyName == ROUND_PAYOUT_MERKLE &&
+      now.isBefore(applicationEnds)) ||
+    (round.payoutStrategy.strategyName == ROUND_PAYOUT_DIRECT &&
+      now.isBefore(roundEnds))
   ) {
     return (
       <div
