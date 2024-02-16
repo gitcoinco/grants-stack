@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import { makeRoundData } from "../../../test-utils";
 import { getRoundById, listRounds } from "../../../features/api/round";
 import { ProgressStatus, Round } from "../../../features/api/types";
+import { DataLayer, DataLayerProvider } from "data-layer";
 
 jest.mock("../../../features/api/round");
 jest.mock("wagmi");
@@ -15,6 +16,7 @@ jest.mock("../../../features/common/Auth", () => ({
 }));
 const mockWallet = {
   address: "0x0",
+  provider: { getNetwork: () => Promise.resolve({ chainId: "0" }) },
   signer: {
     getChainId: () => {
       /* do nothing.*/
@@ -61,10 +63,12 @@ describe("<RoundProvider />", () => {
       );
 
       render(
-        <RoundProvider>
-          {/*// @ts-expect-error test file*/}
-          <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
-        </RoundProvider>
+        <DataLayerProvider client={{} as DataLayer}>
+          <RoundProvider>
+            {/*// @ts-expect-error test file*/}
+            <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       expect(
@@ -86,9 +90,11 @@ describe("<RoundProvider />", () => {
       });
 
       render(
-        <RoundProvider>
-          <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
-        </RoundProvider>
+        <DataLayerProvider client={{} as DataLayer}>
+          <RoundProvider>
+            <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       expect(
@@ -108,12 +114,19 @@ describe("<RoundProvider />", () => {
     it("sets fetch round status to error when fetch fails", async () => {
       const expectedRound = makeRoundData();
       const expectedProgramId = expectedRound.ownedBy;
-      (listRounds as jest.Mock).mockRejectedValue(new Error(":("));
+
+      const dataLayerMock = {
+        getRoundsByProgramIdAndUserAddress: jest
+          .fn()
+          .mockRejectedValue(new Error(":(")),
+      } as unknown as DataLayer;
 
       render(
-        <RoundProvider>
-          <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
-        </RoundProvider>
+        <DataLayerProvider client={dataLayerMock}>
+          <RoundProvider>
+            <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       expect(

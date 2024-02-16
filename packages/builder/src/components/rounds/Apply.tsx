@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
+import { useAllo } from "common";
 import {
   resetApplication,
   submitApplication,
@@ -38,6 +39,7 @@ function Apply() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const allo = useAllo();
 
   const [modalOpen, toggleModal] = useState(false);
   const [roundData, setRoundData] = useState<Round>();
@@ -291,7 +293,7 @@ function Apply() {
                 showErrorModal={props.showErrorModal || false}
                 round={props.round}
                 onSubmit={(answers: RoundApplicationAnswers) => {
-                  dispatch(submitApplication(props.round!.address, answers));
+                  dispatch(submitApplication(props.round!.id, answers, allo));
                   toggleStatusModal(true);
                 }}
               />

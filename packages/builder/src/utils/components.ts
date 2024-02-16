@@ -29,6 +29,11 @@ export const getProjectImage = (
   return pinataClient.fileUrl(img);
 };
 
+export const getFileUrl = (cid: string): string => {
+  const pinataClient = new PinataClient(getConfig());
+  return pinataClient.fileUrl(cid);
+};
+
 export const formatDateFromMs = (ts: number) => {
   const date = new Date(ts);
   return date.toLocaleDateString("en-US", {
@@ -56,6 +61,6 @@ export const formatDateFromString = (ts: string) =>
   new Date(ts).toLocaleDateString();
 
 export const isInfinite = (number: Number) =>
-  number === Number.MAX_SAFE_INTEGER;
+  number === Number.MAX_SAFE_INTEGER || !number;
 
 export const formatDateAsNumber = (ts: string) => Date.parse(ts) / 1000;

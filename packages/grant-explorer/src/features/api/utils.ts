@@ -3,6 +3,8 @@ import { CartProject, IPFSObject, Round, VotingToken } from "./types";
 import {
   ChainId,
   graphQlEndpoints,
+  ROUND_PAYOUT_DIRECT_OLD,
+  ROUND_PAYOUT_MERKLE_OLD,
   ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_MERKLE,
   RoundPayoutType,
@@ -821,21 +823,22 @@ export function getChainIds(): number[] {
 }
 
 export const isDirectRound = (round: Round) =>
+  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_OLD ||
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+
 export const isInfiniteDate = (roundTime: Date) =>
   roundTime.toString() === "Invalid Date";
 
 export const getRoundType = (payoutStrategyName: RoundPayoutType) => {
   switch (payoutStrategyName) {
+    case ROUND_PAYOUT_MERKLE_OLD:
     case ROUND_PAYOUT_MERKLE:
       return "Quadratic Funding";
-      break;
+    case ROUND_PAYOUT_DIRECT_OLD:
     case ROUND_PAYOUT_DIRECT:
       return "Direct Grants";
-      break;
     default:
       return payoutStrategyName;
-      break;
   }
 };
 

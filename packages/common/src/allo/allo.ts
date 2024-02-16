@@ -1,11 +1,11 @@
+import { Signer } from "@ethersproject/abstract-signer";
+import { Round } from "data-layer";
 import { Address, Hex } from "viem";
 import { AnyJson } from "..";
+import { CreateRoundData, RoundCategory } from "../types";
 import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";
-import { CreateRoundData, RoundCategory } from "../types";
-import { Round } from "data-layer";
-import { Signer } from "@ethersproject/abstract-signer";
 
 export type CreateRoundArguments = {
   roundData: {
@@ -60,10 +60,54 @@ export interface Allo {
       indexingStatus: Result<void>;
     }
   >;
+
+  /**
+   * Applies to a round
+   *
+   * @param args { projectId: Hex; roundId: Hex|Number; metadata: AnyJson }
+   * @dev roundId is round address in allo v1  
+   * @dev roundId is poolId in allo v2
+   * @returns AlloOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
+   */
+  applyToRound: (args: {
+    projectId: Hex;
+    roundId: Hex|number;
+    metadata: AnyJson;
+  }) => AlloOperation<
+    Result<Hex>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  >;
 }
 
 export { AlloOperation };
 
+/**
+ * Represents an error that occurred while interacting with Allo.
+ *
+ * @remarks
+ *
+ * This error is thrown when an error occurs while interacting with Allo contracts.
+ *
+ * @public
+ *
+ * @extends Error
+ *
+ * @example
+ *
+ * ```typescript
+ * try {
+ *  const result = await allo.createProject({ name: "Project", metadata: {} });
+ * } catch (error) {
+ *   if (error instanceof AlloError) {
+ *     console.error("An error occurred while creating the project", error);
+ *   }
+ * }
+ * ```
+ */
 export class AlloError extends Error {
   constructor(
     message: string,

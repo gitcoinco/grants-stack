@@ -3,9 +3,8 @@ import { ApplicationStatus, useDataLayer } from "data-layer";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { loadRound } from "../../actions/rounds";
+import { RoundType, loadRound } from "../../actions/rounds";
 import { RootState } from "../../reducers";
-import { PayoutStrategy } from "../../reducers/rounds";
 import { roundApplicationViewPath } from "../../routes";
 import { ApplicationCardType, RoundSupport } from "../../types";
 import { formatDateFromSecs, isInfinite } from "../../utils/components";
@@ -75,7 +74,7 @@ export default function ApplicationCard({
         }
       | undefined;
 
-    switch (props.payoutStrategy as PayoutStrategy) {
+    switch (props.payoutStrategy as RoundType) {
       case "MERKLE":
         colorScheme = {
           bg: "#E6FFF9",

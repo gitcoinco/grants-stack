@@ -1,15 +1,21 @@
+import { Signer } from "@ethersproject/abstract-signer";
+import { Network, Web3Provider } from "@ethersproject/providers";
 import { useMemo, useState } from "react";
+import { useParams as useRouterParams } from "react-router";
+import { useOutletContext } from "react-router-dom";
 import useSWR from "swr";
 import z from "zod";
-import { useOutletContext } from "react-router-dom";
-import { Network, Web3Provider } from "@ethersproject/providers";
-import { Signer } from "@ethersproject/abstract-signer";
-import { graphql_fetch } from "./graphql_fetch";
 import { ChainId } from "./chain-ids";
+import { graphql_fetch } from "./graphql_fetch";
+
 export * from "./icons";
 export * from "./markdown";
 
 export { ChainId };
+
+export function useParams<T extends Record<string, string> = never>() {
+  return useRouterParams<T>() as T;
+}
 
 export enum PassportState {
   NOT_CONNECTED,
@@ -301,9 +307,16 @@ export async function getTokenPrice(tokenId: string) {
   return data[0].value;
 }
 
-export const ROUND_PAYOUT_MERKLE = "MERKLE";
-export const ROUND_PAYOUT_DIRECT = "DIRECT";
-export type RoundPayoutType = "MERKLE" | "DIRECT";
+//FIXME: remove old types
+export const ROUND_PAYOUT_MERKLE_OLD = "MERKLE";
+export const ROUND_PAYOUT_DIRECT_OLD = "DIRECT";
+export const ROUND_PAYOUT_MERKLE = "allov1.QF";
+export const ROUND_PAYOUT_DIRECT = "allov1.Direct";
+export type RoundPayoutType =
+  | "MERKLE"
+  | "DIRECT"
+  | "allov1.Direct"
+  | "allov1.QF";
 export type RoundVisibilityType = "public" | "private";
 
 export type { Allo, AlloError, AlloOperation } from "./allo/allo";
@@ -363,4 +376,4 @@ export interface Web3Instance {
   signer?: Signer;
 }
 
-export { graphql_fetch, graphQlEndpoints } from "./graphql_fetch";
+export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";

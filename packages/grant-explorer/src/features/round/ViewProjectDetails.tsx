@@ -1,22 +1,22 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import {
-  VerifiableCredential,
   PROVIDER_ID,
+  VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { Client } from "allo-indexer-client";
-import { formatDateWithOrdinal, renderToHTML } from "common";
+import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
+import { getConfig } from "common/src/config";
+
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
   ComponentProps,
   ComponentPropsWithRef,
+  createElement,
   FunctionComponent,
   PropsWithChildren,
-  createElement,
   useMemo,
   useState,
 } from "react";
-import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
@@ -31,15 +31,19 @@ import RoundEndedBanner from "../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
-import { getAddress } from "viem";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { DataLayer, useDataLayer } from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { truncate } from "../common/utils/truncate";
 import tw from "tailwind-styled-components";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
-import { DataLayer, useDataLayer } from "data-layer";
+import {
+  mapApplicationToProject,
+  mapApplicationToRound,
+  useApplication,
+} from "../projects/hooks/useApplication";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -67,10 +71,18 @@ enum VerifiedCredentialState {
   PENDING,
 }
 
-const boundFetch = fetch.bind(window);
-
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+
+const {
+  allo: { version },
+} = getConfig();
+
+const useProjectDetailsParams = useParams<{
+  chainId: string;
+  roundId: string;
+  applicationId: string;
+}>;
 
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -79,14 +91,20 @@ export default function ViewProjectDetails() {
     "====> Route: /round/:chainId/:roundId/:applicationId"
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-  const { chainId, roundId, applicationId } = useParams();
+  const { chainId, roundId, applicationId } = useProjectDetailsParams();
+  const dataLayer = useDataLayer();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(Number(chainId), roundId!);
-
-  const projectToRender = round?.approvedProjects?.find(
-    (project) => project.grantApplicationId === applicationId
+  const { data: application, error } = useApplication(
+    {
+      chainId: Number(chainId as string),
+      roundId,
+      applicationId: applicationId?.split("-")[1],
+    },
+    dataLayer
   );
+
+  const projectToRender = mapApplicationToProject(application);
+  const round = mapApplicationToRound(application);
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
 
@@ -96,10 +114,8 @@ export default function ViewProjectDetails() {
     (isInfiniteDate(round.roundEndTime)
       ? false
       : round && round.roundEndTime <= currentTime);
-  const isBeforeRoundEndDate =
-    round &&
-    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
 
+  const disableAddToCartButton = version === "allo-v2" || isAfterRoundEndDate;
   const { projects, add, remove } = useCartStorage();
 
   const isAlreadyInCart = projects.some(
@@ -110,10 +126,9 @@ export default function ViewProjectDetails() {
   const cartProject = projectToRender as CartProject;
 
   if (cartProject !== undefined) {
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    cartProject.roundId = roundId!;
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    cartProject.chainId = Number(chainId!);
+    cartProject.roundId = roundId;
+    cartProject.chainId = Number(chainId);
+    cartProject.grantApplicationId = applicationId;
   }
 
   const breadCrumbs = [
@@ -192,9 +207,9 @@ export default function ViewProjectDetails() {
           {round && !isDirectRound(round) && (
             <Sidebar
               isAlreadyInCart={isAlreadyInCart}
-              isBeforeRoundEndDate={isBeforeRoundEndDate}
+              isBeforeRoundEndDate={!disableAddToCartButton}
               removeFromCart={() => {
-                remove(cartProject.grantApplicationId);
+                remove(applicationId);
               }}
               addToCart={() => {
                 add(cartProject);
@@ -202,20 +217,26 @@ export default function ViewProjectDetails() {
             />
           )}
           <div className="flex-1">
-            <Skeleton isLoaded={Boolean(title)}>
-              <h1 className="text-4xl font-medium tracking-tight text-black">
-                {title}
-              </h1>
-            </Skeleton>
-            <ProjectLinks project={projectToRender} />
-            <ProjectDetailsTabs
-              selected={selectedTab}
-              onChange={handleTabChange}
-              tabs={projectDetailsTabs.map((tab) => tab.name)}
-            />
-            <div className="[&_a]:underline">
-              {projectDetailsTabs[selectedTab].content}
-            </div>
+            {error === undefined ? (
+              <>
+                <Skeleton isLoaded={Boolean(title)}>
+                  <h1 className="text-4xl font-medium tracking-tight text-black">
+                    {title}
+                  </h1>
+                </Skeleton>
+                <ProjectLinks project={projectToRender} />
+                <ProjectDetailsTabs
+                  selected={selectedTab}
+                  onChange={handleTabChange}
+                  tabs={projectDetailsTabs.map((tab) => tab.name)}
+                />
+                <div className="[&_a]:underline">
+                  {projectDetailsTabs[selectedTab].content}
+                </div>
+              </>
+            ) : (
+              <p>Couldn't load project data.</p>
+            )}
           </div>
         </div>
       </DefaultLayout>
@@ -470,43 +491,17 @@ function Sidebar(props: {
   );
 }
 
-// NOTE: Consider moving this
-export function useRoundApprovedApplication(
-  chainId: number,
-  roundId: string,
-  projectId: string
-) {
-  // use chain id and project id from url params
-  const client = new Client(
-    boundFetch,
-    process.env.REACT_APP_ALLO_API_URL ?? "",
-    chainId
-  );
-
-  return useSWR([roundId, "/projects"], async ([roundId]) => {
-    const applications = await client.getRoundApplications(
-      getAddress(roundId.toLowerCase())
-    );
-
-    return applications.find(
-      (app) => app.projectId === projectId && app.status === "APPROVED"
-    );
-  });
-}
-
 export function ProjectStats() {
-  const { chainId, roundId, applicationId } = useParams();
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { round } = useRoundById(Number(chainId), roundId!);
-
-  const projectToRender = round?.approvedProjects?.find(
-    (project) => project.grantApplicationId === applicationId
-  );
-
-  const { data: application } = useRoundApprovedApplication(
-    Number(chainId),
-    roundId as string,
-    projectToRender?.projectRegistryId as string
+  const { chainId, roundId, applicationId } = useProjectDetailsParams();
+  const { round } = useRoundById(Number(chainId), roundId);
+  const dataLayer = useDataLayer();
+  const { data: application } = useApplication(
+    {
+      chainId: Number(chainId as string),
+      roundId,
+      applicationId: applicationId.split("-")[1],
+    },
+    dataLayer
   );
 
   const timeRemaining =
@@ -525,11 +520,11 @@ export function ProjectStats() {
     >
       <Stat
         isLoading={!application}
-        value={`$${application?.amountUSD.toFixed(2)}`}
+        value={`$${application?.totalAmountDonatedInUsd.toFixed(2)}`}
       >
         funding received in current round
       </Stat>
-      <Stat isLoading={!application} value={application?.uniqueContributors}>
+      <Stat isLoading={!application} value={application?.uniqueDonorsCount}>
         contributors
       </Stat>
 

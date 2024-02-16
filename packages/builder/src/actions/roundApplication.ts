@@ -1,10 +1,11 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { ChainId, isJestRunning } from "common";
+import { Allo, AnyJson, ChainId, isJestRunning } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
+import { Hex } from "viem";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -144,21 +145,22 @@ export function chainIdToChainName(chainId: number): string {
 }
 
 export const submitApplication =
-  (roundAddress: string, formInputs: RoundApplicationAnswers) =>
+  (roundId: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
-    const roundState = state.rounds[roundAddress];
+    const roundState = state.rounds[roundId];
+    const isV2 = getConfig().allo.version === "allo-v2";
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundAddress: roundId, // todo: roundAddress is misleading
       status: Status.BuildingApplication,
     });
 
     if (roundState === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot load round data",
         Status.BuildingApplication
       );
@@ -169,7 +171,7 @@ export const submitApplication =
     if (roundApplicationMetadata === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot load round application metadata",
         Status.BuildingApplication
       );
@@ -184,7 +186,7 @@ export const submitApplication =
     if (!projectQuestion) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find project question id",
         Status.BuildingApplication
       );
@@ -203,7 +205,7 @@ export const submitApplication =
     if (projectMetadata === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find selected project metadata",
         Status.BuildingApplication
       );
@@ -216,7 +218,7 @@ export const submitApplication =
     if (chainID === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find chain id",
         Status.BuildingApplication
       );
@@ -226,7 +228,7 @@ export const submitApplication =
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundId,
       status: Status.LitAuthentication,
     });
 
@@ -234,6 +236,8 @@ export const submitApplication =
     let deterministicApplication: string;
 
     try {
+      const roundAddress = roundState.round!.address;
+
       const builder = new RoundApplicationBuilder(
         true,
         project,
@@ -248,7 +252,7 @@ export const submitApplication =
     } catch (error) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "error building round application",
         Status.LitAuthentication
       );
@@ -264,7 +268,7 @@ export const submitApplication =
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundId,
       status: Status.SigningApplication,
     });
 
@@ -274,7 +278,7 @@ export const submitApplication =
     } catch (e) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "error signing round application",
         Status.SigningApplication
       );
@@ -286,64 +290,74 @@ export const submitApplication =
       application,
     };
 
-    const pinataClient = new PinataClient(getConfig());
+    const projectUniqueID = isV2
+      ? (state.projects.anchor![projectID] as Hex)
+      : (generateUniqueRoundApplicationID(
+          Number(projectChainId),
+          projectNumber,
+          projectRegistryAddress
+        ) as Hex);
+
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundAddress: roundId,
       status: Status.UploadingMetadata,
     });
 
-    let resp;
-    try {
-      resp = await pinataClient.pinJSON(signedApplication);
-    } catch (e) {
-      dispatchAndLogApplicationError(
-        dispatch,
-        roundAddress,
-        "error uploading round application metadata",
-        Status.UploadingMetadata
-      );
-      return;
-    }
-    const metaPtr = {
-      protocol: "1",
-      pointer: resp.IpfsHash,
-    };
-    dispatch({
-      type: ROUND_APPLICATION_LOADING,
-      roundAddress,
-      status: Status.SendingTx,
+    const result = allo.applyToRound({
+      projectId: projectUniqueID,
+      roundId: isV2 ? Number(roundId) : (roundId as Hex),
+      metadata: signedApplication as unknown as AnyJson,
     });
 
-    const contract = new ethers.Contract(roundAddress, RoundABI, signer);
-
-    const projectUniqueID = generateUniqueRoundApplicationID(
-      Number(projectChainId),
-      projectNumber,
-      projectRegistryAddress
-    );
-
-    try {
-      const tx = await contract.applyToRound(projectUniqueID, metaPtr);
-      // FIXME: check return value of tx.wait() ??
-      await tx.wait();
-      dispatch({
-        type: ROUND_APPLICATION_LOADED,
-        roundAddress,
-        projectId: projectID,
-      });
-      // TODO-FIX
-      // dispatch<any>(
-      //   fetchProjectApplications(projectID, Number(projectChainId))
-      // );
-    } catch (e: any) {
-      dispatchAndLogApplicationError(
-        dispatch,
-        roundAddress,
-        "error calling applyToRound",
-        Status.SendingTx
-      );
-    }
+    await result
+      .on("ipfs", (res) => {
+        if (res.type === "success") {
+          dispatch({
+            type: ROUND_APPLICATION_LOADING,
+            roundAddress: roundId,
+            status: Status.SendingTx,
+          });
+        } else {
+          console.error("IPFS Error", res.error);
+          datadogRum.addError(res.error);
+          datadogLogs.logger.error("ipfs: error uploading metadata");
+          dispatchAndLogApplicationError(
+            dispatch,
+            roundId,
+            "error uploading round application metadata",
+            Status.UploadingMetadata
+          );
+        }
+      })
+      .on("transaction", (res) => {
+        // Note: Not handled by UI
+        if (res.type === "success") {
+          console.log("Transaction", res.value);
+        } else {
+          console.error("Transaction Error", res.error);
+          datadogRum.addError(res.error);
+          datadogLogs.logger.warn("transaction error");
+        }
+      })
+      .on("transactionStatus", async (res) => {
+        if (res.type === "success") {
+          dispatch({
+            type: ROUND_APPLICATION_LOADED,
+            roundAddress: roundId,
+            projectId: projectID,
+          });
+        } else {
+          dispatchAndLogApplicationError(
+            dispatch,
+            roundId,
+            "error calling applyToRound",
+            Status.SendingTx
+          );
+          console.log("Transaction Status Error", res.error);
+        }
+      })
+      .execute();
   };
 
 export const checkRoundApplications =

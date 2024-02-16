@@ -55,7 +55,7 @@ const dataLayer = new DataLayer({
     endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
   },
   indexer: {
-    baseUrl: getConfig().dataLayer.gsIndexerEndpoint,
+    baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
   },
 });
 

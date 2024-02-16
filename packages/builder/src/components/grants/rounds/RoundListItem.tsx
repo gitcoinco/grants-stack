@@ -1,9 +1,10 @@
 // eslint-disable max-len
-import { ApplicationStatus, ProjectApplication } from "data-layer";
 import { Badge, Box, Spinner } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
+import { ROUND_PAYOUT_DIRECT } from "common";
+import { ApplicationStatus, ProjectApplication } from "data-layer";
 import { useEffect, useState } from "react";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { useSelector } from "react-redux";
+import { RoundType } from "../../../actions/rounds";
 import { RootState } from "../../../reducers";
 import { roundApplicationPathForProject } from "../../../routes";
 import { Round, RoundDisplayType } from "../../../types";
@@ -11,7 +12,6 @@ import { formatDateFromSecs, isInfinite } from "../../../utils/components";
 import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
 import { getProjectURIComponents } from "../../../utils/utils";
 import LinkManager from "./LinkManager";
-import { PayoutStrategy } from "../../../reducers/rounds";
 
 export default function RoundListItem({
   applicationData,
@@ -68,7 +68,7 @@ export default function RoundListItem({
         }
       | undefined;
 
-    switch (roundData?.payoutStrategy as PayoutStrategy) {
+    switch (roundData?.payoutStrategy as RoundType) {
       case "MERKLE":
         colorScheme = {
           bg: "#E6FFF9",
@@ -88,6 +88,7 @@ export default function RoundListItem({
 
     const roundPayoutStrategy = roundData?.payoutStrategy;
 
+    // todo: temp fix for rendering badges
     return (
       <span>
         <Badge
@@ -97,12 +98,12 @@ export default function RoundListItem({
           p={2}
           textTransform="inherit"
         >
-          {roundPayoutStrategy === ROUND_PAYOUT_MERKLE ? (
+          {roundPayoutStrategy === "MERKLE" ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Quadratic Funding
             </span>
           ) : null}
-          {roundPayoutStrategy === ROUND_PAYOUT_DIRECT ? (
+          {roundPayoutStrategy === "DIRECT" ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Direct Grant
             </span>

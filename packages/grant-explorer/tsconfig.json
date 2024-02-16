@@ -16,7 +16,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "sourceMap": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "incremental": true
   },
   "include": ["src"]
 }

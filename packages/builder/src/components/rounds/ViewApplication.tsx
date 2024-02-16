@@ -3,6 +3,7 @@ import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types"
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAllo } from "common";
 import {
   fetchApplicationData,
   submitApplication,
@@ -28,6 +29,7 @@ function ViewApplication() {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const allo = useAllo();
 
   const dataLayer = useDataLayer();
 
@@ -238,7 +240,7 @@ function ViewApplication() {
               showErrorModal={props.showErrorModal || false}
               round={props.round}
               onSubmit={(answers: RoundApplicationAnswers) => {
-                dispatch(submitApplication(props.round!.address, answers));
+                dispatch(submitApplication(props.round!.id, answers, allo));
               }}
               readOnly
             />

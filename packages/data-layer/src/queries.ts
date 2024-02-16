@@ -1,20 +1,20 @@
 import { gql } from "graphql-request";
 
 /**
- * Get all the programs that a user is a part of
- * @param $alloVersion - The version of Allo
+ * Manager: Get all the programs that a user is a part of
  * @param $address - The address of the user
  * @param $chainId - The network ID of the chain
+ * @param $tag - The tag of the program
  *
  * @returns The programs
  */
-export const getProgramsByUser = gql`
-  query ($address: String!, $chainId: Int!) {
+export const getProgramByUserAndTag = gql`
+  query ($address: String!, $chainId: Int!, $filterByTag: String!) {
     projects(
       filter: {
-        tags: { contains: "program" }
+        tags: { contains: [$filterByTag] }
         roles: { some: { address: { equalTo: $address } } }
-        and: { chainId: { equalTo: $chainId } }
+        chainId: { equalTo: $chainId }
       }
     ) {
       id
@@ -39,14 +39,13 @@ export const getProgramsByUser = gql`
  *
  * @returns The programs
  */
-export const getProgramById = gql`
-  query ($alloVersion: [String!]!, $programId: String!, $chainId: Int!) {
+export const getProgramByIdAndUser = gql`
+  query ($userAddress: String!, $programId: String!, $chainId: Int!) {
     projects(
       filter: {
-        tags: { equalTo: $alloVersion }
-        tags: { contains: "program" }
         id: { equalTo: $programId }
-        and: { chainId: { equalTo: $chainId } }
+        roles: { some: { address: { equalTo: $userAddress } } }
+        chainId: { equalTo: $chainId }
       }
     ) {
       id
@@ -90,6 +89,8 @@ export const getProjectById = gql`
       projectNumber
       registryAddress
       tags
+      nonce
+      anchorAddress
       roles {
         address
         role
@@ -130,6 +131,8 @@ export const getProjects = gql`
       projectNumber
       registryAddress
       tags
+      nonce
+      anchorAddress
     }
   }
 `;
@@ -153,6 +156,39 @@ export const getApplicationsByProjectId = gql`
         donationsStartTime
         donationsEndTime
         roundMetadata
+      }
+    }
+  }
+`;
+
+export const getApplication = gql`
+  query Application(
+    $chainId: Int!
+    $applicationId: String!
+    $roundId: String!
+  ) {
+    application(chainId: $chainId, id: $applicationId, roundId: $roundId) {
+      id
+      chainId
+      roundId
+      projectId
+      status
+      totalAmountDonatedInUsd
+      uniqueDonorsCount
+      round {
+        strategyName
+        donationsStartTime
+        donationsEndTime
+        applicationsStartTime
+        applicationsEndTime
+        matchTokenAddress
+        roundMetadata
+      }
+      metadata
+      project {
+        tags
+        id
+        metadata
       }
     }
   }
@@ -192,6 +228,8 @@ export const getProjectsByAddress = gql`
         registryAddress
         projectNumber
         tags
+        nonce
+        anchorAddress
       }
     }
   }
@@ -225,6 +263,8 @@ export const getProjectsAndRolesByAddress = gql`
       projectNumber
       tags
       id
+      nonce
+      anchorAddress
       createdAtBlock
       applications {
         id
@@ -249,7 +289,9 @@ export const getBlockNumberQuery = gql`
 
 export const getRoundByIdAndChainId = gql`
   query getRoundByIdAndChainId($roundId: String!, $chainId: Int!) {
-    rounds(filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
       id
       chainId
       applicationsStartTime
@@ -261,6 +303,44 @@ export const getRoundByIdAndChainId = gql`
       roundMetadataCid
       applicationMetadata
       applicationMetadataCid
+      strategyId
+      strategyAddress
+      strategyName
+    }
+  }
+`;
+
+export const getRoundsByProgramIdAndUserAddress = gql`
+  query getRoundsByProgramIdAndMemberAddress(
+    $chainId: Int!
+    $programId: String!
+    $userAddress: String!
+  ) {
+    rounds(
+      filter: {
+        chainId: { equalTo: $chainId }
+        projectId: { equalTo: $programId }
+        roles: { some: { address: { equalTo: $userAddress } } }
+      }
+    ) {
+      id
+      chainId
+      applicationsStartTime
+      applicationsEndTime
+      donationsStartTime
+      donationsEndTime
+      matchTokenAddress
+      roundMetadata
+      roundMetadataCid
+      applicationMetadata
+      applicationMetadataCid
+      strategyAddress
+      strategyName
+      roles {
+        role
+        address
+        createdAtBlock
+      }
     }
   }
 `;

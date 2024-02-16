@@ -1,12 +1,14 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
+import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { PayoutStrategy, Status } from "../reducers/rounds";
+import { Status } from "../reducers/rounds";
 import { Round } from "../types";
-import { graphqlFetch } from "../utils/graphql";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
+
+export type RoundType = "MERKLE" | "DIRECT";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -61,9 +63,15 @@ export const unloadRounds = () => roundsUnloaded();
 export const loadRound =
   (roundId: string, dataLayer: DataLayer, chainId: number) =>
   async (dispatch: Dispatch) => {
+    const { version } = getConfig().allo;
+
     try {
       // address validation
-      ethers.utils.getAddress(roundId);
+      if (version === "allo-v1") {
+        ethers.utils.getAddress(roundId);
+      } else if (roundId.includes("0x")) {
+        throw new Error(`Invalid roundId ${roundId}`);
+      }
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.warn(`invalid address or address checksum ${roundId}`);
@@ -91,39 +99,24 @@ export const loadRound =
         projectId: v2Round.roundMetadata.programContractAddress,
       })) || "";
 
-    // TODO: FETCH FROM INDEXER
-    let roundPayoutStrategy: PayoutStrategy;
-    try {
-      const resp = await graphqlFetch(
-        `
-          query GetRoundById($roundId: String) {
-            rounds(where: {
-              id: $roundId
-            }) {
-              id
-              payoutStrategy {
-                id
-                strategyName
-              }
-            }
-          }
-        `,
-        chainId!,
-        { roundId: roundId.toLowerCase() }
-      );
-      roundPayoutStrategy = resp.data.rounds[0].payoutStrategy
-        ? resp.data.rounds[0].payoutStrategy.strategyName
-        : "MERKLE";
-    } catch (e) {
-      datadogRum.addError(e);
-      datadogLogs.logger.error("sg: error loading round payoutStrategy");
-      dispatch(loadingError(roundId, "error loading round payoutStrategy"));
-      console.error(e);
-      return;
+    let roundPayoutStrategy: RoundType;
+
+    switch (v2Round.strategyName) {
+      case "allov1.QF":
+      case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
+        roundPayoutStrategy = "MERKLE";
+        break;
+      case "allov1.Direct":
+      case "allov2.DirectGrantsSimpleStrategy":
+        roundPayoutStrategy = "DIRECT";
+        break;
+      default:
+        roundPayoutStrategy = "MERKLE";
     }
 
     const round = {
-      address: roundId,
+      id: version === "allo-v1" ? roundId : v2Round.id,
+      address: version === "allo-v1" ? roundId : v2Round.strategyAddress,
       applicationsStartTime:
         Date.parse(`${v2Round.applicationsStartTime}Z`) / 1000,
       applicationsEndTime: Date.parse(`${v2Round.applicationsEndTime}Z`) / 1000,
