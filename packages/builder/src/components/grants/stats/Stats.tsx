@@ -1,5 +1,5 @@
 import { Spinner } from "@chakra-ui/react";
-import { ChainId, ROUND_PAYOUT_MERKLE, RoundPayoutType } from "common";
+import { ChainId, RoundPayoutType } from "common";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -52,7 +52,7 @@ export default function RoundStats() {
       applications.forEach((app) => {
         const roundType =
           props.rounds[app.roundId]?.round?.payoutStrategy || "";
-        if (roundType !== "" && roundType === ROUND_PAYOUT_MERKLE) {
+        if (roundType !== "" && roundType === "MERKLE") {
           rounds.push({
             roundId: app.roundId,
             chainId: app.chainId,

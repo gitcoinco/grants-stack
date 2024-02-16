@@ -305,6 +305,7 @@ export const getRoundByIdAndChainId = gql`
       applicationMetadataCid
       strategyId
       strategyAddress
+      strategyName
     }
   }
 `;
