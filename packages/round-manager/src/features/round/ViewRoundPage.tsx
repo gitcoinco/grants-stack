@@ -37,7 +37,6 @@ import {
   horizontalTabStyles,
   verticalTabStyles,
 } from "../common/Utils";
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
@@ -50,6 +49,10 @@ import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
 import moment from "moment";
 import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
+import {
+  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
+} from "common";
 
 export const isDirectRound = (round: Round) =>
   round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
