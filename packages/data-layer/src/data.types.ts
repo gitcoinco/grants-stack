@@ -380,7 +380,7 @@ export type RoundsQueryVariables = {
   filter?: {
     and: (
       | { or: TimeFilterVariables[] }
-      | { or?: { strategyName: { in: string[] } } }
+      | { or: { strategyName: { in: string[] } } }
       | {
           or: {
             chainId: {

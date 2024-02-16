@@ -15,6 +15,7 @@ const colorOptions = {
   [ROUND_PAYOUT_DIRECT_OLD]: "yellow",
   [ROUND_PAYOUT_MERKLE]: "blue",
   [ROUND_PAYOUT_DIRECT]: "yellow",
+  ["allov2.DonationVotingMerkleDistributionDirectTransferStrategy"]: "yellow",
 } as const;
 
 export function RoundStrategyBadge({ strategyName }: Props) {

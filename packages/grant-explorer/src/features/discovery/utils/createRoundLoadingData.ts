@@ -28,5 +28,6 @@ export function createRoundLoadingData(length = 4): RoundGetRound[] {
     applications: [],
     strategyId: "",
     strategyAddress: "",
+    tags: [],
   }));
 }

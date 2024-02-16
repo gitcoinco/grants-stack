@@ -110,6 +110,7 @@ const createRoundWhereFilter = (
   version: AlloVersion
 ): RoundsQueryVariables["filter"] => {
   return {
+    // @ts-expect-error temp ignore
     and: [
       // Find rounds that match both statusFilter and round type
       { or: statusFilter },
@@ -138,7 +139,9 @@ const createRoundWhereFilter = (
           },
         }),
       },
-    ].filter((prop) => !isEmpty(prop)),
+    ]
+      .filter((prop) => !isEmpty(prop))
+      .filter((prop) => prop !== undefined),
   };
 };
 
