@@ -85,8 +85,6 @@ function Project() {
     );
   }
 
-  console.log("Project props", props);
-
   return (
     <div>
       {props.currentProject && (
