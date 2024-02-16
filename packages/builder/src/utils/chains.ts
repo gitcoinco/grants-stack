@@ -62,6 +62,7 @@ const stagingChains = [
   avalancheFuji,
   zkSyncEraMainnet,
   zkSyncEraTestnet,
+  sepolia,
 ];
 
 const productionChains = [
