@@ -1,4 +1,9 @@
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import {
+  ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE,
+  ROUND_PAYOUT_DIRECT_OLD,
+  ROUND_PAYOUT_MERKLE_OLD,
+} from "common";
 
 export const verticalTabStyles = (selected: boolean) =>
   selected
@@ -13,11 +18,11 @@ export const horizontalTabStyles = (selected: boolean) =>
 export const getPayoutRoundDescription = (key: string) => {
   switch (key) {
     case ROUND_PAYOUT_MERKLE:
+    case ROUND_PAYOUT_MERKLE_OLD:
       return "Quadratic Funding";
-      break;
     case ROUND_PAYOUT_DIRECT:
+    case ROUND_PAYOUT_DIRECT_OLD:
       return "Direct Grant";
-      break;
     default:
       return key;
       break;

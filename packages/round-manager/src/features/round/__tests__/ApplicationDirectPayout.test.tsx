@@ -9,7 +9,7 @@ import {
 import "@testing-library/jest-dom/extend-expect";
 import ApplicationDirectPayout from "../ApplicationDirectPayout";
 import { makeGrantApplicationData, makeRoundData } from "../../../test-utils";
-import { ROUND_PAYOUT_DIRECT } from "common";
+import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
 
 import { useWallet } from "../../common/Auth";
 import { useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
