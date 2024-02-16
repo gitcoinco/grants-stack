@@ -336,6 +336,7 @@ export const getRoundsByProgramIdAndUserAddress = gql`
       applicationMetadataCid
       strategyAddress
       strategyName
+      createdByAddress
       roles {
         role
         address

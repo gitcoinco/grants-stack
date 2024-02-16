@@ -238,6 +238,7 @@ export type V2Round = {
 
 export type V2RoundWithRoles = V2Round & {
   roles: AddressAndRole[];
+  createdByAddress: string;
 };
 
 export type ProjectEvents = {

@@ -7,7 +7,7 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
 import { RoundVisibilityType } from "common";
-import { Address } from  "viem";
+import { Address } from "viem";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -253,6 +253,10 @@ export interface Round {
   finalized: boolean;
   protocolFeePercentage?: number;
   roundFeePercentage?: number;
+  /**
+   * CreatedByAddress
+   */
+  createdByAddress?: string;
 }
 
 export type MatchingStatsData = {
