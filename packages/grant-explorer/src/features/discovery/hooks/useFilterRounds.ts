@@ -86,7 +86,6 @@ export const useFilterRounds = (
     () => createRoundsStatusFilter(where.status),
     [where.status]
   );
-  console.log(where.network.split(","));
   const strategyNames =
     where.type === undefined || where.type.trim() === ""
       ? []
