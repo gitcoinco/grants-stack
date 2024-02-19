@@ -1,4 +1,5 @@
 import { graphql_fetch } from "../graphql_fetch";
+import { AlloError } from "./allo";
 
 export interface WaitUntilIndexerSynced {
   (args: {
@@ -121,7 +122,7 @@ export const createWaitForIndexerSyncTo = (
       });
     } catch (error) {
       console.error(error);
-      throw new Error("Failed to fetch block number.");
+      throw new AlloError("Failed to determine indexing status.");
     }
   };
 
