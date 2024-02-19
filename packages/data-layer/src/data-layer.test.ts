@@ -38,6 +38,7 @@ const mockProjects: v2Project[] = [
     updatedAtBlock: "5146499",
     projectNumber: null,
     registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
+    projectType: "CANONICAL",
     tags: ["allo-v2"],
     roles: [
       {
@@ -570,7 +571,6 @@ describe("projects retrieval", () => {
     const project = await dataLayer.getProjectById({
       projectId:
         "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
-      chainId: 11155111,
       alloVersion: "allo-v2",
     });
 

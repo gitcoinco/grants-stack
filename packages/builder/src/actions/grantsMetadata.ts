@@ -4,7 +4,7 @@ import { AddressAndRole, DataLayer } from "data-layer";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { Metadata } from "../types";
-import { getProjectURIComponents, getV1HashedProjectId } from "../utils/utils";
+import { getV1HashedProjectId } from "../utils/utils";
 import { projectAnchorsLoaded, projectOwnersLoaded } from "./projects";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
@@ -89,7 +89,6 @@ export const fetchGrantData =
   (id: string, dataLayer: DataLayer) => async (dispatch: Dispatch) => {
     dispatch(grantMetadataLoadingURI(id));
     const config = getConfig();
-    const { chainId } = getProjectURIComponents(id);
     const projectId = id.split(":")[2];
 
     try {
@@ -98,7 +97,6 @@ export const fetchGrantData =
           config.allo.version === "allo-v1"
             ? getV1HashedProjectId(id)
             : projectId,
-        chainId: Number(chainId),
         alloVersion: config.allo.version,
       });
 
