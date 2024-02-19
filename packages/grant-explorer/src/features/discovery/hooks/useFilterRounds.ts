@@ -25,7 +25,7 @@ export type StrategyName =
   | "allov2.SQFSuperFluidStrategy";
 
 export type RoundFilterParams = {
-  type: StrategyName;
+  type: string;
   status: string;
   network: string;
 };

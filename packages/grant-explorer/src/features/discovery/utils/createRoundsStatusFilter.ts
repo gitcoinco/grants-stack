@@ -1,7 +1,7 @@
 import { RoundStatus } from "../hooks/useFilterRounds";
 import { TimeFilterVariables } from "data-layer";
 
-export const createTimestamp = (timestamp = 0) => {
+export const createISOTimestamp = (timestamp = 0) => {
   const NOW_IN_SECONDS = Date.now();
   return new Date(Math.floor(NOW_IN_SECONDS + timestamp)).toISOString();
 };
@@ -10,8 +10,8 @@ const ONE_DAY_IN_MILISECONDS = 3600 * 24 * 1000;
 const ONE_YEAR_IN_MILISECONDS = ONE_DAY_IN_MILISECONDS * 365 * 1000;
 
 function getStatusFilter(status: string): TimeFilterVariables {
-  const currentTimestamp = createTimestamp();
-  const futureTimestamp = createTimestamp(ONE_YEAR_IN_MILISECONDS);
+  const currentTimestamp = createISOTimestamp();
+  const futureTimestamp = createISOTimestamp(ONE_YEAR_IN_MILISECONDS);
 
   switch (status) {
     case RoundStatus.active:
@@ -37,7 +37,7 @@ function getStatusFilter(status: string): TimeFilterVariables {
       return {
         donationsEndTime: {
           greaterThan: currentTimestamp,
-          lessThan: createTimestamp(ONE_DAY_IN_MILISECONDS * 30),
+          lessThan: createISOTimestamp(ONE_DAY_IN_MILISECONDS * 30),
         },
       };
     default:

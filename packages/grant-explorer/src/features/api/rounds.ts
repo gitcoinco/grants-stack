@@ -1,6 +1,6 @@
 import useSWR, { SWRResponse } from "swr";
 import { ChainId } from "common";
-import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
+import { createISOTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 import { RoundGetRound, RoundsQueryVariables, useDataLayer } from "data-layer";
 
 export const useRounds = (
@@ -36,11 +36,11 @@ export function filterRoundsWithProjects(rounds: RoundGetRound[]) {
 0 projects + application period is still open: show
 0 projects + application period has closed: hide
   */
-  const currentTimestamp = createTimestamp();
+  const currentTimestamp = createISOTimestamp();
   return rounds.filter(
     (round) =>
-      round.applicationsEndTime > currentTimestamp ||
-      round?.applications?.length > 0
+      new Date(round.applicationsEndTime).getTime() * 1000 >
+        Date.parse(currentTimestamp) || round?.applications?.length > 0
   );
 }
 

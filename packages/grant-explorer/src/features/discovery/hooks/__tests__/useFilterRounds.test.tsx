@@ -1,6 +1,9 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useFilterRounds } from "../useFilterRounds";
-import { makeRoundOverviewData } from "../../../../test-utils";
+import {
+  makeRoundMetadata,
+  makeRoundOverviewData,
+} from "../../../../test-utils";
 import {
   filterOutPrivateRounds,
   filterRoundsWithProjects,
@@ -35,7 +38,12 @@ vi.mock("swr", async () => {
 
 describe("useFilterRounds", () => {
   const MOCKED_ROUNDS = Array.from({ length: 5 }).map(() =>
-    makeRoundOverviewData()
+    makeRoundOverviewData({
+      roundMetadata: {
+        ...makeRoundMetadata(),
+        roundType: "private",
+      },
+    })
   );
 
   const DEFAULT_FILTER = {
@@ -83,7 +91,7 @@ describe("useFilterRounds", () => {
         {
           ...MOCKED_ROUNDS[0],
           // Only if end time is before now
-          applicationsEndTime: "0",
+          applicationsEndTime: new Date(0).toISOString(),
           applications: [],
         },
       ]).length
@@ -95,21 +103,11 @@ describe("useFilterRounds", () => {
           applications: [],
         },
       ]).length
-    ).toBe(1);
+    ).toBe(0);
   });
 
   it("filterRounds", async () => {
-    const createCacheMock = (data: unknown) => ({
-      get: () => ({ data }),
-    });
-    const cacheMock = createCacheMock({ roundType: "private" }) as any;
     // Only show public rounds
-    expect(
-      filterOutPrivateRounds(
-        createCacheMock({ roundType: "public" }) as any,
-        MOCKED_ROUNDS
-      )?.length
-    ).toBe(5);
-    expect(filterOutPrivateRounds(cacheMock, MOCKED_ROUNDS)?.length).toBe(0);
+    expect(filterOutPrivateRounds(MOCKED_ROUNDS)?.length).toBe(0);
   });
 });

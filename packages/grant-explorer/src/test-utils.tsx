@@ -133,6 +133,7 @@ export const makeRoundOverviewData = (
     strategyName: "MERKLE",
     strategyAddress: faker.finance.ethereumAddress(),
     strategyId: "",
+    tags: [],
     ...overrides,
   };
 };
