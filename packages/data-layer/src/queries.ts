@@ -82,6 +82,7 @@ export const getProjectById = gql`
     ) {
       id
       chainId
+      projectType
       metadata
       metadataCid
       name
@@ -123,6 +124,7 @@ export const getProjects = gql`
       condition: { chainId: $chainId }
     ) {
       id
+      projectType
       chainId
       metadata
       metadataCid

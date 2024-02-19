@@ -125,6 +125,10 @@ export type v2Project = {
    */
   chainId: number;
   /**
+   * The type of the project: canonical / linked
+   */
+  projectType: string;
+  /**
    * The metadata of the project
    */
   metadata: {
