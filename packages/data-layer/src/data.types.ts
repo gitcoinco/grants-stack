@@ -17,6 +17,8 @@ export type ApplicationStatus =
   | "FRAUD"
   | "RECEIVED";
 
+export type ProjectType = "CANONICAL" | "LINKED";
+
 export type GrantApplicationFormAnswer = {
   questionId: number;
   question: string;
@@ -180,6 +182,8 @@ export type v2Project = {
   roles: AddressAndRole[];
   nonce?: bigint;
   anchorAddress?: string;
+  projectType: ProjectType;
+  linkedChains?: number[];
 };
 
 /**

@@ -67,7 +67,7 @@ export const loadRound =
 
     try {
       // address validation
-      if (version === "allo-v1") {
+      if (version === "allo-v1" && roundId.startsWith("0x")) {
         ethers.utils.getAddress(roundId);
       } else if (roundId.includes("0x")) {
         throw new Error(`Invalid roundId ${roundId}`);

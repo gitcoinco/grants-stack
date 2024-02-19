@@ -37,6 +37,7 @@ const mockProjects: v2Project[] = [
     updatedAtBlock: "5146499",
     projectNumber: null,
     registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
+    projectType: "CANONICAL",
     tags: ["allo-v2"],
     roles: [
       {
@@ -569,7 +570,6 @@ describe("projects retrieval", () => {
     const project = await dataLayer.getProjectById({
       projectId:
         "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
-      chainId: 11155111,
       alloVersion: "allo-v2",
     });
 
@@ -584,12 +584,16 @@ describe("projects retrieval", () => {
     expect(project?.project.id).toEqual(mockProject.id);
     expect(project?.project.nodeId).toEqual(mockProject.nodeId);
     expect(project?.project.chainId).toEqual(mockProject.chainId);
-    expect(project?.project.registryAddress).toEqual(mockProject.registryAddress);
+    expect(project?.project.registryAddress).toEqual(
+      mockProject.registryAddress,
+    );
     expect(project?.project.projectNumber).toEqual(mockProject.projectNumber);
     expect(project?.project.tags).toEqual(mockProject.tags);
     expect(project?.project.roles).toEqual(mockProject.roles);
     expect(project?.project.name).toEqual(mockProject.name);
-    expect(project?.project.metadata.description).toEqual(mockProject.metadata.description);
+    expect(project?.project.metadata.description).toEqual(
+      mockProject.metadata.description,
+    );
   });
 
   test("can retrieve all projects for a network", async () => {

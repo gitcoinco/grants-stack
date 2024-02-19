@@ -66,18 +66,16 @@ export const getProgramByIdAndUser = gql`
  * Get a project by its ID
  * @param $alloVersion - The version of Allo
  * @param $projectId - The ID of the project
- * @param $chainId - The network ID of the chain
  *
  * @returns The project
  */
 export const getProjectById = gql`
-  query ($alloVersion: [String!]!, $projectId: String!, $chainId: Int!) {
+  query ($alloVersion: [String!]!, $projectId: String!) {
     projects(
       filter: {
         tags: { equalTo: $alloVersion }
         not: { tags: { contains: "program" } }
         id: { equalTo: $projectId }
-        and: { chainId: { equalTo: $chainId } }
       }
     ) {
       id
@@ -91,6 +89,7 @@ export const getProjectById = gql`
       tags
       nonce
       anchorAddress
+      projectType
       roles {
         address
         role
@@ -133,6 +132,7 @@ export const getProjects = gql`
       tags
       nonce
       anchorAddress
+      projectType
     }
   }
 `;
@@ -230,6 +230,7 @@ export const getProjectsByAddress = gql`
         tags
         nonce
         anchorAddress
+        projectType
       }
     }
   }
@@ -265,6 +266,7 @@ export const getProjectsAndRolesByAddress = gql`
       id
       nonce
       anchorAddress
+      projectType
       createdAtBlock
       applications {
         id

@@ -241,17 +241,14 @@ export class DataLayer {
    */
   async getProjectById({
     projectId,
-    chainId,
     alloVersion,
   }: {
     projectId: string;
-    chainId: number;
     alloVersion: AlloVersion;
   }): Promise<{ project: v2Project } | null> {
     const requestVariables = {
       alloVersion,
       projectId,
-      chainId,
     };
 
     const response: { projects: v2Project[] } = await request(
