@@ -22,11 +22,5 @@ export const mergeCanonicalAndLinkedProjects = (projects: v2Project[]) => {
     }
   }
 
-  if (linkedProjects.length > 0) {
-    console.log("Canonical: ", canonicalProjects);
-    console.log("Linked: ", linkedProjects);
-    console.log("Merged: ", Object.values(tmpProjects));
-  }
-
   return Object.values(tmpProjects);
 };
