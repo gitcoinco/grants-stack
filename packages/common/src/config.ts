@@ -156,6 +156,9 @@ export function getConfig(): Config {
         [ChainId.BASE]: z
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_BASE_API),
+        [ChainId.SEPOLIA]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_SEPOLIA_API),
       },
       gsIndexerEndpoint: z
         .string()

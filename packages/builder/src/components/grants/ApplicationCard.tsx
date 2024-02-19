@@ -1,10 +1,9 @@
-import { RoundType } from "common";
 import { Badge, Box, Button, Image, Spinner } from "@chakra-ui/react";
 import { ApplicationStatus, useDataLayer } from "data-layer";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { loadRound } from "../../actions/rounds";
+import { RoundType, loadRound } from "../../actions/rounds";
 import { RootState } from "../../reducers";
 import { roundApplicationViewPath } from "../../routes";
 import { ApplicationCardType, RoundSupport } from "../../types";

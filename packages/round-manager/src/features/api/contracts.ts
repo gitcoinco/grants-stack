@@ -35,6 +35,7 @@ const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0xb0F4882184EB6e3ed120c5181651D50719329788",
   [ChainId.BASE]: "0xA78Daa89fE9C1eC66c5cB1c5833bC8C6Cb307918",
+  [ChainId.SEPOLIA]: "0x2420EABfA2C0e6f77E435B0B7615c848bF4963AF",
 };
 
 /* GrantHub's ProjectRegistry */
@@ -76,6 +77,7 @@ const programFactoryMap: ChainIdToStringMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x6D341814Be4E2316142D9190E390b494F1dECFAf",
   [ChainId.BASE]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
+  [ChainId.SEPOLIA]: "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e",
 };
 /* ProgramFactory  */
 export const programFactoryContract = (chainId: ChainId): Contract => {
@@ -111,6 +113,7 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x0Bb6e2dfEaef0Db5809B3979717E99e053Cbae72",
   [ChainId.BASE]: "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab",
+  [ChainId.SEPOLIA]: "0xF1d4F5f21746bCD75fD71eB18992443f4F0edb6f",
 };
 /* RoundFactory  */
 export const roundFactoryContract = (
@@ -153,6 +156,7 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x8c28F21D2d8C53eedC58bF9cdCfb7DCF7d809d97",
   [ChainId.BASE]: "0xC3A195EEa198e74D67671732E1B8F8A23781D735",
+  [ChainId.SEPOLIA]: "0xf5D111B57de221774866AC32c4435841F5c141D5",
 };
 /* QuadraticFundingVotingStrategy */
 export const qfVotingStrategyFactoryContract = (
@@ -238,6 +242,10 @@ export const dgVotingStrategyDummyContract = (chainId: ChainId): string => {
       address = "0x73AB205af1476Dc22104A6B8b3d4c273B58C6E27";
       break;
     }
+    case ChainId.SEPOLIA: {
+      address = "0xB9dDcd73278C7f472867bf3D844E2Cc53a3d3D90";
+      break;
+    }
     default: {
       address = "0x717A2cCDD81944e64c8BD9BB1D179A241dE14B46";
       break;
@@ -273,6 +281,7 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0xbA160C13F8F626e3232078aDFD6eD2f2B2289563",
   [ChainId.BASE]: "0xF7c101A95Ea4cBD5DA0Ab9827D7B2C9857440143",
+  [ChainId.SEPOLIA]: "0xB5CF3fFD3BDfC6A124aa9dD96fE14118Ed8083e5",
 };
 export const merklePayoutStrategyFactoryContract = (
   chainId: ChainId
@@ -309,6 +318,7 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x0FD600678475C03f28baE59A2d55f7a911383e2B",
   [ChainId.BASE]: "",
+  [ChainId.SEPOLIA]: "",
 };
 
 /* AlloSettingsContract  */
@@ -347,6 +357,7 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
     "0x4170665B31bC10009f8a69CeaACf3265C3d66797",
   [ChainId.BASE]: "0x74c3665540FC8B92Dd06a7e56a51eCa038C18180",
+  [ChainId.SEPOLIA]: "0xC2B0d8dAdB88100d8509534BB8B5778d1901037d",
 };
 
 /* DirectPayoutStrategyFactoryContract  */

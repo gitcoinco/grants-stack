@@ -20,6 +20,7 @@ import { useCreateProgram } from "../../context/program/CreateProgramContext";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
 import { ChainId } from "common/src/chain-ids";
+import { getConfig } from "common/src/config";
 
 type FormData = {
   name: string;
@@ -153,6 +154,24 @@ export default function CreateProgram() {
           </p>
         </ReactTooltip>
       </>
+    );
+  }
+
+  const config = getConfig();
+
+  if (config.allo.version === "allo-v2") {
+    return (
+      <div className="bg-[#F3F3F5]">
+        <Navbar />
+        <div className="container mx-auto h-screen px-4 py-16">
+          Creating Allo V2 programs in Manager is not yet supported, as a
+          temporary solution please head over to &nbsp;
+          <a className="underline" href="https://builder.gitcoin.co">
+            Builder
+          </a>{" "}
+          to create a project on Allo V2 and come back here.
+        </div>
+      </div>
     );
   }
 
