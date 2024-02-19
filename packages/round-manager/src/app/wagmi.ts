@@ -29,6 +29,7 @@ import {
   scroll,
   zkSyncEraMainnet,
   zkSyncEraTestnet,
+  sepolia,
 } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
@@ -42,6 +43,7 @@ const testnetChains = () => {
     arbitrumGoerli,
     polygonMumbai,
     avalancheFuji,
+    sepolia,
   ];
 };
 

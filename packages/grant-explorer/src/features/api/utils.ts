@@ -117,6 +117,11 @@ export const CHAINS: Record<
     name: "Base",
     logo: "./logos/base-logo.svg",
   },
+  [ChainId.SEPOLIA]: {
+    id: ChainId.SEPOLIA,
+    name: "Sepolia",
+    logo: "./logos/ethereum-eth-logo.svg",
+  },
   [ChainId.SCROLL]: {
     id: ChainId.SCROLL,
     name: "Scroll",
@@ -162,6 +167,29 @@ export const MAINNET_TOKENS: VotingToken[] = [
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
     defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+export const SEPOLIA_TOKENS: VotingToken[] = [
+  {
+    name: "ETH",
+    chainId: ChainId.SEPOLIA,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "DAI",
+    chainId: ChainId.SEPOLIA,
+    address: "0x8db0F9eE54753B91ec1d81Bf68074Be82ED30fEb",
+    decimal: 18,
+    logo: TokenNamesAndLogos["DAI"],
+    redstoneTokenId: RedstoneTokenIds["DAI"],
+    defaultForVoting: false,
     canVote: true,
   },
 ];
@@ -619,6 +647,7 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: ZKSYNC_ERA_TESTNET_TOKENS,
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: ZKSYNC_ERA_MAINNET_TOKENS,
   [ChainId.BASE]: BASE_TOKENS,
+  [ChainId.SEPOLIA]: SEPOLIA_TOKENS,
   [ChainId.SCROLL]: SCROLL_TOKENS,
 };
 
@@ -654,6 +683,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
     "https://goerli.explorer.zksync.io/tx/",
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
   [ChainId.BASE]: "https://basescan.org/tx/",
+  [ChainId.SEPOLIA]: "https://sepolia.etherscan.io//tx/",
   [ChainId.SCROLL]: "https://scrollscan.com/tx/",
 };
 

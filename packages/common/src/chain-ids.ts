@@ -17,6 +17,7 @@ export enum ChainId {
   SCROLL = 534352,
   DEV1 = 313371,
   DEV2 = 313372,
+  SEPOLIA = 11155111,
 }
 
 export const RedstoneTokenIds = {
