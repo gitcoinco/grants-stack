@@ -40,6 +40,7 @@ import {
   getProgramByIdAndUser,
 } from "./queries";
 import { Address } from "viem";
+import { mergeCanonicalAndLinkedProjects } from "./utils";
 
 /**
  * DataLayer is a class that provides a unified interface to the various data sources.
@@ -259,7 +260,7 @@ export class DataLayer {
 
     if (response.projects.length === 0) return null;
 
-    const project = response.projects[0];
+    const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
     return { project };
   }
@@ -300,8 +301,10 @@ export class DataLayer {
       projects.push(profilesData);
     }
 
+    const mergedProjrects = mergeCanonicalAndLinkedProjects(projects);
+
     return {
-      projects,
+      projects: mergedProjrects,
     };
   }
 
@@ -333,7 +336,9 @@ export class DataLayer {
       requestVariables,
     );
 
-    const projects: v2Project[] = response.projects;
+    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
+      response.projects,
+    );
 
     if (projects.length === 0) return undefined;
 
