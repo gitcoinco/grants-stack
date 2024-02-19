@@ -78,6 +78,7 @@ export const getProjectById = gql`
         not: { tags: { contains: "program" } }
         id: { equalTo: $projectId }
         and: { chainId: { equalTo: $chainId } }
+        projectType: CANONICAL
       }
     ) {
       id
@@ -97,6 +98,18 @@ export const getProjectById = gql`
         role
         createdAtBlock
       }
+    }
+    linkedProjects: projects(
+      filter: {
+        tags: { equalTo: $alloVersion }
+        not: { tags: { contains: "program" } }
+        id: { equalTo: $projectId }
+        and: { chainId: { equalTo: $chainId } }
+        projectType: LINKED
+      }
+    ) {
+      id
+      chainId
     }
   }
 `;
@@ -119,6 +132,7 @@ export const getProjects = gql`
       filter: {
         tags: { equalTo: $alloVersion }
         not: { tags: { contains: "program" } }
+        projectType: CANONICAL
       }
       first: $first
       condition: { chainId: $chainId }
@@ -135,6 +149,18 @@ export const getProjects = gql`
       tags
       nonce
       anchorAddress
+    }
+    linkedProjects: projects(
+      filter: {
+        tags: { equalTo: $alloVersion }
+        not: { tags: { contains: "program" } }
+        projectType: LINKED
+      }
+      first: $first
+      condition: { chainId: $chainId }
+    ) {
+      id
+      chainId
     }
   }
 `;
@@ -221,11 +247,16 @@ export const getProjectsByAddress = gql`
     $version: String!
   ) {
     projectRoles(
-      condition: { address: $address, chainId: $chainId, role: $role }
+      condition: {
+        address: $address,
+        chainId: $chainId,
+        role: $role,
+      }
     ) {
       projectId
       project {
         chainId
+        projectType
         createdAtBlock
         registryAddress
         projectNumber
@@ -250,6 +281,7 @@ export const getProjectsAndRolesByAddress = gql`
         not: { tags: { contains: "program" } }
         chainId: { equalTo: $chainId }
         rolesExist: true
+        projectType: CANONICAL
       }
     ) {
       roles {
@@ -272,6 +304,18 @@ export const getProjectsAndRolesByAddress = gql`
         id
         metadata
       }
+    }
+    linkedProjects: projects(
+      filter: {
+        roles: { every: { address: { equalTo: $address } } }
+        tags: { contains: $version }
+        projectType: LINKED
+        chainId: { equalTo: $chainId }
+        rolesExist: true
+      }
+    ) {
+      id
+      chainId
     }
   }
 `;
