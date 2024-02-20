@@ -70,8 +70,7 @@ export const projectsReducer = (
       return {
         ...state,
         status: Status.Loading,
-        loadingChains: [...state.loadingChains, action.payload],
-        ids: [],
+        loadingChains: [...state.loadingChains, ...action.payload],
       };
     }
 
@@ -86,16 +85,12 @@ export const projectsReducer = (
     }
 
     case PROJECTS_LOADED: {
-      const { chainID, events } = action.payload;
-      const ids = Object.keys(events);
-      const loadingChains = state.loadingChains.filter((id) => id !== chainID);
+      const { chainIDs } = action.payload;
 
       return {
         ...state,
-        status: loadingChains.length === 0 ? Status.Loaded : state.status,
-        ids: [...state.ids, ...ids],
-        events: { ...state.events, ...events },
-        loadingChains,
+        status: Status.Loaded,
+        loadingChains: chainIDs,
       };
     }
 

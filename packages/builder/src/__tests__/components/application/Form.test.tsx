@@ -15,6 +15,7 @@ const projectsMetadata: Metadata[] = [
     protocol: 1,
     pointer: "0x1234",
     id: `1:${addressFrom(1)}:1`,
+    chainId: 1,
     title: "First Project",
     description: "This is the first project description",
     website: "https://firstproject.com",
@@ -23,6 +24,7 @@ const projectsMetadata: Metadata[] = [
     protocol: 2,
     pointer: "0x1234",
     id: `1:${addressFrom(2)}:2`,
+    chainId: 1,
     title: "Second Project",
     description: "This is the second project description",
     website: "https://secondproject.com",
@@ -107,12 +109,6 @@ describe("<Form />", () => {
       type: "PROJECTS_LOADED",
       payload: {
         chainID: 1,
-        events: {
-          [`1:${addressFrom(1)}:1`]: {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
-          },
-        },
       },
     });
     store.dispatch({
@@ -388,13 +384,7 @@ describe("<Form/>", () => {
     store.dispatch({
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 10,
-        events: {
-          [`1:${addressFrom(1)}:1`]: {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
-          },
-        },
+        chainIDs: [10],
       },
     });
 
@@ -459,12 +449,6 @@ describe("Form questions", () => {
       type: "PROJECTS_LOADED",
       payload: {
         chainID: 5,
-        events: {
-          [`1:${addressFrom(1)}:1`]: {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
-          },
-        },
       },
     });
 

@@ -8,7 +8,6 @@ import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
-import { getProjectURIComponents } from "../utils/utils";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
@@ -66,18 +65,14 @@ export const grantCreated = ({
 
 // todo: wire in metadata update
 export const publishGrant =
-  (allo: Allo, fullId?: string) =>
+  (allo: Allo, id?: string) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
 
     const { metadata: formMetaData, credentials: formCredentials } =
       state.projectForm;
 
-    const { id: grantId } = fullId
-      ? getProjectURIComponents(fullId)
-      : { id: undefined };
-
-    const oldGrantMetadata = state.grantsMetadata[fullId || ""];
+    const oldGrantMetadata = state.grantsMetadata[id || ""];
 
     if (formMetaData === undefined) {
       return;
@@ -115,9 +110,9 @@ export const publishGrant =
 
     dispatch(grantStatus(Status.UploadingJSON));
 
-    const result = grantId
+    const result = id
       ? allo.updateProjectMetadata({
-          projectId: ethers.utils.hexlify(Number(grantId)) as `0x${string}`,
+          projectId: ethers.utils.hexlify(Number(id)) as `0x${string}`,
           metadata: application as unknown as AnyJson,
         })
       : allo.createProject({
