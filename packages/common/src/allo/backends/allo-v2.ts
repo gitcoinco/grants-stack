@@ -230,7 +230,7 @@ export class AlloV2 implements Allo {
 
       let initStrategyDataEncoded: Address;
       let matchAmount = 0n;
-      let token: Address = zeroAddress;
+      let token: Address = getAddress(NATIVE);
 
       if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
         const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
