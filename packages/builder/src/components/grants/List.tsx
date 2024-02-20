@@ -20,6 +20,7 @@ import LoadingSpinner from "../base/LoadingSpinner";
 import RoundApplyAlert from "../base/RoundApplyAlert";
 import Globe from "../icons/Globe";
 import Card from "./Card";
+import { unloadAll } from "../../actions/grantsMetadata";
 
 function ProjectsList() {
   const dataLayer = useDataLayer();
@@ -80,6 +81,10 @@ function ProjectsList() {
   }, shallowEqual);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(unloadAll());
+  }, []);
 
   useEffect(() => {
     if (props.status !== Status.Undefined) return;
