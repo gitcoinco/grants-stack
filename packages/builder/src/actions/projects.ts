@@ -146,7 +146,7 @@ export type ProjectsActions =
   | ProjectAnchorsLoadedAction;
 
 /** Action Creators */
-export const projectsLoading = (chainIDs: number[]): ProjectsLoadingAction => ({
+export const projectsLoading = (chainIDs: ChainId[]): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
   payload: chainIDs,
 });
@@ -263,7 +263,7 @@ export const loadAllChainsProjects =
   (dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch) => {
     const { web3Provider } = global;
-    const chainIds = web3Provider?.chains?.map((chain) => chain.id);
+    const chainIds = web3Provider?.chains?.map((chain) => chain.id as ChainId);
     if (chainIds)  {
       dispatch(projectsLoading(chainIds));
       dispatch<any>(loadProjects(chainIds, dataLayer, withMetaData));
