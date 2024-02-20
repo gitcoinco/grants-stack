@@ -2,7 +2,6 @@ import { ProgressStatus, Round } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
-import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer, useDataLayer } from "data-layer";
 import { Address } from "viem";
@@ -77,8 +76,9 @@ const fetchRounds = async (
 
 const fetchRoundById = async (
   dispatch: Dispatch,
-  walletProvider: Web3Provider,
-  roundId: string
+  dataLayer: DataLayer,
+  roundId: string,
+  chainId: number
 ) => {
   datadogLogs.logger.info(`fetchRoundById: round - ${roundId}`);
 
@@ -88,7 +88,7 @@ const fetchRoundById = async (
   });
 
   try {
-    const round = await getRoundById(walletProvider, roundId);
+    const round = await getRoundById({ chainId, roundId, dataLayer });
     dispatch({ type: ActionType.SET_ROUNDS, payload: [round] });
     dispatch({
       type: ActionType.SET_FETCH_ROUNDS_STATUS,
@@ -170,6 +170,8 @@ export const useRounds = (programId?: string) => {
 
 export const useRoundById = (roundId?: string) => {
   const context = useContext(RoundContext);
+  const dataLayer = useDataLayer();
+
   if (context === undefined) {
     throw new Error("useRounds must be used within a RoundProvider");
   }
@@ -183,7 +185,9 @@ export const useRoundById = (roundId?: string) => {
       );
 
       if (!existingRound?.token) {
-        fetchRoundById(context.dispatch, provider, roundId);
+        provider.getNetwork().then((network) => {
+          fetchRoundById(context.dispatch, dataLayer, roundId, network.chainId);
+        });
       }
     }
   }, [provider, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps

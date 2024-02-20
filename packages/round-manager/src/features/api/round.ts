@@ -74,205 +74,17 @@ export class TransactionBuilder {
  * @param signerOrProvider - provider
  * @param roundId - the ID of a specific round for detail
  */
-export async function getRoundById(
-  signerOrProvider: Web3Provider,
-  roundId: string
-): Promise<Round> {
+export async function getRoundById(args: {
+  chainId: number;
+  roundId: string;
+  dataLayer: DataLayer;
+}): Promise<Round> {
   try {
-    // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork();
+    const { chainId, roundId, dataLayer } = args;
 
-    // query the subgraph for all rounds by  the given address in the given program
-    let res = await graphql_fetch(
-      `
-          query GetRounds($roundId: String) {
+    const round = await dataLayer.getRoundByIdAndChainId({ roundId, chainId });
 
-            alloSettings(id:"1") {
-              protocolFeePercentage
-            }
-
-            rounds(where: {
-              ${roundId ? `id: $roundId` : ``}
-            }) {
-              id
-              program {
-                id
-              }
-              roundMetaPtr {
-                protocol
-                pointer
-              }
-              applicationMetaPtr {
-                protocol
-                pointer
-              }
-              applicationsStartTime
-              applicationsEndTime
-              roundStartTime
-              roundEndTime
-              roundFeePercentage
-              token
-              projectsMetaPtr {
-                pointer
-              }
-              projects(first: 1000) {
-                id
-                project
-                status
-                applicationIndex
-                metaPtr {
-                  protocol
-                  pointer
-                }
-              }
-              roles(where: {
-                role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
-              }) {
-                accounts {
-                  address
-                }
-              }
-              payoutStrategy {
-                id
-                strategyName
-                type: __typename
-                ... on DirectPayout {
-                  vaultAddress
-                }
-                ... on MerklePayout {
-                  isReadyForPayout
-                }
-              }
-            }
-          }
-        `,
-      chainId,
-      { roundId: roundId }
-    );
-
-    if (res.errors !== undefined) {
-      // FIXME: remove this part after all the subgraphs have been deployed
-      // try the old query
-      res = await graphql_fetch(
-        `
-          query GetRounds($roundId: String) {
-
-            alloSettings(id:"1") {
-              protocolFeePercentage
-            }
-
-            rounds(where: {
-              ${roundId ? `id: $roundId` : ``}
-            }) {
-              id
-              program {
-                id
-              }
-              roundMetaPtr {
-                protocol
-                pointer
-              }
-              applicationMetaPtr {
-                protocol
-                pointer
-              }
-              applicationsStartTime
-              applicationsEndTime
-              roundStartTime
-              roundEndTime
-              roundFeePercentage
-              token
-              projectsMetaPtr {
-                pointer
-              }
-              projects(first: 1000) {
-                id
-                project
-                status
-                applicationIndex
-                metaPtr {
-                  protocol
-                  pointer
-                }
-              }
-              roles(where: {
-                role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
-              }) {
-                accounts {
-                  address
-                }
-              }
-              payoutStrategy {
-                  id
-                  isReadyForPayout
-              }
-            }
-          }
-        `,
-        chainId,
-        { roundId: roundId }
-      );
-    }
-
-    const round: RoundResult = res.data.rounds[0];
-
-    // fetch round and application metadata from IPFS
-    const [roundMetadata, applicationMetadata] = await Promise.all([
-      fetchFromIPFS(res.data.rounds[0].roundMetaPtr.pointer),
-      fetchFromIPFS(res.data.rounds[0].applicationMetaPtr.pointer),
-    ]);
-
-    round.projects = round.projects.map((project) => {
-      return {
-        ...project,
-        status: convertStatus(project.status),
-      };
-    });
-
-    const approvedProjectsWithMetadata = await loadApprovedProjects(
-      round,
-      chainId
-    );
-
-    const operatorWallets = res.data.rounds[0].roles[0].accounts.map(
-      (account: { address: string }) => account.address
-    );
-
-    const DENOMINATOR = 100000;
-    const protocolFeePercentage =
-      res.data.alloSettings && res.data.alloSettings[0]
-        ? res.data.alloSettings[0].protocolFeePercentage / DENOMINATOR
-        : 0;
-
-    const roundFeePercentage =
-      res.data.rounds[0].roundFeePercentage / DENOMINATOR;
-    return {
-      id: round.id,
-      chainId: chainId,
-      roundMetadata,
-      applicationMetadata,
-      applicationsStartTime: new Date(
-        Number(round.applicationsStartTime) * 1000
-      ),
-      applicationsEndTime:
-        round.applicationsEndTime == ethers.constants.MaxUint256.toString()
-          ? maxDateForUint256
-          : new Date(Number(round.applicationsEndTime) * 1000),
-      roundStartTime: new Date(Number(round.roundStartTime) * 1000),
-      roundEndTime:
-        round.applicationsEndTime == ethers.constants.MaxUint256.toString()
-          ? maxDateForUint256
-          : new Date(Number(round.roundEndTime) * 1000),
-      protocolFeePercentage: protocolFeePercentage,
-      roundFeePercentage: roundFeePercentage,
-      token: round.token,
-      votingStrategy: res.data.rounds[0].votingStrategy,
-      payoutStrategy: res.data.rounds[0].payoutStrategy,
-      ownedBy: round.program.id,
-      operatorWallets: operatorWallets,
-      approvedProjects: approvedProjectsWithMetadata,
-      finalized: false,
-    };
+    return indexerV2RoundToRound(round);
   } catch (error) {
     console.error("getRoundById", error);
     throw "Unable to fetch round";
@@ -286,6 +98,7 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
 
   return {
     id: round.id,
+    chainId: round.chainId,
     roundMetadata: round.roundMetadata as Round["roundMetadata"],
     applicationMetadata:
       round.applicationMetadata as unknown as Round["applicationMetadata"],

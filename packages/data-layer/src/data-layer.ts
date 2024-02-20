@@ -436,7 +436,7 @@ export class DataLayer {
   }: {
     roundId: string;
     chainId: number;
-  }): Promise<V2Round> {
+  }): Promise<V2RoundWithRoles> {
     const requestVariables = {
       roundId,
       chainId,
