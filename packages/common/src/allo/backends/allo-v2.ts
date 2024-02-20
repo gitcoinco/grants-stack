@@ -28,7 +28,7 @@ import { payoutTokens } from "../../payoutTokens";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
-    "0xD13ec67938B5E9Cb05A05D8e160daF02Ed5ea9C9",
+    "0x2f9920e473E30E54bD9D56F571BcebC2470A37B0",
   [RoundCategory.Direct]: "0xaC3f288a7A3efA3D33d9Dd321ad31072915D155d",
 };
 
@@ -249,7 +249,7 @@ export class AlloV2 implements Allo {
             allocationEndTime: dateToEthereumTimestamp(
               args.roundData.roundEndTime
             ), // in seconds, must be after allocationStartTime
-            allowedTokens: [zeroAddress], // allow all tokens
+            allowedTokens: [], // allow all tokens
           };
 
         const strategy = new DonationVotingMerkleDistributionStrategy({
@@ -321,9 +321,16 @@ export class AlloV2 implements Allo {
 
       // --- wait for transaction to be mined
       let receipt: TransactionReceipt;
+      let poolCreatedEvent;
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
+
+        poolCreatedEvent = decodeEventFromReceipt({
+          abi: AlloAbi as Abi,
+          receipt,
+          event: "PoolCreated",
+        }) as { poolId: Hex };
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -338,12 +345,6 @@ export class AlloV2 implements Allo {
       });
 
       emit("indexingStatus", success(void 0));
-
-      const poolCreatedEvent = decodeEventFromReceipt({
-        abi: AlloAbi as Abi,
-        receipt,
-        event: "PoolCreated",
-      }) as { poolId: Hex };
 
       return success({
         roundId: poolCreatedEvent.poolId,

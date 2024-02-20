@@ -58,18 +58,7 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
             });
           }
         })
-        .on("indexingStatus", (res) => {
-          if (res.type === "success") {
-            set({
-              indexingStatus: ProgressStatus.IS_SUCCESS,
-            });
-          } else {
-            set({
-              indexingStatus: ProgressStatus.IS_ERROR,
-            });
-          }
-        })
-        .on("transaction", (res) => {
+        .on("transactionStatus", (res) => {
           if (res.type === "success") {
             set({
               contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
@@ -81,14 +70,14 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
             });
           }
         })
-        .on("transactionStatus", (res) => {
+        .on("indexingStatus", (res) => {
           if (res.type === "success") {
             set({
-              contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
+              indexingStatus: ProgressStatus.IS_SUCCESS,
             });
           } else {
             set({
-              contractDeploymentStatus: ProgressStatus.IS_ERROR,
+              indexingStatus: ProgressStatus.IS_ERROR,
             });
           }
         })
@@ -115,9 +104,6 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
       }
 
       set({
-        indexingStatus: ProgressStatus.IS_ERROR,
-        contractDeploymentStatus: ProgressStatus.IS_ERROR,
-        ipfsStatus: ProgressStatus.IS_ERROR,
         error: err,
       });
 
