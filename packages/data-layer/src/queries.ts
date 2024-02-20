@@ -305,6 +305,7 @@ export const getRoundByIdAndChainId = gql`
       applicationMetadataCid
       strategyAddress
       strategyName
+      isReadyForPayout
       roles {
         role
         address
@@ -329,6 +330,7 @@ export const getRoundWithApplications = gql`
       applicationMetadataCid
       strategyAddress
       strategyName
+      isReadyForPayout
       applications {
         id
         status
