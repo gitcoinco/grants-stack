@@ -231,6 +231,8 @@ export const submitApplication =
     try {
       const roundAddress = roundState.round!.address;
 
+      console.log("roundAddress", roundAddress);
+
       const builder = new RoundApplicationBuilder(
         true,
         project,
@@ -288,8 +290,12 @@ export const submitApplication =
       status: Status.UploadingMetadata,
     });
 
+    const projectUniqueID = isV2
+      ? (state.projects.anchor![projectID] as Hex)
+      : projectID;
+
     const result = allo.applyToRound({
-      projectId: projectID as `0x${string}`,
+      projectId: projectUniqueID as `0x${string}`,
       roundId: isV2 ? Number(roundId) : (roundId as Hex),
       metadata: signedApplication as unknown as AnyJson,
     });
