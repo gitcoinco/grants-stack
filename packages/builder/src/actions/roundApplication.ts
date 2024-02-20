@@ -1,12 +1,12 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { Allo, AnyJson, ChainId, isJestRunning } from "common";
+import { Allo, AnyJson, isJestRunning } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { getConfig } from "common/src/config";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { Hex } from "viem";
-import RoundABI from "../contracts/abis/RoundImplementation.json";
+import { DataLayer } from "data-layer";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";
@@ -17,7 +17,6 @@ import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
 import { graphqlFetch } from "../utils/graphql";
-import { DataLayer } from "data-layer";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 
@@ -362,47 +361,51 @@ export const submitApplication =
   };
 
 export const checkRoundApplications =
-  (chainId: Number, roundAddress: string, projectIDs: Array<string>, dataLayer: DataLayer) =>
+  (
+    chainId: Number,
+    roundAddress: string,
+    projectIDs: Array<string>,
+    dataLayer: DataLayer
+  ) =>
   async (dispatch: Dispatch) => {
-
     console.log("roundAddress", roundAddress);
-    
+
     console.log("projectIDs", projectIDs);
 
     try {
-
       const projectIds = projectIDs.map((fullId: string) => {
         const { id } = getProjectURIComponents(fullId);
         return id;
-      })
+      });
 
       console.log("projectIds", projectIds);
-      
-      const applications = await dataLayer.getApplicationsByRoundIdAndProjectIds({
-        chainId: chainId as number,
-        roundId: roundAddress.toLowerCase() as `0x${Lowercase<string>}`,
-        projectIds: projectIds
-      });
+
+      const applications =
+        await dataLayer.getApplicationsByRoundIdAndProjectIds({
+          chainId: chainId as number,
+          roundId: roundAddress.toLowerCase() as `0x${Lowercase<string>}`,
+          projectIds,
+        });
 
       console.log("applications", applications);
 
-      if (!applications || applications.length == 0) {
+      if (!applications || applications.length === 0) {
         dispatch({
           type: ROUND_APPLICATION_NOT_FOUND,
           roundAddress,
         });
         return;
-      } 
+      }
 
       console.log("applications", applications);
-      
 
       projectIds.forEach((projectId) => {
-
         // VALIDATE THIS
-        const application = applications.find((application) => application.projectId === projectId);
+        const app = applications.find(
+          (application) => application.projectId === projectId
+        );
 
-        if (application) {
+        if (app) {
           dispatch({
             type: ROUND_APPLICATION_FOUND,
             roundAddress,
@@ -414,14 +417,14 @@ export const checkRoundApplications =
       // applicationEvents = await contract.queryFilter(applicationFilter); // WTF IS THIS?
 
       // applicationEvents.forEach((event) => {
-        // const projectID = uniqueIDsToIDs[event?.args?.project];
-        // if (data !== undefined) {
-        //   dispatch({
-        //     type: ROUND_APPLICATION_FOUND,
-        //     roundAddress,
-        //     projectID,
-        //   });
-        // }
+      // const projectID = uniqueIDsToIDs[event?.args?.project];
+      // if (data !== undefined) {
+      //   dispatch({
+      //     type: ROUND_APPLICATION_FOUND,
+      //     roundAddress,
+      //     projectID,
+      //   });
+      // }
       // });
     } catch (e) {
       datadogLogs.logger.warn("error getting round applications");

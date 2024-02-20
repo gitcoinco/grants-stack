@@ -98,7 +98,6 @@ function ProjectsList() {
       console.log("chainID", chainID);
       console.log("roundAddress", roundAddress);
       console.log("props.projectIDs", props.projectIDs);
-      
 
       // not loaded yet
       if (

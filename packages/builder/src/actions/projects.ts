@@ -2,12 +2,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
 import { ChainId, ROUND_PAYOUT_MERKLE, RoundPayoutType } from "common";
 import { getConfig } from "common/src/config";
-import {
-  ApplicationStatus,
-  DataLayer,
-  ProjectApplication,
-  ProjectEventsMap,
-} from "data-layer";
+import { ApplicationStatus, DataLayer, ProjectApplication } from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
 import { addressesByChainID } from "../contracts/deployments";
@@ -17,7 +12,7 @@ import { ProjectStats } from "../reducers/projects";
 import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getV1HashedProjectId } from "../utils/utils";
-import { fetchGrantData, transformAndDispatchProject } from "./grantsMetadata";
+import { transformAndDispatchProject } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
@@ -145,14 +140,14 @@ export type ProjectsActions =
   | ProjectAnchorsLoadedAction;
 
 /** Action Creators */
-export const projectsLoading = (chainIDs: ChainId[]): ProjectsLoadingAction => ({
+export const projectsLoading = (
+  chainIDs: ChainId[]
+): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
   payload: chainIDs,
 });
 
-export const projectsLoaded = (
-  chainIDs: ChainId[],
-): ProjectsLoadedAction => ({
+export const projectsLoaded = (chainIDs: ChainId[]): ProjectsLoadedAction => ({
   type: PROJECTS_LOADED,
   payload: {
     chainIDs,
@@ -207,20 +202,21 @@ export const loadProjects =
       });
 
       if (projects && withMetaData) {
-        projects.map(project => {
+        projects.forEach((project) => {
           dispatch<any>(transformAndDispatchProject(project.id, project));
         });
       }
 
       dispatch(projectsLoaded(chainIDs));
-    } catch (error) {
-
+    } catch (error: any) {
       datadogRum.addError(error, { chainIDs });
 
       dispatch(projectsLoaded(chainIDs));
 
-      // @ts-expect-error
-      if (chainIDs.includes(424) && error?.reason === "ENS name not configured") {
+      if (
+        chainIDs.includes(424) &&
+        error?.reason === "ENS name not configured"
+      ) {
         return;
       }
 
@@ -255,7 +251,7 @@ export const loadAllChainsProjects =
   async (dispatch: Dispatch) => {
     const { web3Provider } = global;
     const chainIds = web3Provider?.chains?.map((chain) => chain.id as ChainId);
-    if (chainIds)  {
+    if (chainIds) {
       dispatch(projectsLoading(chainIds));
       dispatch<any>(loadProjects(chainIds, dataLayer, withMetaData));
     }
