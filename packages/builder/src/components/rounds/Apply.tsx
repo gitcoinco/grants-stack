@@ -1,5 +1,4 @@
 import { useAllo } from "common";
-import { getConfig } from "common/src/config";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -21,10 +20,7 @@ import colors from "../../styles/colors";
 import { Round } from "../../types";
 import { isInfinite } from "../../utils/components";
 import { applicationSteps } from "../../utils/steps";
-import {
-  ROUND_PAYOUT_DIRECT,
-  getProjectURIComponents,
-} from "../../utils/utils";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -131,7 +127,6 @@ function Apply() {
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const isV2 = getConfig().allo.version === "allo-v2";
     if (
       props.applicationState &&
       props.applicationState.status === ApplicationStatus.Sent
@@ -140,23 +135,11 @@ function Apply() {
         dispatch(
           addAlert("success", applicationSuccessTitle, applicationSuccessBody)
         );
-        if (isV2) {
-          navigate(
-            projectPath(
-              chainId as string,
-              "0x",
-              props.applicationState.projectsIDs[0].toString()
-            )
-          );
-        } else {
-          const { chainId: projectChainId, id } = getProjectURIComponents(
-            props.applicationState.projectsIDs[0].toString()
-          );
+        const id = props.applicationState.projectsIDs[0].toString();
 
-          // Note: this is a hack to navigate to the project page after the application is submitted
-          // todo: later remove the entire registry path from the url
-          navigate(projectPath(projectChainId, "0x", id));
-        }
+        // Note: this is a hack to navigate to the project page after the application is submitted
+        // todo: later remove the entire registry path from the url
+        navigate(projectPath(chainId as string, "0x", id));
       }, 1500);
     }
 
