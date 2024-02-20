@@ -15,14 +15,11 @@ import {
   Status as ApplicationStatus,
 } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
-import { grantsPath, projectPath, roundPath } from "../../routes";
+import { grantsPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
 import { applicationSteps } from "../../utils/steps";
-import {
-  ROUND_PAYOUT_DIRECT,
-  getProjectURIComponents,
-} from "../../utils/utils";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -133,14 +130,15 @@ function Apply() {
         dispatch(
           addAlert("success", applicationSuccessTitle, applicationSuccessBody)
         );
-        const {
-          chainId: projectChainId,
-          registryAddress,
-          id,
-        } = getProjectURIComponents(
-          props.applicationState.projectsIDs[0].toString()
-        );
-        navigate(projectPath(projectChainId, registryAddress, id));
+        // todo: fix
+        // const {
+        //   chainId: projectChainId,
+        //   registryAddress,
+        //   id,
+        // } = getProjectURIComponents(
+        //   props.applicationState.projectsIDs[0].toString()
+        // );
+        // navigate(projectPath(projectChainId, registryAddress, id));
       }, 1500);
     }
 

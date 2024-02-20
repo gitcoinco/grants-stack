@@ -13,9 +13,8 @@ import { Status } from "../reducers/roundApplication";
 import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
-import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
-import { getProjectURIComponents, metadataToProject } from "../utils/utils";
+import { metadataToProject } from "../utils/utils";
 import { graphqlFetch } from "../utils/graphql";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
@@ -195,12 +194,6 @@ export const submitApplication =
 
     const projectID = formInputs[projectQuestion.id] as string;
 
-    const {
-      id: projectNumber,
-      registryAddress: projectRegistryAddress,
-      chainId: projectChainId,
-    } = getProjectURIComponents(projectID);
-
     const projectMetadata: any = state.grantsMetadata[projectID].metadata;
     if (projectMetadata === undefined) {
       dispatchAndLogApplicationError(
@@ -289,15 +282,6 @@ export const submitApplication =
       signature,
       application,
     };
-
-    const projectUniqueID = isV2
-      ? (state.projects.anchor![projectID] as Hex)
-      : (generateUniqueRoundApplicationID(
-          Number(projectChainId),
-          projectNumber,
-          projectRegistryAddress
-        ) as Hex);
-
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress: roundId,
@@ -305,7 +289,7 @@ export const submitApplication =
     });
 
     const result = allo.applyToRound({
-      projectId: projectUniqueID,
+      projectId: projectID as `0x${string}`,
       roundId: isV2 ? Number(roundId) : (roundId as Hex),
       metadata: signedApplication as unknown as AnyJson,
     });
@@ -368,23 +352,12 @@ export const checkRoundApplications =
     dataLayer: DataLayer
   ) =>
   async (dispatch: Dispatch) => {
-    console.log("roundAddress", roundAddress);
-
-    console.log("projectIDs", projectIDs);
-
     try {
-      const projectIds = projectIDs.map((fullId: string) => {
-        const { id } = getProjectURIComponents(fullId);
-        return id;
-      });
-
-      console.log("projectIds", projectIds);
-
       const applications =
         await dataLayer.getApplicationsByRoundIdAndProjectIds({
           chainId: chainId as number,
           roundId: roundAddress.toLowerCase() as `0x${Lowercase<string>}`,
-          projectIds,
+          projectIds: projectIDs,
         });
 
       console.log("applications", applications);
@@ -399,7 +372,7 @@ export const checkRoundApplications =
 
       console.log("applications", applications);
 
-      projectIds.forEach((projectId) => {
+      projectIDs.forEach((projectId) => {
         // VALIDATE THIS
         const app = applications.find(
           (application) => application.projectId === projectId
