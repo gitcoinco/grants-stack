@@ -10,7 +10,7 @@ import {
   DirectGrantsStrategyTypes,
   DirectGrantsStrategy,
 } from "@allo-team/allo-v2-sdk";
-import { Abi, Address, Hex, parseUnits, zeroAddress } from "viem";
+import { Abi, Address, Hex, parseUnits, zeroAddress, getAddress } from "viem";
 import { AnyJson } from "../..";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
@@ -216,13 +216,8 @@ export class AlloV2 implements Allo {
       indexingStatus: Result<void>;
     }
   > {
+    console.log(args);
     return new AlloOperation(async ({ emit }) => {
-      if (args.roundData?.roundCategory !== RoundCategory.QuadraticFunding) {
-        return error(
-          new AlloError("Only Quadratic Funding rounds are supported for now")
-        );
-      }
-
       const roundIpfsResult = await this.ipfsUploader({
         round: args.roundData.roundMetadataWithProgramContractAddress,
         application: args.roundData.applicationQuestions,
@@ -280,15 +275,18 @@ export class AlloV2 implements Allo {
         );
       }
 
-      const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
-      const payoutToken = payoutTokens.filter(
-        (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
-      )[0];
+      let matchAmount = 0n;
+      let token: Address = zeroAddress;
 
-      const matchAmount = parseUnits(
-        tokenAmount.toString(),
-        payoutToken.decimal
-      );
+      if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
+        const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
+        const payoutToken = payoutTokens.filter(
+          (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
+        )[0];
+
+        matchAmount = parseUnits(tokenAmount.toString(), payoutToken.decimal);
+        token = getAddress(args.roundData.token);
+      }
 
       const profileId =
         args.roundData.roundMetadataWithProgramContractAddress
@@ -302,7 +300,7 @@ export class AlloV2 implements Allo {
         profileId,
         strategy: STRATEGY_ADDRESSES[args.roundData.roundCategory],
         initStrategyData: initStrategyDataEncoded,
-        token: args.roundData.token,
+        token,
         amount: matchAmount,
         metadata: { protocol: 1n, pointer: roundIpfsResult.value },
         managers: args.roundData.roundOperators ?? [],
