@@ -1,21 +1,21 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { Allo, AnyJson, isJestRunning } from "common";
+import { getConfig } from "common/src/config";
+import { DataLayer } from "data-layer";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { getConfig } from "common/src/config";
-import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { Hex } from "viem";
-import { DataLayer } from "data-layer";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";
 import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
-import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
-import { metadataToProject } from "../utils/utils";
+import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import { graphqlFetch } from "../utils/graphql";
+import { metadataToProject } from "../utils/utils";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 
@@ -230,9 +230,6 @@ export const submitApplication =
 
     try {
       const roundAddress = roundState.round!.address;
-
-      console.log("roundAddress", roundAddress);
-
       const builder = new RoundApplicationBuilder(
         true,
         project,
@@ -240,6 +237,8 @@ export const submitApplication =
         roundAddress,
         chainName
       );
+
+      console.log("building application", roundAddress, formInputs);
 
       application = await builder.build(roundAddress, formInputs);
 

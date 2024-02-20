@@ -23,7 +23,6 @@ jest.mock("../../../actions/rounds");
 jest.mock("../../../actions/roundApplication");
 jest.mock("../../../hooks/useLocalStorage");
 
-
 const projectsMetadata: Metadata[] = [
   {
     protocol: 1,
@@ -130,7 +129,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainIDs: [10]
+          chainIDs: [10],
         },
       });
       store.dispatch({

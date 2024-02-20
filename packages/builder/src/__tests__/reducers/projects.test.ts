@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { ApplicationStatus, ProjectApplication, RoundVisibilityType } from "data-layer";
+import { ApplicationStatus, RoundVisibilityType } from "data-layer";
 import {
   ProjectsState,
   Status,
@@ -14,7 +14,6 @@ describe("projects reducer", () => {
   beforeEach(() => {
     state = initialProjectsState;
   });
-
 
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
     const initialState = {
