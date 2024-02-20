@@ -95,6 +95,11 @@ function ProjectsList() {
     if (roundToApply && props.projectIDs.length > 0) {
       const { chainID, roundAddress } = parseRoundToApply(roundToApply);
 
+      console.log("chainID", chainID);
+      console.log("roundAddress", roundAddress);
+      console.log("props.projectIDs", props.projectIDs);
+      
+
       // not loaded yet
       if (
         props.existingApplication === undefined &&
@@ -105,7 +110,8 @@ function ProjectsList() {
           checkRoundApplications(
             Number(chainID),
             roundAddress,
-            props.projectIDs
+            props.projectIDs,
+            dataLayer
           )
         );
       }

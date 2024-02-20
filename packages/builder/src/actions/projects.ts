@@ -14,14 +14,12 @@ import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectStats } from "../reducers/projects";
-import { getEnabledChainsAndProviders } from "../utils/chains";
 import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getV1HashedProjectId } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
-const { chains } = getEnabledChainsAndProviders();
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 
 export type SubgraphApplication = {
@@ -36,7 +34,7 @@ export type SubgraphApplication = {
 };
 
 interface ProjectsLoadingAction {
-  payload: number;
+  payload: number[];
   type: typeof PROJECTS_LOADING;
 }
 
@@ -45,7 +43,7 @@ export const PROJECTS_LOADED = "PROJECTS_LOADED";
 interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
   payload: {
-    chainID: ChainId;
+    chainIDs: ChainId[];
     events: ProjectEventsMap;
   };
 }
@@ -148,18 +146,18 @@ export type ProjectsActions =
   | ProjectAnchorsLoadedAction;
 
 /** Action Creators */
-export const projectsLoading = (chainID: ChainId): ProjectsLoadingAction => ({
+export const projectsLoading = (chainIDs: number[]): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
-  payload: chainID,
+  payload: chainIDs,
 });
 
 export const projectsLoaded = (
-  chainID: ChainId,
+  chainIDs: ChainId[],
   events: ProjectEventsMap
 ): ProjectsLoadedAction => ({
   type: PROJECTS_LOADED,
   payload: {
-    chainID,
+    chainIDs,
     events,
   },
 });
@@ -199,7 +197,7 @@ export const projectAnchorsLoaded = (projectID: string, anchor: string) => ({
  * @returns All projects for a given chain
  */
 export const loadProjects =
-  (chainID: ChainId, dataLayer: DataLayer, withMetaData?: boolean) =>
+  (chainIDs: ChainId[], dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     try {
       const state = getState();
@@ -208,11 +206,11 @@ export const loadProjects =
       const projectEventsMap = await dataLayer.getProjectsByAddress({
         address: account!.toLowerCase(),
         alloVersion: getConfig().allo.version,
-        chainId: chainID.valueOf(),
+        chainIds: chainIDs.map((id) => id.valueOf()),
       });
 
       if (!projectEventsMap) {
-        dispatch(projectsLoaded(chainID, {}));
+        dispatch(projectsLoaded(chainIDs, {}));
         return;
       }
 
@@ -222,28 +220,23 @@ export const loadProjects =
         });
       }
 
-      dispatch(projectsLoaded(chainID, projectEventsMap));
+      dispatch(projectsLoaded(chainIDs, projectEventsMap));
     } catch (error) {
-      const chainName = chains.find((c) => c.id === chainID)?.name;
-      if (chainName === "Hardhat") {
-        dispatch(projectsLoaded(chainID, {}));
-        return;
-      }
-      datadogRum.addError(error, { chainID });
-      console.error(chainName, chainID, error);
 
-      dispatch(projectsLoaded(chainID, {}));
+      datadogRum.addError(error, { chainIDs });
+
+      dispatch(projectsLoaded(chainIDs, {}));
 
       /* TODO: Once ENS is deployed on PGN Mainnet and testnet, undo this */
       // @ts-expect-error
-      if (chainID === 424 && error?.reason === "ENS name not configured") {
+      if (chainIDs.includes(424) && error?.reason === "ENS name not configured") {
         return;
       }
 
       dispatch(
         addAlert(
           "error",
-          `Failed to load projects from ${chainName}`,
+          `Failed to load projects from ${chainIDs}`,
           "Please try refreshing the page."
         )
       );
@@ -270,10 +263,11 @@ export const loadAllChainsProjects =
   (dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch) => {
     const { web3Provider } = global;
-    web3Provider?.chains?.forEach((chainID: { id: number }) => {
-      dispatch(projectsLoading(chainID.id));
-      dispatch<any>(loadProjects(chainID.id, dataLayer, withMetaData));
-    });
+    const chainIds = web3Provider?.chains?.map((chain) => chain.id);
+    if (chainIds)  {
+      dispatch(projectsLoading(chainIds));
+      dispatch<any>(loadProjects(chainIds, dataLayer, withMetaData));
+    }
   };
 
 /**

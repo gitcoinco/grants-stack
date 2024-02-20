@@ -38,6 +38,7 @@ import {
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndUserAddress,
   getProgramByIdAndUser,
+  getApplicationsByRoundIdAndProjectIds,
 } from "./queries";
 import { Address } from "viem";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
@@ -318,16 +319,16 @@ export class DataLayer {
   async getProjectsByAddress({
     address,
     alloVersion,
-    chainId,
+    chainIds,
   }: {
     address: string;
     alloVersion: AlloVersion;
-    chainId: number;
+    chainIds: number[];
   }): Promise<ProjectEventsMap | undefined> {
     const requestVariables = {
       address: address.toLowerCase(),
       version: alloVersion,
-      chainId,
+      chainIds,
     };
 
     const response: { projects: v2Project[] } = await request(
@@ -340,13 +341,15 @@ export class DataLayer {
       response.projects,
     );
 
+    console.log("=====> projects", projects);
+
     if (projects.length === 0) return undefined;
 
     const projectEventsMap: ProjectEventsMap = {};
 
     for (const project of projects) {
       projectEventsMap[
-        `${chainId}:${project.registryAddress}:${
+        `${project.chainId}:${project.registryAddress}:${
           alloVersion === "allo-v2" ? project.id : project.projectNumber
         }`
       ] = {
@@ -412,6 +415,34 @@ export class DataLayer {
 
     return response.application ?? [];
   }
+
+  /**
+   * Returns a single application as identified by its id, round name and chain name
+   * @param projectId
+   */
+    async getApplicationsByRoundIdAndProjectIds({
+      chainId,
+      roundId,
+      projectIds,
+    }: {
+      chainId: number;
+      roundId: Lowercase<Address>;
+      projectIds: string[];
+    }): Promise<ProjectApplication[] | undefined> {
+      const requestVariables = {
+        chainId,
+        roundId,
+        projectIds,
+      };
+  
+      const response: { applications: ProjectApplication[] } = await request(
+        this.gsIndexerEndpoint,
+        getApplicationsByRoundIdAndProjectIds,
+        requestVariables,
+      );
+  
+      return response.applications ?? [];
+    }
 
   async getProgramName({
     projectId,

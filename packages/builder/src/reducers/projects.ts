@@ -86,7 +86,7 @@ export const projectsReducer = (
     }
 
     case PROJECTS_LOADED: {
-      const { chainID, events } = action.payload;
+      const { chainIDs, events } = action.payload;
       const ids = Object.keys(events);
       const loadingChains = state.loadingChains.filter((id) => id !== chainID);
 
