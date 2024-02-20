@@ -1,3 +1,4 @@
+import { getConfig } from "common/src/config";
 import { useAllo } from "common";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect, useState } from "react";
@@ -37,6 +38,7 @@ function Apply() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const allo = useAllo();
+  const isV2 = getConfig().allo.version === "allo-v2";
 
   const [modalOpen, toggleModal] = useState(false);
   const [roundData, setRoundData] = useState<Round>();
@@ -67,7 +69,11 @@ function Apply() {
     const showErrorModal =
       applicationError && applicationStatus === ApplicationStatus.Error;
 
-    console.log("applicationState", applicationState);
+    const versionError =
+      (isV2 && roundId?.startsWith("0x")) ||
+      (!isV2 && !roundId?.startsWith("0x"));
+
+    console.log("versionError", versionError);
 
     return {
       roundState,
@@ -77,6 +83,7 @@ function Apply() {
       applicationState,
       applicationStatus,
       applicationError,
+      versionError,
       applicationMetadata: round?.applicationMetadata,
       showErrorModal,
     };
@@ -188,7 +195,11 @@ function Apply() {
     return <div>loading...</div>;
   }
 
-  if (props.roundState === undefined || props.round === undefined) {
+  if (
+    props.roundState === undefined ||
+    props.round === undefined ||
+    props.versionError
+  ) {
     return (
       <div>
         <ErrorModal
