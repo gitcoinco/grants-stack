@@ -49,10 +49,11 @@ function ProjectsList() {
       const roundState = state.rounds[roundAddress];
       round = roundState ? roundState.round : undefined;
     }
+    const projectIds = Object.keys(state.grantsMetadata);
 
     const showRoundModal =
       roundToApply &&
-      state.projects.ids.length > 0 &&
+      projectIds.length > 0 &&
       toggleModal <= ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
 
@@ -63,11 +64,13 @@ function ProjectsList() {
       applicationStartTime + 1000 < new Date().getTime() / 1000 &&
       applicationEndTime - 1000 > new Date().getTime() / 1000;
 
+    console.log("state", state);
+
     return {
       status: state.projects.status,
       loading: state.projects.status === Status.Loading,
       error: state.projects.status === Status.Error,
-      projectIDs: state.projects.ids,
+      projectIDs: projectIds,
       chainID: state.web3.chainID,
       existingApplication,
       showRoundModal,

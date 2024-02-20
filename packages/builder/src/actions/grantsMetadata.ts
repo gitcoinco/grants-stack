@@ -4,7 +4,6 @@ import { AddressAndRole, DataLayer, v2Project } from "data-layer";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { Metadata } from "../types";
-import { getV1HashedProjectId } from "../utils/utils";
 import { projectAnchorsLoaded, projectOwnersLoaded } from "./projects";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
@@ -89,6 +88,7 @@ export const transformAndDispatchProject =
       userGithub: project.metadata.userGithub,
       projectGithub: project.metadata.projectGithub,
       projectTwitter: project.metadata.projectTwitter,
+      chainId: project.chainId,
     };
 
     const ownerAddresses: `0x${string}`[] = project.roles
@@ -120,14 +120,11 @@ export const fetchGrantData =
   (id: string, dataLayer: DataLayer) => async (dispatch: Dispatch) => {
     dispatch(grantMetadataLoadingURI(id));
     const config = getConfig();
-    const projectId = id.split(":")[2];
+    // const projectId = id.split(":")[2];
 
     try {
       const result = await dataLayer.getProjectById({
-        projectId:
-          config.allo.version === "allo-v1"
-            ? getV1HashedProjectId(id)
-            : projectId,
+        projectId: id,
         alloVersion: config.allo.version,
       });
 

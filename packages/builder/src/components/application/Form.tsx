@@ -26,10 +26,7 @@ import {
   ProjectOption,
   Round,
 } from "../../types";
-import {
-  ROUND_PAYOUT_DIRECT,
-  getProjectURIComponents,
-} from "../../utils/utils";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
@@ -104,9 +101,11 @@ export default function Form({
     const allProjectMetadata = state.grantsMetadata;
     const { chainID } = state.web3;
 
+    const projectIds = Object.keys(allProjectMetadata);
+
     return {
       anchors: state.projects.anchor,
-      projectIDs: state.projects.ids,
+      projectIDs: projectIds,
       allProjectMetadata,
       chainID,
     };
@@ -272,7 +271,7 @@ export default function Form({
 
   useEffect(() => {
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
-      const { chainId } = getProjectURIComponents(id);
+      const chainId = props.allProjectMetadata[id]?.metadata?.chainId;
       const projectChainIconUri = getNetworkIcon(Number(chainId));
       const chainName = networkPrettyName(Number(chainId));
       return {

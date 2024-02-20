@@ -8,7 +8,6 @@ import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
 import { ImgTypes, getProjectImage } from "../../utils/components";
-import { getProjectURIComponents } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import PageNotFound from "../base/PageNotFound";
 import Arrow from "../icons/Arrow";
@@ -23,9 +22,9 @@ function Project() {
   const params = useParams();
 
   const props = useSelector((state: RootState) => {
-    const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
-    const grantMetadata = state.grantsMetadata[fullId];
-    const owners = state.projects.owners[fullId];
+    const grantMetadata = state.grantsMetadata[params.id!];
+    const chainId = grantMetadata?.metadata?.chainId;
+    const owners = state.projects.owners[params.id!];
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
@@ -43,7 +42,8 @@ function Project() {
     );
 
     return {
-      id: fullId,
+      id: params.id,
+      chainId,
       loading,
       loadingFailed,
       bannerImg,
@@ -51,7 +51,6 @@ function Project() {
       owners,
       currentProject: grantMetadata?.metadata,
       signerAddress: state.web3.account,
-      projectEvents: state.projects.events[fullId],
     };
   }, shallowEqual);
 
@@ -71,8 +70,9 @@ function Project() {
   // }, [props.projectEvents, global, dispatch]);
 
   function createEditPath() {
-    const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
-    return editPath(chainId, registryAddress, id);
+    // const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
+    const registryAddress = "0x"; // TODO: fix (technically, we dont need the regsitry address anymore)
+    return editPath(props.chainId!.toString(), registryAddress, props.id!);
   }
 
   if (props.loadingFailed) {

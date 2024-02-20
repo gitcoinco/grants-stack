@@ -89,7 +89,7 @@ export const projectsReducer = (
 
       return {
         ...state,
-        status: chainIDs.length === 0 ? Status.Loaded : state.status,
+        status: Status.Loaded,
         loadingChains: chainIDs,
       };
     }

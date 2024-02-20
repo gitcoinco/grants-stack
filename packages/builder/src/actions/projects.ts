@@ -5,13 +5,10 @@ import { getConfig } from "common/src/config";
 import { ApplicationStatus, DataLayer, ProjectApplication } from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
-import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectStats } from "../reducers/projects";
 import { graphqlFetch } from "../utils/graphql";
-import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getV1HashedProjectId } from "../utils/utils";
 import { transformAndDispatchProject } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
@@ -274,25 +271,14 @@ export const fetchProjectApplicationInRound = async (
   roundID: string,
   roundChainId: ChainId
 ): Promise<any> => {
-  const splitApplicationId = applicationId.split(":");
-  const projectChainId = Number(splitApplicationId[0]);
-  const projectRegistryAddress = splitApplicationId[1];
-  const projectNumber = splitApplicationId[2];
-
-  const projectApplicationID = generateUniqueRoundApplicationID(
-    projectChainId,
-    projectNumber,
-    projectRegistryAddress
-  ).toLowerCase();
-
   const Id = roundID.toLowerCase();
 
   try {
     const response: any = await graphqlFetch(
-      `query projectApplicationInRound($projectApplicationID: String, $Id: String) {
+      `query projectApplicationInRound($applicationId: String, $Id: String) {
           roundApplications(
             where: {
-              project: $projectApplicationID,
+              project: $applicationId,
               round: $Id
             }
           ) {
@@ -302,7 +288,7 @@ export const fetchProjectApplicationInRound = async (
       `,
       roundChainId,
       {
-        projectApplicationID,
+        applicationId,
         Id,
       }
     );
@@ -317,7 +303,7 @@ export const fetchProjectApplicationInRound = async (
         : false,
     };
   } catch (error: any) {
-    datadogRum.addError(error, { projectApplicationID, roundID });
+    datadogRum.addError(error, { applicationId, roundID });
     console.error(error);
 
     return {
@@ -340,10 +326,7 @@ export const fetchProjectApplicationInRound = async (
  * @returns All applications for a given project
  */
 export const fetchProjectApplications =
-  (projectId: string, chainId: ChainId, dataLayer: DataLayer) =>
-  async (dispatch: Dispatch) => {
-    const config = getConfig();
-
+  (projectId: string, dataLayer: DataLayer) => async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID: projectId,
@@ -355,14 +338,7 @@ export const fetchProjectApplications =
         return;
       }
 
-      const id =
-        config.allo.version === "allo-v1"
-          ? getV1HashedProjectId(
-              `${chainId}:${
-                addressesByChainID(chainId).projectRegistry
-              }:${projectId}`
-            )
-          : projectId;
+      const id = projectId;
 
       const chainIds = web3Provider.chains.map((chain) => chain.id);
       const applications = await dataLayer.getApplicationsByProjectId({
@@ -416,12 +392,6 @@ export const loadProjectStats =
     }>
   ) =>
   async (dispatch: Dispatch) => {
-    const uniqueProjectID = generateUniqueRoundApplicationID(
-      Number(projectChainId),
-      projectID,
-      projectRegistryAddress
-    );
-
     dispatch({
       type: PROJECT_STATS_LOADING,
       projectID,
@@ -466,7 +436,7 @@ export const loadProjectStats =
 
       const project = applications.find(
         (app) =>
-          app.projectId === uniqueProjectID &&
+          app.projectId === projectID &&
           app.status === "APPROVED" &&
           round.roundType === ROUND_PAYOUT_MERKLE
       );
