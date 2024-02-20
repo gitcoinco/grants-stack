@@ -23,7 +23,7 @@ import {
   sendRawTransaction,
 } from "../transaction-sender";
 import { RoundCategory } from "../../types";
-import { CreatePoolArgs } from "@allo-team/allo-v2-sdk/dist/types";
+import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
 import { payoutTokens } from "../../payoutTokens";
 
 const STRATEGY_ADDRESSES = {
@@ -216,7 +216,6 @@ export class AlloV2 implements Allo {
       indexingStatus: Result<void>;
     }
   > {
-    console.log(args);
     return new AlloOperation(async ({ emit }) => {
       const roundIpfsResult = await this.ipfsUploader({
         round: args.roundData.roundMetadataWithProgramContractAddress,
@@ -230,6 +229,8 @@ export class AlloV2 implements Allo {
       }
 
       let initStrategyDataEncoded: Address;
+      let matchAmount = 0n;
+      let token: Address = zeroAddress;
 
       if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
         const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
@@ -257,6 +258,17 @@ export class AlloV2 implements Allo {
 
         initStrategyDataEncoded =
           await strategy.getInitializeData(initStrategyData);
+
+        const alloToken =
+          args.roundData.token === zeroAddress ? NATIVE : args.roundData.token;
+
+        const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
+        const payoutToken = payoutTokens.filter(
+          (t) => t.address.toLowerCase() === alloToken.toLowerCase()
+        )[0];
+
+        matchAmount = parseUnits(tokenAmount.toString(), payoutToken.decimal);
+        token = getAddress(alloToken);
       } else if (args.roundData.roundCategory === RoundCategory.Direct) {
         const initStrategyData: DirectGrantsStrategyTypes.InitializeParams = {
           registryGating: true,
@@ -275,19 +287,6 @@ export class AlloV2 implements Allo {
         );
       }
 
-      let matchAmount = 0n;
-      let token: Address = zeroAddress;
-
-      if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
-        const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
-        const payoutToken = payoutTokens.filter(
-          (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
-        )[0];
-
-        matchAmount = parseUnits(tokenAmount.toString(), payoutToken.decimal);
-        token = getAddress(args.roundData.token);
-      }
-
       const profileId =
         args.roundData.roundMetadataWithProgramContractAddress
           ?.programContractAddress;
@@ -301,7 +300,7 @@ export class AlloV2 implements Allo {
         strategy: STRATEGY_ADDRESSES[args.roundData.roundCategory],
         initStrategyData: initStrategyDataEncoded,
         token,
-        amount: matchAmount,
+        amount: 0n, // we send 0 tokens to the pool, we fund it later
         metadata: { protocol: 1n, pointer: roundIpfsResult.value },
         managers: args.roundData.roundOperators ?? [],
       };
