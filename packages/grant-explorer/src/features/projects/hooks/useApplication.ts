@@ -64,10 +64,9 @@ export function mapApplicationToRound(
     applicationsEndTime: new Date(application.round.applicationsEndTime),
     roundMetadata: application.round.roundMetadata,
     token: application.round.matchTokenAddress,
-    // This is missing from the indexer
     payoutStrategy: {
       id: "id",
-      strategyName: "MERKLE",
+      strategyName: application.round.strategyName,
     },
     // These might not be used anywhere in the app
     votingStrategy: "",

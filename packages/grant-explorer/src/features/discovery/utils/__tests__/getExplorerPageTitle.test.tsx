@@ -1,4 +1,4 @@
-import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { ROUND_PAYOUT_DIRECT_OLD, ROUND_PAYOUT_MERKLE_OLD } from "common";
 import { getExplorerPageTitle } from "../getExplorerPageTitle";
 import { RoundStatus } from "../../hooks/useFilterRounds";
 
@@ -12,14 +12,14 @@ describe("getExplorerPageTitle", () => {
     expect(
       getExplorerPageTitle({
         status: "",
-        type: ROUND_PAYOUT_MERKLE,
+        type: ROUND_PAYOUT_MERKLE_OLD,
         network: "",
       })
     ).toEqual("Quadratic Funding rounds");
     expect(
       getExplorerPageTitle({
         status: "",
-        type: ROUND_PAYOUT_DIRECT,
+        type: ROUND_PAYOUT_DIRECT_OLD,
         network: "",
       })
     ).toEqual("Direct Grants rounds");
@@ -49,7 +49,7 @@ describe("getExplorerPageTitle", () => {
     expect(
       getExplorerPageTitle({
         status: "active,finished",
-        type: ROUND_PAYOUT_MERKLE,
+        type: ROUND_PAYOUT_MERKLE_OLD,
         network: "",
       })
     ).toEqual("Multiple filters");

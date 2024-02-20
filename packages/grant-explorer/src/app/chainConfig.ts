@@ -16,6 +16,7 @@ import {
   base,
   zkSyncEraMainnet,
   zkSyncEraTestnet,
+  sepolia,
 } from "common/src/chains";
 import { ChainId } from "common/src/chain-ids";
 
@@ -34,6 +35,7 @@ const TESTNET_CHAINS = [
   avalancheFuji,
   polygonMumbai,
   zkSyncEraTestnet,
+  sepolia,
 ].map(ensureValidChainId);
 
 const MAINNET_CHAINS = [

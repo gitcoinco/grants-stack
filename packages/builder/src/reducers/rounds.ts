@@ -27,8 +27,6 @@ export const enum Status {
   Error,
 }
 
-export type PayoutStrategy = "MERKLE" | "DIRECT";
-
 export interface RoundsState {
   [address: string]: {
     status: Status;

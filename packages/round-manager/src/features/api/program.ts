@@ -1,10 +1,10 @@
-import { CHAINS, fetchFromIPFS } from "./utils";
+import { CHAINS } from "./utils";
 import { MetadataPointer, Program, Web3Instance } from "./types";
 import { programFactoryContract } from "./contracts";
 import { ethers } from "ethers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
-import { ChainId, graphql_fetch } from "common";
+import { ChainId } from "common";
 import { DataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
 
@@ -30,8 +30,8 @@ export async function listPrograms(
     // fetch programs from indexer
 
     const programsRes = await dataLayer.getProgramsByUser({
-      address: address,
-      chainId: chainId,
+      address,
+      chainId,
       alloVersion: config.allo.version,
     });
 
@@ -66,61 +66,40 @@ export async function listPrograms(
 
 // TODO(shavinac) change params to expect chainId instead of signerOrProvider
 export async function getProgramById(
+  address: string,
   programId: string,
-  signerOrProvider: Web3Instance["provider"]
-): Promise<Program> {
-  try {
-    // fetch chain id
-    const { chainId } = (await signerOrProvider.getNetwork()) as {
-      chainId: ChainId;
-    };
+  signerOrProvider: Web3Instance["provider"],
+  dataLayer: DataLayer
+): Promise<Program | null> {
+  // fetch chain id
+  const { chainId } = (await signerOrProvider.getNetwork()) as {
+    chainId: ChainId;
+  };
 
-    // get the subgraph for program by $programId
-    const res = await graphql_fetch(
-      `
-        query GetPrograms($programId: String) {
-          programs(where: {
-            id: $programId
-          }) {
-            id
-            metaPtr {
-              protocol
-              pointer
-            }
-            roles(where: {
-              role: "0xaa630204f2780b6f080cc77cc0e9c0a5c21e92eb0c6771e709255dd27d6de132"
-            }) {
-              accounts {
-                address
-              }
-            }
-          }
-        }
-      `,
-      chainId,
-      { programId }
-    );
+  // fetch program from indexer
+  const { program: program } = await dataLayer.getProgramByIdAndUser({
+    userAddress: address,
+    programId,
+    chainId,
+  });
 
-    const programDataFromGraph = res.data.programs[0];
-    const metadata = await fetchFromIPFS(programDataFromGraph.metaPtr.pointer);
-
-    return {
-      id: programDataFromGraph.id,
-      metadata,
-      operatorWallets: programDataFromGraph.roles[0].accounts.map(
-        (account: { address: string }) => account.address
-      ),
-      chain: {
-        id: chainId,
-        name: CHAINS[chainId]?.name,
-        logo: CHAINS[chainId]?.logo,
-      },
-    };
-  } catch (error) {
-    datadogLogs.logger.error(`error: getProgramById - ${error}`);
-    console.error("getProgramById", error);
-    throw Error("Unable to fetch program");
+  // no program found
+  if (program === null) {
+    return null;
   }
+
+  return {
+    id: program.id,
+    metadata: program.metadata,
+    operatorWallets: program.roles.map(
+      (role: { address: string }) => role.address
+    ),
+    chain: {
+      id: chainId,
+      name: CHAINS[chainId]?.name,
+      logo: CHAINS[chainId]?.logo,
+    },
+  };
 }
 
 interface DeployProgramContractProps {

@@ -145,21 +145,22 @@ export function chainIdToChainName(chainId: number): string {
 }
 
 export const submitApplication =
-  (roundAddress: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
+  (roundId: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
-    const roundState = state.rounds[roundAddress];
+    const roundState = state.rounds[roundId];
+    const isV2 = getConfig().allo.version === "allo-v2";
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundAddress: roundId, // todo: roundAddress is misleading
       status: Status.BuildingApplication,
     });
 
     if (roundState === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot load round data",
         Status.BuildingApplication
       );
@@ -170,7 +171,7 @@ export const submitApplication =
     if (roundApplicationMetadata === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot load round application metadata",
         Status.BuildingApplication
       );
@@ -185,7 +186,7 @@ export const submitApplication =
     if (!projectQuestion) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find project question id",
         Status.BuildingApplication
       );
@@ -204,7 +205,7 @@ export const submitApplication =
     if (projectMetadata === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find selected project metadata",
         Status.BuildingApplication
       );
@@ -217,7 +218,7 @@ export const submitApplication =
     if (chainID === undefined) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "cannot find chain id",
         Status.BuildingApplication
       );
@@ -227,7 +228,7 @@ export const submitApplication =
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundId,
       status: Status.LitAuthentication,
     });
 
@@ -235,6 +236,8 @@ export const submitApplication =
     let deterministicApplication: string;
 
     try {
+      const roundAddress = roundState.round!.address;
+
       const builder = new RoundApplicationBuilder(
         true,
         project,
@@ -249,7 +252,7 @@ export const submitApplication =
     } catch (error) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "error building round application",
         Status.LitAuthentication
       );
@@ -265,7 +268,7 @@ export const submitApplication =
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundId,
       status: Status.SigningApplication,
     });
 
@@ -275,7 +278,7 @@ export const submitApplication =
     } catch (e) {
       dispatchAndLogApplicationError(
         dispatch,
-        roundAddress,
+        roundId,
         "error signing round application",
         Status.SigningApplication
       );
@@ -287,31 +290,32 @@ export const submitApplication =
       application,
     };
 
-    const projectUniqueID = generateUniqueRoundApplicationID(
-      Number(projectChainId),
-      projectNumber,
-      projectRegistryAddress
-    ) as Hex;
+    const projectUniqueID = isV2
+      ? (state.projects.anchor![projectID] as Hex)
+      : (generateUniqueRoundApplicationID(
+          Number(projectChainId),
+          projectNumber,
+          projectRegistryAddress
+        ) as Hex);
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
-      roundAddress,
+      roundAddress: roundId,
       status: Status.UploadingMetadata,
     });
 
     const result = allo.applyToRound({
       projectId: projectUniqueID,
-      roundId: roundAddress as Hex,
+      roundId: isV2 ? Number(roundId) : (roundId as Hex),
       metadata: signedApplication as unknown as AnyJson,
     });
 
     await result
       .on("ipfs", (res) => {
         if (res.type === "success") {
-          console.log("IPFS CID", res.value);
           dispatch({
             type: ROUND_APPLICATION_LOADING,
-            roundAddress,
+            roundAddress: roundId,
             status: Status.SendingTx,
           });
         } else {
@@ -320,7 +324,7 @@ export const submitApplication =
           datadogLogs.logger.error("ipfs: error uploading metadata");
           dispatchAndLogApplicationError(
             dispatch,
-            roundAddress,
+            roundId,
             "error uploading round application metadata",
             Status.UploadingMetadata
           );
@@ -340,13 +344,13 @@ export const submitApplication =
         if (res.type === "success") {
           dispatch({
             type: ROUND_APPLICATION_LOADED,
-            roundAddress,
+            roundAddress: roundId,
             projectId: projectID,
           });
         } else {
           dispatchAndLogApplicationError(
             dispatch,
-            roundAddress,
+            roundId,
             "error calling applyToRound",
             Status.SendingTx
           );

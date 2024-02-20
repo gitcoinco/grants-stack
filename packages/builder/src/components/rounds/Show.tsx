@@ -1,26 +1,26 @@
 /* eslint-disable no-nested-ternary */
+import { ChainId } from "common";
 import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
-import { ChainId } from "common";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { Round } from "../../types";
+import { GrantsMetadataState } from "../../reducers/grantsMetadata";
 import { Status as ProjectStatus } from "../../reducers/projects";
 import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { Status } from "../../reducers/rounds";
 import { grantsPath, newGrantPath, roundApplicationPath } from "../../routes";
+import { Round } from "../../types";
 import { formatTimeUTC, isInfinite } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
-import { GrantsMetadataState } from "../../reducers/grantsMetadata";
 
 interface ApplyButtonProps {
   round: Round;
@@ -353,26 +353,24 @@ function ShowRound() {
           </div>
           {!isDirectRound && (
             <div className="flex flex-1 flex-col mt-8">
-              <span>Application Period:</span>
+              <span className="mb-2">Application Period:</span>
               <span>{renderApplicationDate()}</span>
             </div>
           )}
           <div className="flex flex-1 flex-col mt-8">
-            <span>Round Dates:</span>
+            <span className="mb-2">Round Dates:</span>
             <span>{renderRoundDate()}</span>
           </div>
           <div className="flex flex-1 flex-col mt-8">
-            <span>Eligibility Requirements:</span>
-            <span>
-              {roundData?.roundMetadata?.eligibility?.requirements.map(
-                (r: { requirement: string }, index: number) => (
-                  <>
-                    {`${index + 1}. ${r.requirement}`}
-                    <br />
-                  </>
-                )
-              )}
-            </span>
+            <span className="mb-2">Eligibility Requirements:</span>
+            {roundData?.roundMetadata?.eligibility?.requirements.map(
+              (r: { requirement: string }, index: number) => (
+                <span className="mb-2" key={`${index + 1}. ${r.requirement}`}>
+                  {`${index + 1}. ${r.requirement}`}
+                  <br />
+                </span>
+              )
+            )}
           </div>
         </div>
         <div className="flex flex-1 flex-col mt-8">

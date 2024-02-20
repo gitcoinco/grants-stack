@@ -1,20 +1,20 @@
 import { gql } from "graphql-request";
 
 /**
- * Get all the programs that a user is a part of
- * @param $alloVersion - The version of Allo
+ * Manager: Get all the programs that a user is a part of
  * @param $address - The address of the user
  * @param $chainId - The network ID of the chain
+ * @param $tag - The tag of the program
  *
  * @returns The programs
  */
-export const getProgramsByUser = gql`
-  query ($address: String!, $chainId: Int!) {
+export const getProgramByUserAndTag = gql`
+  query ($address: String!, $chainId: Int!, $filterByTag: String!) {
     projects(
       filter: {
-        tags: { contains: "program" }
+        tags: { contains: [$filterByTag] }
         roles: { some: { address: { equalTo: $address } } }
-        and: { chainId: { equalTo: $chainId } }
+        chainId: { equalTo: $chainId }
       }
     ) {
       id
@@ -39,14 +39,13 @@ export const getProgramsByUser = gql`
  *
  * @returns The programs
  */
-export const getProgramById = gql`
-  query ($alloVersion: [String!]!, $programId: String!, $chainId: Int!) {
+export const getProgramByIdAndUser = gql`
+  query ($userAddress: String!, $programId: String!, $chainId: Int!) {
     projects(
       filter: {
-        tags: { equalTo: $alloVersion }
-        tags: { contains: "program" }
         id: { equalTo: $programId }
-        and: { chainId: { equalTo: $chainId } }
+        roles: { some: { address: { equalTo: $userAddress } } }
+        chainId: { equalTo: $chainId }
       }
     ) {
       id
@@ -90,6 +89,8 @@ export const getProjectById = gql`
       projectNumber
       registryAddress
       tags
+      nonce
+      anchorAddress
       roles {
         address
         role
@@ -130,6 +131,8 @@ export const getProjects = gql`
       projectNumber
       registryAddress
       tags
+      nonce
+      anchorAddress
     }
   }
 `;
@@ -173,6 +176,7 @@ export const getApplication = gql`
       totalAmountDonatedInUsd
       uniqueDonorsCount
       round {
+        strategyName
         donationsStartTime
         donationsEndTime
         applicationsStartTime
@@ -224,6 +228,8 @@ export const getProjectsByAddress = gql`
         registryAddress
         projectNumber
         tags
+        nonce
+        anchorAddress
       }
     }
   }
@@ -257,6 +263,8 @@ export const getProjectsAndRolesByAddress = gql`
       projectNumber
       tags
       id
+      nonce
+      anchorAddress
       createdAtBlock
       applications {
         id
@@ -334,6 +342,9 @@ export const getRoundWithApplications = gql`
         role
         address
       }
+      strategyId
+      strategyAddress
+      strategyName
     }
   }
 `;

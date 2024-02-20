@@ -36,7 +36,7 @@ import {
 import { GrantApplication, ProgressStatus } from "../../api/types";
 import { errorModalDelayMs } from "../../../constants";
 import moment from "moment";
-import { ROUND_PAYOUT_DIRECT } from "common";
+import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth");

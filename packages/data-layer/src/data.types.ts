@@ -3,7 +3,11 @@ import { RoundApplicationMetadata } from "./roundApplication.types";
 import { Address } from "viem";
 // TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
 // avoid further spaghetti dependencies. They should probably be relocated here.
-export type RoundPayoutType = "MERKLE" | "DIRECT";
+export type RoundPayoutType =
+  | "MERKLE"
+  | "DIRECT"
+  | "allov1.Direct"
+  | "allov1.QF";
 export type RoundVisibilityType = "public" | "private";
 
 export type ApplicationStatus =
@@ -104,23 +108,6 @@ export type ProjectRole = {
   projectId: string;
 };
 
-export type Tags = "allo-v1" | "program update";
-
-/**
- * The program type for v1
- **/
-
-export type Program = {
-  id: string;
-  chainId: number;
-  metadata: {
-    name: string;
-  };
-  metadataCid?: MetadataPointer;
-  tags: Tags[];
-  roles: AddressAndRole[];
-};
-
 /**
  * The project type for v2
  *
@@ -182,7 +169,7 @@ export type v2Project = {
    *
    * The tags are used to filter the projects based on the version of Allo.
    */
-  tags: [string];
+  tags: ("allo-v1" | "allo-v2" | "program")[];
   /**
    * The block the project was created at
    */
@@ -192,6 +179,18 @@ export type v2Project = {
    */
   updatedAtBlock: string;
   roles: AddressAndRole[];
+  nonce?: bigint;
+  anchorAddress?: string;
+};
+
+/**
+ * The program type for v1
+ **/
+
+export type Program = Omit<v2Project, "metadata"> & {
+  metadata: {
+    name: string;
+  };
 };
 
 /**
@@ -232,6 +231,7 @@ export type V2Round = {
   roundMetadataCid: string;
   applicationMetadata: RoundApplicationMetadata | null;
   applicationMetadataCid: string;
+  strategyId: string;
   projectId: string;
   strategyAddress: Address;
   strategyName: string;
@@ -433,6 +433,7 @@ export type Application = {
   totalDonationsCount: string;
   uniqueDonorsCount: number;
   round: {
+    strategyName: RoundPayoutType;
     donationsStartTime: string;
     donationsEndTime: string;
     applicationsStartTime: string;

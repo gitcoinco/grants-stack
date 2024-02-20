@@ -100,7 +100,7 @@ function Project() {
             </Link>
             {props.id &&
               props.owners &&
-              props.owners.includes(props.signerAddress!.toLowerCase()) && (
+              props.owners.includes(props.signerAddress!) && (
                 <Link
                   to={createEditPath()}
                   className="sm:w-auto mx-w-full ml-0"
