@@ -15,7 +15,7 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@allo-team/allo-v2-sdk": "^1.0.47",
+    "@allo-team/allo-v2-sdk": "^1.0.49",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@rainbow-me/rainbowkit": "^0.12.16",

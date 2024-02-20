@@ -7,16 +7,10 @@ import {
   RegistryAbi,
   AlloAbi,
   TransactionData,
+  DirectGrantsStrategyTypes,
+  DirectGrantsStrategy,
 } from "@allo-team/allo-v2-sdk";
-import {
-  Abi,
-  Address,
-  Hex,
-  encodeAbiParameters,
-  parseAbiParameters,
-  parseUnits,
-  zeroAddress,
-} from "viem";
+import { Abi, Address, Hex, parseUnits, zeroAddress } from "viem";
 import { AnyJson } from "../..";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
@@ -31,6 +25,12 @@ import {
 import { RoundCategory } from "../../types";
 import { CreatePoolArgs } from "@allo-team/allo-v2-sdk/dist/types";
 import { payoutTokens } from "../../payoutTokens";
+
+const STRATEGY_ADDRESSES = {
+  [RoundCategory.QuadraticFunding]:
+    "0xD13ec67938B5E9Cb05A05D8e160daF02Ed5ea9C9",
+  [RoundCategory.Direct]: "0xaC3f288a7A3efA3D33d9Dd321ad31072915D155d",
+};
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -234,41 +234,51 @@ export class AlloV2 implements Allo {
         return roundIpfsResult;
       }
 
-      const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
-        {
-          useRegistryAnchor: true,
+      let initStrategyDataEncoded: Address;
+
+      if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
+        const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
+          {
+            useRegistryAnchor: true,
+            metadataRequired: true,
+            registrationStartTime: dateToEthereumTimestamp(
+              args.roundData.applicationsStartTime
+            ), // in seconds, must be in future
+            registrationEndTime: dateToEthereumTimestamp(
+              args.roundData.applicationsEndTime
+            ), // in seconds, must be after registrationStartTime
+            allocationStartTime: dateToEthereumTimestamp(
+              args.roundData.roundStartTime
+            ), // in seconds, must be after registrationStartTime
+            allocationEndTime: dateToEthereumTimestamp(
+              args.roundData.roundEndTime
+            ), // in seconds, must be after allocationStartTime
+            allowedTokens: [zeroAddress], // allow all tokens
+          };
+
+        const strategy = new DonationVotingMerkleDistributionStrategy({
+          chain: this.chainId,
+        });
+
+        initStrategyDataEncoded =
+          await strategy.getInitializeData(initStrategyData);
+      } else if (args.roundData.roundCategory === RoundCategory.Direct) {
+        const initStrategyData: DirectGrantsStrategyTypes.InitializeParams = {
+          registryGating: true,
           metadataRequired: true,
-          registrationStartTime: dateToEthereumTimestamp(
-            args.roundData.applicationsStartTime
-          ), // in seconds, must be in future
-          registrationEndTime: dateToEthereumTimestamp(
-            args.roundData.applicationsEndTime
-          ), // in seconds, must be after registrationStartTime
-          allocationStartTime: dateToEthereumTimestamp(
-            args.roundData.roundStartTime
-          ), // in seconds, must be after registrationStartTime
-          allocationEndTime: dateToEthereumTimestamp(
-            args.roundData.roundEndTime
-          ), // in seconds, must be after allocationStartTime
-          allowedTokens: [zeroAddress], // allow all tokens
+          grantAmountRequired: true,
         };
 
-      const initStrategyDataEncoded: `0x${string}` = encodeAbiParameters(
-        parseAbiParameters(
-          "(bool, bool, uint64, uint64, uint64, uint64, address[])"
-        ),
-        [
-          [
-            initStrategyData.useRegistryAnchor,
-            initStrategyData.metadataRequired,
-            initStrategyData.registrationStartTime,
-            initStrategyData.registrationEndTime,
-            initStrategyData.allocationStartTime,
-            initStrategyData.allocationEndTime,
-            initStrategyData.allowedTokens,
-          ],
-        ]
-      );
+        const strategy = new DirectGrantsStrategy({
+          chain: this.chainId,
+        });
+
+        initStrategyDataEncoded = strategy.getInitializeData(initStrategyData);
+      } else {
+        throw new Error(
+          `Unsupported round type ${args.roundData.roundCategory}`
+        );
+      }
 
       const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
       const payoutToken = payoutTokens.filter(
@@ -290,7 +300,7 @@ export class AlloV2 implements Allo {
 
       const createPoolArgs: CreatePoolArgs = {
         profileId,
-        strategy: "0xD13ec67938B5E9Cb05A05D8e160daF02Ed5ea9C9",
+        strategy: STRATEGY_ADDRESSES[args.roundData.roundCategory],
         initStrategyData: initStrategyDataEncoded,
         token: args.roundData.token,
         amount: matchAmount,
