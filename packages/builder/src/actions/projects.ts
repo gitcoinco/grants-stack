@@ -17,7 +17,7 @@ import { ProjectStats } from "../reducers/projects";
 import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getV1HashedProjectId } from "../utils/utils";
-import { fetchGrantData } from "./grantsMetadata";
+import { fetchGrantData, transformAndDispatchProject } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
@@ -44,7 +44,6 @@ interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
   payload: {
     chainIDs: ChainId[];
-    events: ProjectEventsMap;
   };
 }
 
@@ -153,12 +152,10 @@ export const projectsLoading = (chainIDs: ChainId[]): ProjectsLoadingAction => (
 
 export const projectsLoaded = (
   chainIDs: ChainId[],
-  events: ProjectEventsMap
 ): ProjectsLoadedAction => ({
   type: PROJECTS_LOADED,
   payload: {
     chainIDs,
-    events,
   },
 });
 
@@ -203,31 +200,25 @@ export const loadProjects =
       const state = getState();
       const { account } = state.web3;
 
-      const projectEventsMap = await dataLayer.getProjectsByAddress({
+      const projects = await dataLayer.getProjectsByAddress({
         address: account!.toLowerCase(),
         alloVersion: getConfig().allo.version,
         chainIds: chainIDs.map((id) => id.valueOf()),
       });
 
-      if (!projectEventsMap) {
-        dispatch(projectsLoaded(chainIDs, {}));
-        return;
-      }
-
-      if (withMetaData) {
-        Object.keys(projectEventsMap).forEach(async (id) => {
-          dispatch<any>(fetchGrantData(id, dataLayer));
+      if (projects && withMetaData) {
+        projects.map(project => {
+          dispatch<any>(transformAndDispatchProject(project.id, project));
         });
       }
 
-      dispatch(projectsLoaded(chainIDs, projectEventsMap));
+      dispatch(projectsLoaded(chainIDs));
     } catch (error) {
 
       datadogRum.addError(error, { chainIDs });
 
-      dispatch(projectsLoaded(chainIDs, {}));
+      dispatch(projectsLoaded(chainIDs));
 
-      /* TODO: Once ENS is deployed on PGN Mainnet and testnet, undo this */
       // @ts-expect-error
       if (chainIDs.includes(424) && error?.reason === "ENS name not configured") {
         return;

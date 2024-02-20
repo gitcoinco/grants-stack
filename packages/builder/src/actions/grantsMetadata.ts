@@ -1,6 +1,6 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { getConfig } from "common/src/config";
-import { AddressAndRole, DataLayer } from "data-layer";
+import { AddressAndRole, DataLayer, v2Project } from "data-layer";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { Metadata } from "../types";
@@ -105,39 +105,47 @@ export const fetchGrantData =
       }
 
       const { project } = result;
-
-      const item: Metadata = {
-        id,
-        title: project.metadata.title,
-        description: project.metadata.description,
-        website: project.metadata.website,
-        bannerImg: project.metadata.bannerImg,
-        logoImg: project.metadata.logoImg,
-        createdAt: project.metadata.createdAt,
-        updatedAt: project.metadata.createdAt, // todo: get this value
-        credentials: project.metadata.credentials,
-        protocol: project.metadata.protocol,
-        pointer: project.metadataCid,
-        userGithub: project.metadata.userGithub,
-        projectGithub: project.metadata.projectGithub,
-        projectTwitter: project.metadata.projectTwitter,
-      };
-
-      const ownerAddresses: `0x${string}`[] = project.roles
-        .filter((role: AddressAndRole) => role.role === "OWNER")
-        .map((role) => ethers.utils.getAddress(role.address));
-
-      dispatch(projectOwnersLoaded(id, ownerAddresses));
-
-      const anchorAddress = project.anchorAddress!;
-      dispatch(projectAnchorsLoaded(id, anchorAddress));
-
-      dispatch(grantMetadataFetched(item));
+      
+      dispatch<any>(transformAndDispatchProject(id, project));
     } catch (e) {
       datadogRum.addError(e);
       console.error("error fetching project by id", e);
       dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
     }
   };
+
+export const transformAndDispatchProject = (
+  id: string, project: v2Project
+) => async (dispatch: Dispatch) => {
+
+  const item: Metadata = {
+    id,
+    title: project.metadata.title,
+    description: project.metadata.description,
+    website: project.metadata.website,
+    bannerImg: project.metadata.bannerImg,
+    logoImg: project.metadata.logoImg,
+    createdAt: project.metadata.createdAt,
+    updatedAt: project.metadata.createdAt, // todo: get this value
+    credentials: project.metadata.credentials,
+    protocol: project.metadata.protocol,
+    pointer: project.metadataCid,
+    userGithub: project.metadata.userGithub,
+    projectGithub: project.metadata.projectGithub,
+    projectTwitter: project.metadata.projectTwitter,
+  };
+
+  const ownerAddresses: `0x${string}`[] = project.roles
+    .filter((role: AddressAndRole) => role.role === "OWNER")
+    .map((role) => ethers.utils.getAddress(role.address));
+
+  dispatch(projectOwnersLoaded(id, ownerAddresses));
+
+  const anchorAddress = project.anchorAddress!;
+  dispatch(projectAnchorsLoaded(id, anchorAddress));
+
+  dispatch(grantMetadataFetched(item));
+
+}
 
 export const unloadAll = grantsMetadataAllUnloaded;

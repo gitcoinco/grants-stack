@@ -324,7 +324,7 @@ export class DataLayer {
     address: string;
     alloVersion: AlloVersion;
     chainIds: number[];
-  }): Promise<ProjectEventsMap | undefined> {
+  }): Promise<v2Project[]> {
     const requestVariables = {
       address: address.toLowerCase(),
       version: alloVersion,
@@ -343,23 +343,7 @@ export class DataLayer {
 
     console.log("=====> projects", projects);
 
-    if (projects.length === 0) return undefined;
-
-    const projectEventsMap: ProjectEventsMap = {};
-
-    for (const project of projects) {
-      projectEventsMap[
-        `${project.chainId}:${project.registryAddress}:${
-          alloVersion === "allo-v2" ? project.id : project.projectNumber
-        }`
-      ] = {
-        createdAtBlock: Number(project.createdAtBlock),
-        // todo: fix once updatedAtBlock is available
-        updatedAtBlock: Number(project.createdAtBlock),
-      };
-    }
-
-    return projectEventsMap;
+    return projects;
   }
 
   /**

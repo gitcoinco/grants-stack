@@ -66,11 +66,11 @@ function Project() {
     }
   }, [dispatch, props.id, props.currentProject]);
 
-  useEffect(() => {
-    if (props.projectEvents === undefined) {
-      dispatch(loadAllChainsProjects(dataLayer, true));
-    }
-  }, [props.projectEvents, global, dispatch]);
+  // useEffect(() => {
+  //   if (props.projectEvents === undefined) {
+  //     dispatch(loadAllChainsProjects(dataLayer, true));
+  //   }
+  // }, [props.projectEvents, global, dispatch]);
 
   function createEditPath() {
     const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
