@@ -1,8 +1,9 @@
+import { useAllo } from "common";
+import { getConfig } from "common/src/config";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
-import { useAllo } from "common";
 import {
   resetApplication,
   submitApplication,
@@ -15,11 +16,15 @@ import {
   Status as ApplicationStatus,
 } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
-import { grantsPath, roundPath } from "../../routes";
+import { grantsPath, projectPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
+import { isInfinite } from "../../utils/components";
 import { applicationSteps } from "../../utils/steps";
-import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
+import {
+  ROUND_PAYOUT_DIRECT,
+  getProjectURIComponents,
+} from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -27,7 +32,6 @@ import ExitModal from "../base/ExitModal";
 import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import StatusModal from "../base/StatusModal";
 import Cross from "../icons/Cross";
-import { isInfinite } from "../../utils/components";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -66,6 +70,8 @@ function Apply() {
       : undefined;
     const showErrorModal =
       applicationError && applicationStatus === ApplicationStatus.Error;
+
+    console.log("applicationState", applicationState);
 
     return {
       roundState,
@@ -125,20 +131,32 @@ function Apply() {
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
-    if (props.applicationState?.status === ApplicationStatus.Sent) {
+    const isV2 = getConfig().allo.version === "allo-v2";
+    if (
+      props.applicationState &&
+      props.applicationState.status === ApplicationStatus.Sent
+    ) {
       timer = setTimeout(() => {
         dispatch(
           addAlert("success", applicationSuccessTitle, applicationSuccessBody)
         );
-        // todo: fix
-        // const {
-        //   chainId: projectChainId,
-        //   registryAddress,
-        //   id,
-        // } = getProjectURIComponents(
-        //   props.applicationState.projectsIDs[0].toString()
-        // );
-        // navigate(projectPath(projectChainId, registryAddress, id));
+        if (isV2) {
+          navigate(
+            projectPath(
+              chainId as string,
+              "0x",
+              props.applicationState.projectsIDs[0].toString()
+            )
+          );
+        } else {
+          const { chainId: projectChainId, id } = getProjectURIComponents(
+            props.applicationState.projectsIDs[0].toString()
+          );
+
+          // Note: this is a hack to navigate to the project page after the application is submitted
+          // todo: later remove the entire registry path from the url
+          navigate(projectPath(projectChainId, "0x", id));
+        }
       }, 1500);
     }
 
