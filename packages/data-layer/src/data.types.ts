@@ -206,6 +206,7 @@ export type Program = Omit<v2Project, "metadata"> & {
  */
 export type ProjectApplication = {
   id: string;
+  projectId: string;
   chainId: number;
   roundId: string;
   status: ApplicationStatus;

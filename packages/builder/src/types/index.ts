@@ -24,6 +24,8 @@ export interface Metadata {
   credentials?: ProjectCredentials;
   createdAt?: number;
   updatedAt?: number;
+  chainId: number;
+  linkedChains?: number[];
 }
 
 export interface Project {

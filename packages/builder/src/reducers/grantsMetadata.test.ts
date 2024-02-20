@@ -34,6 +34,7 @@ describe("grantsMetaData reducer", () => {
       title: "Title",
       description: "Description",
       website: "www.grant.com",
+      chainId: 1,
     };
     store.dispatch(
       grantMetadataFetched({

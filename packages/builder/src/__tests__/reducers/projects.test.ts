@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { ApplicationStatus, RoundVisibilityType } from "data-layer";
+import { ApplicationStatus, ProjectApplication, RoundVisibilityType } from "data-layer";
 import {
   ProjectsState,
   Status,
@@ -15,6 +15,7 @@ describe("projects reducer", () => {
     state = initialProjectsState;
   });
 
+
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
     const initialState = {
       ...state,
@@ -22,6 +23,7 @@ describe("projects reducer", () => {
         "1": [
           {
             id: "1",
+            projectId: "1",
             chainId: 1,
             roundId: addressFrom(1),
             status: "PENDING" as ApplicationStatus,
@@ -53,6 +55,7 @@ describe("projects reducer", () => {
         "2": [
           {
             id: "1",
+            projectId: "1",
             chainId: 1,
             roundId: addressFrom(2),
             status: "PENDING" as ApplicationStatus,
@@ -97,6 +100,7 @@ describe("projects reducer", () => {
           inReview: false,
           chainId: 1,
           id: "1",
+          projectId: "1",
           metadataCid: "0x1",
           metadata: {},
           round: {
@@ -135,6 +139,7 @@ describe("projects reducer", () => {
             inReview: false,
             chainId: 1,
             id: "1",
+            projectId: "1",
             metadataCid: "0x1",
             metadata: {},
             round: {
@@ -172,6 +177,7 @@ describe("projects reducer", () => {
           inReview: false,
           chainId: 1,
           id: "2",
+          projectId: "2",
           metadataCid: "0x2",
           metadata: {},
           round: {
@@ -285,6 +291,7 @@ describe("projects reducer", () => {
             inReview: false,
             chainId: 1,
             id: "1",
+            projectId: "1",
             metadataCid: "0x1",
             metadata: {},
             round: {
@@ -316,6 +323,7 @@ describe("projects reducer", () => {
             inReview: false,
             chainId: 1,
             id: "1",
+            projectId: "1",
             metadataCid: "0x1",
             metadata: {},
             round: {
@@ -345,6 +353,7 @@ describe("projects reducer", () => {
             inReview: false,
             chainId: 1,
             id: "2",
+            projectId: "2",
             metadataCid: "0x2",
             metadata: {},
             round: {
@@ -374,6 +383,7 @@ describe("projects reducer", () => {
             inReview: false,
             chainId: 1,
             id: "3",
+            projectId: "3",
             metadataCid: "0x3",
             metadata: {},
             round: {
@@ -403,6 +413,7 @@ describe("projects reducer", () => {
             inReview: false,
             chainId: 1,
             id: "4",
+            projectId: "4",
             metadataCid: "0x4",
             metadata: {},
             round: {
@@ -434,6 +445,7 @@ describe("projects reducer", () => {
             inReview: false,
             chainId: 1,
             id: "1",
+            projectId: "1",
             metadataCid: "0x1",
             metadata: {},
             round: {
@@ -503,7 +515,7 @@ describe("projects reducer", () => {
     // start loading chain 0
     const state1: ProjectsState = projectsReducer(state, {
       type: "PROJECTS_LOADING",
-      payload: 10,
+      payload: [10],
     });
 
     expect(state1.status).toEqual(Status.Loading);
@@ -512,7 +524,7 @@ describe("projects reducer", () => {
     // start loading chain 1
     const state2: ProjectsState = projectsReducer(state1, {
       type: "PROJECTS_LOADING",
-      payload: 1,
+      payload: [1],
     });
 
     expect(state2.status).toEqual(Status.Loading);
@@ -522,8 +534,7 @@ describe("projects reducer", () => {
     const state3: ProjectsState = projectsReducer(state2, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 1,
-        events: {},
+        chainIDs: [1],
       },
     });
 
@@ -534,8 +545,7 @@ describe("projects reducer", () => {
     const state4: ProjectsState = projectsReducer(state3, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 10,
-        events: {},
+        chainIDs: [10],
       },
     });
 

@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
-import { ProjectEventsMap } from "data-layer";
 import { when } from "jest-when";
 import { Store } from "redux";
 import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
@@ -24,22 +23,13 @@ jest.mock("../../../actions/rounds");
 jest.mock("../../../actions/roundApplication");
 jest.mock("../../../hooks/useLocalStorage");
 
-const projectEventsMap: ProjectEventsMap = {
-  "1:1:1": {
-    createdAtBlock: 1111,
-    updatedAtBlock: 1112,
-  },
-  "1:1:2": {
-    createdAtBlock: 2222,
-    updatedAtBlock: 2223,
-  },
-};
 
 const projectsMetadata: Metadata[] = [
   {
     protocol: 1,
     pointer: "0x1234",
-    id: "1:1:1",
+    id: "1",
+    chainId: 1,
     title: "First Project",
     description: "",
     website: "",
@@ -47,7 +37,8 @@ const projectsMetadata: Metadata[] = [
   {
     protocol: 2,
     pointer: "0x1234",
-    id: "1:1:2",
+    id: "2",
+    chainId: 1,
     title: "Second Project",
     description: "",
     website: "",
@@ -74,7 +65,7 @@ describe("<List />", () => {
 
     test("should not be called if it's already loading", async () => {
       const store = setupStore();
-      store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
+      store.dispatch({ type: "PROJECTS_LOADING", payload: [10] });
 
       renderWrapped(<List />, store);
 
@@ -106,7 +97,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 10,
+          chainIDs: [10],
           events: {
             "1:1:1": {
               createdAtBlock: 1111,
@@ -139,13 +130,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 10,
-          events: {
-            "1:1:1": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
-          },
+          chainIDs: [10]
         },
       });
       store.dispatch({
@@ -174,9 +159,9 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 10,
+          chainIDs: [10],
           events: {
-            "1:1:1": {
+            "1": {
               createdAtBlock: 1111,
               updatedAtBlock: 1112,
             },
@@ -206,7 +191,7 @@ describe("<List />", () => {
 
       store.dispatch({
         type: "PROJECTS_LOADED",
-        payload: { chainID: 10, events: {} },
+        payload: { chainIDs: [10] },
       });
 
       renderWrapped(<List />, store);
@@ -219,7 +204,7 @@ describe("<List />", () => {
     describe("projects", () => {
       test("should show a loading element", async () => {
         const store = setupStore();
-        store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: [10] });
 
         renderWrapped(<List />, store);
 
@@ -231,7 +216,7 @@ describe("<List />", () => {
         const store = setupStore();
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10, events: {} },
+          payload: { chainIDs: [10] },
         });
 
         renderWrapped(<List />, store);
@@ -248,7 +233,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10, events: projectEventsMap },
+          payload: { chainIDs: [10] },
         });
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -274,7 +259,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10, events: projectEventsMap },
+          payload: { chainID: 10 },
         });
 
         store.dispatch({
@@ -367,7 +352,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10, events: projectEventsMap },
+          payload: { chainID: 10 },
         });
 
         store.dispatch({
@@ -399,12 +384,6 @@ describe("<List />", () => {
             type: "PROJECTS_LOADED",
             payload: {
               chainID: 10,
-              events: {
-                "1:1:1": {
-                  createdAtBlock: 1111,
-                  updatedAtBlock: 1112,
-                },
-              },
             },
           });
 
