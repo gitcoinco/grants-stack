@@ -89,6 +89,7 @@ export const transformAndDispatchProject =
       projectGithub: project.metadata.projectGithub,
       projectTwitter: project.metadata.projectTwitter,
       chainId: project.chainId,
+      linkedChains: project.linkedChains,
     };
 
     const ownerAddresses: `0x${string}`[] = project.roles

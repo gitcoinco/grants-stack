@@ -199,13 +199,13 @@ export const getApplicationsByRoundIdAndProjectIds = gql`
   query Application(
     $chainId: Int!
     $roundId: String!
-    $projectIds: [String]!
+    $projectIds: [String!]!
   ) {
     applications(
       filter: {
-        chainId: { equal: $chainId },
+        chainId: { equalTo: $chainId },
         roundId: { equalTo: $roundId },
-        projectIds: { in: $projectIds }
+        projectId: { in: $projectIds }
       }
     ) {
       id
