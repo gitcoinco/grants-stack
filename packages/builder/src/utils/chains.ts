@@ -19,6 +19,7 @@ import {
   customPolygon,
   customMainnet,
   sepolia,
+  scroll,
 } from "common/src/chains";
 import { getConfig } from "common/src/config";
 import { polygonMumbai } from "@wagmi/core/chains";
@@ -34,6 +35,7 @@ const availableChains: { [key: string]: Chain } = {
   avalanche,
   polygon: customPolygon,
   base,
+  scroll,
   fantomTestnet,
   pgnTestnet,
   arbitrumGoerli,
@@ -55,6 +57,7 @@ const stagingChains = [
   pgn,
   arbitrum,
   base,
+  scroll,
   arbitrumGoerli,
   customPolygon,
   polygonMumbai,
@@ -75,6 +78,7 @@ const productionChains = [
   customPolygon,
   zkSyncEraMainnet,
   base,
+  scroll,
 ];
 
 export function getEnabledChainsAndProviders() {

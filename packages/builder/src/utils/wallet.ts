@@ -6,6 +6,7 @@ import PGNIcon from "common/src/icons/PublicGoodsNetwork.svg";
 import AVAXIcon from "common/src/icons/AVAX.svg";
 import POLIcon from "common/src/icons/pol-logo.svg";
 import ZkSyncIcon from "common/src/icons/zksync-logo.svg";
+import ScrollIcon from "common/src/icons/scroll-logo.svg";
 import FantomFTMLogo from "common/src/assets/fantom-ftm-logo.png";
 import {
   EthDiamondGlyph,
@@ -48,6 +49,7 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   zkSyncEraMainnet: "zkSync Era Mainnet",
   zkSyncEraTestnet: "zkSync Era Testnet",
   base: "Base",
+  scroll: "Scroll",
   sepolia: "sepolia",
 };
 
@@ -70,6 +72,7 @@ export const networkIcon: { [key in ChainName]: string } = {
   zkSyncEraMainnet: ZkSyncIcon,
   zkSyncEraTestnet: ZkSyncIcon,
   base: EthDiamondGlyph,
+  scroll: ScrollIcon,
   sepolia: EthDiamondGlyph,
 };
 
@@ -92,6 +95,7 @@ export const payoutIcon: { [key in ChainName]: string } = {
   zkSyncEraMainnet: ZkSyncIcon,
   zkSyncEraTestnet: ZkSyncIcon,
   base: EthDiamondGlyph,
+  scroll: ScrollIcon,
   sepolia: EthDiamondGlyph,
 };
 
