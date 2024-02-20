@@ -264,7 +264,7 @@ export class AlloV2 implements Allo {
 
         const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
         const payoutToken = payoutTokens.filter(
-          (t) => t.address.toLowerCase() === alloToken.toLowerCase()
+          (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
         )[0];
 
         matchAmount = parseUnits(tokenAmount.toString(), payoutToken.decimal);
