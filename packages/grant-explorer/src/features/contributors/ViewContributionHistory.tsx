@@ -14,7 +14,7 @@ import {
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
-import { VotingToken } from "common/dist/types";
+import { VotingToken } from "common";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")

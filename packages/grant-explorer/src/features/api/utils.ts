@@ -8,12 +8,12 @@ import {
   ROUND_PAYOUT_MERKLE,
   ROUND_PAYOUT_MERKLE_OLD,
   RoundPayoutType,
+  VotingToken,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
 import { useSearchParams } from "react-router-dom";
 import { getAddress, zeroAddress } from "viem";
 import { ethers } from "ethers";
-import { VotingToken } from "common/dist/types";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();

@@ -7,10 +7,9 @@ import React, { useEffect, useState } from "react";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
-import { ChainId, useTokenPrice } from "common";
+import { ChainId, useTokenPrice, VotingToken } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
-import { VotingToken } from "common/dist/types";
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;

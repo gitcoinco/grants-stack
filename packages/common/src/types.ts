@@ -59,6 +59,7 @@ export type InputType =
 export type DeepRequired<T> = {
   [K in keyof T]: Required<DeepRequired<T[K]>>;
 };
+
 export type VotingToken = {
   name: string;
   chainId: ChainId;

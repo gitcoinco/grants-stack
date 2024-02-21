@@ -4,10 +4,9 @@ import DefaultLogoImage from "../../../assets/default_logo.png";
 import { Link } from "react-router-dom";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { renderToPlainText } from "common";
+import { renderToPlainText, VotingToken } from "common";
 import { Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
-import { VotingToken } from "common/dist/types";
 
 export function ProjectInCart(
   props: React.ComponentProps<"div"> & {

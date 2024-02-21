@@ -1,7 +1,7 @@
 import React from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { formatUnits } from "viem";
-import { VotingToken } from "common/dist/types";
+import { VotingToken } from "common";
 
 type ConfirmationModalBodyProps = {
   projectsCount: number;

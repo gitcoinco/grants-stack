@@ -12,7 +12,7 @@ import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor, usePassport } from "../../api/passport";
-import { VotingToken } from "common/dist/types";
+import { VotingToken } from "common";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {

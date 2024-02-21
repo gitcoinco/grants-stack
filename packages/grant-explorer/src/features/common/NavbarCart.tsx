@@ -1,14 +1,20 @@
-import { Project } from "../api/types";
+import { Project } from "data-layer";
 import tw from "tailwind-styled-components";
-import { Link } from "react-router-dom";
 
 export default function NavbarCart(props: { cart: Project[] }) {
   const projectCount = props.cart.length;
 
   return (
-    <Link data-testid="navbar-cart" className="relative flex-row" to={"/cart"}>
+    <div
+      data-testid="navbar-cart"
+      className="relative flex-row"
+      onClick={() => {
+        const url = "#/cart";
+        window.open(url, "_blank");
+      }}
+    >
       <QuickViewIcon count={projectCount} />
-    </Link>
+    </div>
   );
 }
 

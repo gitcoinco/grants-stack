@@ -6,10 +6,9 @@ import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
-import { ChainId } from "common";
+import { ChainId, VotingToken } from "common";
 import { formatUnits } from "viem";
 import { ContributionWithTimestamp } from "../api/round";
-import { VotingToken } from "common/dist/types";
 
 export function DonationsTable(props: {
   contributions: { chainId: ChainId; data: ContributionWithTimestamp[] }[];

@@ -1,10 +1,9 @@
-import { ChainId } from "common";
+import { ChainId, VotingToken } from "common";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartProject } from "./features/api/types";
 import { votingTokensMap } from "./features/api/utils";
 import { zeroAddress } from "viem";
-import { VotingToken } from "common/dist/types";
 
 interface CartState {
   projects: CartProject[];

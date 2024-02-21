@@ -12,7 +12,7 @@ import {
 } from "viem";
 import { CartProject } from "./types";
 import { WalletClient } from "wagmi";
-import { VotingToken } from "common/dist/types";
+import { VotingToken } from "common";
 
 type SignPermitProps = {
   walletClient: WalletClient;
