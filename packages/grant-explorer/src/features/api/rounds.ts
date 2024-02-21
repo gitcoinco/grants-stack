@@ -14,12 +14,14 @@ export const useRounds = (
     // same, cache will be used instead of new requests)
     ["rounds", chainIds, variables],
     async () => {
-      const spamRounds = await fetchSpamRounds();
-      const { rounds } = await dataLayer.getRounds({
-        ...variables,
-        first: 100,
-        chainIds,
-      });
+      const [spamRounds, { rounds }] = await Promise.all([
+        fetchSpamRounds(),
+        dataLayer.getRounds({
+          ...variables,
+          first: 100,
+          chainIds,
+        }),
+      ]);
 
       return rounds.filter(
         (round) => !spamRounds[round.chainId]?.[round.id.toLowerCase()]

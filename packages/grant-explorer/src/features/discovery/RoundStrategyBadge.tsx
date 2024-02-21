@@ -3,12 +3,12 @@ import {
   ROUND_PAYOUT_DIRECT_OLD,
   ROUND_PAYOUT_MERKLE,
   ROUND_PAYOUT_MERKLE_OLD,
-  RoundPayoutType,
+  RoundPayoutTypeNew,
 } from "common";
 import { getRoundType } from "../api/utils";
 import { Badge } from "../common/styles";
 
-type Props = { strategyName: RoundPayoutType };
+type Props = { strategyName: RoundPayoutTypeNew };
 
 const colorOptions = {
   [ROUND_PAYOUT_MERKLE_OLD]: "blue",

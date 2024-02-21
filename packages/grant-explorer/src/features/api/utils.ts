@@ -7,7 +7,7 @@ import {
   ROUND_PAYOUT_DIRECT_OLD,
   ROUND_PAYOUT_MERKLE,
   ROUND_PAYOUT_MERKLE_OLD,
-  RoundPayoutType,
+  RoundPayoutTypeNew,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
 import { useSearchParams } from "react-router-dom";
@@ -860,7 +860,7 @@ export const isDirectRound = (round: Round) =>
 export const isInfiniteDate = (roundTime: Date) =>
   roundTime.toString() === "Invalid Date";
 
-export const getRoundType = (payoutStrategyName: RoundPayoutType) => {
+export const getRoundType = (payoutStrategyName: RoundPayoutTypeNew) => {
   switch (payoutStrategyName) {
     // @ts-expect-error support old rounds
     case ROUND_PAYOUT_MERKLE_OLD:
