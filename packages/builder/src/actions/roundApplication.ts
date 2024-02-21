@@ -159,6 +159,8 @@ const applyToRound =
       metadata: signedApplication as unknown as AnyJson,
     });
 
+    console.log("Result", result);
+
     // Apply To Round
     await result
       .on("ipfs", (res) => {
@@ -211,7 +213,12 @@ const applyToRound =
   };
 
 export const submitApplication =
-  (roundId: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
+  (
+    roundId: string,
+    formInputs: RoundApplicationAnswers,
+    allo: Allo,
+    createLinkedProject: boolean
+  ) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const roundState = state.rounds[roundId];
@@ -359,34 +366,23 @@ export const submitApplication =
       ? (state.projects.anchor![projectID] as Hex)
       : projectID;
 
-    const createLinkedProject =
-      Number(projectMetadata.chainId) !== Number(chainID) &&
-      (!projectMetadata.linkedChains ||
-        !projectMetadata.linkedChains.includes(Number(chainID)));
-
-    console.log("CHAIN ID", chainID);
-    console.log("PROJECT METADATA", projectMetadata);
-    console.log("===> A", Number(projectMetadata.chainId) !== Number(chainID));
-    console.log(
-      "===> B",
-      !projectMetadata.linkedChains ||
-        !projectMetadata.linkedChains.includes(Number(chainID))
-    );
-    console.log("===> C", createLinkedProject);
-
     if (createLinkedProject) {
-      console.log("Creating Linked Project");
-
-      // TODO: Configure how to pass nonce
-
       // Create Linked Project
       const result = allo.createProject({
-        name: projectMetadata.name,
+        name: projectMetadata.title,
         metadata: {
-          registryAddress: projectMetadata.registryAddress,
-          chainId: Number(projectMetadata.chainId),
+          canonical: {
+            registryAddress: projectMetadata.registryAddress,
+            chainId: Number(projectMetadata.chainId),
+          },
         },
         nonce: projectMetadata.nonce,
+      });
+
+      dispatch({
+        type: ROUND_APPLICATION_LOADING,
+        roundAddress: roundId,
+        status: Status.CreateProject,
       });
 
       await result
@@ -406,6 +402,12 @@ export const submitApplication =
             console.error("profile creation: Transaction Error", res.error);
             datadogRum.addError(res.error);
             datadogLogs.logger.warn("transaction error");
+            dispatchAndLogApplicationError(
+              dispatch,
+              roundId,
+              "error creating linked project",
+              Status.SigningApplication
+            );
           }
         })
         .on("transactionStatus", async (res) => {

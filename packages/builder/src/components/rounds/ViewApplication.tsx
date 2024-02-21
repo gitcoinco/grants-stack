@@ -239,10 +239,21 @@ function ViewApplication() {
               }
               showErrorModal={props.showErrorModal || false}
               round={props.round}
-              onSubmit={(answers: RoundApplicationAnswers) => {
-                dispatch(submitApplication(props.round!.id, answers, allo));
+              onSubmit={(
+                answers: RoundApplicationAnswers,
+                createLinkedProject: boolean
+              ) => {
+                dispatch(
+                  submitApplication(
+                    props.round!.id,
+                    answers,
+                    allo,
+                    createLinkedProject
+                  )
+                );
               }}
               readOnly
+              setCreateLinkedProject={() => {}}
             />
           )}
         </div>

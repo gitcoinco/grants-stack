@@ -66,14 +66,16 @@ export default function Form({
   showErrorModal,
   readOnly,
   publishedApplication,
+  setCreateLinkedProject,
 }: {
   roundApplication: RoundApplicationMetadata;
   round: Round;
-  onSubmit?: (answers: RoundApplicationAnswers) => void;
+  onSubmit?: (answers: RoundApplicationAnswers, createProfile: boolean) => void;
   onChange?: (answers: RoundApplicationAnswers) => void;
   showErrorModal: boolean;
   readOnly?: boolean;
   publishedApplication?: any;
+  setCreateLinkedProject: (createLinkedProject: boolean) => void;
 }) {
   const dispatch = useDispatch();
   const { chains } = useNetwork();
@@ -112,10 +114,16 @@ export default function Form({
   }, shallowEqual);
 
   let selectedProjectMetadata: Metadata | undefined;
+  let createLinkedProject = false;
 
   if (selectedProjectID !== undefined && selectedProjectID !== "") {
     selectedProjectMetadata =
       props.allProjectMetadata[selectedProjectID]?.metadata;
+    createLinkedProject =
+      Number(selectedProjectMetadata!.chainId) !== Number(props.chainID) &&
+      (!selectedProjectMetadata!.linkedChains ||
+        !selectedProjectMetadata!.linkedChains.includes(Number(props.chainID)));
+    setCreateLinkedProject(createLinkedProject);
   }
 
   const twitterCredentialValidation = useValidateCredential(
@@ -865,7 +873,7 @@ export default function Form({
           confirmText="Proceed"
           cancelText="Cancel"
           confirmHandler={() => {
-            if (onSubmit) onSubmit(answers);
+            if (onSubmit) onSubmit(answers, createLinkedProject);
             setInfoModal(false);
           }}
           toggleModal={() => setInfoModal(!infoModal)}

@@ -20,7 +20,7 @@ import { grantsPath, projectPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
 import { isInfinite } from "../../utils/components";
-import { applicationSteps } from "../../utils/steps";
+import { getApplicationSteps } from "../../utils/steps";
 import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
@@ -40,6 +40,7 @@ function Apply() {
   const allo = useAllo();
   const isV2 = getConfig().allo.version === "allo-v2";
 
+  const [createLinkedProject, setCreateLinkedProject] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
   const [roundData, setRoundData] = useState<Round>();
   const [statusModalOpen, toggleStatusModal] = useState(false);
@@ -72,8 +73,6 @@ function Apply() {
     const versionError =
       (isV2 && roundId?.startsWith("0x")) ||
       (!isV2 && !roundId?.startsWith("0x"));
-
-    console.log("versionError", versionError);
 
     return {
       roundState,
@@ -165,6 +164,10 @@ function Apply() {
       toggleStatusModal(false);
     }
   }, [props.applicationStatus, props.applicationError]);
+
+  useEffect(() => {
+    // set createLinkedProject
+  }, [createLinkedProject]);
 
   if (props.roundStatus === RoundStatus.Error) {
     <div>
@@ -302,10 +305,21 @@ function Apply() {
                 roundApplication={props.applicationMetadata}
                 showErrorModal={props.showErrorModal || false}
                 round={props.round}
-                onSubmit={(answers: RoundApplicationAnswers) => {
-                  dispatch(submitApplication(props.round!.id, answers, allo));
+                onSubmit={(
+                  answers: RoundApplicationAnswers,
+                  createProfile: boolean
+                ) => {
+                  dispatch(
+                    submitApplication(
+                      props.round!.id,
+                      answers,
+                      allo,
+                      createProfile
+                    )
+                  );
                   toggleStatusModal(true);
                 }}
+                setCreateLinkedProject={setCreateLinkedProject}
               />
             )}
           </div>
@@ -319,7 +333,7 @@ function Apply() {
             open={statusModalOpen}
             onClose={toggleStatusModal}
             currentStatus={props.applicationState.status}
-            steps={applicationSteps}
+            steps={getApplicationSteps(createLinkedProject)}
             error={props.applicationState.error}
             title="Please hold while we submit your grant round application."
           />

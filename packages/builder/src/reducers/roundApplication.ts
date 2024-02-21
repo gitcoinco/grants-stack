@@ -16,6 +16,7 @@ export const enum Status {
   LitAuthentication,
   SigningApplication,
   UploadingMetadata,
+  CreateProject,
   SendingTx,
   Sent,
   Found,

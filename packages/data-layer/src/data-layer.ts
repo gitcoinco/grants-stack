@@ -12,7 +12,6 @@ import {
   Collection,
   Program,
   ProjectApplication,
-  ProjectEventsMap,
   Round,
   RoundOverview,
   SearchBasedProjectCategory,
@@ -341,8 +340,6 @@ export class DataLayer {
       response.projects,
     );
 
-    console.log("=====> projects", projects);
-
     return projects;
   }
 
@@ -404,29 +401,29 @@ export class DataLayer {
    * Returns a single application as identified by its id, round name and chain name
    * @param projectId
    */
-    async getApplicationsByRoundIdAndProjectIds({
+  async getApplicationsByRoundIdAndProjectIds({
+    chainId,
+    roundId,
+    projectIds,
+  }: {
+    chainId: number;
+    roundId: Lowercase<Address>;
+    projectIds: string[];
+  }): Promise<ProjectApplication[] | undefined> {
+    const requestVariables = {
       chainId,
       roundId,
       projectIds,
-    }: {
-      chainId: number;
-      roundId: Lowercase<Address>;
-      projectIds: string[];
-    }): Promise<ProjectApplication[] | undefined> {
-      const requestVariables = {
-        chainId,
-        roundId,
-        projectIds,
-      };
-  
-      const response: { applications: ProjectApplication[] } = await request(
-        this.gsIndexerEndpoint,
-        getApplicationsByRoundIdAndProjectIds,
-        requestVariables,
-      );
-  
-      return response.applications ?? [];
-    }
+    };
+
+    const response: { applications: ProjectApplication[] } = await request(
+      this.gsIndexerEndpoint,
+      getApplicationsByRoundIdAndProjectIds,
+      requestVariables,
+    );
+
+    return response.applications ?? [];
+  }
 
   async getProgramName({
     projectId,

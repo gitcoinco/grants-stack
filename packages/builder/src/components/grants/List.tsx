@@ -65,8 +65,6 @@ function ProjectsList() {
       applicationStartTime + 1000 < new Date().getTime() / 1000 &&
       applicationEndTime - 1000 > new Date().getTime() / 1000;
 
-    console.log("state", state);
-
     return {
       status: state.projects.status,
       loading: state.projects.status === Status.Loading,
@@ -84,6 +82,7 @@ function ProjectsList() {
 
   useEffect(() => {
     dispatch(unloadAll());
+    dispatch(loadAllChainsProjects(dataLayer, true));
   }, []);
 
   useEffect(() => {
@@ -102,10 +101,6 @@ function ProjectsList() {
   useEffect(() => {
     if (roundToApply && props.projectIDs.length > 0) {
       const { chainID, roundAddress } = parseRoundToApply(roundToApply);
-
-      console.log("chainID", chainID);
-      console.log("roundAddress", roundAddress);
-      console.log("props.projectIDs", props.projectIDs);
 
       // not loaded yet
       if (
