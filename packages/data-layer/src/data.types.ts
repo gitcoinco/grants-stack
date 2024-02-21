@@ -186,7 +186,13 @@ export type v2Project = {
   roles: AddressAndRole[];
   nonce?: bigint;
   anchorAddress?: string;
+  /**
+   * The type of the project - `CANONICAL` or `LINKED`
+   */
   projectType: ProjectType;
+  /**
+   * The linked chains to the canonical project
+   */
   linkedChains?: number[];
 };
 

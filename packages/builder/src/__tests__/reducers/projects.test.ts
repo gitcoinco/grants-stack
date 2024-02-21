@@ -207,6 +207,7 @@ describe("projects reducer", () => {
       "1": [
         {
           roundId: addressFrom(1),
+          projectId: "1",
           status: "PENDING" as ApplicationStatus,
           inReview: false,
           chainId: 1,
@@ -238,6 +239,7 @@ describe("projects reducer", () => {
       "2": [
         {
           roundId: addressFrom(2),
+          projectId: "2",
           status: "APPROVED" as ApplicationStatus,
           inReview: false,
           chainId: 1,
@@ -481,6 +483,7 @@ describe("projects reducer", () => {
 
     expect(newState.applications!["2"][2]).toEqual({
       roundId: "0x3",
+      projectId: "3",
       status: "APPROVED" as ApplicationStatus,
       inReview: false,
       chainId: 1,

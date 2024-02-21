@@ -1,5 +1,13 @@
 import { v2Project } from ".";
 
+/**
+ * Merges canonical and linked projects into a single array of projects
+ * where linked projects are linked to their canonical project by chian ID.
+ *
+ * @param projects - Array of v2 projects
+ *
+ * @returns - Array of merged v2 projects
+ */
 export const mergeCanonicalAndLinkedProjects = (projects: v2Project[]) => {
   const canonicalProjects = projects.filter(
     (project) => project.projectType === "CANONICAL",
@@ -8,19 +16,19 @@ export const mergeCanonicalAndLinkedProjects = (projects: v2Project[]) => {
   const linkedProjects = projects.filter(
     (project) => project.projectType === "LINKED",
   );
-  const tmpProjects: Record<string, v2Project> = {};
+  const allProjects: Record<string, v2Project> = {};
   for (const project of canonicalProjects) {
-    tmpProjects[project.id] = project;
+    allProjects[project.id] = project;
   }
 
   for (const project of linkedProjects) {
-    if (tmpProjects[project.id]) {
-      if (!tmpProjects[project.id].linkedChains) {
-        tmpProjects[project.id].linkedChains = [];
+    if (allProjects[project.id]) {
+      if (!allProjects[project.id].linkedChains) {
+        allProjects[project.id].linkedChains = [];
       }
-      tmpProjects[project.id].linkedChains?.push(project.chainId);
+      allProjects[project.id].linkedChains?.push(project.chainId);
     }
   }
 
-  return Object.values(tmpProjects);
+  return Object.values(allProjects);
 };
