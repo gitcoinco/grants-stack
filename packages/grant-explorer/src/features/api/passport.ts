@@ -18,6 +18,7 @@ export type { PassportResponse };
 export function usePassport({ address }: { address: string | undefined }) {
   const { chain } = useNetwork();
   const chainId = chain?.id || ChainId.MAINNET;
+  // fetch passport community id based on chain id
   const PASSPORT_COMMUNITY_ID = chainToPassportCommunityIdMap(chainId);
   const swr = useSWR<PassportResponse, Response, () => [string, string] | null>(
     () =>
