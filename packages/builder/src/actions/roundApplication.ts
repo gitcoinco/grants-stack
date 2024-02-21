@@ -159,8 +159,6 @@ const applyToRound =
       metadata: signedApplication as unknown as AnyJson,
     });
 
-    console.log("Result", result);
-
     // Apply To Round
     await result
       .on("ipfs", (res) => {
