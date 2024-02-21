@@ -26,6 +26,7 @@ import {
   isInfiniteDate,
   votingTokens,
 } from "../api/utils";
+import { PassportWidget } from "../common/PassportWidget";
 
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -47,7 +48,7 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 const builderURL = process.env.REACT_APP_BUILDER_URL;
 import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
-import { useToken } from "wagmi";
+import { useAccount, useToken } from "wagmi";
 import { getAddress } from "viem";
 import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
@@ -186,6 +187,7 @@ function AfterRoundStart(props: {
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
   const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
+  const { address: walletAddress } = useAccount();
 
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
@@ -306,6 +308,11 @@ function AfterRoundStart(props: {
       <div className="relative top-28 lg:mx-20 px-4 py-7 h-screen">
         <div className="flex flex-col pb-4" data-testid="bread-crumbs">
           <Breadcrumb items={breadCrumbs} />
+          {walletAddress && (
+            <div data-testid="passport-widget">
+              <PassportWidget />
+            </div>
+          )}
         </div>
         <main>
           <div className="flex flex-col md:items-center md:justify-between md:gap-8 md:flex-row md:mb-0 mb-4">
