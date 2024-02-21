@@ -1,5 +1,6 @@
 import { ChainId } from "common";
 import { RoundGetRound } from "data-layer";
+import { zeroAddress } from "viem";
 
 export function createRoundLoadingData(length = 4): RoundGetRound[] {
   return Array.from({ length }).map((_, i) => ({
@@ -14,20 +15,20 @@ export function createRoundLoadingData(length = 4): RoundGetRound[] {
     applicationsEndTime: "0",
     donationsStartTime: "0",
     donationsEndTime: "0",
-    matchAmount: "",
-    matchTokenAddress: "0",
+    matchAmountInUsd: "",
+    matchTokenAddress: zeroAddress,
     strategyName: "allov1.QF",
     roundMetadata: {
       name: "Round",
       eligibility: {
         description: "",
       },
-      programContractAddress: "",
+      programContractAddress: zeroAddress,
     },
     roundMetadataCid: "",
     applications: [],
     strategyId: "",
-    strategyAddress: "",
+    strategyAddress: zeroAddress,
     tags: [],
   }));
 }

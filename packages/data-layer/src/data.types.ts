@@ -459,6 +459,7 @@ export type RoundGetRound = {
   applicationsEndTime: string;
   donationsStartTime: string;
   donationsEndTime: string;
+  matchAmountInUsd: number;
   matchAmount: string;
   matchTokenAddress: string;
   strategyId: string;

@@ -49,7 +49,12 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...{ ...activeRounds, data: filteredActiveRounds }}
+          {...{
+            ...activeRounds,
+            data: filteredActiveRounds.sort(
+              (a, b) => b.matchAmountInUsd - a.matchAmountInUsd
+            ),
+          }}
           loadingCount={4}
           maxCount={6}
           getItemClassName={(_, i) =>

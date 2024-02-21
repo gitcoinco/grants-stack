@@ -23,7 +23,7 @@ export function RoundsGrid({
   }
   return (
     <div className="md:grid space-y-4 md:space-y-0 md:grid-cols-3 gap-6">
-      {(data ?? createRoundLoadingData(loadingCount))
+      {(data && data.length > 0 ? data : createRoundLoadingData(loadingCount))
         ?.slice(0, maxCount)
         .map((round, i) => (
           <div key={round?.id} className={getItemClassName?.(round, i)}>

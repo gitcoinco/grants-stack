@@ -126,6 +126,7 @@ export const makeRoundOverviewData = (
     applicationsEndTime: makeTimestamp(10),
     donationsStartTime: makeTimestamp(20),
     donationsEndTime: makeTimestamp(30),
+    matchAmountInUsd: 1000000000000000000000000,
     matchAmount: "1000000000000000000000000",
     matchTokenAddress: faker.finance.ethereumAddress(),
     roundMetadata: makeRoundMetadata(roundMetadataOverrides),

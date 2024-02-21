@@ -305,6 +305,7 @@ export const getRoundsQuery = gql`
       applicationsEndTime
       donationsStartTime
       donationsEndTime
+      matchAmountInUsd
       matchAmount
       matchTokenAddress
       strategyId
