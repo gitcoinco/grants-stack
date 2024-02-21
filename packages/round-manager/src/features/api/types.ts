@@ -7,7 +7,7 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
 import { RoundVisibilityType } from "common";
-import { Address } from  "viem";
+import { Address } from "viem";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -95,6 +95,10 @@ export interface Program {
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets: Array<string>;
+  /**
+   * Address which created the program
+   */
+  createdByAddress?: string;
   /**
    * Network Chain Information
    */
@@ -253,6 +257,10 @@ export interface Round {
   finalized: boolean;
   protocolFeePercentage?: number;
   roundFeePercentage?: number;
+  /**
+   * CreatedByAddress
+   */
+  createdByAddress?: string;
 }
 
 export type MatchingStatsData = {

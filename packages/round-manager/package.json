@@ -67,7 +67,7 @@
     "https-browserify": "^1.0.0",
     "jest-fetch-mock": "^3.0.3",
     "jszip": "^3.10.1",
-    "lit-js-sdk-old-w-pgn": "^1.1.256",
+    "lit-js-sdk-old-w-pgn": "^1.1.257",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
