@@ -312,6 +312,9 @@ export const ROUND_PAYOUT_MERKLE = "allov1.QF";
 export const ROUND_PAYOUT_DIRECT = "allov1.Direct";
 export const ROUND_PAYOUT_DIRECT_OLD = "DIRECT";
 export type RoundPayoutType =
+  | typeof ROUND_PAYOUT_DIRECT_OLD
+  | typeof ROUND_PAYOUT_MERKLE_OLD;
+export type RoundPayoutTypeNew =
   | "allov1.Direct"
   | "allov1.QF"
   | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"

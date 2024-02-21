@@ -1,6 +1,6 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
-import { ChainId, ROUND_PAYOUT_MERKLE, RoundPayoutType } from "common";
+import { ChainId, ROUND_PAYOUT_MERKLE_OLD, RoundPayoutType } from "common";
 import { getConfig } from "common/src/config";
 import {
   ApplicationStatus,
@@ -487,7 +487,7 @@ export const loadProjectStats =
         (app) =>
           app.projectId === uniqueProjectID &&
           app.status === "APPROVED" &&
-          round.roundType === ROUND_PAYOUT_MERKLE
+          round.roundType === ROUND_PAYOUT_MERKLE_OLD
       );
 
       if (project) {
