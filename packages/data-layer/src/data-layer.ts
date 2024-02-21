@@ -3,12 +3,14 @@ import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import _fetch from "cross-fetch";
 import { request } from "graphql-request";
 import shuffle from "knuth-shuffle-seeded";
+import { Address } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
 import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Application,
+  ApplicationStatus,
   Collection,
   Program,
   ProjectApplication,
@@ -16,32 +18,30 @@ import {
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
+  V2Round,
   V2RoundWithRoles,
   v2Project,
-  V2Round,
-  ApplicationStatus,
 } from "./data.types";
 import {
   ApplicationSummary,
-  Configuration as SearchApiConfiguration,
   DefaultApi as SearchApi,
+  Configuration as SearchApiConfiguration,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
   getApplication,
+  getApplicationStatusByRoundIdAndCID,
   getApplicationsByProjectId,
+  getApplicationsByRoundIdAndProjectIds,
+  getProgramByIdAndUser,
+  getProgramByUserAndTag,
   getProgramName,
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
-  getProgramByUserAndTag,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndUserAddress,
-  getProgramByIdAndUser,
-  getApplicationsByRoundIdAndProjectIds,
-  getApplicationStatusByRoundIdAndCID,
 } from "./queries";
-import { Address } from "viem";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
 /**
@@ -433,7 +433,7 @@ export class DataLayer {
     metadataCid,
   }: {
     chainId: number;
-    roundId: Lowercase<Address>;
+    roundId: string;
     metadataCid: string;
   }): Promise<ApplicationStatus | undefined> {
     const requestVariables = {
@@ -447,6 +447,8 @@ export class DataLayer {
       getApplicationStatusByRoundIdAndCID,
       requestVariables,
     );
+
+    console.log("response", response);
   
     return response.applications[0].status;
   }

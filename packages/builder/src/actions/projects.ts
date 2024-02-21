@@ -274,7 +274,7 @@ export const fetchProjectApplicationInRound = async (
   const Id = roundID.toLowerCase();
 
   try {
-    // TODO: FIX BEFORE FRIDAY 
+    // TODO: FIX BEFORE FRIDAY
     const response: any = await graphqlFetch(
       `query projectApplicationInRound($applicationId: String, $Id: String) {
           roundApplications(

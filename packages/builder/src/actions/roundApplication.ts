@@ -490,24 +490,28 @@ export const checkRoundApplications =
   };
 
 export const fetchApplicationData =
-  (ipfsHash: string, roundAddress: string, chainId: string, dataLayer: DataLayer) =>
+  (
+    ipfsHash: string,
+    roundAddress: string
+    // chainId: string,
+    // dataLayer: DataLayer
+  ) =>
   async (dispatch: Dispatch) => {
     const pinataClient = new PinataClient(getConfig());
     try {
-      const resp = await pinataClient.fetchJson(ipfsHash);
+      const applicationMetadata = await pinataClient.fetchJson(ipfsHash);
 
-      const status = await dataLayer.getApplicationStatusByRoundIdAndCID({
-        chainId: Number(chainId),
-        roundId: roundAddress as `0x${Lowercase<string>}`,
-        metadataCid: ipfsHash,
-      })
+      // const status = await dataLayer.getApplicationStatusByRoundIdAndCID({
+      //   chainId: Number(chainId),
+      //   roundId: roundAddress as any,
+      //   metadataCid: ipfsHash,
+      // });
 
-      // SHIT BREAKS
-      resp.status = status;
+      // console.log("status", status);
 
       dispatch({
         type: APPLICATION_DATA_LOADED,
-        applicationData: resp,
+        applicationData: applicationMetadata,
         roundAddress,
         ipfsHash,
       });

@@ -231,6 +231,8 @@ export default function RoundListItem({
     }
   }, [props.round]);
 
+  console.log("rounds", props.round);
+
   return (
     <Box>
       <Box className="w-full my-8 lg:flex md:flex basis-0 justify-between items-center text-[14px] text-gitcoin-grey-400">

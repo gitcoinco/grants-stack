@@ -1,9 +1,9 @@
+import { useAllo } from "common";
 import { useDataLayer } from "data-layer";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAllo } from "common";
 import {
   fetchApplicationData,
   submitApplication,
@@ -12,7 +12,7 @@ import { loadRound, unloadRounds } from "../../actions/rounds";
 import { RootState } from "../../reducers";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
-import { grantsPath, projectPathByID } from "../../routes";
+import { grantsPath, projectPath } from "../../routes";
 import colors from "../../styles/colors";
 import { isInfinite } from "../../utils/components";
 import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
@@ -43,6 +43,8 @@ function ViewApplication() {
       ? applicationState.status
       : ApplicationStatus.Undefined;
 
+    console.log("applicationState", state);
+
     const roundError = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
 
@@ -61,7 +63,7 @@ function ViewApplication() {
 
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
-    const fullProjectID =
+    const projectId =
       publishedApplicationMetadata?.publishedApplicationData?.application
         ?.project?.id;
 
@@ -78,7 +80,7 @@ function ViewApplication() {
       showErrorModal,
       web3ChainId,
       roundChainId,
-      fullProjectID,
+      projectId,
       roundApplicationStatus,
     };
   }, shallowEqual);
@@ -94,7 +96,8 @@ function ViewApplication() {
     if (!props.round) return;
 
     if (params.ipfsHash !== undefined) {
-      dispatch(fetchApplicationData(ipfsHash!, roundId!, chainId!, dataLayer));
+      console.log("fetching application data");
+      dispatch(fetchApplicationData(ipfsHash!, roundId!));
     }
   }, [dispatch, params.ipfsHash, props.round]);
 
@@ -128,6 +131,8 @@ function ViewApplication() {
   const roundApproved = props.roundApplicationStatus === "APPROVED";
   const hasProperStatus = roundInReview || roundApproved;
 
+  console.log("props from view application", props);
+
   if (
     props.roundState === undefined ||
     props.round === undefined ||
@@ -150,12 +155,12 @@ function ViewApplication() {
         <Button
           variant={ButtonVariants.outlineDanger}
           onClick={() => {
-            const path = projectPathByID(props.fullProjectID);
+            const path = projectPath(chainId as string, "0x", props.projectId!);
             if (path !== undefined) {
               navigate(path);
             } else {
               console.error(
-                `cannot build project path from id: ${props.fullProjectID}`
+                `cannot build project path from id: ${props.projectId}`
               );
             }
           }}
