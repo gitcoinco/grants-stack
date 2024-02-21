@@ -1,4 +1,3 @@
-import { VotingToken } from "../api/types";
 import {
   ChevronRightIcon,
   InformationCircleIcon,
@@ -10,6 +9,7 @@ import { TransactionButton } from "./TransactionButton";
 import { ChainId } from "common";
 import { formatUnits } from "viem";
 import { ContributionWithTimestamp } from "../api/round";
+import { VotingToken } from "common/dist/types";
 
 export function DonationsTable(props: {
   contributions: { chainId: ChainId; data: ContributionWithTimestamp[] }[];

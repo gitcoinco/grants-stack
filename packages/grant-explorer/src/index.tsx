@@ -29,6 +29,7 @@ import ThankYou from "./features/round/ThankYou";
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
+import AlloWrapper from "./features/api/AlloWrapper";
 
 initSentry();
 initDatadog();
@@ -66,42 +67,44 @@ root.render(
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
             <DataLayerProvider client={dataLayer}>
-              <HashRouter>
-                <Routes>
-                  {/* Protected Routes */}
-                  <Route element={<Auth />} />
+              <AlloWrapper>
+                <HashRouter>
+                  <Routes>
+                    {/* Protected Routes */}
+                    <Route element={<Auth />} />
 
-                  {/* Default Route */}
-                  <Route path="/" element={<LandingPage />} />
+                    {/* Default Route */}
+                    <Route path="/" element={<LandingPage />} />
 
-                  <Route path="/rounds" element={<ExploreRoundsPage />} />
+                    <Route path="/rounds" element={<ExploreRoundsPage />} />
 
-                  {/* Round Routes */}
-                  <Route
-                    path="/round/:chainId/:roundId"
-                    element={<ViewRound />}
-                  />
-                  <Route
-                    path="/round/:chainId/:roundId/:applicationId"
-                    element={<ViewProjectDetails />}
-                  />
+                    {/* Round Routes */}
+                    <Route
+                      path="/round/:chainId/:roundId"
+                      element={<ViewRound />}
+                    />
+                    <Route
+                      path="/round/:chainId/:roundId/:applicationId"
+                      element={<ViewProjectDetails />}
+                    />
 
-                  <Route path="/cart" element={<ViewCart />} />
+                    <Route path="/cart" element={<ViewCart />} />
 
-                  <Route path="/thankyou" element={<ThankYou />} />
+                    <Route path="/thankyou" element={<ThankYou />} />
 
-                  <Route
-                    path="/contributors/:address"
-                    element={<ViewContributionHistoryPage />}
-                  />
+                    <Route
+                      path="/contributors/:address"
+                      element={<ViewContributionHistoryPage />}
+                    />
 
-                  {/* Access Denied */}
-                  <Route path="/access-denied" element={<AccessDenied />} />
+                    {/* Access Denied */}
+                    <Route path="/access-denied" element={<AccessDenied />} />
 
-                  {/* 404 */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </HashRouter>
+                    {/* 404 */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </HashRouter>
+              </AlloWrapper>
             </DataLayerProvider>
           </RoundProvider>
         </RainbowKitProvider>

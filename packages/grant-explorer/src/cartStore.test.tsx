@@ -1,8 +1,9 @@
 import { useCartStorage } from "./store";
 import { ChainId } from "common";
-import { CartProject, VotingToken } from "./features/api/types";
+import { CartProject } from "./features/api/types";
 import { makeApprovedProjectData } from "./test-utils";
 import { votingTokensMap } from "./features/api/utils";
+import { VotingToken } from "common/dist/types";
 
 describe("useCartStorage Zustand store", () => {
   beforeEach(() => {

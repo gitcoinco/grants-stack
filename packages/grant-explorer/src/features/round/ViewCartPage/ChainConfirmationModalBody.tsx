@@ -1,10 +1,11 @@
 import React from "react";
-import { CartProject, VotingToken } from "../../api/types";
+import { CartProject } from "../../api/types";
 import { ChainId } from "common";
 import { CHAINS } from "../../api/utils";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
 import { parseChainId } from "common/src/chains";
+import { VotingToken } from "common/dist/types";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };

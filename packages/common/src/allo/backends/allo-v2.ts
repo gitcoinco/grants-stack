@@ -7,17 +7,19 @@ import {
   TransactionData,
 } from "@allo-team/allo-v2-sdk/";
 import { Abi, Address, Hex } from "viem";
-import { AnyJson } from "../..";
+import { AnyJson, ChainId } from "../..";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { Result, error, success } from "../common";
+import { error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
-  TransactionReceipt,
-  TransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
+  TransactionReceipt,
+  TransactionSender,
 } from "../transaction-sender";
+import { VotingToken } from "../../types";
+import { PermitSignature } from "../voting";
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -45,6 +47,27 @@ export class AlloV2 implements Allo {
     this.allo = new AlloV2Contract({
       chain: this.chainId,
     });
+  }
+
+  async voteUsingMRCContract(
+    chainId: ChainId,
+    token: VotingToken,
+    groupedVotes: Record<string, Hex[]>,
+    groupedAmounts: Record<string, bigint>,
+    nativeTokenAmount: bigint,
+    permit?: {
+      sig: PermitSignature;
+      deadline: number;
+      nonce: bigint;
+    }
+  ) {
+    return {
+      transactionHash: "0x0",
+      blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
+      blockNumber: BigInt(1),
+      logs: [],
+      status: "success",
+    } as TransactionReceipt;
   }
 
   createProject(args: { name: string; metadata: AnyJson }): AlloOperation<
@@ -226,7 +249,6 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
       }

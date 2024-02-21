@@ -14,7 +14,7 @@ import {
 import { AnyJson, ChainId } from "../..";
 import { parseChainId } from "../../chains";
 import { payoutTokens } from "../../payoutTokens";
-import { RoundCategory } from "../../types";
+import { RoundCategory, VotingToken } from "../../types";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import RoundImplementation from "../abis/allo-v1/RoundImplementation";
@@ -36,6 +36,9 @@ import {
   TransactionReceipt,
   TransactionSender,
 } from "../transaction-sender";
+import { getPermitType, PermitSignature } from "../voting";
+import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
+import { MRC_CONTRACTS } from "../addresses/mrc";
 
 function createProjectId(args: {
   chainId: number;
@@ -70,6 +73,87 @@ export class AlloV1 implements Allo {
     this.roundFactoryAddress = roundFactoryMap[this.chainId];
     this.ipfsUploader = args.ipfsUploader;
     this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
+  }
+
+  async voteUsingMRCContract(
+    chainId: ChainId,
+    token: VotingToken,
+    groupedVotes: Record<string, Hex[]>,
+    groupedAmounts: Record<string, bigint>,
+    nativeTokenAmount: bigint,
+    permit?: {
+      sig: PermitSignature;
+      deadline: number;
+      nonce: bigint;
+    }
+  ) {
+    let tx: Result<Hex>;
+    const mrcAddress = MRC_CONTRACTS[chainId];
+
+    /* decide which function to use based on whether token is native, permit-compatible or DAI */
+    if (token.address === zeroAddress) {
+      tx = await sendTransaction(this.transactionSender, {
+        address: mrcAddress,
+        abi: MRC_ABI,
+        functionName: "vote",
+        args: [
+          Object.values(groupedVotes),
+          Object.keys(groupedVotes) as Hex[],
+          Object.values(groupedAmounts),
+        ],
+        value: nativeTokenAmount,
+      });
+    } else if (permit) {
+      if (getPermitType(token) === "dai") {
+        tx = await sendTransaction(this.transactionSender, {
+          address: mrcAddress,
+          abi: MRC_ABI,
+          functionName: "voteDAIPermit",
+          args: [
+            Object.values(groupedVotes),
+            Object.keys(groupedVotes) as Hex[],
+            Object.values(groupedAmounts),
+            Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+            token.address as Hex,
+            BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+            permit.nonce,
+            permit.sig.v,
+            permit.sig.r as Hex,
+            permit.sig.s as Hex,
+          ],
+          value: nativeTokenAmount,
+        });
+      } else {
+        tx = await sendTransaction(this.transactionSender, {
+          address: mrcAddress,
+          abi: MRC_ABI,
+          functionName: "voteERC20Permit",
+          args: [
+            Object.values(groupedVotes),
+            Object.keys(groupedVotes) as Hex[],
+            Object.values(groupedAmounts),
+            Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+            token.address as Hex,
+            BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+            permit.sig.v,
+            permit.sig.r as Hex,
+            permit.sig.s as Hex,
+          ],
+          value: nativeTokenAmount,
+        });
+      }
+    } else {
+      /* Tried voting using erc-20 but no permit signature provided */
+      throw new Error(
+        "Tried voting using erc-20 but no permit signature provided"
+      );
+    }
+
+    if (tx.type === "success") {
+      return this.transactionSender.wait(tx.value, 20_000_000);
+    } else {
+      throw new Error("Failed voting");
+    }
   }
 
   createProject(args: { name: string; metadata: AnyJson }): AlloOperation<
@@ -388,7 +472,7 @@ export class AlloV1 implements Allo {
    */
   applyToRound(args: {
     projectId: Hex;
-    roundId: Hex|number;
+    roundId: Hex | number;
     metadata: AnyJson;
   }): AlloOperation<
     Result<Hex>,
@@ -399,11 +483,8 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-
       if (typeof args.roundId == "number") {
-        return error(
-          new AlloError("roundId must be Hex")
-        );
+        return error(new AlloError("roundId must be Hex"));
       }
 
       const ipfsResult = await this.ipfsUploader(args.metadata);

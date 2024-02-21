@@ -1,10 +1,10 @@
 import { ChainId, useTokenPrice } from "common";
 import React from "react";
-import { VotingToken } from "../../api/types";
 import { CHAINS } from "../../api/utils";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import { VotingToken } from "common/dist/types";
 
 type SummaryProps = {
   totalDonation: bigint;

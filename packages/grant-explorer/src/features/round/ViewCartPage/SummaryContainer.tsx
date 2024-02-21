@@ -1,4 +1,4 @@
-import { ChainId, getTokenPrice, PassportState } from "common";
+import { ChainId, getTokenPrice, PassportState, useAllo } from "common";
 import { useCartStorage } from "../../../store";
 import React, { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -8,7 +8,7 @@ import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
@@ -46,7 +46,7 @@ export function SummaryContainer() {
   const dataLayer = useDataLayer();
 
   const { openConnectModal } = useConnectModal();
-  const publicClient = usePublicClient();
+  const allo = useAllo();
   const projectsByChain = useMemo(
     () => groupBy(projects, "chainId"),
     [projects]
@@ -322,7 +322,7 @@ export function SummaryContainer() {
           permitDeadline: currentPermitDeadline,
         })),
         walletClient,
-        publicClient
+        allo
       );
     } catch (error) {
       console.error(error);
