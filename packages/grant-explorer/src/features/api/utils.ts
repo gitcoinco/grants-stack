@@ -853,6 +853,7 @@ export function getChainIds(): number[] {
 }
 
 export const isDirectRound = (round: Round) =>
+  // @ts-expect-error support old rounds
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_OLD ||
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
 
@@ -861,9 +862,11 @@ export const isInfiniteDate = (roundTime: Date) =>
 
 export const getRoundType = (payoutStrategyName: RoundPayoutType) => {
   switch (payoutStrategyName) {
+    // @ts-expect-error support old rounds
     case ROUND_PAYOUT_MERKLE_OLD:
     case ROUND_PAYOUT_MERKLE:
       return "Quadratic Funding";
+    // @ts-expect-error support old rounds
     case ROUND_PAYOUT_DIRECT_OLD:
     case ROUND_PAYOUT_DIRECT:
     case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":

@@ -5,9 +5,9 @@ import {
   __deprecated_graphql_fetch,
 } from "../utils";
 import {
+  __deprecated_getProjectOwners,
   __deprecated_getRoundById,
   __deprecated_GetRoundByIdResult,
-  __deprecated_getProjectOwners,
 } from "../round";
 import { Mock } from "vitest";
 
@@ -65,7 +65,7 @@ describe("getRoundById", () => {
             token: expectedRoundData.token,
             payoutStrategy: {
               id: "some-id",
-              strategyName: "MERKLE",
+              strategyName: "allov1.QF",
             },
             votingStrategy: expectedRoundData.votingStrategy,
             projectsMetaPtr: null,

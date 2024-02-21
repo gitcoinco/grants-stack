@@ -16,7 +16,7 @@ export function createRoundLoadingData(length = 4): RoundGetRound[] {
     donationsEndTime: "0",
     matchAmount: "",
     matchTokenAddress: "0",
-    strategyName: "MERKLE",
+    strategyName: "allov1.QF",
     roundMetadata: {
       name: "Round",
       eligibility: {

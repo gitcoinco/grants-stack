@@ -13,6 +13,9 @@ import {
 import { getFilterLabel } from "./utils/getFilterLabel";
 import { getEnabledChains } from "../../app/chainConfig";
 import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
+import { getConfig } from "common/src/config";
+
+const isAlloV2 = getConfig().allo.version === "allo-v2";
 
 export const FILTER_OPTIONS: RoundFilterUiOption[] = [
   {
@@ -26,11 +29,13 @@ export const FILTER_OPTIONS: RoundFilterUiOption[] = [
     children: [
       {
         label: "Quadratic funding",
-        value: ROUND_PAYOUT_MERKLE,
+        value: isAlloV2
+          ? "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
+          : ROUND_PAYOUT_MERKLE,
       },
       {
         label: "Direct grants",
-        value: ROUND_PAYOUT_DIRECT,
+        value: isAlloV2 ? "allov2.MicroGrantsStrategy" : ROUND_PAYOUT_DIRECT,
       },
     ],
   },
