@@ -290,6 +290,10 @@ export interface Round {
    */
   id?: string;
   /**
+   * The chain ID of the network
+   */
+  chainId?: number;
+  /**
    * Metadata of the Round to be stored off-chain
    */
   roundMetadata?: {
@@ -325,7 +329,7 @@ export interface Round {
   /**
    * Voting contract address
    */
-  votingStrategy: string;
+  votingStrategy?: string;
   /**
    * Unix timestamp of the start of the round
    */

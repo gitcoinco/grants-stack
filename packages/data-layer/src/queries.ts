@@ -337,6 +337,15 @@ export const getRoundByIdAndChainId = gql`
       strategyId
       strategyAddress
       strategyName
+      applications(first: 1000, filter: { status: { equalTo: APPROVED } }) {
+        id
+        projectId
+        status
+        metadata
+        project {
+          metadata
+        }
+      }
     }
   }
 `;

@@ -467,6 +467,46 @@ export class DataLayer {
     return response.rounds;
   }
 
+  async getRoundById({
+    roundId,
+    chainId,
+  }: {
+    roundId: string;
+    chainId: number;
+  }): Promise<{ round: Round }> {
+    const requestVariables = {
+      roundId,
+      chainId,
+    };
+
+    const response: { rounds: any } = await request(
+      this.gsIndexerEndpoint,
+      getRoundByIdAndChainId,
+      requestVariables,
+    );
+
+    const _round = response.rounds[0] ?? [];
+
+    return {
+      round: {
+        id: _round.id,
+        chainId: _round.chainId,
+        applicationsStartTime: _round.applicationsStartTime,
+        applicationsEndTime: _round.applicationsEndTime,
+        roundStartTime: _round.donationsStartTime,
+        roundEndTime: _round.donationsEndTime,
+        token: _round.matchTokenAddress,
+        ownedBy: _round.ownedBy,
+        roundMetadata: _round.roundMetadata,
+        payoutStrategy: {
+          id: _round.strategyAddress,
+          strategyName: _round.strategyName,
+        },
+        approvedProjects: _round.applications,
+      },
+    };
+  }
+
   /**
    * Legacy - Allo v1 queries
    */
