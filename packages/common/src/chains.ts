@@ -21,6 +21,8 @@ export const BaseLogo =
   "https://ipfs.io/ipfs/QmQaAsfJpUuKmpX3eJEzgdZjqqFWmWHXnDy3MpPVJyDzcj";
 export const FantomFTMLogo =
   "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9";
+export const ScrollIcon =
+  "https://ipfs.io/ipfs/QmYRA5tXMmGxhw7HUNdr9DYN2GRX3MnLoJVweeWKgfxBZX";
 
 const config = getConfig();
 
@@ -115,6 +117,32 @@ export const zkSyncEraMainnet: Chain = {
     },
     public: {
       http: ["https://mainnet.era.zksync.io"],
+    },
+  },
+};
+
+export const scroll: Chain = {
+  id: 534352,
+  name: "Scroll",
+  network: "scroll",
+  iconUrl: ScrollIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.scroll.io"],
+    },
+    public: {
+      http: ["https://rpc.scroll.io"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Scrollscan",
+      url: "https://scrollscan.com/",
     },
   },
 };

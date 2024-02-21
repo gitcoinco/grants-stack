@@ -16,9 +16,13 @@ jest.mock("data-layer", () => ({
 describe("listPrograms", () => {
   it("calls the indexer endpoint", async () => {
     // const address = "0x0"
-    const expectedProgram = makeProgramData({
+    let expectedProgram = makeProgramData({
       chain: CHAINS[ChainId.MAINNET],
     });
+    expectedProgram = {
+      ...expectedProgram,
+      createdByAddress: expectedProgram.operatorWallets[0],
+    };
     const expectedPrograms: Program[] = [expectedProgram];
 
     const actualPrograms = await listPrograms(
@@ -37,6 +41,7 @@ describe("listPrograms", () => {
               metadata: {
                 name: expectedProgram.metadata?.name,
               },
+              createdByAddress: expectedProgram.operatorWallets[0],
             },
           ],
         }),
