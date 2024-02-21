@@ -14,7 +14,6 @@ import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
-import { graphqlFetch } from "../utils/graphql";
 import { metadataToProject } from "../utils/utils";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
@@ -491,55 +490,20 @@ export const checkRoundApplications =
   };
 
 export const fetchApplicationData =
-  (ipfsHash: string, roundAddress: string, chainId: string) =>
+  (ipfsHash: string, roundAddress: string, chainId: string, dataLayer: DataLayer) =>
   async (dispatch: Dispatch) => {
     const pinataClient = new PinataClient(getConfig());
     try {
-      // FETCH roundApplication DATA
       const resp = await pinataClient.fetchJson(ipfsHash);
 
-      // FETCH roundApplication STATUS
-      const roundApplication = await graphqlFetch(
-        `
-          query GetRoundApplicationByIPFSHash(
-                $roundId: String,
-                $ipfsHash: String,
-              ) {
-            roundApplications(
-              where: {
-                round_: {
-                  id: $roundId
-                },
-                metaPtr_: {
-                  pointer: $ipfsHash
-                }
-              }
-            ) {
-              id
-              applicationIndex
-              inReview
-              project
-              status
-              statusDescription
-              statusSnapshots {
-                id
-                status
-                statusDescription
-                timestamp
-              }
-            }
-          }
-        `,
-        Number(chainId),
-        {
-          roundId: roundAddress,
-          ipfsHash,
-        }
-      );
+      const status = await dataLayer.getApplicationStatusByRoundIdAndCID({
+        chainId: Number(chainId),
+        roundId: roundAddress as `0x${Lowercase<string>}`,
+        metadataCid: ipfsHash,
+      })
 
-      // ASSIGNS roundApplication STATUS
-      resp.status =
-        roundApplication.data.roundApplications[0].statusDescription;
+      // SHIT BREAKS
+      resp.status = status;
 
       dispatch({
         type: APPLICATION_DATA_LOADED,

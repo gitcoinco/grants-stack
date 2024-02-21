@@ -94,7 +94,7 @@ function ViewApplication() {
     if (!props.round) return;
 
     if (params.ipfsHash !== undefined) {
-      dispatch(fetchApplicationData(ipfsHash!, roundId!, chainId!));
+      dispatch(fetchApplicationData(ipfsHash!, roundId!, chainId!, dataLayer));
     }
   }, [dispatch, params.ipfsHash, props.round]);
 

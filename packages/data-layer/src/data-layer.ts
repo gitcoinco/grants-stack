@@ -19,6 +19,7 @@ import {
   V2RoundWithRoles,
   v2Project,
   V2Round,
+  ApplicationStatus,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -38,6 +39,7 @@ import {
   getRoundsByProgramIdAndUserAddress,
   getProgramByIdAndUser,
   getApplicationsByRoundIdAndProjectIds,
+  getApplicationStatusByRoundIdAndCID,
 } from "./queries";
 import { Address } from "viem";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
@@ -423,6 +425,30 @@ export class DataLayer {
     );
 
     return response.applications ?? [];
+  }
+
+  async getApplicationStatusByRoundIdAndCID({
+    roundId,
+    chainId,
+    metadataCid,
+  }: {
+    chainId: number;
+    roundId: Lowercase<Address>;
+    metadataCid: string;
+  }): Promise<ApplicationStatus | undefined> {
+    const requestVariables = {
+      chainId,
+      roundId,
+      metadataCid,
+    };
+
+    const response: { applications: any } = await request(
+      this.gsIndexerEndpoint,
+      getApplicationStatusByRoundIdAndCID,
+      requestVariables,
+    );
+  
+    return response.applications[0].status;
   }
 
   async getProgramName({
