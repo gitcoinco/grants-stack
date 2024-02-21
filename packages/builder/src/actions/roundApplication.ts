@@ -238,8 +238,6 @@ export const submitApplication =
         chainName
       );
 
-      console.log("building application", roundAddress, formInputs);
-
       application = await builder.build(roundAddress, formInputs);
 
       deterministicApplication = objectToDeterministicJSON(application as any);
@@ -288,6 +286,24 @@ export const submitApplication =
       roundAddress: roundId,
       status: Status.UploadingMetadata,
     });
+
+    if (
+      projectMetadata.chainID !== Number(chainID) &&
+      (!projectMetadata.linkedChains ||
+        !projectMetadata.linkedChains.includes(Number(chainID)))
+    ) {
+      console.log("Creating Linked Project");
+
+      // Create Linked Project
+      // TODO: FIX
+      allo.createProject({
+        name: projectMetadata.name,
+        metadata: {
+          registryAddress: "0x4AAcca72145e1dF2aeC137E1f3C5E3D75DB8b5f3",
+          chainId: Number(chainID),
+        },
+      });
+    }
 
     const projectUniqueID = isV2
       ? (state.projects.anchor![projectID] as Hex)
