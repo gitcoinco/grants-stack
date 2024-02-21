@@ -1,4 +1,4 @@
-import { ChainId, getTokenPrice, PassportState, useAllo } from "common";
+import { ChainId, getTokenPrice, PassportState } from "common";
 import { useCartStorage } from "../../../store";
 import React, { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -31,6 +31,7 @@ import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
 import { fetchBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
+import { useAllo } from "../../api/AlloWrapper";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -307,7 +308,7 @@ export function SummaryContainer() {
 
   async function handleSubmitDonation() {
     try {
-      if (!walletClient) {
+      if (!walletClient || !allo) {
         return;
       }
 

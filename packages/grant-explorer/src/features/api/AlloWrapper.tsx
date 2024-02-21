@@ -1,6 +1,5 @@
 import {
   Allo,
-  AlloProvider,
   AlloV1,
   AlloV2,
   ChainId,
@@ -9,7 +8,7 @@ import {
   createWaitForIndexerSyncTo,
 } from "common";
 import { getConfig } from "common/src/config";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNetwork, usePublicClient, useWalletClient } from "wagmi";
 import { zeroAddress } from "viem";
 
@@ -73,3 +72,19 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
 }
 
 export default AlloWrapper;
+
+export const AlloContext = createContext<Allo | null>(null);
+
+interface AlloProps extends React.PropsWithChildren {
+  backend: Allo | null;
+}
+
+export const AlloProvider: React.FC<AlloProps> = ({ backend, children }) => {
+  return (
+    <AlloContext.Provider value={backend}>{children}</AlloContext.Provider>
+  );
+};
+
+export const useAllo = () => {
+  return useContext(AlloContext);
+};
