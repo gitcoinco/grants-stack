@@ -26,6 +26,7 @@ export interface Metadata {
   updatedAt?: number;
   chainId: number;
   linkedChains?: number[];
+  nonce?: bigint;
 }
 
 export interface Project {

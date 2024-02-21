@@ -30,6 +30,10 @@ function Card({ projectId }: { projectId: string }) {
     const projectChainName = networkPrettyName(Number(chainId));
     const projectChainIconUri = getNetworkIcon(Number(chainId));
 
+    const linkedChains = grantMetadata?.metadata?.linkedChains || [];
+
+    console.log("linkedChains", linkedChains);
+
     return {
       id: projectId,
       chainId,
@@ -40,6 +44,7 @@ function Card({ projectId }: { projectId: string }) {
       bannerImg,
       logoImg,
       status,
+      linkedChains,
     };
   }, shallowEqual);
 
@@ -111,6 +116,10 @@ function Card({ projectId }: { projectId: string }) {
               />
               {props.projectChainName}
             </Badge>
+            {/* todo: remove this shit: */}
+            <div className="text-xs mt-2 ml-2">
+              Available on: {[props.chainId, ...props.linkedChains].toString()}
+            </div>
           </div>
         </>
       )}

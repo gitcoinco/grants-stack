@@ -359,13 +359,19 @@ export const submitApplication =
       ? (state.projects.anchor![projectID] as Hex)
       : projectID;
 
-    const createLinkedProject = Number(projectMetadata.chainId) !== Number(chainID) &&
-    (!projectMetadata.linkedChains || !projectMetadata.linkedChains.includes(Number(chainID)));
+    const createLinkedProject =
+      Number(projectMetadata.chainId) !== Number(chainID) &&
+      (!projectMetadata.linkedChains ||
+        !projectMetadata.linkedChains.includes(Number(chainID)));
 
     console.log("CHAIN ID", chainID);
     console.log("PROJECT METADATA", projectMetadata);
     console.log("===> A", Number(projectMetadata.chainId) !== Number(chainID));
-    console.log("===> B", !projectMetadata.linkedChains || !projectMetadata.linkedChains.includes(Number(chainID)));
+    console.log(
+      "===> B",
+      !projectMetadata.linkedChains ||
+        !projectMetadata.linkedChains.includes(Number(chainID))
+    );
     console.log("===> C", createLinkedProject);
 
     if (createLinkedProject) {
@@ -377,11 +383,11 @@ export const submitApplication =
       const result = allo.createProject({
         name: projectMetadata.name,
         metadata: {
-          registryAddress: "0x4AAcca72145e1dF2aeC137E1f3C5E3D75DB8b5f3",
-          chainId: Number(chainID),
+          registryAddress: projectMetadata.registryAddress,
+          chainId: Number(projectMetadata.chainId),
         },
+        nonce: projectMetadata.nonce,
       });
-      
 
       await result
         .on("ipfs", (res) => {
@@ -408,14 +414,16 @@ export const submitApplication =
               "profile creation: Transaction Status Success",
               res.value
             );
-            dispatch<any>(applyToRound(
-              roundId,
-              projectID,
-              projectUniqueID,
-              isV2,
-              signedApplication,
-              allo
-            ));
+            dispatch<any>(
+              applyToRound(
+                roundId,
+                projectID,
+                projectUniqueID,
+                isV2,
+                signedApplication,
+                allo
+              )
+            );
           } else {
             console.log(
               "profile creation: Transaction Status Error",
@@ -425,14 +433,16 @@ export const submitApplication =
         })
         .execute();
     } else {
-      dispatch<any>(applyToRound(
-        roundId,
-        projectID,
-        projectUniqueID,
-        isV2,
-        signedApplication,
-        allo
-      ));
+      dispatch<any>(
+        applyToRound(
+          roundId,
+          projectID,
+          projectUniqueID,
+          isV2,
+          signedApplication,
+          allo
+        )
+      );
     }
   };
 
@@ -473,7 +483,6 @@ export const checkRoundApplications =
           });
         }
       });
-
     } catch (e) {
       datadogLogs.logger.warn("error getting round applications");
       datadogRum.addError(e);

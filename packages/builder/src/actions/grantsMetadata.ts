@@ -90,6 +90,7 @@ export const transformAndDispatchProject =
       projectTwitter: project.metadata.projectTwitter,
       chainId: project.chainId,
       linkedChains: project.linkedChains,
+      nonce: project.nonce,
     };
 
     // todo: should we lowercase the owner addresses?
