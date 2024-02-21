@@ -452,8 +452,6 @@ export const checkRoundApplications =
           projectIds: projectIDs,
         });
 
-      console.log("applications", applications);
-
       if (!applications || applications.length === 0) {
         dispatch({
           type: ROUND_APPLICATION_NOT_FOUND,
@@ -461,8 +459,6 @@ export const checkRoundApplications =
         });
         return;
       }
-
-      console.log("applications", applications);
 
       projectIDs.forEach((projectId) => {
         const app = applications.find(
