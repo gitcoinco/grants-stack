@@ -33,6 +33,7 @@ const mockProjects: v2Project[] = [
     nodeId:
       "WyJwcm9qZWN0cyIsIjB4OGE3OTI0OWI2MzM5NWMyNWJkMTIxYmE2ZmYyODAxOThjMzk5ZDRmYjNmOTUxZmMzYzQyMTk3YjU0YTZkYjZhNiIsMTExNTUxMTFd",
     // note: This is moved to roles also
+    createdByAddress: "0x0000",
     createdAtBlock: "5146499",
     updatedAtBlock: "5146499",
     projectNumber: null,
@@ -584,12 +585,16 @@ describe("projects retrieval", () => {
     expect(project?.project.id).toEqual(mockProject.id);
     expect(project?.project.nodeId).toEqual(mockProject.nodeId);
     expect(project?.project.chainId).toEqual(mockProject.chainId);
-    expect(project?.project.registryAddress).toEqual(mockProject.registryAddress);
+    expect(project?.project.registryAddress).toEqual(
+      mockProject.registryAddress,
+    );
     expect(project?.project.projectNumber).toEqual(mockProject.projectNumber);
     expect(project?.project.tags).toEqual(mockProject.tags);
     expect(project?.project.roles).toEqual(mockProject.roles);
     expect(project?.project.name).toEqual(mockProject.name);
-    expect(project?.project.metadata.description).toEqual(mockProject.metadata.description);
+    expect(project?.project.metadata.description).toEqual(
+      mockProject.metadata.description,
+    );
   });
 
   test("can retrieve all projects for a network", async () => {

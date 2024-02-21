@@ -1054,8 +1054,8 @@ importers:
         specifier: ^3.10.1
         version: 3.10.1
       lit-js-sdk-old-w-pgn:
-        specifier: ^1.1.256
-        version: 1.1.256
+        specifier: ^1.1.257
+        version: 1.1.257
       localforage:
         specifier: ^1.10.0
         version: 1.10.0
@@ -20742,8 +20742,8 @@ packages:
       '@types/trusted-types': 2.0.3
     dev: false
 
-  /lit-js-sdk-old-w-pgn@1.1.256:
-    resolution: {integrity: sha512-9drOhHcSS41FWBk2Hfnzt3j2tO1QhjtURR04Z7rBo20x80bSMO0yKcX4igo5+qApEIUFFbQI1nPxSp4skfl9Pw==}
+  /lit-js-sdk-old-w-pgn@1.1.257:
+    resolution: {integrity: sha512-6PRmkpfPoI5jz2/Ps8lwXuiBjE8Nezb/lvQXppwA13GEvRH/uw/AIElEMU09Rh5XDqHUkZadJFcvanIOfWD5Lw==}
     dependencies:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0

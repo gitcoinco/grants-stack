@@ -101,6 +101,11 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Sepolia",
     logo: "/logos/ethereum-eth-logo.svg",
   },
+  [ChainId.SCROLL]: {
+    id: ChainId.SCROLL,
+    name: "Scroll",
+    logo: "/logos/scroll-logo.svg",
+  },
 };
 
 export type SupportType = {

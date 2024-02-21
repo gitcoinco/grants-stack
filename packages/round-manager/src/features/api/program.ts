@@ -39,7 +39,7 @@ export async function listPrograms(
       throw Error("Unable to fetch programs");
     }
 
-    const programs: Program[] = [];
+    let programs: Program[] = [];
 
     for (const program of programsRes.programs) {
       programs.push({
@@ -53,8 +53,18 @@ export async function listPrograms(
           name: CHAINS[chainId]?.name,
           logo: CHAINS[chainId]?.logo,
         },
+        createdByAddress: program.createdByAddress,
       });
     }
+
+    // Filter out programs where operatorWallets does not include round.createdByAddress.
+    // This is to filter out spam rounds created by bots
+    programs = programs.filter((program) => {
+      return (
+        program.createdByAddress &&
+        program.operatorWallets?.includes(program.createdByAddress)
+      );
+    });
 
     return programs;
   } catch (error) {

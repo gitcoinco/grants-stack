@@ -159,6 +159,9 @@ export function getConfig(): Config {
         [ChainId.SEPOLIA]: z
           .string()
           .parse(process.env.REACT_APP_SUBGRAPH_SEPOLIA_API),
+        [ChainId.SCROLL]: z
+          .string()
+          .parse(process.env.REACT_APP_SUBGRAPH_SCROLL_API),
       },
       gsIndexerEndpoint: z
         .string()
