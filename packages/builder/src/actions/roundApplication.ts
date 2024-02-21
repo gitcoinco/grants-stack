@@ -143,12 +143,78 @@ export function chainIdToChainName(chainId: number): string {
   throw new Error(`couldn't find LIT chain name for chainId ${chainId}`);
 }
 
+const applyToRound =
+  (
+    roundId: string,
+    projectID: string,
+    projectUniqueID: string,
+    isV2: boolean,
+    signedApplication: SignedRoundApplication,
+    allo: Allo
+  ) =>
+  async (dispatch: Dispatch) => {
+    const result = allo.applyToRound({
+      projectId: projectUniqueID as `0x${string}`,
+      roundId: isV2 ? Number(roundId) : (roundId as Hex),
+      metadata: signedApplication as unknown as AnyJson,
+    });
+
+    // Apply To Round
+    await result
+      .on("ipfs", (res) => {
+        if (res.type === "success") {
+          dispatch({
+            type: ROUND_APPLICATION_LOADING,
+            roundAddress: roundId,
+            status: Status.SendingTx,
+          });
+        } else {
+          console.error("IPFS Error", res.error);
+          datadogRum.addError(res.error);
+          datadogLogs.logger.error("ipfs: error uploading metadata");
+          dispatchAndLogApplicationError(
+            dispatch,
+            roundId,
+            "error uploading round application metadata",
+            Status.UploadingMetadata
+          );
+        }
+      })
+      .on("transaction", (res) => {
+        // Note: Not handled by UI
+        if (res.type === "success") {
+          console.log("Transaction", res.value);
+        } else {
+          console.error("Transaction Error", res.error);
+          datadogRum.addError(res.error);
+          datadogLogs.logger.warn("transaction error");
+        }
+      })
+      .on("transactionStatus", async (res) => {
+        if (res.type === "success") {
+          dispatch({
+            type: ROUND_APPLICATION_LOADED,
+            roundAddress: roundId,
+            projectId: projectID,
+          });
+        } else {
+          dispatchAndLogApplicationError(
+            dispatch,
+            roundId,
+            "error calling applyToRound",
+            Status.SendingTx
+          );
+          console.log("Transaction Status Error", res.error);
+        }
+      })
+      .execute();
+  };
+
 export const submitApplication =
   (roundId: string, formInputs: RoundApplicationAnswers, allo: Allo) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const roundState = state.rounds[roundId];
-    const isV2 = getConfig().allo.version === "allo-v2";
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
@@ -287,82 +353,87 @@ export const submitApplication =
       status: Status.UploadingMetadata,
     });
 
-    if (
-      projectMetadata.chainID !== Number(chainID) &&
-      (!projectMetadata.linkedChains ||
-        !projectMetadata.linkedChains.includes(Number(chainID)))
-    ) {
+    const isV2 = getConfig().allo.version === "allo-v2";
+
+    const projectUniqueID = isV2
+      ? (state.projects.anchor![projectID] as Hex)
+      : projectID;
+
+    const createLinkedProject = Number(projectMetadata.chainId) !== Number(chainID) &&
+    (!projectMetadata.linkedChains || !projectMetadata.linkedChains.includes(Number(chainID)));
+
+    console.log("CHAIN ID", chainID);
+    console.log("PROJECT METADATA", projectMetadata);
+    console.log("===> A", Number(projectMetadata.chainId) !== Number(chainID));
+    console.log("===> B", !projectMetadata.linkedChains || !projectMetadata.linkedChains.includes(Number(chainID)));
+    console.log("===> C", createLinkedProject);
+
+    if (createLinkedProject) {
       console.log("Creating Linked Project");
 
+      // TODO: Configure how to pass nonce
+
       // Create Linked Project
-      // TODO: FIX
-      allo.createProject({
+      const result = allo.createProject({
         name: projectMetadata.name,
         metadata: {
           registryAddress: "0x4AAcca72145e1dF2aeC137E1f3C5E3D75DB8b5f3",
           chainId: Number(chainID),
         },
       });
+      
+
+      await result
+        .on("ipfs", (res) => {
+          if (res.type === "success") {
+            console.log("IPFS CID", res.value);
+          } else {
+            console.error("profile creation: IPFS Error", res.error);
+            datadogRum.addError(res.error);
+            datadogLogs.logger.error("ipfs: error uploading metadata");
+          }
+        })
+        .on("transaction", (res) => {
+          if (res.type === "success") {
+            console.log("Transaction", res.value);
+          } else {
+            console.error("profile creation: Transaction Error", res.error);
+            datadogRum.addError(res.error);
+            datadogLogs.logger.warn("transaction error");
+          }
+        })
+        .on("transactionStatus", async (res) => {
+          if (res.type === "success") {
+            console.log(
+              "profile creation: Transaction Status Success",
+              res.value
+            );
+            dispatch<any>(applyToRound(
+              roundId,
+              projectID,
+              projectUniqueID,
+              isV2,
+              signedApplication,
+              allo
+            ));
+          } else {
+            console.log(
+              "profile creation: Transaction Status Error",
+              res.error
+            );
+          }
+        })
+        .execute();
+    } else {
+      dispatch<any>(applyToRound(
+        roundId,
+        projectID,
+        projectUniqueID,
+        isV2,
+        signedApplication,
+        allo
+      ));
     }
-
-    const projectUniqueID = isV2
-      ? (state.projects.anchor![projectID] as Hex)
-      : projectID;
-
-    const result = allo.applyToRound({
-      projectId: projectUniqueID as `0x${string}`,
-      roundId: isV2 ? Number(roundId) : (roundId as Hex),
-      metadata: signedApplication as unknown as AnyJson,
-    });
-
-    await result
-      .on("ipfs", (res) => {
-        if (res.type === "success") {
-          dispatch({
-            type: ROUND_APPLICATION_LOADING,
-            roundAddress: roundId,
-            status: Status.SendingTx,
-          });
-        } else {
-          console.error("IPFS Error", res.error);
-          datadogRum.addError(res.error);
-          datadogLogs.logger.error("ipfs: error uploading metadata");
-          dispatchAndLogApplicationError(
-            dispatch,
-            roundId,
-            "error uploading round application metadata",
-            Status.UploadingMetadata
-          );
-        }
-      })
-      .on("transaction", (res) => {
-        // Note: Not handled by UI
-        if (res.type === "success") {
-          console.log("Transaction", res.value);
-        } else {
-          console.error("Transaction Error", res.error);
-          datadogRum.addError(res.error);
-          datadogLogs.logger.warn("transaction error");
-        }
-      })
-      .on("transactionStatus", async (res) => {
-        if (res.type === "success") {
-          dispatch({
-            type: ROUND_APPLICATION_LOADED,
-            roundAddress: roundId,
-            projectId: projectID,
-          });
-        } else {
-          dispatchAndLogApplicationError(
-            dispatch,
-            roundId,
-            "error calling applyToRound",
-            Status.SendingTx
-          );
-          console.log("Transaction Status Error", res.error);
-        }
-      })
-      .execute();
   };
 
 export const checkRoundApplications =
@@ -394,7 +465,6 @@ export const checkRoundApplications =
       console.log("applications", applications);
 
       projectIDs.forEach((projectId) => {
-        // VALIDATE THIS
         const app = applications.find(
           (application) => application.projectId === projectId
         );
@@ -408,18 +478,6 @@ export const checkRoundApplications =
         }
       });
 
-      // applicationEvents = await contract.queryFilter(applicationFilter); // WTF IS THIS?
-
-      // applicationEvents.forEach((event) => {
-      // const projectID = uniqueIDsToIDs[event?.args?.project];
-      // if (data !== undefined) {
-      //   dispatch({
-      //     type: ROUND_APPLICATION_FOUND,
-      //     roundAddress,
-      //     projectID,
-      //   });
-      // }
-      // });
     } catch (e) {
       datadogLogs.logger.warn("error getting round applications");
       datadogRum.addError(e);
