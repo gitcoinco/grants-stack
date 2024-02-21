@@ -447,8 +447,6 @@ export class DataLayer {
       getApplicationStatusByRoundIdAndCID,
       requestVariables,
     );
-
-    console.log("response", response);
   
     return response.applications[0].status;
   }

@@ -43,20 +43,13 @@ function ViewApplication() {
       ? applicationState.status
       : ApplicationStatus.Undefined;
 
-    console.log("applicationState", state);
-
     const roundError = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
-
-    const applicationError = applicationState
-      ? applicationState.error
-      : undefined;
-    const showErrorModal =
-      applicationError && applicationStatus === ApplicationStatus.Error;
-
     const publishedApplicationMetadata = applicationState
       ? applicationState.metadataFromIpfs![ipfsHash!]
       : undefined;
+    const showErrorModal =
+      !!publishedApplicationMetadata?.publishedApplicationData?.error;
 
     const roundApplicationStatus =
       publishedApplicationMetadata?.status ?? "IN_REVIEW";
@@ -74,7 +67,7 @@ function ViewApplication() {
       round,
       applicationState,
       applicationStatus,
-      applicationError,
+      // applicationError,
       applicationMetadata: round?.applicationMetadata,
       publishedApplicationMetadata,
       showErrorModal,
@@ -175,7 +168,7 @@ function ViewApplication() {
       <div className="w-full flex">
         <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
           <p className="font-semibold">Grant Round</p>
-          <p>{props.round.programName}</p>
+          <p>{props.round.programName ?? "shit"}</p>
           <p>{props.round.roundMetadata.name}</p>
           {isDirectRound && hasProperStatus && (
             <>
@@ -236,7 +229,7 @@ function ViewApplication() {
               showText
             />
           )}
-          {props.applicationMetadata && props.publishedApplicationMetadata && (
+          {props.applicationMetadata && (
             <Form
               roundApplication={props.applicationMetadata}
               publishedApplication={

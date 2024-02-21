@@ -71,6 +71,9 @@ export const APPLICATION_DATA_ERROR = "APPLICATION_DATA_ERROR";
 
 interface ApplicationDataErrorAction {
   type: typeof APPLICATION_DATA_ERROR;
+  roundAddress: string;
+  ipfsHash: string;
+  applicationData: SignedRoundApplication;
   error: string;
 }
 
@@ -490,24 +493,10 @@ export const checkRoundApplications =
   };
 
 export const fetchApplicationData =
-  (
-    ipfsHash: string,
-    roundAddress: string
-    // chainId: string,
-    // dataLayer: DataLayer
-  ) =>
-  async (dispatch: Dispatch) => {
+  (ipfsHash: string, roundAddress: string) => async (dispatch: Dispatch) => {
     const pinataClient = new PinataClient(getConfig());
     try {
       const applicationMetadata = await pinataClient.fetchJson(ipfsHash);
-
-      // const status = await dataLayer.getApplicationStatusByRoundIdAndCID({
-      //   chainId: Number(chainId),
-      //   roundId: roundAddress as any,
-      //   metadataCid: ipfsHash,
-      // });
-
-      // console.log("status", status);
 
       dispatch({
         type: APPLICATION_DATA_LOADED,
@@ -516,8 +505,15 @@ export const fetchApplicationData =
         ipfsHash,
       });
     } catch (e) {
+      // dispatch({
+      //   type: APPLICATION_DATA_ERROR,
+      //   error: "shit",
+      // });
       dispatch({
-        type: APPLICATION_DATA_ERROR,
+        type: APPLICATION_DATA_LOADED,
+        applicationData: { error: "shit" },
+        roundAddress,
+        ipfsHash,
       });
     }
   };

@@ -140,7 +140,7 @@ export default function Form({
   const schema = roundApplication.applicationSchema;
 
   useEffect(() => {
-    if (publishedApplication === undefined) {
+    if (publishedApplication === undefined || showErrorModal) {
       return;
     }
 
