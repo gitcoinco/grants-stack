@@ -306,8 +306,10 @@ function AfterRoundStart(props: {
         </div>
       )}
       <div className="relative top-28 lg:mx-20 px-4 py-7 h-screen">
-        <div className="flex flex-col pb-4" data-testid="bread-crumbs">
-          <Breadcrumb items={breadCrumbs} />
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-col pb-4" data-testid="bread-crumbs">
+            <Breadcrumb items={breadCrumbs} />
+          </div>
           {walletAddress && (
             <div data-testid="passport-widget">
               <PassportWidget />

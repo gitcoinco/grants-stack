@@ -373,6 +373,15 @@ export interface Web3Instance {
 
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
+export function chainToPassportCommunityIdMap(chainId: number) {
+  switch (chainId) {
+    case ChainId.AVALANCHE:
+      return process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID_AVALANCHE;
+    default:
+      return process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
+  }
+}
+
 export * from "./allo/transaction-builder";
 export type { VotingToken } from "./types";
 

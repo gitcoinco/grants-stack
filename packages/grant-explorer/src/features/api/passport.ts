@@ -5,16 +5,20 @@ import {
   PassportResponseSchema,
   PassportState,
   submitPassport,
+  chainToPassportCommunityIdMap,
+  ChainId,
 } from "common";
 import { useEffect, useMemo } from "react";
 import useSWR from "swr";
+import { useNetwork } from "wagmi";
 
 export { submitPassport, fetchPassport, PassportState };
 export type { PassportResponse };
 
-const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
-
 export function usePassport({ address }: { address: string | undefined }) {
+  const { chain } = useNetwork();
+  const chainId = chain?.id || ChainId.MAINNET;
+  const PASSPORT_COMMUNITY_ID = chainToPassportCommunityIdMap(chainId);
   const swr = useSWR<PassportResponse, Response, () => [string, string] | null>(
     () =>
       address && PASSPORT_COMMUNITY_ID
