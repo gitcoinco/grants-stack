@@ -530,24 +530,24 @@ describe("projects reducer", () => {
     });
 
     expect(state2.status).toEqual(Status.Loading);
-    expect(state2.loadingChains.length).toEqual(2);
+    expect(state2.loadingChains.length).toEqual(0);
 
     // mark chain 1 as done
     const state3: ProjectsState = projectsReducer(state2, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainIDs: [1],
+        chainIDs: [10],
       },
     });
 
-    expect(state3.status).toEqual(Status.Loading);
+    expect(state3.status).toEqual(Status.Loaded);
     expect(state3.loadingChains.length).toEqual(1);
 
     // mark chain 0 as done
     const state4: ProjectsState = projectsReducer(state3, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainIDs: [10],
+        chainIDs: [1],
       },
     });
 

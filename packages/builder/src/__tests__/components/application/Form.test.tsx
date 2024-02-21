@@ -7,27 +7,49 @@ import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
 import { Metadata, Round } from "../../../types";
-import { addressFrom, renderWrapped } from "../../../utils/test_utils";
+import { renderWrapped } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
 
 const projectsMetadata: Metadata[] = [
   {
     protocol: 1,
     pointer: "0x1234",
-    id: `1:${addressFrom(1)}:1`,
+    id: "0x3456",
     chainId: 1,
     title: "First Project",
     description: "This is the first project description",
     website: "https://firstproject.com",
+    bannerImg: "",
+    logoImg: "",
+    projectTwitter: "",
+    userGithub: "",
+    projectGithub: "",
+    credentials: {},
+    createdAt: 1,
+    updatedAt: 1,
+    linkedChains: [1],
+    nonce: BigInt(1),
+    registryAddress: "0x1234",
   },
   {
     protocol: 2,
-    pointer: "0x1234",
-    id: `1:${addressFrom(2)}:2`,
+    pointer: "0x1324",
+    id: "0x9876",
     chainId: 1,
     title: "Second Project",
     description: "This is the second project description",
     website: "https://secondproject.com",
+    bannerImg: "",
+    logoImg: "",
+    projectTwitter: "",
+    userGithub: "",
+    projectGithub: "",
+    credentials: {},
+    createdAt: 1,
+    updatedAt: 1,
+    linkedChains: [1],
+    nonce: BigInt(1),
+    registryAddress: "0x1234",
   },
 ];
 
@@ -47,7 +69,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
 };
 
 const round: Round = {
-  id: `1:${addressFrom(1)}:1`,
+  id: "0x3456",
   address: "0x123",
   applicationsStartTime: 123,
   applicationsEndTime: 123,
@@ -135,6 +157,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
+          setCreateLinkedProject={(createLinkedProject) => {}}
         />,
         store
       );
@@ -144,7 +167,7 @@ describe("<Form />", () => {
       );
       await act(async () => {
         fireEvent.change(selectProject, {
-          target: { value: `1:${addressFrom(1)}:1` },
+          target: { value: "0x3456" },
         });
       });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -190,6 +213,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
+          setCreateLinkedProject={(createLinkedProject) => {}}
         />,
         store
       );
@@ -199,7 +223,7 @@ describe("<Form />", () => {
       );
       await act(async () => {
         fireEvent.change(selectProject, {
-          target: { value: `1:${addressFrom(1)}:1` },
+          target: { value: "0x3456" },
         });
       });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -245,6 +269,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
+          setCreateLinkedProject={(createLinkedProject) => {}}
         />,
         store
       );
@@ -254,7 +279,7 @@ describe("<Form />", () => {
       );
       await act(async () => {
         fireEvent.change(selectProject, {
-          target: { value: `1:${addressFrom(1)}:1` },
+          target: { value: "0x3456" },
         });
       });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -300,6 +325,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
+          setCreateLinkedProject={(createLinkedProject) => {}}
         />,
         store
       );
@@ -309,7 +335,7 @@ describe("<Form />", () => {
       );
       await act(async () => {
         fireEvent.change(selectProject, {
-          target: { value: `1:${addressFrom(1)}:1` },
+          target: { value: "0x3456" },
         });
       });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -349,6 +375,7 @@ describe("<Form />", () => {
         round={round}
         onSubmit={jest.fn()}
         showErrorModal={false}
+        setCreateLinkedProject={(createLinkedProject) => {}}
       />,
       store
     );
@@ -358,7 +385,7 @@ describe("<Form />", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
     const toggleButton = screen.getByText("View your Project Details");
@@ -412,6 +439,7 @@ describe("<Form/>", () => {
         round={round}
         onSubmit={jest.fn()}
         showErrorModal={false}
+        setCreateLinkedProject={(createLinkedProject) => {}}
       />,
       store
     );
@@ -421,7 +449,7 @@ describe("<Form/>", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
 
@@ -487,6 +515,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
+        setCreateLinkedProject={(createLinkedProject) => {}}
       />,
       store
     );
@@ -496,7 +525,7 @@ describe("Form questions", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
 
@@ -506,7 +535,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: ["Second option"],
     });
 
@@ -516,7 +545,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: ["Second option", "First option"],
     });
   });
@@ -550,6 +579,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
+        setCreateLinkedProject={(createLinkedProject) => {}}
       />,
       store
     );
@@ -559,7 +589,7 @@ describe("Form questions", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
 
@@ -569,7 +599,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: "Second option",
     });
 
@@ -579,7 +609,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: "First option",
     });
   });
@@ -613,6 +643,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
+        setCreateLinkedProject={(createLinkedProject) => {}}
       />,
       store
     );
@@ -622,7 +653,7 @@ describe("Form questions", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
 
@@ -636,7 +667,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: "First option",
     });
 
@@ -645,7 +676,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: "Second option",
     });
   });

@@ -70,7 +70,6 @@ function Project() {
   // }, [props.projectEvents, global, dispatch]);
 
   function createEditPath() {
-    // const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
     const registryAddress = "0x"; // TODO: fix (technically, we dont need the regsitry address anymore)
     return editPath(props.chainId!.toString(), registryAddress, props.id!);
   }

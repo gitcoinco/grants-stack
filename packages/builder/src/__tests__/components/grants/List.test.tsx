@@ -32,6 +32,17 @@ const projectsMetadata: Metadata[] = [
     title: "First Project",
     description: "",
     website: "",
+    bannerImg: "",
+    logoImg: "",
+    projectTwitter: "",
+    userGithub: "",
+    projectGithub: "",
+    credentials: {},
+    createdAt: 1,
+    updatedAt: 1,
+    linkedChains: [1],
+    nonce: BigInt(1),
+    registryAddress: "0x1234",
   },
   {
     protocol: 2,
@@ -41,6 +52,17 @@ const projectsMetadata: Metadata[] = [
     title: "Second Project",
     description: "",
     website: "",
+    bannerImg: "",
+    logoImg: "",
+    projectTwitter: "",
+    userGithub: "",
+    projectGithub: "",
+    credentials: {},
+    createdAt: 1,
+    updatedAt: 1,
+    linkedChains: [1],
+    nonce: BigInt(1),
+    registryAddress: "0x1234",
   },
 ];
 
@@ -98,7 +120,7 @@ describe("<List />", () => {
         payload: {
           chainIDs: [10],
           events: {
-            "1:1:1": {
+            "0x1234": {
               createdAtBlock: 1111,
               updatedAtBlock: 1112,
             },
@@ -258,7 +280,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10 },
+          payload: { chainIDs: [10] },
         });
 
         store.dispatch({
@@ -351,7 +373,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10 },
+          payload: { chainIDs: [10] },
         });
 
         store.dispatch({
@@ -382,7 +404,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "PROJECTS_LOADED",
             payload: {
-              chainID: 10,
+              chainID: [10],
             },
           });
 
@@ -405,7 +427,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "ROUND_APPLICATION_FOUND",
             roundAddress,
-            project: "1:1:1",
+            project: "0x1234",
           });
 
           when(useLocalStorage as jest.Mock)

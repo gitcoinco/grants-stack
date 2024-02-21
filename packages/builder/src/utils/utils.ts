@@ -1,5 +1,3 @@
-import { datadogLogs } from "@datadog/browser-logs";
-import { datadogRum } from "@datadog/browser-rum";
 import { ChainId } from "common";
 import { BigNumberish, ethers } from "ethers";
 import gnosisABI from "../contracts/abis/gnosis.json";
@@ -65,27 +63,6 @@ export const metadataToProject = (
   };
 
   return p;
-};
-
-/**
- * Get the components of a project URI
- *
- * @param id
- *
- * @returns { ChainId, registryAddress, id }
- */
-export const getProjectURIComponents = (id: string) => {
-  const split = id.split(":");
-  if (split.length < 3) {
-    datadogRum.addError("Invalid project id", { id });
-    datadogLogs.logger.warn("Invalid project id", { id });
-    throw new Error("Invalid project ID");
-  }
-  return {
-    chainId: split[0],
-    registryAddress: split[1],
-    id: split[2],
-  };
 };
 
 /**

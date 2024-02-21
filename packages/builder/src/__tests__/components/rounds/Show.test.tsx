@@ -146,7 +146,7 @@ describe("<Show />", () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
 
-        store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: [10] });
 
         renderWrapped(<Show />, store);
 

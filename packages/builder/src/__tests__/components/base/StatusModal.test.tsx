@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import StatusModal from "../../../components/base/StatusModal";
-import { applicationSteps, grantSteps } from "../../../utils/steps";
 import setupStore from "../../../store";
+import { applicationSteps, grantSteps } from "../../../utils/steps";
 import { renderWrapped } from "../../../utils/test_utils";
 
 describe("<StatusModal /> with applicationSteps", () => {
