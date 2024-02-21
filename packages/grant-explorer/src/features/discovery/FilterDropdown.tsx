@@ -1,18 +1,18 @@
 import { Fragment } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Transition, Disclosure } from "@headlessui/react";
+import { Disclosure, Transition } from "@headlessui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import { toQueryString } from "./RoundsFilter";
 import {
+  getRoundSelectionParamsFromUrlParams,
   RoundFilterUiOption,
   RoundStatus,
-  getRoundSelectionParamsFromUrlParams,
 } from "./hooks/useFilterRounds";
-import { ROUND_PAYOUT_DIRECT_OLD, ROUND_PAYOUT_MERKLE_OLD } from "common";
 import { getFilterLabel } from "./utils/getFilterLabel";
 import { getEnabledChains } from "../../app/chainConfig";
+import { ROUND_PAYOUT_DIRECT, ROUND_PAYOUT_MERKLE } from "common";
 
 export const FILTER_OPTIONS: RoundFilterUiOption[] = [
   {
@@ -26,11 +26,11 @@ export const FILTER_OPTIONS: RoundFilterUiOption[] = [
     children: [
       {
         label: "Quadratic funding",
-        value: ROUND_PAYOUT_MERKLE_OLD,
+        value: ROUND_PAYOUT_MERKLE,
       },
       {
         label: "Direct grants",
-        value: ROUND_PAYOUT_DIRECT_OLD,
+        value: ROUND_PAYOUT_DIRECT,
       },
     ],
   },

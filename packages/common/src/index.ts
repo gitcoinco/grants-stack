@@ -307,17 +307,17 @@ export async function getTokenPrice(tokenId: string) {
   return data[0].value;
 }
 
-//FIXME: remove old types
-export const ROUND_PAYOUT_MERKLE_OLD = "MERKLE";
-export const ROUND_PAYOUT_DIRECT_OLD = "DIRECT";
 export const ROUND_PAYOUT_MERKLE = "allov1.QF";
 export const ROUND_PAYOUT_DIRECT = "allov1.Direct";
 export type RoundPayoutType =
-  | "MERKLE"
-  | "DIRECT"
   | "allov1.Direct"
   | "allov1.QF"
-  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy";
+  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
+  | "allov2.MicroGrantsStrategy"
+  | "allov2.MicroGrantsHatsStrategy"
+  | "allov2.SQFSuperFluidStrategy"
+  | "allov2.MicroGrantsGovStrategy";
+
 export type RoundVisibilityType = "public" | "private";
 
 export type { Allo, AlloError, AlloOperation } from "./allo/allo";
