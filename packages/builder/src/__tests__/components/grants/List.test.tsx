@@ -243,7 +243,6 @@ describe("<List />", () => {
         renderWrapped(<List />, store);
 
         await act(async () => {
-
           store.dispatch({
             type: "PROJECTS_LOADED",
             payload: { chainIDs: [10] },

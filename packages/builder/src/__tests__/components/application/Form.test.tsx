@@ -2,7 +2,6 @@ import "@testing-library/jest-dom";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { RoundApplicationMetadata, DataLayer } from "data-layer";
 import { Store } from "redux";
-import * as projects from "../../../actions/projects";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
@@ -157,7 +156,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
-          setCreateLinkedProject={(createLinkedProject) => {}}
+          setCreateLinkedProject={() => {}}
         />,
         store
       );

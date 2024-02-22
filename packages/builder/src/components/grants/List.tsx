@@ -25,7 +25,7 @@ import { unloadAll } from "../../actions/grantsMetadata";
 function ProjectsList() {
   const dataLayer = useDataLayer();
   const dispatch = useDispatch();
-  const [showErrorModal, setShowErrorModal] = useState<boolean>(true);  
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(true);
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
@@ -53,7 +53,6 @@ function ProjectsList() {
     const projectIds = Object.keys(state.grantsMetadata);
 
     console.log("ProjectsList -> projectIds", projectIds);
-    
 
     const showRoundModal =
       roundToApply &&

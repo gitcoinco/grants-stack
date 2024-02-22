@@ -129,7 +129,6 @@ function ShowRound() {
   const { roundId, chainId } = params;
 
   const props = useSelector((state: RootState) => {
-
     const allProjectMetadata = state.grantsMetadata;
     const projectsStatus = state.projects.status;
     const roundState = state.rounds[roundId!];
