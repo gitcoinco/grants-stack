@@ -324,7 +324,7 @@ export async function listRounds(args: {
   const { chainId, dataLayer, programId } = args;
 
   let rounds = await dataLayer
-    .getRoundsByProgramId({
+    .getRoundsByProgramIdAndChainId({
       chainId: chainId,
       programId,
     })

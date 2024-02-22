@@ -307,8 +307,8 @@ export const getRoundByIdAndChainId = gql`
   }
 `;
 
-export const getRoundsByProgramId = gql`
-  query getRoundsByProgramId($chainId: Int!, $programId: String!) {
+export const getRoundsByProgramIdAndChainId = gql`
+  query getRoundsByProgramIdAndChainId($chainId: Int!, $programId: String!) {
     rounds(
       filter: {
         chainId: { equalTo: $chainId }
