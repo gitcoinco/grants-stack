@@ -50,8 +50,9 @@ function Card({ projectId }: { projectId: string }) {
   }, [dispatch, projectId, props.currentProject, props.status]);
 
   function createProjectPath() {
+    if (!props.chainId) return "";
     const registryAddress = "0x"; // TODO: fix (technically, we dont need the regsitry address anymore)
-    return projectPath(props.chainId!.toString(), registryAddress, props.id);
+    return projectPath(props.chainId.toString(), registryAddress, props.id);
   }
 
   const projectDescription = renderToPlainText(
