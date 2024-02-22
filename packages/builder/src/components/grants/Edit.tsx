@@ -71,12 +71,10 @@ function EditProject() {
   };
 
   useEffect(() => {
-    console.log("shit");
     if (
       props.id !== undefined &&
       props.metadataStatus === GrantsMetadataStatus.Undefined
     ) {
-      console.log("shit2");
       dispatch(fetchGrantData(props.id, dataLayer));
     }
   }, [dispatch, props.id, props.metadataStatus]);

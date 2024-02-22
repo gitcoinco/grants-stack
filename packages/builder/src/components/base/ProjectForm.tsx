@@ -130,7 +130,10 @@ function ProjectForm({
       dispatch(
         metadataSaved({
           ...props.formMetaData,
-          website: `https://${props.formMetaData.website}`,
+          website: `https://${props.formMetaData.website?.replace(
+            "https://",
+            ""
+          )}`,
         })
       );
       setVerifying(ProjectFormStatus.Verification);
