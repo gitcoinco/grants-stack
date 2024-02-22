@@ -8,13 +8,7 @@ import {
   roundFactoryContract,
   roundImplementationContract,
 } from "./contracts";
-import {
-  ApplicationStatus,
-  ApprovedProject,
-  MatchingStatsData,
-  MetadataPointer,
-  Round,
-} from "./types";
+import { MatchingStatsData, Round } from "./types";
 import { fetchFromIPFS } from "./utils";
 import { maxDateForUint256 } from "../../constants";
 import { payoutTokens } from "./payoutTokens";
@@ -300,97 +294,6 @@ export async function deployRoundContract(
     console.error("deployRoundContract", error);
     throw new Error("Unable to create round");
   }
-}
-
-/**
- * Shape of subgraph response of Round
- */
-interface RoundResult {
-  id: string;
-  program: {
-    id: string;
-  };
-  roundMetaPtr: MetadataPointer;
-  applicationMetaPtr: MetadataPointer;
-  applicationsStartTime: string;
-  applicationsEndTime: string;
-  roundStartTime: string;
-  roundEndTime: string;
-  token: string;
-  votingStrategy: {
-    id: string;
-  };
-  projectsMetaPtr?: MetadataPointer | null;
-  projects: RoundProjectResult[];
-}
-
-interface RoundProjectResult {
-  id: string;
-  project: string;
-  status: string | number;
-  applicationIndex: number;
-  metaPtr: MetadataPointer;
-}
-
-function convertStatus(status: string | number) {
-  switch (status) {
-    case 0:
-      return "PENDING";
-    case 1:
-      return "APPROVED";
-    case 2:
-      return "REJECTED";
-    case 3:
-      return "CANCELLED";
-    default:
-      return "PENDING";
-  }
-}
-
-async function loadApprovedProjects(
-  round: RoundResult,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
-): Promise<ApprovedProject[]> {
-  if (!round.projectsMetaPtr || round.projects.length === 0) {
-    return [];
-  }
-  const allRoundProjects = round.projects;
-
-  const approvedProjects = allRoundProjects.filter(
-    (project) => project.status === ApplicationStatus.APPROVED
-  );
-  const fetchApprovedProjectMetadata: Promise<ApprovedProject>[] =
-    approvedProjects.map((project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId)
-    );
-  return Promise.all(fetchApprovedProjectMetadata);
-}
-
-async function fetchMetadataAndMapProject(
-  project: RoundProjectResult,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
-): Promise<ApprovedProject> {
-  const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
-  // NB: applicationData can be in two formats:
-  // old format: { round, project, ... }
-  // new format: { signature: "...", application: { round, project, ... } }
-  const application = applicationData.application || applicationData;
-  const projectMetadataFromApplication = application.project;
-  const projectRegistryId = `0x${projectMetadataFromApplication.id}`;
-  const projectOwners = await getProjectOwners(chainId, projectRegistryId);
-
-  return {
-    grantApplicationId: project.id,
-    projectRegistryId: project.project,
-    recipient: application.recipient,
-    projectMetadata: {
-      ...projectMetadataFromApplication,
-      owners: projectOwners.map((address: string) => ({ address })),
-    },
-    status: ApplicationStatus.APPROVED,
-  };
 }
 
 export async function getProjectOwners(
