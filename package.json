@@ -38,6 +38,7 @@
     "turbo": "^1.12.2"
   },
   "dependencies": {
+    "concurrently": "^8.2.2",
     "prettier": "^3.0.3"
   },
   "pnpm": {
@@ -45,5 +46,7 @@
       "webpack": "^5"
     }
   },
-  "workspaces": ["packages/*"]
+  "workspaces": [
+    "packages/*"
+  ]
 }

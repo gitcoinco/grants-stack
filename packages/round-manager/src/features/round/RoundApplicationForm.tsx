@@ -232,6 +232,7 @@ export function RoundApplicationForm(props: {
     ipfsStatus,
     contractDeploymentStatus,
     indexingStatus,
+    error: createRoundError,
   } = useCreateRoundStore();
 
   /** Upon succesful creation of round, redirect to program details */
@@ -268,10 +269,6 @@ export function RoundApplicationForm(props: {
       setTimeout(() => {
         setOpenErrorModal(true);
       }, errorModalDelayMs);
-    }
-
-    if (indexingStatus === ProgressStatus.IS_ERROR) {
-      redirectToProgramDetails(navigate, 5000, programId);
     }
   }, [
     contractDeploymentStatus,
@@ -399,6 +396,7 @@ export function RoundApplicationForm(props: {
     >
       <ErrorModal
         isOpen={openErrorModal}
+        subheading={createRoundError?.toString()}
         setIsOpen={setOpenErrorModal}
         tryAgainFn={handleSubmit(next)}
         doneFn={() => {

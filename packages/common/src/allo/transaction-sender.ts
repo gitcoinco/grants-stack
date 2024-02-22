@@ -61,7 +61,9 @@ export function decodeEventFromReceipt<
 
   if (log === undefined) {
     // should never happen
-    throw new Error("Event not found in receipt");
+    throw new AlloError(
+      `Event ${args.event} not found in transaction receipt, was the transaction successful?`
+    );
   }
 
   const decoded = decodeEventLog({
