@@ -249,6 +249,10 @@ export type V2Round = {
   projectId: string;
   strategyAddress: string;
   strategyName: string;
+  project?: {
+    id: string;
+    name: string;
+  };
 };
 
 export type V2RoundWithRoles = V2Round & {

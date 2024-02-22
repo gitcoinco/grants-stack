@@ -360,6 +360,10 @@ export const getRoundByIdAndChainId = gql`
       strategyId
       strategyAddress
       strategyName
+      project {
+        id
+        name
+      }
     }
   }
 `;
