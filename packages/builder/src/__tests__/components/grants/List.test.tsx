@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { when } from "jest-when";
 import { Store } from "redux";
 import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
@@ -71,13 +71,12 @@ describe("<List />", () => {
   beforeEach(() => {
     (useLocalStorage as jest.Mock).mockReturnValue([null]);
     (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+    (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
   });
 
   describe("useEffect/loadAllChainsProjects", () => {
     test("should be called the first time", async () => {
       const store = setupStore();
-      (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
-      // (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
       renderWrapped(<List />, store);
 
@@ -241,20 +240,23 @@ describe("<List />", () => {
       test("should show projects", async () => {
         const store = setupStore();
 
-        store.dispatch({
-          type: "PROJECTS_LOADED",
-          payload: { chainIDs: [10] },
-        });
-        store.dispatch({
-          type: "GRANT_METADATA_FETCHED",
-          data: projectsMetadata[0],
-        });
-        store.dispatch({
-          type: "GRANT_METADATA_FETCHED",
-          data: projectsMetadata[1],
-        });
-
         renderWrapped(<List />, store);
+
+        await act(async () => {
+
+          store.dispatch({
+            type: "PROJECTS_LOADED",
+            payload: { chainIDs: [10] },
+          });
+          store.dispatch({
+            type: "GRANT_METADATA_FETCHED",
+            data: projectsMetadata[0],
+          });
+          store.dispatch({
+            type: "GRANT_METADATA_FETCHED",
+            data: projectsMetadata[1],
+          });
+        });
 
         expect(screen.getByText("First Project")).toBeInTheDocument();
         expect(screen.getByText("Second Project")).toBeInTheDocument();
