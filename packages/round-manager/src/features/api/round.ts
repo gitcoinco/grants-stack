@@ -18,7 +18,6 @@ import {
 import { fetchFromIPFS } from "./utils";
 import { maxDateForUint256 } from "../../constants";
 import { payoutTokens } from "./payoutTokens";
-import { Address } from "wagmi";
 import { DataLayer, V2RoundWithRoles } from "data-layer";
 
 export enum UpdateAction {
