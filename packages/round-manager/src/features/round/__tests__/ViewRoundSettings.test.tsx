@@ -62,6 +62,10 @@ jest.mock("react-router-dom", () => ({
   useParams: jest.fn(),
 }));
 
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({}),
+}));
+
 const mockRoundData: Round = makeRoundData();
 
 const mockDirectGrantRoundData: Round = makeDirectGrantRoundData();
