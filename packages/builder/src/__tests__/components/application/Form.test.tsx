@@ -212,7 +212,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
-          setCreateLinkedProject={(createLinkedProject) => {}}
+          setCreateLinkedProject={() => {}}
         />,
         store
       );
@@ -267,7 +267,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
-          setCreateLinkedProject={(createLinkedProject) => {}}
+          setCreateLinkedProject={() => {}}
         />,
         store
       );
@@ -323,7 +323,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
-          setCreateLinkedProject={(createLinkedProject) => {}}
+          setCreateLinkedProject={() => {}}
         />,
         store
       );
@@ -373,7 +373,7 @@ describe("<Form />", () => {
         round={round}
         onSubmit={jest.fn()}
         showErrorModal={false}
-        setCreateLinkedProject={(createLinkedProject) => {}}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -437,7 +437,7 @@ describe("<Form/>", () => {
         round={round}
         onSubmit={jest.fn()}
         showErrorModal={false}
-        setCreateLinkedProject={(createLinkedProject) => {}}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -513,7 +513,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
-        setCreateLinkedProject={(createLinkedProject) => {}}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -577,7 +577,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
-        setCreateLinkedProject={(createLinkedProject) => {}}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -641,7 +641,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
-        setCreateLinkedProject={(createLinkedProject) => {}}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
