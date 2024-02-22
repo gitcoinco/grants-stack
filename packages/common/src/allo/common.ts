@@ -9,3 +9,6 @@ export function success<T>(value: T): Result<T> {
 export function error<T>(error: Error): Result<T> {
   return { type: "error", error };
 }
+
+export const dateToEthereumTimestamp = (date: Date) =>
+  BigInt(Math.floor(date.getTime() / 1000));
