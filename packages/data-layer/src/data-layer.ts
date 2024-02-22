@@ -267,49 +267,6 @@ export class DataLayer {
     return { project };
   }
 
-  /**
-   * getProjects() returns a list of projects.
-   *
-   * @param chainIds
-   * @param first
-   * @param alloVersion
-   *
-   * @returns v2Projects[] | null
-   */
-  async getProjects({
-    chainIds,
-    first,
-    alloVersion,
-  }: {
-    chainIds: number[];
-    first: number;
-    alloVersion: AlloVersion;
-  }): Promise<{ projects: v2Project[] } | null> {
-    const projects: v2Project[] = [];
-
-    for (const chainId of chainIds) {
-      const requestVariables = {
-        alloVersion,
-        first,
-        chainId,
-      };
-
-      const profilesData: v2Project = await request(
-        this.gsIndexerEndpoint,
-        getProjects,
-        requestVariables,
-      );
-
-      projects.push(profilesData);
-    }
-
-    const mergedProjrects = mergeCanonicalAndLinkedProjects(projects);
-
-    return {
-      projects: mergedProjrects,
-    };
-  }
-
   // getProjectsByAddress
   /**
    * getProjectsByAddress() returns a list of projects by address.

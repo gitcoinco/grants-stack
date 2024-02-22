@@ -590,34 +590,6 @@ describe("v2 projects retrieval", () => {
       mockProject.metadata.description,
     );
   });
-
-  test("can retrieve all projects for a network", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      status: 200,
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => ({
-        projects: mockProjects,
-      }),
-    });
-
-    const dataLayer = new DataLayer({
-      fetch: fetchMock,
-      search: { baseUrl: "https://example.com" },
-      subgraph: { endpointsByChainId: {} },
-      indexer: {
-        baseUrl: "https://grants-stack-indexer-v2.gitcoin.co/graphql",
-      },
-    });
-
-    const data = await dataLayer.getProjects({
-      chainIds: [11155111],
-      first: 10,
-      alloVersion: "allo-v2",
-    });
-
-
-    if (data?.projects) expect(data.projects.length).toBeGreaterThan(0);
-  });
 });
 
 describe("categories", () => {
