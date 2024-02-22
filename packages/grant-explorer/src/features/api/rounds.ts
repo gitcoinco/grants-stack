@@ -70,30 +70,34 @@ type SpamRoundsMaps = {
 
 // Temporary round curation to avoid spam
 export async function fetchSpamRounds(): Promise<SpamRoundsMaps> {
-  const spam: SpamRoundsMaps = {};
+  try {
+    const spam: SpamRoundsMaps = {};
 
-  const csvContent = await fetch(
-    "https://docs.google.com/spreadsheets/d/10jekVhMuFg6IQ0sYAN_dxh_U-OxU7EAuGMNvTtlpraM/export?format=tsv"
-  ).then((res) => res.text());
+    const csvContent = await fetch(
+      "https://docs.google.com/spreadsheets/d/10jekVhMuFg6IQ0sYAN_dxh_U-OxU7EAuGMNvTtlpraM/export?format=tsv"
+    ).then((res) => res.text());
 
-  const rows = csvContent.split("\n");
-  rows
-    // skip the header row
-    .slice(1)
-    .forEach((line) => {
-      const columns = line.split("\t");
-      const url = columns[1];
-      // extract chainId and roundId
-      const regex =
-        /https:\/\/explorer\.gitcoin\.co\/#\/round\/(\d+)\/([0-9a-fA-Fx]+)/;
-      const match = url.match(regex);
-      if (match) {
-        const chainId = parseInt(match[1]);
-        const roundId = match[2].toLowerCase();
-        spam[chainId] ||= {};
-        spam[chainId][roundId] = true;
-      }
-    });
+    const rows = csvContent.split("\n");
+    rows
+      // skip the header row
+      .slice(1)
+      .forEach((line) => {
+        const columns = line.split("\t");
+        const url = columns[1];
+        // extract chainId and roundId
+        const regex =
+          /https:\/\/explorer\.gitcoin\.co\/#\/round\/(\d+)\/([0-9a-fA-Fx]+)/;
+        const match = url.match(regex);
+        if (match) {
+          const chainId = parseInt(match[1]);
+          const roundId = match[2].toLowerCase();
+          spam[chainId] ||= {};
+          spam[chainId][roundId] = true;
+        }
+      });
 
-  return spam;
+    return spam;
+  } catch (e) {
+    return {};
+  }
 }
