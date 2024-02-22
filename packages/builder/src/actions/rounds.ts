@@ -117,11 +117,10 @@ export const loadRound =
     const round = {
       id: version === "allo-v1" ? roundId : v2Round.id,
       address: version === "allo-v1" ? roundId : v2Round.strategyAddress,
-      applicationsStartTime:
-        Date.parse(`${v2Round.applicationsStartTime}Z`) / 1000,
-      applicationsEndTime: Date.parse(`${v2Round.applicationsEndTime}Z`) / 1000,
-      roundStartTime: Date.parse(`${v2Round.donationsStartTime}Z`) / 1000,
-      roundEndTime: Date.parse(`${v2Round.donationsEndTime}Z`) / 1000,
+      applicationsStartTime: Date.parse(v2Round.applicationsStartTime) / 1000,
+      applicationsEndTime: Date.parse(v2Round.applicationsEndTime) / 1000,
+      roundStartTime: Date.parse(v2Round.donationsStartTime) / 1000,
+      roundEndTime: Date.parse(v2Round.donationsEndTime) / 1000,
       token: v2Round.matchTokenAddress,
       roundMetaPtr: {
         protocol: "1",
