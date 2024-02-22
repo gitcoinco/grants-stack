@@ -116,7 +116,7 @@ export function MRCProgressModalBody({
                     icon={
                       <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full">
                         <CheckIcon
-                          className="w-5 h-5 text-white"
+                          className="w-5 h-5 text-white animate-pulse-scale"
                           aria-hidden="true"
                         />
                       </span>
@@ -173,7 +173,7 @@ export function MRCProgressModalBody({
                   step={step}
                   icon={
                     <span
-                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-teal-500 rounded-full"
+                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-teal-500 rounded-full "
                       data-testid={`${step.name}-complete-icon`}
                     >
                       <CheckIcon
@@ -191,7 +191,7 @@ export function MRCProgressModalBody({
                   icon={
                     <span className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
                       <span
-                        className="h-2.5 w-2.5 bg-violet-500 rounded-full"
+                        className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale"
                         data-testid={`${step.name}-current-icon`}
                       />
                     </span>
