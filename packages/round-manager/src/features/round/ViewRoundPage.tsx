@@ -636,13 +636,17 @@ export function RoundOpenDateRange({ round }: { round: RoundDates }) {
 }
 
 export function RoundBadgeStatus({ round }: { round: Round }) {
-  const applicationEnds = round.applicationsEndTime;
   const roundEnds = round.roundEndTime;
   const now = moment();
 
+  console.log(round.payoutStrategy.strategyName, ROUND_PAYOUT_MERKLE);
+
   if (
     (round.payoutStrategy.strategyName == ROUND_PAYOUT_MERKLE &&
-      now.isBefore(applicationEnds)) ||
+      now.isBetween(
+        round.applicationsStartTime,
+        round.applicationsEndTime || now
+      )) ||
     (round.payoutStrategy.strategyName == ROUND_PAYOUT_DIRECT &&
       now.isBefore(roundEnds))
   ) {

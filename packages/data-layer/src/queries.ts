@@ -22,6 +22,7 @@ export const getProgramByUserAndTag = gql`
       metadata
       metadataCid
       tags
+      createdByAddress
       roles {
         address
         role
@@ -53,6 +54,7 @@ export const getProgramByIdAndUser = gql`
       metadata
       metadataCid
       tags
+      createdByAddress
       roles {
         address
         role
@@ -377,6 +379,7 @@ export const getRoundsByProgramIdAndUserAddress = gql`
       applicationMetadataCid
       strategyAddress
       strategyName
+      createdByAddress
       roles {
         role
         address

@@ -20,6 +20,7 @@ export const chains = {
   137: "polygon",
   80001: "polygonMumbai",
   8453: "base",
+  534352: "scroll",
 } as const;
 
 export type ChainName = (typeof chains)[keyof typeof chains];
@@ -95,6 +96,9 @@ export const addresses: DeploymentAddressesMap = {
   },
   sepolia: {
     projectRegistry: "0x2420EABfA2C0e6f77E435B0B7615c848bF4963AF",
+  },
+  scroll: {
+    projectRegistry: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
   },
 };
 

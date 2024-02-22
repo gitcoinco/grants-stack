@@ -71,4 +71,5 @@ export const graphQlEndpoints: Record<ChainId, string> = {
     process.env.REACT_APP_SUBGRAPH_ZKSYNC_MAINNET_API!,
   [ChainId.BASE]: process.env.REACT_APP_SUBGRAPH_BASE_API!,
   [ChainId.SEPOLIA]: process.env.REACT_APP_SUBGRAPH_SEPOLIA_API!,
+  [ChainId.SCROLL]: process.env.REACT_APP_SUBGRAPH_SCROLL_API!,
 };

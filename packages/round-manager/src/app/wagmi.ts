@@ -26,6 +26,7 @@ import {
   pgn,
   pgnTestnet,
   base,
+  scroll,
   zkSyncEraMainnet,
   zkSyncEraTestnet,
   sepolia,
@@ -56,6 +57,7 @@ const mainnetChains = () => {
     polygon,
     zkSyncEraMainnet,
     base,
+    scroll,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
   ];
 };

@@ -317,6 +317,16 @@ export type RoundPayoutType =
   | "DIRECT"
   | "allov1.Direct"
   | "allov1.QF";
+
+export const ROUND_PAYOUT_STRATEGY_TITLES: Record<string, string> = {
+  MERKLE: "Quadratic Funding",
+  DIRECT: "Direct Grants",
+  "allov1.QF": "Quadratic Funding",
+  "allov1.Direct": "Direct Grants",
+  "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
+    "Quadratic Funding",
+};
+
 export type RoundVisibilityType = "public" | "private";
 
 export type { Allo, AlloError, AlloOperation } from "./allo/allo";
@@ -325,7 +335,7 @@ export { AlloV2 } from "./allo/backends/allo-v2";
 export {
   createWaitForIndexerSyncTo,
   getCurrentSubgraphBlockNumber,
-  waitForSubgraphSyncTo
+  waitForSubgraphSyncTo,
 } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
@@ -336,7 +346,7 @@ export {
   createViemTransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
-  sendTransaction
+  sendTransaction,
 } from "./allo/transaction-sender";
 
 export type AnyJson =

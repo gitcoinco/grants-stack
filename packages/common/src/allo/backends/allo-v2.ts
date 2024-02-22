@@ -2,14 +2,18 @@ import {
   Allo as AlloV2Contract,
   CreateProfileArgs,
   DonationVotingMerkleDistributionStrategy,
+  DonationVotingMerkleDistributionStrategyTypes,
   Registry,
   RegistryAbi,
+  AlloAbi,
   TransactionData,
-} from "@allo-team/allo-v2-sdk/";
-import { Abi, Address, Hex } from "viem";
+  DirectGrantsStrategyTypes,
+  DirectGrantsStrategy,
+} from "@allo-team/allo-v2-sdk";
+import { Abi, Address, Hex, parseUnits, zeroAddress, getAddress } from "viem";
 import { AnyJson } from "../..";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { Result, error, success } from "../common";
+import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
@@ -18,6 +22,15 @@ import {
   decodeEventFromReceipt,
   sendRawTransaction,
 } from "../transaction-sender";
+import { RoundCategory } from "../../types";
+import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
+import { payoutTokens } from "../../payoutTokens";
+
+const STRATEGY_ADDRESSES = {
+  [RoundCategory.QuadraticFunding]:
+    "0x2f9920e473E30E54bD9D56F571BcebC2470A37B0",
+  [RoundCategory.Direct]: "0xaC3f288a7A3efA3D33d9Dd321ad31072915D155d",
+};
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -194,7 +207,7 @@ export class AlloV2 implements Allo {
     });
   }
 
-  createRound!: (args: CreateRoundArguments) => AlloOperation<
+  createRound(args: CreateRoundArguments): AlloOperation<
     Result<{ roundId: Hex }>,
     {
       ipfsStatus: Result<string>;
@@ -202,7 +215,142 @@ export class AlloV2 implements Allo {
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<void>;
     }
-  >;
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const roundIpfsResult = await this.ipfsUploader({
+        round: args.roundData.roundMetadataWithProgramContractAddress,
+        application: args.roundData.applicationQuestions,
+      });
+
+      emit("ipfsStatus", roundIpfsResult);
+
+      if (roundIpfsResult.type === "error") {
+        return roundIpfsResult;
+      }
+
+      let initStrategyDataEncoded: Address;
+      let matchAmount = 0n;
+      let token: Address = getAddress(NATIVE);
+
+      if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
+        const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
+          {
+            useRegistryAnchor: true,
+            metadataRequired: true,
+            registrationStartTime: dateToEthereumTimestamp(
+              args.roundData.applicationsStartTime
+            ), // in seconds, must be in future
+            registrationEndTime: dateToEthereumTimestamp(
+              args.roundData.applicationsEndTime
+            ), // in seconds, must be after registrationStartTime
+            allocationStartTime: dateToEthereumTimestamp(
+              args.roundData.roundStartTime
+            ), // in seconds, must be after registrationStartTime
+            allocationEndTime: dateToEthereumTimestamp(
+              args.roundData.roundEndTime
+            ), // in seconds, must be after allocationStartTime
+            allowedTokens: [], // allow all tokens
+          };
+
+        const strategy = new DonationVotingMerkleDistributionStrategy({
+          chain: this.chainId,
+        });
+
+        initStrategyDataEncoded =
+          await strategy.getInitializeData(initStrategyData);
+
+        const alloToken =
+          args.roundData.token === zeroAddress ? NATIVE : args.roundData.token;
+
+        const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
+        const payoutToken = payoutTokens.filter(
+          (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
+        )[0];
+
+        matchAmount = parseUnits(tokenAmount.toString(), payoutToken.decimal);
+        token = getAddress(alloToken);
+      } else if (args.roundData.roundCategory === RoundCategory.Direct) {
+        const initStrategyData: DirectGrantsStrategyTypes.InitializeParams = {
+          registryGating: true,
+          metadataRequired: true,
+          grantAmountRequired: true,
+        };
+
+        const strategy = new DirectGrantsStrategy({
+          chain: this.chainId,
+        });
+
+        initStrategyDataEncoded = strategy.getInitializeData(initStrategyData);
+      } else {
+        throw new Error(
+          `Unsupported round type ${args.roundData.roundCategory}`
+        );
+      }
+
+      const profileId =
+        args.roundData.roundMetadataWithProgramContractAddress
+          ?.programContractAddress;
+
+      if (!profileId) {
+        throw new Error("Program contract address is required");
+      }
+
+      const createPoolArgs: CreatePoolArgs = {
+        profileId,
+        strategy: STRATEGY_ADDRESSES[args.roundData.roundCategory],
+        initStrategyData: initStrategyDataEncoded,
+        token,
+        amount: 0n, // we send 0 tokens to the pool, we fund it later
+        metadata: { protocol: 1n, pointer: roundIpfsResult.value },
+        managers: args.roundData.roundOperators ?? [],
+      };
+
+      const txData = this.allo.createPool(createPoolArgs);
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      // --- wait for transaction to be mined
+      let receipt: TransactionReceipt;
+      let poolCreatedEvent;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+
+        poolCreatedEvent = decodeEventFromReceipt({
+          abi: AlloAbi as Abi,
+          receipt,
+          event: "PoolCreated",
+        }) as { poolId: Hex };
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to create Pool", err);
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(void 0));
+
+      return success({
+        roundId: poolCreatedEvent.poolId,
+      });
+    });
+  }
 
   /**
    * Applies to a round for Allo v2
@@ -226,7 +374,6 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
       }

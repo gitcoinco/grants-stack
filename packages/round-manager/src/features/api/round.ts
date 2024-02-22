@@ -123,6 +123,7 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
     ownedBy: round.projectId,
     operatorWallets: operatorWallets,
     finalized: false,
+    createdByAddress: round.createdByAddress,
   };
 }
 
@@ -137,13 +138,22 @@ export async function listRounds(args: {
 }): Promise<{ rounds: Round[] }> {
   const { chainId, userAddress, dataLayer, programId } = args;
 
-  const rounds = await dataLayer
+  let rounds = await dataLayer
     .getRoundsByProgramIdAndUserAddress({
       chainId: chainId,
       programId,
       userAddress,
     })
     .then((rounds) => rounds.map(indexerV2RoundToRound));
+
+  // Filter out rounds where operatorWallets does not include round.createdByAddress
+  // This is to filter out spam rounds created by bots
+  rounds = rounds.filter((round) => {
+    return (
+      round.createdByAddress &&
+      round.operatorWallets?.includes(round.createdByAddress)
+    );
+  });
 
   return { rounds };
 }
