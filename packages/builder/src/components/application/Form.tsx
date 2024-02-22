@@ -18,7 +18,7 @@ import { fetchProjectApplicationInRound } from "../../actions/projects";
 import { resetApplicationError } from "../../actions/roundApplication";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
-import { editProjectPathByID } from "../../routes";
+import { editPath } from "../../routes";
 import {
   AddressType,
   ChangeHandlers,
@@ -768,7 +768,13 @@ export default function Form({
                       <Link
                         className="text-link"
                         target="_blank"
-                        to={editProjectPathByID(selectedProjectID)!}
+                        to={
+                          editPath(
+                            selectedProjectMetadata?.chainId.toString()!,
+                            selectedProjectMetadata?.registryAddress!,
+                            selectedProjectID
+                          )!
+                        }
                       >
                         here
                       </Link>{" "}

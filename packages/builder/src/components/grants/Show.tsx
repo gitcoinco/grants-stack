@@ -63,12 +63,6 @@ function Project() {
     }
   }, [dispatch, props.id, props.currentProject]);
 
-  // useEffect(() => {
-  //   if (props.projectEvents === undefined) {
-  //     dispatch(loadAllChainsProjects(dataLayer, true));
-  //   }
-  // }, [props.projectEvents, global, dispatch]);
-
   function createEditPath() {
     const registryAddress = "0x"; // TODO: fix (technically, we dont need the regsitry address anymore)
     return editPath(props.chainId!.toString(), registryAddress, props.id!);
