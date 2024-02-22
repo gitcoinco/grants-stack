@@ -28,6 +28,7 @@ export interface Metadata {
   linkedChains?: number[];
   nonce?: bigint;
   registryAddress: string;
+  projectNumber?: number | null;
 }
 
 export interface Project {

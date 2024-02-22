@@ -165,7 +165,7 @@ function ViewApplication() {
       <div className="w-full flex">
         <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
           <p className="font-semibold">Grant Round</p>
-          <p>{props.round.programName ?? "shit"}</p>
+          <p>{props.round.programName ?? ""}</p>
           <p>{props.round.roundMetadata.name}</p>
           {isDirectRound && hasProperStatus && (
             <>

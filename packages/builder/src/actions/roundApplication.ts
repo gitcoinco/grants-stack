@@ -505,13 +505,9 @@ export const fetchApplicationData =
         ipfsHash,
       });
     } catch (e) {
-      // dispatch({
-      //   type: APPLICATION_DATA_ERROR,
-      //   error: "shit",
-      // });
       dispatch({
         type: APPLICATION_DATA_LOADED,
-        applicationData: { error: "shit" },
+        applicationData: { error: "Unable to fetch application" },
         roundAddress,
         ipfsHash,
       });

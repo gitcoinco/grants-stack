@@ -46,6 +46,7 @@ function EditProject() {
       error: state.newGrant.error,
       formMetaData: state.projectForm.metadata,
       chainId: state.web3.chainID,
+      projectNumber: grantMetadata?.metadata?.projectNumber,
     };
   }, shallowEqual);
 
@@ -70,10 +71,12 @@ function EditProject() {
   };
 
   useEffect(() => {
+    console.log("shit");
     if (
       props.id !== undefined &&
       props.metadataStatus === GrantsMetadataStatus.Undefined
     ) {
+      console.log("shit2");
       dispatch(fetchGrantData(props.id, dataLayer));
     }
   }, [dispatch, props.id, props.metadataStatus]);
@@ -173,7 +176,7 @@ function EditProject() {
       case ProjectFormStatus.Preview:
         return (
           <Preview
-            currentProjectId={props.id}
+            currentProjectId={props.projectNumber?.toString() || props.id}
             setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
           />
         );

@@ -92,6 +92,7 @@ export const transformAndDispatchProject =
       linkedChains: project.linkedChains,
       nonce: project.nonce,
       registryAddress: project.registryAddress,
+      projectNumber: project.projectNumber,
     };
 
     // todo: should we lowercase the owner addresses?
