@@ -14,7 +14,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
-import { fetchProjectApplicationInRound } from "../../actions/projects";
+import { ProjectApplication, useDataLayer } from "data-layer";
 import { resetApplicationError } from "../../actions/roundApplication";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
@@ -78,8 +78,12 @@ export default function Form({
   setCreateLinkedProject: (createLinkedProject: boolean) => void;
 }) {
   const dispatch = useDispatch();
+  const dataLayer = useDataLayer();
   const { chains } = useNetwork();
 
+  const [projectApplications, setProjectApplications] = useState<
+    ProjectApplication[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [answers, setAnswers] = useState<RoundApplicationAnswers>({});
@@ -112,6 +116,22 @@ export default function Form({
       chainID,
     };
   }, shallowEqual);
+
+  useEffect(() => {
+    async function loadApplications() {
+      const applications =
+        await dataLayer.getApplicationsByRoundIdAndProjectIds({
+          chainId: props.chainID as number,
+          roundId: round.id.toLowerCase() as `0x${Lowercase<string>}`,
+          projectIds: props.projectIDs,
+        });
+      if (applications) {
+        setProjectApplications(applications);
+      }
+    }
+
+    loadApplications();
+  }, []);
 
   let selectedProjectMetadata: Metadata | undefined;
   let createLinkedProject = false;
@@ -231,20 +251,20 @@ export default function Form({
     const { value: projectId } = e.target;
     setSelectedProjectID(projectId);
     setIsLoading(true);
-    // don't load the project if the input is empty/blank
+
     if (projectId === "") {
       setHasExistingApplication(false);
       setIsLoading(false);
       handleInput(e);
       return;
     }
-    const { hasProjectAppliedToRound } = await fetchProjectApplicationInRound(
-      projectId,
-      round.address,
-      // assume the chainID is set and we are on the same chain
-      // as the round we are applying for
-      props.chainID!
-    );
+
+    console.log("projectApplications", projectApplications);
+
+    const hasProjectAppliedToRound =
+      projectApplications.filter((app) => app.projectId === projectId).length >
+      0;
+
     setHasExistingApplication(hasProjectAppliedToRound);
     setIsLoading(false);
     handleInput(e);

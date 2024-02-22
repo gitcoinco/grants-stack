@@ -8,7 +8,6 @@ import { Dispatch } from "redux";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectStats } from "../reducers/projects";
-import { graphqlFetch } from "../utils/graphql";
 import { transformAndDispatchProject } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
@@ -253,65 +252,6 @@ export const loadAllChainsProjects =
       dispatch<any>(loadProjects(chainIds, dataLayer, withMetaData));
     }
   };
-
-/**
- * Load project applications for a given round
- *
- * @remarks
- *
- * This returns whether the project has applied to a given round.
- *
- * @param roundID
- * @param roundChainId
- *
- * @returns boolean
- */
-export const fetchProjectApplicationInRound = async (
-  applicationId: string,
-  roundID: string,
-  roundChainId: ChainId
-): Promise<any> => {
-  const Id = roundID.toLowerCase();
-
-  try {
-    // TODO: FIX BEFORE FRIDAY
-    const response: any = await graphqlFetch(
-      `query projectApplicationInRound($applicationId: String, $Id: String) {
-          roundApplications(
-            where: {
-              project: $applicationId,
-              round: $Id
-            }
-          ) {
-            status
-          }
-        }
-      `,
-      roundChainId,
-      {
-        applicationId,
-        Id,
-      }
-    );
-
-    if (response.errors) {
-      throw response.errors;
-    }
-
-    return {
-      hasProjectAppliedToRound: response.data.roundApplications
-        ? response.data.roundApplications.length > 0
-        : false,
-    };
-  } catch (error: any) {
-    datadogRum.addError(error, { applicationId, roundID });
-    console.error(error);
-
-    return {
-      hasProjectAppliedToRound: false,
-    };
-  }
-};
 
 /**
  * Load project applications for a given project on a given chain
