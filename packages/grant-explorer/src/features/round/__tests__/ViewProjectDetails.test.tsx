@@ -11,7 +11,7 @@ import { truncate } from "../../common/utils/truncate";
 import { formatDateWithOrdinal } from "common";
 import { useApplication } from "../../projects/hooks/useApplication";
 import { beforeEach, expect, Mock } from "vitest";
-import { Application } from "data-layer";
+import { Application, DataLayer } from "data-layer";
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
@@ -140,6 +140,12 @@ const expectedProject: Application = {
   totalDonationsCount: "0",
 };
 
+const mockDataLayer = {
+  getRoundById: vi.fn().mockResolvedValue({
+    rounds: [],
+  }),
+} as unknown as DataLayer;
+
 describe("<ViewProjectDetails/>", () => {
   beforeEach(() => {
     (useApplication as Mock).mockReturnValue({
@@ -153,6 +159,7 @@ describe("<ViewProjectDetails/>", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
     expect(
       await screen.findByText(expectedProject.project.metadata.title)
@@ -167,6 +174,7 @@ describe("<ViewProjectDetails/>", () => {
           rounds: [],
           isLoading: false,
         },
+        dataLayer: mockDataLayer,
       });
     });
 
@@ -228,6 +236,7 @@ describe("<ViewProjectDetails/>", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     expect(
@@ -241,6 +250,7 @@ describe("<ViewProjectDetails/>", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     const bannerImg = screen.getByRole("img", {
@@ -256,6 +266,7 @@ describe("<ViewProjectDetails/>", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     const logoImg = screen.getByRole("img", {
@@ -271,6 +282,7 @@ describe("<ViewProjectDetails/>", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     expect(screen.getByText("Additional Information")).toBeInTheDocument();
@@ -302,6 +314,7 @@ describe("<ViewProjectDetails/>", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     expect(
@@ -327,6 +340,7 @@ describe("voting cart", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
     screen.logTestingPlaygroundURL();
 
@@ -373,6 +387,7 @@ describe("voting cart", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
     const addToCart = screen.getAllByTestId("add-to-cart");
     fireEvent.click(addToCart[0]);
@@ -389,6 +404,7 @@ describe("voting cart", () => {
         rounds: [],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     const removeFromCart = screen.getAllByTestId("remove-from-cart");
