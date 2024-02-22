@@ -25,7 +25,7 @@ import { unloadAll } from "../../actions/grantsMetadata";
 function ProjectsList() {
   const dataLayer = useDataLayer();
   const dispatch = useDispatch();
-  const [showErrorModal, setShowErrorModal] = useState<boolean>(true);
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(true);  
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
@@ -84,12 +84,6 @@ function ProjectsList() {
     dispatch(unloadAll());
     dispatch(loadAllChainsProjects(dataLayer, true));
   }, []);
-
-  useEffect(() => {
-    if (props.status !== Status.Undefined) return;
-
-    dispatch(loadAllChainsProjects(dataLayer, true));
-  }, [dispatch, props.status]);
 
   useEffect(() => {
     if (roundToApply) {

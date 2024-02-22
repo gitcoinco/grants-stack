@@ -220,18 +220,11 @@ export default function RoundListItem({
   );
   const explorerUrl = process.env.REACT_APP_GRANT_EXPLORER;
 
-  // add check for application status
-  // const enableStatusButton = () =>
-  //   applicationData?.status === "APPROVED" &&
-  //   displayType === RoundDisplayType.Past;
-
   useEffect(() => {
     if (props.round) {
       setRoundData(props.round);
     }
   }, [props.round]);
-
-  console.log("rounds", props.round);
 
   return (
     <Box>

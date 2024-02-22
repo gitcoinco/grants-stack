@@ -103,7 +103,6 @@ describe("<Show />", () => {
           type: "PROJECTS_LOADED",
           payload: {
             chainID: 1,
-            events: {},
           },
         });
 
@@ -174,7 +173,6 @@ describe("<Show />", () => {
           type: "PROJECTS_LOADED",
           payload: {
             chainID: 10,
-            events: {},
           },
         });
 
@@ -191,8 +189,7 @@ describe("<Show />", () => {
         store.dispatch({
           type: "PROJECTS_LOADED",
           payload: {
-            chainID: 10,
-            events: {},
+            chainIDs: [10],
           },
         });
 
@@ -228,8 +225,7 @@ describe("<Show />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 10,
-          events: {},
+          chainIDs: [10],
         },
       });
 

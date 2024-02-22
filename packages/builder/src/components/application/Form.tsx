@@ -258,8 +258,6 @@ export default function Form({
       return;
     }
 
-    console.log("projectApplications", projectApplications);
-
     const hasProjectAppliedToRound =
       projectApplications.filter((app) => app.projectId === projectId).length >
       0;

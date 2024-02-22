@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { ApplicationStatus, RoundVisibilityType } from "data-layer";
+import { ChainId } from "common/src/chain-ids";
 import {
   ProjectsState,
   Status,
@@ -7,7 +8,6 @@ import {
   projectsReducer,
 } from "../../reducers/projects";
 import { addressFrom } from "../../utils/test_utils";
-import { ChainId } from "common/src/chain-ids";
 
 describe("projects reducer", () => {
   let state: ProjectsState;
@@ -526,10 +526,7 @@ describe("projects reducer", () => {
     const state2: ProjectsState = projectsReducer(state1, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainIDs: [
-          ChainId.OPTIMISM_MAINNET_CHAIN_ID, 
-          ChainId.MAINNET
-        ],
+        chainIDs: [ChainId.OPTIMISM_MAINNET_CHAIN_ID, ChainId.MAINNET],
       },
     });
 

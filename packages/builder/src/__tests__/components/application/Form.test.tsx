@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { RoundApplicationMetadata } from "data-layer";
+import { RoundApplicationMetadata, DataLayer } from "data-layer";
 import { Store } from "redux";
 import * as projects from "../../../actions/projects";
 import { web3ChainIDLoaded } from "../../../actions/web3";
@@ -9,7 +9,6 @@ import setupStore from "../../../store";
 import { Metadata, Round } from "../../../types";
 import { renderWrapped, roundIdFrom } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
-import { DataLayer } from "data-layer";
 
 const projectsMetadata: Metadata[] = [
   {
@@ -260,9 +259,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-     jest
-       .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
-       .mockResolvedValue([]);
+      jest
+        .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+        .mockResolvedValue([]);
       renderWrapped(
         <Form
           roundApplication={roundApplicationMetadata}

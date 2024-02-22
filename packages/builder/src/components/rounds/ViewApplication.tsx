@@ -124,8 +124,6 @@ function ViewApplication() {
   const roundApproved = props.roundApplicationStatus === "APPROVED";
   const hasProperStatus = roundInReview || roundApproved;
 
-  console.log("props from view application", props);
-
   if (
     props.roundState === undefined ||
     props.round === undefined ||

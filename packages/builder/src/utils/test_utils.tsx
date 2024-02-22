@@ -12,11 +12,11 @@ import { DataLayer, DataLayerProvider, ProjectApplication } from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
 import { zeroAddress } from "viem";
+import { getConfig } from "common/src/config";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
 import { Alert } from "../types/alert";
-import { getConfig } from "common/src/config";
 
 export function addressFrom(n: number): string {
   const bn = ethers.BigNumber.from(n);
@@ -33,9 +33,8 @@ export const buildAlert = (attrs = {}): Alert => ({
 
 export const now = new Date().getTime() / 1000;
 
-export const roundIdFrom = (n: number): string => {
-  return getConfig().allo.version === "allo-v1" ? addressFrom(n) : n.toString();
-};
+export const roundIdFrom = (n: number): string =>
+  getConfig().allo.version === "allo-v1" ? addressFrom(n) : n.toString();
 
 export const buildRound = (round: any): Round => ({
   id: roundIdFrom(1),

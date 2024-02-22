@@ -129,7 +129,7 @@ function ShowRound() {
   const { roundId, chainId } = params;
 
   const props = useSelector((state: RootState) => {
-    console.log(state);
+
     const allProjectMetadata = state.grantsMetadata;
     const projectsStatus = state.projects.status;
     const roundState = state.rounds[roundId!];
@@ -142,15 +142,6 @@ function ShowRound() {
     const versionError =
       (isV2 && roundId?.startsWith("0x")) ||
       (!isV2 && !roundId?.startsWith("0x"));
-
-      console.log(
-        "versionError",
-        versionError,
-        roundId,
-        isV2,
-        roundId?.startsWith("0x")
-      );
-      console.log("roundState", roundState);
 
     const now = new Date().getTime() / 1000;
 

@@ -120,12 +120,6 @@ describe("<List />", () => {
         type: "PROJECTS_LOADED",
         payload: {
           chainIDs: [10],
-          events: {
-            "0x1234": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
-          },
         },
       });
       store.dispatch({
@@ -182,12 +176,6 @@ describe("<List />", () => {
         type: "PROJECTS_LOADED",
         payload: {
           chainIDs: [10],
-          events: {
-            "1": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
-          },
         },
       });
       store.dispatch({
