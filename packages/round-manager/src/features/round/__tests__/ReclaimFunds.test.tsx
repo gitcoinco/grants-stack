@@ -46,6 +46,10 @@ jest.mock("common", () => ({
   useTokenPrice: jest.fn(),
 }));
 
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({}),
+}));
+
 const chainId = "0";
 const roundId = "testRoundId";
 
