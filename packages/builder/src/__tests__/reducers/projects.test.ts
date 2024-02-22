@@ -7,6 +7,7 @@ import {
   projectsReducer,
 } from "../../reducers/projects";
 import { addressFrom } from "../../utils/test_utils";
+import { ChainId } from "common/src/chain-ids";
 
 describe("projects reducer", () => {
   let state: ProjectsState;
@@ -514,44 +515,25 @@ describe("projects reducer", () => {
   });
 
   it("handles multiple chain loading states", async () => {
-    // start loading chain 0
     const state1: ProjectsState = projectsReducer(state, {
       type: "PROJECTS_LOADING",
-      payload: [10],
+      payload: [10, 1],
     });
 
     expect(state1.status).toEqual(Status.Loading);
-    expect(state1.loadingChains.length).toEqual(1);
+    expect(state1.loadingChains.length).toEqual(2);
 
-    // start loading chain 1
     const state2: ProjectsState = projectsReducer(state1, {
-      type: "PROJECTS_LOADING",
-      payload: [1],
+      type: "PROJECTS_LOADED",
+      payload: {
+        chainIDs: [
+          ChainId.OPTIMISM_MAINNET_CHAIN_ID, 
+          ChainId.MAINNET
+        ],
+      },
     });
 
-    expect(state2.status).toEqual(Status.Loading);
+    expect(state2.status).toEqual(Status.Loaded);
     expect(state2.loadingChains.length).toEqual(0);
-
-    // mark chain 1 as done
-    const state3: ProjectsState = projectsReducer(state2, {
-      type: "PROJECTS_LOADED",
-      payload: {
-        chainIDs: [10],
-      },
-    });
-
-    expect(state3.status).toEqual(Status.Loaded);
-    expect(state3.loadingChains.length).toEqual(1);
-
-    // mark chain 0 as done
-    const state4: ProjectsState = projectsReducer(state3, {
-      type: "PROJECTS_LOADED",
-      payload: {
-        chainIDs: [1],
-      },
-    });
-
-    expect(state4.status).toEqual(Status.Loaded);
-    expect(state4.loadingChains.length).toEqual(0);
   });
 });

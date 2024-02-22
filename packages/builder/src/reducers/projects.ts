@@ -85,12 +85,10 @@ export const projectsReducer = (
     }
 
     case PROJECTS_LOADED: {
-      const { chainIDs } = action.payload;
-
       return {
         ...state,
         status: Status.Loaded,
-        loadingChains: chainIDs,
+        loadingChains: [],
       };
     }
 
