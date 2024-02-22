@@ -64,10 +64,11 @@ export const loadRound =
   (roundId: string, dataLayer: DataLayer, chainId: number) =>
   async (dispatch: Dispatch) => {
     const { version } = getConfig().allo;
+    const isV1 = version === "allo-v1";
 
     try {
       // address validation
-      if (version === "allo-v1" && roundId.startsWith("0x")) {
+      if (isV1 && roundId.startsWith("0x")) {
         ethers.utils.getAddress(roundId);
       } else if (roundId.includes("0x")) {
         throw new Error(`Invalid roundId ${roundId}`);
@@ -94,10 +95,11 @@ export const loadRound =
       v2Round.applicationMetadata
     );
 
-    const programName =
-      (await dataLayer.getProgramName({
-        projectId: v2Round.roundMetadata.programContractAddress,
-      })) || "";
+    const programName = isV1
+      ? (await dataLayer.getProgramName({
+          projectId: v2Round.roundMetadata.programContractAddress,
+        })) || ""
+      : v2Round.project?.name || "";
 
     let roundPayoutStrategy: RoundType;
 
