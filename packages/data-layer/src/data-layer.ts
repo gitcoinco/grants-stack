@@ -479,6 +479,7 @@ export class DataLayer {
       chainId,
     };
 
+    // fix the any
     const response: { rounds: any } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainId,
@@ -491,10 +492,10 @@ export class DataLayer {
       round: {
         id: _round.id,
         chainId: _round.chainId,
-        applicationsStartTime: _round.applicationsStartTime,
-        applicationsEndTime: _round.applicationsEndTime,
-        roundStartTime: _round.donationsStartTime,
-        roundEndTime: _round.donationsEndTime,
+        applicationsStartTime: new Date(_round.applicationsStartTime),
+        applicationsEndTime: new Date(_round.applicationsEndTime),
+        roundStartTime: new Date(_round.donationsStartTime),
+        roundEndTime: new Date(_round.donationsEndTime),
         token: _round.matchTokenAddress,
         ownedBy: _round.ownedBy,
         roundMetadata: _round.roundMetadata,
@@ -502,7 +503,8 @@ export class DataLayer {
           id: _round.strategyAddress,
           strategyName: _round.strategyName,
         },
-        approvedProjects: _round.applications,
+        // approvedProjects: convertApplicationsToProjects(_round.applications),
+        approvedProjects: [],
       },
     };
   }
