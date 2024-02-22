@@ -1,6 +1,6 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
-import { ChainId, ROUND_PAYOUT_MERKLE, RoundPayoutType } from "common";
+import { ChainId, RoundPayoutType } from "common";
 import { getConfig } from "common/src/config";
 import { ApplicationStatus, DataLayer, ProjectApplication } from "data-layer";
 import { utils } from "ethers";
@@ -338,7 +338,6 @@ export const loadProjectStats =
       projectID,
     });
     const boundFetch = fetch.bind(window);
-
     const stats: ProjectStats[] = [];
 
     const updateStats = async (projectRoundData: any, roundId: string) => {
@@ -379,7 +378,7 @@ export const loadProjectStats =
         (app) =>
           app.projectId === projectID &&
           app.status === "APPROVED" &&
-          round.roundType === ROUND_PAYOUT_MERKLE
+          round.roundType === "MERKLE"
       );
 
       if (project) {
