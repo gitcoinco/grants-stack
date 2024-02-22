@@ -36,7 +36,7 @@ import {
   getProjectsAndRolesByAddress,
   getProgramByUserAndTag,
   getRoundByIdAndChainId,
-  getRoundsByProgramIdAndUserAddress,
+  getRoundsByProgramId,
   getProgramByIdAndUser,
 } from "./queries";
 import { Address } from "viem";
@@ -183,18 +183,16 @@ export class DataLayer {
   }
 
   async getProgramByIdAndUser({
-    userAddress,
     programId,
     chainId,
   }: {
-    userAddress: string;
     programId: string;
     chainId: number;
   }): Promise<{ program: Program | null }> {
     const response: { projects: (Program | v2Project)[] } = await request(
       this.gsIndexerEndpoint,
       getProgramByIdAndUser,
-      { programId, chainId, userAddress },
+      { programId, chainId },
     );
 
     if (response.projects.length === 0) {
@@ -451,15 +449,14 @@ export class DataLayer {
     return response.rounds[0] ?? [];
   }
 
-  async getRoundsByProgramIdAndUserAddress(args: {
+  async getRoundsByProgramId(args: {
     chainId: number;
     programId: string;
-    userAddress: Address;
   }): Promise<V2RoundWithRoles[]> {
     const response: { rounds: V2RoundWithRoles[] } = await request(
       this.gsIndexerEndpoint,
-      getRoundsByProgramIdAndUserAddress,
-      { ...args, userAddress: args.userAddress.toLowerCase() },
+      getRoundsByProgramId,
+      args,
     );
 
     return response.rounds;

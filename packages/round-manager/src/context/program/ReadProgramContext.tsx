@@ -88,12 +88,7 @@ const fetchProgramsById = async (
     payload: ProgressStatus.IN_PROGRESS,
   });
   try {
-    const program = await getProgramById(
-      address,
-      programId,
-      walletProvider,
-      dataLayer
-    );
+    const program = await getProgramById(programId, walletProvider, dataLayer);
     dispatch({ type: ActionType.SET_PROGRAMS, payload: [program] });
     dispatch({
       type: ActionType.SET_FETCH_PROGRAM_STATUS,

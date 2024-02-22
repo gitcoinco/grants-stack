@@ -319,17 +319,15 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
  */
 export async function listRounds(args: {
   chainId: number;
-  userAddress: Address;
   dataLayer: DataLayer;
   programId: string;
 }): Promise<{ rounds: Round[] }> {
-  const { chainId, userAddress, dataLayer, programId } = args;
+  const { chainId, dataLayer, programId } = args;
 
   let rounds = await dataLayer
-    .getRoundsByProgramIdAndUserAddress({
+    .getRoundsByProgramId({
       chainId: chainId,
       programId,
-      userAddress,
     })
     .then((rounds) => rounds.map(indexerV2RoundToRound));
 
