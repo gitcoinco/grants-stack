@@ -30,7 +30,11 @@ export type CreateRoundArguments = {
  * of the operation and resolves to a final result.
  */
 export interface Allo {
-  createProject: (args: { name: string; metadata: AnyJson }) => AlloOperation<
+  createProject: (args: {
+    name: string;
+    metadata: AnyJson;
+    nonce?: bigint;
+  }) => AlloOperation<
     Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;

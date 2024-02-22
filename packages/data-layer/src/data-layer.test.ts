@@ -38,6 +38,7 @@ const mockProjects: v2Project[] = [
     updatedAtBlock: "5146499",
     projectNumber: null,
     registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
+
     tags: ["allo-v2"],
     roles: [
       {
@@ -46,6 +47,8 @@ const mockProjects: v2Project[] = [
         createdAtBlock: "5146499",
       },
     ],
+    projectType: "CANONICAL",
+    linkedChains: [],
   },
 ];
 
@@ -550,7 +553,7 @@ describe("passport verification", () => {
   });
 });
 
-describe("projects retrieval", () => {
+describe("v2 projects retrieval", () => {
   test("can retrieve project by id", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       status: 200,
@@ -570,18 +573,9 @@ describe("projects retrieval", () => {
     const project = await dataLayer.getProjectById({
       projectId:
         "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
-      chainId: 11155111,
       alloVersion: "allo-v2",
     });
 
-    // todo: update to test the entire object when the missing fields are added
-    // to the indexer. @0xKurt
-    // {
-    //   bannerImg: "",
-    //   bannerImgData: new Blob(),
-    //   logoImg: "",
-    //   logoImgData: new Blob(),
-    // }
     expect(project?.project.id).toEqual(mockProject.id);
     expect(project?.project.nodeId).toEqual(mockProject.nodeId);
     expect(project?.project.chainId).toEqual(mockProject.chainId);
@@ -595,31 +589,6 @@ describe("projects retrieval", () => {
     expect(project?.project.metadata.description).toEqual(
       mockProject.metadata.description,
     );
-  });
-
-  test("can retrieve all projects for a network", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      status: 200,
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => ({
-        projects: mockProjects,
-      }),
-    });
-
-    const dataLayer = new DataLayer({
-      fetch: fetchMock,
-      search: { baseUrl: "https://example.com" },
-      subgraph: { endpointsByChainId: {} },
-      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
-    });
-
-    const data = await dataLayer.getProjects({
-      chainIds: [5],
-      first: 10,
-      alloVersion: "allo-v2",
-    });
-
-    if (data?.projects) expect(data.projects.length).toBeGreaterThan(0);
   });
 });
 

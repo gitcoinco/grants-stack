@@ -35,11 +35,10 @@ function EditProject() {
   );
 
   const props = useSelector((state: RootState) => {
-    const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
-    const grantMetadata = state.grantsMetadata[fullId];
+    const grantMetadata = state.grantsMetadata[params.id!];
 
     return {
-      id: fullId,
+      id: params.id,
       projectMetadata: grantMetadata?.metadata,
       metadataStatus: grantMetadata
         ? grantMetadata.status
@@ -47,6 +46,7 @@ function EditProject() {
       error: state.newGrant.error,
       formMetaData: state.projectForm.metadata,
       chainId: state.web3.chainID,
+      projectNumber: grantMetadata?.metadata?.projectNumber,
     };
   }, shallowEqual);
 
@@ -174,7 +174,7 @@ function EditProject() {
       case ProjectFormStatus.Preview:
         return (
           <Preview
-            currentProjectId={props.id}
+            currentProjectId={props.projectNumber?.toString() || props.id}
             setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
           />
         );
