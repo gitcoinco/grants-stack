@@ -442,7 +442,7 @@ export class DataLayer {
       chainId,
     };
 
-    const response: { rounds: V2Round[] } = await request(
+    const response: { rounds: V2RoundWithRoles[] } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainId,
       requestVariables,

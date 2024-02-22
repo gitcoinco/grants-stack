@@ -308,6 +308,7 @@ export const getRoundByIdAndChainId = gql`
       strategyAddress
       strategyName
       isReadyForPayout
+      projectId
       roles {
         role
         address
@@ -380,6 +381,7 @@ export const getRoundsByProgramIdAndUserAddress = gql`
       strategyAddress
       strategyName
       createdByAddress
+      projectId
       roles {
         role
         address
