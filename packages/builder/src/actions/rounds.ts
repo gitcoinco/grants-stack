@@ -13,14 +13,14 @@ export type RoundType = "MERKLE" | "DIRECT";
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
   type: typeof ROUNDS_LOADING_ROUND;
-  address: string;
+  id: string;
   status: Status;
 }
 
 export const ROUNDS_ROUND_LOADED = "ROUNDS_ROUND_LOADED";
 interface RoundsRoundLoadedAction {
   type: typeof ROUNDS_ROUND_LOADED;
-  address: string;
+  id: string;
   round: Round;
 }
 
@@ -32,7 +32,7 @@ interface RoundsUnloadedAction {
 export const ROUNDS_LOADING_ERROR = "ROUNDS_LOADING_ERROR";
 interface RoundsLoadingErrorAction {
   type: typeof ROUNDS_LOADING_ERROR;
-  address: string;
+  id: string;
   error: string;
 }
 
@@ -42,9 +42,9 @@ export type RoundsActions =
   | RoundsUnloadedAction
   | RoundsLoadingErrorAction;
 
-export const roundLoaded = (address: string, round: Round): RoundsActions => ({
+export const roundLoaded = (id: string, round: Round): RoundsActions => ({
   type: ROUNDS_ROUND_LOADED,
-  address,
+  id,
   round,
 });
 
@@ -52,9 +52,9 @@ const roundsUnloaded = (): RoundsActions => ({
   type: ROUNDS_UNLOADED,
 });
 
-const loadingError = (address: string, error: string): RoundsActions => ({
+const loadingError = (id: string, error: string): RoundsActions => ({
   type: ROUNDS_LOADING_ERROR,
-  address,
+  id,
   error,
 });
 

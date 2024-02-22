@@ -117,19 +117,18 @@ export default function Form({
     };
   }, shallowEqual);
 
-  useEffect(() => {
-    async function loadApplications() {
-      const applications =
-        await dataLayer.getApplicationsByRoundIdAndProjectIds({
-          chainId: props.chainID as number,
-          roundId: round.id.toLowerCase() as `0x${Lowercase<string>}`,
-          projectIds: props.projectIDs,
-        });
-      if (applications) {
-        setProjectApplications(applications);
-      }
+  async function loadApplications() {
+    const applications = await dataLayer.getApplicationsByRoundIdAndProjectIds({
+      chainId: props.chainID as number,
+      roundId: round.id.toLowerCase() as `0x${Lowercase<string>}`,
+      projectIds: props.projectIDs,
+    });
+    if (applications) {
+      setProjectApplications(applications);
     }
+  }
 
+  useEffect(() => {
     loadApplications();
   }, []);
 

@@ -16,6 +16,7 @@ import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
 import { Alert } from "../types/alert";
+import { getConfig } from "common/src/config";
 
 export function addressFrom(n: number): string {
   const bn = ethers.BigNumber.from(n);
@@ -32,7 +33,12 @@ export const buildAlert = (attrs = {}): Alert => ({
 
 export const now = new Date().getTime() / 1000;
 
+export const roundIdFrom = (n: number): string => {
+  return getConfig().allo.version === "allo-v1" ? addressFrom(n) : n.toString();
+};
+
 export const buildRound = (round: any): Round => ({
+  id: roundIdFrom(1),
   address: addressFrom(1),
   applicationsStartTime: now,
   applicationsEndTime: now + 3600,
@@ -44,6 +50,7 @@ export const buildRound = (round: any): Round => ({
   applicationMetaPtr: {},
   applicationMetadata: {},
   programName: "test-program",
+  payoutStrategy: "0x",
   ...round,
 });
 
@@ -93,6 +100,11 @@ export const buildProjectMetadata = (metadata: any): Metadata => ({
     twitter: buildVerifiableCredential("Twitter", "my-twitter"),
   },
   createdAt: 123,
+  updatedAt: 123,
+  chainId: 5,
+  linkedChains: [1],
+  nonce: BigInt(1),
+  registryAddress: "0x1",
   ...metadata,
 });
 

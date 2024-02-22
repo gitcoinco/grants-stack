@@ -16,6 +16,7 @@ import {
   addressFrom,
   buildRound,
   renderWrapped,
+  roundIdFrom,
 } from "../../../utils/test_utils";
 
 jest.mock("../../../actions/projects");
@@ -333,6 +334,7 @@ describe("<List />", () => {
 
         test("should be visible if user didn't apply yet", async () => {
           const round = buildRound({
+            id: roundIdFrom(1),
             address: addressFrom(1),
           });
 
@@ -340,7 +342,7 @@ describe("<List />", () => {
 
           store.dispatch({
             type: "ROUNDS_ROUND_LOADED",
-            address: addressFrom(1),
+            id: addressFrom(1),
             round,
           });
 

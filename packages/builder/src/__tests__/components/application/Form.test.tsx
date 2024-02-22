@@ -7,8 +7,9 @@ import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
 import { Metadata, Round } from "../../../types";
-import { renderWrapped } from "../../../utils/test_utils";
+import { renderWrapped, roundIdFrom } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
+import { DataLayer } from "data-layer";
 
 const projectsMetadata: Metadata[] = [
   {
@@ -69,7 +70,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
 };
 
 const round: Round = {
-  id: "0x3456",
+  id: roundIdFrom(123),
   address: "0x123",
   applicationsStartTime: 123,
   applicationsEndTime: 123,
@@ -147,9 +148,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-        hasProjectAppliedToRound: false,
-      });
+      jest
+        .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+        .mockResolvedValue([]);
 
       renderWrapped(
         <Form
@@ -203,9 +204,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-        hasProjectAppliedToRound: false,
-      });
+      jest
+        .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+        .mockResolvedValue([]);
 
       renderWrapped(
         <Form
@@ -259,10 +260,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-        hasProjectAppliedToRound: false,
-      });
-
+     jest
+       .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+       .mockResolvedValue([]);
       renderWrapped(
         <Form
           roundApplication={roundApplicationMetadata}
@@ -315,9 +315,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-        hasProjectAppliedToRound: false,
-      });
+      jest
+        .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+        .mockResolvedValue([]);
 
       renderWrapped(
         <Form
@@ -365,9 +365,9 @@ describe("<Form />", () => {
   });
 
   it("shows a project details section", async () => {
-    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-      hasProjectAppliedToRound: false,
-    });
+    jest
+      .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+      .mockResolvedValue([]);
 
     renderWrapped(
       <Form
@@ -420,9 +420,9 @@ describe("<Form/>", () => {
       data: { ...projectsMetadata[0], projectGithub: "mygithub" },
     });
 
-    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-      hasProjectAppliedToRound: false,
-    });
+    jest
+      .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+      .mockResolvedValue([]);
 
     renderWrapped(
       <Form
@@ -469,9 +469,9 @@ describe("Form questions", () => {
   beforeEach(() => {
     store = setupStore();
     store.dispatch(web3ChainIDLoaded(5));
-    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-      hasProjectAppliedToRound: false,
-    });
+    jest
+      .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+      .mockResolvedValue([]);
 
     store.dispatch({
       type: "PROJECTS_LOADED",
