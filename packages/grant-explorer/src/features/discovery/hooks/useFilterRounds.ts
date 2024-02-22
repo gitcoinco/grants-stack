@@ -22,7 +22,8 @@ export type StrategyName =
   | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
   | "allov2.MicroGrantsStrategy"
   | "allov2.MicroGrantsGovStrategy"
-  | "allov2.SQFSuperFluidStrategy";
+  | "allov2.SQFSuperFluidStrategy"
+  | "allov2.DirectGrantsSimpleStrategy";
 
 export type RoundFilterParams = {
   type: string;
@@ -109,7 +110,9 @@ const createRoundWhereFilter = (
   version: AlloVersion
 ): RoundsQueryVariables["filter"] => {
   return {
-    // @ts-expect-error temp ignore
+    // @ts-expect-error TS thinks that some of the items can be undefined,
+    // even though they can't, because they are filtered out down the line
+    // so we ignore the error here
     and: [
       // Find rounds that match both statusFilter and round type
       { or: statusFilter },
