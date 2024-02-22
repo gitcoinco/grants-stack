@@ -121,7 +121,6 @@ export class AlloV1 implements Allo {
             permit.sig.r as Hex,
             permit.sig.s as Hex,
           ],
-          value: nativeTokenAmount,
         });
       } else {
         tx = await sendTransaction(this.transactionSender, {
@@ -139,7 +138,6 @@ export class AlloV1 implements Allo {
             permit.sig.r as Hex,
             permit.sig.s as Hex,
           ],
-          value: nativeTokenAmount,
         });
       }
     } else {
@@ -152,6 +150,7 @@ export class AlloV1 implements Allo {
     if (tx.type === "success") {
       return this.transactionSender.wait(tx.value, 20_000);
     } else {
+      console.error(tx.error);
       throw new Error("Failed voting");
     }
   }
