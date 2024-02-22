@@ -67,7 +67,7 @@ describe("getRoundById", () => {
               id: "some-id",
               strategyName: "allov1.QF",
             },
-            votingStrategy: expectedRoundData.votingStrategy,
+            votingStrategy: expectedRoundData.votingStrategy ?? "",
             projectsMetaPtr: null,
             projects: [],
           },

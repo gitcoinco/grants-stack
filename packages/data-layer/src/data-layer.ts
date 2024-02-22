@@ -481,7 +481,6 @@ export class DataLayer {
       chainId,
     };
 
-    // fix the any
     const response: { rounds: any } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainId,
@@ -490,9 +489,6 @@ export class DataLayer {
 
     const _round = response.rounds[0] ?? [];
 
-    console.log(_round);
-
-    // fix any
     const projects: Project[] = _round.applications.map((application: any) => ({
       grantApplicationId: application.id,
       projectRegistryId: application.projectId,
