@@ -36,7 +36,7 @@ jest.mock("../../../utils/projects", () => ({
 
 describe("<Show />", () => {
   let store: any;
-  const projectId = `1:${addressFrom(1)}:1`;
+  const projectId = `1`;
 
   beforeEach(() => {
     store = setupStore();

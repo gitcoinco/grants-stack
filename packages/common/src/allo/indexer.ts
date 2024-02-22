@@ -1,4 +1,5 @@
 import { graphql_fetch } from "../graphql_fetch";
+import { AlloError } from "./allo";
 
 export interface WaitUntilIndexerSynced {
   (args: {
@@ -84,28 +85,32 @@ export const createWaitForIndexerSyncTo = (
         }),
       });
 
-      const {
-        data,
-      }: {
-        data: {
-          subscriptions: { chainId: number; indexedToBlock: string }[];
-        };
-      } = await response.json();
+      if (response.status === 200) {
+        const {
+          data,
+        }: {
+          data: {
+            subscriptions: { chainId: number; indexedToBlock: string }[];
+          };
+        } = await response.json();
 
-      const subscriptions = data?.subscriptions || [];
+        const subscriptions = data?.subscriptions || [];
 
-      const currentBlockNumber = BigInt(
-        subscriptions.reduce(
-          (minBlock, sub) =>
-            BigInt(sub.indexedToBlock) < BigInt(minBlock)
-              ? sub.indexedToBlock
-              : minBlock,
-          subscriptions[0].indexedToBlock
-        )
-      );
+        if (subscriptions.length > 0) {
+          const currentBlockNumber = BigInt(
+            subscriptions.reduce(
+              (minBlock, sub) =>
+                BigInt(sub.indexedToBlock) < BigInt(minBlock)
+                  ? sub.indexedToBlock
+                  : minBlock,
+              subscriptions[0].indexedToBlock
+            )
+          );
 
-      if (currentBlockNumber >= BigInt(blockNumber)) {
-        return currentBlockNumber;
+          if (currentBlockNumber >= BigInt(blockNumber)) {
+            return currentBlockNumber;
+          }
+        }
       }
 
       await wait(pollIntervalInMs);
@@ -117,7 +122,7 @@ export const createWaitForIndexerSyncTo = (
       });
     } catch (error) {
       console.error(error);
-      throw new Error("Failed to fetch block number.");
+      throw new AlloError("Failed to determine indexing status.");
     }
   };
 

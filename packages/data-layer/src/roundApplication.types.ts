@@ -70,6 +70,7 @@ export interface RoundApplicationMetadata {
     questions: RoundApplicationQuestion[];
     requirements: ProjectRequirements;
   };
+  error?: string;
 }
 
 export interface ProjectRequirements {
