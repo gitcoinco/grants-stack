@@ -10,7 +10,7 @@
     "prepare": "tsc",
     "dev:fast": "esbuild src/**/*.ts src/**/*.tsx src/*.ts src/*.tsx --outdir=dist --watch",
     "build": "tsc",
-    "dev": "tsc --watch",
+    "dev": "tsc --watch --preserveWatchOutput",
     "typecheck": "tsc --noEmit",
     "test:watch": "vitest watch"
   },
