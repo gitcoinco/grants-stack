@@ -20,7 +20,7 @@ describe("<ListRoundProvider />", () => {
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
-        getLegacyRoundById: vi.fn().mockResolvedValue({
+        getRoundById: vi.fn().mockResolvedValue({
           round: expectedRound,
         }),
       } as unknown as Mocked<DataLayer>;
@@ -41,7 +41,7 @@ describe("<ListRoundProvider />", () => {
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
-        getLegacyRoundById: vi.fn().mockResolvedValue({
+        getRoundById: vi.fn().mockResolvedValue({
           round: expectedRound,
         }),
       } as unknown as Mocked<DataLayer>;
@@ -64,7 +64,7 @@ describe("<ListRoundProvider />", () => {
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
-        getLegacyRoundById: vi.fn().mockResolvedValue({
+        getRoundById: vi.fn().mockResolvedValue({
           round: expectedRound,
         }),
       } as unknown as Mocked<DataLayer>;
@@ -89,7 +89,7 @@ describe("<ListRoundProvider />", () => {
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
-        getLegacyRoundById: vi.fn().mockRejectedValue(new Error()),
+        getRoundById: vi.fn().mockRejectedValue(new Error()),
       } as unknown as Mocked<DataLayer>;
 
       render(
