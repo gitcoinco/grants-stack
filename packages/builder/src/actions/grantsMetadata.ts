@@ -81,7 +81,7 @@ export const transformAndDispatchProject =
       bannerImg: project.metadata.bannerImg,
       logoImg: project.metadata.logoImg,
       createdAt: project.metadata.createdAt,
-      updatedAt: project.metadata.createdAt, // todo: get this value
+      updatedAt: project.metadata.createdAt,
       credentials: project.metadata.credentials,
       protocol: project.metadata.protocol,
       pointer: project.metadataCid,

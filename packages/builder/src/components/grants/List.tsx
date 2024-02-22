@@ -52,8 +52,6 @@ function ProjectsList() {
     }
     const projectIds = Object.keys(state.grantsMetadata);
 
-    console.log("ProjectsList -> projectIds", projectIds);
-
     const showRoundModal =
       roundToApply &&
       projectIds.length > 0 &&

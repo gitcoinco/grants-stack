@@ -576,14 +576,6 @@ describe("v2 projects retrieval", () => {
       alloVersion: "allo-v2",
     });
 
-    // todo: update to test the entire object when the missing fields are added
-    // to the indexer. @0xKurt
-    // {
-    //   bannerImg: "",
-    //   bannerImgData: new Blob(),
-    //   logoImg: "",
-    //   logoImgData: new Blob(),
-    // }
     expect(project?.project.id).toEqual(mockProject.id);
     expect(project?.project.nodeId).toEqual(mockProject.nodeId);
     expect(project?.project.chainId).toEqual(mockProject.chainId);
@@ -623,9 +615,8 @@ describe("v2 projects retrieval", () => {
       alloVersion: "allo-v2",
     });
 
-    console.log(data);
 
-    // if (data?.projects) expect(data.projects.length).toBeGreaterThan(0);
+    if (data?.projects) expect(data.projects.length).toBeGreaterThan(0);
   });
 });
 

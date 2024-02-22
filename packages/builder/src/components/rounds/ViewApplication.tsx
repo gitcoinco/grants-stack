@@ -89,7 +89,6 @@ function ViewApplication() {
     if (!props.round) return;
 
     if (params.ipfsHash !== undefined) {
-      console.log("fetching application data");
       dispatch(fetchApplicationData(ipfsHash!, roundId!));
     }
   }, [dispatch, params.ipfsHash, props.round]);
