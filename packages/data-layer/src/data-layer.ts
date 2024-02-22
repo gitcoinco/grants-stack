@@ -9,9 +9,11 @@ import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Application,
+  ApplicationStatus,
   Collection,
   OrderByRounds,
   Program,
+  Project,
   ProjectApplication,
   ProjectEventsMap,
   Round,
@@ -488,6 +490,39 @@ export class DataLayer {
 
     const _round = response.rounds[0] ?? [];
 
+    console.log(_round);
+
+    // fix any
+    const projects: Project[] = _round.applications.map((application: any) => ({
+      grantApplicationId: application.id,
+      projectRegistryId: application.projectId,
+      recipient: application.metadata.application.recipient,
+      projectMetadata: {
+        title: application.metadata.application.project.title,
+        description: application.metadata.application.project.description,
+        website: application.metadata.application.project.website,
+        logoImg: application.metadata.application.project.logoImg,
+        bannerImg: application.metadata.application.project.bannerImg,
+        projectTwitter: application.metadata.application.project.projectTwitter,
+        userGithub: application.metadata.application.project.userGithub,
+        projectGithub: application.metadata.application.project.projectGithub,
+        credentials: application.metadata.application.project.credentials,
+        owners: application.metadata.application.project.owners,
+        createdAt: application.metadata.application.project.createdAt,
+      },
+      grantApplicationFormAnswers: application.metadata.application.answers.map(
+        (answer: any) => ({
+          questionId: answer.questionId,
+          question: answer.question,
+          answer: answer.answer,
+          hidden: answer.hidden,
+          type: answer.type,
+        }),
+      ),
+      status: application.status as ApplicationStatus,
+      applicationIndex: Number(application.id),
+    }));
+
     return {
       round: {
         id: _round.id,
@@ -503,8 +538,7 @@ export class DataLayer {
           id: _round.strategyAddress,
           strategyName: _round.strategyName,
         },
-        // approvedProjects: convertApplicationsToProjects(_round.applications),
-        approvedProjects: [],
+        approvedProjects: projects,
       },
     };
   }

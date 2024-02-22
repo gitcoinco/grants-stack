@@ -342,9 +342,6 @@ export const getRoundByIdAndChainId = gql`
         projectId
         status
         metadata
-        project {
-          metadata
-        }
       }
     }
   }
