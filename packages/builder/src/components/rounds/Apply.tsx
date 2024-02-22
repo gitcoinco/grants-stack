@@ -165,10 +165,6 @@ function Apply() {
     }
   }, [props.applicationStatus, props.applicationError]);
 
-  useEffect(() => {
-    // set createLinkedProject
-  }, [createLinkedProject]);
-
   if (props.roundStatus === RoundStatus.Error) {
     <div>
       <ErrorModal

@@ -125,7 +125,6 @@ export const fetchGrantData =
   (id: string, dataLayer: DataLayer) => async (dispatch: Dispatch) => {
     dispatch(grantMetadataLoadingURI(id));
     const config = getConfig();
-    // const projectId = id.split(":")[2];
 
     try {
       const result = await dataLayer.getProjectById({
