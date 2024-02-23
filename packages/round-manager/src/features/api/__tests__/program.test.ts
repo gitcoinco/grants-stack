@@ -66,7 +66,7 @@ describe("getProgramById", () => {
           Promise.resolve({ chainId: ChainId.MAINNET }),
       },
       {
-        getProgramByIdAndUser: jest.fn().mockResolvedValue({
+        getProgramById: jest.fn().mockResolvedValue({
           program: {
             id: expectedProgram.id,
             roles: [{ address: expectedProgram.operatorWallets[0] }],
