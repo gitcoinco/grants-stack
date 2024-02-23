@@ -34,7 +34,7 @@ import {
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
   getProgramByIdAndUser,
-  getProgramByUserAndTag,
+  getProgramsByUserAndTag,
   getProgramName,
   getProjectById,
   getProjectsAndRolesByAddress,
@@ -159,7 +159,7 @@ export class DataLayer {
     if (alloVersion === "allo-v1") {
       const response: { projects: Program[] } = await request(
         this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
+        getProgramsByUserAndTag,
         { ...requestVariables, filterByTag: "program" },
       );
 
@@ -167,7 +167,7 @@ export class DataLayer {
     } else if (alloVersion === "allo-v2") {
       const response: { projects: v2Project[] } = await request(
         this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
+        getProgramsByUserAndTag,
         { ...requestVariables, filterByTag: "allo-v2" },
       );
 
