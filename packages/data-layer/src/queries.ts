@@ -223,14 +223,6 @@ export const getApplicationsByRoundIdAndProjectIds = gql`
   }
 `;
 
-export const getProgramName = gql`
-  query getProgramNameQuery($projectId: String!) {
-    projects(filter: { id: { equalTo: $projectId } }) {
-      metadata
-    }
-  }
-`;
-
 /**
  * Get projects by their address
  * @param $address - The address of the project

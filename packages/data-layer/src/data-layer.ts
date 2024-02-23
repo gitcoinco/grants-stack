@@ -33,7 +33,6 @@ import {
   getApplicationsByRoundIdAndProjectIds,
   getProgramByIdAndUser,
   getProgramByUserAndTag,
-  getProgramName,
   getProjectById,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
@@ -377,25 +376,6 @@ export class DataLayer {
     );
 
     return response.applications ?? [];
-  }
-
-  async getProgramName({
-    projectId,
-  }: {
-    projectId: string;
-  }): Promise<string | null> {
-    const requestVariables = {
-      projectId,
-    };
-
-    const response: { projects: { metadata: { name: string } }[] } =
-      await request(this.gsIndexerEndpoint, getProgramName, requestVariables);
-
-    if (response.projects.length === 0) return null;
-
-    const project = response.projects[0];
-
-    return project.metadata.name;
   }
 
   async getRoundByIdAndChainId({
