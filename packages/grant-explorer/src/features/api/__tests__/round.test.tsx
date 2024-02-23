@@ -46,7 +46,7 @@ describe("getRoundById", () => {
           {
             id: expectedRoundData.id!,
             program: {
-              id: expectedRoundData.ownedBy,
+              id: expectedRoundData.ownedBy!,
             },
             roundMetaPtr: expectedRoundData.store!,
             applicationMetaPtr: expectedRoundData.applicationStore!,
