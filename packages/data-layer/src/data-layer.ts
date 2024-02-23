@@ -20,7 +20,6 @@ import {
   RoundsQueryVariables,
   SearchBasedProjectCategory,
   v2Project,
-  V2Round,
   V2RoundWithRoles,
 } from "./data.types";
 import {
@@ -35,12 +34,13 @@ import {
   getApplicationsByRoundIdAndProjectIds,
   getApplicationStatusByRoundIdAndCID,
   getProgramByIdAndUser,
-  getProgramByUserAndTag,
+  getProgramById,
+  getProgramsByUserAndTag,
   getProgramName,
   getProjectById,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
-  getRoundsByProgramIdAndUserAddress,
+  getRoundsByProgramIdAndChainId,
   getRoundsQuery,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
@@ -151,8 +151,8 @@ export class DataLayer {
     alloVersion: AlloVersion;
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
+      userAddress: address.toLowerCase(),
       alloVersion,
-      address,
       chainId,
     };
 
@@ -161,7 +161,7 @@ export class DataLayer {
     if (alloVersion === "allo-v1") {
       const response: { projects: Program[] } = await request(
         this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
+        getProgramsByUserAndTag,
         { ...requestVariables, filterByTag: "program" },
       );
 
@@ -169,7 +169,7 @@ export class DataLayer {
     } else if (alloVersion === "allo-v2") {
       const response: { projects: v2Project[] } = await request(
         this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
+        getProgramsByUserAndTag,
         { ...requestVariables, filterByTag: "allo-v2" },
       );
 
@@ -183,22 +183,29 @@ export class DataLayer {
       });
     }
 
+    // FIXME: this is a temporary fix that is going to be addressed just after merging this PR.
+    // The real fix is to change the query to load the projectRole joining all the projects,
+    // but we need a change in the indexer to add the "projects" relationship available in graphql.
+    programs = programs.filter((project) => {
+      const membershipFound =
+        project.roles.find((role) => role.address === address) !== undefined;
+      return membershipFound;
+    });
+
     return { programs };
   }
 
-  async getProgramByIdAndUser({
-    userAddress,
+  async getProgramById({
     programId,
     chainId,
   }: {
-    userAddress: string;
     programId: string;
     chainId: number;
   }): Promise<{ program: Program | null }> {
     const response: { projects: (Program | v2Project)[] } = await request(
       this.gsIndexerEndpoint,
-      getProgramByIdAndUser,
-      { programId, chainId, userAddress },
+      getProgramById,
+      { programId, chainId },
     );
 
     if (response.projects.length === 0) {
@@ -434,13 +441,13 @@ export class DataLayer {
   }: {
     roundId: string;
     chainId: number;
-  }): Promise<V2Round> {
+  }): Promise<V2RoundWithRoles> {
     const requestVariables = {
       roundId,
       chainId,
     };
 
-    const response: { rounds: V2Round[] } = await request(
+    const response: { rounds: V2RoundWithRoles[] } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainId,
       requestVariables,
@@ -449,15 +456,14 @@ export class DataLayer {
     return response.rounds[0] ?? [];
   }
 
-  async getRoundsByProgramIdAndUserAddress(args: {
+  async getRoundsByProgramIdAndChainId(args: {
     chainId: number;
     programId: string;
-    userAddress: Address;
   }): Promise<V2RoundWithRoles[]> {
     const response: { rounds: V2RoundWithRoles[] } = await request(
       this.gsIndexerEndpoint,
-      getRoundsByProgramIdAndUserAddress,
-      { ...args, userAddress: args.userAddress.toLowerCase() },
+      getRoundsByProgramIdAndChainId,
+      args,
     );
 
     return response.rounds;

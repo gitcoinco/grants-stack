@@ -14,6 +14,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 jest.mock("../../../features/common/Auth", () => ({
   useWallet: () => mockWallet,
 }));
+
 const mockWallet = {
   address: "0x0",
   provider: { getNetwork: () => Promise.resolve({ chainId: "0" }) },
@@ -116,7 +117,7 @@ describe("<RoundProvider />", () => {
       const expectedProgramId = expectedRound.ownedBy;
 
       const dataLayerMock = {
-        getRoundsByProgramIdAndUserAddress: jest
+        getRoundsByProgramIdAndChainId: jest
           .fn()
           .mockRejectedValue(new Error(":(")),
       } as unknown as DataLayer;
@@ -152,10 +153,12 @@ describe("<RoundProvider />", () => {
       );
 
       render(
-        <RoundProvider>
-          {/*// @ts-expect-error test file*/}
-          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        <DataLayerProvider client={{} as DataLayer}>
+          <RoundProvider>
+            {/*// @ts-expect-error test file*/}
+            <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       expect(
@@ -171,10 +174,12 @@ describe("<RoundProvider />", () => {
       (getRoundById as any).mockResolvedValue(expectedRound);
 
       render(
-        <RoundProvider>
-          {/*// @ts-expect-error test file*/}
-          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        <DataLayerProvider client={{} as DataLayer}>
+          <RoundProvider>
+            {/*// @ts-expect-error test file*/}
+            <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       expect(
@@ -192,10 +197,12 @@ describe("<RoundProvider />", () => {
       (getRoundById as any).mockRejectedValue(new Error(":("));
 
       render(
-        <RoundProvider>
-          {/*// @ts-expect-error test file*/}
-          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
-        </RoundProvider>
+        <DataLayerProvider client={{} as DataLayer}>
+          <RoundProvider>
+            {/*// @ts-expect-error test file*/}
+            <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
+          </RoundProvider>
+        </DataLayerProvider>
       );
 
       expect(

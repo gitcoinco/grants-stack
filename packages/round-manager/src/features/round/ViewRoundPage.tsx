@@ -639,8 +639,6 @@ export function RoundBadgeStatus({ round }: { round: Round }) {
   const roundEnds = round.roundEndTime;
   const now = moment();
 
-  console.log(round.payoutStrategy.strategyName, ROUND_PAYOUT_MERKLE);
-
   if (
     (round.payoutStrategy.strategyName == ROUND_PAYOUT_MERKLE &&
       now.isBetween(
