@@ -16,11 +16,14 @@ import { datadogLogs } from "@datadog/browser-logs";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import { ProgressStatus, ProgressStep } from "../api/types";
-import { useCreateProgram } from "../../context/program/CreateProgramContext";
+import {
+  CreateProgramState,
+  useCreateProgram,
+} from "../../context/program/CreateProgramContext";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
 import { ChainId } from "common/src/chain-ids";
-import { getConfig } from "common/src/config";
+import { getAddress } from "viem";
 
 type FormData = {
   name: string;
@@ -36,17 +39,9 @@ export default function CreateProgram() {
 
   const { address, chain } = useWallet();
 
-  const {
-    createProgram,
-    IPFSCurrentStatus,
-    contractDeploymentStatus,
-    indexingStatus,
-  } = useCreateProgram();
+  const { createProgram, state: createProgramState } = useCreateProgram();
 
-  const createProgramInProgress =
-    IPFSCurrentStatus === ProgressStatus.IN_PROGRESS ||
-    contractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
-    indexingStatus === ProgressStatus.IN_PROGRESS;
+  const isCreatingProgram = createProgramState.type === "creating";
 
   const navigate = useNavigate();
   const { register, control, formState, handleSubmit } = useForm<FormData>({
@@ -63,64 +58,74 @@ export default function CreateProgram() {
   const { errors } = formState;
 
   useEffect(() => {
-    if (
-      IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
-      contractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
-      indexingStatus === ProgressStatus.IS_SUCCESS
-    ) {
+    if (createProgramState.type === "created") {
       redirectToPrograms(navigate, 2000);
     }
-  }, [navigate, IPFSCurrentStatus, contractDeploymentStatus, indexingStatus]);
 
-  useEffect(() => {
-    if (
-      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
-      contractDeploymentStatus === ProgressStatus.IS_ERROR
-    ) {
-      setTimeout(() => {
-        setOpenProgressModal(false);
-        setOpenErrorModal(true);
-      }, errorModalDelayMs);
+    if (createProgramState.type === "error") {
+      setOpenErrorModal(true);
     }
-
-    if (indexingStatus === ProgressStatus.IS_ERROR) {
-      redirectToPrograms(navigate, 5000);
-    }
-  }, [navigate, IPFSCurrentStatus, contractDeploymentStatus, indexingStatus]);
+  }, [navigate, createProgramState]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    try {
-      setOpenProgressModal(true);
-      await createProgram(
-        data.name,
-        data.operators.map((op) => op.wallet)
-      );
-    } catch (error) {
-      console.error("CreateProgram", error);
+    setOpenProgressModal(true);
+
+    await createProgram(
+      data.name,
+      data.operators.map((op) => getAddress(op.wallet))
+    );
+  };
+
+  /// how to calcualte status
+  // createProgramState.type === "creating" and
+  //
+  // createProgramState.step === 0 && createProgramState.error !== null = ProgessStatus.IS_ERROR
+  // createProgramState.step === 0 && createProgramState.error === null = ProgessStatus.IN_PROGRESS
+  // createProgramState.step > 0 = ProgessStatus.IS_SUCCESS
+  const getProgressStepFromState = (
+    createProgramState: CreateProgramState,
+    stepIndex: number
+  ): ProgressStatus => {
+    if (createProgramState.type === "creating") {
+      if (createProgramState.step === stepIndex) {
+        if (createProgramState.error !== null) {
+          return ProgressStatus.IS_ERROR;
+        } else {
+          return ProgressStatus.IN_PROGRESS;
+        }
+      } else if (createProgramState.step > stepIndex) {
+        return ProgressStatus.IS_SUCCESS;
+      }
     }
+    return ProgressStatus.NOT_STARTED;
   };
 
   const progressSteps: ProgressStep[] = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
-      status: IPFSCurrentStatus,
+      status: getProgressStepFromState(createProgramState, 0),
     },
     {
-      name: "Deploying",
-      description: `Connecting to the ${chain.name} blockchain.`,
-      status: contractDeploymentStatus,
+      name: "Executing transaction",
+      description: `Executing transaction.`,
+      status: getProgressStepFromState(createProgramState, 1),
+    },
+    {
+      name: "Waiting for transaction",
+      description: `Waiting for transaction to be included in the blockchain.`,
+      status: getProgressStepFromState(createProgramState, 2),
     },
     {
       name: "Indexing",
       description: "The subgraph is indexing the data.",
-      status: indexingStatus,
+      status: getProgressStepFromState(createProgramState, 3),
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
       status:
-        indexingStatus === ProgressStatus.IS_SUCCESS
+        createProgramState.type === "created"
           ? ProgressStatus.IN_PROGRESS
           : ProgressStatus.NOT_STARTED,
     },
@@ -205,7 +210,7 @@ export default function CreateProgram() {
                       {...register("name", { required: true })}
                       $hasError={Boolean(errors.name)}
                       type="text"
-                      disabled={createProgramInProgress}
+                      disabled={isCreatingProgram}
                       placeholder="Enter the name of the Grant Program."
                       className="placeholder:italic"
                       data-testid="program-name"
@@ -254,7 +259,7 @@ export default function CreateProgram() {
                         <Input
                           {...register(`operators.${index}.wallet`)}
                           type="text"
-                          disabled={createProgramInProgress}
+                          disabled={isCreatingProgram}
                           className="basis:3/4 md:basis-2/3 placeholder:italic"
                           placeholder="Enter a valid wallet address (32 characters)."
                         />
@@ -292,12 +297,10 @@ export default function CreateProgram() {
                 <Button
                   className="float-right"
                   type="submit"
-                  disabled={IPFSCurrentStatus === ProgressStatus.IN_PROGRESS}
+                  disabled={isCreatingProgram}
                   data-testid="save"
                 >
-                  {IPFSCurrentStatus === ProgressStatus.IN_PROGRESS
-                    ? "Saving..."
-                    : "Save"}
+                  {isCreatingProgram ? "Saving..." : "Save"}
                 </Button>
               </div>
             </form>
