@@ -173,7 +173,7 @@ export function MRCProgressModalBody({
                   step={step}
                   icon={
                     <span
-                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-teal-500 rounded-full "
+                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-teal-500 rounded-full"
                       data-testid={`${step.name}-complete-icon`}
                     >
                       <CheckIcon
