@@ -149,8 +149,8 @@ export class DataLayer {
     alloVersion: AlloVersion;
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
+      userAddress: address.toLowerCase(),
       alloVersion,
-      address,
       chainId,
     };
 
@@ -180,15 +180,6 @@ export class DataLayer {
         };
       });
     }
-
-    // FIXME: this is a temporary fix that is going to be addressed just after merging this PR.
-    // The real fix is to change the query to load the projectRole joining all the projects,
-    // but we need a change in the indexer to add the "projects" relationship available in graphql.
-    programs = programs.filter((project) => {
-      const membershipFound =
-        project.roles.find((role) => role.address === address) !== undefined;
-      return membershipFound;
-    });
 
     return { programs };
   }

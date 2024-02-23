@@ -9,11 +9,12 @@ import { gql } from "graphql-request";
  * @returns The programs
  */
 export const getProgramByUserAndTag = gql`
-  query ($chainId: Int!, $filterByTag: String!) {
+  query ($userAddress: String!, $chainId: Int!, $filterByTag: String!) {
     projects(
       filter: {
         tags: { contains: [$filterByTag] }
         chainId: { equalTo: $chainId }
+        roles: { some: { address: { equalTo: $userAddress } } }
       }
     ) {
       id
