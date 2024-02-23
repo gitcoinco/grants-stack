@@ -309,7 +309,7 @@ export interface Round {
    */
   roundMetadata?: {
     name: string;
-    roundType: RoundVisibilityType;
+    roundType?: RoundVisibilityType;
     eligibility: Eligibility;
     programContractAddress: string;
     quadraticFundingConfig?: {
@@ -365,7 +365,7 @@ export interface Round {
   /**
    * Contract address of the program to which the round belongs
    */
-  ownedBy: string;
+  ownedBy?: string;
   /**
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
@@ -467,7 +467,7 @@ export type RoundGetRound = {
   id: string;
   tags: string[];
   chainId: number;
-  ownedBy: string;
+  ownedBy?: string;
   createdAtBlock: number;
   roundMetadataCid: string;
   roundMetadata: RoundMetadataGetRound;
@@ -493,7 +493,7 @@ export interface RoundMetadataGetRound {
   feesPercentage?: number;
   programContractAddress: string;
   quadraticFundingConfig?: QuadraticFundingConfig;
-  roundType: RoundVisibilityType;
+  roundType?: RoundVisibilityType;
 }
 
 export interface Support {
