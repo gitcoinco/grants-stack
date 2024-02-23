@@ -352,6 +352,48 @@ export const getRoundByIdAndChainId = gql`
       roundMetadataCid
       applicationMetadata
       applicationMetadataCid
+      strategyAddress
+      strategyName
+      isReadyForPayout
+      projectId
+      roles {
+        role
+        address
+      }
+    }
+  }
+`;
+
+export const getRoundWithApplications = gql`
+  query getRoundWithApplications($roundId: String!, $chainId: Int!) {
+    round(id: $roundId, chainId: $chainId) {
+      id
+      chainId
+      applicationsStartTime
+      applicationsEndTime
+      donationsStartTime
+      donationsEndTime
+      matchTokenAddress
+      roundMetadata
+      roundMetadataCid
+      applicationMetadata
+      applicationMetadataCid
+      strategyAddress
+      strategyName
+      isReadyForPayout
+      applications {
+        id
+        status
+        projectId
+        metadata
+      }
+      project {
+        id
+      }
+      roles {
+        role
+        address
+      }
       strategyId
       strategyAddress
       strategyName
@@ -385,6 +427,7 @@ export const getRoundsByProgramIdAndChainId = gql`
       strategyAddress
       strategyName
       createdByAddress
+      projectId
       roles {
         role
         address

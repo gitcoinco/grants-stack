@@ -430,13 +430,13 @@ export class DataLayer {
   }: {
     roundId: string;
     chainId: number;
-  }): Promise<V2Round> {
+  }): Promise<V2RoundWithRoles> {
     const requestVariables = {
       roundId,
       chainId,
     };
 
-    const response: { rounds: V2Round[] } = await request(
+    const response: { rounds: V2RoundWithRoles[] } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainId,
       requestVariables,
