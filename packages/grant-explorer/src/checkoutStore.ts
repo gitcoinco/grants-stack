@@ -23,7 +23,7 @@ import { groupBy, uniq } from "lodash-es";
 import { datadogLogs } from "@datadog/browser-logs";
 import { getEnabledChains } from "./app/chainConfig";
 import { WalletClient } from "wagmi";
-import { getContract } from "@wagmi/core";
+import { getContract, getPublicClient } from "@wagmi/core";
 import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 
@@ -244,6 +244,9 @@ export const useCheckoutStore = create<CheckoutState>()(
           }
 
           const receipt = await allo.voteUsingMRCContract(
+            getPublicClient({
+              chainId,
+            }),
             chainId,
             token,
             groupedEncodedVotes,

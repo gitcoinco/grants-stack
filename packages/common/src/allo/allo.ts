@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Round } from "data-layer";
-import { Address, Hex } from "viem";
+import { Address, Hex, PublicClient } from "viem";
 import { AnyJson, ChainId } from "..";
 import { CreateRoundData, RoundCategory, VotingToken } from "../types";
 import { Result } from "./common";
@@ -88,6 +88,7 @@ export interface Allo {
   >;
 
   voteUsingMRCContract: (
+    publicClient: PublicClient,
     chainId: ChainId,
     token: VotingToken,
     groupedVotes: Record<string, Hex[]>,

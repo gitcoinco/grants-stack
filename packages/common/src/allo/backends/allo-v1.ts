@@ -9,6 +9,7 @@ import {
   maxUint256,
   parseAbiParameters,
   parseUnits,
+  PublicClient,
   zeroAddress,
 } from "viem";
 import { AnyJson, ChainId } from "../..";
@@ -76,6 +77,7 @@ export class AlloV1 implements Allo {
   }
 
   async voteUsingMRCContract(
+    publicClient: PublicClient,
     chainId: ChainId,
     token: VotingToken,
     groupedVotes: Record<string, Hex[]>,
@@ -148,7 +150,7 @@ export class AlloV1 implements Allo {
     }
 
     if (tx.type === "success") {
-      return this.transactionSender.wait(tx.value, 60_000);
+      return this.transactionSender.wait(tx.value, 60_000, publicClient);
     } else {
       console.error(tx.error);
       throw new Error("Failed voting");

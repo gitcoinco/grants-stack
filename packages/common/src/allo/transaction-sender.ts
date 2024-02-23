@@ -36,7 +36,11 @@ export interface TransactionReceipt {
 
 export interface TransactionSender {
   send(tx: TransactionData): Promise<Hex>;
-  wait(txHash: Hex, timeout?: number): Promise<TransactionReceipt>;
+  wait(
+    txHash: Hex,
+    timeout?: number,
+    publicClient?: PublicClient
+  ): Promise<TransactionReceipt>;
   address(): Promise<Address>;
 }
 
@@ -141,8 +145,15 @@ export function createViemTransactionSender(
       return transactionHash;
     },
 
-    async wait(txHash: Hex, timeout?: number): Promise<TransactionReceipt> {
-      const receipt = await publicClient.waitForTransactionReceipt({
+    async wait(
+      txHash: Hex,
+      timeout?: number,
+      customPublicClient?: PublicClient
+    ): Promise<TransactionReceipt> {
+      debugger;
+      const receipt = await (
+        customPublicClient ?? publicClient
+      ).waitForTransactionReceipt({
         hash: txHash,
         timeout: timeout,
       });
