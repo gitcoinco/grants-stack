@@ -1,17 +1,20 @@
 import {
+  AlloAbi,
   Allo as AlloV2Contract,
   CreateProfileArgs,
+  DirectGrantsStrategy,
+  DirectGrantsStrategyTypes,
   DonationVotingMerkleDistributionStrategy,
   DonationVotingMerkleDistributionStrategyTypes,
   Registry,
   RegistryAbi,
-  AlloAbi,
   TransactionData,
-  DirectGrantsStrategyTypes,
-  DirectGrantsStrategy,
 } from "@allo-team/allo-v2-sdk";
-import { Abi, Address, Hex, parseUnits, zeroAddress, getAddress } from "viem";
+import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
+import { Abi, Address, Hex, getAddress, parseUnits, zeroAddress } from "viem";
 import { AnyJson } from "../..";
+import { payoutTokens } from "../../payoutTokens";
+import { RoundCategory } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -22,9 +25,6 @@ import {
   decodeEventFromReceipt,
   sendRawTransaction,
 } from "../transaction-sender";
-import { RoundCategory } from "../../types";
-import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { payoutTokens } from "../../payoutTokens";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -426,11 +426,6 @@ export class AlloV2 implements Allo {
         return error(new AlloError("roundId must be number"));
       }
 
-      const strategyInstance = new DonationVotingMerkleDistributionStrategy({
-        chain: this.chainId,
-        poolId: args.roundId,
-      });
-
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
@@ -443,7 +438,18 @@ export class AlloV2 implements Allo {
         application: { recipient: Hex };
       };
 
-      const registerRecipientTx = strategyInstance.getRegisterRecipientData({
+      // check the strategy type
+      let strategyInstance = null;
+      let registerRecipientTx = null;
+
+      // todo: finish strategy type check
+
+      strategyInstance = new DonationVotingMerkleDistributionStrategy({
+        chain: this.chainId,
+        poolId: args.roundId,
+      });
+
+      registerRecipientTx = strategyInstance.getRegisterRecipientData({
         registryAnchor: args.projectId,
         recipientAddress: metadata.application.recipient,
         metadata: {
@@ -451,6 +457,8 @@ export class AlloV2 implements Allo {
           pointer: ipfsResult.value,
         },
       });
+
+      /** End of split strategy */
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: registerRecipientTx.to,
