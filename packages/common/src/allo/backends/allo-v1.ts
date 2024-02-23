@@ -174,10 +174,16 @@ export class AlloV1 implements Allo {
         "(uint256 protocol, string pointer), address[], address[]",
       ]);
 
+      if (args.memberAddresses.length === 0) {
+        return error(new AlloError("You must atleast specify one operator"));
+      }
+
+      const ownerAddress = args.memberAddresses[0];
+
       const encodedInitParameters = encodeAbiParameters(abiType, [
         { protocol: 1n, pointer: ipfsResult.value },
-        [await this.transactionSender.address()],
-        args.memberAddresses,
+        [ownerAddress],
+        args.memberAddresses.slice(1),
       ]);
 
       const txResult = await sendTransaction(this.transactionSender, {

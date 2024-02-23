@@ -87,6 +87,11 @@ export default function CreateProgram() {
         return ProgressStatus.IS_SUCCESS;
       }
     }
+
+    if (createProgramState.type === "created") {
+      return ProgressStatus.IS_SUCCESS;
+    }
+
     return ProgressStatus.NOT_STARTED;
   };
 
@@ -108,7 +113,7 @@ export default function CreateProgram() {
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "Indexing the new data.",
       status: getProgressStepFromState(createProgramState, 3),
     },
     {
