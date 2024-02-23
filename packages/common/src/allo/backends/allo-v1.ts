@@ -148,7 +148,7 @@ export class AlloV1 implements Allo {
     }
 
     if (tx.type === "success") {
-      return this.transactionSender.wait(tx.value, 20_000);
+      return this.transactionSender.wait(tx.value, 60_000);
     } else {
       console.error(tx.error);
       throw new Error("Failed voting");
