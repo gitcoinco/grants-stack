@@ -18,7 +18,6 @@ import {
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
-  V2Round,
   V2RoundWithRoles,
   v2Project,
 } from "./data.types";
@@ -33,7 +32,7 @@ import {
   getApplicationStatusByRoundIdAndCID,
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
-  getProgramByIdAndUser,
+  getProgramById,
   getProgramsByUserAndTag,
   getProgramName,
   getProjectById,
@@ -184,7 +183,7 @@ export class DataLayer {
     return { programs };
   }
 
-  async getProgramByIdAndUser({
+  async getProgramById({
     programId,
     chainId,
   }: {
@@ -193,7 +192,7 @@ export class DataLayer {
   }): Promise<{ program: Program | null }> {
     const response: { projects: (Program | v2Project)[] } = await request(
       this.gsIndexerEndpoint,
-      getProgramByIdAndUser,
+      getProgramById,
       { programId, chainId },
     );
 

@@ -71,7 +71,7 @@ export const getProgramsByUserAndTag = gql`
  *
  * @returns The programs
  */
-export const getProgramByIdAndUser = gql`
+export const getProgramById = gql`
   query ($programId: String!, $chainId: Int!) {
     projects(
       filter: { id: { equalTo: $programId }, chainId: { equalTo: $chainId } }
