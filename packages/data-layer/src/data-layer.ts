@@ -11,6 +11,7 @@ import {
   Application,
   ApplicationStatus,
   Collection,
+  GrantApplicationFormAnswer,
   OrderByRounds,
   Program,
   Project,
@@ -19,6 +20,7 @@ import {
   Round,
   RoundGetRound,
   RoundsQueryVariables,
+  RoundWithApplications,
   SearchBasedProjectCategory,
   v2Project,
   V2Round,
@@ -482,7 +484,7 @@ export class DataLayer {
       chainId,
     };
 
-    const response: { rounds: any } = await request(
+    const response: { rounds: RoundWithApplications[] } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainIdWithApprovedApplications,
       requestVariables,
@@ -490,35 +492,38 @@ export class DataLayer {
 
     const _round = response.rounds[0] ?? [];
 
-    const projects: Project[] = _round.applications.map((application: any) => ({
-      grantApplicationId: application.id,
-      projectRegistryId: application.projectId,
-      recipient: application.metadata.application.recipient,
-      projectMetadata: {
-        title: application.metadata.application.project.title,
-        description: application.metadata.application.project.description,
-        website: application.metadata.application.project.website,
-        logoImg: application.metadata.application.project.logoImg,
-        bannerImg: application.metadata.application.project.bannerImg,
-        projectTwitter: application.metadata.application.project.projectTwitter,
-        userGithub: application.metadata.application.project.userGithub,
-        projectGithub: application.metadata.application.project.projectGithub,
-        credentials: application.metadata.application.project.credentials,
-        owners: application.metadata.application.project.owners,
-        createdAt: application.metadata.application.project.createdAt,
-      },
-      grantApplicationFormAnswers: application.metadata.application.answers.map(
-        (answer: any) => ({
-          questionId: answer.questionId,
-          question: answer.question,
-          answer: answer.answer,
-          hidden: answer.hidden,
-          type: answer.type,
-        }),
-      ),
-      status: application.status as ApplicationStatus,
-      applicationIndex: Number(application.id),
-    }));
+    const projects: Project[] = _round.applications.map(
+      (application: Application) => ({
+        grantApplicationId: application.id,
+        projectRegistryId: application.projectId,
+        recipient: application.metadata.application.recipient,
+        projectMetadata: {
+          title: application.project.metadata.title,
+          description: application.project.metadata.description,
+          website: application.project.metadata.website,
+          logoImg: application.project.metadata.logoImg,
+          bannerImg: application.project.metadata.bannerImg,
+          projectTwitter: application.project.metadata.projectTwitter,
+          userGithub: application.project.metadata.userGithub,
+          projectGithub: application.project.metadata.projectGithub,
+          credentials: application.project.metadata.credentials,
+          owners: application.project.metadata.owners,
+          createdAt: application.project.metadata.createdAt,
+        },
+        grantApplicationFormAnswers:
+          application.metadata.application.answers.map(
+            (answer: GrantApplicationFormAnswer) => ({
+              questionId: answer.questionId,
+              question: answer.question,
+              answer: answer.answer,
+              hidden: answer.hidden,
+              type: answer.type,
+            }),
+          ),
+        status: application.status as ApplicationStatus,
+        applicationIndex: Number(application.id),
+      }),
+    );
 
     return {
       round: {

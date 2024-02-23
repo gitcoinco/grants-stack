@@ -368,6 +368,10 @@ export const getRoundByIdAndChainIdWithApprovedApplications = gql`
         projectId
         status
         metadata
+        project {
+          id
+          metadata
+        }
       }
     }
   }
