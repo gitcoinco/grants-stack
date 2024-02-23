@@ -141,7 +141,7 @@ const expectedProject: Application = {
 };
 
 const mockDataLayer = {
-  getRoundById: vi.fn().mockResolvedValue({
+  getRoundByIdAndChainIdWithApprovedApplications: vi.fn().mockResolvedValue({
     rounds: [],
   }),
 } as unknown as DataLayer;

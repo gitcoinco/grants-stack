@@ -202,13 +202,6 @@ export const renderWithContext = (
           ],
         },
       ]),
-      getLegacyRoundById: vi.fn().mockResolvedValue({
-        round:
-          overrides?.roundState?.rounds !== undefined &&
-          overrides?.roundState?.rounds.length > 0
-            ? overrides?.roundState?.rounds[0]
-            : undefined,
-      }),
     } as unknown as Mocked<DataLayer>);
 
   return render(
