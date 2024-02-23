@@ -1,8 +1,9 @@
+import { getConfig } from "common/src/config";
+import { useAllo } from "common";
+import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
-import { useAllo } from "common";
 import {
   resetApplication,
   submitApplication,
@@ -18,11 +19,9 @@ import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantsPath, projectPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
-import { applicationSteps } from "../../utils/steps";
-import {
-  ROUND_PAYOUT_DIRECT,
-  getProjectURIComponents,
-} from "../../utils/utils";
+import { isInfinite } from "../../utils/components";
+import { getApplicationSteps } from "../../utils/steps";
+import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -30,7 +29,6 @@ import ExitModal from "../base/ExitModal";
 import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import StatusModal from "../base/StatusModal";
 import Cross from "../icons/Cross";
-import { isInfinite } from "../../utils/components";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -40,7 +38,9 @@ function Apply() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const allo = useAllo();
+  const isV2 = getConfig().allo.version === "allo-v2";
 
+  const [createLinkedProject, setCreateLinkedProject] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
   const [roundData, setRoundData] = useState<Round>();
   const [statusModalOpen, toggleStatusModal] = useState(false);
@@ -70,6 +70,10 @@ function Apply() {
     const showErrorModal =
       applicationError && applicationStatus === ApplicationStatus.Error;
 
+    const versionError =
+      (isV2 && roundId?.startsWith("0x")) ||
+      (!isV2 && !roundId?.startsWith("0x"));
+
     return {
       roundState,
       roundStatus,
@@ -78,6 +82,7 @@ function Apply() {
       applicationState,
       applicationStatus,
       applicationError,
+      versionError,
       applicationMetadata: round?.applicationMetadata,
       showErrorModal,
     };
@@ -128,19 +133,19 @@ function Apply() {
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
-    if (props.applicationState?.status === ApplicationStatus.Sent) {
+    if (
+      props.applicationState &&
+      props.applicationState.status === ApplicationStatus.Sent
+    ) {
       timer = setTimeout(() => {
         dispatch(
           addAlert("success", applicationSuccessTitle, applicationSuccessBody)
         );
-        const {
-          chainId: projectChainId,
-          registryAddress,
-          id,
-        } = getProjectURIComponents(
-          props.applicationState.projectsIDs[0].toString()
-        );
-        navigate(projectPath(projectChainId, registryAddress, id));
+        const id = props.applicationState.projectsIDs[0].toString();
+
+        // Note: this is a hack to navigate to the project page after the application is submitted
+        // todo: later remove the entire registry path from the url
+        navigate(projectPath(chainId as string, "0x", id));
       }, 1500);
     }
 
@@ -189,7 +194,11 @@ function Apply() {
     return <div>loading...</div>;
   }
 
-  if (props.roundState === undefined || props.round === undefined) {
+  if (
+    props.roundState === undefined ||
+    props.round === undefined ||
+    props.versionError
+  ) {
     return (
       <div>
         <ErrorModal
@@ -292,10 +301,21 @@ function Apply() {
                 roundApplication={props.applicationMetadata}
                 showErrorModal={props.showErrorModal || false}
                 round={props.round}
-                onSubmit={(answers: RoundApplicationAnswers) => {
-                  dispatch(submitApplication(props.round!.id, answers, allo));
+                onSubmit={(
+                  answers: RoundApplicationAnswers,
+                  createProfile: boolean
+                ) => {
+                  dispatch(
+                    submitApplication(
+                      props.round!.id,
+                      answers,
+                      allo,
+                      createProfile
+                    )
+                  );
                   toggleStatusModal(true);
                 }}
+                setCreateLinkedProject={setCreateLinkedProject}
               />
             )}
           </div>
@@ -309,7 +329,7 @@ function Apply() {
             open={statusModalOpen}
             onClose={toggleStatusModal}
             currentStatus={props.applicationState.status}
-            steps={applicationSteps}
+            steps={getApplicationSteps(createLinkedProject)}
             error={props.applicationState.error}
             title="Please hold while we submit your grant round application."
           />

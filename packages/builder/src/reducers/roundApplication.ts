@@ -1,6 +1,5 @@
 import {
   APPLICATION_DATA_LOADED,
-  RoundApplicationActions,
   ROUND_APPLICATION_ERROR,
   ROUND_APPLICATION_ERROR_RESET,
   ROUND_APPLICATION_FOUND,
@@ -8,6 +7,7 @@ import {
   ROUND_APPLICATION_LOADING,
   ROUND_APPLICATION_NOT_FOUND,
   ROUND_APPLICATION_RESET,
+  RoundApplicationActions,
 } from "../actions/roundApplication";
 
 export const enum Status {
@@ -16,6 +16,7 @@ export const enum Status {
   LitAuthentication,
   SigningApplication,
   UploadingMetadata,
+  CreateProject,
   SendingTx,
   Sent,
   Found,

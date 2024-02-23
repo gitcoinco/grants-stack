@@ -1,3 +1,5 @@
+import "./browserPatches";
+
 import { ChakraProvider } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
@@ -10,7 +12,6 @@ import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
 import { WagmiConfig } from "wagmi";
 import AlloWrapper from "./utils/AlloWrapper";
-import "./browserPatches";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
 import PageNotFound from "./components/base/PageNotFound";

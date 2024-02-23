@@ -3,43 +3,46 @@ import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import _fetch from "cross-fetch";
 import { request } from "graphql-request";
 import shuffle from "knuth-shuffle-seeded";
+import { Address } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
 import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Application,
+  ApplicationStatus,
   Collection,
   Program,
   ProjectApplication,
-  ProjectEventsMap,
   Round,
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
+  V2Round,
   V2RoundWithRoles,
   v2Project,
-  V2Round,
 } from "./data.types";
 import {
   ApplicationSummary,
-  Configuration as SearchApiConfiguration,
   DefaultApi as SearchApi,
+  Configuration as SearchApiConfiguration,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
   getApplication,
+  getApplicationStatusByRoundIdAndCID,
   getApplicationsByProjectId,
+  getApplicationsByRoundIdAndProjectIds,
+  getProgramByIdAndUser,
+  getProgramByUserAndTag,
   getProgramName,
   getProjectById,
   getProjects,
   getProjectsAndRolesByAddress,
-  getProgramByUserAndTag,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndUserAddress,
-  getProgramByIdAndUser,
 } from "./queries";
-import { Address } from "viem";
+import { mergeCanonicalAndLinkedProjects } from "./utils";
 
 /**
  * DataLayer is a class that provides a unified interface to the various data sources.
@@ -241,17 +244,14 @@ export class DataLayer {
    */
   async getProjectById({
     projectId,
-    chainId,
     alloVersion,
   }: {
     projectId: string;
-    chainId: number;
     alloVersion: AlloVersion;
   }): Promise<{ project: v2Project } | null> {
     const requestVariables = {
       alloVersion,
       projectId,
-      chainId,
     };
 
     const response: { projects: v2Project[] } = await request(
@@ -262,50 +262,9 @@ export class DataLayer {
 
     if (response.projects.length === 0) return null;
 
-    const project = response.projects[0];
+    const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
     return { project };
-  }
-
-  /**
-   * getProjects() returns a list of projects.
-   *
-   * @param chainIds
-   * @param first
-   * @param alloVersion
-   *
-   * @returns v2Projects[] | null
-   */
-  async getProjects({
-    chainIds,
-    first,
-    alloVersion,
-  }: {
-    chainIds: number[];
-    first: number;
-    alloVersion: AlloVersion;
-  }): Promise<{ projects: v2Project[] } | null> {
-    const projects: v2Project[] = [];
-
-    for (const chainId of chainIds) {
-      const requestVariables = {
-        alloVersion,
-        first,
-        chainId,
-      };
-
-      const profilesData: v2Project = await request(
-        this.gsIndexerEndpoint,
-        getProjects,
-        requestVariables,
-      );
-
-      projects.push(profilesData);
-    }
-
-    return {
-      projects,
-    };
   }
 
   // getProjectsByAddress
@@ -318,16 +277,16 @@ export class DataLayer {
   async getProjectsByAddress({
     address,
     alloVersion,
-    chainId,
+    chainIds,
   }: {
     address: string;
     alloVersion: AlloVersion;
-    chainId: number;
-  }): Promise<ProjectEventsMap | undefined> {
+    chainIds: number[];
+  }): Promise<v2Project[]> {
     const requestVariables = {
       address: address.toLowerCase(),
       version: alloVersion,
-      chainId,
+      chainIds,
     };
 
     const response: { projects: v2Project[] } = await request(
@@ -336,25 +295,11 @@ export class DataLayer {
       requestVariables,
     );
 
-    const projects: v2Project[] = response.projects;
+    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
+      response.projects,
+    );
 
-    if (projects.length === 0) return undefined;
-
-    const projectEventsMap: ProjectEventsMap = {};
-
-    for (const project of projects) {
-      projectEventsMap[
-        `${chainId}:${project.registryAddress}:${
-          alloVersion === "allo-v2" ? project.id : project.projectNumber
-        }`
-      ] = {
-        createdAtBlock: Number(project.createdAtBlock),
-        // todo: fix once updatedAtBlock is available
-        updatedAtBlock: Number(project.createdAtBlock),
-      };
-    }
-
-    return projectEventsMap;
+    return projects;
   }
 
   /**
@@ -409,6 +354,58 @@ export class DataLayer {
     );
 
     return response.application ?? [];
+  }
+
+  /**
+   * Returns a single application as identified by its id, round name and chain name
+   * @param projectId
+   */
+  async getApplicationsByRoundIdAndProjectIds({
+    chainId,
+    roundId,
+    projectIds,
+  }: {
+    chainId: number;
+    roundId: Lowercase<Address>;
+    projectIds: string[];
+  }): Promise<ProjectApplication[] | undefined> {
+    const requestVariables = {
+      chainId,
+      roundId,
+      projectIds,
+    };
+
+    const response: { applications: ProjectApplication[] } = await request(
+      this.gsIndexerEndpoint,
+      getApplicationsByRoundIdAndProjectIds,
+      requestVariables,
+    );
+
+    return response.applications ?? [];
+  }
+
+  async getApplicationStatusByRoundIdAndCID({
+    roundId,
+    chainId,
+    metadataCid,
+  }: {
+    chainId: number;
+    roundId: string;
+    metadataCid: string;
+  }): Promise<ApplicationStatus | undefined> {
+    const requestVariables = {
+      chainId,
+      roundId,
+      metadataCid,
+    };
+
+    const response: { applications: any } = await request(
+      this.gsIndexerEndpoint,
+      getApplicationStatusByRoundIdAndCID,
+      requestVariables,
+    );
+  
+    return response.applications[0].status;
   }
 
   async getProgramName({

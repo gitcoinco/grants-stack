@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
-import { screen } from "@testing-library/react";
-import { ProjectEventsMap } from "data-layer";
+import { act, screen } from "@testing-library/react";
 import { when } from "jest-when";
 import { Store } from "redux";
 import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
@@ -17,6 +16,7 @@ import {
   addressFrom,
   buildRound,
   renderWrapped,
+  roundIdFrom,
 } from "../../../utils/test_utils";
 
 jest.mock("../../../actions/projects");
@@ -24,33 +24,46 @@ jest.mock("../../../actions/rounds");
 jest.mock("../../../actions/roundApplication");
 jest.mock("../../../hooks/useLocalStorage");
 
-const projectEventsMap: ProjectEventsMap = {
-  "1:1:1": {
-    createdAtBlock: 1111,
-    updatedAtBlock: 1112,
-  },
-  "1:1:2": {
-    createdAtBlock: 2222,
-    updatedAtBlock: 2223,
-  },
-};
-
 const projectsMetadata: Metadata[] = [
   {
     protocol: 1,
     pointer: "0x1234",
-    id: "1:1:1",
+    id: "1",
+    chainId: 1,
     title: "First Project",
     description: "",
     website: "",
+    bannerImg: "",
+    logoImg: "",
+    projectTwitter: "",
+    userGithub: "",
+    projectGithub: "",
+    credentials: {},
+    createdAt: 1,
+    updatedAt: 1,
+    linkedChains: [1],
+    nonce: BigInt(1),
+    registryAddress: "0x1234",
   },
   {
     protocol: 2,
     pointer: "0x1234",
-    id: "1:1:2",
+    id: "2",
+    chainId: 1,
     title: "Second Project",
     description: "",
     website: "",
+    bannerImg: "",
+    logoImg: "",
+    projectTwitter: "",
+    userGithub: "",
+    projectGithub: "",
+    credentials: {},
+    createdAt: 1,
+    updatedAt: 1,
+    linkedChains: [1],
+    nonce: BigInt(1),
+    registryAddress: "0x1234",
   },
 ];
 
@@ -58,13 +71,12 @@ describe("<List />", () => {
   beforeEach(() => {
     (useLocalStorage as jest.Mock).mockReturnValue([null]);
     (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+    (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
   });
 
   describe("useEffect/loadAllChainsProjects", () => {
     test("should be called the first time", async () => {
       const store = setupStore();
-      (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
-      // (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
       renderWrapped(<List />, store);
 
@@ -74,7 +86,7 @@ describe("<List />", () => {
 
     test("should not be called if it's already loading", async () => {
       const store = setupStore();
-      store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
+      store.dispatch({ type: "PROJECTS_LOADING", payload: [10] });
 
       renderWrapped(<List />, store);
 
@@ -106,13 +118,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 10,
-          events: {
-            "1:1:1": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
-          },
+          chainIDs: [10],
         },
       });
       store.dispatch({
@@ -139,13 +145,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 10,
-          events: {
-            "1:1:1": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
-          },
+          chainIDs: [10],
         },
       });
       store.dispatch({
@@ -174,13 +174,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 10,
-          events: {
-            "1:1:1": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
-          },
+          chainIDs: [10],
         },
       });
       store.dispatch({
@@ -206,7 +200,7 @@ describe("<List />", () => {
 
       store.dispatch({
         type: "PROJECTS_LOADED",
-        payload: { chainID: 10, events: {} },
+        payload: { chainIDs: [10] },
       });
 
       renderWrapped(<List />, store);
@@ -219,7 +213,7 @@ describe("<List />", () => {
     describe("projects", () => {
       test("should show a loading element", async () => {
         const store = setupStore();
-        store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: [10] });
 
         renderWrapped(<List />, store);
 
@@ -231,7 +225,7 @@ describe("<List />", () => {
         const store = setupStore();
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10, events: {} },
+          payload: { chainIDs: [10] },
         });
 
         renderWrapped(<List />, store);
@@ -246,20 +240,22 @@ describe("<List />", () => {
       test("should show projects", async () => {
         const store = setupStore();
 
-        store.dispatch({
-          type: "PROJECTS_LOADED",
-          payload: { chainID: 10, events: projectEventsMap },
-        });
-        store.dispatch({
-          type: "GRANT_METADATA_FETCHED",
-          data: projectsMetadata[0],
-        });
-        store.dispatch({
-          type: "GRANT_METADATA_FETCHED",
-          data: projectsMetadata[1],
-        });
-
         renderWrapped(<List />, store);
+
+        await act(async () => {
+          store.dispatch({
+            type: "PROJECTS_LOADED",
+            payload: { chainIDs: [10] },
+          });
+          store.dispatch({
+            type: "GRANT_METADATA_FETCHED",
+            data: projectsMetadata[0],
+          });
+          store.dispatch({
+            type: "GRANT_METADATA_FETCHED",
+            data: projectsMetadata[1],
+          });
+        });
 
         expect(screen.getByText("First Project")).toBeInTheDocument();
         expect(screen.getByText("Second Project")).toBeInTheDocument();
@@ -274,7 +270,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10, events: projectEventsMap },
+          payload: { chainIDs: [10] },
         });
 
         store.dispatch({
@@ -327,6 +323,7 @@ describe("<List />", () => {
 
         test("should be visible if user didn't apply yet", async () => {
           const round = buildRound({
+            id: roundIdFrom(1),
             address: addressFrom(1),
           });
 
@@ -334,7 +331,7 @@ describe("<List />", () => {
 
           store.dispatch({
             type: "ROUNDS_ROUND_LOADED",
-            address: addressFrom(1),
+            id: addressFrom(1),
             round,
           });
 
@@ -367,7 +364,7 @@ describe("<List />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          payload: { chainID: 10, events: projectEventsMap },
+          payload: { chainIDs: [10] },
         });
 
         store.dispatch({
@@ -398,13 +395,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "PROJECTS_LOADED",
             payload: {
-              chainID: 10,
-              events: {
-                "1:1:1": {
-                  createdAtBlock: 1111,
-                  updatedAtBlock: 1112,
-                },
-              },
+              chainID: [10],
             },
           });
 
@@ -427,7 +418,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "ROUND_APPLICATION_FOUND",
             roundAddress,
-            project: "1:1:1",
+            project: "0x1234",
           });
 
           when(useLocalStorage as jest.Mock)
