@@ -37,11 +37,9 @@ import {
   getProgramByUserAndTag,
   getProgramName,
   getProjectById,
-  getProjects,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndChainId,
-  getProgramByIdAndUser,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -403,7 +401,7 @@ export class DataLayer {
       getApplicationStatusByRoundIdAndCID,
       requestVariables,
     );
-  
+
     return response.applications[0].status;
   }
 
