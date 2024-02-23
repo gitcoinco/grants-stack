@@ -14,16 +14,11 @@ import Footer from "common/src/components/Footer";
 import ProgressModal from "../common/ProgressModal";
 import { datadogLogs } from "@datadog/browser-logs";
 import ErrorModal from "../common/ErrorModal";
-import { errorModalDelayMs } from "../../constants";
 import { ProgressStatus, ProgressStep } from "../api/types";
-import {
-  CreateProgramState,
-  useCreateProgram,
-} from "../../context/program/CreateProgramContext";
+import { CreateProgramState, useCreateProgram } from "./useCreateProgram";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
 import { ChainId } from "common/src/chain-ids";
-import { getAddress } from "viem";
 
 type FormData = {
   name: string;
@@ -72,16 +67,11 @@ export default function CreateProgram() {
 
     await createProgram(
       data.name,
-      data.operators.map((op) => getAddress(op.wallet))
+      // FIXME: use getAddress when Uint8Array is fixed in jest
+      data.operators.map((op) => op.wallet as `0x${string}`)
     );
   };
 
-  /// how to calcualte status
-  // createProgramState.type === "creating" and
-  //
-  // createProgramState.step === 0 && createProgramState.error !== null = ProgessStatus.IS_ERROR
-  // createProgramState.step === 0 && createProgramState.error === null = ProgessStatus.IN_PROGRESS
-  // createProgramState.step > 0 = ProgessStatus.IS_SUCCESS
   const getProgressStepFromState = (
     createProgramState: CreateProgramState,
     stepIndex: number
