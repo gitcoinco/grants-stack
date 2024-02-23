@@ -17,8 +17,9 @@ import {
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
+  V2RoundWithProjects,
   V2RoundWithRoles,
-  v2Project
+  v2Project,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -36,7 +37,7 @@ import {
   getProjectById,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
-  getRoundsByProgramIdAndChainId
+  getRoundsByProgramIdAndChainId,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -403,13 +404,13 @@ export class DataLayer {
   }: {
     roundId: string;
     chainId: number;
-  }): Promise<V2RoundWithRoles> {
+  }): Promise<V2RoundWithProjects> {
     const requestVariables = {
       roundId,
       chainId,
     };
 
-    const response: { rounds: V2RoundWithRoles[] } = await request(
+    const response: { rounds: V2RoundWithProjects[] } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainId,
       requestVariables,

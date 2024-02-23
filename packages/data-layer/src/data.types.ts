@@ -255,7 +255,7 @@ export type V2Round = {
 /**
  * V2 Round with project
  */
-export type V2RoundWithProject = V2Round & {
+export type V2RoundWithProjects = V2RoundWithRoles & {
   project: {
     id: string;
     name: string;
