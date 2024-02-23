@@ -17,10 +17,12 @@ import { payoutTokens } from "../../payoutTokens";
 import { RoundCategory } from "../../types";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
-import RoundImplementation from "../abis/allo-v1/RoundImplementation";
+import RoundImplementationABI from "../abis/allo-v1/RoundImplementation";
+import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import {
   dgVotingStrategyDummyContractMap,
   directPayoutStrategyFactoryContractMap,
+  programFactoryMap,
   merklePayoutStrategyFactoryMap,
   projectRegistryMap,
   qfVotingStrategyFactoryMap,
@@ -109,10 +111,6 @@ export class AlloV1 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -120,6 +118,11 @@ export class AlloV1 implements Allo {
         emit("transactionStatus", error(result));
         return error(result);
       }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: ProjectRegistryABI,
@@ -135,6 +138,88 @@ export class AlloV1 implements Allo {
 
       return success({
         projectId,
+      });
+    });
+  }
+
+  createProgram(args: {
+    name: string;
+    memberAddresses: Address[];
+  }): AlloOperation<
+    Result<{ programId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const metadata = {
+        type: "program",
+        name: args.name,
+      };
+
+      const ipfsResult = await this.ipfsUploader(metadata);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      const programFactoryAddress = programFactoryMap[this.chainId];
+
+      let abiType = parseAbiParameters([
+        "(uint256 protocol, string pointer), address[], address[]",
+      ]);
+
+      const encodedInitParameters = encodeAbiParameters(abiType, [
+        { protocol: 1n, pointer: ipfsResult.value },
+        [await this.transactionSender.address()],
+        args.memberAddresses,
+      ]);
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: programFactoryAddress,
+        abi: ProgramFactoryABI,
+        functionName: "create",
+        args: [encodedInitParameters],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to create program", err);
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(void 0));
+
+      const programCreatedEvent = decodeEventFromReceipt({
+        abi: ProgramFactoryABI,
+        receipt,
+        event: "ProgramCreated",
+      });
+
+      return success({
+        programId: programCreatedEvent.programContractAddress,
       });
     });
   }
@@ -388,7 +473,7 @@ export class AlloV1 implements Allo {
    */
   applyToRound(args: {
     projectId: Hex;
-    roundId: Hex|number;
+    roundId: Hex | number;
     metadata: AnyJson;
   }): AlloOperation<
     Result<Hex>,
@@ -399,11 +484,8 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-
       if (typeof args.roundId == "number") {
-        return error(
-          new AlloError("roundId must be Hex")
-        );
+        return error(new AlloError("roundId must be Hex"));
       }
 
       const ipfsResult = await this.ipfsUploader(args.metadata);
@@ -416,7 +498,7 @@ export class AlloV1 implements Allo {
 
       const txResult = await sendTransaction(this.transactionSender, {
         address: args.roundId,
-        abi: RoundImplementation,
+        abi: RoundImplementationABI,
         functionName: "applyToRound",
         args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
       });
@@ -431,17 +513,17 @@ export class AlloV1 implements Allo {
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
-
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to apply to round");
         emit("transactionStatus", error(result));
         return error(result);
       }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
 
       return success(args.projectId);
     });

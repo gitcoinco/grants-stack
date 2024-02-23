@@ -55,6 +55,7 @@ describe("AlloV2", () => {
       .createProject({
         name: "My Project",
         metadata: { foo: "bar" },
+        memberAddresses: [],
       })
       .on("ipfs", (r) => (ipfsResult = r))
       .on("transaction", (r) => {

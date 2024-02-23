@@ -5,6 +5,7 @@ import { useWallet } from "../../features/common/Auth";
 import { saveToIPFS } from "../../features/api/ipfs";
 import { deployProgramContract } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
+import { useAllo } from "common";
 
 export interface CreateProgramState {
   IPFSCurrentStatus: ProgressStatus;
@@ -112,55 +113,45 @@ export const CreateProgramProvider = ({
   );
 };
 
-const _createProgram = async ({
-  dispatch,
-  programName,
-  operatorWallets,
-  signerOrProvider,
-}: _createProgramParams) => {
-  dispatch({
-    type: ActionType.RESET_TO_INITIAL_STATE,
-  });
-  try {
-    const IpfsHash = await storeDocument(dispatch, programName);
-
-    const metadata = {
-      protocol: 1,
-      pointer: IpfsHash,
-    };
-    const transactionBlockNumber = await deployContract(
-      dispatch,
-      metadata,
-      operatorWallets,
-      signerOrProvider
-    );
-
-    await waitForSubgraphToUpdate(
-      dispatch,
-      signerOrProvider,
-      transactionBlockNumber
-    );
-  } catch (error) {
-    datadogLogs.logger.error(`error: _createProgram - ${error}`);
-    console.error("_createProgram: ", error);
-  }
-};
 export const useCreateProgram = () => {
   const context = useContext(CreateProgramContext);
   if (context === undefined) {
     throw new Error("useCreateProgram must be used within a ProgramProvider");
   }
 
-  const { signer: walletSigner } = useWallet();
+  const { dispatch } = context;
 
-  const createProgram = (programName: string, operatorWallets: string[]) => {
-    return _createProgram({
-      dispatch: context.dispatch,
-      programName: programName,
-      operatorWallets,
-      // @ts-expect-error TODO: resolve this situation around signers and providers
-      signerOrProvider: walletSigner,
+  const allo = useAllo();
+
+  const createProgram = async (
+    programName: string,
+    operatorWallets: string[]
+  ) => {
+    dispatch({
+      type: ActionType.RESET_TO_INITIAL_STATE,
     });
+    try {
+      const metadata = {
+        type: "program",
+        name: programName,
+      };
+
+      const transactionBlockNumber = await deployContract(
+        dispatch,
+        metadata,
+        operatorWallets,
+        signerOrProvider
+      );
+
+      await waitForSubgraphToUpdate(
+        dispatch,
+        signerOrProvider,
+        transactionBlockNumber
+      );
+    } catch (error) {
+      datadogLogs.logger.error(`error: _createProgram - ${error}`);
+      console.error("_createProgram: ", error);
+    }
   };
 
   return {
@@ -184,7 +175,7 @@ async function storeDocument(
 
   try {
     const IpfsHash: string = await saveToIPFS({
-      content: { name: programName },
+      content: { type: "program", name: programName },
       metadata: {
         name: "program-metadata",
       },

@@ -63,6 +63,7 @@ export class AlloV2 implements Allo {
   createProject(args: {
     name: string;
     metadata: AnyJson;
+    memberAddresses: Address[];
     nonce?: bigint;
   }): AlloOperation<
     Result<{ projectId: Hex }>,
@@ -70,6 +71,7 @@ export class AlloV2 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -94,7 +96,7 @@ export class AlloV2 implements Allo {
           pointer: ipfsResult.value,
         },
         owner: await this.transactionSender.address(),
-        members: [], // todo: get members
+        members: args.memberAddresses,
       };
 
       const txCreateProfile: TransactionData =
@@ -119,17 +121,17 @@ export class AlloV2 implements Allo {
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
-
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to create project");
         emit("transactionStatus", error(result));
         return error(result);
       }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: RegistryAbi as Abi,
@@ -140,6 +142,36 @@ export class AlloV2 implements Allo {
       return success({
         projectId: projectCreatedEvent.profileId,
       });
+    });
+  }
+
+  createProgram(args: {
+    name: string;
+    memberAddresses: Address[];
+  }): AlloOperation<
+    Result<{ programId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return this.createProject({
+      name: args.name,
+      metadata: {
+        type: "program",
+        name: args.name,
+      },
+      memberAddresses: args.memberAddresses,
+    }).map((result) => {
+      if (result.type === "success") {
+        return success({
+          programId: result.value.projectId,
+        });
+      }
+
+      return result;
     });
   }
 
@@ -195,10 +227,6 @@ export class AlloV2 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -206,6 +234,11 @@ export class AlloV2 implements Allo {
         emit("transactionStatus", error(result));
         return error(result);
       }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
 
       return success({
         projectId: projectId,
