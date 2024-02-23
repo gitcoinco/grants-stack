@@ -1,19 +1,27 @@
 import {
   Allo as AlloV2Contract,
+  AlloAbi,
   CreateProfileArgs,
+  DirectGrantsStrategy,
+  DirectGrantsStrategyTypes,
   DonationVotingMerkleDistributionStrategy,
   DonationVotingMerkleDistributionStrategyTypes,
   Registry,
   RegistryAbi,
-  AlloAbi,
   TransactionData,
-  DirectGrantsStrategyTypes,
-  DirectGrantsStrategy,
 } from "@allo-team/allo-v2-sdk";
-import { Abi, Address, Hex, parseUnits, zeroAddress, getAddress } from "viem";
+import {
+  Abi,
+  Address,
+  getAddress,
+  Hex,
+  parseUnits,
+  PublicClient,
+  zeroAddress,
+} from "viem";
 import { AnyJson, ChainId } from "../..";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { Result, dateToEthereumTimestamp, error, success } from "../common";
+import { dateToEthereumTimestamp, error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
@@ -22,9 +30,8 @@ import {
   TransactionReceipt,
   TransactionSender,
 } from "../transaction-sender";
-import { VotingToken } from "../../types";
+import { RoundCategory, VotingToken } from "../../types";
 import { PermitSignature } from "../voting";
-import { RoundCategory } from "../../types";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
 import { payoutTokens } from "../../payoutTokens";
 
@@ -63,6 +70,7 @@ export class AlloV2 implements Allo {
   }
 
   async voteUsingMRCContract(
+    publicClient: PublicClient,
     chainId: ChainId,
     token: VotingToken,
     groupedVotes: Record<string, Hex[]>,
