@@ -438,27 +438,43 @@ export class AlloV2 implements Allo {
         application: { recipient: Hex };
       };
 
-      // check the strategy type
-      let strategyInstance = null;
-      let registerRecipientTx = null;
+      let strategyInstance:
+        | DirectGrantsStrategy
+        | DonationVotingMerkleDistributionStrategy;
+      let registerRecipientTx: TransactionData;
 
-      // todo: finish strategy type check
+      // todo: not sure how to fetch the round category yet... @thelostone-mc @boudra
+      // fixme: round.roundCategory
+      if (1 !== RoundCategory.Direct) {
+        strategyInstance = new DirectGrantsStrategy({
+          chain: this.chainId,
+          poolId: args.roundId,
+        });
 
-      strategyInstance = new DonationVotingMerkleDistributionStrategy({
-        chain: this.chainId,
-        poolId: args.roundId,
-      });
+        registerRecipientTx = strategyInstance.getRegisterRecipientData({
+          registryAnchor: args.projectId,
+          recipientAddress: metadata.application.recipient,
+          grantAmount: 0n,
+          metadata: {
+            protocol: 1n,
+            pointer: ipfsResult.value,
+          },
+        });
+      } else {
+        strategyInstance = new DonationVotingMerkleDistributionStrategy({
+          chain: this.chainId,
+          poolId: args.roundId,
+        });
 
-      registerRecipientTx = strategyInstance.getRegisterRecipientData({
-        registryAnchor: args.projectId,
-        recipientAddress: metadata.application.recipient,
-        metadata: {
-          protocol: 1n,
-          pointer: ipfsResult.value,
-        },
-      });
-
-      /** End of split strategy */
+        registerRecipientTx = strategyInstance.getRegisterRecipientData({
+          registryAnchor: args.projectId,
+          recipientAddress: metadata.application.recipient,
+          metadata: {
+            protocol: 1n,
+            pointer: ipfsResult.value,
+          },
+        });
+      }
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: registerRecipientTx.to,
