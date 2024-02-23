@@ -116,7 +116,7 @@ describe("<RoundProvider />", () => {
       const expectedProgramId = expectedRound.ownedBy;
 
       const dataLayerMock = {
-        getRoundsByProgramIdAndUserAddress: jest
+        getRoundsByProgramIdAndChainId: jest
           .fn()
           .mockRejectedValue(new Error(":(")),
       } as unknown as DataLayer;

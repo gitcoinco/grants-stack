@@ -5,7 +5,6 @@ import { getRoundById, listRounds } from "../../features/api/round";
 import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer, useDataLayer } from "data-layer";
-import { Address } from "viem";
 
 export interface RoundState {
   data: Round[];
@@ -39,7 +38,6 @@ export const RoundContext = createContext<
 const fetchRounds = async (
   dispatch: Dispatch,
   dataLayer: DataLayer,
-  address: Address,
   chainId: number,
   programId: string
 ) => {
@@ -55,7 +53,6 @@ const fetchRounds = async (
       chainId: chainId,
       dataLayer,
       programId,
-      userAddress: address,
     });
 
     dispatch({ type: ActionType.SET_ROUNDS, payload: rounds });
@@ -149,21 +146,15 @@ export const useRounds = (programId?: string) => {
   if (context === undefined) {
     throw new Error("useRounds must be used within a RoundProvider");
   }
-  const { address, provider } = useWallet();
+  const { provider } = useWallet();
 
   useEffect(() => {
     if (programId) {
       provider.getNetwork().then((network) => {
-        fetchRounds(
-          context.dispatch,
-          dataLayer,
-          address,
-          network.chainId,
-          programId
-        );
+        fetchRounds(context.dispatch, dataLayer, network.chainId, programId);
       });
     }
-  }, [address, dataLayer, provider, programId, context.dispatch]);
+  }, [dataLayer, provider, programId, context.dispatch]);
 
   return { ...context.state, dispatch: context.dispatch };
 };

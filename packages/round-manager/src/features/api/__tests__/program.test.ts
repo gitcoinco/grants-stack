@@ -3,7 +3,6 @@ import { Program } from "../types";
 import { makeProgramData } from "../../../test-utils";
 import { CHAINS } from "../utils";
 import { ChainId } from "common";
-import { zeroAddress } from "viem";
 
 jest.mock("data-layer", () => ({
   DataLayer: jest.fn().mockImplementation(() => ({
@@ -60,7 +59,6 @@ describe("getProgramById", () => {
     const programId = expectedProgram.id;
 
     const actualProgram = await getProgramById(
-      zeroAddress,
       programId as string,
       {
         getNetwork: async () =>

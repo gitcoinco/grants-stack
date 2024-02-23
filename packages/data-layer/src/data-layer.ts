@@ -37,10 +37,9 @@ import {
   getProgramByUserAndTag,
   getProgramName,
   getProjectById,
-  getProjects,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
-  getRoundsByProgramIdAndUserAddress,
+  getRoundsByProgramIdAndChainId,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -186,18 +185,16 @@ export class DataLayer {
   }
 
   async getProgramByIdAndUser({
-    userAddress,
     programId,
     chainId,
   }: {
-    userAddress: string;
     programId: string;
     chainId: number;
   }): Promise<{ program: Program | null }> {
     const response: { projects: (Program | v2Project)[] } = await request(
       this.gsIndexerEndpoint,
       getProgramByIdAndUser,
-      { programId, chainId, userAddress },
+      { programId, chainId },
     );
 
     if (response.projects.length === 0) {
@@ -404,7 +401,7 @@ export class DataLayer {
       getApplicationStatusByRoundIdAndCID,
       requestVariables,
     );
-  
+
     return response.applications[0].status;
   }
 
@@ -448,15 +445,14 @@ export class DataLayer {
     return response.rounds[0] ?? [];
   }
 
-  async getRoundsByProgramIdAndUserAddress(args: {
+  async getRoundsByProgramIdAndChainId(args: {
     chainId: number;
     programId: string;
-    userAddress: Address;
   }): Promise<V2RoundWithRoles[]> {
     const response: { rounds: V2RoundWithRoles[] } = await request(
       this.gsIndexerEndpoint,
-      getRoundsByProgramIdAndUserAddress,
-      { ...args, userAddress: args.userAddress.toLowerCase() },
+      getRoundsByProgramIdAndChainId,
+      args,
     );
 
     return response.rounds;

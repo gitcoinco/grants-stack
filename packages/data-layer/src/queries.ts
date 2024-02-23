@@ -9,11 +9,10 @@ import { gql } from "graphql-request";
  * @returns The programs
  */
 export const getProgramByUserAndTag = gql`
-  query ($address: String!, $chainId: Int!, $filterByTag: String!) {
+  query ($chainId: Int!, $filterByTag: String!) {
     projects(
       filter: {
         tags: { contains: [$filterByTag] }
-        roles: { some: { address: { equalTo: $address } } }
         chainId: { equalTo: $chainId }
       }
     ) {
@@ -41,13 +40,9 @@ export const getProgramByUserAndTag = gql`
  * @returns The programs
  */
 export const getProgramByIdAndUser = gql`
-  query ($userAddress: String!, $programId: String!, $chainId: Int!) {
+  query ($programId: String!, $chainId: Int!) {
     projects(
-      filter: {
-        id: { equalTo: $programId }
-        roles: { some: { address: { equalTo: $userAddress } } }
-        chainId: { equalTo: $chainId }
-      }
+      filter: { id: { equalTo: $programId }, chainId: { equalTo: $chainId } }
     ) {
       id
       chainId
@@ -368,17 +363,12 @@ export const getRoundByIdAndChainId = gql`
   }
 `;
 
-export const getRoundsByProgramIdAndUserAddress = gql`
-  query getRoundsByProgramIdAndMemberAddress(
-    $chainId: Int!
-    $programId: String!
-    $userAddress: String!
-  ) {
+export const getRoundsByProgramIdAndChainId = gql`
+  query getRoundsByProgramIdAndChainId($chainId: Int!, $programId: String!) {
     rounds(
       filter: {
         chainId: { equalTo: $chainId }
         projectId: { equalTo: $programId }
-        roles: { some: { address: { equalTo: $userAddress } } }
       }
     ) {
       id

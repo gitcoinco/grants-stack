@@ -76,7 +76,6 @@ export async function listPrograms(
 
 // TODO(shavinac) change params to expect chainId instead of signerOrProvider
 export async function getProgramById(
-  address: string,
   programId: string,
   signerOrProvider: Web3Instance["provider"],
   dataLayer: DataLayer
@@ -88,7 +87,6 @@ export async function getProgramById(
 
   // fetch program from indexer
   const { program: program } = await dataLayer.getProgramByIdAndUser({
-    userAddress: address,
     programId,
     chainId,
   });

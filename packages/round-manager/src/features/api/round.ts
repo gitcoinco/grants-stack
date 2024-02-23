@@ -18,7 +18,6 @@ import {
 import { fetchFromIPFS } from "./utils";
 import { maxDateForUint256 } from "../../constants";
 import { payoutTokens } from "./payoutTokens";
-import { Address } from "wagmi";
 import { DataLayer, V2RoundWithRoles } from "data-layer";
 
 export enum UpdateAction {
@@ -318,17 +317,15 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
  */
 export async function listRounds(args: {
   chainId: number;
-  userAddress: Address;
   dataLayer: DataLayer;
   programId: string;
 }): Promise<{ rounds: Round[] }> {
-  const { chainId, userAddress, dataLayer, programId } = args;
+  const { chainId, dataLayer, programId } = args;
 
   let rounds = await dataLayer
-    .getRoundsByProgramIdAndUserAddress({
+    .getRoundsByProgramIdAndChainId({
       chainId: chainId,
       programId,
-      userAddress,
     })
     .then((rounds) => rounds.map(indexerV2RoundToRound));
 
