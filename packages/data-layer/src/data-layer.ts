@@ -18,7 +18,6 @@ import {
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
-  V2Round,
   V2RoundWithRoles,
   v2Project,
 } from "./data.types";
@@ -33,8 +32,8 @@ import {
   getApplicationStatusByRoundIdAndCID,
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
-  getProgramByIdAndUser,
-  getProgramByUserAndTag,
+  getProgramById,
+  getProgramsByUserAndTag,
   getProgramName,
   getProjectById,
   getProjectsAndRolesByAddress,
@@ -149,8 +148,8 @@ export class DataLayer {
     alloVersion: AlloVersion;
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
+      userAddress: address.toLowerCase(),
       alloVersion,
-      address,
       chainId,
     };
 
@@ -159,7 +158,7 @@ export class DataLayer {
     if (alloVersion === "allo-v1") {
       const response: { projects: Program[] } = await request(
         this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
+        getProgramsByUserAndTag,
         { ...requestVariables, filterByTag: "program" },
       );
 
@@ -167,7 +166,7 @@ export class DataLayer {
     } else if (alloVersion === "allo-v2") {
       const response: { projects: v2Project[] } = await request(
         this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
+        getProgramsByUserAndTag,
         { ...requestVariables, filterByTag: "allo-v2" },
       );
 
@@ -193,7 +192,7 @@ export class DataLayer {
     return { programs };
   }
 
-  async getProgramByIdAndUser({
+  async getProgramById({
     programId,
     chainId,
   }: {
@@ -202,7 +201,7 @@ export class DataLayer {
   }): Promise<{ program: Program | null }> {
     const response: { projects: (Program | v2Project)[] } = await request(
       this.gsIndexerEndpoint,
-      getProgramByIdAndUser,
+      getProgramById,
       { programId, chainId },
     );
 
