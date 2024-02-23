@@ -117,6 +117,7 @@ export const publishGrant =
       : allo.createProject({
           name: application.title,
           metadata: application as unknown as AnyJson,
+          memberAddresses: [],
         });
 
     await result
