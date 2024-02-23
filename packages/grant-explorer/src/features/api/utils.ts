@@ -3,11 +3,11 @@ import { CartProject, IPFSObject, Round, VotingToken } from "./types";
 import {
   ChainId,
   graphQlEndpoints,
-  ROUND_PAYOUT_DIRECT_OLD,
-  ROUND_PAYOUT_MERKLE_OLD,
   ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_DIRECT_OLD,
   ROUND_PAYOUT_MERKLE,
-  RoundPayoutType,
+  ROUND_PAYOUT_MERKLE_OLD,
+  RoundPayoutTypeNew,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
 import { useSearchParams } from "react-router-dom";
@@ -853,19 +853,23 @@ export function getChainIds(): number[] {
 }
 
 export const isDirectRound = (round: Round) =>
+  // @ts-expect-error support old rounds
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_OLD ||
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
 
 export const isInfiniteDate = (roundTime: Date) =>
   roundTime.toString() === "Invalid Date";
 
-export const getRoundType = (payoutStrategyName: RoundPayoutType) => {
+export const getRoundType = (payoutStrategyName: RoundPayoutTypeNew) => {
   switch (payoutStrategyName) {
+    // @ts-expect-error support old rounds
     case ROUND_PAYOUT_MERKLE_OLD:
     case ROUND_PAYOUT_MERKLE:
       return "Quadratic Funding";
+    // @ts-expect-error support old rounds
     case ROUND_PAYOUT_DIRECT_OLD:
     case ROUND_PAYOUT_DIRECT:
+    case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
       return "Direct Grants";
     default:
       return payoutStrategyName;

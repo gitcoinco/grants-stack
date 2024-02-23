@@ -1,115 +1,31 @@
-import useSWR, { useSWRConfig, Cache, SWRResponse } from "swr";
-import { ChainId, RoundPayoutType } from "common";
-import { __deprecated_RoundMetadata } from "./round";
-import { MetadataPointer } from "./types";
-import { __deprecated_fetchFromIPFS } from "./utils";
-import { createTimestamp } from "../discovery/utils/createRoundsStatusFilter";
-import { useDataLayer } from "data-layer";
-
-export type __deprecated_RoundOverview = {
-  id: string;
-  chainId: ChainId;
-  createdAt: string;
-  roundMetaPtr: MetadataPointer;
-  applicationMetaPtr: MetadataPointer;
-  applicationsStartTime: string;
-  applicationsEndTime: string;
-  roundStartTime: string;
-  roundEndTime: string;
-  matchAmount: string;
-  token: string;
-  roundMetadata?: __deprecated_RoundMetadata;
-  projects?: { id: string }[];
-  payoutStrategy: {
-    id: string;
-    strategyName: RoundPayoutType;
-  };
-};
-
-export type __deprecated_RoundsQueryVariables = {
-  first?: number;
-  orderBy?:
-    | "createdAt"
-    | "matchAmount"
-    | "roundStartTime"
-    | "roundEndTime"
-    | "applicationsStartTime"
-    | "applicationsEndTime";
-  orderDirection?: "asc" | "desc";
-  where?: {
-    and: [
-      { or: __deprecated_TimestampVariables[] },
-      { payoutStrategy_?: { or: { strategyName: string }[] } },
-    ];
-  };
-};
-
-export type __deprecated_TimestampVariables = {
-  applicationsStartTime_lte?: string;
-  applicationsEndTime_gt?: string;
-  applicationsEndTime_lt?: string;
-  applicationsEndTime?: string;
-  applicationsEndTime_gte?: string;
-  roundStartTime_lt?: string;
-  roundStartTime_gt?: string;
-  roundEndTime_gt?: string;
-  roundEndTime_lt?: string;
-};
+import useSWR, { SWRResponse } from "swr";
+import { ChainId } from "common";
+import { createISOTimestamp } from "../discovery/utils/createRoundsStatusFilter";
+import { RoundGetRound, RoundsQueryVariables, useDataLayer } from "data-layer";
 
 export const useRounds = (
-  variables: __deprecated_RoundsQueryVariables,
+  variables: RoundsQueryVariables,
   chainIds: ChainId[]
-): SWRResponse<__deprecated_RoundOverview[]> => {
-  const { cache, mutate } = useSWRConfig();
+): SWRResponse<RoundGetRound[]> => {
   const dataLayer = useDataLayer();
-
-  const prewarmSwrCacheWithRoundsMetadata = async (
-    rounds: __deprecated_RoundOverview[]
-  ): Promise<void> => {
-    const roundsWithUncachedMetadata = rounds.filter(
-      (round) =>
-        cache.get(`@"metadata","${round.roundMetaPtr.pointer}",`) === undefined
-    );
-
-    const uncachedMetadata = await Promise.all(
-      roundsWithUncachedMetadata.map(async (round) => {
-        const cid = round.roundMetaPtr.pointer;
-        const metadata = await __deprecated_fetchFromIPFS(cid);
-        return [cid, metadata];
-      })
-    );
-
-    for (const [cid, metadata] of uncachedMetadata) {
-      mutate(["metadata", cid], metadata);
-    }
-
-    if (roundsWithUncachedMetadata.length > 0) {
-      // clear rounds cache
-      mutate(["rounds", chainIds, variables]);
-    }
-  };
 
   const query = useSWR(
     // Cache requests on chainIds and variables as keys (when these are the
     // same, cache will be used instead of new requests)
     ["rounds", chainIds, variables],
     async () => {
-      const { rounds } = await dataLayer.getLegacyRounds({
-        ...variables,
-        // We need to overfetch these because many will be filtered out from the
-        // metadata.roundType === "public" The `first` param in the arguments
-        // will instead be used last to limit the results returned
-        first: 100,
-        chainIds,
-      });
+      const [spamRounds, { rounds }] = await Promise.all([
+        fetchSpamRounds(),
+        dataLayer.getRounds({
+          ...variables,
+          first: 100,
+          chainIds,
+        }),
+      ]);
 
-      await prewarmSwrCacheWithRoundsMetadata(rounds);
-
-      return rounds;
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
+      return rounds.filter(
+        (round) => !spamRounds[round.chainId]?.[round.id.toLowerCase()]
+      );
     }
   );
 
@@ -120,59 +36,68 @@ export const useRounds = (
   return { ...query, data };
 };
 
-export function filterRoundsWithProjects(rounds: __deprecated_RoundOverview[]) {
+export function filterRoundsWithProjects(rounds: RoundGetRound[]) {
   /*
-0 projects + application period is still open: show 
+0 projects + application period is still open: show
 0 projects + application period has closed: hide
   */
-  const currentTimestamp = createTimestamp();
-  return rounds.filter((round) => {
-    if (round.applicationsEndTime > currentTimestamp) return true;
-    return round?.projects?.length;
-  });
+  const currentTimestamp = createISOTimestamp();
+  return rounds.filter(
+    (round) =>
+      new Date(round.applicationsEndTime).getTime() * 1000 >
+        Date.parse(currentTimestamp) || round?.applications?.length > 0
+  );
 }
 
-export const filterRounds = (
-  cache: Cache<{ roundType: string }>,
-  rounds?: __deprecated_RoundOverview[]
-) => {
-  return rounds?.filter((round) => {
-    // Get the round metadata
-    const metadata = cache.get(`@"metadata","${round.roundMetaPtr.pointer}",`);
-    if (metadata?.data?.roundType === "public") {
-      return true;
-    }
-  });
+const OVERRIDE_PRIVATE_ROUND_IDS = [
+  /* Zuzalu Q1 Round */
+  "0xf89aad3fad6c3e79ffa3ccc835620fcc7e55f919",
+];
+
+export const filterOutPrivateRounds = (rounds: RoundGetRound[]) => {
+  return rounds.filter(
+    (round) =>
+      round.roundMetadata.roundType !== "private" ||
+      OVERRIDE_PRIVATE_ROUND_IDS.includes(round.id.toLowerCase())
+  );
 };
 
-// Will only make a request if metadata doesn't exist yet
-export function useMetadata(cid: string) {
-  return useSWR(["metadata", cid], () => __deprecated_fetchFromIPFS(cid));
-}
+type SpamRoundsMaps = {
+  [chainId: number]: {
+    [roundId: string]: boolean;
+  };
+};
 
-/* 
-Search round metadata
-Builds a results object and filters round name on a search query
-*/
-export function useSearchRounds(query = "") {
-  const { cache } = useSWRConfig();
+// Temporary round curation to avoid spam
+export async function fetchSpamRounds(): Promise<SpamRoundsMaps> {
+  try {
+    const spam: SpamRoundsMaps = {};
 
-  const results: __deprecated_RoundMetadata[] = [];
-  // Cache is actually a Map but says forEach doesn't exist
-  (cache as Map<string, { data: __deprecated_RoundMetadata }>).forEach(
-    ({ data }, key) => {
-      if (nameContains(data?.name, key)) {
-        results.push(data);
-      }
-    }
-  );
+    const csvContent = await fetch(
+      "https://docs.google.com/spreadsheets/d/10jekVhMuFg6IQ0sYAN_dxh_U-OxU7EAuGMNvTtlpraM/export?format=tsv"
+    ).then((res) => res.text());
 
-  function nameContains(name: string, key: string) {
-    return (
-      key.startsWith(`@"metadata"`) &&
-      name?.toLowerCase().includes(query.toLowerCase())
-    );
+    const rows = csvContent.split("\n");
+    rows
+      // skip the header row
+      .slice(1)
+      .forEach((line) => {
+        const columns = line.split("\t");
+        const url = columns[1];
+        // extract chainId and roundId
+        const regex =
+          /https:\/\/explorer\.gitcoin\.co\/#\/round\/(\d+)\/([0-9a-fA-Fx]+)/;
+        const match = url.match(regex);
+        if (match) {
+          const chainId = parseInt(match[1]);
+          const roundId = match[2].toLowerCase();
+          spam[chainId] ||= {};
+          spam[chainId][roundId] = true;
+        }
+      });
+
+    return spam;
+  } catch (e) {
+    return {};
   }
-
-  return useSWR(["search", { results, query }], () => results);
 }

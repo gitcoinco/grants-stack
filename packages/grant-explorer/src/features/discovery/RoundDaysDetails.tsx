@@ -44,10 +44,15 @@ export function getRoundApplicationDaysText({
 }
 
 export const RoundDaysDetails = ({
-  roundStartsIn = 0,
-  roundEndsIn = 0,
-  applicationsStartsIn = 0,
-  applicationsEndsIn = 0,
+  roundStartsIn,
+  roundEndsIn,
+  applicationsStartsIn,
+  applicationsEndsIn,
+}: {
+  roundStartsIn: number | undefined;
+  roundEndsIn: number | undefined;
+  applicationsStartsIn: number | undefined;
+  applicationsEndsIn: number | undefined;
 }) => {
   const startsOrEndsIn = getRoundDaysText({ roundStartsIn, roundEndsIn });
   const applicationsIn = getRoundApplicationDaysText({

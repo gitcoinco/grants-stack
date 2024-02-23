@@ -1,16 +1,20 @@
 import { GradientLayout } from "../common/DefaultLayout";
-import LandingHero from "./LandingHero";
-import { LandingSection, ViewAllLink } from "./LandingSection";
-import { RoundsGrid } from "./RoundsGrid";
 import {
-  RoundStatus,
   ACTIVE_ROUNDS_FILTER,
   ROUNDS_ENDING_SOON_FILTER,
+  RoundStatus,
   useFilterRounds,
 } from "./hooks/useFilterRounds";
-import { toQueryString } from "./RoundsFilter";
 import { getEnabledChains } from "../../app/chainConfig";
 import { useMemo } from "react";
+import {
+  filterOutPrivateRounds,
+  filterRoundsWithProjects,
+} from "../api/rounds";
+import { RoundsGrid } from "./RoundsGrid";
+import LandingHero from "./LandingHero";
+import { LandingSection, ViewAllLink } from "./LandingSection";
+import { toQueryString } from "./RoundsFilter";
 
 const LandingPage = () => {
   const activeRounds = useFilterRounds(
@@ -22,22 +26,16 @@ const LandingPage = () => {
     getEnabledChains()
   );
 
-  const filteredActiveRounds: typeof activeRounds.data = useMemo(() => {
-    if (activeRounds.data === undefined) {
-      return undefined;
-    }
-
-    const rounds =
-      activeRounds.data?.filter((round) => {
-        return (round.projects?.length ?? 0) > 1;
-      }) ?? [];
-
-    rounds.sort((a, b) => {
-      return (b.projects?.length ?? 0) - (a.projects?.length ?? 0);
-    });
-
-    return rounds;
+  const filteredActiveRounds = useMemo(() => {
+    return filterRoundsWithProjects(
+      filterOutPrivateRounds(activeRounds.data ?? [])
+    );
   }, [activeRounds.data]);
+  const filteredRoundsEndingSoon = useMemo(() => {
+    return filterRoundsWithProjects(
+      filterOutPrivateRounds(roundsEndingSoon.data ?? [])
+    );
+  }, [roundsEndingSoon.data]);
 
   return (
     <GradientLayout showWalletInteraction>
@@ -51,7 +49,12 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...{ ...activeRounds, data: filteredActiveRounds }}
+          {...{
+            ...activeRounds,
+            data: filteredActiveRounds.sort(
+              (a, b) => b.matchAmountInUsd - a.matchAmountInUsd
+            ),
+          }}
           loadingCount={4}
           maxCount={6}
           getItemClassName={(_, i) =>
@@ -66,7 +69,6 @@ const LandingPage = () => {
           <ViewAllLink
             to={`/rounds?${toQueryString({
               orderBy: ROUNDS_ENDING_SOON_FILTER.orderBy,
-              orderDirection: ROUNDS_ENDING_SOON_FILTER.orderDirection,
               status: RoundStatus.active,
             })}`}
           >
@@ -75,7 +77,8 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...roundsEndingSoon}
+          isLoading={roundsEndingSoon.isLoading}
+          data={filteredRoundsEndingSoon}
           loadingCount={ROUNDS_ENDING_SOON_FILTER.first}
           maxCount={ROUNDS_ENDING_SOON_FILTER.first}
           roundType="endingSoon"

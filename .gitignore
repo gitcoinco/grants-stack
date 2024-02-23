@@ -11,3 +11,5 @@ coverage/
 .eslintcache
 bun.lockb
 tmp
+/packages/grant-explorer/tsconfig.tsbuildinfo
+/packages/round-manager/tsconfig.tsbuildinfo

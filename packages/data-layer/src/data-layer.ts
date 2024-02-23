@@ -12,33 +12,35 @@ import {
   Application,
   ApplicationStatus,
   Collection,
+  OrderByRounds,
   Program,
   ProjectApplication,
   Round,
-  RoundOverview,
+  RoundGetRound,
+  RoundsQueryVariables,
   SearchBasedProjectCategory,
-  TimestampVariables,
-  V2RoundWithRoles,
   v2Project,
+  V2RoundWithRoles,
 } from "./data.types";
 import {
   ApplicationSummary,
-  DefaultApi as SearchApi,
   Configuration as SearchApiConfiguration,
+  DefaultApi as SearchApi,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
   getApplication,
-  getApplicationStatusByRoundIdAndCID,
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
+  getApplicationStatusByRoundIdAndCID,
   getProgramById,
-  getProgramsByUserAndTag,
   getProgramName,
+  getProgramsByUserAndTag,
   getProjectById,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndChainId,
+  getRoundsQuery,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -589,44 +591,24 @@ export class DataLayer {
     };
   }
 
-  async getLegacyRounds({
+  async getRounds({
     chainIds,
     first,
     orderBy,
-    orderDirection,
-    where,
+    filter,
   }: {
     chainIds: number[];
     first: number;
-    orderBy?:
-      | "createdAt"
-      | "matchAmount"
-      | "roundStartTime"
-      | "roundEndTime"
-      | "applicationsStartTime"
-      | "applicationsEndTime";
+    orderBy?: OrderByRounds;
     orderDirection?: "asc" | "desc";
-    where?: {
-      and: [
-        { or: TimestampVariables[] },
-        { payoutStrategy_?: { or: { strategyName: string }[] } },
-      ];
-    };
-  }): Promise<{ rounds: RoundOverview[] }> {
-    return {
-      rounds: await legacy.getRounds(
-        {
-          chainIds,
-          first,
-          orderBy,
-          orderDirection,
-          where,
-        },
-        {
-          graphqlEndpoints: this.subgraphEndpointsByChainId,
-        },
-      ),
-    };
+    filter?: RoundsQueryVariables["filter"];
+  }): Promise<{ rounds: RoundGetRound[] }> {
+    return await request(this.gsIndexerEndpoint, getRoundsQuery, {
+      orderBy: orderBy ?? "NATURAL",
+      chainIds,
+      first,
+      filter,
+    });
   }
 
   async verifyPassportCredential(
