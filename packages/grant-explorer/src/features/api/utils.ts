@@ -8,7 +8,6 @@ import {
   ROUND_PAYOUT_MERKLE,
   ROUND_PAYOUT_MERKLE_OLD,
   RoundPayoutTypeNew,
-  RoundPayoutType,
   VotingToken,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
