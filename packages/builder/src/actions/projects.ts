@@ -1,6 +1,6 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
-import { ChainId, ROUND_PAYOUT_MERKLE_OLD, RoundPayoutType } from "common";
+import { ChainId, RoundPayoutType } from "common";
 import { getConfig } from "common/src/config";
 import { ApplicationStatus, DataLayer, ProjectApplication } from "data-layer";
 import { utils } from "ethers";
