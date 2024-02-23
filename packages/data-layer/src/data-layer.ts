@@ -40,6 +40,7 @@ import {
   getProjects,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
+  getRoundByIdAndChainIdWithApprovedApplications,
   getRoundsByProgramIdAndUserAddress,
   getRoundsQuery,
 } from "./queries";
@@ -469,7 +470,7 @@ export class DataLayer {
     return response.rounds;
   }
 
-  async getRoundById({
+  async getRoundByIdAndChainIdWithApprovedApplications({
     roundId,
     chainId,
   }: {
@@ -483,7 +484,7 @@ export class DataLayer {
 
     const response: { rounds: any } = await request(
       this.gsIndexerEndpoint,
-      getRoundByIdAndChainId,
+      getRoundByIdAndChainIdWithApprovedApplications,
       requestVariables,
     );
 
@@ -640,25 +641,6 @@ export class DataLayer {
         ),
         totalItems: filteredApplicationSummaries.length,
       },
-    };
-  }
-
-  async getLegacyRoundById({
-    roundId,
-    chainId,
-  }: {
-    roundId: string;
-    chainId: number;
-  }): Promise<{ round: Round }> {
-    const graphqlEndpoint = this.subgraphEndpointsByChainId[chainId];
-    if (!graphqlEndpoint) {
-      throw new Error(`No Graph endpoint defined for chain id ${chainId}`);
-    }
-    return {
-      round: await legacy.getRoundById(
-        { roundId, chainId },
-        { graphqlEndpoint, ipfsGateway: this.ipfsGateway },
-      ),
     };
   }
 

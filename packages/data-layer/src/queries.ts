@@ -337,6 +337,32 @@ export const getRoundByIdAndChainId = gql`
       strategyId
       strategyAddress
       strategyName
+    }
+  }
+`;
+
+export const getRoundByIdAndChainIdWithApprovedApplications = gql`
+  query getRoundByIdAndChainIdWithApprovedApplications(
+    $roundId: String!
+    $chainId: Int!
+  ) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      id
+      chainId
+      applicationsStartTime
+      applicationsEndTime
+      donationsStartTime
+      donationsEndTime
+      matchTokenAddress
+      roundMetadata
+      roundMetadataCid
+      applicationMetadata
+      applicationMetadataCid
+      strategyId
+      strategyAddress
+      strategyName
       applications(first: 1000, filter: { status: { equalTo: APPROVED } }) {
         id
         projectId
