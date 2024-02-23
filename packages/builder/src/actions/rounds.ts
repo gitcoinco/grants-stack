@@ -95,6 +95,7 @@ export const loadRound =
       v2Round.applicationMetadata
     );
 
+    // fixme: get the program name from the roundMetadata and not make another call to indexer
     const programName = isV1
       ? (await dataLayer.getProgramName({
           projectId: v2Round.roundMetadata.programContractAddress,

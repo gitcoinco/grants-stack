@@ -10,7 +10,6 @@ import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Application,
-  ApplicationStatus,
   Collection,
   Program,
   ProjectApplication,
@@ -18,9 +17,8 @@ import {
   RoundOverview,
   SearchBasedProjectCategory,
   TimestampVariables,
-  V2Round,
   V2RoundWithRoles,
-  v2Project,
+  v2Project
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -30,7 +28,6 @@ import {
 } from "./openapi-search-client/index";
 import {
   getApplication,
-  getApplicationStatusByRoundIdAndCID,
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
   getProgramByIdAndUser,
@@ -39,7 +36,7 @@ import {
   getProjectById,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
-  getRoundsByProgramIdAndChainId,
+  getRoundsByProgramIdAndChainId
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -363,9 +360,9 @@ export class DataLayer {
     projectIds,
   }: {
     chainId: number;
-    roundId: Lowercase<Address>;
+    roundId: string;
     projectIds: string[];
-  }): Promise<ProjectApplication[] | undefined> {
+  }): Promise<ProjectApplication[]> {
     const requestVariables = {
       chainId,
       roundId,
@@ -379,30 +376,6 @@ export class DataLayer {
     );
 
     return response.applications ?? [];
-  }
-
-  async getApplicationStatusByRoundIdAndCID({
-    roundId,
-    chainId,
-    metadataCid,
-  }: {
-    chainId: number;
-    roundId: string;
-    metadataCid: string;
-  }): Promise<ApplicationStatus | undefined> {
-    const requestVariables = {
-      chainId,
-      roundId,
-      metadataCid,
-    };
-
-    const response: { applications: any } = await request(
-      this.gsIndexerEndpoint,
-      getApplicationStatusByRoundIdAndCID,
-      requestVariables,
-    );
-
-    return response.applications[0].status;
   }
 
   async getProgramName({

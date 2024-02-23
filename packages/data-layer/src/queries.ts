@@ -159,24 +159,6 @@ export const getApplicationsByProjectId = gql`
   }
 `;
 
-export const getApplicationStatusByRoundIdAndCID = gql`
-  query getApplicationStatusByRoundIdAndCID(
-    $roundId: String!
-    $chainId: Int!
-    $metadataCid: String!
-  ) {
-    applications(
-      filter: {
-        roundId: { equalTo: $roundId }
-        chainId: { equalTo: $chainId }
-        metadataCid: { equalTo: $metadataCid }
-      }
-    ) {
-      status
-    }
-  }
-`;
-
 export const getApplication = gql`
   query Application(
     $chainId: Int!

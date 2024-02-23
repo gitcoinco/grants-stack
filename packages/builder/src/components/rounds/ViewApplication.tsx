@@ -67,7 +67,6 @@ function ViewApplication() {
       round,
       applicationState,
       applicationStatus,
-      // applicationError,
       applicationMetadata: round?.applicationMetadata,
       publishedApplicationMetadata,
       showErrorModal,
