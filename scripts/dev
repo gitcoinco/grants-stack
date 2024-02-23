@@ -120,15 +120,25 @@ populate_v2() {
     bash -c "npx hardhat run scripts/dev/populate.ts --no-compile --network dev2"
 }
 
-start() {
+up() {
   echo "Starting all services..."
   docker-compose up -d
   docker-compose logs -f
 }
 
-stop() {
+down() {
   echo "Stopping all services..."
   docker-compose down
+}
+
+start() {
+  pnpm concurrently \
+    --names "common,data-layer,builder,explorer,manager" \
+    "cd packages/common && pnpm rsbuild dev" \
+    "cd packages/common && pnpm rsbuild dev" \
+    "cd packages/builder && env PORT=3000 pnpm rsbuild dev" \
+    "cd packages/grant-explorer && env PORT=3001 pnpm rsbuild dev" \
+    "cd packages/round-manager && env PORT=3002 pnpm rsbuild dev"
 }
 
 init() {
@@ -146,8 +156,9 @@ print_help() {
   echo "  deploy-v2      Deploy Allo V2 contracts"
   echo "  populate-v1    Populate Allo V1 contracts"
   echo "  populate-v2    Populate Allo V2 contracts"
-  echo "  start          Start all Docker Compose services and follow logs"
-  echo "  stop           Stop all Docker Compose services"
+  echo "  up             Start all Docker Compose services with docker-compose up, and follow logs"
+  echo "  down           Stop all Docker Compose services with docker-compose down"
+  echo "  start          Start all the 3 apps and watch common and data-layer for changes"
   echo "  help           Display this help message"
 }
 
@@ -168,14 +179,17 @@ main() {
     populate-v2)
       populate_v2
       ;;
-    start)
-      start
+    up)
+      up
       ;;
-    stop)
-      stop
+    down)
+      down
       ;;
     help)
       print_help
+      ;;
+    start)
+      start
       ;;
     *)
       echo "Error: Unknown command '$1'"

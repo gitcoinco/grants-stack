@@ -13,14 +13,14 @@ export type RoundType = "MERKLE" | "DIRECT";
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
   type: typeof ROUNDS_LOADING_ROUND;
-  address: string;
+  id: string;
   status: Status;
 }
 
 export const ROUNDS_ROUND_LOADED = "ROUNDS_ROUND_LOADED";
 interface RoundsRoundLoadedAction {
   type: typeof ROUNDS_ROUND_LOADED;
-  address: string;
+  id: string;
   round: Round;
 }
 
@@ -32,7 +32,7 @@ interface RoundsUnloadedAction {
 export const ROUNDS_LOADING_ERROR = "ROUNDS_LOADING_ERROR";
 interface RoundsLoadingErrorAction {
   type: typeof ROUNDS_LOADING_ERROR;
-  address: string;
+  id: string;
   error: string;
 }
 
@@ -42,9 +42,9 @@ export type RoundsActions =
   | RoundsUnloadedAction
   | RoundsLoadingErrorAction;
 
-export const roundLoaded = (address: string, round: Round): RoundsActions => ({
+export const roundLoaded = (id: string, round: Round): RoundsActions => ({
   type: ROUNDS_ROUND_LOADED,
-  address,
+  id,
   round,
 });
 
@@ -52,9 +52,9 @@ const roundsUnloaded = (): RoundsActions => ({
   type: ROUNDS_UNLOADED,
 });
 
-const loadingError = (address: string, error: string): RoundsActions => ({
+const loadingError = (id: string, error: string): RoundsActions => ({
   type: ROUNDS_LOADING_ERROR,
-  address,
+  id,
   error,
 });
 
@@ -64,10 +64,11 @@ export const loadRound =
   (roundId: string, dataLayer: DataLayer, chainId: number) =>
   async (dispatch: Dispatch) => {
     const { version } = getConfig().allo;
+    const isV1 = version === "allo-v1";
 
     try {
       // address validation
-      if (version === "allo-v1") {
+      if (isV1 && roundId.startsWith("0x")) {
         ethers.utils.getAddress(roundId);
       } else if (roundId.includes("0x")) {
         throw new Error(`Invalid roundId ${roundId}`);
@@ -94,10 +95,11 @@ export const loadRound =
       v2Round.applicationMetadata
     );
 
-    const programName =
-      (await dataLayer.getProgramName({
-        projectId: v2Round.roundMetadata.programContractAddress,
-      })) || "";
+    const programName = isV1
+      ? (await dataLayer.getProgramName({
+          projectId: v2Round.roundMetadata.programContractAddress,
+        })) || ""
+      : v2Round.project?.name || "";
 
     let roundPayoutStrategy: RoundType;
 
@@ -117,11 +119,10 @@ export const loadRound =
     const round = {
       id: version === "allo-v1" ? roundId : v2Round.id,
       address: version === "allo-v1" ? roundId : v2Round.strategyAddress,
-      applicationsStartTime:
-        Date.parse(`${v2Round.applicationsStartTime}Z`) / 1000,
-      applicationsEndTime: Date.parse(`${v2Round.applicationsEndTime}Z`) / 1000,
-      roundStartTime: Date.parse(`${v2Round.donationsStartTime}Z`) / 1000,
-      roundEndTime: Date.parse(`${v2Round.donationsEndTime}Z`) / 1000,
+      applicationsStartTime: Date.parse(v2Round.applicationsStartTime) / 1000,
+      applicationsEndTime: Date.parse(v2Round.applicationsEndTime) / 1000,
+      roundStartTime: Date.parse(v2Round.donationsStartTime) / 1000,
+      roundEndTime: Date.parse(v2Round.donationsEndTime) / 1000,
       token: v2Round.matchTokenAddress,
       roundMetaPtr: {
         protocol: "1",

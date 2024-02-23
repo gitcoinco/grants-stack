@@ -44,10 +44,8 @@ export default function Details({
   });
 
   useEffect(() => {
-    if (params.id! && params.chainId) {
-      dispatch(
-        fetchProjectApplications(params.id!, Number(params.chainId), dataLayer)
-      );
+    if (params.id!) {
+      dispatch(fetchProjectApplications(params.id!, dataLayer));
     }
   }, [params.id!, params.chainId]);
 

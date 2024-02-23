@@ -303,8 +303,7 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
     payoutStrategy: {
       id: round.strategyAddress,
       isReadyForPayout: false,
-      strategyName:
-        round.strategyName === "allov1.Direct" ? "DIRECT" : "MERKLE",
+      strategyName: round.strategyName,
     },
     ownedBy: round.projectId,
     operatorWallets: operatorWallets,

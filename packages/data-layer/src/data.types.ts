@@ -17,6 +17,8 @@ export type ApplicationStatus =
   | "FRAUD"
   | "RECEIVED";
 
+export type ProjectType = "CANONICAL" | "LINKED";
+
 export type GrantApplicationFormAnswer = {
   questionId: number;
   question: string;
@@ -184,6 +186,14 @@ export type v2Project = {
   roles: AddressAndRole[];
   nonce?: bigint;
   anchorAddress?: string;
+  /**
+   * The type of the project - `CANONICAL` or `LINKED`
+   */
+  projectType: ProjectType;
+  /**
+   * The linked chains to the canonical project
+   */
+  linkedChains?: number[];
 };
 
 /**
@@ -202,6 +212,7 @@ export type Program = Omit<v2Project, "metadata"> & {
  */
 export type ProjectApplication = {
   id: string;
+  projectId: string;
   chainId: number;
   roundId: string;
   status: ApplicationStatus;
@@ -238,6 +249,10 @@ export type V2Round = {
   projectId: string;
   strategyAddress: string;
   strategyName: string;
+  project?: {
+    id: string;
+    name: string;
+  };
 };
 
 export type V2RoundWithRoles = V2Round & {

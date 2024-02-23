@@ -70,7 +70,11 @@ function ProjectForm({
     try {
       await validateProjectForm({
         ...props.formMetaData,
-        website: `https://${props.formMetaData.website}`,
+        // When editing, the website is already prefixed with https://
+        website: `https://${props.formMetaData.website?.replace(
+          "https://",
+          ""
+        )}`,
       });
       setFormValidation({
         messages: [],
@@ -126,7 +130,10 @@ function ProjectForm({
       dispatch(
         metadataSaved({
           ...props.formMetaData,
-          website: `https://${props.formMetaData.website}`,
+          website: `https://${props.formMetaData.website?.replace(
+            "https://",
+            ""
+          )}`,
         })
       );
       setVerifying(ProjectFormStatus.Verification);

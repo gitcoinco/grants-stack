@@ -1,6 +1,6 @@
 ## Summary
 
-Adds a full local development environment setup allowing local testing with all the services running on `docker-compose` and scripts to populate the environment with test data. 
+Adds a full local development environment setup allowing local testing with all the services running on `docker-compose` and scripts to populate the environment with test data.
 
 With docker compose we run:
 
@@ -18,11 +18,12 @@ The `scripts/dev` script contains commands to:
 
 ## Commands
 
-* `./scripts/dev start`: starts all the services with `docker-compose` in detached mode and follow logs.
-* `./scripts/dev stop`: stops the services.
+* `./scripts/dev up`: starts all the services with `docker-compose` in detached mode and follow logs.
+* `./scripts/dev down`: stops the services.
 * `./scripts/dev setup`: calls the subcommands to deploy and populate Allo V1 and V2 in the 2 local chains.
+* `./scripts/dev start`: starts all the 3 apps and watch common and data-layer for changes.
 
-## Additional work 
+## Additional work
 
 * Dockerized allo-v1 scripts to deploy and populate Allo V1 https://github.com/gitcoinco/grants-stack-allo-contracts-v1
 * Dockerized allo-v2 scripts to deploy and populate Allo V2 https://github.com/gitcoinco/grants-stack-allo-contracts-v2

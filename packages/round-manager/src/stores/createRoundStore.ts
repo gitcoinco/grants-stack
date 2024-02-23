@@ -4,13 +4,14 @@ import { Address } from "viem";
 import { Allo } from "common";
 import { error, Result } from "common/src/allo/common";
 
-import { CreateRoundArguments } from "common/dist/allo/allo";
+import { AlloError, CreateRoundArguments } from "common/dist/allo/allo";
 
 export type CreateRoundStoreState = {
   ipfsStatus: ProgressStatus;
   contractDeploymentStatus: ProgressStatus;
   indexingStatus: ProgressStatus;
   round: Address | undefined;
+  error: Error | null;
   createRound: (
     allo: Allo,
     createRoundData: CreateRoundArguments
@@ -26,6 +27,7 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
   ipfsStatus: ProgressStatus.NOT_STARTED,
   contractDeploymentStatus: ProgressStatus.NOT_STARTED,
   indexingStatus: ProgressStatus.NOT_STARTED,
+  error: null,
   clearStatuses: () => {
     set({
       indexingStatus: ProgressStatus.NOT_STARTED,
@@ -56,18 +58,7 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
             });
           }
         })
-        .on("indexingStatus", (res) => {
-          if (res.type === "success") {
-            set({
-              indexingStatus: ProgressStatus.IS_SUCCESS,
-            });
-          } else {
-            set({
-              indexingStatus: ProgressStatus.IS_ERROR,
-            });
-          }
-        })
-        .on("transaction", (res) => {
+        .on("transactionStatus", (res) => {
           if (res.type === "success") {
             set({
               contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
@@ -79,14 +70,14 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
             });
           }
         })
-        .on("transactionStatus", (res) => {
+        .on("indexingStatus", (res) => {
           if (res.type === "success") {
             set({
-              contractDeploymentStatus: ProgressStatus.IS_SUCCESS,
+              indexingStatus: ProgressStatus.IS_SUCCESS,
             });
           } else {
             set({
-              contractDeploymentStatus: ProgressStatus.IS_ERROR,
+              indexingStatus: ProgressStatus.IS_ERROR,
             });
           }
         })
@@ -96,17 +87,27 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
         set({
           round: round.value.roundId,
         });
+      } else {
+        throw round.error;
       }
 
       return round;
     } catch (e) {
+      let err: Error;
+
+      console.error("creating round error", e);
+
+      if (e instanceof AlloError) {
+        err = e;
+      } else {
+        err = new Error("An unknown error occurred while creating round");
+      }
+
       set({
-        indexingStatus: ProgressStatus.IS_ERROR,
-        contractDeploymentStatus: ProgressStatus.IS_ERROR,
-        ipfsStatus: ProgressStatus.IS_ERROR,
+        error: err,
       });
 
-      return error(e as Error);
+      return error(err);
     }
   },
 }));
