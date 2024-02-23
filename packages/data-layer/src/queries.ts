@@ -8,42 +8,11 @@ import { gql } from "graphql-request";
  *
  * @returns The programs
  */
-export const getProgramByUserAndTag = gql`
-  query ($chainId: Int!, $filterByTag: String!) {
-    projects(
-      filter: {
-        tags: { contains: [$filterByTag] }
-        chainId: { equalTo: $chainId }
-      }
-    ) {
-      id
-      chainId
-      metadata
-      metadataCid
-      tags
-      createdByAddress
-      roles {
-        address
-        role
-        createdAtBlock
-      }
-    }
-  }
-`;
-
-/**
- * Manager: Get all the programs that a user is a part of
- * @param $address - The address of the user
- * @param $chainId - The network ID of the chain
- * @param $tag - The tag of the program
- *
- * @returns The programs
- */
 export const getProgramsByUserAndTag = gql`
-  query ($userAddress: String!, $chainId: Int!, $filterByTag: String!) {
+  query ($userAddress: String!, $chainId: Int!, $tags: [String!]!) {
     projects(
       filter: {
-        tags: { contains: [$filterByTag] }
+        tags: { contains: $tags }
         chainId: { equalTo: $chainId }
         roles: { some: { address: { equalTo: $userAddress } } }
       }

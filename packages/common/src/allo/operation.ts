@@ -84,7 +84,7 @@ export class AlloOperation<
   async execute(): Promise<TResult> {
     return this.callback({
       emit: (event, ...args) => {
-        super.emit(event as string, ...args);
+        this.emit(event, ...args);
       },
     });
   }

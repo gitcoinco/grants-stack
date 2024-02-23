@@ -19,11 +19,36 @@ import { CreateProgramState, useCreateProgram } from "./useCreateProgram";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
 import { ChainId } from "common/src/chain-ids";
+import { AlloError } from "common";
 
 type FormData = {
   name: string;
   operators: { wallet: string }[];
 };
+
+function viewCreateProgramStateError(
+  state: CreateProgramState
+): string | undefined {
+  let error = null;
+
+  if (state.type === "error") {
+    error = state.error;
+  }
+
+  if (state.type === "creating" && state.error !== null) {
+    error = state.error;
+  }
+
+  if (error === null) {
+    return undefined;
+  }
+
+  if (error instanceof AlloError) {
+    return error.message;
+  }
+
+  return "An unknown error occurred";
+}
 
 export default function CreateProgram() {
   datadogLogs.logger.info(`====> Route: /program/create`);
@@ -57,7 +82,11 @@ export default function CreateProgram() {
       redirectToPrograms(navigate, 2000);
     }
 
-    if (createProgramState.type === "error") {
+    if (
+      createProgramState.type === "error" ||
+      (createProgramState.type === "creating" &&
+        createProgramState.error !== null)
+    ) {
       setOpenErrorModal(true);
     }
   }, [navigate, createProgramState]);
@@ -308,6 +337,7 @@ export default function CreateProgram() {
 
           <ErrorModal
             isOpen={openErrorModal}
+            subheading={viewCreateProgramStateError(createProgramState)}
             setIsOpen={setOpenErrorModal}
             tryAgainFn={handleSubmit(onSubmit)}
           />

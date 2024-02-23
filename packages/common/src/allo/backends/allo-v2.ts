@@ -87,6 +87,7 @@ export class AlloV2 implements Allo {
       const profileNonce: number = args.nonce
         ? Number(args.nonce)
         : Math.floor(Math.random() * 1000000) + 1000000;
+      const senderAddress = await this.transactionSender.address();
 
       const createProfileData: CreateProfileArgs = {
         nonce: profileNonce,
@@ -95,8 +96,10 @@ export class AlloV2 implements Allo {
           protocol: 1n,
           pointer: ipfsResult.value,
         },
-        owner: await this.transactionSender.address(),
-        members: args.memberAddresses,
+        owner: senderAddress,
+        members: args.memberAddresses.filter(
+          (address) => address !== senderAddress
+        ),
       };
 
       const txCreateProfile: TransactionData =
