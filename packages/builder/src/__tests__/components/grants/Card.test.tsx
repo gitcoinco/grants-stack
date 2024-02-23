@@ -11,7 +11,7 @@ describe("<Card />", () => {
       const store = setupStore();
       (fetchGrantData as jest.Mock).mockReturnValue({ type: "TEST" });
 
-      renderWrapped(<Card projectId="1:1:1" />, store);
+      renderWrapped(<Card projectId="0x1234" />, store);
 
       expect(fetchGrantData).toBeCalledTimes(1);
     });

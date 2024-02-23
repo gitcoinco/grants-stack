@@ -83,7 +83,11 @@ export class AlloV2 implements Allo {
     } as TransactionReceipt;
   }
 
-  createProject(args: { name: string; metadata: AnyJson }): AlloOperation<
+  createProject(args: {
+    name: string;
+    metadata: AnyJson;
+    nonce?: bigint;
+  }): AlloOperation<
     Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;
@@ -101,10 +105,12 @@ export class AlloV2 implements Allo {
         return ipfsResult;
       }
 
-      const randomNonce: number = Math.floor(Math.random() * 1000000) + 1000000;
+      const profileNonce: number = args.nonce
+        ? Number(args.nonce)
+        : Math.floor(Math.random() * 1000000) + 1000000;
 
       const createProfileData: CreateProfileArgs = {
-        nonce: randomNonce,
+        nonce: profileNonce,
         name: args.name,
         metadata: {
           protocol: 1n,

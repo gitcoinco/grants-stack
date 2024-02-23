@@ -4,16 +4,15 @@ import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import {
+  initialRoundState,
   RoundContext,
   RoundState,
-  initialRoundState,
 } from "./context/RoundContext";
 import { __deprecated_RoundMetadata } from "./features/api/round";
-import { __deprecated_RoundOverview } from "./features/api/rounds";
 import { CartProject, ProjectMetadata, Round } from "./features/api/types";
 import { parseUnits } from "viem";
 import { ChainId } from "common";
-import { DataLayer, DataLayerProvider } from "data-layer";
+import { DataLayer, DataLayerProvider, RoundGetRound } from "data-layer";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -58,7 +57,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     token: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: "some-id",
-      strategyName: "MERKLE",
+      strategyName: "allov1.QF",
     },
     votingStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),
@@ -115,33 +114,27 @@ export const makeRoundMetadata = (
 });
 
 export const makeRoundOverviewData = (
-  overrides?: Partial<__deprecated_RoundOverview>,
+  overrides?: Partial<RoundGetRound>,
   roundMetadataOverrides?: Partial<__deprecated_RoundMetadata>
-): __deprecated_RoundOverview => {
+): RoundGetRound => {
   return {
     id: faker.finance.ethereumAddress(),
     chainId: ChainId.MAINNET,
-    createdAt: makeTimestamp(),
-    roundMetaPtr: {
-      protocol: 1,
-      pointer: generateIpfsCid(),
-    },
-    applicationMetaPtr: {
-      protocol: 1,
-      pointer: generateIpfsCid(),
-    },
+    createdAtBlock: 1,
+    roundMetadataCid: generateIpfsCid(),
     applicationsStartTime: makeTimestamp(),
     applicationsEndTime: makeTimestamp(10),
-    roundStartTime: makeTimestamp(20),
-    roundEndTime: makeTimestamp(30),
+    donationsStartTime: makeTimestamp(20),
+    donationsEndTime: makeTimestamp(30),
+    matchAmountInUsd: 1000000000000000000000000,
     matchAmount: "1000000000000000000000000",
-    token: faker.finance.ethereumAddress(),
+    matchTokenAddress: faker.finance.ethereumAddress(),
     roundMetadata: makeRoundMetadata(roundMetadataOverrides),
-    projects: Array.from({ length: 2 }).map((_, i) => ({ id: String(i) })),
-    payoutStrategy: {
-      id: "someid",
-      strategyName: "MERKLE",
-    },
+    applications: Array.from({ length: 2 }).map((_, i) => ({ id: String(i) })),
+    strategyName: "allov1.QF",
+    strategyAddress: faker.finance.ethereumAddress(),
+    strategyId: "",
+    tags: [],
     ...overrides,
   };
 };

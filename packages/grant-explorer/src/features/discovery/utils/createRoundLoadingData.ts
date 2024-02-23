@@ -1,30 +1,35 @@
 import { ChainId } from "common";
-import { __deprecated_RoundOverview } from "../../api/rounds";
+import { RoundGetRound } from "data-layer";
+import { zeroAddress } from "viem";
 
-export function createRoundLoadingData(
-  length = 4
-): __deprecated_RoundOverview[] {
+export function createRoundLoadingData(length = 4): RoundGetRound[] {
   return Array.from({ length }).map((_, i) => ({
     id: String(i),
     chainId: ChainId.MAINNET,
-    createdAt: "0",
-    roundMetaPtr: {
-      protocol: 1,
-      pointer: "",
-    },
+    createdAtBlock: 1,
     applicationMetaPtr: {
       protocol: 1,
       pointer: "",
     },
     applicationsStartTime: "0",
     applicationsEndTime: "0",
-    roundStartTime: "0",
-    roundEndTime: "0",
+    donationsStartTime: "0",
+    donationsEndTime: "0",
+    matchAmountInUsd: 10,
     matchAmount: "",
-    token: "0",
-    payoutStrategy: {
-      id: "someid",
-      strategyName: "MERKLE",
+    matchTokenAddress: zeroAddress,
+    strategyName: "allov1.QF",
+    roundMetadata: {
+      name: "Round",
+      eligibility: {
+        description: "",
+      },
+      programContractAddress: zeroAddress,
     },
+    roundMetadataCid: "",
+    applications: [],
+    strategyId: "",
+    strategyAddress: zeroAddress,
+    tags: [],
   }));
 }

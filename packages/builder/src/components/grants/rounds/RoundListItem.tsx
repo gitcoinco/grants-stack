@@ -9,8 +9,6 @@ import { RootState } from "../../../reducers";
 import { roundApplicationPathForProject } from "../../../routes";
 import { Round, RoundDisplayType } from "../../../types";
 import { formatDateFromSecs, isInfinite } from "../../../utils/components";
-import generateUniqueRoundApplicationID from "../../../utils/roundApplication";
-import { getProjectURIComponents } from "../../../utils/utils";
 import LinkManager from "./LinkManager";
 
 export default function RoundListItem({
@@ -24,28 +22,17 @@ export default function RoundListItem({
 }) {
   const [roundData, setRoundData] = useState<Round>();
   const props = useSelector((state: RootState) => {
-    const { roundId, chainId: projectChainId } = applicationData!;
+    const { roundId } = applicationData!;
     const roundState = state.rounds[roundId];
     const round = roundState ? roundState.round : undefined;
     const roundAddress = round?.address;
-    const {
-      chainId: roundChain,
-      registryAddress,
-      id,
-    } = getProjectURIComponents(projectId);
-    const generatedProjectId = generateUniqueRoundApplicationID(
-      projectChainId,
-      id,
-      registryAddress
-    );
 
     return {
       round,
       roundId,
-      roundChain,
+      roundChain: applicationData?.chainId,
       roundAddress,
-      projectId: id,
-      generatedProjectId,
+      projectId,
     };
   });
 
@@ -227,16 +214,11 @@ export default function RoundListItem({
   };
 
   const applicationLink = roundApplicationPathForProject(
-    props.roundChain!,
+    props.roundChain!.toString(),
     props.roundAddress!,
     projectId
   );
   const explorerUrl = process.env.REACT_APP_GRANT_EXPLORER;
-
-  // add check for application status
-  // const enableStatusButton = () =>
-  //   applicationData?.status === "APPROVED" &&
-  //   displayType === RoundDisplayType.Past;
 
   useEffect(() => {
     if (props.round) {

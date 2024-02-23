@@ -22,6 +22,10 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
 
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({}),
+}));
+
 Object.assign(navigator, {
   clipboard: {
     writeText: () => {
@@ -54,7 +58,7 @@ jest.mock("../../common/Auth", () => ({
       network: {
         chainId: 1,
       },
-      getNetwork: () => {
+      getNetwork: async () => {
         return { chainId: 1 };
       },
     },

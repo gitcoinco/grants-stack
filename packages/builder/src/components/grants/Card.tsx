@@ -10,7 +10,6 @@ import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { projectPath } from "../../routes";
 import { getProjectImage, ImgTypes } from "../../utils/components";
-import { getProjectURIComponents } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import LoadingCard from "./LoadingCard";
 
@@ -19,6 +18,7 @@ function Card({ projectId }: { projectId: string }) {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[projectId];
+    const chainId = grantMetadata?.metadata?.chainId;
     const status = grantMetadata?.status || Status.Undefined;
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
@@ -27,12 +27,11 @@ function Card({ projectId }: { projectId: string }) {
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
-    const { id, chainId } = getProjectURIComponents(projectId);
     const projectChainName = networkPrettyName(Number(chainId));
     const projectChainIconUri = getNetworkIcon(Number(chainId));
 
     return {
-      id,
+      id: projectId,
       chainId,
       loading,
       currentProject: project,
@@ -51,8 +50,9 @@ function Card({ projectId }: { projectId: string }) {
   }, [dispatch, projectId, props.currentProject, props.status]);
 
   function createProjectPath() {
-    const { chainId, registryAddress, id } = getProjectURIComponents(projectId);
-    return projectPath(chainId, registryAddress, id);
+    if (!props.chainId) return "";
+    const registryAddress = "0x"; // TODO: fix (technically, we dont need the regsitry address anymore)
+    return projectPath(props.chainId.toString(), registryAddress, props.id);
   }
 
   const projectDescription = renderToPlainText(

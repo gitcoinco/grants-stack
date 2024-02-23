@@ -3,7 +3,6 @@ import {
   ROUND_PAYOUT_DIRECT,
   truncateDescription,
 } from "common";
-import { __deprecated_RoundOverview, useMetadata } from "../api/rounds";
 import { CHAINS, getDaysLeft, getRoundStates } from "../api/utils";
 import {
   Badge,
@@ -15,15 +14,16 @@ import {
 } from "../common/styles";
 import RoundBanner from "./CardBanner";
 import { RoundDaysDetails } from "./RoundDaysDetails";
-import { Skeleton, SkeletonText } from "@chakra-ui/react";
 import { RoundMatchAmountBadge } from "./RoundMatchAmountBadge";
 import { RoundStrategyBadge } from "./RoundStrategyBadge";
 import { RoundTimeBadge } from "./RoundTimeBadge";
+import { RoundGetRound } from "data-layer";
+import { parseChainId, parseChainIdIntoResult } from "common/dist/chains";
 
 type RoundType = "all" | "endingSoon" | "active";
 
 type RoundCardProps = {
-  round: __deprecated_RoundOverview;
+  round: RoundGetRound;
   index: number;
   roundType: RoundType;
 };
@@ -33,39 +33,68 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
     id,
     chainId,
     matchAmount,
-    projects,
-    payoutStrategy,
-    roundStartTime,
-    roundEndTime,
-    roundMetaPtr,
+    applications,
+    strategyName,
+    donationsStartTime,
+    donationsEndTime,
+    roundMetadata,
     applicationsStartTime,
     applicationsEndTime,
-    token,
+    matchTokenAddress,
   } = round ?? {};
 
-  const { data: metadata, isLoading } = useMetadata(roundMetaPtr?.pointer);
+  const parsedChainId = parseChainIdIntoResult(chainId);
+  if (parsedChainId.type === "error") {
+    return null;
+  }
 
+  const donationsStartTimeTimestampSec =
+    donationsStartTime !== null
+      ? Math.round(new Date(donationsStartTime).getTime() / 1000).toString()
+      : Number.MAX_SAFE_INTEGER;
+  const donationsEndTimeTimestampSec =
+    donationsEndTime !== null
+      ? Math.round(new Date(donationsEndTime).getTime() / 1000).toString()
+      : Number.MAX_SAFE_INTEGER;
+  const applicationsEndTimeTimestampSec =
+    applicationsEndTime !== null
+      ? Math.round(new Date(applicationsEndTime).getTime() / 1000).toString()
+      : Number.MAX_SAFE_INTEGER;
   const roundEndsIn =
-    roundEndTime === undefined ? undefined : getDaysLeft(roundEndTime);
+    donationsEndTime === null
+      ? undefined
+      : getDaysLeft(
+          Math.round(new Date(donationsEndTime).getTime() / 1000).toString()
+        );
   const roundStartsIn =
-    roundStartTime === undefined ? undefined : getDaysLeft(roundStartTime);
+    donationsStartTime === null
+      ? undefined
+      : getDaysLeft(
+          Math.round(new Date(donationsStartTime).getTime() / 1000).toString()
+        );
   const applicationsStartsIn =
-    applicationsStartTime === undefined
+    applicationsStartTime === null
       ? undefined
-      : getDaysLeft(applicationsStartTime);
+      : getDaysLeft(
+          Math.round(
+            new Date(applicationsStartTime).getTime() / 1000
+          ).toString()
+        );
   const applicationsEndsIn =
-    applicationsEndTime === undefined
+    applicationsEndTime === null
       ? undefined
-      : getDaysLeft(applicationsEndTime);
+      : getDaysLeft(
+          Math.round(new Date(applicationsEndTime).getTime() / 1000).toString()
+        );
 
   const roundStates = getRoundStates({
-    roundStartTimeInSecsStr: roundStartTime,
-    roundEndTimeInSecsStr: roundEndTime,
-    applicationsEndTimeInSecsStr: applicationsEndTime,
+    roundStartTimeInSecsStr: donationsStartTimeTimestampSec?.toString(),
+    roundEndTimeInSecsStr: donationsEndTimeTimestampSec?.toString(),
+    applicationsEndTimeInSecsStr: applicationsEndTimeTimestampSec?.toString(),
     atTimeMs: Date.now(),
   });
 
-  const approvedApplicationsCount = projects?.length ?? 0;
+  const approvedApplicationsCount = applications?.length ?? 0;
 
   const getTrackEventValue = (roundType: RoundType, index: number) => {
     if (roundType === "all") return "round-card";
@@ -91,6 +120,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
         href={`/#/round/${chainId}/${id}`}
         data-testid="round-card"
         data-track-event={trackEventValue}
+        rel="noreferrer"
       >
         <CardHeader className="relative">
           <RoundBanner roundId={id} />
@@ -99,9 +129,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
             data-testid="round-name"
             className="absolute bottom-1 px-2 text-white"
           >
-            <Skeleton className="truncate" isLoaded={!isLoading}>
-              {metadata?.name}
-            </Skeleton>
+            {roundMetadata.name}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -109,12 +137,10 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
             data-testid="round-description"
             className="min-h-[96px]"
           >
-            <SkeletonText isLoaded={!isLoading}>
-              {truncateDescription(
-                renderToPlainText(metadata?.eligibility?.description ?? ""),
-                240
-              )}
-            </SkeletonText>
+            {truncateDescription(
+              renderToPlainText(roundMetadata.eligibility?.description ?? ""),
+              240
+            )}
           </CardDescription>
           <div className="flex gap-2 justfy-between items-center">
             <RoundDaysDetails
@@ -124,7 +150,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
               applicationsEndsIn={applicationsEndsIn}
             />
 
-            <RoundStrategyBadge strategyName={payoutStrategy?.strategyName} />
+            <RoundStrategyBadge strategyName={strategyName} />
           </div>
           <div className="border-t" />
           <div className="flex justify-between">
@@ -135,16 +161,20 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
               >
                 {approvedApplicationsCount} projects
               </Badge>
-              {payoutStrategy?.strategyName !== ROUND_PAYOUT_DIRECT && (
+              {strategyName !== ROUND_PAYOUT_DIRECT && (
                 <RoundMatchAmountBadge
                   chainId={chainId}
-                  tokenAddress={token}
+                  tokenAddress={matchTokenAddress}
                   matchAmount={matchAmount}
                 />
               )}
             </div>
             <div>
-              <img className="w-8" src={CHAINS[chainId]?.logo} alt="" />
+              <img
+                className="w-8"
+                src={CHAINS[parseChainId(chainId)]?.logo}
+                alt=""
+              />
             </div>
           </div>
         </CardContent>
@@ -154,7 +184,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
 };
 
 export const RoundCardLoading = () => (
-  <BasicCard className="w-full h-[378px] animate-pulse"></BasicCard>
+  <BasicCard className="w-full h-[378px] animate-pulse" />
 );
 
 export default function Round(props: { isLoading?: boolean } & RoundCardProps) {

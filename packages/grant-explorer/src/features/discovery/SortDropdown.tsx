@@ -1,8 +1,8 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { Dropdown, DropdownItem } from "../common/Dropdown";
 import {
-  RoundSortUiOption,
   getRoundSelectionParamsFromUrlParams,
+  RoundSortUiOption,
 } from "./hooks/useFilterRounds";
 import { toQueryString } from "./RoundsFilter";
 import { getSortLabel } from "./utils/getSortLabel";
@@ -10,28 +10,23 @@ import { getSortLabel } from "./utils/getSortLabel";
 export const SORT_OPTIONS: RoundSortUiOption[] = [
   {
     label: "All",
-    orderBy: "",
-    orderDirection: "",
+    orderBy: "NATURAL",
   },
   {
     label: "Newest",
-    orderBy: "createdAt",
-    orderDirection: "desc",
+    orderBy: "CREATED_AT_BLOCK_DESC",
   },
   {
     label: "Oldest",
-    orderBy: "createdAt",
-    orderDirection: "asc",
+    orderBy: "CREATED_AT_BLOCK_ASC",
   },
   {
     label: "Round end (earliest)",
-    orderBy: "roundEndTime",
-    orderDirection: "asc",
+    orderBy: "DONATIONS_END_TIME_ASC",
   },
   {
     label: "Round end (latest)",
-    orderBy: "roundEndTime",
-    orderDirection: "desc",
+    orderBy: "DONATIONS_END_TIME_DESC",
   } /*
   {
     label: "Highest contributor count",
@@ -55,35 +50,31 @@ export const SORT_OPTIONS: RoundSortUiOption[] = [
   },*/,
   {
     label: "Matching funds: high to low",
-    orderBy: "matchAmount",
-    orderDirection: "desc",
+    orderBy: "MATCH_AMOUNT_IN_USD_DESC",
   },
   {
     label: "Matching funds: low to high",
-    orderBy: "matchAmount",
-    orderDirection: "asc",
+    orderBy: "MATCH_AMOUNT_IN_USD_ASC",
   },
 ];
 
 export function SortDropdown() {
   const [params] = useSearchParams();
-  const { orderBy = "", orderDirection = "" } =
-    getRoundSelectionParamsFromUrlParams(params);
+  const { orderBy } = getRoundSelectionParamsFromUrlParams(params);
 
-  const selected = getSortLabel({ orderBy, orderDirection });
+  const selected = getSortLabel({ orderBy });
 
   return (
     <Dropdown
       label={selected?.label}
       options={SORT_OPTIONS}
-      renderItem={({ label, orderBy, orderDirection, close }) => (
+      renderItem={({ label, orderBy, close }) => (
         <DropdownItem
           $as={Link}
           // Merge search params
           to={`/rounds?${toQueryString({
             ...Object.fromEntries(params),
             orderBy,
-            orderDirection,
           })}`}
           preventScrollReset
           onClick={close}
@@ -91,6 +82,6 @@ export function SortDropdown() {
           {label}
         </DropdownItem>
       )}
-    ></Dropdown>
+    />
   );
 }

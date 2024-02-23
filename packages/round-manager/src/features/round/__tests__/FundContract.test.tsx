@@ -59,6 +59,10 @@ jest.mock("common", () => ({
   useTokenPrice: jest.fn(),
 }));
 
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({}),
+}));
+
 describe("fund contract tab", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {

@@ -1,42 +1,44 @@
-import { __deprecated_TimestampVariables } from "../../api/rounds";
 import { RoundStatus } from "../hooks/useFilterRounds";
+import { TimeFilterVariables } from "data-layer";
 
-export const createTimestamp = (timestamp = 0) => {
-  const NOW_IN_SECONDS = Date.now() / 1000;
-  return Math.floor(NOW_IN_SECONDS + timestamp).toString();
+export const createISOTimestamp = (timestamp = 0) => {
+  const NOW_IN_SECONDS = Date.now();
+  return new Date(Math.floor(NOW_IN_SECONDS + timestamp)).toISOString();
 };
 
-const ONE_DAY_IN_SECONDS = 3600 * 24;
-const ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365;
+const ONE_DAY_IN_MILISECONDS = 3600 * 24 * 1000;
+const ONE_YEAR_IN_MILISECONDS = ONE_DAY_IN_MILISECONDS * 365 * 1000;
 
-function getStatusFilter(status: string): __deprecated_TimestampVariables {
-  const currentTimestamp = createTimestamp();
-  const futureTimestamp = createTimestamp(ONE_YEAR_IN_SECONDS);
+function getStatusFilter(status: string): TimeFilterVariables {
+  const currentTimestamp = createISOTimestamp();
+  const futureTimestamp = createISOTimestamp(ONE_YEAR_IN_MILISECONDS);
 
   switch (status) {
     case RoundStatus.active:
       return {
         // Round must have started and not ended yet
-        roundStartTime_lt: currentTimestamp,
-        roundEndTime_gt: currentTimestamp,
-        roundEndTime_lt: futureTimestamp,
+        donationsStartTime: { lessThan: currentTimestamp },
+        donationsEndTime: {
+          greaterThan: currentTimestamp,
+          lessThan: futureTimestamp,
+        },
       };
     case RoundStatus.taking_applications:
       return {
-        applicationsStartTime_lte: currentTimestamp,
-        applicationsEndTime_gte: currentTimestamp,
+        applicationsStartTime: { lessThanOrEqualTo: currentTimestamp },
+        applicationsEndTime: { greaterThanOrEqualTo: currentTimestamp },
       };
 
     case RoundStatus.finished:
       return {
-        roundEndTime_lt: currentTimestamp,
+        donationsEndTime: { lessThan: currentTimestamp },
       };
     case RoundStatus.ending_soon:
       return {
-        roundEndTime_gt: currentTimestamp,
-        roundEndTime_lt: String(
-          Number(currentTimestamp) + ONE_DAY_IN_SECONDS * 30
-        ),
+        donationsEndTime: {
+          greaterThan: currentTimestamp,
+          lessThan: createISOTimestamp(ONE_DAY_IN_MILISECONDS * 30),
+        },
       };
     default:
       return {};
@@ -45,7 +47,7 @@ function getStatusFilter(status: string): __deprecated_TimestampVariables {
 
 export function createRoundsStatusFilter(
   status: string
-): __deprecated_TimestampVariables[] {
+): TimeFilterVariables[] {
   // Default to all filters
   const selectedFilters =
     status ||
