@@ -231,8 +231,7 @@ export type ProjectApplication = {
 };
 
 /**
- * The round type for v2
- *
+ * V2 Round
  */
 export type V2Round = {
   id: string;
@@ -251,13 +250,22 @@ export type V2Round = {
   strategyAddress: Address;
   strategyName: string;
   isReadyForPayout: boolean;
-  project?: ProjectApplicationWithProject;
+};
+
+/**
+ * V2 Round with project
+ */
+export type V2RoundWithProject = V2Round & {
+  project: {
+    id: string;
+    name: string;
+  };
 };
 
 export type ProjectApplicationWithProject = {
   id: string;
   name: string;
-}
+};
 
 export type V2RoundWithRoles = V2Round & {
   roles: AddressAndRole[];
