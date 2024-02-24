@@ -11,32 +11,36 @@ import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Application,
   Collection,
+  OrderByRounds,
   Program,
   ProjectApplication,
   Round,
-  RoundOverview,
+  RoundGetRound,
+  RoundsQueryVariables,
   SearchBasedProjectCategory,
   TimestampVariables,
   V2RoundWithProjects,
   V2RoundWithRoles,
   v2Project,
+  V2RoundWithRoles,
 } from "./data.types";
 import {
   ApplicationSummary,
-  DefaultApi as SearchApi,
   Configuration as SearchApiConfiguration,
+  DefaultApi as SearchApi,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
   getApplication,
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
-  getProgramByIdAndUser,
-  getProgramByUserAndTag,
+  getProgramById,
+  getProgramsByUserAndTag,
   getProjectById,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundsByProgramIdAndChainId,
+  getRoundsQuery,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -146,8 +150,8 @@ export class DataLayer {
     alloVersion: AlloVersion;
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
+      userAddress: address.toLowerCase(),
       alloVersion,
-      address,
       chainId,
     };
 
@@ -156,7 +160,7 @@ export class DataLayer {
     if (alloVersion === "allo-v1") {
       const response: { projects: Program[] } = await request(
         this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
+        getProgramsByUserAndTag,
         { ...requestVariables, filterByTag: "program" },
       );
 
@@ -164,7 +168,7 @@ export class DataLayer {
     } else if (alloVersion === "allo-v2") {
       const response: { projects: v2Project[] } = await request(
         this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
+        getProgramsByUserAndTag,
         { ...requestVariables, filterByTag: "allo-v2" },
       );
 
@@ -178,10 +182,19 @@ export class DataLayer {
       });
     }
 
+    // FIXME: this is a temporary fix that is going to be addressed just after merging this PR.
+    // The real fix is to change the query to load the projectRole joining all the projects,
+    // but we need a change in the indexer to add the "projects" relationship available in graphql.
+    programs = programs.filter((project) => {
+      const membershipFound =
+        project.roles.find((role) => role.address === address) !== undefined;
+      return membershipFound;
+    });
+
     return { programs };
   }
 
-  async getProgramByIdAndUser({
+  async getProgramById({
     programId,
     chainId,
   }: {
@@ -190,7 +203,7 @@ export class DataLayer {
   }): Promise<{ program: Program | null }> {
     const response: { projects: (Program | v2Project)[] } = await request(
       this.gsIndexerEndpoint,
-      getProgramByIdAndUser,
+      getProgramById,
       { programId, chainId },
     );
 
@@ -535,44 +548,24 @@ export class DataLayer {
     };
   }
 
-  async getLegacyRounds({
+  async getRounds({
     chainIds,
     first,
     orderBy,
-    orderDirection,
-    where,
+    filter,
   }: {
     chainIds: number[];
     first: number;
-    orderBy?:
-      | "createdAt"
-      | "matchAmount"
-      | "roundStartTime"
-      | "roundEndTime"
-      | "applicationsStartTime"
-      | "applicationsEndTime";
+    orderBy?: OrderByRounds;
     orderDirection?: "asc" | "desc";
-    where?: {
-      and: [
-        { or: TimestampVariables[] },
-        { payoutStrategy_?: { or: { strategyName: string }[] } },
-      ];
-    };
-  }): Promise<{ rounds: RoundOverview[] }> {
-    return {
-      rounds: await legacy.getRounds(
-        {
-          chainIds,
-          first,
-          orderBy,
-          orderDirection,
-          where,
-        },
-        {
-          graphqlEndpoints: this.subgraphEndpointsByChainId,
-        },
-      ),
-    };
+    filter?: RoundsQueryVariables["filter"];
+  }): Promise<{ rounds: RoundGetRound[] }> {
+    return await request(this.gsIndexerEndpoint, getRoundsQuery, {
+      orderBy: orderBy ?? "NATURAL",
+      chainIds,
+      first,
+      filter,
+    });
   }
 
   async verifyPassportCredential(

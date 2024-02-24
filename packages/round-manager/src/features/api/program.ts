@@ -86,7 +86,7 @@ export async function getProgramById(
   };
 
   // fetch program from indexer
-  const { program: program } = await dataLayer.getProgramByIdAndUser({
+  const { program: program } = await dataLayer.getProgramById({
     programId,
     chainId,
   });

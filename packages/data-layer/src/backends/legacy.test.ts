@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { describe, test, expect } from "vitest";
+import { describe, expect, test } from "vitest";
 import { cleanRoundData, sortRounds } from "./legacy";
 import { RoundMetadata, RoundOverview } from "..";
 
@@ -97,7 +97,7 @@ const generateRoundOverviewData = (
     projects: Array.from({ length: 2 }).map((_, i) => ({ id: String(i) })),
     payoutStrategy: {
       id: "someid",
-      strategyName: "MERKLE",
+      strategyName: "allov1.QF",
     },
     ...overrides,
   };

@@ -4,15 +4,14 @@ import { toQueryString } from "./RoundsFilter";
 import { RoundStatus } from "./hooks/useFilterRounds";
 import { useMediaQuery } from "@chakra-ui/react";
 
-type Tab = {
+type TabType = {
   to: string;
   children: string;
   tabName: string;
 };
 
 export const exploreRoundsLink = `/rounds?${toQueryString({
-  orderBy: "matchAmount",
-  orderDirection: "desc",
+  orderBy: "MATCH_AMOUNT_IN_USD_DESC",
   status: [RoundStatus.active, RoundStatus.taking_applications].join(","),
 })}`;
 
@@ -20,7 +19,7 @@ export default function LandingTabs() {
   const { pathname } = useLocation();
   const [isDesktop] = useMediaQuery("(min-width: 768px)");
 
-  const tabs: Tab[] = [
+  const tabs: TabType[] = [
     {
       to: "/",
       children: "Home",
@@ -28,8 +27,7 @@ export default function LandingTabs() {
     },
     {
       to: `/rounds?${toQueryString({
-        orderBy: "matchAmount",
-        orderDirection: "desc",
+        orderBy: "MATCH_AMOUNT_IN_USD_DESC",
         status: [RoundStatus.active, RoundStatus.taking_applications].join(","),
       })}`,
       children: isDesktop ? "Explore rounds" : "Rounds",

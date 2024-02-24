@@ -1,14 +1,13 @@
 import { SORT_OPTIONS } from "../SortDropdown";
-import { RoundSortUiOption, RoundSortParams } from "../hooks/useFilterRounds";
+import { RoundSortParams, RoundSortUiOption } from "../hooks/useFilterRounds";
 
 export function getSortLabel({
-  orderBy = "",
-  orderDirection = "",
+  orderBy = "NATURAL",
 }: Partial<RoundSortParams>): RoundSortUiOption {
   return (
-    SORT_OPTIONS.find(
-      (item) =>
-        item.orderBy === orderBy && item.orderDirection === orderDirection
-    ) ?? { label: "", orderBy: "", orderDirection: "" }
+    SORT_OPTIONS.find((item) => item.orderBy === orderBy) ?? {
+      label: "",
+      orderBy: "NATURAL",
+    }
   );
 }

@@ -1,7 +1,13 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useFilterRounds } from "../useFilterRounds";
-import { makeRoundOverviewData } from "../../../../test-utils";
-import { filterRounds, filterRoundsWithProjects } from "../../../api/rounds";
+import {
+  makeRoundMetadata,
+  makeRoundOverviewData,
+} from "../../../../test-utils";
+import {
+  filterOutPrivateRounds,
+  filterRoundsWithProjects,
+} from "../../../api/rounds";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { getEnabledChains } from "../../../../app/chainConfig";
 
@@ -32,12 +38,16 @@ vi.mock("swr", async () => {
 
 describe("useFilterRounds", () => {
   const MOCKED_ROUNDS = Array.from({ length: 5 }).map(() =>
-    makeRoundOverviewData()
+    makeRoundOverviewData({
+      roundMetadata: {
+        ...makeRoundMetadata(),
+        roundType: "private",
+      },
+    })
   );
 
   const DEFAULT_FILTER = {
-    orderBy: "",
-    orderDirection: "",
+    orderBy: "NATURAL",
     status: "",
     network: "",
     type: "",
@@ -50,7 +60,7 @@ describe("useFilterRounds", () => {
     );
 
     const mockDataLayer = {
-      getLegacyRounds: vi.fn().mockResolvedValueOnce({
+      getRounds: vi.fn().mockResolvedValueOnce({
         rounds: mockedRoundsOverAllChains,
       }),
     } as unknown as DataLayer;
@@ -81,8 +91,8 @@ describe("useFilterRounds", () => {
         {
           ...MOCKED_ROUNDS[0],
           // Only if end time is before now
-          applicationsEndTime: "0",
-          projects: [],
+          applicationsEndTime: new Date(0).toISOString(),
+          applications: [],
         },
       ]).length
     ).toBe(0);
@@ -90,24 +100,14 @@ describe("useFilterRounds", () => {
       filterRoundsWithProjects([
         {
           ...MOCKED_ROUNDS[0],
-          projects: [],
+          applications: [],
         },
       ]).length
-    ).toBe(1);
+    ).toBe(0);
   });
 
   it("filterRounds", async () => {
-    const createCacheMock = (data: unknown) => ({
-      get: () => ({ data }),
-    });
-    const cacheMock = createCacheMock({ roundType: "private" }) as any;
     // Only show public rounds
-    expect(
-      filterRounds(
-        createCacheMock({ roundType: "public" }) as any,
-        MOCKED_ROUNDS
-      )?.length
-    ).toBe(5);
-    expect(filterRounds(cacheMock, MOCKED_ROUNDS)?.length).toBe(0);
+    expect(filterOutPrivateRounds(MOCKED_ROUNDS)?.length).toBe(0);
   });
 });

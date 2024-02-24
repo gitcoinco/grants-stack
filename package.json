@@ -35,7 +35,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
-    "turbo": "^1.12.2"
+    "turbo": "^1.12.3"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
