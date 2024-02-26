@@ -25,7 +25,7 @@ import {
   RejectedApplicationsCount,
   Select,
 } from "./BulkApplicationCommon";
-import { useApplicationsByRoundId } from "../../context/application/ApplicationContext";
+import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
 import ProgressModal from "../common/ProgressModal";

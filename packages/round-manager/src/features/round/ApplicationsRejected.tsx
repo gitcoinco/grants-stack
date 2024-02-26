@@ -1,7 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useApplicationsByRoundId } from "../../context/application/ApplicationContext";
+import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import {
   ApplicationStatus,
   GrantApplication,

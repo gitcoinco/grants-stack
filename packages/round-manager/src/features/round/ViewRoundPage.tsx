@@ -16,7 +16,6 @@ import { Button } from "common/src/styles";
 import { Link, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
-import { useApplicationsByRoundId } from "../../context/application/ApplicationContext";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useDebugMode } from "../../hooks";
 import {
@@ -53,6 +52,7 @@ import {
   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
 } from "common";
+import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 
 export const isDirectRound = (round: Round) =>
   round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
