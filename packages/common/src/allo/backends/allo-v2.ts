@@ -413,6 +413,7 @@ export class AlloV2 implements Allo {
     projectId: Hex;
     roundId: Hex | number;
     metadata: AnyJson;
+    strategy?: RoundCategory;
   }): AlloOperation<
     Result<Hex>,
     {
@@ -438,42 +439,46 @@ export class AlloV2 implements Allo {
         application: { recipient: Hex };
       };
 
-      let strategyInstance:
-        | DirectGrantsStrategy
-        | DonationVotingMerkleDistributionStrategy;
       let registerRecipientTx: TransactionData;
 
-      // todo: not sure how to fetch the round category yet... @thelostone-mc @boudra
-      // fixme: round.roundCategory
-      if (1 !== RoundCategory.Direct) {
-        strategyInstance = new DirectGrantsStrategy({
-          chain: this.chainId,
-          poolId: args.roundId,
-        });
+      switch (args.strategy) {
+        case RoundCategory.QuadraticFunding: {
+          const strategyInstance = new DonationVotingMerkleDistributionStrategy({
+            chain: this.chainId,
+            poolId: args.roundId,
+          });
 
-        registerRecipientTx = strategyInstance.getRegisterRecipientData({
-          registryAnchor: args.projectId,
-          recipientAddress: metadata.application.recipient,
-          grantAmount: 0n,
-          metadata: {
-            protocol: 1n,
-            pointer: ipfsResult.value,
-          },
-        });
-      } else {
-        strategyInstance = new DonationVotingMerkleDistributionStrategy({
-          chain: this.chainId,
-          poolId: args.roundId,
-        });
+          registerRecipientTx = strategyInstance.getRegisterRecipientData({
+            registryAnchor: args.projectId,
+            recipientAddress: metadata.application.recipient,
+            metadata: {
+              protocol: 1n,
+              pointer: ipfsResult.value,
+            },
+          });
+          break;
+        }
 
-        registerRecipientTx = strategyInstance.getRegisterRecipientData({
-          registryAnchor: args.projectId,
-          recipientAddress: metadata.application.recipient,
-          metadata: {
-            protocol: 1n,
-            pointer: ipfsResult.value,
-          },
-        });
+        case RoundCategory.Direct: {
+          const strategyInstance = new DirectGrantsStrategy({
+            chain: this.chainId,
+            poolId: args.roundId,
+          });
+
+          registerRecipientTx = strategyInstance.getRegisterRecipientData({
+            registryAnchor: args.projectId,
+            recipientAddress: metadata.application.recipient,
+            grantAmount: 0n,
+            metadata: {
+              protocol: 1n,
+              pointer: ipfsResult.value,
+            },
+          });
+          break;
+        }
+
+        default:
+          throw new AlloError("Unsupported strategy");
       }
 
       const txResult = await sendRawTransaction(this.transactionSender, {
