@@ -26,7 +26,9 @@ jest.mock("data-layer", () => ({
   useDataLayer: () => ({}),
 }));
 
-jest.mock("../../common/useApplicationsByRoundId");
+jest.mock("../../common/useApplicationsByRoundId", () => ({
+  useApplicationsByRoundId: jest.fn().mockReturnValue({}),
+}));
 
 Object.assign(navigator, {
   clipboard: {
