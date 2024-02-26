@@ -40,6 +40,7 @@ export default function ApplicationsApproved() {
   }
 
   const { data: applications, isLoading } = useApplicationsByRoundId(id);
+
   const approvedApplications =
     applications?.filter(
       (a: GrantApplication) =>
