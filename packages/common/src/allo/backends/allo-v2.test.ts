@@ -5,13 +5,13 @@ import {
 } from "@allo-team/allo-v2-sdk";
 import { Abi, Hex, encodeEventTopics } from "viem";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { RoundCategory } from "../../types";
 import { Result, success } from "../common";
 import {
   TransactionReceipt,
   createMockTransactionSender,
 } from "../transaction-sender";
 import { AlloV2 } from "./allo-v2";
-import { RoundCategory } from "../../types";
 
 const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
@@ -156,10 +156,11 @@ describe("AlloV2", () => {
     const result = await allo
       .applyToRound({
         projectId: "0x8C180840fcBb90CE8464B4eCd12ab0f840c6647C",
-        roundId: 88,
+        roundId: 99,
         metadata: {
           application: {
             recipient: "0x8C180840fcBb90CE8464B4eCd12ab0f840c6647C",
+            answers: [],
           },
         },
         strategy: RoundCategory.Direct,
