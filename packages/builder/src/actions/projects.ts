@@ -1,10 +1,11 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
-import { ChainId, RoundPayoutType } from "common";
+import { ChainId } from "common";
 import { getConfig } from "common/src/config";
 import { ApplicationStatus, DataLayer, ProjectApplication } from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
+import { RoundCategory } from "common/dist/types";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectStats } from "../reducers/projects";
@@ -12,17 +13,6 @@ import { transformAndDispatchProject } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
-
-export type SubgraphApplication = {
-  round: { id: string };
-  status: ApplicationStatus;
-  inReview: boolean;
-  chainId: ChainId;
-  metaPtr?: {
-    protocol: string;
-    pointer: string;
-  };
-};
 
 interface ProjectsLoadingAction {
   payload: number[];
@@ -321,7 +311,7 @@ export const loadProjectStats =
     rounds: Array<{
       roundId: string;
       chainId: ChainId;
-      roundType: RoundPayoutType;
+      roundType: RoundCategory;
     }>
   ) =>
   async (dispatch: Dispatch) => {
@@ -370,7 +360,7 @@ export const loadProjectStats =
         (app) =>
           app.projectId === projectID &&
           app.status === "APPROVED" &&
-          round.roundType === "MERKLE"
+          round.roundType === RoundCategory.QuadraticFunding
       );
 
       if (project) {

@@ -11,6 +11,7 @@ import {
   createMockTransactionSender,
 } from "../transaction-sender";
 import { AlloV2 } from "./allo-v2";
+import { RoundCategory } from "../../types";
 
 const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
@@ -108,6 +109,7 @@ describe("AlloV2", () => {
             recipient: "0x8C180840fcBb90CE8464B4eCd12ab0f840c6647C",
           },
         },
+        strategy: RoundCategory.QuadraticFunding,
       })
       .on("ipfs", (r) => (ipfsResult = r))
       .on("transaction", (r) => {
@@ -160,6 +162,7 @@ describe("AlloV2", () => {
             recipient: "0x8C180840fcBb90CE8464B4eCd12ab0f840c6647C",
           },
         },
+        strategy: RoundCategory.Direct,
       })
       .on("ipfs", (r) => (ipfsResult = r))
       .on("transaction", (r) => {

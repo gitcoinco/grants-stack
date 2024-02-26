@@ -1,8 +1,9 @@
 import { Spinner } from "@chakra-ui/react";
-import { ChainId, RoundPayoutType } from "common";
+import { ChainId } from "common";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { RoundCategory } from "common/dist/types";
 import { loadProjectStats } from "../../../actions/projects";
 import { RootState } from "../../../reducers";
 import { ProjectStats } from "../../../reducers/projects";
@@ -47,12 +48,11 @@ export default function RoundStats() {
       const rounds: Array<{
         roundId: string;
         chainId: ChainId;
-        roundType: RoundPayoutType;
+        roundType: RoundCategory;
       }> = [];
       applications.forEach((app) => {
-        const roundType =
-          props.rounds[app.roundId]?.round?.payoutStrategy || "";
-        if (roundType !== "" && roundType === "MERKLE") {
+        const roundType = props.rounds[app.roundId]?.round?.payoutStrategy;
+        if (roundType === RoundCategory.QuadraticFunding) {
           rounds.push({
             roundId: app.roundId,
             chainId: app.chainId,
