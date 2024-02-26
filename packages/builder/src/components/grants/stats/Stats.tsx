@@ -51,9 +51,8 @@ export default function RoundStats() {
         roundType: RoundCategory;
       }> = [];
       applications.forEach((app) => {
-        const roundType =
-          props.rounds[app.roundId]?.round?.payoutStrategy || "";
-        if (roundType !== "" && roundType === RoundCategory.QuadraticFunding) {
+        const roundType = props.rounds[app.roundId]?.round?.payoutStrategy;
+        if (roundType === RoundCategory.QuadraticFunding) {
           rounds.push({
             roundId: app.roundId,
             chainId: app.chainId,
