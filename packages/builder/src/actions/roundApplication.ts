@@ -377,6 +377,7 @@ export const submitApplication =
           },
         },
         nonce: projectMetadata.nonce,
+        memberAddresses: [],
       });
 
       dispatch({
