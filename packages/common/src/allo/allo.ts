@@ -77,6 +77,7 @@ export interface Allo {
     projectId: Hex;
     roundId: Hex | number;
     metadata: AnyJson;
+    strategy?: RoundCategory;
   }) => AlloOperation<
     Result<Hex>,
     {
