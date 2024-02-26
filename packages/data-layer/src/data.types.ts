@@ -215,8 +215,7 @@ export type ProjectApplication = {
   roundId: string;
   status: ApplicationStatus;
   metadataCid: string;
-  metadata: any; // TODO: fix
-  inReview: boolean;
+  metadata: any;
   round: {
     applicationsStartTime: string;
     applicationsEndTime: string;
