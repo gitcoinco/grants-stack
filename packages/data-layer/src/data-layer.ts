@@ -293,17 +293,18 @@ export class DataLayer {
   }: {
     projectId: string;
     chainIds: number[];
-  }): Promise<ProjectApplication[]> {
+  }): Promise<ProjectApplicationWithRound[]> {
     const requestVariables = {
       projectId: projectId,
       chainIds: chainIds,
     };
 
-    const response: { applications: ProjectApplication[] } = await request(
-      this.gsIndexerEndpoint,
-      getApplicationsByProjectId,
-      requestVariables,
-    );
+    const response: { applications: ProjectApplicationWithRound[] } =
+      await request(
+        this.gsIndexerEndpoint,
+        getApplicationsByProjectId,
+        requestVariables,
+      );
 
     return response.applications ?? [];
   }

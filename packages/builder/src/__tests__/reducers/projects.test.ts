@@ -1,5 +1,9 @@
 import "@testing-library/jest-dom";
-import { ApplicationStatus, RoundVisibilityType } from "data-layer";
+import {
+  ApplicationStatus,
+  ProjectApplicationMetadata,
+  RoundVisibilityType,
+} from "data-layer";
 import { ChainId } from "common/src/chain-ids";
 import {
   ProjectsState,
@@ -17,7 +21,7 @@ describe("projects reducer", () => {
   });
 
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
-    const initialState = {
+    const initialState: ProjectsState = {
       ...state,
       applications: {
         "1": [
@@ -28,7 +32,7 @@ describe("projects reducer", () => {
             roundId: addressFrom(1),
             status: "PENDING" as ApplicationStatus,
             metadataCid: "0x1",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             inReview: false,
             round: {
               applicationsStartTime: "0",
@@ -60,7 +64,7 @@ describe("projects reducer", () => {
             roundId: addressFrom(2),
             status: "PENDING" as ApplicationStatus,
             metadataCid: "0x1",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             inReview: false,
             round: {
               applicationsStartTime: "0",
@@ -129,7 +133,7 @@ describe("projects reducer", () => {
   });
 
   it("PROJECT_APPLICATIONS_LOADED updates state", async () => {
-    const initialState = {
+    const initialState: ProjectsState = {
       ...state,
       applications: {
         "1": [
@@ -141,7 +145,7 @@ describe("projects reducer", () => {
             id: "1",
             projectId: "1",
             metadataCid: "0x1",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -179,7 +183,7 @@ describe("projects reducer", () => {
           id: "2",
           projectId: "2",
           metadataCid: "0x2",
-          metadata: {},
+          metadata: {} as ProjectApplicationMetadata,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -214,7 +218,7 @@ describe("projects reducer", () => {
           chainId: 1,
           id: "1",
           metadataCid: "0x1",
-          metadata: {},
+          metadata: {} as ProjectApplicationMetadata,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -246,7 +250,7 @@ describe("projects reducer", () => {
           chainId: 1,
           id: "2",
           metadataCid: "0x2",
-          metadata: {},
+          metadata: {} as ProjectApplicationMetadata,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -283,7 +287,7 @@ describe("projects reducer", () => {
   });
 
   it("PROJECT_APPLICATION_UPDATED updates a project application status", async () => {
-    const initialState = {
+    const initialState: ProjectsState = {
       ...state,
       applications: {
         "1": [
@@ -295,7 +299,7 @@ describe("projects reducer", () => {
             id: "1",
             projectId: "1",
             metadataCid: "0x1",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -327,7 +331,7 @@ describe("projects reducer", () => {
             id: "1",
             projectId: "1",
             metadataCid: "0x1",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -357,7 +361,7 @@ describe("projects reducer", () => {
             id: "2",
             projectId: "2",
             metadataCid: "0x2",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -387,7 +391,7 @@ describe("projects reducer", () => {
             id: "3",
             projectId: "3",
             metadataCid: "0x3",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -417,7 +421,7 @@ describe("projects reducer", () => {
             id: "4",
             projectId: "4",
             metadataCid: "0x4",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -449,7 +453,7 @@ describe("projects reducer", () => {
             id: "1",
             projectId: "1",
             metadataCid: "0x1",
-            metadata: {},
+            metadata: {} as ProjectApplicationMetadata,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",

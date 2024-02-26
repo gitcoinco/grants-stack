@@ -389,6 +389,9 @@ describe("<ViewRound /> in case of after the round start date", () => {
       description: "test",
       website: "test.com",
       owners: [],
+      createdAt: 0,
+      lastUpdated: 0,
+      credentials: {},
     };
     const approvedProjects = [
       makeApprovedProjectData(),

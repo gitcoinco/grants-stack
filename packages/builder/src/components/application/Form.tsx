@@ -14,7 +14,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
-import { ProjectApplication, useDataLayer } from "data-layer";
+import { ProjectApplicationWithRound, useDataLayer } from "data-layer";
 import { resetApplicationError } from "../../actions/roundApplication";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
@@ -82,7 +82,7 @@ export default function Form({
   const { chains } = useNetwork();
 
   const [projectApplications, setProjectApplications] = useState<
-    ProjectApplication[]
+    ProjectApplicationWithRound[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
