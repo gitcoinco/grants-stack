@@ -165,8 +165,7 @@ export default function ApplicationCard({
         p={2}
         textTransform="inherit"
       >
-        {applicationStatus === "PENDING" &&
-        props.isDirectRound ? (
+        {applicationStatus === "PENDING" && props.isDirectRound ? (
           <span className={`text-${colorScheme?.text} text-sm`}>Received</span>
         ) : null}
         {(applicationStatus === "PENDING" && !props.isDirectRound) ||
@@ -183,11 +182,9 @@ export default function ApplicationCard({
     );
   };
 
-  const hasProperStatus = [
-    "APPROVED",
-    "PENDING",
-    "IN_REVIEW"
-  ].includes(applicationData.application.status)
+  const hasProperStatus = ["APPROVED", "PENDING", "IN_REVIEW"].includes(
+    applicationData.application.status
+  );
 
   if (!props.round?.roundMetadata) {
     return null;
