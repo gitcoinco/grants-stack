@@ -15,6 +15,8 @@ import {
   OrderByRounds,
   Program,
   ProjectApplication,
+  ProjectApplicationWithRound,
+  ProjectMetadata,
   Round,
   RoundGetRound,
   RoundsQueryVariables,
@@ -32,6 +34,7 @@ import {
   getApplication,
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
+  getApplicationsForManager,
   getApplicationStatusByRoundIdAndCID,
   getProgramById,
   getProgramName,
@@ -345,18 +348,19 @@ export class DataLayer {
     chainId: number;
     roundId: Lowercase<Address>;
     projectIds: string[];
-  }): Promise<ProjectApplication[] | undefined> {
+  }): Promise<ProjectApplicationWithRound[]> {
     const requestVariables = {
       chainId,
       roundId,
       projectIds,
     };
 
-    const response: { applications: ProjectApplication[] } = await request(
-      this.gsIndexerEndpoint,
-      getApplicationsByRoundIdAndProjectIds,
-      requestVariables,
-    );
+    const response: { applications: ProjectApplicationWithRound[] } =
+      await request(
+        this.gsIndexerEndpoint,
+        getApplicationsByRoundIdAndProjectIds,
+        requestVariables,
+      );
 
     return response.applications ?? [];
   }
@@ -436,6 +440,21 @@ export class DataLayer {
     );
 
     return response.rounds;
+  }
+
+  async getApplicationsForManager(args: {
+    chainId: number;
+    roundId: string;
+  }): Promise<
+    (ProjectApplication & { project: { metadata: ProjectMetadata } })[]
+  > {
+    const response: {
+      applications: (ProjectApplication & {
+        project: { metadata: ProjectMetadata };
+      })[];
+    } = await request(this.gsIndexerEndpoint, getApplicationsForManager, args);
+
+    return response.applications;
   }
 
   /**

@@ -160,6 +160,25 @@ export const getApplicationsByProjectId = gql`
   }
 `;
 
+export const getApplicationsForManager = gql`
+  query getApplicationsForManager($chainId: Int!, $roundId: String!) {
+    applications(
+      filter: { roundId: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      id
+      projectId
+      chainId
+      roundId
+      status
+      metadataCid
+      metadata
+      project {
+        metadata
+      }
+    }
+  }
+`;
+
 export const getApplicationStatusByRoundIdAndCID = gql`
   query getApplicationStatusByRoundIdAndCID(
     $roundId: String!

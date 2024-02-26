@@ -41,9 +41,10 @@ export type ProjectMetadata = {
   projectTwitter?: string;
   userGithub?: string;
   projectGithub?: string;
-  credentials?: ProjectCredentials;
+  credentials: ProjectCredentials;
   owners: ProjectOwner[];
-  createdAt?: number;
+  createdAt: number;
+  lastUpdated: number;
 };
 
 export type AddressAndRole = {
@@ -203,6 +204,37 @@ export type Program = Omit<v2Project, "metadata"> & {
   };
 };
 
+export type ProjectApplicationMetadata = {
+  signature: string;
+  application: {
+    round: string;
+    answers: {
+      type: string;
+      hidden: boolean;
+      question: string;
+      questionId: number;
+      encryptedAnswer?: {
+        ciphertext: string;
+        encryptedSymmetricKey: string;
+      };
+    }[];
+    project: {
+      id: string;
+      title: string;
+      metaPtr: {
+        pointer: string;
+        protocol: string;
+      };
+      website: string;
+      createdAt: number;
+      credentials: unknown;
+      description: string;
+      lastUpdated: number;
+    };
+    recipient: string;
+  };
+};
+
 /**
  * The project application type for v2
  *
@@ -214,8 +246,12 @@ export type ProjectApplication = {
   roundId: string;
   status: ApplicationStatus;
   metadataCid: string;
-  metadata: any; // TODO: fix
+  metadata: ProjectApplicationMetadata;
+  // FIXME: this field doesn't exist in the indexer, why was it added?
   inReview: boolean;
+};
+
+export type ProjectApplicationWithRound = ProjectApplication & {
   round: {
     applicationsStartTime: string;
     applicationsEndTime: string;

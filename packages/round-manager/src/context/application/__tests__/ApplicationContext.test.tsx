@@ -2,7 +2,7 @@
 import {
   ApplicationProvider,
   useApplicationById,
-  useApplicationByRoundId,
+  useApplicationsByRoundId,
 } from "../ApplicationContext";
 import { render, screen, waitFor } from "@testing-library/react";
 import { makeGrantApplicationData } from "../../../test-utils";
@@ -232,7 +232,7 @@ const TestingUseApplicationByRoundIdComponent = (props: {
   expectedRoundId: string;
 }) => {
   const { applications, isLoading, getApplicationByRoundIdError } =
-    useApplicationByRoundId(props.expectedRoundId);
+    useApplicationsByRoundId(props.expectedRoundId);
 
   return (
     <>

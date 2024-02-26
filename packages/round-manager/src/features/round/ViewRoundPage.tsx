@@ -16,7 +16,7 @@ import { Button } from "common/src/styles";
 import { Link, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
-import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
+import { useApplicationsByRoundId } from "../../context/application/ApplicationContext";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useDebugMode } from "../../hooks";
 import {
@@ -68,7 +68,7 @@ export default function ViewRoundPage() {
   const isRoundFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
 
-  const { applications } = useApplicationByRoundId(id);
+  const { data: applications } = useApplicationsByRoundId(id);
 
   const debugModeEnabled = useDebugMode();
   const hasAccess =

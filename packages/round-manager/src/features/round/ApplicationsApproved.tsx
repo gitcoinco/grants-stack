@@ -25,7 +25,7 @@ import {
   RejectedApplicationsCount,
   Select,
 } from "./BulkApplicationCommon";
-import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
+import { useApplicationsByRoundId } from "../../context/application/ApplicationContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
 import ProgressModal from "../common/ProgressModal";
@@ -39,7 +39,7 @@ export default function ApplicationsApproved() {
     throw new Error("id is undefined");
   }
 
-  const { applications, isLoading } = useApplicationByRoundId(id);
+  const { data: applications, isLoading } = useApplicationsByRoundId(id);
   const approvedApplications =
     applications?.filter(
       (a: GrantApplication) =>

@@ -6,11 +6,6 @@ import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import {
-  ApplicationContext,
-  ApplicationState,
-  initialApplicationState,
-} from "./context/application/ApplicationContext";
-import {
   BulkUpdateGrantApplicationContext,
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
@@ -341,10 +336,6 @@ export const makeGrantApplicationData = (
       website: faker.internet.domainName(),
       bannerImg: faker.random.alpha({ count: 59, casing: "lower" }),
       logoImg: faker.random.alpha({ count: 59, casing: "lower" }),
-      metaPtr: {
-        protocol: randomInt(1, 10),
-        pointer: faker.random.alpha({ count: 59, casing: "lower" }),
-      },
       projectGithub: projectGithubOverride ?? undefined,
       projectTwitter: projectTwitterOverride ?? undefined,
       credentials: makeProjectCredentials(credentialInputData, ownerAddress),
@@ -420,47 +411,6 @@ export const renderWithProgramContext = (
       </ReadProgramContext.Provider>
     </MemoryRouter>
   );
-
-export const renderWithApplicationContext = (
-  ui: JSX.Element,
-  grantApplicationStateOverrides: Partial<ApplicationState> = {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
-) =>
-  render(
-    <MemoryRouter>
-      <ApplicationContext.Provider
-        value={{
-          state: {
-            ...initialApplicationState,
-            ...grantApplicationStateOverrides,
-          },
-          dispatch,
-        }}
-      >
-        {ui}
-      </ApplicationContext.Provider>
-    </MemoryRouter>
-  );
-
-export const wrapWithApplicationContext = (
-  ui: JSX.Element,
-  grantApplicationStateOverrides: Partial<ApplicationState> = {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
-) => (
-  <ApplicationContext.Provider
-    value={{
-      state: {
-        ...initialApplicationState,
-        ...grantApplicationStateOverrides,
-      },
-      dispatch,
-    }}
-  >
-    {ui}
-  </ApplicationContext.Provider>
-);
 
 export const wrapWithFinalizeRoundContext = (
   ui: JSX.Element,
