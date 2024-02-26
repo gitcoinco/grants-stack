@@ -4,11 +4,10 @@ import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
+import { RoundCategory } from "common/dist/types";
 import { Status } from "../reducers/rounds";
 import { Round } from "../types";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
-
-export type RoundType = "MERKLE" | "DIRECT";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -101,19 +100,18 @@ export const loadRound =
         })) || ""
       : v2Round.project?.name || "";
 
-    let roundPayoutStrategy: RoundType;
+    let roundPayoutStrategy: RoundCategory;
 
     switch (v2Round.strategyName) {
-      case "allov1.QF":
-      case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
-        roundPayoutStrategy = "MERKLE";
-        break;
       case "allov1.Direct":
       case "allov2.DirectGrantsSimpleStrategy":
-        roundPayoutStrategy = "DIRECT";
+        roundPayoutStrategy = RoundCategory.Direct;
         break;
+
+      case "allov1.QF":
+      case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
       default:
-        roundPayoutStrategy = "MERKLE";
+        roundPayoutStrategy = RoundCategory.QuadraticFunding;
     }
 
     const round = {

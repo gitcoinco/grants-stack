@@ -3,12 +3,12 @@ import { ApplicationStatus, useDataLayer } from "data-layer";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { RoundType, loadRound } from "../../actions/rounds";
+import { RoundCategory } from "common/dist/types";
+import { loadRound } from "../../actions/rounds";
 import { RootState } from "../../reducers";
 import { roundApplicationViewPath } from "../../routes";
 import { ApplicationCardType, RoundSupport } from "../../types";
 import { formatDateFromSecs, isInfinite } from "../../utils/components";
-import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 
 export default function ApplicationCard({
@@ -35,7 +35,7 @@ export default function ApplicationCard({
       Number(applicationData.chainId)
     );
 
-    const isDirectRound = payoutStrategy === ROUND_PAYOUT_DIRECT;
+    const isDirectRound = payoutStrategy === RoundCategory.Direct;
 
     return {
       round,
@@ -74,14 +74,14 @@ export default function ApplicationCard({
         }
       | undefined;
 
-    switch (props.payoutStrategy as RoundType) {
-      case "MERKLE":
+    switch (props.payoutStrategy) {
+      case RoundCategory.QuadraticFunding:
         colorScheme = {
           bg: "#E6FFF9",
           text: "gitcoin-grey-500",
         };
         break;
-      case "DIRECT":
+      case RoundCategory.Direct:
         colorScheme = {
           bg: "#FDDEE4",
           text: "gitcoin-grey-500",
@@ -103,12 +103,12 @@ export default function ApplicationCard({
           p={2}
           textTransform="inherit"
         >
-          {roundPayoutStrategy === "MERKLE" ? (
+          {roundPayoutStrategy === RoundCategory.QuadraticFunding ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Quadratic Funding
             </span>
           ) : null}
-          {roundPayoutStrategy === "DIRECT" ? (
+          {roundPayoutStrategy === RoundCategory.Direct ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Direct Grant
             </span>
