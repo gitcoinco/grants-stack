@@ -307,8 +307,6 @@ export function RoundApplicationForm(props: {
         operatorWallets: props.initialData.program.operatorWallets,
       } as DeepRequired<Round>;
 
-      console.log("rounde", round);
-
       await createRound(allo, {
         roundData: {
           roundCategory: roundCategory,
