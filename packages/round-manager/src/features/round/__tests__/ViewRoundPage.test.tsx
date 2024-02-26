@@ -26,9 +26,7 @@ jest.mock("data-layer", () => ({
   useDataLayer: () => ({}),
 }));
 
-jest.mock("../../common/useApplicationsByRoundId", () => ({
-  useApplicationsByRoundId: jest.fn().mockReturnValue({}),
-}));
+jest.mock("../../common/useApplicationsByRoundId");
 
 Object.assign(navigator, {
   clipboard: {
@@ -79,6 +77,10 @@ describe("View Round", () => {
 
     (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [],
+      isLoading: false,
+    });
   });
 
   it("displays a 404 when there no round is found", () => {
