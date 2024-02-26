@@ -100,7 +100,6 @@ export default function ViewApplicationPage() {
   const { roundId, id } = useParams() as { roundId: string; id: string };
   const { chain, address } = useWallet();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { data: applications, isLoading } = useApplicationsByRoundId(roundId!);
   const filteredApplication = applications?.filter((a) => a.id == id) || [];
   const application = filteredApplication[0];
@@ -778,7 +777,6 @@ export default function ViewApplicationPage() {
                       </div>
                     );
                   })}
-
                 {round !== undefined &&
                   application?.payoutStrategy?.strategyName ==
                     ROUND_PAYOUT_DIRECT &&
