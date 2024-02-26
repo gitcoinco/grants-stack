@@ -12,7 +12,8 @@ export type ApplicationStatus =
   | "REJECTED"
   | "APPEAL"
   | "FRAUD"
-  | "RECEIVED";
+  | "RECEIVED"
+  | "IN_REVIEW";
 
 export type ProjectType = "CANONICAL" | "LINKED";
 

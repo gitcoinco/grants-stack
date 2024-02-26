@@ -138,7 +138,6 @@ export default function RoundListItem({
 
     const applicationStatus = applicationData?.status;
     const isDirectRound = props.round?.payoutStrategy === RoundCategory.Direct;
-    const applicationInReview = applicationData?.inReview;
 
     if (RoundDisplayType.Current === dt) {
       return (
@@ -154,15 +153,13 @@ export default function RoundListItem({
               Rejected
             </span>
           ) : null}
-          {applicationStatus === "PENDING" &&
-          isDirectRound &&
-          !applicationInReview ? (
+          {applicationStatus === "PENDING" && isDirectRound ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Received
             </span>
           ) : null}
-          {(applicationStatus === "PENDING" && !isDirectRound) ||
-          (isDirectRound && applicationInReview) ? (
+          {(applicationStatus === "IN_REVIEW" && !isDirectRound) ||
+          isDirectRound ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               In Review
             </span>
@@ -193,12 +190,12 @@ export default function RoundListItem({
     }
 
     if (RoundDisplayType.Active === dt) {
-      if (applicationData?.status === "PENDING" && !applicationInReview) {
+      if (applicationData?.status === "PENDING") {
         return <span className={`text-${colorScheme?.text}`}>Received</span>;
       }
       if (
-        (applicationStatus === "PENDING" && !isDirectRound) ||
-        (isDirectRound && applicationInReview)
+        (applicationStatus === "IN_REVIEW" && !isDirectRound) ||
+        isDirectRound
       ) {
         return <span className={`text-${colorScheme?.text}`}>In Review</span>;
       }

@@ -14,17 +14,6 @@ import { addAlert } from "./ui";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 
-export type SubgraphApplication = {
-  round: { id: string };
-  status: ApplicationStatus;
-  inReview: boolean;
-  chainId: ChainId;
-  metaPtr?: {
-    protocol: string;
-    pointer: string;
-  };
-};
-
 interface ProjectsLoadingAction {
   payload: number[];
   type: typeof PROJECTS_LOADING;
