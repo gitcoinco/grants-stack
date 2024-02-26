@@ -95,25 +95,40 @@ export const loadRound =
 
     let roundPayoutStrategy: RoundCategory;
 
+    let applicationsStartTime;
+    let applicationsEndTime;
+    let roundStartTime;
+    let roundEndTime;
     switch (v2Round.strategyName) {
       case "allov1.Direct":
       case "allov2.DirectGrantsSimpleStrategy":
+        // application times == round times
         roundPayoutStrategy = RoundCategory.Direct;
+        applicationsStartTime =
+          Date.parse(v2Round.applicationsStartTime) / 1000;
+        applicationsEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
+        roundStartTime = Date.parse(v2Round.applicationsStartTime) / 1000;
+        roundEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
         break;
 
       case "allov1.QF":
       case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
       default:
         roundPayoutStrategy = RoundCategory.QuadraticFunding;
+        applicationsStartTime =
+          Date.parse(v2Round.applicationsStartTime) / 1000;
+        applicationsEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
+        roundStartTime = Date.parse(v2Round.donationsStartTime) / 1000;
+        roundEndTime = Date.parse(v2Round.donationsEndTime) / 1000;
     }
 
     const round = {
       id: version === "allo-v1" ? roundId : v2Round.id,
       address: version === "allo-v1" ? roundId : v2Round.strategyAddress,
-      applicationsStartTime: Date.parse(v2Round.applicationsStartTime) / 1000,
-      applicationsEndTime: Date.parse(v2Round.applicationsEndTime) / 1000,
-      roundStartTime: Date.parse(v2Round.donationsStartTime) / 1000,
-      roundEndTime: Date.parse(v2Round.donationsEndTime) / 1000,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
       token: v2Round.matchTokenAddress,
       roundMetaPtr: {
         protocol: "1",

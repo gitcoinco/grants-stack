@@ -25,6 +25,7 @@ import {
   decodeEventFromReceipt,
   sendRawTransaction,
 } from "../transaction-sender";
+import { RoundApplicationAnswers } from "data-layer";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -436,17 +437,19 @@ export class AlloV2 implements Allo {
       }
 
       const metadata = args.metadata as unknown as {
-        application: { recipient: Hex };
+        application: { recipient: Hex; answers: RoundApplicationAnswers[] };
       };
 
       let registerRecipientTx: TransactionData;
 
       switch (args.strategy) {
         case RoundCategory.QuadraticFunding: {
-          const strategyInstance = new DonationVotingMerkleDistributionStrategy({
-            chain: this.chainId,
-            poolId: args.roundId,
-          });
+          const strategyInstance = new DonationVotingMerkleDistributionStrategy(
+            {
+              chain: this.chainId,
+              poolId: args.roundId,
+            }
+          );
 
           registerRecipientTx = strategyInstance.getRegisterRecipientData({
             registryAnchor: args.projectId,
@@ -465,10 +468,15 @@ export class AlloV2 implements Allo {
             poolId: args.roundId,
           });
 
+          const answers = metadata.application.answers;
+          const amountAnswer = answers.find(
+            (a) => a.question === "Amount requested"
+          );
+
           registerRecipientTx = strategyInstance.getRegisterRecipientData({
             registryAnchor: args.projectId,
             recipientAddress: metadata.application.recipient,
-            grantAmount: 0n,
+            grantAmount: BigInt((amountAnswer?.answer as string) ?? 0),
             metadata: {
               protocol: 1n,
               pointer: ipfsResult.value,
