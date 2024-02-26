@@ -156,7 +156,6 @@ export default function ApplicationCard({
     }
 
     const applicationStatus = applicationData.application.status;
-    const applicationInReview = applicationData.application.inReview;
 
     return (
       <Badge
@@ -167,12 +166,11 @@ export default function ApplicationCard({
         textTransform="inherit"
       >
         {applicationStatus === "PENDING" &&
-        props.isDirectRound &&
-        !applicationInReview ? (
+        props.isDirectRound ? (
           <span className={`text-${colorScheme?.text} text-sm`}>Received</span>
         ) : null}
         {(applicationStatus === "PENDING" && !props.isDirectRound) ||
-        (props.isDirectRound && applicationInReview) ? (
+        (props.isDirectRound && applicationStatus === "IN_REVIEW") ? (
           <span className={`text-${colorScheme?.text} text-sm`}>In Review</span>
         ) : null}
         {applicationStatus === "REJECTED" ? (
@@ -185,9 +183,11 @@ export default function ApplicationCard({
     );
   };
 
-  const hasProperStatus =
-    applicationData.application.inReview ||
-    applicationData.application.status === "APPROVED";
+  const hasProperStatus = [
+    "APPROVED",
+    "PENDING",
+    "IN_REVIEW"
+  ].includes(applicationData.application.status)
 
   if (!props.round?.roundMetadata) {
     return null;
