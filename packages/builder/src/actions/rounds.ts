@@ -67,7 +67,6 @@ export const loadRound =
     const isV1 = version === "allo-v1";
 
     try {
-      // address validation
       if (isV1 && roundId.startsWith("0x")) {
         ethers.utils.getAddress(roundId);
       } else if (roundId.includes("0x")) {
@@ -94,12 +93,6 @@ export const loadRound =
     const applicationMetadata = parseRoundApplicationMetadata(
       v2Round.applicationMetadata
     );
-
-    const programName = isV1
-      ? (await dataLayer.getProgramName({
-          projectId: v2Round.roundMetadata.programContractAddress,
-        })) || ""
-      : v2Round.project?.name || "";
 
     let roundPayoutStrategy: RoundType;
 
@@ -134,7 +127,7 @@ export const loadRound =
         pointer: v2Round.applicationMetadataCid,
       },
       applicationMetadata,
-      programName,
+      programName: v2Round.project?.name || "",
       payoutStrategy: roundPayoutStrategy,
     };
 

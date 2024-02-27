@@ -2,7 +2,7 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { getAddress } from "viem";
 import { describe, expect, test, vi } from "vitest";
-import { v2Project } from ".";
+import { ProjectApplication, v2Project } from ".";
 import { DataLayer } from "./data-layer";
 
 // This is mocked from an acutal project on Sepolia
@@ -38,7 +38,6 @@ const mockProjects: v2Project[] = [
     updatedAtBlock: "5146499",
     projectNumber: null,
     registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
-
     tags: ["allo-v2"],
     roles: [
       {
@@ -51,8 +50,44 @@ const mockProjects: v2Project[] = [
     linkedChains: [],
   },
 ];
-
 const mockProject = mockProjects[0];
+const mockApplications: ProjectApplication[] = [
+  {
+    id: "1",
+    projectId:
+      "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+    chainId: 11155111,
+    roundId: "28",
+    status: "PENDING",
+    metadataCid: "",
+    metadata: {
+      protocol: 1,
+      pointer: "QmS9XiFsCq2Ng6buJmBLvNWNpcsHs4uYBhVmBfSK2DFpsm",
+    },
+    inReview: true,
+    round: {
+      applicationsStartTime: "2024-02-20T17:27:40+00:00",
+      applicationsEndTime: "2024-02-27T17:24:40+00:00",
+      donationsStartTime: "2024-02-20T18:54:40+00:00",
+      donationsEndTime: "2024-03-05T17:24:40+00:00",
+      roundMetadata: {
+        name: "Test Round 1",
+        roundType: "public",
+        eligibility: {
+          description:
+            'The goal in 2024 is to scale Zuzalu and create an open vibrant ecosystem, with multiple independent spinoffs that innovate on the original idea. We can carry the torch of Zuzalu 2023, with the experience, learnings and culture from these early days, and bring it to the next level by working with and welcoming top talent from our broader world. This round’s primary objective is to fund spinoff events, referred to as "Zu-events." This initiative is expected to significantly contribute to the fulfillment of Zuzalu\'s mission in the year 2024. A “Zuzalu event” is a long-duration in-person gathering whose goal is to experiment with open frontier digital and social technologies.',
+          requirements: [{ requirement: "You should be awesome" }],
+        },
+        programContractAddress: "",
+        support: {
+          info: "",
+          type: "email",
+        },
+      },
+      name: "Test Round 1",
+    },
+  },
+];
 
 describe("applications search", () => {
   describe("can retrieve multiple applications by search query", () => {
@@ -582,12 +617,87 @@ describe("v2 projects retrieval", () => {
     expect(project?.project.registryAddress).toEqual(
       mockProject.registryAddress,
     );
-    expect(project?.project.projectNumber).toEqual(mockProject.projectNumber);
+    // Note: projectNumber is depreciated in v2 and should be null
+    expect(project?.project.projectNumber).toEqual(null);
     expect(project?.project.tags).toEqual(mockProject.tags);
     expect(project?.project.roles).toEqual(mockProject.roles);
     expect(project?.project.name).toEqual(mockProject.name);
     expect(project?.project.metadata.description).toEqual(
       mockProject.metadata.description,
+    );
+  });
+
+  test("can retrieve multiple projects by address", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        project: mockProjects,
+      }),
+    });
+
+    const dataLayer = new DataLayer({
+      fetch: fetchMock,
+      search: { baseUrl: "https://example.com" },
+      subgraph: { endpointsByChainId: {} },
+      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+    });
+
+    const projects = await dataLayer.getProjectsByAddress({
+      address: "0xe849b2a694184b8739a04c915518330757cdb18b",
+      alloVersion: "allo-v2",
+      chainIds: [11155111],
+    });
+
+    expect(projects[0].id).toEqual(mockProject.id);
+    expect(projects[0].chainId).toEqual(mockProject.chainId);
+    expect(projects[0].registryAddress).toEqual(mockProject.registryAddress);
+    // Note: projectNumber is depreciated in v2 and should be null
+    expect(projects[0].projectNumber).toEqual(null);
+    expect(projects[0].tags).toEqual(mockProject.tags);
+    expect(projects[0].name).toEqual(mockProject.name);
+    expect(projects[0].metadata.description).toEqual(
+      mockProject.metadata.description,
+    );
+  });
+
+  test("can get applications by project id", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({
+        applications: mockApplications,
+      }),
+    });
+
+    const dataLayer = new DataLayer({
+      fetch: fetchMock,
+      search: { baseUrl: "https://example.com" },
+      subgraph: { endpointsByChainId: {} },
+      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+    });
+
+    const applications = await dataLayer.getApplicationsByProjectId({
+      projectId:
+        "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+      chainIds: [11155111],
+    });
+
+    expect(applications[0].id).toEqual(mockApplications[0].id);
+    expect(applications[0].chainId).toEqual(mockApplications[0].chainId);
+    expect(applications[0].projectId).toEqual(mockApplications[0].projectId);
+    expect(applications[0].status).toEqual(mockApplications[0].status);
+    expect(applications[0].round.applicationsStartTime).toEqual(
+      mockApplications[0].round.applicationsStartTime,
+    );
+    expect(applications[0].round.applicationsEndTime).toEqual(
+      mockApplications[0].round.applicationsEndTime,
+    );
+    expect(applications[0].round.donationsStartTime).toEqual(
+      mockApplications[0].round.donationsStartTime,
+    );
+    expect(applications[0].round.donationsEndTime).toEqual(
+      mockApplications[0].round.donationsEndTime,
     );
   });
 });

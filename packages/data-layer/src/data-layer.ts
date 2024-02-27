@@ -10,7 +10,6 @@ import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Application,
-  ApplicationStatus,
   Collection,
   OrderByRounds,
   Program,
@@ -19,22 +18,21 @@ import {
   RoundGetRound,
   RoundsQueryVariables,
   SearchBasedProjectCategory,
-  v2Project,
+  V2RoundWithProject,
   V2RoundWithRoles,
+  v2Project,
 } from "./data.types";
 import {
   ApplicationSummary,
-  Configuration as SearchApiConfiguration,
   DefaultApi as SearchApi,
+  Configuration as SearchApiConfiguration,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
   getApplication,
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
-  getApplicationStatusByRoundIdAndCID,
   getProgramById,
-  getProgramName,
   getProgramsByUserAndTag,
   getProjectById,
   getProjectsAndRolesByAddress,
@@ -343,9 +341,9 @@ export class DataLayer {
     projectIds,
   }: {
     chainId: number;
-    roundId: Lowercase<Address>;
+    roundId: string;
     projectIds: string[];
-  }): Promise<ProjectApplication[] | undefined> {
+  }): Promise<ProjectApplication[]> {
     const requestVariables = {
       chainId,
       roundId,
@@ -361,62 +359,19 @@ export class DataLayer {
     return response.applications ?? [];
   }
 
-  async getApplicationStatusByRoundIdAndCID({
-    roundId,
-    chainId,
-    metadataCid,
-  }: {
-    chainId: number;
-    roundId: string;
-    metadataCid: string;
-  }): Promise<ApplicationStatus | undefined> {
-    const requestVariables = {
-      chainId,
-      roundId,
-      metadataCid,
-    };
-
-    const response: { applications: any } = await request(
-      this.gsIndexerEndpoint,
-      getApplicationStatusByRoundIdAndCID,
-      requestVariables,
-    );
-
-    return response.applications[0].status;
-  }
-
-  async getProgramName({
-    projectId,
-  }: {
-    projectId: string;
-  }): Promise<string | null> {
-    const requestVariables = {
-      projectId,
-    };
-
-    const response: { projects: { metadata: { name: string } }[] } =
-      await request(this.gsIndexerEndpoint, getProgramName, requestVariables);
-
-    if (response.projects.length === 0) return null;
-
-    const project = response.projects[0];
-
-    return project.metadata.name;
-  }
-
   async getRoundByIdAndChainId({
     roundId,
     chainId,
   }: {
     roundId: string;
     chainId: number;
-  }): Promise<V2RoundWithRoles> {
+  }): Promise<V2RoundWithProject> {
     const requestVariables = {
       roundId,
       chainId,
     };
 
-    const response: { rounds: V2RoundWithRoles[] } = await request(
+    const response: { rounds: V2RoundWithProject[] } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainId,
       requestVariables,

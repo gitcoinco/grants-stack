@@ -287,14 +287,6 @@ export const fetchProjectApplications =
         chainIds,
       });
 
-      applications?.forEach(async (application, index) => {
-        const programName = await dataLayer.getProgramName({
-          projectId: application.round.roundMetadata.programContractAddress,
-        });
-
-        applications[index].round.name = programName || "";
-      });
-
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID: projectId,
