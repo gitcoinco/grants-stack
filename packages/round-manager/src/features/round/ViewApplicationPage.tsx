@@ -430,8 +430,8 @@ export default function ViewApplicationPage() {
     return "done";
   };
 
-  const strategyType = application?.payoutStrategy?.strategyName
-    ? getRoundStrategyType(application.payoutStrategy.strategyName)
+  const strategyType = round?.payoutStrategy?.strategyName
+    ? getRoundStrategyType(round.payoutStrategy.strategyName)
     : undefined;
 
   const showReviewButton = () =>
