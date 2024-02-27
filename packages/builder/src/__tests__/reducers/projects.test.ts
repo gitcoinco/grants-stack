@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
-import { ApplicationStatus, RoundVisibilityType } from "data-layer";
 import { ChainId } from "common/src/chain-ids";
+import { ApplicationStatus, RoundVisibilityType } from "data-layer";
 import {
   ProjectsState,
   Status,
@@ -29,7 +29,6 @@ describe("projects reducer", () => {
             status: "PENDING" as ApplicationStatus,
             metadataCid: "0x1",
             metadata: {},
-            inReview: false,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -61,7 +60,6 @@ describe("projects reducer", () => {
             status: "PENDING" as ApplicationStatus,
             metadataCid: "0x1",
             metadata: {},
-            inReview: false,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -97,7 +95,6 @@ describe("projects reducer", () => {
         {
           roundId: addressFrom(1),
           status: "PENDING" as ApplicationStatus,
-          inReview: false,
           chainId: 1,
           id: "1",
           projectId: "1",
@@ -136,7 +133,6 @@ describe("projects reducer", () => {
           {
             roundId: addressFrom(1),
             status: "PENDING" as ApplicationStatus,
-            inReview: false,
             chainId: 1,
             id: "1",
             projectId: "1",
@@ -174,7 +170,6 @@ describe("projects reducer", () => {
         {
           roundId: addressFrom(2),
           status: "APPROVED" as ApplicationStatus,
-          inReview: false,
           chainId: 1,
           id: "2",
           projectId: "2",
@@ -210,7 +205,6 @@ describe("projects reducer", () => {
           roundId: addressFrom(1),
           projectId: "1",
           status: "PENDING" as ApplicationStatus,
-          inReview: false,
           chainId: 1,
           id: "1",
           metadataCid: "0x1",
@@ -242,7 +236,6 @@ describe("projects reducer", () => {
           roundId: addressFrom(2),
           projectId: "2",
           status: "APPROVED" as ApplicationStatus,
-          inReview: false,
           chainId: 1,
           id: "2",
           metadataCid: "0x2",
@@ -290,7 +283,6 @@ describe("projects reducer", () => {
           {
             roundId: "0x1",
             status: "PENDING" as ApplicationStatus,
-            inReview: false,
             chainId: 1,
             id: "1",
             projectId: "1",
@@ -322,7 +314,6 @@ describe("projects reducer", () => {
           {
             roundId: "0x1",
             status: "PENDING" as ApplicationStatus,
-            inReview: false,
             chainId: 1,
             id: "1",
             projectId: "1",
@@ -352,7 +343,6 @@ describe("projects reducer", () => {
           {
             roundId: "0x2",
             status: "PENDING" as ApplicationStatus,
-            inReview: false,
             chainId: 1,
             id: "2",
             projectId: "2",
@@ -382,7 +372,6 @@ describe("projects reducer", () => {
           {
             roundId: "0x3",
             status: "PENDING" as ApplicationStatus,
-            inReview: false,
             chainId: 1,
             id: "3",
             projectId: "3",
@@ -412,7 +401,6 @@ describe("projects reducer", () => {
           {
             roundId: "0x4",
             status: "PENDING" as ApplicationStatus,
-            inReview: false,
             chainId: 1,
             id: "4",
             projectId: "4",
@@ -444,7 +432,6 @@ describe("projects reducer", () => {
           {
             roundId: "0x3",
             status: "PENDING" as ApplicationStatus,
-            inReview: false,
             chainId: 1,
             id: "1",
             projectId: "1",
@@ -486,7 +473,6 @@ describe("projects reducer", () => {
       roundId: "0x3",
       projectId: "3",
       status: "APPROVED" as ApplicationStatus,
-      inReview: false,
       chainId: 1,
       id: "3",
       metadataCid: "0x3",

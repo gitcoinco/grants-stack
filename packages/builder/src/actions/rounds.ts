@@ -109,6 +109,7 @@ export const loadRound =
         roundPayoutStrategy = "MERKLE";
     }
 
+    const programName = v2Round.project?.name || ""; // Provide a default value for programName
     const round = {
       id: version === "allo-v1" ? roundId : v2Round.id,
       address: version === "allo-v1" ? roundId : v2Round.strategyAddress,
@@ -127,7 +128,7 @@ export const loadRound =
         pointer: v2Round.applicationMetadataCid,
       },
       applicationMetadata,
-      programName: v2Round.project?.name,
+      programName, // Use the default value for programName
       payoutStrategy: roundPayoutStrategy,
     };
 
