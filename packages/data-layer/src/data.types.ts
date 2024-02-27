@@ -258,6 +258,10 @@ export type ProjectApplicationForManager = ProjectApplication & {
     updatedAtBlock: string;
     updatedAt: string;
   }[];
+  round: {
+    strategyName: string;
+    strategyAddress: string;
+  };
   project: {
     metadata: ProjectMetadata;
   };

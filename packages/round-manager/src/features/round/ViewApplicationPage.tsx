@@ -77,6 +77,16 @@ export const IAM_SERVER =
 
 const verifier = new PassportVerifier();
 
+function getApplicationStatusTitle(status: ProjectStatus) {
+  switch (status) {
+    case "IN_REVIEW":
+      return "In review";
+    default:
+      // capital case
+      return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  }
+}
+
 export default function ViewApplicationPage() {
   const navigate = useNavigate();
   datadogLogs.logger.info("====> Route: /round/:roundId/application/:id");
@@ -400,6 +410,7 @@ export default function ViewApplicationPage() {
     status?: Status;
     index?: number;
   }> = ({ title, icon, index, text, status }) => {
+    console.log(`application-step-${title}`);
     return (
       <div className={`flex gap-4`} data-testid={`application-step-${title}`}>
         <StepStatus index={index} status={status} />
@@ -430,8 +441,8 @@ export default function ViewApplicationPage() {
     return "done";
   };
 
-  const strategyType = round?.payoutStrategy?.strategyName
-    ? getRoundStrategyType(round.payoutStrategy.strategyName)
+  const strategyType = application?.payoutStrategy?.strategyName
+    ? getRoundStrategyType(application.payoutStrategy.strategyName)
     : undefined;
 
   const showReviewButton = () =>
@@ -526,7 +537,7 @@ export default function ViewApplicationPage() {
                             s.status,
                             index === application.statusSnapshots!.length - 1
                           )}
-                          title={s.status.toLowerCase()}
+                          title={getApplicationStatusTitle(s.status)}
                           icon={
                             <CalendarIcon className="text-grey-400 h-3 w-3" />
                           }

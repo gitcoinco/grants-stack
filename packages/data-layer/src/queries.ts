@@ -173,6 +173,10 @@ export const getApplicationsForManager = gql`
       metadataCid
       metadata
       statusSnapshots
+      round {
+        strategyName
+        strategyAddress
+      }
       project {
         metadata
       }

@@ -314,7 +314,7 @@ describe("ViewApplicationPage", () => {
       renderWithContext(<ViewApplicationPage />, {});
 
       // Pending
-      const pendingStep = await screen.findByTestId("application-step-pending");
+      const pendingStep = await screen.findByTestId("application-step-Pending");
       expect(
         within(pendingStep).queryByTestId("status-current")
       ).toBeInTheDocument();
@@ -347,8 +347,10 @@ describe("ViewApplicationPage", () => {
 
       renderWithContext(<ViewApplicationPage />, {});
 
+      // screen.logTestingPlaygroundURL();
+
       // Pending
-      const pendingStep = await screen.findByTestId("application-step-pending");
+      const pendingStep = await screen.findByTestId("application-step-Pending");
       expect(
         within(pendingStep).queryByTestId("status-current")
       ).toBeInTheDocument();
@@ -379,13 +381,11 @@ describe("ViewApplicationPage", () => {
             statusSnapshots: [
               {
                 status: "PENDING",
-                statusDescription: "PENDING",
-                timestamp: moment().subtract(1, "day").toDate(),
+                updatedAt: moment().subtract(1, "day").toDate(),
               },
               {
                 status: "APPROVED",
-                statusDescription: "APPROVED",
-                timestamp: moment().add(1, "day").toDate(),
+                updatedAt: moment().add(1, "day").toDate(),
               },
             ],
           }),
@@ -396,14 +396,14 @@ describe("ViewApplicationPage", () => {
       renderWithContext(<ViewApplicationPage />, {});
 
       // Pending
-      const pendingStep = await screen.findByTestId("application-step-pending");
+      const pendingStep = await screen.findByTestId("application-step-Pending");
       expect(
         within(pendingStep).queryByTestId("status-done")
       ).toBeInTheDocument();
 
       // Approved
       const approvedStep = await screen.findByTestId(
-        "application-step-approved"
+        "application-step-Approved"
       );
       expect(
         within(approvedStep).queryByTestId("status-done")
@@ -419,13 +419,11 @@ describe("ViewApplicationPage", () => {
             statusSnapshots: [
               {
                 status: "PENDING",
-                statusDescription: "PENDING",
-                timestamp: moment().subtract(2, "day").toDate(),
+                updatedAt: moment().subtract(2, "day").toDate(),
               },
               {
                 status: "REJECTED",
-                statusDescription: "REJECTED",
-                timestamp: moment().add(1, "day").toDate(),
+                updatedAt: moment().add(1, "day").toDate(),
               },
             ],
           }),
@@ -436,14 +434,14 @@ describe("ViewApplicationPage", () => {
       renderWithContext(<ViewApplicationPage />, {});
 
       // Pending
-      const pendingStep = await screen.findByTestId("application-step-pending");
+      const pendingStep = await screen.findByTestId("application-step-Pending");
       expect(
         within(pendingStep).queryByTestId("status-done")
       ).toBeInTheDocument();
 
       // Rejected
       const rejectedStep = await screen.findByTestId(
-        "application-step-rejected"
+        "application-step-Rejected"
       );
       expect(
         within(rejectedStep).queryByTestId("status-rejected")

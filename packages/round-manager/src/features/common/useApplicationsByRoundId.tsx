@@ -31,6 +31,11 @@ export const useApplicationsByRoundId = (roundId: string) => {
           recipient: application.metadata.application.recipient,
           createdAt: "0",
           projectsMetaPtr: { protocol: 1, pointer: "" },
+          payoutStrategy: {
+            strategyName: application.round.strategyName,
+            id: application.round.strategyAddress,
+            payouts: [],
+          },
           statusSnapshots: application.statusSnapshots.map((snapshot) => ({
             ...snapshot,
             updatedAt: new Date(snapshot.updatedAt),
