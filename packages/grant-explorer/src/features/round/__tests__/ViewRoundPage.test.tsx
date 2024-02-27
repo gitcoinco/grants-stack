@@ -419,7 +419,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       },
     });
 
-    const searchInput = screen.getByPlaceholderText("Search");
+    const searchInput = screen.getByPlaceholderText("Search...");
     const projectCards = screen.getAllByTestId("project-card");
     expect(projectCards.length).toEqual(approvedProjects.length);
 
