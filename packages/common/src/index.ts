@@ -334,7 +334,8 @@ export const ROUND_PAYOUT_STRATEGY_TITLES: Record<string, string> = {
 
 export type RoundVisibilityType = "public" | "private";
 
-export type { Allo, AlloError, AlloOperation } from "./allo/allo";
+export type { Allo } from "./allo/allo";
+export { AlloError, AlloOperation } from "./allo/allo";
 export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
 export {
