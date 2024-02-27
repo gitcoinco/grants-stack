@@ -178,7 +178,9 @@ export const getApplicationsForManager = gql`
         strategyAddress
       }
       project {
-        owners
+        roles {
+          address
+        }
       }
     }
   }

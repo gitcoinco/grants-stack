@@ -25,9 +25,7 @@ export const useApplicationsByRoundId = (roundId: string) => {
           metadata: application.metadata,
           project: {
             ...application.metadata.application.project,
-            owners: application.project.owners.map((owner) => ({
-              address: owner,
-            })),
+            owners: application.project.roles,
             id: application.projectId,
           },
           inReview: application.status === "IN_REVIEW",

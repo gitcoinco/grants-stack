@@ -251,7 +251,7 @@ export type ProjectApplicationForManager = ProjectApplication & {
     strategyAddress: string;
   };
   project: {
-    owners: Address[];
+    roles: { address: Address }[];
   };
 };
 
