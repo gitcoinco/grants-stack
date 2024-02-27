@@ -2,7 +2,12 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { getAddress } from "viem";
 import { describe, expect, test, vi } from "vitest";
-import { ProjectApplication, v2Project } from ".";
+import {
+  ProjectApplication,
+  ProjectApplicationMetadata,
+  ProjectApplicationWithRound,
+  v2Project,
+} from ".";
 import { DataLayer } from "./data-layer";
 
 // This is mocked from an acutal project on Sepolia
@@ -51,7 +56,7 @@ const mockProjects: v2Project[] = [
   },
 ];
 const mockProject = mockProjects[0];
-const mockApplications: ProjectApplication[] = [
+const mockApplications: ProjectApplicationWithRound[] = [
   {
     id: "1",
     projectId:
@@ -60,10 +65,7 @@ const mockApplications: ProjectApplication[] = [
     roundId: "28",
     status: "PENDING",
     metadataCid: "",
-    metadata: {
-      protocol: 1,
-      pointer: "QmS9XiFsCq2Ng6buJmBLvNWNpcsHs4uYBhVmBfSK2DFpsm",
-    },
+    metadata: {} as ProjectApplicationMetadata,
     inReview: true,
     round: {
       applicationsStartTime: "2024-02-20T17:27:40+00:00",
