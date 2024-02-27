@@ -12,7 +12,8 @@ export type ApplicationStatus =
   | "REJECTED"
   | "APPEAL"
   | "FRAUD"
-  | "RECEIVED";
+  | "RECEIVED"
+  | "IN_REVIEW";
 
 export type ProjectType = "CANONICAL" | "LINKED";
 
@@ -214,8 +215,7 @@ export type ProjectApplication = {
   roundId: string;
   status: ApplicationStatus;
   metadataCid: string;
-  metadata: any; // TODO: fix
-  inReview: boolean;
+  metadata: any;
   round: {
     applicationsStartTime: string;
     applicationsEndTime: string;

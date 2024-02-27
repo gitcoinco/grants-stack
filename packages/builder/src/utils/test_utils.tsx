@@ -125,7 +125,6 @@ export const buildProjectApplication = (
   chainId: 5,
   roundId: addressFrom(1),
   status: "APPROVED",
-  inReview: false,
   id: "1",
   metadataCid: "0x1",
   metadata: {},

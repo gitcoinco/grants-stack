@@ -4,9 +4,6 @@ import gnosisABI from "../contracts/abis/gnosis.json";
 import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
 
-export const ROUND_PAYOUT_MERKLE = "MERKLE";
-export const ROUND_PAYOUT_DIRECT = "DIRECT";
-
 /**
  * Parse a round to apply string
  *
