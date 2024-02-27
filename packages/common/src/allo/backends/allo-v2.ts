@@ -29,7 +29,7 @@ import { payoutTokens } from "../../payoutTokens";
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
     "0x2f9920e473E30E54bD9D56F571BcebC2470A37B0",
-  [RoundCategory.Direct]: "0xaC3f288a7A3efA3D33d9Dd321ad31072915D155d",
+  [RoundCategory.Direct]: "0x726d2398E79c9535Dd81FB1576A8aCB798c35951",
 };
 
 export class AlloV2 implements Allo {
@@ -316,6 +316,12 @@ export class AlloV2 implements Allo {
           registryGating: true,
           metadataRequired: true,
           grantAmountRequired: true,
+          registrationStartTime: dateToEthereumTimestamp(
+            args.roundData.roundStartTime
+          ), // in seconds, must be in future
+          registrationEndTime: dateToEthereumTimestamp(
+            args.roundData.roundEndTime
+          ), // in seconds, must be after registrationStartTime
         };
 
         const strategy = new DirectGrantsStrategy({

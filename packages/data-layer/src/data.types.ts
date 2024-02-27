@@ -1,6 +1,6 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { RoundApplicationMetadata } from "./roundApplication.types";
 import { Address } from "viem";
+import { RoundApplicationMetadata } from "./roundApplication.types";
 // TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
 // avoid further spaghetti dependencies. They should probably be relocated here.
 export type RoundPayoutType = "allov1.Direct" | "allov1.QF";
@@ -267,8 +267,7 @@ export type ProjectApplicationWithRound = ProjectApplication & {
 };
 
 /**
- * The round type for v2
- *
+ * V2 Round
  */
 export type V2Round = {
   id: string;
@@ -287,10 +286,21 @@ export type V2Round = {
   strategyAddress: Address;
   strategyName: string;
   isReadyForPayout: boolean;
-  project?: {
+};
+
+/**
+ * V2 Round with project
+ */
+export type V2RoundWithProject = V2RoundWithRoles & {
+  project: {
     id: string;
     name: string;
   };
+};
+
+export type ProjectApplicationWithProject = {
+  id: string;
+  name: string;
 };
 
 export type V2RoundWithRoles = V2Round & {
