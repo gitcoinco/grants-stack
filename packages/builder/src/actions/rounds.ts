@@ -127,7 +127,7 @@ export const loadRound =
         pointer: v2Round.applicationMetadataCid,
       },
       applicationMetadata,
-      programName: v2Round.roundMetadata.name,
+      programName: v2Round.project?.name,
       payoutStrategy: roundPayoutStrategy,
     };
 
