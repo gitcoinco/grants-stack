@@ -18,16 +18,14 @@ import {
   RoundGetRound,
   RoundsQueryVariables,
   SearchBasedProjectCategory,
-  TimestampVariables,
   V2RoundWithProjects,
   V2RoundWithRoles,
   v2Project,
-  V2RoundWithRoles,
 } from "./data.types";
 import {
   ApplicationSummary,
-  Configuration as SearchApiConfiguration,
   DefaultApi as SearchApi,
+  Configuration as SearchApiConfiguration,
   SearchResult,
 } from "./openapi-search-client/index";
 import {

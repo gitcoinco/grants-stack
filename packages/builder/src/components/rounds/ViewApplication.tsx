@@ -118,7 +118,7 @@ function ViewApplication() {
   }
 
   const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
-  const roundInReview = props.roundApplicationStatus === "IN_REVIEW";
+  const roundInReview = props.roundApplicationStatus === "PENDING";
   const roundApproved = props.roundApplicationStatus === "APPROVED";
   const hasProperStatus = roundInReview || roundApproved;
 

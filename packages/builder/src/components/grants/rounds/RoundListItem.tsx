@@ -139,7 +139,7 @@ export default function RoundListItem({
 
     const applicationStatus = applicationData?.status;
     const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
-    const applicationInReview = applicationData?.status === "IN_REVIEW";
+    const applicationInReview = applicationData?.status === "PENDING";
 
     if (RoundDisplayType.Current === dt) {
       return (
