@@ -138,12 +138,7 @@ describe("AlloV2", () => {
       .execute();
 
     expect(result.type).not.toEqual("error");
-    // fixme: this is failing with an "value": "0x0000000000000000000000000000000000000000000000000000000000000000" type response.
-    // expect(result).toEqual(
-    //   success({ recipientId: roundApplicationEvent.indexed.recipientId as Hex })
-    // );
 
-    // Note: this is a 2 because of the createProject test is 1
     expect(transactionSender.sentTransactions).toHaveLength(2);
     expect(transactionSender.sentTransactions[0].to.toLowerCase()).toEqual(
       "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3".toLocaleLowerCase()
@@ -192,12 +187,7 @@ describe("AlloV2", () => {
       .execute();
 
     expect(result.type).not.toEqual("error");
-    // fixme: this is failing with an "value": "0x0000000000000000000000000000000000000000000000000000000000000000" type response.
-    // expect(result).toEqual(
-    //   success({ recipientId: roundApplicationEvent.indexed.recipientId as Hex })
-    // );
 
-    // Note: this is a 3 because of the createProject and applyToRound test is 1 & 2 respectively.
     expect(transactionSender.sentTransactions).toHaveLength(3);
     expect(transactionSender.sentTransactions[0].to.toLowerCase()).toEqual(
       "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3".toLocaleLowerCase()
