@@ -116,7 +116,7 @@ export function MRCProgressModalBody({
                     icon={
                       <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full">
                         <CheckIcon
-                          className="w-5 h-5 text-white animate-pulse-scale"
+                          className="w-5 h-5 text-white"
                           aria-hidden="true"
                         />
                       </span>
