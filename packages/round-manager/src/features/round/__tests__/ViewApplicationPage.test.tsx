@@ -236,6 +236,10 @@ describe("ViewApplicationPage", () => {
         contractUpdatingStatus: ProgressStatus.IS_ERROR,
       });
 
+      await waitFor(() => {
+        screen.getByText(/Approve/);
+      });
+
       fireEvent.click(screen.getByText(/Approve/));
 
       await screen.findByTestId("confirm-modal");
