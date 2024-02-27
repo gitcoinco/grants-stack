@@ -178,6 +178,9 @@ describe("ViewApplicationPage", () => {
 
     it("should open confirmation modal when approve is clicked", async () => {
       renderWithContext(<ViewApplicationPage />);
+      await waitFor(() => {
+        screen.getByText(/Approve/);
+      });
       fireEvent.click(screen.getByText(/Approve/));
 
       expect(await screen.findByTestId("confirm-modal")).toBeInTheDocument();
@@ -217,6 +220,9 @@ describe("ViewApplicationPage", () => {
 
     it("should close the confirmation modal when cancel is selected", async () => {
       renderWithContext(<ViewApplicationPage />);
+      await waitFor(() => {
+        screen.getByText(/Approve/);
+      });
       fireEvent.click(screen.getByText(/Approve/));
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Cancel"));
