@@ -14,11 +14,11 @@ import { usePayout } from "../../context/application/usePayout";
 import { Button, Input } from "common/src/styles";
 import { BigNumber, ethers } from "ethers";
 import { AnswerBlock, GrantApplication, Round } from "../api/types";
-import { formatUTCDateAsISOString, getUTCTime, graphql_fetch } from "common";
+import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { getPayoutTokenOptions } from "../api/payoutTokens";
-import useSWR from "swr";
+import { usePayouts } from "./usePayouts";
 
 const schema = yup.object().shape({
   amount: yup
@@ -41,52 +41,6 @@ type Props = {
   application: GrantApplication;
   answerBlocks: AnswerBlock[];
 };
-
-function usePayouts(args: {
-  chainId: number;
-  roundId?: string;
-  applicationIndex?: number;
-}) {
-  return useSWR<
-    {
-      applicationIndex: number;
-      amount: string;
-      createdAt: string;
-      txnHash: string;
-    }[]
-  >(
-    args.roundId !== undefined && args.applicationIndex !== undefined
-      ? [args.chainId, args.roundId, args.applicationIndex]
-      : null,
-    async () => {
-      const res = await graphql_fetch(
-        `
-        query GetApplicationsByRoundId($roundId: String!, $applicationIndex: Int!) {
-          roundApplications(where: {
-            round: $roundId
-            applicationIndex: $applicationIndex
-          }) {
-            round {
-              payoutStrategy {
-                payouts {
-                  amount
-                  createdAt
-                  txnHash
-                  applicationIndex
-                }
-              }
-            }
-          }
-        }
-      `,
-        args.chainId,
-        { roundId: args.roundId, applicationIndex: args.applicationIndex }
-      );
-
-      return res.data.roundApplications[0].round.payoutStrategy.payouts ?? [];
-    }
-  );
-}
 
 export default function ApplicationDirectPayout({
   round,
