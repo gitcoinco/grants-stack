@@ -156,7 +156,7 @@ export default function ApplicationCard({
     }
 
     const applicationStatus = applicationData.application.status;
-    const applicationInReview = applicationStatus === "PENDING";
+    const applicationInReview = applicationData.application.inReview;
 
     return (
       <Badge
@@ -186,7 +186,7 @@ export default function ApplicationCard({
   };
 
   const hasProperStatus =
-    applicationData.application.status === "PENDING" ||
+    applicationData.application.inReview ||
     applicationData.application.status === "APPROVED";
 
   if (!props.round?.roundMetadata) {
