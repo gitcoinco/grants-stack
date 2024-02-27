@@ -172,6 +172,7 @@ export const getApplicationsForManager = gql`
       status
       metadataCid
       metadata
+      statusSnapshots
       project {
         metadata
       }

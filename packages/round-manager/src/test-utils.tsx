@@ -315,8 +315,7 @@ export const makeGrantApplicationData = (
     statusSnapshots: statusSnapshots ?? [
       {
         status: "PENDING",
-        statusDescription: "PENDING",
-        timestamp: moment().subtract(1, "days").toDate(),
+        updatedAt: moment().subtract(1, "days").toDate(),
       },
     ],
 

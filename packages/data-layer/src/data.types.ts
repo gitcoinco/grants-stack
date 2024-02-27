@@ -251,6 +251,17 @@ export type ProjectApplication = {
   inReview: boolean;
 };
 
+export type ProjectApplicationForManager = ProjectApplication & {
+  statusSnapshots: {
+    status: ApplicationStatus;
+    updatedAtBlock: string;
+    updatedAt: string;
+  }[];
+  project: {
+    metadata: ProjectMetadata;
+  };
+};
+
 export type ProjectApplicationWithRound = ProjectApplication & {
   round: {
     applicationsStartTime: string;

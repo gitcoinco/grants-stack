@@ -15,6 +15,7 @@ import {
   OrderByRounds,
   Program,
   ProjectApplication,
+  ProjectApplicationForManager,
   ProjectApplicationWithRound,
   ProjectMetadata,
   Round,
@@ -446,14 +447,9 @@ export class DataLayer {
   async getApplicationsForManager(args: {
     chainId: number;
     roundId: string;
-  }): Promise<
-    (ProjectApplication & { project: { metadata: ProjectMetadata } })[]
-  > {
-    const response: {
-      applications: (ProjectApplication & {
-        project: { metadata: ProjectMetadata };
-      })[];
-    } = await request(this.gsIndexerEndpoint, getApplicationsForManager, args);
+  }): Promise<ProjectApplicationForManager[]> {
+    const response: { applications: ProjectApplicationForManager[] } =
+      await request(this.gsIndexerEndpoint, getApplicationsForManager, args);
 
     return response.applications;
   }

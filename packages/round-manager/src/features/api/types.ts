@@ -370,8 +370,7 @@ export interface GrantApplication {
 
   statusSnapshots?: {
     status: ProjectStatus;
-    statusDescription: string;
-    timestamp: Date;
+    updatedAt: Date;
   }[];
 
   /**
