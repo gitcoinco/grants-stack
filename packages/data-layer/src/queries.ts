@@ -409,6 +409,18 @@ export const getRoundWithApplications = gql`
   }
 `;
 
+export const getRoundUniqueDonorsCount = gql`
+  query getRoundUniqueDonorsCount($roundId: String!, $chainId: Int!) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      id
+      chainId
+      uniqueDonorsCount
+    }
+  }
+`;
+
 export const getRoundsByProgramIdAndChainId = gql`
   query getRoundsByProgramIdAndChainId($chainId: Int!, $programId: String!) {
     rounds(

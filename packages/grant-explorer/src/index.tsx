@@ -29,6 +29,7 @@ import ThankYou from "./features/round/ThankYou";
 import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
+import ViewRoundStats from "./features/round/ViewRoundPageStats";
 
 initSentry();
 initDatadog();
@@ -81,6 +82,12 @@ root.render(
                     path="/round/:chainId/:roundId"
                     element={<ViewRound />}
                   />
+
+                  <Route
+                    path="/round/:chainId/:roundId/stats"
+                    element={<ViewRoundStats />}
+                  />
+
                   <Route
                     path="/round/:chainId/:roundId/:applicationId"
                     element={<ViewProjectDetails />}

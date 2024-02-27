@@ -37,6 +37,7 @@ import {
   getProjectById,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
+  getRoundUniqueDonorsCount,
   getRoundsByProgramIdAndChainId,
   getRoundsQuery,
 } from "./queries";
@@ -357,6 +358,37 @@ export class DataLayer {
     );
 
     return response.applications ?? [];
+  }
+
+  async getRoundUniqueDonorsCount({
+    roundId,
+    chainId,
+  }: {
+    roundId: string;
+    chainId: number;
+  }): Promise<{
+    roundId: string;
+    chainId: number;
+    uniqueDonorsCount: number;
+  }> {
+    const requestVariables = {
+      roundId,
+      chainId,
+    };
+
+    const response: {
+      rounds: {
+        roundId: string;
+        chainId: number;
+        uniqueDonorsCount: number;
+      }[];
+    } = await request(
+      this.gsIndexerEndpoint,
+      getRoundUniqueDonorsCount,
+      requestVariables,
+    );
+
+    return response.rounds[0] ?? [];
   }
 
   async getRoundByIdAndChainId({
