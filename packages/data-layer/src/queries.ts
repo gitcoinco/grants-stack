@@ -138,9 +138,7 @@ export const getProjects = gql`
 export const getApplicationsByProjectId = gql`
   query getApplicationsByProjectId($projectId: String!, $chainIds: [Int!]!) {
     applications(
-      filter: {
-        project: { id: { equalTo: $projectId }, chainId: { in: $chainIds } }
-      }
+      filter: { projectId: { equalTo: $projectId }, chainId: { in: $chainIds } }
     ) {
       id
       projectId
