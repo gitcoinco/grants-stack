@@ -178,7 +178,7 @@ export const getApplicationsForManager = gql`
         strategyAddress
       }
       project {
-        metadata
+        owners
       }
     }
   }

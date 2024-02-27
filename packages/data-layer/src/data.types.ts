@@ -219,19 +219,7 @@ export type ProjectApplicationMetadata = {
         encryptedSymmetricKey: string;
       };
     }[];
-    project: {
-      id: string;
-      title: string;
-      metaPtr: {
-        pointer: string;
-        protocol: string;
-      };
-      website: string;
-      createdAt: number;
-      credentials: unknown;
-      description: string;
-      lastUpdated: number;
-    };
+    project: ProjectMetadata;
     recipient: string;
   };
 };
@@ -263,7 +251,7 @@ export type ProjectApplicationForManager = ProjectApplication & {
     strategyAddress: string;
   };
   project: {
-    metadata: ProjectMetadata;
+    owners: Address[];
   };
 };
 
