@@ -64,7 +64,7 @@ export default function InfoModal({
                       {title}
                     </Dialog.Title>
                     {props.body && (
-                      <div className="mt-2" data-testid="modal-body">
+                      <div className="mt-2">
                         {props.body}
                       </div>
                     )}

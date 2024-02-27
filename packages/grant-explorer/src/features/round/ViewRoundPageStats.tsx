@@ -368,6 +368,7 @@ const ReportCard = ({
 
     return (
       <GenericModal
+        data-test-id="modal-body"
         title="Share"
         body={<ShareModalBody />}
         isOpen={isShareModalOpen}
