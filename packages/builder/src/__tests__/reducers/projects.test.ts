@@ -1,7 +1,10 @@
 import "@testing-library/jest-dom";
-import { ProjectApplicationMetadata } from "data-layer";
 import { ChainId } from "common/src/chain-ids";
-import { ApplicationStatus, RoundVisibilityType } from "data-layer";
+import {
+  ProjectApplicationMetadata,
+  ApplicationStatus,
+  RoundVisibilityType,
+} from "data-layer";
 import {
   ProjectsState,
   Status,
