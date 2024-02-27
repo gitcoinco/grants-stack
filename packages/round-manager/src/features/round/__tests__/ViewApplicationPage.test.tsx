@@ -188,7 +188,9 @@ describe("ViewApplicationPage", () => {
 
     it("should open confirmation modal when reject is clicked", async () => {
       renderWithContext(<ViewApplicationPage />);
-      fireEvent.click(screen.getByText(/Reject/));
+      await waitFor(() => {
+        fireEvent.click(screen.getByText(/Reject/));
+      });
 
       expect(await screen.findByTestId("confirm-modal")).toBeInTheDocument();
     });
@@ -207,8 +209,6 @@ describe("ViewApplicationPage", () => {
       await waitFor(() => {
         expect(updateApplicationStatuses).toBeCalled();
       });
-
-      application.status = "APPROVED";
 
       expect(updateApplicationStatuses).toBeCalled();
       const updateApplicationStatusesFirstCall = (
