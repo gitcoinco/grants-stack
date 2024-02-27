@@ -27,7 +27,7 @@ export const useApplicationsByRoundId = (roundId: string) => {
             ...application.project.metadata,
             id: application.projectId,
           },
-          inReview: application.inReview,
+          inReview: application.status === "IN_REVIEW",
           recipient: application.metadata.application.recipient,
           createdAt: "0",
           projectsMetaPtr: { protocol: 1, pointer: "" },

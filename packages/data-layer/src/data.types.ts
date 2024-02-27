@@ -9,6 +9,7 @@ export type RoundVisibilityType = "public" | "private";
 export type ApplicationStatus =
   | "PENDING"
   | "APPROVED"
+  | "IN_REVIEW"
   | "REJECTED"
   | "APPEAL"
   | "FRAUD"

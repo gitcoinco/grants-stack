@@ -48,14 +48,15 @@ import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
 import moment from "moment";
 import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
-import {
-  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
-} from "common";
+import { getRoundStrategyType } from "common";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 
-export const isDirectRound = (round: Round) =>
-  round && round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+export const isDirectRound = (round: Round | undefined) => {
+  return (
+    round?.payoutStrategy?.strategyName &&
+    getRoundStrategyType(round.payoutStrategy.strategyName) === "DirectGrants"
+  );
+};
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -69,6 +70,9 @@ export default function ViewRoundPage() {
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
 
   const { data: applications } = useApplicationsByRoundId(id);
+  const roundStrategyType = round?.payoutStrategy?.strategyName
+    ? getRoundStrategyType(round?.payoutStrategy?.strategyName)
+    : null;
 
   const debugModeEnabled = useDebugMode();
   const hasAccess =
@@ -314,10 +318,7 @@ export default function ViewRoundPage() {
                   <Tab.Panels className="flex-grow ml-6">
                     <Tab.Panel>
                       <GrantApplications
-                        isDirectRound={
-                          round.payoutStrategy.strategyName ==
-                          ROUND_PAYOUT_DIRECT
-                        }
+                        isDirectRound={roundStrategyType === "DirectGrants"}
                         applications={applications}
                         isRoundsFetched={isRoundFetched}
                         fetchRoundStatus={fetchRoundStatus}
@@ -639,14 +640,17 @@ export function RoundBadgeStatus({ round }: { round: Round }) {
   const roundEnds = round.roundEndTime;
   const now = moment();
 
+  const roundStrategyType = round?.payoutStrategy?.strategyName
+    ? getRoundStrategyType(round.payoutStrategy?.strategyName)
+    : null;
+
   if (
-    (round.payoutStrategy.strategyName == ROUND_PAYOUT_MERKLE &&
+    (roundStrategyType === "QuadraticFunding" &&
       now.isBetween(
         round.applicationsStartTime,
         round.applicationsEndTime || now
       )) ||
-    (round.payoutStrategy.strategyName == ROUND_PAYOUT_DIRECT &&
-      now.isBefore(roundEnds))
+    (roundStrategyType === "DirectGrants" && now.isBefore(roundEnds))
   ) {
     return (
       <div
