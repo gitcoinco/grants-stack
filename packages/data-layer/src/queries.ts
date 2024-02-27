@@ -511,6 +511,18 @@ const getRoundForManagerFields = `
   }
 `;
 
+export const getRoundUniqueDonorsCount = gql`
+  query getRoundUniqueDonorsCount($roundId: String!, $chainId: Int!) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      id
+      chainId
+      uniqueDonorsCount
+    }
+  }
+`;
+
 export const getRoundForManager = gql`
   query getRoundForManager($roundId: String!, $chainId: Int!) {
     rounds(

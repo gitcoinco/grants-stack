@@ -30,6 +30,7 @@ import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import AlloWrapper from "./features/api/AlloWrapper";
+import ViewRoundStats from "./features/round/ViewRoundPageStats";
 
 initSentry();
 initDatadog();
@@ -78,15 +79,21 @@ root.render(
 
                     <Route path="/rounds" element={<ExploreRoundsPage />} />
 
-                    {/* Round Routes */}
-                    <Route
-                      path="/round/:chainId/:roundId"
-                      element={<ViewRound />}
-                    />
-                    <Route
-                      path="/round/:chainId/:roundId/:applicationId"
-                      element={<ViewProjectDetails />}
-                    />
+                  {/* Round Routes */}
+                  <Route
+                    path="/round/:chainId/:roundId"
+                    element={<ViewRound />}
+                  />
+
+                  <Route
+                    path="/round/:chainId/:roundId/stats"
+                    element={<ViewRoundStats />}
+                  />
+
+                  <Route
+                    path="/round/:chainId/:roundId/:applicationId"
+                    element={<ViewProjectDetails />}
+                  />
 
                     <Route path="/cart" element={<ViewCart />} />
 
