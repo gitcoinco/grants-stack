@@ -155,43 +155,13 @@ export class DataLayer {
       chainId,
     };
 
-    let programs: Program[] = [];
+    const response: { projects: Program[] } = await request(
+      this.gsIndexerEndpoint,
+      getProgramsByUserAndTag,
+      { ...requestVariables, tags: ["program", alloVersion] },
+    );
 
-    if (alloVersion === "allo-v1") {
-      const response: { projects: Program[] } = await request(
-        this.gsIndexerEndpoint,
-        getProgramsByUserAndTag,
-        { ...requestVariables, filterByTag: "program" },
-      );
-
-      programs = response.projects;
-    } else if (alloVersion === "allo-v2") {
-      const response: { projects: v2Project[] } = await request(
-        this.gsIndexerEndpoint,
-        getProgramsByUserAndTag,
-        { ...requestVariables, filterByTag: "allo-v2" },
-      );
-
-      programs = response.projects.map((project) => {
-        return {
-          ...project,
-          metadata: {
-            name: project.metadata?.title,
-          },
-        };
-      });
-    }
-
-    // FIXME: this is a temporary fix that is going to be addressed just after merging this PR.
-    // The real fix is to change the query to load the projectRole joining all the projects,
-    // but we need a change in the indexer to add the "projects" relationship available in graphql.
-    programs = programs.filter((project) => {
-      const membershipFound =
-        project.roles.find((role) => role.address === address) !== undefined;
-      return membershipFound;
-    });
-
-    return { programs };
+    return { programs: response.projects };
   }
 
   async getProgramById({

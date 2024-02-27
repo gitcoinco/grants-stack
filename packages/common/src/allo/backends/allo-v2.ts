@@ -29,7 +29,7 @@ import { payoutTokens } from "../../payoutTokens";
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
     "0x2f9920e473E30E54bD9D56F571BcebC2470A37B0",
-  [RoundCategory.Direct]: "0xaC3f288a7A3efA3D33d9Dd321ad31072915D155d",
+  [RoundCategory.Direct]: "0x726d2398E79c9535Dd81FB1576A8aCB798c35951",
 };
 
 export class AlloV2 implements Allo {
@@ -63,6 +63,7 @@ export class AlloV2 implements Allo {
   createProject(args: {
     name: string;
     metadata: AnyJson;
+    memberAddresses: Address[];
     nonce?: bigint;
   }): AlloOperation<
     Result<{ projectId: Hex }>,
@@ -70,6 +71,7 @@ export class AlloV2 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -85,6 +87,7 @@ export class AlloV2 implements Allo {
       const profileNonce: number = args.nonce
         ? Number(args.nonce)
         : Math.floor(Math.random() * 1000000) + 1000000;
+      const senderAddress = await this.transactionSender.address();
 
       const createProfileData: CreateProfileArgs = {
         nonce: profileNonce,
@@ -93,8 +96,10 @@ export class AlloV2 implements Allo {
           protocol: 1n,
           pointer: ipfsResult.value,
         },
-        owner: await this.transactionSender.address(),
-        members: [], // todo: get members
+        owner: senderAddress,
+        members: args.memberAddresses.filter(
+          (address) => address !== senderAddress
+        ),
       };
 
       const txCreateProfile: TransactionData =
@@ -119,17 +124,17 @@ export class AlloV2 implements Allo {
       try {
         receipt = await this.transactionSender.wait(txResult.value);
 
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
-
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to create project");
         emit("transactionStatus", error(result));
         return error(result);
       }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: RegistryAbi as Abi,
@@ -140,6 +145,36 @@ export class AlloV2 implements Allo {
       return success({
         projectId: projectCreatedEvent.profileId,
       });
+    });
+  }
+
+  createProgram(args: {
+    name: string;
+    memberAddresses: Address[];
+  }): AlloOperation<
+    Result<{ programId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return this.createProject({
+      name: args.name,
+      metadata: {
+        type: "program",
+        name: args.name,
+      },
+      memberAddresses: args.memberAddresses,
+    }).map((result) => {
+      if (result.type === "success") {
+        return success({
+          programId: result.value.projectId,
+        });
+      }
+
+      return result;
     });
   }
 
@@ -195,10 +230,6 @@ export class AlloV2 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
 
         emit("transactionStatus", success(receipt));
       } catch (err) {
@@ -206,6 +237,11 @@ export class AlloV2 implements Allo {
         emit("transactionStatus", error(result));
         return error(result);
       }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
 
       return success({
         projectId: projectId,
@@ -280,6 +316,12 @@ export class AlloV2 implements Allo {
           registryGating: true,
           metadataRequired: true,
           grantAmountRequired: true,
+          registrationStartTime: dateToEthereumTimestamp(
+            args.roundData.roundStartTime
+          ), // in seconds, must be in future
+          registrationEndTime: dateToEthereumTimestamp(
+            args.roundData.roundEndTime
+          ), // in seconds, must be after registrationStartTime
         };
 
         const strategy = new DirectGrantsStrategy({

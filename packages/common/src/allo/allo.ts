@@ -34,12 +34,26 @@ export interface Allo {
     name: string;
     metadata: AnyJson;
     nonce?: bigint;
+    memberAddresses: Address[];
   }) => AlloOperation<
     Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+    }
+  >;
+
+  createProgram: (args: {
+    name: string;
+    memberAddresses: Address[];
+  }) => AlloOperation<
+    Result<{ programId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 
