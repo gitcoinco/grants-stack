@@ -13,7 +13,8 @@ export type ApplicationStatus =
   | "REJECTED"
   | "APPEAL"
   | "FRAUD"
-  | "RECEIVED";
+  | "RECEIVED"
+  | "IN_REVIEW";
 
 export type ProjectType = "CANONICAL" | "LINKED";
 
@@ -236,8 +237,6 @@ export type ProjectApplication = {
   status: ApplicationStatus;
   metadataCid: string;
   metadata: ProjectApplicationMetadata;
-  // FIXME: this field doesn't exist in the indexer, why was it added?
-  inReview: boolean;
 };
 
 export type ProjectApplicationForManager = ProjectApplication & {

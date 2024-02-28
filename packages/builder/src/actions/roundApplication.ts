@@ -7,6 +7,7 @@ import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types"
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { Hex } from "viem";
+import { RoundCategory } from "common/dist/types";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";
@@ -151,6 +152,7 @@ const applyToRound =
     projectID: string,
     projectUniqueID: string,
     isV2: boolean,
+    strategy: RoundCategory,
     signedApplication: SignedRoundApplication,
     allo: Allo
   ) =>
@@ -159,6 +161,7 @@ const applyToRound =
       projectId: projectUniqueID as `0x${string}`,
       roundId: isV2 ? Number(roundId) : (roundId as Hex),
       metadata: signedApplication as unknown as AnyJson,
+      strategy,
     });
 
     // Apply To Round
@@ -423,6 +426,7 @@ export const submitApplication =
                 projectID,
                 projectUniqueID,
                 isV2,
+                roundState.round?.payoutStrategy!,
                 signedApplication,
                 allo
               )
@@ -442,6 +446,7 @@ export const submitApplication =
           projectID,
           projectUniqueID,
           isV2,
+          roundState.round?.payoutStrategy!,
           signedApplication,
           allo
         )

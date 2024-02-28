@@ -4,6 +4,7 @@ import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types"
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { RoundCategory } from "common/dist/types";
 import {
   resetApplication,
   submitApplication,
@@ -21,7 +22,6 @@ import colors from "../../styles/colors";
 import { Round } from "../../types";
 import { isInfinite } from "../../utils/components";
 import { getApplicationSteps } from "../../utils/steps";
-import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -88,7 +88,7 @@ function Apply() {
     };
   }, shallowEqual);
 
-  const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
+  const isDirectRound = props.round?.payoutStrategy === RoundCategory.Direct;
 
   /*
    * Alert elements

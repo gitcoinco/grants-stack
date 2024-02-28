@@ -1,17 +1,20 @@
 import {
+  AlloAbi,
   Allo as AlloV2Contract,
   CreateProfileArgs,
+  DirectGrantsStrategy,
+  DirectGrantsStrategyTypes,
   DonationVotingMerkleDistributionStrategy,
   DonationVotingMerkleDistributionStrategyTypes,
   Registry,
   RegistryAbi,
-  AlloAbi,
   TransactionData,
-  DirectGrantsStrategyTypes,
-  DirectGrantsStrategy,
 } from "@allo-team/allo-v2-sdk";
-import { Abi, Address, Hex, parseUnits, zeroAddress, getAddress } from "viem";
+import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
+import { Abi, Address, Hex, getAddress, parseUnits, zeroAddress } from "viem";
 import { AnyJson } from "../..";
+import { payoutTokens } from "../../payoutTokens";
+import { RoundCategory } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -22,9 +25,7 @@ import {
   decodeEventFromReceipt,
   sendRawTransaction,
 } from "../transaction-sender";
-import { RoundCategory } from "../../types";
-import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { payoutTokens } from "../../payoutTokens";
+import { RoundApplicationAnswers } from "data-layer";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -413,6 +414,7 @@ export class AlloV2 implements Allo {
     projectId: Hex;
     roundId: Hex | number;
     metadata: AnyJson;
+    strategy?: RoundCategory;
   }): AlloOperation<
     Result<Hex>,
     {
@@ -426,11 +428,6 @@ export class AlloV2 implements Allo {
         return error(new AlloError("roundId must be number"));
       }
 
-      const strategyInstance = new DonationVotingMerkleDistributionStrategy({
-        chain: this.chainId,
-        poolId: args.roundId,
-      });
-
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
@@ -440,17 +437,57 @@ export class AlloV2 implements Allo {
       }
 
       const metadata = args.metadata as unknown as {
-        application: { recipient: Hex };
+        application: { recipient: Hex; answers: RoundApplicationAnswers[] };
       };
 
-      const registerRecipientTx = strategyInstance.getRegisterRecipientData({
-        registryAnchor: args.projectId,
-        recipientAddress: metadata.application.recipient,
-        metadata: {
-          protocol: 1n,
-          pointer: ipfsResult.value,
-        },
-      });
+      let registerRecipientTx: TransactionData;
+
+      switch (args.strategy) {
+        case RoundCategory.QuadraticFunding: {
+          const strategyInstance = new DonationVotingMerkleDistributionStrategy(
+            {
+              chain: this.chainId,
+              poolId: args.roundId,
+            }
+          );
+
+          registerRecipientTx = strategyInstance.getRegisterRecipientData({
+            registryAnchor: args.projectId,
+            recipientAddress: metadata.application.recipient,
+            metadata: {
+              protocol: 1n,
+              pointer: ipfsResult.value,
+            },
+          });
+          break;
+        }
+
+        case RoundCategory.Direct: {
+          const strategyInstance = new DirectGrantsStrategy({
+            chain: this.chainId,
+            poolId: args.roundId,
+          });
+
+          const answers = metadata.application.answers;
+          const amountAnswer = answers.find(
+            (a) => a.question === "Amount requested"
+          );
+
+          registerRecipientTx = strategyInstance.getRegisterRecipientData({
+            registryAnchor: args.projectId,
+            recipientAddress: metadata.application.recipient,
+            grantAmount: BigInt((amountAnswer?.answer as string) ?? 0),
+            metadata: {
+              protocol: 1n,
+              pointer: ipfsResult.value,
+            },
+          });
+          break;
+        }
+
+        default:
+          throw new AlloError("Unsupported strategy");
+      }
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: registerRecipientTx.to,

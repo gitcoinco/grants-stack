@@ -3,6 +3,7 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
 import { ReactNode } from "react";
 import { RoundApplicationMetadata } from "data-layer/dist/roundApplication.types";
+import { RoundCategory } from "common/dist/types";
 
 export type Images = {
   bannerImg?: Blob;
@@ -149,7 +150,7 @@ export type Round = {
   applicationMetaPtr: MetaPtr;
   applicationMetadata: RoundApplicationMetadata;
   programName: string;
-  payoutStrategy: string;
+  payoutStrategy: RoundCategory;
 };
 
 export enum RoundDisplayType {
