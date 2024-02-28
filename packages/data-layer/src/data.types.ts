@@ -250,7 +250,7 @@ export type ProjectApplicationForManager = ProjectApplication & {
     strategyName: string;
     strategyAddress: string;
   };
-  project: {
+  canonicalProject: {
     roles: { address: Address }[];
   };
 };
