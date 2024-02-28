@@ -1,5 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
+import { RoundCategory } from "common/dist/types";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
 import { ethers } from "ethers";
@@ -7,8 +8,6 @@ import { Dispatch } from "redux";
 import { Status } from "../reducers/rounds";
 import { Round } from "../types";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
-
-export type RoundType = "MERKLE" | "DIRECT";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -94,28 +93,42 @@ export const loadRound =
       v2Round.applicationMetadata
     );
 
-    let roundPayoutStrategy: RoundType;
+    let roundPayoutStrategy: RoundCategory;
 
+    let applicationsStartTime;
+    let applicationsEndTime;
+    let roundStartTime;
+    let roundEndTime;
     switch (v2Round.strategyName) {
-      case "allov1.QF":
-      case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
-        roundPayoutStrategy = "MERKLE";
-        break;
       case "allov1.Direct":
       case "allov2.DirectGrantsSimpleStrategy":
-        roundPayoutStrategy = "DIRECT";
+        // application times == round times
+        roundPayoutStrategy = RoundCategory.Direct;
+        applicationsStartTime =
+          Date.parse(v2Round.applicationsStartTime) / 1000;
+        applicationsEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
+        roundStartTime = Date.parse(v2Round.applicationsStartTime) / 1000;
+        roundEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
         break;
+
+      case "allov1.QF":
+      case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
       default:
-        roundPayoutStrategy = "MERKLE";
+        roundPayoutStrategy = RoundCategory.QuadraticFunding;
+        applicationsStartTime =
+          Date.parse(v2Round.applicationsStartTime) / 1000;
+        applicationsEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
+        roundStartTime = Date.parse(v2Round.donationsStartTime) / 1000;
+        roundEndTime = Date.parse(v2Round.donationsEndTime) / 1000;
     }
 
     const round = {
       id: version === "allo-v1" ? roundId : v2Round.id,
       address: version === "allo-v1" ? roundId : v2Round.strategyAddress,
-      applicationsStartTime: Date.parse(v2Round.applicationsStartTime) / 1000,
-      applicationsEndTime: Date.parse(v2Round.applicationsEndTime) / 1000,
-      roundStartTime: Date.parse(v2Round.donationsStartTime) / 1000,
-      roundEndTime: Date.parse(v2Round.donationsEndTime) / 1000,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
       token: v2Round.matchTokenAddress,
       roundMetaPtr: {
         protocol: "1",

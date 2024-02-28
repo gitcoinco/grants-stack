@@ -64,7 +64,7 @@ const mockApplications: ProjectApplication[] = [
       protocol: 1,
       pointer: "QmS9XiFsCq2Ng6buJmBLvNWNpcsHs4uYBhVmBfSK2DFpsm",
     },
-    inReview: true,
+    // inReview: true,
     round: {
       applicationsStartTime: "2024-02-20T17:27:40+00:00",
       applicationsEndTime: "2024-02-27T17:24:40+00:00",
