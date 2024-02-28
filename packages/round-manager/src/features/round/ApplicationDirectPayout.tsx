@@ -72,8 +72,6 @@ export default function ApplicationDirectPayout({
     applicationIndex: application.applicationIndex,
   });
 
-  // helpers
-  // const payouts = application.payoutStrategy?.payouts ?? [];
   // find answer with question "Payout token"
   const payoutTokenAnswer = answerBlocks?.find(
     (a) => a.question === "Payout token"
