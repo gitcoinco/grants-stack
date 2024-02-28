@@ -1,31 +1,55 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { RoundApplicationMetadata } from "data-layer";
+import { RoundApplicationMetadata, DataLayer } from "data-layer";
 import { Store } from "redux";
-import * as projects from "../../../actions/projects";
+import { RoundCategory } from "common/dist/types";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
 import { Metadata, Round } from "../../../types";
-import { addressFrom, renderWrapped } from "../../../utils/test_utils";
+import { renderWrapped, roundIdFrom } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
 
 const projectsMetadata: Metadata[] = [
   {
     protocol: 1,
     pointer: "0x1234",
-    id: `1:${addressFrom(1)}:1`,
+    id: "0x3456",
+    chainId: 1,
     title: "First Project",
     description: "This is the first project description",
     website: "https://firstproject.com",
+    bannerImg: "",
+    logoImg: "",
+    projectTwitter: "",
+    userGithub: "",
+    projectGithub: "",
+    credentials: {},
+    createdAt: 1,
+    updatedAt: 1,
+    linkedChains: [1],
+    nonce: BigInt(1),
+    registryAddress: "0x1234",
   },
   {
     protocol: 2,
-    pointer: "0x1234",
-    id: `1:${addressFrom(2)}:2`,
+    pointer: "0x1324",
+    id: "0x9876",
+    chainId: 1,
     title: "Second Project",
     description: "This is the second project description",
     website: "https://secondproject.com",
+    bannerImg: "",
+    logoImg: "",
+    projectTwitter: "",
+    userGithub: "",
+    projectGithub: "",
+    credentials: {},
+    createdAt: 1,
+    updatedAt: 1,
+    linkedChains: [1],
+    nonce: BigInt(1),
+    registryAddress: "0x1234",
   },
 ];
 
@@ -45,7 +69,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
 };
 
 const round: Round = {
-  id: `1:${addressFrom(1)}:1`,
+  id: roundIdFrom(123),
   address: "0x123",
   applicationsStartTime: 123,
   applicationsEndTime: 123,
@@ -80,7 +104,7 @@ const round: Round = {
       ],
     },
   },
-  payoutStrategy: "MERKLE",
+  payoutStrategy: RoundCategory.QuadraticFunding,
   programName: "sample program",
 };
 
@@ -107,12 +131,6 @@ describe("<Form />", () => {
       type: "PROJECTS_LOADED",
       payload: {
         chainID: 1,
-        events: {
-          [`1:${addressFrom(1)}:1`]: {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
-          },
-        },
       },
     });
     store.dispatch({
@@ -129,9 +147,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-        hasProjectAppliedToRound: false,
-      });
+      jest
+        .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+        .mockResolvedValue([]);
 
       renderWrapped(
         <Form
@@ -139,6 +157,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
+          setCreateLinkedProject={() => {}}
         />,
         store
       );
@@ -148,7 +167,7 @@ describe("<Form />", () => {
       );
       await act(async () => {
         fireEvent.change(selectProject, {
-          target: { value: `1:${addressFrom(1)}:1` },
+          target: { value: "0x3456" },
         });
       });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -184,9 +203,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-        hasProjectAppliedToRound: false,
-      });
+      jest
+        .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+        .mockResolvedValue([]);
 
       renderWrapped(
         <Form
@@ -194,6 +213,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
+          setCreateLinkedProject={() => {}}
         />,
         store
       );
@@ -203,7 +223,7 @@ describe("<Form />", () => {
       );
       await act(async () => {
         fireEvent.change(selectProject, {
-          target: { value: `1:${addressFrom(1)}:1` },
+          target: { value: "0x3456" },
         });
       });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -239,16 +259,16 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-        hasProjectAppliedToRound: false,
-      });
-
+      jest
+        .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+        .mockResolvedValue([]);
       renderWrapped(
         <Form
           roundApplication={roundApplicationMetadata}
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
+          setCreateLinkedProject={() => {}}
         />,
         store
       );
@@ -258,7 +278,7 @@ describe("<Form />", () => {
       );
       await act(async () => {
         fireEvent.change(selectProject, {
-          target: { value: `1:${addressFrom(1)}:1` },
+          target: { value: "0x3456" },
         });
       });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -294,9 +314,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-        hasProjectAppliedToRound: false,
-      });
+      jest
+        .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+        .mockResolvedValue([]);
 
       renderWrapped(
         <Form
@@ -304,6 +324,7 @@ describe("<Form />", () => {
           round={round}
           onSubmit={jest.fn()}
           showErrorModal={false}
+          setCreateLinkedProject={() => {}}
         />,
         store
       );
@@ -313,7 +334,7 @@ describe("<Form />", () => {
       );
       await act(async () => {
         fireEvent.change(selectProject, {
-          target: { value: `1:${addressFrom(1)}:1` },
+          target: { value: "0x3456" },
         });
       });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -343,9 +364,9 @@ describe("<Form />", () => {
   });
 
   it("shows a project details section", async () => {
-    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-      hasProjectAppliedToRound: false,
-    });
+    jest
+      .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+      .mockResolvedValue([]);
 
     renderWrapped(
       <Form
@@ -353,6 +374,7 @@ describe("<Form />", () => {
         round={round}
         onSubmit={jest.fn()}
         showErrorModal={false}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -362,7 +384,7 @@ describe("<Form />", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
     const toggleButton = screen.getByText("View your Project Details");
@@ -388,13 +410,7 @@ describe("<Form/>", () => {
     store.dispatch({
       type: "PROJECTS_LOADED",
       payload: {
-        chainID: 10,
-        events: {
-          [`1:${addressFrom(1)}:1`]: {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
-          },
-        },
+        chainIDs: [10],
       },
     });
 
@@ -403,9 +419,9 @@ describe("<Form/>", () => {
       data: { ...projectsMetadata[0], projectGithub: "mygithub" },
     });
 
-    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-      hasProjectAppliedToRound: false,
-    });
+    jest
+      .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+      .mockResolvedValue([]);
 
     renderWrapped(
       <Form
@@ -422,6 +438,7 @@ describe("<Form/>", () => {
         round={round}
         onSubmit={jest.fn()}
         showErrorModal={false}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -431,7 +448,7 @@ describe("<Form/>", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
 
@@ -451,20 +468,14 @@ describe("Form questions", () => {
   beforeEach(() => {
     store = setupStore();
     store.dispatch(web3ChainIDLoaded(5));
-    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
-      hasProjectAppliedToRound: false,
-    });
+    jest
+      .spyOn(DataLayer.prototype, "getApplicationsByRoundIdAndProjectIds")
+      .mockResolvedValue([]);
 
     store.dispatch({
       type: "PROJECTS_LOADED",
       payload: {
         chainID: 5,
-        events: {
-          [`1:${addressFrom(1)}:1`]: {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
-          },
-        },
       },
     });
 
@@ -503,6 +514,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -512,7 +524,7 @@ describe("Form questions", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
 
@@ -522,7 +534,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: ["Second option"],
     });
 
@@ -532,7 +544,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: ["Second option", "First option"],
     });
   });
@@ -566,6 +578,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -575,7 +588,7 @@ describe("Form questions", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
 
@@ -585,7 +598,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: "Second option",
     });
 
@@ -595,7 +608,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: "First option",
     });
   });
@@ -629,6 +642,7 @@ describe("Form questions", () => {
         round={round}
         onChange={onChange}
         showErrorModal={false}
+        setCreateLinkedProject={() => {}}
       />,
       store
     );
@@ -638,7 +652,7 @@ describe("Form questions", () => {
     );
     await act(async () => {
       fireEvent.change(selectProject, {
-        target: { value: `1:${addressFrom(1)}:1` },
+        target: { value: "0x3456" },
       });
     });
 
@@ -652,7 +666,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: "First option",
     });
 
@@ -661,7 +675,7 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: `1:${addressFrom(1)}:1`,
+      0: "0x3456",
       1: "Second option",
     });
   });

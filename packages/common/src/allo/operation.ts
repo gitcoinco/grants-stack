@@ -29,7 +29,7 @@ export class AlloOperation<
   constructor(
     callback: (args: {
       emit: <K extends keyof TEvents>(event: K, ...args: TEvents[K][]) => void;
-    }) => Promise<TResult>,
+    }) => Promise<TResult>
   ) {
     super();
     this.callback = callback;
@@ -37,14 +37,14 @@ export class AlloOperation<
 
   on<K extends keyof TEvents>(
     event: K,
-    callback: (args: TEvents[K]) => void,
+    callback: (args: TEvents[K]) => void
   ): this {
     return super.on(event as string, callback);
   }
 
   once<K extends keyof TEvents>(
     event: K,
-    callback: (args: TEvents[K]) => void,
+    callback: (args: TEvents[K]) => void
   ): this {
     return super.once(event as string, callback);
   }
@@ -55,7 +55,7 @@ export class AlloOperation<
 
   off<K extends keyof TEvents>(
     event: K,
-    callback?: (args: TEvents[K]) => void,
+    callback?: (args: TEvents[K]) => void
   ): this {
     return super.off(event as string, callback);
   }
@@ -63,6 +63,16 @@ export class AlloOperation<
   waitFor<K extends keyof TEvents>(event: K): Promise<TEvents[K]> {
     return new Promise((resolve) => {
       this.once(event, resolve);
+    });
+  }
+
+  map<TMappedResult>(
+    mapper: (result: TResult) => TMappedResult
+  ): AlloOperation<TMappedResult, TEvents> {
+    return new AlloOperation(async ({ emit }) => {
+      this.emit = emit as unknown as typeof this.emit;
+      const result = await this.execute();
+      return mapper(result);
     });
   }
 
@@ -74,7 +84,7 @@ export class AlloOperation<
   async execute(): Promise<TResult> {
     return this.callback({
       emit: (event, ...args) => {
-        super.emit(event as string, ...args);
+        this.emit(event, ...args);
       },
     });
   }

@@ -20,6 +20,7 @@ const colorOptions = {
   ["allov2.MicroGrantsHatsStrategy"]: "yellow",
   ["allov2.SQFSuperFluidStrategy"]: "yellow",
   ["allov2.MicroGrantsGovStrategy"]: "yellow",
+  ["allov2.DirectGrantsSimpleStrategy"]: "yellow",
 } as const;
 
 export function RoundStrategyBadge({ strategyName }: Props) {

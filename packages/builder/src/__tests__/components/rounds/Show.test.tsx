@@ -13,6 +13,7 @@ import {
   buildRound,
   now,
   renderWrapped,
+  roundIdFrom,
 } from "../../../utils/test_utils";
 
 jest.mock("../../../actions/rounds");
@@ -43,6 +44,7 @@ describe("<Show />", () => {
     });
 
     const pastRound = buildRound({
+      id: roundIdFrom(2),
       address: addressFrom(2),
       applicationsStartTime: now - 7200,
       applicationsEndTime: now - 3600,
@@ -51,6 +53,7 @@ describe("<Show />", () => {
     });
 
     const futureRound = buildRound({
+      id: roundIdFrom(3),
       address: addressFrom(3),
       applicationsStartTime: now + 3600,
       applicationsEndTime: now + 7200,
@@ -61,17 +64,17 @@ describe("<Show />", () => {
     store.dispatch(web3ChainIDLoaded(5));
     store.dispatch({
       type: "ROUNDS_ROUND_LOADED",
-      address: addressFrom(1),
+      id: roundIdFrom(1),
       round,
     });
     store.dispatch({
       type: "ROUNDS_ROUND_LOADED",
-      address: addressFrom(2),
+      id: roundIdFrom(2),
       round: pastRound,
     });
     store.dispatch({
       type: "ROUNDS_ROUND_LOADED",
-      address: addressFrom(3),
+      id: roundIdFrom(3),
       round: futureRound,
     });
   });
@@ -79,7 +82,7 @@ describe("<Show />", () => {
   describe("current round", () => {
     beforeEach(() => {
       (useParams as jest.Mock).mockReturnValue({
-        roundId: addressFrom(1),
+        roundId: roundIdFrom(1),
         chainId: 5,
       });
     });
@@ -100,7 +103,6 @@ describe("<Show />", () => {
           type: "PROJECTS_LOADED",
           payload: {
             chainID: 1,
-            events: {},
           },
         });
 
@@ -146,7 +148,7 @@ describe("<Show />", () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
 
-        store.dispatch({ type: "PROJECTS_LOADING", payload: 10 });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: [10] });
 
         renderWrapped(<Show />, store);
 
@@ -171,7 +173,6 @@ describe("<Show />", () => {
           type: "PROJECTS_LOADED",
           payload: {
             chainID: 10,
-            events: {},
           },
         });
 
@@ -188,8 +189,7 @@ describe("<Show />", () => {
         store.dispatch({
           type: "PROJECTS_LOADED",
           payload: {
-            chainID: 10,
-            events: {},
+            chainIDs: [10],
           },
         });
 
@@ -207,7 +207,7 @@ describe("<Show />", () => {
   describe("past round", () => {
     beforeEach(() => {
       (useParams as jest.Mock).mockReturnValue({
-        roundId: addressFrom(2),
+        roundId: roundIdFrom(2),
         chainId: 5,
       });
     });
@@ -225,8 +225,7 @@ describe("<Show />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         payload: {
-          chainID: 10,
-          events: {},
+          chainIDs: [10],
         },
       });
 
@@ -240,7 +239,7 @@ describe("<Show />", () => {
   describe("future round", () => {
     beforeEach(() => {
       (useParams as jest.Mock).mockReturnValue({
-        roundId: addressFrom(3),
+        roundId: roundIdFrom(3),
         chainId: 5,
       });
     });

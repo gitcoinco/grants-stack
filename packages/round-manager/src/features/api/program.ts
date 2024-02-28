@@ -1,9 +1,6 @@
 import { CHAINS } from "./utils";
-import { MetadataPointer, Program, Web3Instance } from "./types";
-import { programFactoryContract } from "./contracts";
-import { ethers } from "ethers";
+import { Program, Web3Instance } from "./types";
 import { datadogLogs } from "@datadog/browser-logs";
-import { Signer } from "@ethersproject/abstract-signer";
 import { ChainId } from "common";
 import { DataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
@@ -76,7 +73,6 @@ export async function listPrograms(
 
 // TODO(shavinac) change params to expect chainId instead of signerOrProvider
 export async function getProgramById(
-  address: string,
   programId: string,
   signerOrProvider: Web3Instance["provider"],
   dataLayer: DataLayer
@@ -87,8 +83,7 @@ export async function getProgramById(
   };
 
   // fetch program from indexer
-  const { program: program } = await dataLayer.getProgramByIdAndUser({
-    userAddress: address,
+  const { program: program } = await dataLayer.getProgramById({
     programId,
     chainId,
   });
@@ -110,67 +105,4 @@ export async function getProgramById(
       logo: CHAINS[chainId]?.logo,
     },
   };
-}
-
-interface DeployProgramContractProps {
-  program: {
-    store: MetadataPointer;
-    operatorWallets: string[];
-  };
-  signerOrProvider: Signer;
-}
-
-export async function deployProgramContract({
-  program: { store: metadata, operatorWallets },
-  signerOrProvider,
-}: DeployProgramContractProps) {
-  try {
-    const chainId = await signerOrProvider.getChainId();
-    const _programFactoryContract = programFactoryContract(chainId);
-    const programFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _programFactoryContract.address!,
-      _programFactoryContract.abi,
-      signerOrProvider
-    );
-
-    operatorWallets = operatorWallets.filter((e) => e !== "");
-
-    const encodedParameters = encodeInputParameters(metadata, operatorWallets);
-
-    // Deploy a new Program contract
-    const tx = await programFactory.create(encodedParameters);
-    const receipt = await tx.wait();
-    let programAddress;
-
-    if (receipt.events) {
-      const event = receipt.events.find(
-        (e: { event: string }) => e.event === "ProgramCreated"
-      );
-      if (event && event.args) {
-        programAddress = event.args.programContractAddress; // program contract address from the event
-      }
-    }
-
-    console.log("✅ Transaction hash: ", tx.hash);
-    console.log("✅ Program address: ", programAddress);
-    const blockNumber = receipt.blockNumber;
-    return {
-      transactionBlockNumber: blockNumber,
-    };
-  } catch (error) {
-    datadogLogs.logger.error(`error: deployProgramContract - ${error}`);
-    console.error("deployProgramContract", error);
-    throw new Error("Unable to create program");
-  }
-}
-
-function encodeInputParameters(
-  metadata: MetadataPointer,
-  operatorWallets: string[]
-) {
-  return ethers.utils.defaultAbiCoder.encode(
-    ["tuple(uint256 protocol, string pointer)", "address[]", "address[]"],
-    [metadata, operatorWallets.slice(0, 1), operatorWallets]
-  );
 }

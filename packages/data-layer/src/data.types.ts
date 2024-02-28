@@ -1,4 +1,5 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { Address } from "viem";
 import { RoundApplicationMetadata } from "./roundApplication.types";
 // TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
 // avoid further spaghetti dependencies. They should probably be relocated here.
@@ -11,7 +12,10 @@ export type ApplicationStatus =
   | "REJECTED"
   | "APPEAL"
   | "FRAUD"
-  | "RECEIVED";
+  | "RECEIVED"
+  | "IN_REVIEW";
+
+export type ProjectType = "CANONICAL" | "LINKED";
 
 export type GrantApplicationFormAnswer = {
   questionId: number;
@@ -180,6 +184,14 @@ export type v2Project = {
   roles: AddressAndRole[];
   nonce?: bigint;
   anchorAddress?: string;
+  /**
+   * The type of the project - `CANONICAL` or `LINKED`
+   */
+  projectType: ProjectType;
+  /**
+   * The linked chains to the canonical project
+   */
+  linkedChains?: number[];
 };
 
 /**
@@ -206,12 +218,12 @@ export type RoundWithApplications = Omit<RoundGetRound, "applications"> & {
  */
 export type ProjectApplication = {
   id: string;
+  projectId: string;
   chainId: number;
   roundId: string;
   status: ApplicationStatus;
   metadataCid: string;
-  metadata: any; // TODO: fix
-  inReview: boolean;
+  metadata: any;
   round: {
     applicationsStartTime: string;
     applicationsEndTime: string;
@@ -223,8 +235,7 @@ export type ProjectApplication = {
 };
 
 /**
- * The round type for v2
- *
+ * V2 Round
  */
 export type V2Round = {
   id: string;
@@ -240,8 +251,24 @@ export type V2Round = {
   applicationMetadataCid: string;
   strategyId: string;
   projectId: string;
-  strategyAddress: string;
+  strategyAddress: Address;
   strategyName: string;
+  isReadyForPayout: boolean;
+};
+
+/**
+ * V2 Round with project
+ */
+export type V2RoundWithProject = V2RoundWithRoles & {
+  project: {
+    id: string;
+    name: string;
+  };
+};
+
+export type ProjectApplicationWithProject = {
+  id: string;
+  name: string;
 };
 
 export type V2RoundWithRoles = V2Round & {
@@ -485,7 +512,7 @@ export type RoundGetRound = {
 };
 
 export interface RoundMetadataGetRound {
-  name: string;
+  name?: string;
   support?: Support;
   eligibility: Eligibility;
   feesAddress?: string;

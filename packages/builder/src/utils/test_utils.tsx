@@ -12,6 +12,7 @@ import { DataLayer, DataLayerProvider, ProjectApplication } from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
 import { zeroAddress } from "viem";
+import { getConfig } from "common/src/config";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
@@ -32,7 +33,11 @@ export const buildAlert = (attrs = {}): Alert => ({
 
 export const now = new Date().getTime() / 1000;
 
+export const roundIdFrom = (n: number): string =>
+  getConfig().allo.version === "allo-v1" ? addressFrom(n) : n.toString();
+
 export const buildRound = (round: any): Round => ({
+  id: roundIdFrom(1),
   address: addressFrom(1),
   applicationsStartTime: now,
   applicationsEndTime: now + 3600,
@@ -44,6 +49,7 @@ export const buildRound = (round: any): Round => ({
   applicationMetaPtr: {},
   applicationMetadata: {},
   programName: "test-program",
+  payoutStrategy: "0x",
   ...round,
 });
 
@@ -93,6 +99,11 @@ export const buildProjectMetadata = (metadata: any): Metadata => ({
     twitter: buildVerifiableCredential("Twitter", "my-twitter"),
   },
   createdAt: 123,
+  updatedAt: 123,
+  chainId: 5,
+  linkedChains: [1],
+  nonce: BigInt(1),
+  registryAddress: "0x1",
   ...metadata,
 });
 
@@ -114,7 +125,6 @@ export const buildProjectApplication = (
   chainId: 5,
   roundId: addressFrom(1),
   status: "APPROVED",
-  inReview: false,
   id: "1",
   metadataCid: "0x1",
   metadata: {},

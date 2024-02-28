@@ -2,13 +2,11 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { Allo, AnyJson } from "common";
 import { getConfig } from "common/src/config";
-import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
-import { getProjectURIComponents } from "../utils/utils";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
@@ -66,18 +64,14 @@ export const grantCreated = ({
 
 // todo: wire in metadata update
 export const publishGrant =
-  (allo: Allo, fullId?: string) =>
+  (allo: Allo, id?: string) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
 
     const { metadata: formMetaData, credentials: formCredentials } =
       state.projectForm;
 
-    const { id: grantId } = fullId
-      ? getProjectURIComponents(fullId)
-      : { id: undefined };
-
-    const oldGrantMetadata = state.grantsMetadata[fullId || ""];
+    const oldGrantMetadata = state.grantsMetadata[id || ""];
 
     if (formMetaData === undefined) {
       return;
@@ -115,14 +109,15 @@ export const publishGrant =
 
     dispatch(grantStatus(Status.UploadingJSON));
 
-    const result = grantId
+    const result = id
       ? allo.updateProjectMetadata({
-          projectId: ethers.utils.hexlify(Number(grantId)) as `0x${string}`,
+          projectId: id as `0x${string}`,
           metadata: application as unknown as AnyJson,
         })
       : allo.createProject({
           name: application.title,
           metadata: application as unknown as AnyJson,
+          memberAddresses: [],
         });
 
     await result

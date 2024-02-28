@@ -1,15 +1,17 @@
-import { Abi, Hex, encodeEventTopics, zeroAddress } from "viem";
+import {
+  DirectGrantsStrategyAbi,
+  DonationVotingMerkleDistributionDirectTransferStrategyAbi,
+  RegistryAbi,
+} from "@allo-team/allo-v2-sdk";
+import { Abi, Hex, encodeEventTopics } from "viem";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { RoundCategory } from "../../types";
 import { Result, success } from "../common";
 import {
   TransactionReceipt,
   createMockTransactionSender,
 } from "../transaction-sender";
 import { AlloV2 } from "./allo-v2";
-import {
-  DonationVotingMerkleDistributionDirectTransferStrategyAbi,
-  RegistryAbi,
-} from "@allo-team/allo-v2-sdk";
 
 const zeroTxHash = ("0x" + "0".repeat(64)) as Hex;
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
@@ -55,6 +57,7 @@ describe("AlloV2", () => {
       .createProject({
         name: "My Project",
         metadata: { foo: "bar" },
+        memberAddresses: [],
       })
       .on("ipfs", (r) => (ipfsResult = r))
       .on("transaction", (r) => {
@@ -96,16 +99,17 @@ describe("AlloV2", () => {
     expect(txStatusResult!).toBeTruthy();
   });
 
-  test("applyToRound", async () => {
+  test("applyToRound DonationVotingMerkleDistributionDirectTransferStrategy", async () => {
     const result = await allo
       .applyToRound({
-        projectId: "0x123",
-        roundId: "0x456",
+        projectId: "0x8C180840fcBb90CE8464B4eCd12ab0f840c6647C",
+        roundId: 88,
         metadata: {
           application: {
-            recipient: "0x789",
+            recipient: "0x8C180840fcBb90CE8464B4eCd12ab0f840c6647C",
           },
         },
+        strategy: RoundCategory.QuadraticFunding,
       })
       .on("ipfs", (r) => (ipfsResult = r))
       .on("transaction", (r) => {
@@ -133,10 +137,58 @@ describe("AlloV2", () => {
       .on("transactionStatus", (r) => (txStatusResult = r))
       .execute();
 
-    // expect(result).toEqual(
-    //   success({ recipientId: roundApplicationEvent.indexed.recipientId as Hex })
-    // );
-    expect(transactionSender.sentTransactions).toHaveLength(1);
+    expect(result.type).not.toEqual("error");
+
+    expect(transactionSender.sentTransactions).toHaveLength(2);
+    expect(transactionSender.sentTransactions[0].to.toLowerCase()).toEqual(
+      "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3".toLocaleLowerCase()
+    );
+    expect(txResult!).toEqual(success(zeroTxHash));
+    expect(txStatusResult).toBeTruthy();
+  });
+
+  test("applyToRound DirectGrantsStrategy", async () => {
+    const result = await allo
+      .applyToRound({
+        projectId: "0x8C180840fcBb90CE8464B4eCd12ab0f840c6647C",
+        roundId: 99,
+        metadata: {
+          application: {
+            recipient: "0x8C180840fcBb90CE8464B4eCd12ab0f840c6647C",
+            answers: [],
+          },
+        },
+        strategy: RoundCategory.Direct,
+      })
+      .on("ipfs", (r) => (ipfsResult = r))
+      .on("transaction", (r) => {
+        txResult = r;
+
+        /** mock transaction receipt */
+        transactionSender.wait = vi.fn().mockResolvedValueOnce({
+          transactionHash: zeroTxHash,
+          blockNumber: 1n,
+          blockHash: "0x0",
+          logs: [
+            {
+              topics: encodeEventTopics({
+                abi: DirectGrantsStrategyAbi,
+                eventName: "Registered",
+                args: {
+                  recipientId: roundApplicationEvent.indexed.recipientId as Hex,
+                },
+              }),
+              data: roundApplicationEvent.data,
+            },
+          ],
+        });
+      })
+      .on("transactionStatus", (r) => (txStatusResult = r))
+      .execute();
+
+    expect(result.type).not.toEqual("error");
+
+    expect(transactionSender.sentTransactions).toHaveLength(3);
     expect(transactionSender.sentTransactions[0].to.toLowerCase()).toEqual(
       "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3".toLocaleLowerCase()
     );

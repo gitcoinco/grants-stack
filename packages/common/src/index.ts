@@ -323,9 +323,19 @@ export type RoundPayoutTypeNew =
   | "allov2.SQFSuperFluidStrategy"
   | "allov2.MicroGrantsGovStrategy";
 
+export const ROUND_PAYOUT_STRATEGY_TITLES: Record<string, string> = {
+  MERKLE: "Quadratic Funding",
+  DIRECT: "Direct Grants",
+  "allov1.QF": "Quadratic Funding",
+  "allov1.Direct": "Direct Grants",
+  "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
+    "Quadratic Funding",
+};
+
 export type RoundVisibilityType = "public" | "private";
 
-export type { Allo, AlloError, AlloOperation } from "./allo/allo";
+export type { Allo } from "./allo/allo";
+export { AlloError, AlloOperation } from "./allo/allo";
 export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
 export {

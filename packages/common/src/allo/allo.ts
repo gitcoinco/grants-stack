@@ -30,12 +30,30 @@ export type CreateRoundArguments = {
  * of the operation and resolves to a final result.
  */
 export interface Allo {
-  createProject: (args: { name: string; metadata: AnyJson }) => AlloOperation<
+  createProject: (args: {
+    name: string;
+    metadata: AnyJson;
+    nonce?: bigint;
+    memberAddresses: Address[];
+  }) => AlloOperation<
     Result<{ projectId: Hex }>,
     {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+    }
+  >;
+
+  createProgram: (args: {
+    name: string;
+    memberAddresses: Address[];
+  }) => AlloOperation<
+    Result<{ programId: Hex }>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 
@@ -65,14 +83,15 @@ export interface Allo {
    * Applies to a round
    *
    * @param args { projectId: Hex; roundId: Hex|Number; metadata: AnyJson }
-   * @dev roundId is round address in allo v1  
+   * @dev roundId is round address in allo v1
    * @dev roundId is poolId in allo v2
    * @returns AlloOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
    */
   applyToRound: (args: {
     projectId: Hex;
-    roundId: Hex|number;
+    roundId: Hex | number;
     metadata: AnyJson;
+    strategy?: RoundCategory;
   }) => AlloOperation<
     Result<Hex>,
     {

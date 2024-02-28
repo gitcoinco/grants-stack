@@ -1,42 +1,21 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
-import { ChainId, ROUND_PAYOUT_MERKLE_OLD, RoundPayoutType } from "common";
+import { ChainId } from "common";
 import { getConfig } from "common/src/config";
-import {
-  ApplicationStatus,
-  DataLayer,
-  ProjectApplication,
-  ProjectEventsMap,
-} from "data-layer";
+import { ApplicationStatus, DataLayer, ProjectApplication } from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
-import { addressesByChainID } from "../contracts/deployments";
+import { RoundCategory } from "common/dist/types";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectStats } from "../reducers/projects";
-import { getEnabledChainsAndProviders } from "../utils/chains";
-import { graphqlFetch } from "../utils/graphql";
-import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getV1HashedProjectId } from "../utils/utils";
-import { fetchGrantData } from "./grantsMetadata";
+import { transformAndDispatchProject } from "./grantsMetadata";
 import { addAlert } from "./ui";
 
-const { chains } = getEnabledChainsAndProviders();
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 
-export type SubgraphApplication = {
-  round: { id: string };
-  status: ApplicationStatus;
-  inReview: boolean;
-  chainId: ChainId;
-  metaPtr?: {
-    protocol: string;
-    pointer: string;
-  };
-};
-
 interface ProjectsLoadingAction {
-  payload: number;
+  payload: number[];
   type: typeof PROJECTS_LOADING;
 }
 
@@ -45,8 +24,7 @@ export const PROJECTS_LOADED = "PROJECTS_LOADED";
 interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
   payload: {
-    chainID: ChainId;
-    events: ProjectEventsMap;
+    chainIDs: ChainId[];
   };
 }
 
@@ -148,19 +126,17 @@ export type ProjectsActions =
   | ProjectAnchorsLoadedAction;
 
 /** Action Creators */
-export const projectsLoading = (chainID: ChainId): ProjectsLoadingAction => ({
+export const projectsLoading = (
+  chainIDs: ChainId[]
+): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
-  payload: chainID,
+  payload: chainIDs,
 });
 
-export const projectsLoaded = (
-  chainID: ChainId,
-  events: ProjectEventsMap
-): ProjectsLoadedAction => ({
+export const projectsLoaded = (chainIDs: ChainId[]): ProjectsLoadedAction => ({
   type: PROJECTS_LOADED,
   payload: {
-    chainID,
-    events,
+    chainIDs,
   },
 });
 
@@ -199,51 +175,41 @@ export const projectAnchorsLoaded = (projectID: string, anchor: string) => ({
  * @returns All projects for a given chain
  */
 export const loadProjects =
-  (chainID: ChainId, dataLayer: DataLayer, withMetaData?: boolean) =>
+  (chainIDs: ChainId[], dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     try {
       const state = getState();
       const { account } = state.web3;
 
-      const projectEventsMap = await dataLayer.getProjectsByAddress({
+      const projects = await dataLayer.getProjectsByAddress({
         address: account!.toLowerCase(),
         alloVersion: getConfig().allo.version,
-        chainId: chainID.valueOf(),
+        chainIds: chainIDs.map((id) => id.valueOf()),
       });
 
-      if (!projectEventsMap) {
-        dispatch(projectsLoaded(chainID, {}));
-        return;
-      }
-
-      if (withMetaData) {
-        Object.keys(projectEventsMap).forEach(async (id) => {
-          dispatch<any>(fetchGrantData(id, dataLayer));
+      if (projects && withMetaData) {
+        projects.forEach((project) => {
+          dispatch<any>(transformAndDispatchProject(project.id, project));
         });
       }
 
-      dispatch(projectsLoaded(chainID, projectEventsMap));
-    } catch (error) {
-      const chainName = chains.find((c) => c.id === chainID)?.name;
-      if (chainName === "Hardhat") {
-        dispatch(projectsLoaded(chainID, {}));
-        return;
-      }
-      datadogRum.addError(error, { chainID });
-      console.error(chainName, chainID, error);
+      dispatch(projectsLoaded(chainIDs));
+    } catch (error: any) {
+      datadogRum.addError(error, { chainIDs });
 
-      dispatch(projectsLoaded(chainID, {}));
+      dispatch(projectsLoaded(chainIDs));
 
-      /* TODO: Once ENS is deployed on PGN Mainnet and testnet, undo this */
-      // @ts-expect-error
-      if (chainID === 424 && error?.reason === "ENS name not configured") {
+      if (
+        chainIDs.includes(424) &&
+        error?.reason === "ENS name not configured"
+      ) {
         return;
       }
 
       dispatch(
         addAlert(
           "error",
-          `Failed to load projects from ${chainName}`,
+          `Failed to load projects from ${chainIDs}`,
           "Please try refreshing the page."
         )
       );
@@ -270,80 +236,12 @@ export const loadAllChainsProjects =
   (dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch) => {
     const { web3Provider } = global;
-    web3Provider?.chains?.forEach((chainID: { id: number }) => {
-      dispatch(projectsLoading(chainID.id));
-      dispatch<any>(loadProjects(chainID.id, dataLayer, withMetaData));
-    });
-  };
-
-/**
- * Load project applications for a given round
- *
- * @remarks
- *
- * This returns whether the project has applied to a given round.
- *
- * @param roundID
- * @param roundChainId
- *
- * @returns boolean
- */
-export const fetchProjectApplicationInRound = async (
-  applicationId: string,
-  roundID: string,
-  roundChainId: ChainId
-): Promise<any> => {
-  const splitApplicationId = applicationId.split(":");
-  const projectChainId = Number(splitApplicationId[0]);
-  const projectRegistryAddress = splitApplicationId[1];
-  const projectNumber = splitApplicationId[2];
-
-  const projectApplicationID = generateUniqueRoundApplicationID(
-    projectChainId,
-    projectNumber,
-    projectRegistryAddress
-  ).toLowerCase();
-
-  const Id = roundID.toLowerCase();
-
-  try {
-    const response: any = await graphqlFetch(
-      `query projectApplicationInRound($projectApplicationID: String, $Id: String) {
-          roundApplications(
-            where: {
-              project: $projectApplicationID,
-              round: $Id
-            }
-          ) {
-            status
-          }
-        }
-      `,
-      roundChainId,
-      {
-        projectApplicationID,
-        Id,
-      }
-    );
-
-    if (response.errors) {
-      throw response.errors;
+    const chainIds = web3Provider?.chains?.map((chain) => chain.id as ChainId);
+    if (chainIds) {
+      dispatch(projectsLoading(chainIds));
+      dispatch<any>(loadProjects(chainIds, dataLayer, withMetaData));
     }
-
-    return {
-      hasProjectAppliedToRound: response.data.roundApplications
-        ? response.data.roundApplications.length > 0
-        : false,
-    };
-  } catch (error: any) {
-    datadogRum.addError(error, { projectApplicationID, roundID });
-    console.error(error);
-
-    return {
-      hasProjectAppliedToRound: false,
-    };
-  }
-};
+  };
 
 /**
  * Load project applications for a given project on a given chain
@@ -359,10 +257,7 @@ export const fetchProjectApplicationInRound = async (
  * @returns All applications for a given project
  */
 export const fetchProjectApplications =
-  (projectId: string, chainId: ChainId, dataLayer: DataLayer) =>
-  async (dispatch: Dispatch) => {
-    const config = getConfig();
-
+  (projectId: string, dataLayer: DataLayer) => async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID: projectId,
@@ -374,27 +269,12 @@ export const fetchProjectApplications =
         return;
       }
 
-      const id =
-        config.allo.version === "allo-v1"
-          ? getV1HashedProjectId(
-              `${chainId}:${
-                addressesByChainID(chainId).projectRegistry
-              }:${projectId}`
-            )
-          : projectId;
+      const id = projectId;
 
       const chainIds = web3Provider.chains.map((chain) => chain.id);
       const applications = await dataLayer.getApplicationsByProjectId({
         projectId: id,
         chainIds,
-      });
-
-      applications?.forEach(async (application, index) => {
-        const programName = await dataLayer.getProgramName({
-          projectId: application.round.roundMetadata.programContractAddress,
-        });
-
-        applications[index].round.name = programName || "";
       });
 
       dispatch({
@@ -431,22 +311,15 @@ export const loadProjectStats =
     rounds: Array<{
       roundId: string;
       chainId: ChainId;
-      roundType: RoundPayoutType;
+      roundType: RoundCategory;
     }>
   ) =>
   async (dispatch: Dispatch) => {
-    const uniqueProjectID = generateUniqueRoundApplicationID(
-      Number(projectChainId),
-      projectID,
-      projectRegistryAddress
-    );
-
     dispatch({
       type: PROJECT_STATS_LOADING,
       projectID,
     });
     const boundFetch = fetch.bind(window);
-
     const stats: ProjectStats[] = [];
 
     const updateStats = async (projectRoundData: any, roundId: string) => {
@@ -485,9 +358,9 @@ export const loadProjectStats =
 
       const project = applications.find(
         (app) =>
-          app.projectId === uniqueProjectID &&
+          app.projectId === projectID &&
           app.status === "APPROVED" &&
-          round.roundType === ROUND_PAYOUT_MERKLE_OLD
+          round.roundType === RoundCategory.QuadraticFunding
       );
 
       if (project) {

@@ -1,10 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import { ChainId } from "common";
+import { getConfig } from "common/src/config";
 import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
+import { RoundCategory } from "common/dist/types";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -118,6 +120,7 @@ function ApplyButton(props: ApplyButtonProps) {
 function ShowRound() {
   const [roundData, setRoundData] = useState<any>();
   const dataLayer = useDataLayer();
+  const isV2 = getConfig().allo.version === "allo-v2";
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -135,6 +138,10 @@ function ShowRound() {
     const round = roundState ? roundState.round : undefined;
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
+
+    const versionError =
+      (isV2 && roundId?.startsWith("0x")) ||
+      (!isV2 && !roundId?.startsWith("0x"));
 
     const now = new Date().getTime() / 1000;
 
@@ -174,6 +181,7 @@ function ShowRound() {
       applicationsHaveEnded,
       votingHasStarted,
       votingHasEnded,
+      versionError,
     };
   }, shallowEqual);
 
@@ -303,7 +311,11 @@ function ShowRound() {
     );
   }
 
-  if (props.roundState === undefined || props.round === undefined) {
+  if (
+    props.roundState === undefined ||
+    props.round === undefined ||
+    props.versionError
+  ) {
     return (
       <div>
         <ErrorModal
@@ -329,7 +341,7 @@ function ShowRound() {
       </div>
     );
   }
-  const isDirectRound = props.round?.payoutStrategy === "DIRECT";
+  const isDirectRound = props.round?.payoutStrategy === RoundCategory.Direct;
 
   return (
     <div

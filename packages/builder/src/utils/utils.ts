@@ -1,14 +1,8 @@
-import { datadogLogs } from "@datadog/browser-logs";
-import { datadogRum } from "@datadog/browser-rum";
 import { ChainId } from "common";
 import { BigNumberish, ethers } from "ethers";
 import gnosisABI from "../contracts/abis/gnosis.json";
 import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
-import generateUniqueRoundApplicationID from "./roundApplication";
-
-export const ROUND_PAYOUT_MERKLE = "MERKLE";
-export const ROUND_PAYOUT_DIRECT = "DIRECT";
 
 /**
  * Parse a round to apply string
@@ -69,27 +63,6 @@ export const metadataToProject = (
 };
 
 /**
- * Get the components of a project URI
- *
- * @param id
- *
- * @returns { ChainId, registryAddress, id }
- */
-export const getProjectURIComponents = (id: string) => {
-  const split = id.split(":");
-  if (split.length < 3) {
-    datadogRum.addError("Invalid project id", { id });
-    datadogLogs.logger.warn("Invalid project id", { id });
-    throw new Error("Invalid project ID");
-  }
-  return {
-    chainId: split[0],
-    registryAddress: split[1],
-    id: split[2],
-  };
-};
-
-/**
  * Get the provider for a given chain ID
  *
  * @param chainId
@@ -112,25 +85,6 @@ export const getProviderByChainId = (chainId: ChainId) => {
 
   // TODO: Create a more robust RPC here to avoid fails
   return ethers.getDefaultProvider(chainConfig.rpcUrls.default.http[0]);
-};
-
-/**
- * Get the V1 hashed project ID
- *
- * @param projectId
- *
- * @returns The hashed project ID for V1 projects
- */
-export const getV1HashedProjectId = (projectId: string) => {
-  const { chainId, registryAddress, id } = getProjectURIComponents(projectId);
-
-  const generatedProjectId = generateUniqueRoundApplicationID(
-    Number(chainId),
-    id,
-    registryAddress
-  );
-
-  return generatedProjectId;
 };
 
 /**

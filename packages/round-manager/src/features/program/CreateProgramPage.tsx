@@ -14,18 +14,41 @@ import Footer from "common/src/components/Footer";
 import ProgressModal from "../common/ProgressModal";
 import { datadogLogs } from "@datadog/browser-logs";
 import ErrorModal from "../common/ErrorModal";
-import { errorModalDelayMs } from "../../constants";
 import { ProgressStatus, ProgressStep } from "../api/types";
-import { useCreateProgram } from "../../context/program/CreateProgramContext";
+import { CreateProgramState, useCreateProgram } from "./useCreateProgram";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
 import { ChainId } from "common/src/chain-ids";
-import { getConfig } from "common/src/config";
+import { AlloError } from "common";
 
 type FormData = {
   name: string;
   operators: { wallet: string }[];
 };
+
+function viewCreateProgramStateError(
+  state: CreateProgramState
+): string | undefined {
+  let error = null;
+
+  if (state.type === "error") {
+    error = state.error;
+  }
+
+  if (state.type === "creating" && state.error !== null) {
+    error = state.error;
+  }
+
+  if (error === null) {
+    return undefined;
+  }
+
+  if (error instanceof AlloError) {
+    return error.message;
+  }
+
+  return "An unknown error occurred";
+}
 
 export default function CreateProgram() {
   datadogLogs.logger.info(`====> Route: /program/create`);
@@ -36,17 +59,9 @@ export default function CreateProgram() {
 
   const { address, chain } = useWallet();
 
-  const {
-    createProgram,
-    IPFSCurrentStatus,
-    contractDeploymentStatus,
-    indexingStatus,
-  } = useCreateProgram();
+  const { createProgram, state: createProgramState } = useCreateProgram();
 
-  const createProgramInProgress =
-    IPFSCurrentStatus === ProgressStatus.IN_PROGRESS ||
-    contractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
-    indexingStatus === ProgressStatus.IN_PROGRESS;
+  const isCreatingProgram = createProgramState.type === "creating";
 
   const navigate = useNavigate();
   const { register, control, formState, handleSubmit } = useForm<FormData>({
@@ -63,64 +78,78 @@ export default function CreateProgram() {
   const { errors } = formState;
 
   useEffect(() => {
-    if (
-      IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
-      contractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
-      indexingStatus === ProgressStatus.IS_SUCCESS
-    ) {
+    if (createProgramState.type === "created") {
       redirectToPrograms(navigate, 2000);
     }
-  }, [navigate, IPFSCurrentStatus, contractDeploymentStatus, indexingStatus]);
 
-  useEffect(() => {
     if (
-      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
-      contractDeploymentStatus === ProgressStatus.IS_ERROR
+      createProgramState.type === "error" ||
+      (createProgramState.type === "creating" &&
+        createProgramState.error !== null)
     ) {
-      setTimeout(() => {
-        setOpenProgressModal(false);
-        setOpenErrorModal(true);
-      }, errorModalDelayMs);
+      setOpenErrorModal(true);
     }
-
-    if (indexingStatus === ProgressStatus.IS_ERROR) {
-      redirectToPrograms(navigate, 5000);
-    }
-  }, [navigate, IPFSCurrentStatus, contractDeploymentStatus, indexingStatus]);
+  }, [navigate, createProgramState]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    try {
-      setOpenProgressModal(true);
-      await createProgram(
-        data.name,
-        data.operators.map((op) => op.wallet)
-      );
-    } catch (error) {
-      console.error("CreateProgram", error);
+    setOpenProgressModal(true);
+
+    await createProgram(
+      data.name,
+      // FIXME: use getAddress when Uint8Array is fixed in jest
+      data.operators.map((op) => op.wallet as `0x${string}`)
+    );
+  };
+
+  const getProgressStepFromState = (
+    createProgramState: CreateProgramState,
+    stepIndex: number
+  ): ProgressStatus => {
+    if (createProgramState.type === "creating") {
+      if (createProgramState.step === stepIndex) {
+        if (createProgramState.error !== null) {
+          return ProgressStatus.IS_ERROR;
+        } else {
+          return ProgressStatus.IN_PROGRESS;
+        }
+      } else if (createProgramState.step > stepIndex) {
+        return ProgressStatus.IS_SUCCESS;
+      }
     }
+
+    if (createProgramState.type === "created") {
+      return ProgressStatus.IS_SUCCESS;
+    }
+
+    return ProgressStatus.NOT_STARTED;
   };
 
   const progressSteps: ProgressStep[] = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
-      status: IPFSCurrentStatus,
+      status: getProgressStepFromState(createProgramState, 0),
     },
     {
-      name: "Deploying",
-      description: `Connecting to the ${chain.name} blockchain.`,
-      status: contractDeploymentStatus,
+      name: "Executing transaction",
+      description: `Executing transaction.`,
+      status: getProgressStepFromState(createProgramState, 1),
+    },
+    {
+      name: "Waiting for transaction",
+      description: `Waiting for transaction to be included in the blockchain.`,
+      status: getProgressStepFromState(createProgramState, 2),
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
-      status: indexingStatus,
+      description: "Indexing the new data.",
+      status: getProgressStepFromState(createProgramState, 3),
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
       status:
-        indexingStatus === ProgressStatus.IS_SUCCESS
+        createProgramState.type === "created"
           ? ProgressStatus.IN_PROGRESS
           : ProgressStatus.NOT_STARTED,
     },
@@ -154,24 +183,6 @@ export default function CreateProgram() {
           </p>
         </ReactTooltip>
       </>
-    );
-  }
-
-  const config = getConfig();
-
-  if (config.allo.version === "allo-v2") {
-    return (
-      <div className="bg-[#F3F3F5]">
-        <Navbar />
-        <div className="container mx-auto h-screen px-4 py-16">
-          Creating Allo V2 programs in Manager is not yet supported, as a
-          temporary solution please head over to &nbsp;
-          <a className="underline" href="https://builder.gitcoin.co">
-            Builder
-          </a>{" "}
-          to create a project on Allo V2 and come back here.
-        </div>
-      </div>
     );
   }
 
@@ -223,7 +234,7 @@ export default function CreateProgram() {
                       {...register("name", { required: true })}
                       $hasError={Boolean(errors.name)}
                       type="text"
-                      disabled={createProgramInProgress}
+                      disabled={isCreatingProgram}
                       placeholder="Enter the name of the Grant Program."
                       className="placeholder:italic"
                       data-testid="program-name"
@@ -272,7 +283,7 @@ export default function CreateProgram() {
                         <Input
                           {...register(`operators.${index}.wallet`)}
                           type="text"
-                          disabled={createProgramInProgress}
+                          disabled={isCreatingProgram}
                           className="basis:3/4 md:basis-2/3 placeholder:italic"
                           placeholder="Enter a valid wallet address (32 characters)."
                         />
@@ -310,12 +321,10 @@ export default function CreateProgram() {
                 <Button
                   className="float-right"
                   type="submit"
-                  disabled={IPFSCurrentStatus === ProgressStatus.IN_PROGRESS}
+                  disabled={isCreatingProgram}
                   data-testid="save"
                 >
-                  {IPFSCurrentStatus === ProgressStatus.IN_PROGRESS
-                    ? "Saving..."
-                    : "Save"}
+                  {isCreatingProgram ? "Saving..." : "Save"}
                 </Button>
               </div>
             </form>
@@ -328,6 +337,7 @@ export default function CreateProgram() {
 
           <ErrorModal
             isOpen={openErrorModal}
+            subheading={viewCreateProgramStateError(createProgramState)}
             setIsOpen={setOpenErrorModal}
             tryAgainFn={handleSubmit(onSubmit)}
           />

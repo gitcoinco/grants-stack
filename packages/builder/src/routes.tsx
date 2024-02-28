@@ -1,5 +1,3 @@
-import { getProjectURIComponents } from "./utils/utils";
-
 export const slugs = {
   root: `/`,
   grants: `/projects`,
@@ -47,33 +45,3 @@ export const roundApplicationViewPath = (
   roundId: string,
   ipfsHash: string
 ) => `/chains/${chainId}/rounds/${roundId}/view/${ipfsHash}`;
-
-export const projectPathByID = (projectID: string) => {
-  let path: string | undefined;
-
-  try {
-    const { chainId, registryAddress, id } = getProjectURIComponents(projectID);
-    path = projectPath(chainId, registryAddress, id);
-  } catch (e) {
-    // in case projectID has a bad format, getProjectURIComponents
-    // will throw an exception and log the errors.
-    console.error(e);
-  }
-
-  return path;
-};
-
-export const editProjectPathByID = (projectID: string) => {
-  let path: string | undefined;
-
-  try {
-    const { chainId, registryAddress, id } = getProjectURIComponents(projectID);
-    path = editPath(chainId, registryAddress, id);
-  } catch (e) {
-    // in case projectID has a bad format, getProjectURIComponents
-    // will throw an exception and log the errors.
-    console.error(e);
-  }
-
-  return path;
-};

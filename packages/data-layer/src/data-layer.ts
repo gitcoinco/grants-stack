@@ -3,6 +3,7 @@ import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import _fetch from "cross-fetch";
 import { request } from "graphql-request";
 import shuffle from "knuth-shuffle-seeded";
+import { Address } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
 import * as legacy from "./backends/legacy";
@@ -16,37 +17,35 @@ import {
   Program,
   Project,
   ProjectApplication,
-  ProjectEventsMap,
   Round,
   RoundGetRound,
   RoundsQueryVariables,
   RoundWithApplications,
   SearchBasedProjectCategory,
-  v2Project,
-  V2Round,
+  V2RoundWithProject,
   V2RoundWithRoles,
+  v2Project,
 } from "./data.types";
 import {
   ApplicationSummary,
-  Configuration as SearchApiConfiguration,
   DefaultApi as SearchApi,
+  Configuration as SearchApiConfiguration,
   SearchResult,
 } from "./openapi-search-client/index";
 import {
   getApplication,
   getApplicationsByProjectId,
-  getProgramByIdAndUser,
-  getProgramByUserAndTag,
-  getProgramName,
+  getApplicationsByRoundIdAndProjectIds,
+  getProgramById,
+  getProgramsByUserAndTag,
   getProjectById,
-  getProjects,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundByIdAndChainIdWithApprovedApplications,
-  getRoundsByProgramIdAndUserAddress,
+  getRoundsByProgramIdAndChainId,
   getRoundsQuery,
 } from "./queries";
-import { Address } from "viem";
+import { mergeCanonicalAndLinkedProjects } from "./utils";
 
 /**
  * DataLayer is a class that provides a unified interface to the various data sources.
@@ -154,54 +153,31 @@ export class DataLayer {
     alloVersion: AlloVersion;
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
+      userAddress: address.toLowerCase(),
       alloVersion,
-      address,
       chainId,
     };
 
-    let programs: Program[] = [];
+    const response: { projects: Program[] } = await request(
+      this.gsIndexerEndpoint,
+      getProgramsByUserAndTag,
+      { ...requestVariables, tags: ["program", alloVersion] },
+    );
 
-    if (alloVersion === "allo-v1") {
-      const response: { projects: Program[] } = await request(
-        this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
-        { ...requestVariables, filterByTag: "program" },
-      );
-
-      programs = response.projects;
-    } else if (alloVersion === "allo-v2") {
-      const response: { projects: v2Project[] } = await request(
-        this.gsIndexerEndpoint,
-        getProgramByUserAndTag,
-        { ...requestVariables, filterByTag: "allo-v2" },
-      );
-
-      programs = response.projects.map((project) => {
-        return {
-          ...project,
-          metadata: {
-            name: project.metadata?.title,
-          },
-        };
-      });
-    }
-
-    return { programs };
+    return { programs: response.projects };
   }
 
-  async getProgramByIdAndUser({
-    userAddress,
+  async getProgramById({
     programId,
     chainId,
   }: {
-    userAddress: string;
     programId: string;
     chainId: number;
   }): Promise<{ program: Program | null }> {
     const response: { projects: (Program | v2Project)[] } = await request(
       this.gsIndexerEndpoint,
-      getProgramByIdAndUser,
-      { programId, chainId, userAddress },
+      getProgramById,
+      { programId, chainId },
     );
 
     if (response.projects.length === 0) {
@@ -248,17 +224,14 @@ export class DataLayer {
    */
   async getProjectById({
     projectId,
-    chainId,
     alloVersion,
   }: {
     projectId: string;
-    chainId: number;
     alloVersion: AlloVersion;
   }): Promise<{ project: v2Project } | null> {
     const requestVariables = {
       alloVersion,
       projectId,
-      chainId,
     };
 
     const response: { projects: v2Project[] } = await request(
@@ -269,50 +242,9 @@ export class DataLayer {
 
     if (response.projects.length === 0) return null;
 
-    const project = response.projects[0];
+    const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
     return { project };
-  }
-
-  /**
-   * getProjects() returns a list of projects.
-   *
-   * @param chainIds
-   * @param first
-   * @param alloVersion
-   *
-   * @returns v2Projects[] | null
-   */
-  async getProjects({
-    chainIds,
-    first,
-    alloVersion,
-  }: {
-    chainIds: number[];
-    first: number;
-    alloVersion: AlloVersion;
-  }): Promise<{ projects: v2Project[] } | null> {
-    const projects: v2Project[] = [];
-
-    for (const chainId of chainIds) {
-      const requestVariables = {
-        alloVersion,
-        first,
-        chainId,
-      };
-
-      const profilesData: v2Project = await request(
-        this.gsIndexerEndpoint,
-        getProjects,
-        requestVariables,
-      );
-
-      projects.push(profilesData);
-    }
-
-    return {
-      projects,
-    };
   }
 
   // getProjectsByAddress
@@ -325,16 +257,16 @@ export class DataLayer {
   async getProjectsByAddress({
     address,
     alloVersion,
-    chainId,
+    chainIds,
   }: {
     address: string;
     alloVersion: AlloVersion;
-    chainId: number;
-  }): Promise<ProjectEventsMap | undefined> {
+    chainIds: number[];
+  }): Promise<v2Project[]> {
     const requestVariables = {
       address: address.toLowerCase(),
       version: alloVersion,
-      chainId,
+      chainIds,
     };
 
     const response: { projects: v2Project[] } = await request(
@@ -343,25 +275,11 @@ export class DataLayer {
       requestVariables,
     );
 
-    const projects: v2Project[] = response.projects;
+    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
+      response.projects,
+    );
 
-    if (projects.length === 0) return undefined;
-
-    const projectEventsMap: ProjectEventsMap = {};
-
-    for (const project of projects) {
-      projectEventsMap[
-        `${chainId}:${project.registryAddress}:${
-          alloVersion === "allo-v2" ? project.id : project.projectNumber
-        }`
-      ] = {
-        createdAtBlock: Number(project.createdAtBlock),
-        // todo: fix once updatedAtBlock is available
-        updatedAtBlock: Number(project.createdAtBlock),
-      };
-    }
-
-    return projectEventsMap;
+    return projects;
   }
 
   /**
@@ -418,23 +336,32 @@ export class DataLayer {
     return response.application ?? [];
   }
 
-  async getProgramName({
-    projectId,
+  /**
+   * Returns a single application as identified by its id, round name and chain name
+   * @param projectId
+   */
+  async getApplicationsByRoundIdAndProjectIds({
+    chainId,
+    roundId,
+    projectIds,
   }: {
-    projectId: string;
-  }): Promise<string | null> {
+    chainId: number;
+    roundId: string;
+    projectIds: string[];
+  }): Promise<ProjectApplication[]> {
     const requestVariables = {
-      projectId,
+      chainId,
+      roundId,
+      projectIds,
     };
 
-    const response: { projects: { metadata: { name: string } }[] } =
-      await request(this.gsIndexerEndpoint, getProgramName, requestVariables);
+    const response: { applications: ProjectApplication[] } = await request(
+      this.gsIndexerEndpoint,
+      getApplicationsByRoundIdAndProjectIds,
+      requestVariables,
+    );
 
-    if (response.projects.length === 0) return null;
-
-    const project = response.projects[0];
-
-    return project.metadata.name;
+    return response.applications ?? [];
   }
 
   async getRoundByIdAndChainId({
@@ -443,13 +370,13 @@ export class DataLayer {
   }: {
     roundId: string;
     chainId: number;
-  }): Promise<V2Round> {
+  }): Promise<V2RoundWithProject> {
     const requestVariables = {
       roundId,
       chainId,
     };
 
-    const response: { rounds: V2Round[] } = await request(
+    const response: { rounds: V2RoundWithProject[] } = await request(
       this.gsIndexerEndpoint,
       getRoundByIdAndChainId,
       requestVariables,
@@ -458,15 +385,14 @@ export class DataLayer {
     return response.rounds[0] ?? [];
   }
 
-  async getRoundsByProgramIdAndUserAddress(args: {
+  async getRoundsByProgramIdAndChainId(args: {
     chainId: number;
     programId: string;
-    userAddress: Address;
   }): Promise<V2RoundWithRoles[]> {
     const response: { rounds: V2RoundWithRoles[] } = await request(
       this.gsIndexerEndpoint,
-      getRoundsByProgramIdAndUserAddress,
-      { ...args, userAddress: args.userAddress.toLowerCase() },
+      getRoundsByProgramIdAndChainId,
+      args,
     );
 
     return response.rounds;

@@ -16,7 +16,6 @@ import "./index.css";
 // Routes
 import { ApplicationProvider } from "./context/application/ApplicationContext";
 import { BulkUpdateGrantApplicationProvider } from "./context/application/BulkUpdateGrantApplicationContext";
-import { CreateProgramProvider } from "./context/program/CreateProgramContext";
 import { ReadProgramProvider } from "./context/program/ReadProgramContext";
 import { FinalizeRoundProvider } from "./context/round/FinalizeRoundContext";
 import { FundContractProvider } from "./context/round/FundContractContext";
@@ -128,14 +127,7 @@ root.render(
                   />
 
                   {/* Program Routes */}
-                  <Route
-                    path="/program/create"
-                    element={
-                      <CreateProgramProvider>
-                        <CreateProgram />
-                      </CreateProgramProvider>
-                    }
-                  />
+                  <Route path="/program/create" element={<CreateProgram />} />
                   <Route
                     path="/program/:id"
                     element={

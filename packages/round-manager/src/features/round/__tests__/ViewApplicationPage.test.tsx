@@ -81,6 +81,10 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 jest.mock("wagmi");
 
+jest.mock("data-layer", () => ({
+  useDataLayer: () => ({}),
+}));
+
 const verifyCredentialMock = jest.spyOn(
   PassportVerifier.prototype,
   "verifyCredential"
