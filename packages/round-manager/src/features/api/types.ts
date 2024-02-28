@@ -280,6 +280,7 @@ export type MatchingStatsData = {
 
 export type ProjectStatus =
   | "PENDING"
+  | "RECEIVED"
   | "APPROVED"
   | "REJECTED"
   | "CANCELLED"
@@ -369,8 +370,7 @@ export interface GrantApplication {
 
   statusSnapshots?: {
     status: ProjectStatus;
-    statusDescription: string;
-    timestamp: Date;
+    updatedAt: Date;
   }[];
 
   /**
@@ -432,7 +432,7 @@ export type ProgressStep = {
 };
 
 export type Project = {
-  lastUpdated: number; // unix timestamp in milliseconds
+  lastUpdated: number; // unix timestamp in miliseconds
   createdAt: number; // unix timestamp in miliseconds
   id: string;
   owners: ProjectOwner[];
@@ -445,7 +445,6 @@ export type Project = {
   userGithub?: string;
   projectTwitter?: string;
   credentials: ProjectCredentials;
-  metaPtr: MetadataPointer;
 };
 
 export type TransactionBlock = {

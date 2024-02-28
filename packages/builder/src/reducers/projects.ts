@@ -1,4 +1,4 @@
-import { ProjectApplication, ProjectEventsMap } from "data-layer";
+import { ProjectApplicationWithRound, ProjectEventsMap } from "data-layer";
 
 import {
   PROJECTS_ERROR,
@@ -33,7 +33,7 @@ export interface ProjectsState {
   owners: ProjectOwners;
   anchor?: { [anchor: string]: string };
   applications?: {
-    [projectID: string]: ProjectApplication[];
+    [projectID: string]: ProjectApplicationWithRound[];
   };
   stats: {
     [projectID: string]: ProjectStats[];
@@ -134,7 +134,7 @@ export const projectsReducer = (
     case PROJECT_APPLICATION_UPDATED: {
       const projectApplications = state.applications?.[action.projectID] || [];
       const index = projectApplications.findIndex(
-        (app: ProjectApplication) => app.roundId === action.roundID
+        (app: ProjectApplicationWithRound) => app.roundId === action.roundID
       );
 
       if (index < 0) {

@@ -1,17 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Signer } from "@ethersproject/abstract-signer";
 import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
-import { graphql_fetch } from "common";
-import { BigNumber, ethers, utils } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
-  roundFactoryContract,
   roundImplementationContract,
 } from "./contracts";
 import { MatchingStatsData, Round } from "./types";
 import { fetchFromIPFS } from "./utils";
 import { maxDateForUint256 } from "../../constants";
-import { payoutTokens } from "./payoutTokens";
 import { DataLayer, V2RoundWithRoles } from "data-layer";
 
 export enum UpdateAction {
@@ -147,189 +144,6 @@ export async function listRounds(args: {
   });
 
   return { rounds };
-}
-
-/**
- * Deploys a round by invoking the create funciton on RoundFactory
- *
- * @param round
- * @param signerOrProvider
- * @returns
- */
-export async function deployRoundContract(
-  round: Round,
-  signerOrProvider: Signer,
-  isQF: boolean
-): Promise<{ transactionBlockNumber: number }> {
-  try {
-    const chainId = await signerOrProvider.getChainId();
-
-    if (isQF) {
-      /* Validate and prepare round data*/
-      if (!round.applicationsEndTime) {
-        round.applicationsEndTime = round.roundStartTime;
-      }
-    }
-    round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
-
-    const _roundFactoryContract = roundFactoryContract(chainId);
-    const roundFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _roundFactoryContract.address!,
-      _roundFactoryContract.abi,
-      signerOrProvider
-    );
-
-    const initAddresses = [round.votingStrategy, round.payoutStrategy.id];
-
-    let initRoundTimes: string[] = [];
-    const formatDate = (date: Date) => (date.getTime() / 1000).toString();
-    if (isQF) {
-      if (round.applicationsEndTime === undefined) {
-        round.applicationsEndTime = round.roundStartTime;
-      }
-      initRoundTimes = [
-        formatDate(round.applicationsStartTime),
-        formatDate(round.applicationsEndTime),
-        formatDate(round.roundStartTime),
-        formatDate(round.roundEndTime),
-      ];
-    } else {
-      // note: DirectRounds does not set application dates.
-      // in those cases, we set:
-      // application start time with the round start time
-      // application end time with MaxUint256.
-      // if the round has not end time, we set it with MaxUint256.
-
-      initRoundTimes = [
-        formatDate(round.applicationsStartTime ?? round.roundStartTime),
-        round.applicationsEndTime
-          ? formatDate(round.applicationsEndTime)
-          : round.roundEndTime
-          ? formatDate(round.roundEndTime)
-          : ethers.constants.MaxUint256.toString(),
-        formatDate(round.roundStartTime),
-        round.roundEndTime
-          ? formatDate(round.roundEndTime)
-          : ethers.constants.MaxUint256.toString(),
-      ];
-    }
-
-    const initMetaPtr = [round.store, round.applicationStore];
-
-    const initRoles = [
-      [await signerOrProvider.getAddress()],
-      round.operatorWallets,
-    ];
-
-    const token = ethers.constants.AddressZero;
-    let parsedTokenAmount = ethers.constants.Zero;
-
-    if (isQF) {
-      // Ensure tokenAmount is normalized to token decimals
-      const tokenAmount =
-        round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable ?? 0;
-      const pyToken = payoutTokens.filter(
-        (t) => t.address.toLowerCase() === round.token.toLowerCase()
-      )[0];
-      parsedTokenAmount = utils.parseUnits(
-        tokenAmount.toString(),
-        pyToken.decimal
-      );
-    }
-
-    // encode input parameters
-    const params = [
-      initAddresses,
-      initRoundTimes,
-      parsedTokenAmount,
-      isQF ? round.token : token,
-      round.feesPercentage || 0,
-      round.feesAddress || ethers.constants.AddressZero,
-      initMetaPtr,
-      initRoles,
-    ];
-
-    const encodedParameters = ethers.utils.defaultAbiCoder.encode(
-      [
-        "tuple(address votingStrategy, address payoutStrategy)",
-        "tuple(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime)",
-        "uint256",
-        "address",
-        "uint8",
-        "address",
-        "tuple(tuple(uint256 protocol, string pointer), tuple(uint256 protocol, string pointer))",
-        "tuple(address[] adminRoles, address[] roundOperators)",
-      ],
-      params
-    );
-
-    // Deploy a new Round contract
-    const tx = await roundFactory.create(encodedParameters, round.ownedBy);
-
-    const receipt = await tx.wait(); // wait for transaction receipt
-
-    let roundAddress;
-
-    if (receipt.events) {
-      const event = receipt.events.find(
-        (e: { event: string }) => e.event === "RoundCreated"
-      );
-      if (event && event.args) {
-        roundAddress = event.args.roundAddress;
-      }
-    }
-
-    console.log("✅ Round Contract Transaction hash: ", tx.hash);
-    console.log("✅ Round address: ", roundAddress);
-
-    const blockNumber = receipt.blockNumber;
-    return {
-      transactionBlockNumber: blockNumber,
-    };
-  } catch (error) {
-    console.error("deployRoundContract", error);
-    throw new Error("Unable to create round");
-  }
-}
-
-export async function getProjectOwners(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any,
-  projectRegistryId: string
-) {
-  try {
-    // get the subgraph for project owners by $projectRegistryId
-    const res = await graphql_fetch(
-      `
-        query GetProjectOwners($projectRegistryId: String) {
-          projects(where: {
-            id: $projectRegistryId
-          }) {
-            id
-            accounts {
-              account {
-                address
-              }
-            }
-          }
-        }
-      `,
-      chainId,
-      { projectRegistryId },
-      true
-    );
-
-    return (
-      res.data?.projects[0]?.accounts.map(
-        (account: { account: { address: string } }) =>
-          ethers.utils.getAddress(account.account.address)
-      ) || []
-    );
-  } catch (error) {
-    console.log("getProjectOwners", error);
-    throw Error("Unable to fetch project owners");
-  }
 }
 
 /**

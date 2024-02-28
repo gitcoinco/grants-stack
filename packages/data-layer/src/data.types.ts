@@ -9,6 +9,7 @@ export type RoundVisibilityType = "public" | "private";
 export type ApplicationStatus =
   | "PENDING"
   | "APPROVED"
+  | "IN_REVIEW"
   | "REJECTED"
   | "APPEAL"
   | "FRAUD"
@@ -42,9 +43,10 @@ export type ProjectMetadata = {
   projectTwitter?: string;
   userGithub?: string;
   projectGithub?: string;
-  credentials?: ProjectCredentials;
+  credentials: ProjectCredentials;
   owners: ProjectOwner[];
-  createdAt?: number;
+  createdAt: number;
+  lastUpdated: number;
 };
 
 export type AddressAndRole = {
@@ -204,6 +206,25 @@ export type Program = Omit<v2Project, "metadata"> & {
   };
 };
 
+export type ProjectApplicationMetadata = {
+  signature: string;
+  application: {
+    round: string;
+    answers: {
+      type: string;
+      hidden: boolean;
+      question: string;
+      questionId: number;
+      encryptedAnswer?: {
+        ciphertext: string;
+        encryptedSymmetricKey: string;
+      };
+    }[];
+    project: ProjectMetadata;
+    recipient: string;
+  };
+};
+
 /**
  * The project application type for v2
  *
@@ -215,7 +236,25 @@ export type ProjectApplication = {
   roundId: string;
   status: ApplicationStatus;
   metadataCid: string;
-  metadata: any;
+  metadata: ProjectApplicationMetadata;
+};
+
+export type ProjectApplicationForManager = ProjectApplication & {
+  statusSnapshots: {
+    status: ApplicationStatus;
+    updatedAtBlock: string;
+    updatedAt: string;
+  }[];
+  round: {
+    strategyName: string;
+    strategyAddress: string;
+  };
+  canonicalProject: {
+    roles: { address: Address }[];
+  };
+};
+
+export type ProjectApplicationWithRound = ProjectApplication & {
   round: {
     applicationsStartTime: string;
     applicationsEndTime: string;

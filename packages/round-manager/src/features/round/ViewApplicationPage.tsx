@@ -43,7 +43,6 @@ import { Lit } from "../api/lit";
 import { utils } from "ethers";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
-import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
@@ -60,6 +59,7 @@ import {
 import {
   CalendarIcon,
   formatDateWithOrdinal,
+  getRoundStrategyType,
   getUTCTime,
   VerifiedCredentialState,
 } from "common";
@@ -68,7 +68,7 @@ import { useDebugMode } from "../../hooks";
 import { getPayoutRoundDescription } from "../common/Utils";
 import moment from "moment";
 import ApplicationDirectPayout from "./ApplicationDirectPayout";
-import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
+import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -76,6 +76,16 @@ export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
 const verifier = new PassportVerifier();
+
+function getApplicationStatusTitle(status: ProjectStatus) {
+  switch (status) {
+    case "IN_REVIEW":
+      return "In review";
+    default:
+      // capital case
+      return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  }
+}
 
 export default function ViewApplicationPage() {
   const navigate = useNavigate();
@@ -100,8 +110,7 @@ export default function ViewApplicationPage() {
   const { roundId, id } = useParams() as { roundId: string; id: string };
   const { chain, address } = useWallet();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { applications, isLoading } = useApplicationByRoundId(roundId!);
+  const { data: applications, isLoading } = useApplicationsByRoundId(roundId!);
   const filteredApplication = applications?.filter((a) => a.id == id) || [];
   const application = filteredApplication[0];
 
@@ -431,14 +440,19 @@ export default function ViewApplicationPage() {
     return "done";
   };
 
+  const strategyType = application?.payoutStrategy?.strategyName
+    ? getRoundStrategyType(application.payoutStrategy.strategyName)
+    : undefined;
+
   const showReviewButton = () =>
-    application?.payoutStrategy?.strategyName === ROUND_PAYOUT_DIRECT &&
+    strategyType === "DirectGrants" &&
     application?.status === "PENDING" &&
     application?.inReview === false;
 
   const showApproveReject = () => {
-    if (application?.payoutStrategy?.strategyName !== ROUND_PAYOUT_DIRECT)
+    if (strategyType !== "DirectGrants") {
       return true;
+    }
 
     if (application?.status === "PENDING" && !application?.inReview) {
       return false;
@@ -489,10 +503,9 @@ export default function ViewApplicationPage() {
               </div>
             )}
             <div className="flex flex-row flex-wrap relative">
-              {round &&
-                round?.payoutStrategy.strategyName != ROUND_PAYOUT_DIRECT && (
-                  <ApplicationOpenDateRange round={round} />
-                )}
+              {round && strategyType === "DirectGrants" && (
+                <ApplicationOpenDateRange round={round} />
+              )}
               {round && <RoundOpenDateRange round={round} />}
               <div className="absolute right-0">
                 <ViewGrantsExplorerButton
@@ -514,7 +527,7 @@ export default function ViewApplicationPage() {
                   <div className="flex flex-col">
                     {application
                       .statusSnapshots!.sort((a, b) =>
-                        moment(a.timestamp).diff(moment(b.timestamp))
+                        moment(a.updatedAt).diff(moment(b.updatedAt))
                       )
                       .map((s, index) => (
                         <Step
@@ -523,24 +536,23 @@ export default function ViewApplicationPage() {
                             s.status,
                             index === application.statusSnapshots!.length - 1
                           )}
-                          title={s.statusDescription.toLowerCase()}
+                          title={getApplicationStatusTitle(s.status)}
                           icon={
                             <CalendarIcon className="text-grey-400 h-3 w-3" />
                           }
                           text={
                             <>
                               <div className="mb-[2px]">
-                                {moment(s.timestamp).format("MMMM Do YYYY")}
+                                {moment(s.updatedAt).format("MMMM Do YYYY")}
                               </div>
-                              <div>{getUTCTime(s.timestamp)}</div>
+                              <div>{getUTCTime(s.updatedAt)}</div>
                             </>
                           }
                           index={index}
                         />
                       ))}
                     {/* When is direct round and application is in review */}
-                    {application?.payoutStrategy?.strategyName ==
-                      ROUND_PAYOUT_DIRECT &&
+                    {strategyType === "DirectGrants" &&
                       application.status === "PENDING" &&
                       !application.inReview && (
                         <>
@@ -778,10 +790,8 @@ export default function ViewApplicationPage() {
                       </div>
                     );
                   })}
-
                 {round !== undefined &&
-                  application?.payoutStrategy?.strategyName ==
-                    ROUND_PAYOUT_DIRECT &&
+                  strategyType === "DirectGrants" &&
                   application?.status === "APPROVED" &&
                   answerBlocks !== undefined &&
                   answerBlocks.length > 0 && (

@@ -1,5 +1,5 @@
 import { Divider } from "@chakra-ui/react";
-import { ProjectApplication } from "data-layer";
+import { ProjectApplicationWithRound } from "data-layer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../../reducers";
@@ -21,7 +21,7 @@ function secondsSinceEpoch(): number {
 export default function Rounds({
   applications,
 }: {
-  applications: ProjectApplication[];
+  applications: ProjectApplicationWithRound[];
 }) {
   const params = useParams();
 
@@ -106,7 +106,7 @@ export default function Rounds({
 
   const renderStatGroup = (
     displayType: RoundDisplayType,
-    userApplications: ProjectApplication[]
+    userApplications: ProjectApplicationWithRound[]
   ) => (
     <div>
       <span className="text-gitcoin-grey-500 text-[12px] font-normal">
