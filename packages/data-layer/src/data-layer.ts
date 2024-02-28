@@ -16,14 +16,15 @@ import {
   OrderByRounds,
   Program,
   Project,
-  ProjectApplication,
+  ProjectApplicationForManager,
+  ProjectApplicationWithRound,
   Round,
   RoundGetRound,
   RoundsQueryVariables,
   RoundWithApplications,
   SearchBasedProjectCategory,
-  V2RoundWithProject,
   V2RoundWithRoles,
+  V2RoundWithProject,
   v2Project,
 } from "./data.types";
 import {
@@ -36,6 +37,7 @@ import {
   getApplication,
   getApplicationsByProjectId,
   getApplicationsByRoundIdAndProjectIds,
+  getApplicationsForManager,
   getProgramById,
   getProgramsByUserAndTag,
   getProjectById,
@@ -293,17 +295,18 @@ export class DataLayer {
   }: {
     projectId: string;
     chainIds: number[];
-  }): Promise<ProjectApplication[]> {
+  }): Promise<ProjectApplicationWithRound[]> {
     const requestVariables = {
       projectId: projectId,
       chainIds: chainIds,
     };
 
-    const response: { applications: ProjectApplication[] } = await request(
-      this.gsIndexerEndpoint,
-      getApplicationsByProjectId,
-      requestVariables,
-    );
+    const response: { applications: ProjectApplicationWithRound[] } =
+      await request(
+        this.gsIndexerEndpoint,
+        getApplicationsByProjectId,
+        requestVariables,
+      );
 
     return response.applications ?? [];
   }
@@ -348,18 +351,19 @@ export class DataLayer {
     chainId: number;
     roundId: string;
     projectIds: string[];
-  }): Promise<ProjectApplication[]> {
+  }): Promise<ProjectApplicationWithRound[]> {
     const requestVariables = {
       chainId,
       roundId,
       projectIds,
     };
 
-    const response: { applications: ProjectApplication[] } = await request(
-      this.gsIndexerEndpoint,
-      getApplicationsByRoundIdAndProjectIds,
-      requestVariables,
-    );
+    const response: { applications: ProjectApplicationWithRound[] } =
+      await request(
+        this.gsIndexerEndpoint,
+        getApplicationsByRoundIdAndProjectIds,
+        requestVariables,
+      );
 
     return response.applications ?? [];
   }
@@ -469,6 +473,16 @@ export class DataLayer {
         approvedProjects: projects,
       },
     };
+  }
+
+  async getApplicationsForManager(args: {
+    chainId: number;
+    roundId: string;
+  }): Promise<ProjectApplicationForManager[]> {
+    const response: { applications: ProjectApplicationForManager[] } =
+      await request(this.gsIndexerEndpoint, getApplicationsForManager, args);
+
+    return response.applications;
   }
 
   /**

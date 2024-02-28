@@ -7,7 +7,6 @@ import { useParams } from "react-router-dom";
 import { useBalance, useDisconnect, useSwitchNetwork } from "wagmi";
 import {
   makeRoundData,
-  wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
@@ -170,24 +169,18 @@ describe("View Fund Grantees", () => {
 
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(
-              <ViewFundGrantees
-                isRoundFinalized={false}
-                round={makeRoundData()}
-              />,
-              {
-                data: [],
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }
-            ),
-            { programs: [] }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(
+            <ViewFundGrantees
+              isRoundFinalized={false}
+              round={makeRoundData()}
+            />,
+            {
+              data: [],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }
           ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+          { programs: [] }
         )
       )
     );
@@ -203,24 +196,18 @@ describe("View Fund Grantees", () => {
     await act(async () => {
       render(
         wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithApplicationContext(
-            wrapWithReadProgramContext(
-              wrapWithRoundContext(
-                <ViewFundGrantees
-                  isRoundFinalized={true}
-                  round={makeRoundData()}
-                />,
-                {
-                  data: undefined,
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }
-              ),
-              { programs: [] }
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(
+              <ViewFundGrantees
+                isRoundFinalized={true}
+                round={makeRoundData()}
+              />,
+              {
+                data: undefined,
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
             ),
-            {
-              applications: [],
-              isLoading: false,
-            }
+            { programs: [] }
           )
         )
       );
@@ -235,24 +222,18 @@ describe("View Fund Grantees", () => {
       await act(async () => {
         render(
           wrapWithBulkUpdateGrantApplicationContext(
-            wrapWithApplicationContext(
-              wrapWithReadProgramContext(
-                wrapWithRoundContext(
-                  <ViewFundGrantees
-                    isRoundFinalized={true}
-                    round={makeRoundData()}
-                  />,
-                  {
-                    data: undefined,
-                    fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                  }
-                ),
-                { programs: [] }
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(
+                <ViewFundGrantees
+                  isRoundFinalized={true}
+                  round={makeRoundData()}
+                />,
+                {
+                  data: undefined,
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }
               ),
-              {
-                applications: [],
-                isLoading: false,
-              }
+              { programs: [] }
             )
           )
         );
@@ -371,24 +352,18 @@ describe("View Fund Grantees", () => {
       await act(async () => {
         render(
           wrapWithBulkUpdateGrantApplicationContext(
-            wrapWithApplicationContext(
-              wrapWithReadProgramContext(
-                wrapWithRoundContext(
-                  <ViewFundGrantees
-                    isRoundFinalized={true}
-                    round={makeRoundData()}
-                  />,
-                  {
-                    data: undefined,
-                    fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                  }
-                ),
-                { programs: [] }
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(
+                <ViewFundGrantees
+                  isRoundFinalized={true}
+                  round={makeRoundData()}
+                />,
+                {
+                  data: undefined,
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }
               ),
-              {
-                applications: [],
-                isLoading: false,
-              }
+              { programs: [] }
             )
           )
         );

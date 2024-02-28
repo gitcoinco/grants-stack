@@ -7,7 +7,6 @@ import {
   initialQuestionsQF,
   initialRequirements,
 } from "../../round/RoundApplicationForm";
-import { checkGrantApplicationStatus } from "../application";
 import { MetadataPointer } from "../types";
 import { graphql_fetch } from "common";
 
@@ -225,35 +224,6 @@ describe("pinToIPFS", () => {
       "https://api.pinata.cloud/pinning/pinJSONToIPFS",
       params
     );
-  });
-});
-
-describe("checkGrantApplicationStatus", () => {
-  beforeEach(() => {
-    fetchMock.resetMocks();
-  });
-
-  it("should return grant application status from IPFS", async () => {
-    fetchMock.mockResponseOnce(
-      JSON.stringify([
-        {
-          id: "1",
-          status: "FRAUD",
-        },
-      ])
-    );
-
-    const metadataPointer: MetadataPointer = {
-      protocol: 1,
-      pointer: "QmPMERYmqZtbHmqd2UzRhX9F4cixnMQU2GFa2hYAsQ6J3D",
-    };
-
-    const res = await checkGrantApplicationStatus("1", metadataPointer);
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${metadataPointer.pointer}`
-    );
-    expect(res).toEqual("FRAUD");
   });
 });
 

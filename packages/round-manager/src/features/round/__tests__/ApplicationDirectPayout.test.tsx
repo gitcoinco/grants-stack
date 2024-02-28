@@ -18,11 +18,13 @@ import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
 import { parseUnits } from "ethers/lib/utils.js";
 import { usePayout } from "../../../context/application/usePayout";
+import { usePayouts } from "../usePayouts";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
 jest.mock("../../../context/application/usePayout");
+jest.mock("../usePayouts");
 
 const mockAddress = ethers.constants.AddressZero;
 const mockWallet = {
@@ -124,6 +126,10 @@ describe("<ApplicationDirectPayout />", () => {
       ],
     };
 
+    (usePayouts as jest.Mock).mockReturnValue({
+      data: [],
+    });
+
     try {
       render(<ApplicationDirectPayout {...mockProps} />);
     } catch (error: any) {
@@ -158,6 +164,10 @@ describe("<ApplicationDirectPayout />", () => {
       ],
     };
 
+    (usePayouts as jest.Mock).mockReturnValue({
+      data: [],
+    });
+
     try {
       render(<ApplicationDirectPayout {...mockProps} />);
     } catch (error: any) {
@@ -180,6 +190,10 @@ describe("<ApplicationDirectPayout />", () => {
       answerBlocks: correctAnswerBlocks,
     };
 
+    (usePayouts as jest.Mock).mockReturnValue({
+      data: [],
+    });
+
     render(<ApplicationDirectPayout {...mockProps} />);
 
     expect(
@@ -197,36 +211,34 @@ describe("<ApplicationDirectPayout />", () => {
         payoutStrategy: {
           id: "1",
           strategyName: ROUND_PAYOUT_DIRECT,
-          payouts: [
-            {
-              amount: parseUnits("1", 18).toString(),
-              applicationIndex: 1,
-              createdAt: (
-                moment().subtract(3, "day").valueOf() / 1000
-              ).toString(),
-              txnHash: "0x00001",
-            },
-            {
-              amount: parseUnits("2", 18).toString(),
-              applicationIndex: 1,
-              createdAt: (
-                moment().subtract(2, "day").valueOf() / 1000
-              ).toString(),
-              txnHash: "0x00002",
-            },
-            {
-              amount: parseUnits("20", 18).toString(),
-              applicationIndex: 2, // NOTE: This payout is for a different application
-              createdAt: (
-                moment().subtract(1, "day").valueOf() / 1000
-              ).toString(),
-              txnHash: "0x00003",
-            },
-          ],
+          payouts: [],
         },
       }),
       answerBlocks: correctAnswerBlocks,
     };
+
+    (usePayouts as jest.Mock).mockReturnValue({
+      data: [
+        {
+          amount: parseUnits("1", 18).toString(),
+          applicationIndex: 1,
+          createdAt: (moment().subtract(3, "day").valueOf() / 1000).toString(),
+          txnHash: "0x00001",
+        },
+        {
+          amount: parseUnits("2", 18).toString(),
+          applicationIndex: 1,
+          createdAt: (moment().subtract(2, "day").valueOf() / 1000).toString(),
+          txnHash: "0x00002",
+        },
+        {
+          amount: parseUnits("20", 18).toString(),
+          applicationIndex: 2, // NOTE: This payout is for a different application
+          createdAt: (moment().subtract(1, "day").valueOf() / 1000).toString(),
+          txnHash: "0x00003",
+        },
+      ],
+    });
 
     render(<ApplicationDirectPayout {...mockProps} />);
 
@@ -256,6 +268,10 @@ describe("<ApplicationDirectPayout />", () => {
       answerBlocks: correctAnswerBlocks,
     };
 
+    (usePayouts as jest.Mock).mockReturnValue({
+      data: [],
+    });
+
     render(<ApplicationDirectPayout {...mockProps} />);
 
     const button = screen.getByTestId("trigger-payment");
@@ -284,6 +300,10 @@ describe("<ApplicationDirectPayout />", () => {
       }),
       answerBlocks: correctAnswerBlocks,
     };
+
+    (usePayouts as jest.Mock).mockReturnValue({
+      data: [],
+    });
 
     render(<ApplicationDirectPayout {...mockProps} />);
 
@@ -322,6 +342,10 @@ describe("<ApplicationDirectPayout />", () => {
       }),
       answerBlocks: correctAnswerBlocks,
     };
+
+    (usePayouts as jest.Mock).mockReturnValue({
+      data: [],
+    });
 
     render(<ApplicationDirectPayout {...mockProps} />);
 

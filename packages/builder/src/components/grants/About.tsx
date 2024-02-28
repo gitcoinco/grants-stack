@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import { renderToHTML } from "common";
-import { ProjectApplication } from "data-layer";
+import { ProjectApplicationWithRound } from "data-layer";
 import { GithubLogo, TwitterLogo } from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import colors from "../../styles/colors";
@@ -24,7 +24,7 @@ export default function About({
   updatedAt,
 }: {
   project?: Metadata | FormInputs | Project;
-  applications: ProjectApplication[];
+  applications: ProjectApplicationWithRound[];
   showApplications: boolean;
   createdAt: number;
   updatedAt: number;

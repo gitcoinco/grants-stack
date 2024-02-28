@@ -84,6 +84,8 @@ export const makeApprovedProjectData = (
       projectGithub: faker.internet.userName(),
       userGithub: faker.internet.userName(),
       owners: [{ address: faker.finance.ethereumAddress() }],
+      lastUpdated: 0,
+      credentials: {},
       ...projectMetadataOverrides,
     },
     status: "APPROVED",

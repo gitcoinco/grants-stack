@@ -114,6 +114,8 @@ const expectedProject: Application = {
       projectTwitter: "twitter.com/project",
       projectGithub: "github.com/project",
       userGithub: "github.com/user",
+      lastUpdated: 0,
+      credentials: {},
     },
   },
   projectId: faker.finance.ethereumAddress(),

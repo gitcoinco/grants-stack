@@ -1,4 +1,4 @@
-import { ProjectApplication } from "data-layer";
+import { ProjectApplicationWithRound } from "data-layer";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
 import { ReactNode } from "react";
@@ -160,7 +160,7 @@ export enum RoundDisplayType {
 }
 
 export type ApplicationCardType = {
-  application: ProjectApplication;
+  application: ProjectApplicationWithRound;
   roundID: string;
   chainId: ChainId;
 };

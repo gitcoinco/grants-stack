@@ -1,6 +1,6 @@
 // eslint-disable max-len
 import { Badge, Box, Spinner } from "@chakra-ui/react";
-import { ApplicationStatus, ProjectApplication } from "data-layer";
+import { ApplicationStatus, ProjectApplicationWithRound } from "data-layer";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RoundCategory } from "common/dist/types";
@@ -15,7 +15,7 @@ export default function RoundListItem({
   displayType,
   projectId,
 }: {
-  applicationData?: ProjectApplication;
+  applicationData?: ProjectApplicationWithRound;
   displayType?: RoundDisplayType;
   projectId: string;
 }) {

@@ -15,16 +15,8 @@ import {
 } from "@testing-library/react";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import {
-  ApplicationContext,
-  ApplicationState,
-  initialApplicationState,
-} from "../../../context/application/ApplicationContext";
 import { MemoryRouter } from "react-router-dom";
-import {
-  getApplicationsByRoundId,
-  updateApplicationStatuses,
-} from "../../api/application";
+import { updateApplicationStatuses } from "../../api/application";
 import { faker } from "@faker-js/faker";
 import { RoundContext } from "../../../context/round/RoundContext";
 import { useWallet } from "../../common/Auth";
@@ -37,6 +29,7 @@ import { GrantApplication, ProgressStatus } from "../../api/types";
 import { errorModalDelayMs } from "../../../constants";
 import moment from "moment";
 import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
+import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth");
@@ -84,6 +77,7 @@ jest.mock("wagmi");
 jest.mock("data-layer", () => ({
   useDataLayer: () => ({}),
 }));
+jest.mock("../../common/useApplicationsByRoundId");
 
 const verifyCredentialMock = jest.spyOn(
   PassportVerifier.prototype,
@@ -98,31 +92,36 @@ describe("ViewApplicationPage", () => {
   });
 
   it("should display 404 when no application is found", () => {
-    (getApplicationsByRoundId as jest.Mock).mockRejectedValue(
-      "No application :("
-    );
-
-    renderWithContext(<ViewApplicationPage />, {
-      applications: [],
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [],
       isLoading: false,
     });
+
+    renderWithContext(<ViewApplicationPage />);
 
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
     expect(screen.queryByText("Access Denied!")).not.toBeInTheDocument();
   });
 
-  it("should display access denied when wallet accessing is not round operator", () => {
+  it("should display access denied when wallet accessing is not round operator", async () => {
     const application = makeGrantApplicationData({ applicationIdOverride });
-    (getApplicationsByRoundId as any).mockResolvedValue(application);
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [application],
+      isLoading: false,
+    });
+
     const wrongAddress = faker.finance.ethereumAddress();
     (useWallet as jest.Mock).mockImplementation(() => ({
       ...mockWallet,
       address: wrongAddress,
     }));
 
-    renderWithContext(<ViewApplicationPage />, { applications: [application] });
-    expect(screen.getByText("Access Denied!")).toBeInTheDocument();
-    expect(screen.queryByText("404 ERROR")).not.toBeInTheDocument();
+    renderWithContext(<ViewApplicationPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Access Denied!")).toBeInTheDocument();
+      expect(screen.queryByText("404 ERROR")).not.toBeInTheDocument();
+    });
   });
 
   it("should display project's application answers", async () => {
@@ -149,13 +148,12 @@ describe("ViewApplicationPage", () => {
       applicationAnswers: expectedAnswers,
     });
 
-    (getApplicationsByRoundId as any).mockResolvedValue(
-      grantApplicationWithApplicationAnswers
-    );
-
-    renderWithContext(<ViewApplicationPage />, {
-      applications: [grantApplicationWithApplicationAnswers],
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [grantApplicationWithApplicationAnswers],
+      isLoading: false,
     });
+
+    renderWithContext(<ViewApplicationPage />);
 
     expect(
       await screen.findByText(expectedAnswers[0].answer)
@@ -163,20 +161,24 @@ describe("ViewApplicationPage", () => {
   });
 
   describe("when approve or reject decision is selected", () => {
-    let application: GrantApplication;
-
     beforeEach(() => {
       jest.clearAllMocks();
-      application = makeGrantApplicationData({
+      const application = makeGrantApplicationData({
         applicationIdOverride,
         roundIdOverride,
+        status: "PENDING",
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(application);
+
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [application],
+        isLoading: false,
+      });
     });
 
     it("should open confirmation modal when approve is clicked", async () => {
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [application],
+      renderWithContext(<ViewApplicationPage />);
+      await waitFor(() => {
+        screen.getByText(/Approve/);
       });
       fireEvent.click(screen.getByText(/Approve/));
 
@@ -184,10 +186,10 @@ describe("ViewApplicationPage", () => {
     });
 
     it("should open confirmation modal when reject is clicked", async () => {
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [application],
+      renderWithContext(<ViewApplicationPage />);
+      await waitFor(() => {
+        fireEvent.click(screen.getByText(/Reject/));
       });
-      fireEvent.click(screen.getByText(/Reject/));
 
       expect(await screen.findByTestId("confirm-modal")).toBeInTheDocument();
     });
@@ -198,27 +200,16 @@ describe("ViewApplicationPage", () => {
         transactionBlockNumber
       );
 
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [application],
-      });
+      renderWithContext(<ViewApplicationPage />);
+
       fireEvent.click(screen.getByText(/Approve/));
+
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Confirm"));
 
       await waitFor(() => {
         expect(updateApplicationStatuses).toBeCalled();
       });
-
-      application.status = "APPROVED";
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const expected = {
-        id: application.id,
-        round: application.round,
-        recipient: application.recipient,
-        projectsMetaPtr: application.projectsMetaPtr,
-        status: application.status,
-      };
 
       expect(updateApplicationStatuses).toBeCalled();
       const updateApplicationStatusesFirstCall = (
@@ -229,9 +220,12 @@ describe("ViewApplicationPage", () => {
     });
 
     it("should close the confirmation modal when cancel is selected", async () => {
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [application],
+      renderWithContext(<ViewApplicationPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Approve/)).toBeInTheDocument();
       });
+
       fireEvent.click(screen.getByText(/Approve/));
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Cancel"));
@@ -247,15 +241,13 @@ describe("ViewApplicationPage", () => {
         transactionBlockNumber,
       });
 
-      renderWithContext(
-        <ViewApplicationPage />,
-        {
-          applications: [application],
-        },
-        {
-          contractUpdatingStatus: ProgressStatus.IS_ERROR,
-        }
-      );
+      renderWithContext(<ViewApplicationPage />, {
+        contractUpdatingStatus: ProgressStatus.IS_ERROR,
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Approve/)).toBeInTheDocument();
+      });
 
       fireEvent.click(screen.getByText(/Approve/));
 
@@ -275,15 +267,13 @@ describe("ViewApplicationPage", () => {
         transactionBlockNumber,
       });
 
-      renderWithContext(
-        <ViewApplicationPage />,
-        {
-          applications: [application],
-        },
-        {
-          contractUpdatingStatus: ProgressStatus.IS_ERROR,
-        }
-      );
+      renderWithContext(<ViewApplicationPage />, {
+        contractUpdatingStatus: ProgressStatus.IS_ERROR,
+      });
+
+      await waitFor(() => {
+        screen.getByText(/Approve/);
+      });
 
       fireEvent.click(screen.getByText(/Approve/));
 
@@ -293,7 +283,7 @@ describe("ViewApplicationPage", () => {
       await screen.findByTestId("error-modal");
 
       const done = await screen.findByTestId("done");
-      await act(() => {
+      act(() => {
         fireEvent.click(done);
       });
 
@@ -310,7 +300,10 @@ describe("ViewApplicationPage", () => {
         applicationIdOverride,
         roundIdOverride,
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(application);
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [application],
+        isLoading: false,
+      });
     });
 
     it("should show application steps", async () => {
@@ -324,18 +317,21 @@ describe("ViewApplicationPage", () => {
     });
 
     it("QF: should show pending:current, evaluation:inactive when application is Pending", async () => {
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [
           makeGrantApplicationData({
             applicationIdOverride,
             roundIdOverride,
             status: "PENDING",
           }),
         ],
+        isLoading: false,
       });
 
+      renderWithContext(<ViewApplicationPage />, {});
+
       // Pending
-      const pendingStep = await screen.findByTestId("application-step-pending");
+      const pendingStep = await screen.findByTestId("application-step-Pending");
       expect(
         within(pendingStep).queryByTestId("status-current")
       ).toBeInTheDocument();
@@ -349,7 +345,7 @@ describe("ViewApplicationPage", () => {
       ).toBeInTheDocument();
     });
 
-    it("DR: should show pending:current, in-review and evaluation:inactive when application is Pending", async () => {
+    it("DG: should show pending:current, in-review and evaluation:inactive when application is Pending", async () => {
       const application = makeGrantApplicationData({
         applicationIdOverride,
         roundIdOverride,
@@ -361,13 +357,17 @@ describe("ViewApplicationPage", () => {
           payouts: [],
         },
       });
-
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [application],
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [application],
+        isLoading: false,
       });
 
+      renderWithContext(<ViewApplicationPage />, {});
+
+      // screen.logTestingPlaygroundURL();
+
       // Pending
-      const pendingStep = await screen.findByTestId("application-step-pending");
+      const pendingStep = await screen.findByTestId("application-step-Pending");
       expect(
         within(pendingStep).queryByTestId("status-current")
       ).toBeInTheDocument();
@@ -390,36 +390,37 @@ describe("ViewApplicationPage", () => {
     });
 
     it("should show pending:done, approved:done when application is Approved", async () => {
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [
           makeGrantApplicationData({
             applicationIdOverride,
             roundIdOverride,
             statusSnapshots: [
               {
                 status: "PENDING",
-                statusDescription: "PENDING",
-                timestamp: moment().subtract(1, "day").toDate(),
+                updatedAt: moment().subtract(1, "day").toDate(),
               },
               {
                 status: "APPROVED",
-                statusDescription: "APPROVED",
-                timestamp: moment().add(1, "day").toDate(),
+                updatedAt: moment().add(1, "day").toDate(),
               },
             ],
           }),
         ],
+        isLoading: false,
       });
 
+      renderWithContext(<ViewApplicationPage />, {});
+
       // Pending
-      const pendingStep = await screen.findByTestId("application-step-pending");
+      const pendingStep = await screen.findByTestId("application-step-Pending");
       expect(
         within(pendingStep).queryByTestId("status-done")
       ).toBeInTheDocument();
 
       // Approved
       const approvedStep = await screen.findByTestId(
-        "application-step-approved"
+        "application-step-Approved"
       );
       expect(
         within(approvedStep).queryByTestId("status-done")
@@ -427,36 +428,37 @@ describe("ViewApplicationPage", () => {
     });
 
     it("should show pending:done, rejected:rejected when application is Rejected", async () => {
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [
           makeGrantApplicationData({
             applicationIdOverride,
             roundIdOverride,
             statusSnapshots: [
               {
                 status: "PENDING",
-                statusDescription: "PENDING",
-                timestamp: moment().subtract(2, "day").toDate(),
+                updatedAt: moment().subtract(2, "day").toDate(),
               },
               {
                 status: "REJECTED",
-                statusDescription: "REJECTED",
-                timestamp: moment().add(1, "day").toDate(),
+                updatedAt: moment().add(1, "day").toDate(),
               },
             ],
           }),
         ],
+        isLoading: false,
       });
 
+      renderWithContext(<ViewApplicationPage />, {});
+
       // Pending
-      const pendingStep = await screen.findByTestId("application-step-pending");
+      const pendingStep = await screen.findByTestId("application-step-Pending");
       expect(
         within(pendingStep).queryByTestId("status-done")
       ).toBeInTheDocument();
 
       // Rejected
       const rejectedStep = await screen.findByTestId(
-        "application-step-rejected"
+        "application-step-Rejected"
       );
       expect(
         within(rejectedStep).queryByTestId("status-rejected")
@@ -497,16 +499,19 @@ describe("ViewApplicationPage", () => {
           payouts: [],
         },
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(application);
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [application],
+        isLoading: false,
+      });
     });
 
     it("should show the ApplicationDirectPayoutComponent", async () => {
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [application],
-      });
+      renderWithContext(<ViewApplicationPage />);
 
-      const payout = await screen.findByTestId("application-direct-payout");
-      expect(payout).toBeInTheDocument();
+      await waitFor(async () => {
+        const payout = await screen.findByTestId("application-direct-payout");
+        expect(payout).toBeInTheDocument();
+      });
     });
   });
 });
@@ -528,13 +533,13 @@ describe("ViewApplicationPage verification badges", () => {
     });
 
     grantApplicationWithNoVc.project!.credentials = {};
-    (getApplicationsByRoundId as any).mockResolvedValue(
-      grantApplicationWithNoVc
-    );
 
-    renderWithContext(<ViewApplicationPage />, {
-      applications: [grantApplicationWithNoVc],
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [grantApplicationWithNoVc],
+      isLoading: false,
     });
+
+    renderWithContext(<ViewApplicationPage />, {});
 
     expect(await screen.findByText(expectedTwitterHandle)).toBeInTheDocument();
     expect(
@@ -554,13 +559,13 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: expectedGithubOrganizationName,
     });
     grantApplicationWithNoVc.project!.credentials = {};
-    (getApplicationsByRoundId as any).mockResolvedValue(
-      grantApplicationWithNoVc
-    );
 
-    renderWithContext(<ViewApplicationPage />, {
-      applications: [grantApplicationWithNoVc],
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [grantApplicationWithNoVc],
+      isLoading: false,
     });
+
+    renderWithContext(<ViewApplicationPage />, {});
 
     expect(
       await screen.findByText(expectedGithubOrganizationName)
@@ -584,13 +589,13 @@ describe("ViewApplicationPage verification badges", () => {
         applicationIdOverride,
         ...overrides,
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(
-        grantApplicationWithValidVc
-      );
 
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [grantApplicationWithValidVc],
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [grantApplicationWithValidVc],
+        isLoading: false,
       });
+
+      renderWithContext(<ViewApplicationPage />, {});
 
       expect(
         await screen.findByTestId(`${provider}-verifiable-credential`)
@@ -607,11 +612,13 @@ describe("ViewApplicationPage verification badges", () => {
       projectTwitterOverride: handle.toLowerCase(),
     });
     grantApplication.project!.projectTwitter = handle.toUpperCase();
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
 
-    renderWithContext(<ViewApplicationPage />, {
-      applications: [grantApplication],
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [grantApplication],
+      isLoading: false,
     });
+
+    renderWithContext(<ViewApplicationPage />, {});
 
     await waitFor(() => {
       expect(
@@ -632,11 +639,13 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: handle.toLowerCase(),
     });
     grantApplication.project!.projectGithub = handle.toUpperCase();
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
 
-    renderWithContext(<ViewApplicationPage />, {
-      applications: [grantApplication],
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [grantApplication],
+      isLoading: false,
     });
+
+    renderWithContext(<ViewApplicationPage />, {});
 
     await waitFor(() => {
       expect(
@@ -659,12 +668,12 @@ describe("ViewApplicationPage verification badges", () => {
         applicationIdOverride,
         ...overrides,
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(grantApplicationStub);
-
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [grantApplicationStub],
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [grantApplicationStub],
         isLoading: false,
       });
+
+      renderWithContext(<ViewApplicationPage />, {});
 
       await waitFor(() => {
         expect(
@@ -686,11 +695,13 @@ describe("ViewApplicationPage verification badges", () => {
         }),
         isLoading: false,
       };
-      (getApplicationsByRoundId as any).mockResolvedValue(
-        noGithubVerification.application
-      );
 
-      renderWithContext(<ViewApplicationPage />, noGithubVerification);
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [noGithubVerification.application],
+        isLoading: false,
+      });
+
+      renderWithContext(<ViewApplicationPage />);
 
       expect(
         screen.queryByTestId(`${provider}-verifiable-credential`)
@@ -707,7 +718,11 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: "whatever",
     });
     grantApplication.project!.credentials["github"].issuer = fakeIssuer;
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
+
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [grantApplication],
+      isLoading: false,
+    });
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -732,11 +747,12 @@ describe("ViewApplicationPage verification badges", () => {
       projectTwitterOverride: handle,
     });
     grantApplication.project!.projectTwitter = "not some handle";
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
-
-    renderWithContext(<ViewApplicationPage />, {
-      applications: [grantApplication],
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [grantApplication],
+      isLoading: false,
     });
+
+    renderWithContext(<ViewApplicationPage />, {});
 
     await waitFor(() => {
       expect(
@@ -757,11 +773,13 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: handle,
     });
     grantApplication.project!.projectGithub = "not some handle";
-    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
 
-    renderWithContext(<ViewApplicationPage />, {
-      applications: [grantApplication],
+    (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+      data: [grantApplication],
+      isLoading: false,
     });
+
+    renderWithContext(<ViewApplicationPage />, {});
 
     await waitFor(() => {
       expect(
@@ -787,11 +805,13 @@ describe("ViewApplicationPage verification badges", () => {
       grantApplicationData.project!.owners.forEach((it) => {
         it.address = "bad";
       });
-      (getApplicationsByRoundId as any).mockResolvedValue(grantApplicationData);
 
-      renderWithContext(<ViewApplicationPage />, {
-        applications: [grantApplicationData],
+      (useApplicationsByRoundId as jest.Mock).mockReturnValue({
+        data: [grantApplicationData],
+        isLoading: false,
       });
+
+      renderWithContext(<ViewApplicationPage />, {});
 
       await screen.findByTestId(`${provider}-verifiable-credential-unverified`);
       expect(
@@ -803,7 +823,6 @@ describe("ViewApplicationPage verification badges", () => {
 
 export const renderWithContext = (
   ui: JSX.Element,
-  applicationStateOverrides: Partial<ApplicationState> = {},
   bulkUpdateGrantApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
   dispatch: any = jest.fn()
 ) =>
@@ -829,17 +848,7 @@ export const renderWithContext = (
             dispatch,
           }}
         >
-          <ApplicationContext.Provider
-            value={{
-              state: {
-                ...initialApplicationState,
-                ...applicationStateOverrides,
-              },
-              dispatch,
-            }}
-          >
-            {ui}
-          </ApplicationContext.Provider>
+          {ui}
         </RoundContext.Provider>
       </BulkUpdateGrantApplicationContext.Provider>
     </MemoryRouter>
