@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, cleanup, screen } from "@testing-library/react";
-import { ProjectApplication } from "data-layer";
+import { ProjectApplicationWithRound } from "data-layer";
 import { web3ChainIDLoaded } from "../../../../actions/web3";
 import setupStore from "../../../../store";
 import {
@@ -114,7 +114,7 @@ describe("<Rounds />", () => {
         id: addressFrom(2),
         round: round2,
       });
-      const applications: ProjectApplication[] = [];
+      const applications: ProjectApplicationWithRound[] = [];
       applications.push(
         buildProjectApplication({
           roundId: addressFrom(1),
@@ -165,7 +165,7 @@ describe("<Rounds />", () => {
         id: addressFrom(2),
         round: round2,
       });
-      const applications: ProjectApplication[] = [];
+      const applications: ProjectApplicationWithRound[] = [];
       applications.push(
         buildProjectApplication({
           roundId: addressFrom(1),
@@ -216,7 +216,7 @@ describe("<Rounds />", () => {
         id: addressFrom(2),
         round: round2,
       });
-      const applications: ProjectApplication[] = [];
+      const applications: ProjectApplicationWithRound[] = [];
       applications.push(
         buildProjectApplication({
           roundId: addressFrom(1),

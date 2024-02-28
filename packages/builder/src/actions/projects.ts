@@ -2,7 +2,11 @@ import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
 import { ChainId } from "common";
 import { getConfig } from "common/src/config";
-import { ApplicationStatus, DataLayer, ProjectApplication } from "data-layer";
+import {
+  ApplicationStatus,
+  DataLayer,
+  ProjectApplicationWithRound,
+} from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
 import { RoundCategory } from "common/dist/types";
@@ -53,7 +57,7 @@ export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
 interface ProjectApplicationsLoadedAction {
   type: typeof PROJECT_APPLICATIONS_LOADED;
   projectID: string;
-  applications: ProjectApplication[];
+  applications: ProjectApplicationWithRound[];
 }
 
 export const PROJECT_APPLICATION_UPDATED = "PROJECT_APPLICATION_UPDATED";

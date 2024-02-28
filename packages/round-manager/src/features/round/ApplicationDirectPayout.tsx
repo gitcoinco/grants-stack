@@ -18,6 +18,7 @@ import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { getPayoutTokenOptions } from "../api/payoutTokens";
+import { usePayouts } from "./usePayouts";
 
 const schema = yup.object().shape({
   amount: yup
@@ -65,8 +66,12 @@ export default function ApplicationDirectPayout({
 
   const allInputs = watch();
 
-  // helpers
-  const payouts = application.payoutStrategy?.payouts ?? [];
+  const { data: payouts } = usePayouts({
+    chainId: chain.id,
+    roundId: round.id,
+    applicationIndex: application.applicationIndex,
+  });
+
   // find answer with question "Payout token"
   const payoutTokenAnswer = answerBlocks?.find(
     (a) => a.question === "Payout token"
@@ -174,108 +179,113 @@ export default function ApplicationDirectPayout({
         className="payouts flex flex-col gap-6 mt-3"
         data-testid="application-direct-payout"
       >
-        {/* Header */}
-        <div className="flex flex-col gap-2">
-          <div className="flex pt-6 border-t border-gray-100">
-            <span className="text-sm leading-5 text-gray-500 font-semibold text-left">
-              Previous Payments
-            </span>
-            <span className="text-xs leading-5 text-violet-400 text-left ml-auto">
-              ({payouts.length}) Payouts
-            </span>
-          </div>
-          {payouts.length === 0 && (
-            <p className="text-sm leading-5 text-gray-300 text-left">
-              Payouts have not been made yet.
-            </p>
-          )}
-        </div>
-
-        {payouts.length > 0 && (
+        {payouts && (
           <>
-            {/* Table */}
-            <div className="col-span-3 border border-gray-100 rounded p-4 row-span-2 overflow-y-auto max-h-80">
-              <table className="table-fixed border-separate h-full w-full">
-                <thead className="font-normal">
-                  <tr>
-                    <th className="text-sm leading-5 pr-2 text-gray-500 text-left w-auto">
-                      Transaction ID
-                    </th>
-                    <th className="text-sm leading-5 px-2 text-gray-500 text-left w-32">
-                      Amount
-                    </th>
-                    <th className="text-sm leading-5 px-2 text-gray-500 text-left w-44">
-                      Date
-                    </th>
-                  </tr>
-                </thead>
-                <tbody data-testid="direct-payout-payments-table">
-                  {payouts
-                    .filter(
-                      (p) => p.applicationIndex === application.applicationIndex
-                    )
-                    .map((payout) => (
-                      <tr key={payout.txnHash}>
-                        <td className="text-sm leading-5 py-2 pr-2 text-gray-400 text-left">
-                          <div className="flex flex-nowrap content-center">
-                            <span className="text-ellipsis overflow-hidden whitespace-nowrap min-w-[2rem]">
-                              {payout.txnHash}
-                            </span>
-                            <a
-                              target="_blank"
-                              href={`${network.chain?.blockExplorers?.default.url}/tx/${payout.txnHash}`}
-                              className="inline items-center ml-2"
-                              rel="noreferrer"
-                            >
-                              <ExternalLinkIcon className="h-4 w-4" />
-                            </a>
-                          </div>
-                        </td>
-                        <td className="text-sm leading-5 px-2 text-gray-400 text-left text-ellipsis overflow-hidden">
-                          {ethers.utils.formatUnits(
-                            payout.amount,
-                            tokenInfo.decimal
-                          )}{" "}
-                          {tokenInfo.name}
-                        </td>
-                        <td className="text-sm leading-5 px-2 text-gray-400 text-left">
-                          {formatUTCDateAsISOString(
-                            new Date(Number(payout.createdAt) * 1000)
-                          )}
-                          &nbsp;
-                          {getUTCTime(
-                            new Date(Number(payout.createdAt) * 1000)
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-            {/* Totals */}
-            <div className="flex px-4 pb-6">
-              <p
-                className="text-sm text-gray-400 text-left flex gap-4 content-center"
-                data-testid="direct-payout-payments-total"
-              >
-                <span>Total paid out:</span>
-                <span>
-                  {ethers.utils.formatUnits(
-                    payouts
-                      .filter(
-                        (p) =>
-                          p.applicationIndex === application.applicationIndex
-                      )
-                      .reduce(
-                        (sum, payout) => sum.add(payout.amount),
-                        BigNumber.from(0)
-                      ),
-                    tokenInfo.decimal
-                  )}{" "}
-                  {tokenInfo.name}
+            <div className="flex flex-col gap-2">
+              <div className="flex pt-6 border-t border-gray-100">
+                <span className="text-sm leading-5 text-gray-500 font-semibold text-left">
+                  Previous Payments
                 </span>
-              </p>
+                <span className="text-xs leading-5 text-violet-400 text-left ml-auto">
+                  ({payouts.length}) Payouts
+                </span>
+              </div>
+              {payouts.length === 0 && (
+                <p className="text-sm leading-5 text-gray-300 text-left">
+                  Payouts have not been made yet.
+                </p>
+              )}
             </div>
+
+            {payouts.length > 0 && (
+              <>
+                {/* Table */}
+                <div className="col-span-3 border border-gray-100 rounded p-4 row-span-2 overflow-y-auto max-h-80">
+                  <table className="table-fixed border-separate h-full w-full">
+                    <thead className="font-normal">
+                      <tr>
+                        <th className="text-sm leading-5 pr-2 text-gray-500 text-left w-auto">
+                          Transaction ID
+                        </th>
+                        <th className="text-sm leading-5 px-2 text-gray-500 text-left w-32">
+                          Amount
+                        </th>
+                        <th className="text-sm leading-5 px-2 text-gray-500 text-left w-44">
+                          Date
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody data-testid="direct-payout-payments-table">
+                      {payouts
+                        .filter(
+                          (p) =>
+                            p.applicationIndex === application.applicationIndex
+                        )
+                        .map((payout) => (
+                          <tr key={payout.txnHash}>
+                            <td className="text-sm leading-5 py-2 pr-2 text-gray-400 text-left">
+                              <div className="flex flex-nowrap content-center">
+                                <span className="text-ellipsis overflow-hidden whitespace-nowrap min-w-[2rem]">
+                                  {payout.txnHash}
+                                </span>
+                                <a
+                                  target="_blank"
+                                  href={`${network.chain?.blockExplorers?.default.url}/tx/${payout.txnHash}`}
+                                  className="inline items-center ml-2"
+                                  rel="noreferrer"
+                                >
+                                  <ExternalLinkIcon className="h-4 w-4" />
+                                </a>
+                              </div>
+                            </td>
+                            <td className="text-sm leading-5 px-2 text-gray-400 text-left text-ellipsis overflow-hidden">
+                              {ethers.utils.formatUnits(
+                                payout.amount,
+                                tokenInfo.decimal
+                              )}{" "}
+                              {tokenInfo.name}
+                            </td>
+                            <td className="text-sm leading-5 px-2 text-gray-400 text-left">
+                              {formatUTCDateAsISOString(
+                                new Date(Number(payout.createdAt) * 1000)
+                              )}
+                              &nbsp;
+                              {getUTCTime(
+                                new Date(Number(payout.createdAt) * 1000)
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Totals */}
+                <div className="flex px-4 pb-6">
+                  <p
+                    className="text-sm text-gray-400 text-left flex gap-4 content-center"
+                    data-testid="direct-payout-payments-total"
+                  >
+                    <span>Total paid out:</span>
+                    <span>
+                      {ethers.utils.formatUnits(
+                        payouts
+                          .filter(
+                            (p) =>
+                              p.applicationIndex ===
+                              application.applicationIndex
+                          )
+                          .reduce(
+                            (sum, payout) => sum.add(payout.amount),
+                            BigNumber.from(0)
+                          ),
+                        tokenInfo.decimal
+                      )}{" "}
+                      {tokenInfo.name}
+                    </span>
+                  </p>
+                </div>
+              </>
+            )}
           </>
         )}
 

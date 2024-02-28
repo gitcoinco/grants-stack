@@ -158,6 +158,50 @@ export const getApplicationsByProjectId = gql`
   }
 `;
 
+export const getApplicationsForManager = gql`
+  query getApplicationsForManager($chainId: Int!, $roundId: String!) {
+    applications(
+      filter: { roundId: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      id
+      projectId
+      chainId
+      roundId
+      status
+      metadataCid
+      metadata
+      statusSnapshots
+      round {
+        strategyName
+        strategyAddress
+      }
+      canonicalProject {
+        roles {
+          address
+        }
+      }
+    }
+  }
+`;
+
+export const getApplicationStatusByRoundIdAndCID = gql`
+  query getApplicationStatusByRoundIdAndCID(
+    $roundId: String!
+    $chainId: Int!
+    $metadataCid: String!
+  ) {
+    applications(
+      filter: {
+        roundId: { equalTo: $roundId }
+        chainId: { equalTo: $chainId }
+        metadataCid: { equalTo: $metadataCid }
+      }
+    ) {
+      status
+    }
+  }
+`;
+
 export const getApplication = gql`
   query Application(
     $chainId: Int!

@@ -8,7 +8,11 @@ import {
   RoundVisibilityType,
   createMockTransactionSender,
 } from "common";
-import { DataLayer, DataLayerProvider, ProjectApplication } from "data-layer";
+import {
+  DataLayer,
+  DataLayerProvider,
+  ProjectApplicationWithRound,
+} from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
 import { zeroAddress } from "viem";
@@ -121,7 +125,7 @@ export const buildFormMetadata = (metadata: any): FormInputs => ({
 
 export const buildProjectApplication = (
   application: any
-): ProjectApplication => ({
+): ProjectApplicationWithRound => ({
   chainId: 5,
   roundId: addressFrom(1),
   status: "APPROVED",

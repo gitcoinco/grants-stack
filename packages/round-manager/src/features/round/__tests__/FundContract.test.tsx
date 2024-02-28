@@ -4,7 +4,6 @@ import ViewRoundPage from "../ViewRoundPage";
 import { ProgressStatus, Round } from "../../api/types";
 import {
   makeRoundData,
-  wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
@@ -102,18 +101,12 @@ describe("fund contract tab", () => {
 
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );
