@@ -410,7 +410,6 @@ export default function ViewApplicationPage() {
     status?: Status;
     index?: number;
   }> = ({ title, icon, index, text, status }) => {
-    console.log(`application-step-${title}`);
     return (
       <div className={`flex gap-4`} data-testid={`application-step-${title}`}>
         <StepStatus index={index} status={status} />
@@ -451,7 +450,7 @@ export default function ViewApplicationPage() {
     application?.inReview === false;
 
   const showApproveReject = () => {
-    if (strategyType === "DirectGrants") {
+    if (strategyType !== "DirectGrants") {
       return true;
     }
 

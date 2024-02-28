@@ -161,13 +161,12 @@ describe("ViewApplicationPage", () => {
   });
 
   describe("when approve or reject decision is selected", () => {
-    let application: GrantApplication;
-
     beforeEach(() => {
       jest.clearAllMocks();
-      application = makeGrantApplicationData({
+      const application = makeGrantApplicationData({
         applicationIdOverride,
         roundIdOverride,
+        status: "PENDING",
       });
 
       (useApplicationsByRoundId as jest.Mock).mockReturnValue({
@@ -202,7 +201,9 @@ describe("ViewApplicationPage", () => {
       );
 
       renderWithContext(<ViewApplicationPage />);
+
       fireEvent.click(screen.getByText(/Approve/));
+
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Confirm"));
 
@@ -220,9 +221,11 @@ describe("ViewApplicationPage", () => {
 
     it("should close the confirmation modal when cancel is selected", async () => {
       renderWithContext(<ViewApplicationPage />);
+
       await waitFor(() => {
-        screen.getByText(/Approve/);
+        expect(screen.getByText(/Approve/)).toBeInTheDocument();
       });
+
       fireEvent.click(screen.getByText(/Approve/));
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Cancel"));
@@ -243,7 +246,7 @@ describe("ViewApplicationPage", () => {
       });
 
       await waitFor(() => {
-        screen.getByText(/Approve/);
+        expect(screen.getByText(/Approve/)).toBeInTheDocument();
       });
 
       fireEvent.click(screen.getByText(/Approve/));
@@ -266,6 +269,10 @@ describe("ViewApplicationPage", () => {
 
       renderWithContext(<ViewApplicationPage />, {
         contractUpdatingStatus: ProgressStatus.IS_ERROR,
+      });
+
+      await waitFor(() => {
+        screen.getByText(/Approve/);
       });
 
       fireEvent.click(screen.getByText(/Approve/));
