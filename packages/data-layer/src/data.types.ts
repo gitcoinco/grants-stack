@@ -512,7 +512,7 @@ export type RoundGetRound = {
 };
 
 export interface RoundMetadataGetRound {
-  name?: string;
+  name: string;
   support?: Support;
   eligibility: Eligibility;
   feesAddress?: string;
