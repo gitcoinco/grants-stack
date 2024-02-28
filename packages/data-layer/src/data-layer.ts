@@ -439,6 +439,7 @@ export class DataLayer {
           credentials: application.project.metadata.credentials,
           owners: application.project.metadata.owners,
           createdAt: application.project.metadata.createdAt,
+          lastUpdated: application.project.metadata.lastUpdated,
         },
         grantApplicationFormAnswers:
           application.metadata.application.answers.map(
