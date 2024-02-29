@@ -171,7 +171,6 @@ async function _bulkUpdateGrantApplication({
   signer,
   context,
   roundId,
-  roundStrategy,
   roundStrategyAddress,
   applications,
   selectedApplications,
@@ -179,7 +178,9 @@ async function _bulkUpdateGrantApplication({
 }: BulkUpdateGrantApplicationParams) {
   resetToInitialState(context);
   try {
-    if (roundStrategy === "QuadraticFunding") {
+    const containsInReview = selectedApplications.some((a) => a.inReview);
+
+    if (!containsInReview) {
       context.setContractUpdatingStatus(ProgressStatus.IN_PROGRESS);
 
       const result = await allo

@@ -202,7 +202,9 @@ export default function ApplicationsToApproveReject({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         applications: applications,
         selectedApplications: selected.filter(
-          (application) => application.status !== "PENDING"
+          (application) =>
+            application.status !== "PENDING" &&
+            application.status !== "IN_REVIEW"
         ),
       });
       setBulkSelect(false);
