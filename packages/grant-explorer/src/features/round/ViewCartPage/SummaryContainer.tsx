@@ -119,18 +119,24 @@ export function SummaryContainer() {
     );
   }, [chainIds, tokenBalancesPerChain, totalDonationsPerChain]);
 
-  const { data: rounds } = useSWR(projects, (projects) => {
-    const uniqueProjects = uniqBy(projects, "roundId");
+  const { data: rounds } = useSWR(projects, async (projects) => {
+    const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
+    // FIXME: we should group by round id and fetch the round once
+    // instead of fetching the same round for each project
     return Promise.all(
       uniqueProjects.map(async (proj) => {
-        const { round } =
+        const results =
           await dataLayer.getRoundByIdAndChainIdWithApprovedApplications({
             roundId: proj.roundId,
             chainId: proj.chainId,
           });
-        return round;
+        if (results === null) {
+          return null;
+        } else {
+          return results.round;
+        }
       })
-    );
+    ).then((rounds) => rounds.filter(isPresent));
   });
 
   /** useEffect to clear projects from expired rounds (no longer accepting donations) */

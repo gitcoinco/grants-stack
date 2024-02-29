@@ -408,7 +408,7 @@ export class DataLayer {
   }: {
     roundId: string;
     chainId: number;
-  }): Promise<{ round: Round }> {
+  }): Promise<{ round: Round } | null> {
     const requestVariables = {
       roundId,
       chainId,
@@ -419,6 +419,10 @@ export class DataLayer {
       getRoundByIdAndChainIdWithApprovedApplications,
       requestVariables,
     );
+
+    if (response.rounds.length === 0) {
+      return null;
+    }
 
     const _round = response.rounds[0] ?? [];
 

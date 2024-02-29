@@ -16,6 +16,12 @@ export interface RoundState {
   currentRoundId?: string;
 }
 
+export class RoundNotFoundError extends Error {
+  constructor(chainId: number, roundId: string) {
+    super(`Round not found: chainId=${chainId}, roundId=${roundId}`);
+  }
+}
+
 enum ActionType {
   SET_LOADING = "SET_LOADING",
   FINISH_LOADING = "FINISH_LOADING",
@@ -64,6 +70,8 @@ const roundReducer = (state: RoundState, action: Action) => {
         getRoundByIdError: undefined,
       };
     case ActionType.SET_ERROR_GET_ROUND:
+      // log error to console to be sure we can debug it
+      console.error(action.payload);
       return { ...state, getRoundByIdError: action.payload };
     case ActionType.SET_ROUND_ID:
       return { ...state, currentRoundId: action.payload };
@@ -97,9 +105,17 @@ function fetchRoundsById(
       roundId,
       chainId,
     })
-    .then(({ round }) =>
-      dispatch({ type: ActionType.ADD_ROUND, payload: round })
-    )
+    .then((result) => {
+      if (result === null) {
+        dispatch({
+          type: ActionType.SET_ERROR_GET_ROUND,
+          payload: new RoundNotFoundError(chainId, roundId),
+        });
+      } else {
+        const { round } = result;
+        dispatch({ type: ActionType.ADD_ROUND, payload: round });
+      }
+    })
     .catch((error) =>
       dispatch({ type: ActionType.SET_ERROR_GET_ROUND, payload: error })
     )
