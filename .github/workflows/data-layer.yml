@@ -30,16 +30,15 @@ jobs:
         run: |
           pnpm install
 
-      # TODO
-      # - name: Lint Data Layer
-      #   run: |
-      #     pnpm lint:data-layer
+      - name: Typecheck Data Layer
+        run: |
+          pnpm typecheck:data-layer
+
+      - name: Lint Data Layer
+        run: |
+          pnpm lint:data-layer
 
       - name: Test Data Layer
         run: |
           pnpm test:data-layer
 
-      # TODO    
-      # - name: Typecheck Data Layer
-      #   run: |
-      #     pnpm typecheck:data-layer
