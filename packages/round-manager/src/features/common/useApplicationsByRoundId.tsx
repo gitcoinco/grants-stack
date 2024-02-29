@@ -38,9 +38,7 @@ export const useApplicationsByRoundId = (roundId: string) => {
                 owners: application.canonicalProject.roles,
                 id: application.projectId,
               },
-              inReview: application.statusSnapshots.some(
-                (snapshot) => snapshot.status === "IN_REVIEW"
-              ),
+              inReview: application.status === "IN_REVIEW",
               recipient: application.metadata.application.recipient,
               createdAt: "0",
               projectsMetaPtr: { protocol: 1, pointer: "" },
