@@ -20,6 +20,7 @@ import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { Signer } from "@ethersproject/abstract-signer";
 import { useWallet } from "../../features/common/Auth";
 import { Allo, RoundStrategyType } from "common";
+import { Address } from "viem";
 
 export interface BulkUpdateGrantApplicationState {
   roundId: string;
@@ -192,7 +193,8 @@ async function _bulkUpdateGrantApplication({
             index: a.applicationIndex,
             status: a.status,
           })),
-          strategyAddress: roundStrategyAddress,
+          // FIXME: use getAddress when tests stop failing because of it
+          strategyAddress: roundStrategyAddress as Address,
         })
         .on("transactionStatus", (tx) => {
           if (tx.type === "success") {
