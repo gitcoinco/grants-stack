@@ -33,11 +33,12 @@ import { useBulkUpdateGrantApplications } from "../../context/application/BulkUp
 import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
-import { renderToPlainText } from "common";
+import { getRoundStrategyType, renderToPlainText, useAllo } from "common";
 import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
 import { CheckIcon } from "@heroicons/react/solid";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
+import { getAddress } from "viem";
 
 async function exportAndDownloadCSV(roundId: string, chainId: number) {
   const csv = await roundApplicationsToCSV(roundId, chainId);
@@ -72,6 +73,7 @@ export default function ApplicationsToReview() {
   }
 
   const { data: applications, isLoading } = useApplicationsByRoundId(id);
+  const allo = useAllo();
   const filteredApplications =
     applications?.filter(
       (a) => a.status === ApplicationStatus.PENDING.toString() && !a.inReview
@@ -101,7 +103,7 @@ export default function ApplicationsToReview() {
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "Indexing the data.",
       status: indexingStatus,
     },
     {
@@ -171,16 +173,27 @@ export default function ApplicationsToReview() {
   };
 
   const handleBulkReview = async () => {
+    if (
+      id === undefined ||
+      applications === undefined ||
+      applications[0].payoutStrategy?.strategyName === undefined ||
+      applications[0].payoutStrategy?.id === undefined
+    ) {
+      return;
+    }
+
     try {
       setOpenProgressModal(true);
       setOpenModal(false);
+
       await bulkUpdateGrantApplications({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        roundId: id!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        applications: applications!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        payoutAddress: applications![0].payoutStrategy?.id,
+        allo,
+        roundId: id,
+        applications: applications,
+        roundStrategy: getRoundStrategyType(
+          applications[0].payoutStrategy.strategyName
+        ),
+        roundStrategyAddress: getAddress(applications[0].payoutStrategy.id),
         selectedApplications: selected.filter(
           (application) => application.inReview
         ),
@@ -280,7 +293,7 @@ export default function ApplicationsToReview() {
       </CardsContainer>
       {selected && selected?.filter((obj) => obj.inReview).length > 0 && (
         <>
-          <div className="fixed w-full left-0 bottom-0 bg-white">
+          <div className="fixed w-full left-0 bottom-0 bg-white z-20">
             <hr />
             <div className="flex justify-end items-center py-5 pr-20">
               <NumberOfApplicationsSelectedMessage

@@ -31,9 +31,12 @@ import { useBulkUpdateGrantApplications } from "../../context/application/BulkUp
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
+import { getRoundStrategyType, useAllo } from "common";
+import { getAddress } from "viem";
 
 export default function ApplicationsRejected() {
   const { id } = useParams();
+  const allo = useAllo();
 
   if (id === undefined) {
     throw new Error("id is undefined");
@@ -68,7 +71,7 @@ export default function ApplicationsRejected() {
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "Indexing the data.",
       status: indexingStatus,
     },
     {
@@ -136,14 +139,26 @@ export default function ApplicationsRejected() {
   };
 
   const handleBulkReview = async () => {
+    if (
+      id === undefined ||
+      applications === undefined ||
+      applications[0].payoutStrategy?.strategyName === undefined ||
+      applications[0].payoutStrategy?.id === undefined
+    ) {
+      return;
+    }
+
     try {
       setOpenProgressModal(true);
       setOpenConfirmationModal(false);
       await bulkUpdateGrantApplications({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        roundId: id!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        applications: applications!,
+        allo,
+        roundId: id,
+        applications: applications,
+        roundStrategy: getRoundStrategyType(
+          applications[0].payoutStrategy.strategyName
+        ),
+        roundStrategyAddress: getAddress(applications[0].payoutStrategy.id),
         selectedApplications: selected.filter(
           (application) => application.status === "APPROVED"
         ),

@@ -61,6 +61,7 @@ import {
   formatDateWithOrdinal,
   getRoundStrategyType,
   getUTCTime,
+  useAllo,
   VerifiedCredentialState,
 } from "common";
 import { renderToHTML } from "common";
@@ -69,6 +70,7 @@ import { getPayoutRoundDescription } from "../common/Utils";
 import moment from "moment";
 import ApplicationDirectPayout from "./ApplicationDirectPayout";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
+import { getAddress } from "viem";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -132,7 +134,7 @@ export default function ViewApplicationPage() {
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "Indexing the data.",
       status: indexingStatus,
     },
     {
@@ -192,8 +194,18 @@ export default function ViewApplicationPage() {
   }, [application, application?.project?.owners, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { round } = useRoundById(roundId);
+  const allo = useAllo();
 
   const handleReview = async () => {
+    if (
+      reviewDecision === undefined ||
+      applications === undefined ||
+      applications[0]?.payoutStrategy?.strategyName === undefined ||
+      applications[0]?.payoutStrategy?.id === undefined
+    ) {
+      return;
+    }
+
     try {
       if (!application) {
         throw "error: application does not exist";
@@ -210,13 +222,12 @@ export default function ViewApplicationPage() {
 
       await bulkUpdateGrantApplications({
         roundId: roundId,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        applications: applications!,
-        payoutAddress:
-          reviewDecision == "IN_REVIEW"
-            ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              applications![0].payoutStrategy?.id
-            : undefined,
+        allo,
+        applications: applications,
+        roundStrategyAddress: getAddress(applications[0].payoutStrategy.id),
+        roundStrategy: getRoundStrategyType(
+          applications[0].payoutStrategy.strategyName
+        ),
         selectedApplications: [application],
       });
     } catch (error) {
