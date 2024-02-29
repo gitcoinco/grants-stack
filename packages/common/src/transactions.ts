@@ -26,6 +26,7 @@ export const handleTransaction = async (
       txBlockNumber: receipt.blockNumber,
       error: undefined,
     };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === Logger.errors.TRANSACTION_REPLACED) {
       if (error.cancelled) {
