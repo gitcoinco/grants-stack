@@ -2,7 +2,6 @@ import {
   AppStatus,
   GrantApplication,
   ProgressStatus,
-  Status,
   StatusForDirectPayout,
 } from "../../features/api/types";
 import React, {
@@ -125,63 +124,6 @@ function resetToInitialState(context: BulkUpdateGrantApplicationState) {
     initialBulkUpdateGrantApplicationState.contractUpdatingStatus
   );
   setIndexingStatus(initialBulkUpdateGrantApplicationState.indexingStatus);
-}
-
-function convertStatus(status: string) {
-  switch (status) {
-    case "PENDING":
-      return 0;
-    case "APPROVED":
-      return 1;
-    case "REJECTED":
-      return 2;
-    case "CANCELLED":
-      return 3;
-    case "IN_REVIEW":
-      return 4;
-    default:
-      throw new Error(`Unknown status ${status}`);
-  }
-}
-
-function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
-  const statuses: Status[] = [];
-
-  const startApplicationIndex = rowIndex * 128;
-
-  for (let columnIndex = 0; columnIndex < 128; columnIndex++) {
-    const applicationIndex = startApplicationIndex + columnIndex;
-    const application = applications.find(
-      (app) => app.applicationIndex === applicationIndex
-    );
-
-    if (application !== undefined) {
-      statuses.push({
-        index: columnIndex,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        status: convertStatus(application.status!),
-      });
-    }
-  }
-  return statuses;
-}
-
-function createFullRow(statuses: Status[]) {
-  let fullRow = BigInt(0);
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  for (const statusObj of statuses!) {
-    const { index: columnIndex, status } = statusObj;
-
-    if (columnIndex >= 0 && columnIndex < 128 && status >= 0 && status <= 3) {
-      const statusBigInt = BigInt(status === 4 ? 0 : status); // 4 is IN_REVIEW, but for the round is still pending.
-      const shiftedStatus = statusBigInt << BigInt(columnIndex * 2);
-      fullRow |= shiftedStatus;
-    } else {
-      throw new Error("Invalid index or status value");
-    }
-  }
-  return fullRow.toString();
 }
 
 function fetchStatusesForPayoutStrategy(
