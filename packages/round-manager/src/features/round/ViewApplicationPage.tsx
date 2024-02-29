@@ -221,6 +221,7 @@ export default function ViewApplicationPage() {
         application.inReview = true;
       } else {
         application.status = reviewDecision;
+        application.inReview = false;
       }
 
       await bulkUpdateGrantApplications({
