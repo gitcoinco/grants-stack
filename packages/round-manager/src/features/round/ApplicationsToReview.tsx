@@ -173,6 +173,7 @@ export default function ApplicationsToReview() {
 
   const handleBulkReview = async () => {
     if (
+      allo === null ||
       id === undefined ||
       applications === undefined ||
       applications[0].payoutStrategy?.strategyName === undefined ||

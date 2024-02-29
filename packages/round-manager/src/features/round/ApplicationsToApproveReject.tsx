@@ -183,6 +183,7 @@ export default function ApplicationsToApproveReject({
       setOpenModal(false);
 
       if (
+        allo === null ||
         id === undefined ||
         applications === undefined ||
         applications[0].payoutStrategy?.strategyName === undefined ||

@@ -210,6 +210,10 @@ export default function ViewApplicationPage() {
         throw "error: application does not exist";
       }
 
+      if (allo === null) {
+        throw "wallet not connected";
+      }
+
       setOpenProgressModal(true);
       setOpenModal(false);
 

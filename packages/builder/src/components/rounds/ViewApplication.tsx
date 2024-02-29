@@ -237,6 +237,9 @@ function ViewApplication() {
                 answers: RoundApplicationAnswers,
                 createLinkedProject: boolean
               ) => {
+                if (allo === null) {
+                  return;
+                }
                 dispatch(
                   submitApplication(
                     props.round!.id,

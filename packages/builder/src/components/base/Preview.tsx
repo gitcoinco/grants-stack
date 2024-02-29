@@ -58,6 +58,10 @@ export default function Preview({
   const allo = useAllo();
 
   const publishProject = async () => {
+    if (allo === null) {
+      return;
+    }
+
     setSubmitted(true);
     showModal(true);
     dispatch(publishGrant(allo, currentProjectId));

@@ -139,6 +139,7 @@ export default function ApplicationsRejected() {
 
   const handleBulkReview = async () => {
     if (
+      allo === null ||
       id === undefined ||
       applications === undefined ||
       applications[0].payoutStrategy?.strategyName === undefined ||
