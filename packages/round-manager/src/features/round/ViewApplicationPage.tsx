@@ -70,7 +70,6 @@ import { getPayoutRoundDescription } from "../common/Utils";
 import moment from "moment";
 import ApplicationDirectPayout from "./ApplicationDirectPayout";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
-import { getAddress } from "viem";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -224,7 +223,7 @@ export default function ViewApplicationPage() {
         roundId: roundId,
         allo,
         applications: applications,
-        roundStrategyAddress: getAddress(applications[0].payoutStrategy.id),
+        roundStrategyAddress: applications[0].payoutStrategy.id,
         roundStrategy: getRoundStrategyType(
           applications[0].payoutStrategy.strategyName
         ),
