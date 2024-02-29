@@ -6,7 +6,7 @@ type Props = React.SVGProps<SVGSVGElement> & {
   direction: Direction;
 };
 
-export function Dropdown(props: Props) {
+export function Dropdown(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       width="10"

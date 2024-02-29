@@ -170,7 +170,7 @@ export class AlloV1 implements Allo {
 
       const programFactoryAddress = programFactoryMap[this.chainId];
 
-      const abiType = parseAbiParameters([
+      let abiType = parseAbiParameters([
         "(uint256 protocol, string pointer), address[], address[]",
       ]);
 
@@ -344,9 +344,8 @@ export class AlloV1 implements Allo {
         }
 
         let initRoundTimes: bigint[];
-        const admins: Address[] = [
-          getAddress(await args.walletSigner.getAddress()),
-        ];
+        let admins: Address[];
+        admins = [getAddress(await args.walletSigner.getAddress())];
         if (isQF) {
           if (args.roundData.applicationsEndTime === undefined) {
             args.roundData.applicationsEndTime = args.roundData.roundStartTime;
@@ -560,7 +559,7 @@ function constructCreateRoundArgs({
   roundMetadata,
   applicationMetadata,
 }: CreateRoundArgs) {
-  const abiType = parseAbiParameters([
+  let abiType = parseAbiParameters([
     "(address votingStrategy, address payoutStrategy),(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime),uint256,address,uint8,address,((uint256 protocol, string pointer), (uint256 protocol, string pointer)),(address[] adminRoles, address[] roundOperators)",
   ]);
   return encodeAbiParameters(abiType, [

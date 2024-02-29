@@ -388,9 +388,6 @@ importers:
       dompurify:
         specifier: ^2.4.3
         version: 2.4.7
-      eslint-config-gitcoin:
-        specifier: workspace:*
-        version: link:../eslint-config-gitcoin
       ethers:
         specifier: ^5.6.5
         version: 5.7.2
