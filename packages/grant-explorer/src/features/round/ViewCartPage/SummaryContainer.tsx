@@ -121,8 +121,6 @@ export function SummaryContainer() {
 
   const { data: rounds } = useSWR(projects, async (projects) => {
     const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
-    // FIXME: we should group by round id and fetch the round once
-    // instead of fetching the same round for each project
     return Promise.all(
       uniqueProjects.map(async (proj) => {
         const results =
