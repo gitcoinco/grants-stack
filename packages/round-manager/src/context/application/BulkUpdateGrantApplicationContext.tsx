@@ -20,7 +20,6 @@ import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { Signer } from "@ethersproject/abstract-signer";
 import { useWallet } from "../../features/common/Auth";
 import { Allo, RoundStrategyType } from "common";
-import { Address } from "viem";
 
 export interface BulkUpdateGrantApplicationState {
   roundId: string;
@@ -64,7 +63,7 @@ export type BulkUpdateGrantApplicationParams = {
   context: BulkUpdateGrantApplicationState;
   roundId: string;
   roundStrategy: RoundStrategyType;
-  roundStrategyAddress: Address;
+  roundStrategyAddress: string;
   applications: GrantApplication[];
   selectedApplications: GrantApplication[];
   allo: Allo;

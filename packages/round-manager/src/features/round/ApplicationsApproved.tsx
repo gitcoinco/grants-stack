@@ -32,7 +32,6 @@ import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { getRoundStrategyType, useAllo } from "common";
-import { getAddress } from "viem";
 
 export default function ApplicationsApproved() {
   const { id } = useParams();
@@ -160,7 +159,7 @@ export default function ApplicationsApproved() {
         roundStrategy: getRoundStrategyType(
           applications[0].payoutStrategy.strategyName
         ),
-        roundStrategyAddress: getAddress(applications[0].payoutStrategy.id),
+        roundStrategyAddress: applications[0].payoutStrategy.id,
         selectedApplications: selected.filter(
           (application) => application.status === "REJECTED"
         ),

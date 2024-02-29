@@ -40,7 +40,6 @@ import { getRoundStrategyType, renderToPlainText, useAllo } from "common";
 import { roundApplicationsToCSV } from "../api/exports";
 import { utils } from "ethers";
 import { useWallet } from "../common/Auth";
-import { getAddress } from "viem";
 
 async function exportAndDownloadCSV(roundId: string, chainId: number) {
   const csv = await roundApplicationsToCSV(roundId, chainId);
@@ -197,7 +196,7 @@ export default function ApplicationsToApproveReject({
         roundStrategy: getRoundStrategyType(
           applications[0].payoutStrategy.strategyName
         ),
-        roundStrategyAddress: getAddress(applications[0].payoutStrategy.id),
+        roundStrategyAddress: applications[0].payoutStrategy.id,
         roundId: id,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         applications: applications,

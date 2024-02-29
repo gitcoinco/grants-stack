@@ -38,7 +38,6 @@ import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
 import { CheckIcon } from "@heroicons/react/solid";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
-import { getAddress } from "viem";
 
 async function exportAndDownloadCSV(roundId: string, chainId: number) {
   const csv = await roundApplicationsToCSV(roundId, chainId);
@@ -193,7 +192,7 @@ export default function ApplicationsToReview() {
         roundStrategy: getRoundStrategyType(
           applications[0].payoutStrategy.strategyName
         ),
-        roundStrategyAddress: getAddress(applications[0].payoutStrategy.id),
+        roundStrategyAddress: applications[0].payoutStrategy.id,
         selectedApplications: selected.filter(
           (application) => application.inReview
         ),
