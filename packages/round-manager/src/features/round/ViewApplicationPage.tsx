@@ -493,7 +493,7 @@ export default function ViewApplicationPage() {
                 <span>{"Program Details"}</span>
               </Link>
               <ChevronRightIcon className="h-6 w-6" />
-              <Link to={`/round/${id}`}>
+              <Link to={`/round/${roundId.toString()}`}>
                 <span>{"Round Details"}</span>
               </Link>
               {round && <RoundBadgeStatus round={round} />}
