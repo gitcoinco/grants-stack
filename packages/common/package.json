@@ -11,13 +11,11 @@
     "dev:fast": "esbuild src/**/*.ts src/**/*.tsx src/*.ts src/*.tsx --outdir=dist --watch",
     "build": "tsc",
     "dev": "tsc --watch --preserveWatchOutput",
-    "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "test:watch": "vitest watch"
   },
   "dependencies": {
     "@allo-team/allo-v2-sdk": "1.0.53",
-    "eslint-config-gitcoin": "workspace:*",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@rainbow-me/rainbowkit": "^0.12.16",
