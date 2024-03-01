@@ -61,6 +61,7 @@ import {
   formatDateWithOrdinal,
   getRoundStrategyType,
   getUTCTime,
+  useAllo,
   VerifiedCredentialState,
 } from "common";
 import { renderToHTML } from "common";
@@ -132,7 +133,7 @@ export default function ViewApplicationPage() {
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "Indexing the data.",
       status: indexingStatus,
     },
     {
@@ -192,11 +193,25 @@ export default function ViewApplicationPage() {
   }, [application, application?.project?.owners, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { round } = useRoundById(roundId);
+  const allo = useAllo();
 
   const handleReview = async () => {
+    if (
+      reviewDecision === undefined ||
+      applications === undefined ||
+      applications[0]?.payoutStrategy?.strategyName === undefined ||
+      applications[0]?.payoutStrategy?.id === undefined
+    ) {
+      return;
+    }
+
     try {
       if (!application) {
         throw "error: application does not exist";
+      }
+
+      if (allo === null) {
+        throw "wallet not connected";
       }
 
       setOpenProgressModal(true);
@@ -206,17 +221,17 @@ export default function ViewApplicationPage() {
         application.inReview = true;
       } else {
         application.status = reviewDecision;
+        application.inReview = false;
       }
 
       await bulkUpdateGrantApplications({
         roundId: roundId,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        applications: applications!,
-        payoutAddress:
-          reviewDecision == "IN_REVIEW"
-            ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              applications![0].payoutStrategy?.id
-            : undefined,
+        allo,
+        applications: applications,
+        roundStrategyAddress: applications[0].payoutStrategy.id,
+        roundStrategy: getRoundStrategyType(
+          applications[0].payoutStrategy.strategyName
+        ),
         selectedApplications: [application],
       });
     } catch (error) {
@@ -479,7 +494,7 @@ export default function ViewApplicationPage() {
                 <span>{"Program Details"}</span>
               </Link>
               <ChevronRightIcon className="h-6 w-6" />
-              <Link to={`/round/${id}`}>
+              <Link to={`/round/${roundId.toString()}`}>
                 <span>{"Round Details"}</span>
               </Link>
               {round && <RoundBadgeStatus round={round} />}

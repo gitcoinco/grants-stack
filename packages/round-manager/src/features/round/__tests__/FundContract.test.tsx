@@ -56,6 +56,7 @@ jest.mock("../../api/utils", () => ({
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useTokenPrice: jest.fn(),
+  useAllo: jest.fn(),
 }));
 
 jest.mock("data-layer", () => ({

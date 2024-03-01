@@ -36,6 +36,10 @@ export const useCreateProgram = () => {
     operatorWallets: Address[]
   ) => {
     try {
+      if (allo === null) {
+        throw new Error("Allo is not available");
+      }
+
       setState({
         type: "creating",
         step: CreateProgramStep.STORING,

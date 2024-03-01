@@ -17,36 +17,43 @@ export const useApplicationsByRoundId = (roundId: string) => {
         chainId,
       });
 
-      const applications: GrantApplication[] = dataLayerApplications.map(
+      const applications: GrantApplication[] = dataLayerApplications.flatMap(
         (application) => {
-          return {
-            id: application.id,
-            applicationIndex: Number(application.id),
-            round: application.roundId,
-            status: application.status,
-            metadata: application.metadata,
-            project: {
-              ...application.metadata.application.project,
-              owners: application.canonicalProject.roles,
-              id: application.projectId,
+          if (application.canonicalProject === null) {
+            console.error(
+              `Canonical project not found for application ${application.id}`
+            );
+            return [];
+          }
+
+          return [
+            {
+              id: application.id,
+              applicationIndex: Number(application.id),
+              round: application.roundId,
+              status: application.status,
+              metadata: application.metadata,
+              project: {
+                ...application.metadata.application.project,
+                owners: application.canonicalProject.roles,
+                id: application.projectId,
+              },
+              inReview: application.status === "IN_REVIEW",
+              recipient: application.metadata.application.recipient,
+              createdAt: "0",
+              projectsMetaPtr: { protocol: 1, pointer: "" },
+              payoutStrategy: {
+                strategyName: application.round.strategyName,
+                id: application.round.strategyAddress,
+                payouts: [],
+              },
+              statusSnapshots: application.statusSnapshots.map((snapshot) => ({
+                ...snapshot,
+                updatedAt: new Date(snapshot.updatedAt),
+              })),
+              answers: application.metadata.application.answers,
             },
-            inReview: application.statusSnapshots.some(
-              (snapshot) => snapshot.status === "IN_REVIEW"
-            ),
-            recipient: application.metadata.application.recipient,
-            createdAt: "0",
-            projectsMetaPtr: { protocol: 1, pointer: "" },
-            payoutStrategy: {
-              strategyName: application.round.strategyName,
-              id: application.round.strategyAddress,
-              payouts: [],
-            },
-            statusSnapshots: application.statusSnapshots.map((snapshot) => ({
-              ...snapshot,
-              updatedAt: new Date(snapshot.updatedAt),
-            })),
-            answers: application.metadata.application.answers,
-          };
+          ];
         }
       );
 

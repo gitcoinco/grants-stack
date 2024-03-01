@@ -42,6 +42,8 @@ import {
 import { getPermitType, PermitSignature } from "../voting";
 import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
 import { MRC_CONTRACTS } from "../addresses/mrc";
+import { ApplicationStatus } from "data-layer";
+import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 
 function createProjectId(args: {
   chainId: number;
@@ -54,6 +56,19 @@ function createProjectId(args: {
       [BigInt(args.chainId), args.registryAddress, args.projectIndex]
     )
   );
+}
+
+function applicationStatusToNumber(status: ApplicationStatus) {
+  switch (status) {
+    case "PENDING":
+      return 0n;
+    case "APPROVED":
+      return 1n;
+    case "REJECTED":
+      return 2n;
+    default:
+      throw new Error(`Unknown status ${status}`);
+  }
 }
 
 export class AlloV1 implements Allo {
@@ -154,8 +169,7 @@ export class AlloV1 implements Allo {
     if (tx.type === "success") {
       return this.transactionSender.wait(tx.value, 60_000, publicClient);
     } else {
-      console.error(tx.error);
-      throw new Error("Failed voting");
+      throw tx.error;
     }
   }
 
@@ -617,6 +631,72 @@ export class AlloV1 implements Allo {
       });
 
       return success(args.projectId);
+    });
+  }
+
+  bulkUpdateApplicationStatus(args: {
+    roundId: string;
+    strategyAddress: Address;
+    applicationsToUpdate: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+    currentApplications: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+  }): AlloOperation<
+    Result<void>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (args.applicationsToUpdate.some((app) => app.status === "IN_REVIEW")) {
+        throw new AlloError("DirectGrants is not supported yet!");
+      }
+
+      const roundAddress = getAddress(args.roundId);
+      const rows = buildUpdatedRowsOfApplicationStatuses({
+        applicationsToUpdate: args.applicationsToUpdate,
+        currentApplications: args.currentApplications,
+        statusToNumber: applicationStatusToNumber,
+        bitsPerStatus: 2,
+      });
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: roundAddress,
+        abi: RoundImplementationABI,
+        functionName: "setApplicationStatuses",
+        args: [rows],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to update application status");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(undefined));
+
+      return success(undefined);
     });
   }
 }

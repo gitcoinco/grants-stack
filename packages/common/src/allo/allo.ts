@@ -1,5 +1,5 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { Round } from "data-layer";
+import { ApplicationStatus, Round } from "data-layer";
 import { Address, Hex, PublicClient } from "viem";
 import { AnyJson, ChainId } from "..";
 import { CreateRoundData, RoundCategory, VotingToken } from "../types";
@@ -115,6 +115,26 @@ export interface Allo {
       nonce: bigint;
     }
   ) => Promise<TransactionReceipt>;
+
+  bulkUpdateApplicationStatus: (args: {
+    roundId: string;
+    strategyAddress: Address;
+    applicationsToUpdate: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+    currentApplications: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+  }) => AlloOperation<
+    Result<void>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  >;
 }
 
 export { AlloOperation };
