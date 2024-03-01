@@ -1,11 +1,12 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { ApplicationStatus, Round } from "data-layer";
-import { Address, Hex } from "viem";
-import { AnyJson } from "..";
-import { CreateRoundData, RoundCategory } from "../types";
+import { Address, Hex, PublicClient } from "viem";
+import { AnyJson, ChainId } from "..";
+import { CreateRoundData, RoundCategory, VotingToken } from "../types";
 import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";
+import { PermitSignature } from "./voting";
 
 export type CreateRoundArguments = {
   roundData: {
@@ -100,6 +101,20 @@ export interface Allo {
       transactionStatus: Result<TransactionReceipt>;
     }
   >;
+
+  voteUsingMRCContract: (
+    publicClient: PublicClient,
+    chainId: ChainId,
+    token: VotingToken,
+    groupedVotes: Record<string, Hex[]>,
+    groupedAmounts: Record<string, bigint>,
+    nativeTokenAmount: bigint,
+    permit?: {
+      sig: PermitSignature;
+      deadline: number;
+      nonce: bigint;
+    }
+  ) => Promise<TransactionReceipt>;
 
   bulkUpdateApplicationStatus: (args: {
     roundId: string;

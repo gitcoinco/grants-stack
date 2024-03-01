@@ -416,3 +416,5 @@ export interface Web3Instance {
 }
 
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
+
+export type { VotingToken } from "./types";

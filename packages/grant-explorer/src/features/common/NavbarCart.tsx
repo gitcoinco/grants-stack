@@ -1,4 +1,4 @@
-import { Project } from "../api/types";
+import { Project } from "data-layer";
 import tw from "tailwind-styled-components";
 
 export default function NavbarCart(props: { cart: Project[] }) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { CartProject, VotingToken } from "../../api/types";
+import { CartProject } from "../../api/types";
 import { useRoundById } from "../../../context/RoundContext";
 import { ProjectInCart } from "./ProjectInCart";
 import {
@@ -12,6 +12,7 @@ import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor, usePassport } from "../../api/passport";
+import { VotingToken } from "common";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {

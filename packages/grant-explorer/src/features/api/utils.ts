@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CartProject, IPFSObject, Round, VotingToken } from "./types";
+import { CartProject, IPFSObject, Round } from "./types";
 import {
   ChainId,
   graphQlEndpoints,
@@ -8,6 +8,7 @@ import {
   ROUND_PAYOUT_MERKLE,
   ROUND_PAYOUT_MERKLE_OLD,
   RoundPayoutTypeNew,
+  VotingToken,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
 import { useSearchParams } from "react-router-dom";

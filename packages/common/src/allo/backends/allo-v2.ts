@@ -11,21 +11,22 @@ import {
   TransactionData,
   DonationVotingMerkleDistributionDirectTransferStrategyAbi,
 } from "@allo-team/allo-v2-sdk";
+import { Abi, Address, getAddress, Hex, PublicClient, zeroAddress } from "viem";
+import { AnyJson, ChainId } from "../..";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { Abi, Address, Hex, getAddress, zeroAddress } from "viem";
-import { AnyJson } from "../..";
-import { RoundCategory } from "../../types";
+import { RoundCategory, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { Result, dateToEthereumTimestamp, error, success } from "../common";
+import { dateToEthereumTimestamp, error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
-  TransactionReceipt,
-  TransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
+  TransactionReceipt,
+  TransactionSender,
   sendTransaction,
 } from "../transaction-sender";
+import { PermitSignature } from "../voting";
 import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 
@@ -74,6 +75,28 @@ export class AlloV2 implements Allo {
     this.allo = new AlloV2Contract({
       chain: this.chainId,
     });
+  }
+
+  async voteUsingMRCContract(
+    _publicClient: PublicClient,
+    _chainId: ChainId,
+    _token: VotingToken,
+    _groupedVotes: Record<string, Hex[]>,
+    _groupedAmounts: Record<string, bigint>,
+    _nativeTokenAmount: bigint,
+    _permit?: {
+      sig: PermitSignature;
+      deadline: number;
+      nonce: bigint;
+    }
+  ) {
+    return {
+      transactionHash: "0x0",
+      blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
+      blockNumber: BigInt(1),
+      logs: [],
+      status: "success",
+    } as TransactionReceipt;
   }
 
   createProject(args: {
