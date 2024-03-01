@@ -28,7 +28,10 @@
     "test:builder": "pnpm test --filter=builder",
     "typecheck:builder": "turbo run typecheck --filter=builder",
     "test:common": "turbo run test --filter=common",
-    "typecheck:common": "turbo run typecheck --filter=common",
+    "lint:common": "pnpm --filter common run lint",
+    "typecheck:common": "pnpm --filter common run typecheck",
+    "lint:data-layer": "pnpm --filter data-layer run lint",
+    "typecheck:data-layer": "pnpm --filter data-layer run typecheck",
     "test:verify-env": "turbo run test --filter=verify-env",
     "test:data-layer": "turbo run test --filter=data-layer"
   },

@@ -11,18 +11,9 @@ import {
   TransactionData,
   DonationVotingMerkleDistributionDirectTransferStrategyAbi,
 } from "@allo-team/allo-v2-sdk";
-import {
-  Abi,
-  Address,
-  getAddress,
-  Hex,
-  parseUnits,
-  PublicClient,
-  zeroAddress,
-} from "viem";
+import { Abi, Address, getAddress, Hex, PublicClient, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { payoutTokens } from "../../payoutTokens";
 import { RoundCategory, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { dateToEthereumTimestamp, error, Result, success } from "../common";
@@ -319,7 +310,6 @@ export class AlloV2 implements Allo {
       }
 
       let initStrategyDataEncoded: Address;
-      let matchAmount = 0n;
       let token: Address = getAddress(NATIVE);
 
       if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
@@ -352,12 +342,6 @@ export class AlloV2 implements Allo {
         const alloToken =
           args.roundData.token === zeroAddress ? NATIVE : args.roundData.token;
 
-        const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
-        const payoutToken = payoutTokens.filter(
-          (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
-        )[0];
-
-        matchAmount = parseUnits(tokenAmount.toString(), payoutToken.decimal);
         token = getAddress(alloToken);
       } else if (args.roundData.roundCategory === RoundCategory.Direct) {
         const initStrategyData: DirectGrantsStrategyTypes.InitializeParams = {
