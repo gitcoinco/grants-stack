@@ -15,6 +15,11 @@ import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
+}));
+
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
 

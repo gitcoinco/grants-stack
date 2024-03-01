@@ -284,6 +284,10 @@ export function RoundApplicationForm(props: {
 
   const next: SubmitHandler<Round> = async (values) => {
     try {
+      if (allo === null) {
+        throw "wallet not connected";
+      }
+
       setOpenProgressModal(true);
       const data = _.merge(formData, values);
 

@@ -16,7 +16,6 @@ import {
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { MemoryRouter } from "react-router-dom";
-import { updateApplicationStatuses } from "../../api/application";
 import { faker } from "@faker-js/faker";
 import { RoundContext } from "../../../context/round/RoundContext";
 import { useWallet } from "../../common/Auth";
@@ -28,8 +27,17 @@ import {
 import { GrantApplication, ProgressStatus } from "../../api/types";
 import { errorModalDelayMs } from "../../../constants";
 import moment from "moment";
-import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import {
+  AlloOperation,
+  useAllo,
+  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
+} from "common";
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
+}));
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth");
@@ -85,10 +93,21 @@ const verifyCredentialMock = jest.spyOn(
 );
 
 describe("ViewApplicationPage", () => {
+  let mockBulkUpdateApplicationStatus: jest.Mock;
+
   beforeEach(() => {
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
     (useSwitchNetwork as any).mockReturnValue({ chains: [] });
     (useDisconnect as any).mockReturnValue({});
+
+    mockBulkUpdateApplicationStatus = jest.fn().mockImplementation(() => {
+      return new AlloOperation(async () => ({
+        type: "success",
+      }));
+    });
+    (useAllo as jest.Mock).mockImplementation(() => ({
+      bulkUpdateApplicationStatus: mockBulkUpdateApplicationStatus,
+    }));
   });
 
   it("should display 404 when no application is found", () => {
@@ -195,11 +214,6 @@ describe("ViewApplicationPage", () => {
     });
 
     it("should start the bulk update process to persist approve decision when confirm is selected", async () => {
-      const transactionBlockNumber = 10;
-      (updateApplicationStatuses as jest.Mock).mockResolvedValue(
-        transactionBlockNumber
-      );
-
       renderWithContext(<ViewApplicationPage />);
 
       fireEvent.click(screen.getByText(/Approve/));
@@ -207,15 +221,11 @@ describe("ViewApplicationPage", () => {
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Confirm"));
 
-      await waitFor(() => {
-        expect(updateApplicationStatuses).toBeCalled();
-      });
+      expect(mockBulkUpdateApplicationStatus).toBeCalled();
 
-      expect(updateApplicationStatuses).toBeCalled();
-      const updateApplicationStatusesFirstCall = (
-        updateApplicationStatuses as jest.Mock
-      ).mock.calls[0];
-      const actualRoundId = updateApplicationStatusesFirstCall[0];
+      const updateApplicationStatusesFirstCall =
+        mockBulkUpdateApplicationStatus.mock.calls[0];
+      const actualRoundId = updateApplicationStatusesFirstCall[0].roundId;
       expect(actualRoundId).toEqual(roundIdOverride);
     });
 
@@ -236,11 +246,6 @@ describe("ViewApplicationPage", () => {
     });
 
     it("shows error modal when reviewing application fails", async () => {
-      const transactionBlockNumber = 10;
-      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
-        transactionBlockNumber,
-      });
-
       renderWithContext(<ViewApplicationPage />, {
         contractUpdatingStatus: ProgressStatus.IS_ERROR,
       });
@@ -262,11 +267,6 @@ describe("ViewApplicationPage", () => {
     });
 
     it("choosing done closes the error modal", async () => {
-      const transactionBlockNumber = 10;
-      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
-        transactionBlockNumber,
-      });
-
       renderWithContext(<ViewApplicationPage />, {
         contractUpdatingStatus: ProgressStatus.IS_ERROR,
       });

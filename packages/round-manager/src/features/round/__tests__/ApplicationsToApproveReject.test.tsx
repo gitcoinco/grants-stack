@@ -15,11 +15,16 @@ import {
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
-import { updateApplicationStatuses } from "../../api/application";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ProgressStatus } from "../../api/types";
 import { errorModalDelayMs } from "../../../constants";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import { AlloOperation, useAllo } from "common";
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
+}));
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({
@@ -73,11 +78,20 @@ function setupInBulkSelectionMode() {
 }
 
 describe("<ApplicationsReceived />", () => {
+  let mockBulkUpdateApplicationStatus: jest.Mock;
   beforeEach(() => {
     (useApplicationsByRoundId as jest.Mock).mockResolvedValue({
       data: grantApplications,
       isLoading: false,
     });
+    mockBulkUpdateApplicationStatus = jest.fn().mockImplementation(() => {
+      return new AlloOperation(async () => ({
+        type: "success",
+      }));
+    });
+    (useAllo as jest.Mock).mockImplementation(() => ({
+      bulkUpdateApplicationStatus: mockBulkUpdateApplicationStatus,
+    }));
   });
 
   it("should display a loading spinner if received applications are loading", () => {
@@ -344,7 +358,6 @@ describe("<ApplicationsReceived />", () => {
       });
 
       it("starts the bulk update process when confirm is selected", async () => {
-        (updateApplicationStatuses as jest.Mock).mockResolvedValue("");
         setupInBulkSelectionMode();
 
         const approveButton = screen.queryAllByTestId("approve-button")[0];
@@ -361,15 +374,13 @@ describe("<ApplicationsReceived />", () => {
 
         fireEvent.click(confirmationModalConfirmButton);
 
-        await waitFor(() => {
-          expect(updateApplicationStatuses).toBeCalled();
-        });
+        expect(mockBulkUpdateApplicationStatus).toBeCalled();
 
-        expect(updateApplicationStatuses).toBeCalled();
-        const updateApplicationStatusesFirstCall = (
-          updateApplicationStatuses as jest.Mock
-        ).mock.calls[0];
-        const actualRoundId = updateApplicationStatusesFirstCall[0];
+        grantApplications[0].status = "REJECTED";
+
+        const updateApplicationStatusesFirstCall =
+          mockBulkUpdateApplicationStatus.mock.calls[0];
+        const actualRoundId = updateApplicationStatusesFirstCall[0].roundId;
         expect(actualRoundId).toEqual(roundIdOverride);
       });
 
@@ -409,11 +420,6 @@ describe("<ApplicationsReceived />", () => {
 
   describe("when processing bulk action fails", () => {
     beforeEach(() => {
-      const transactionBlockNumber = 10;
-      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
-        transactionBlockNumber,
-      });
-
       (useApplicationsByRoundId as jest.Mock).mockReturnValue({
         data: grantApplications,
       });

@@ -42,6 +42,7 @@ import {
   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
 } from "common";
+import { zeroAddress } from "viem";
 
 export const mockedOperatorWallet = faker.finance.ethereumAddress();
 
@@ -308,7 +309,7 @@ export const makeGrantApplicationData = (
 
     payoutStrategy: payoutStrategy ?? {
       strategyName: ROUND_PAYOUT_MERKLE,
-      id: faker.random.alpha({ count: 59, casing: "lower" }),
+      id: zeroAddress,
       payouts: [],
     },
 

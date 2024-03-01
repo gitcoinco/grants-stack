@@ -1,5 +1,5 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { Round } from "data-layer";
+import { ApplicationStatus, Round } from "data-layer";
 import { Address, Hex } from "viem";
 import { AnyJson } from "..";
 import { CreateRoundData, RoundCategory } from "../types";
@@ -98,6 +98,26 @@ export interface Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+    }
+  >;
+
+  bulkUpdateApplicationStatus: (args: {
+    roundId: string;
+    strategyAddress: Address;
+    applicationsToUpdate: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+    currentApplications: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+  }) => AlloOperation<
+    Result<void>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 }
