@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { CartProject, ProgressStatus } from "./features/api/types";
-import { ChainId } from "common";
+import { Allo, ChainId } from "common";
 import { useCartStorage } from "./store";
 import {
   getAddress,
@@ -16,17 +16,16 @@ import {
 } from "viem";
 import {
   encodeQFVotes,
-  getPermitType,
   signPermit2612,
   signPermitDai,
-  voteUsingMRCContract,
 } from "./features/api/voting";
-import { MRC_CONTRACTS } from "./features/api/contracts";
 import { groupBy, uniq } from "lodash-es";
 import { datadogLogs } from "@datadog/browser-logs";
 import { getEnabledChains } from "./app/chainConfig";
 import { WalletClient } from "wagmi";
-import { getContract, getWalletClient, PublicClient } from "@wagmi/core";
+import { getContract, getPublicClient } from "@wagmi/core";
+import { getPermitType } from "common/dist/allo/voting";
+import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 
 type ChainMap<T> = Record<ChainId, T>;
 
@@ -52,7 +51,7 @@ interface CheckoutState {
   checkout: (
     chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
     walletClient: WalletClient,
-    publicClient: PublicClient
+    allo: Allo
   ) => Promise<void>;
   getCheckedOutProjects: () => CartProject[];
   checkedOutProjects: CartProject[];
@@ -98,7 +97,8 @@ export const useCheckoutStore = create<CheckoutState>()(
     },
     checkout: async (
       chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
-      walletClient: WalletClient
+      walletClient: WalletClient,
+      allo: Allo
     ) => {
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
       get().setChainsToCheckout(
@@ -147,9 +147,6 @@ export const useCheckoutStore = create<CheckoutState>()(
         /* Switch to the current chain */
         await switchToChain(chainId, walletClient, get);
 
-        const wc = await getWalletClient({
-          chainId,
-        })!;
         const token = getVotingTokenForChain(chainId);
 
         let sig;
@@ -246,8 +243,10 @@ export const useCheckoutStore = create<CheckoutState>()(
             );
           }
 
-          const receipt = await voteUsingMRCContract(
-            wc!,
+          const receipt = await allo.voteUsingMRCContract(
+            getPublicClient({
+              chainId,
+            }),
             chainId,
             token,
             groupedEncodedVotes,

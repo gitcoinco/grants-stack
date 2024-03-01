@@ -1,4 +1,4 @@
-import { ChainId } from "common";
+import { ChainId } from "../../chain-ids";
 import { Hex } from "viem";
 
 export const MRC_CONTRACTS: Record<ChainId, Hex> = {

@@ -8,7 +8,7 @@ import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
@@ -31,6 +31,7 @@ import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
 import { fetchBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
+import { useAllo } from "../../api/AlloWrapper";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -46,7 +47,7 @@ export function SummaryContainer() {
   const dataLayer = useDataLayer();
 
   const { openConnectModal } = useConnectModal();
-  const publicClient = usePublicClient();
+  const allo = useAllo();
   const projectsByChain = useMemo(
     () => groupBy(projects, "chainId"),
     [projects]
@@ -307,7 +308,7 @@ export function SummaryContainer() {
 
   async function handleSubmitDonation() {
     try {
-      if (!walletClient) {
+      if (!walletClient || !allo) {
         return;
       }
 
@@ -322,7 +323,7 @@ export function SummaryContainer() {
           permitDeadline: currentPermitDeadline,
         })),
         walletClient,
-        publicClient
+        allo
       );
     } catch (error) {
       console.error(error);
