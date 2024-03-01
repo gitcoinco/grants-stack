@@ -78,13 +78,13 @@ export class AlloV2 implements Allo {
   }
 
   async voteUsingMRCContract(
-    publicClient: PublicClient,
-    chainId: ChainId,
-    token: VotingToken,
-    groupedVotes: Record<string, Hex[]>,
-    groupedAmounts: Record<string, bigint>,
-    nativeTokenAmount: bigint,
-    permit?: {
+    _publicClient: PublicClient,
+    _chainId: ChainId,
+    _token: VotingToken,
+    _groupedVotes: Record<string, Hex[]>,
+    _groupedAmounts: Record<string, bigint>,
+    _nativeTokenAmount: bigint,
+    _permit?: {
       sig: PermitSignature;
       deadline: number;
       nonce: bigint;
