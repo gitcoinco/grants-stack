@@ -34,7 +34,7 @@ jobs:
         run: |
           pnpm typecheck:common
 
-      - name: Typecheck
+      - name: Lint
         run: |
           pnpm lint:common
 
