@@ -1,7 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
   makeRoundData,
-  wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
@@ -117,18 +116,12 @@ describe("ReclaimFunds", () => {
 
       render(
         wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithApplicationContext(
-            wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewRoundPage />, {
-                data: [mockRoundData],
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }),
-              { programs: [] }
-            ),
-            {
-              applications: [],
-              isLoading: false,
-            }
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
           )
         )
       );

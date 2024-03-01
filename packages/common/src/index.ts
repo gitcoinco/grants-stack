@@ -321,16 +321,36 @@ export type RoundPayoutTypeNew =
   | "allov2.MicroGrantsStrategy"
   | "allov2.MicroGrantsHatsStrategy"
   | "allov2.SQFSuperFluidStrategy"
-  | "allov2.MicroGrantsGovStrategy"
+  | "allov2.MicroGrantsGovStrategy";
 
-export const ROUND_PAYOUT_STRATEGY_TITLES: Record<string, string> = {
-  MERKLE: "Quadratic Funding",
-  DIRECT: "Direct Grants",
-  "allov1.QF": "Quadratic Funding",
-  "allov1.Direct": "Direct Grants",
-  "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
-    "Quadratic Funding",
-};
+export type RoundStrategyType = "QuadraticFunding" | "DirectGrants";
+
+export function getRoundStrategyTitle(name: string) {
+  switch (getRoundStrategyType(name)) {
+    case "DirectGrants":
+      return "Direct Grants";
+
+    case "QuadraticFunding":
+      return "Quadratic Funding";
+  }
+}
+
+export function getRoundStrategyType(name: string): RoundStrategyType {
+  switch (name) {
+    case "allov1.Direct":
+    case "DIRECT":
+    case "allov2.DirectGrantsSimpleStrategy":
+      return "DirectGrants";
+
+    case "allov1.QF":
+    case "MERKLE":
+    case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
+      return "QuadraticFunding";
+
+    default:
+      throw new Error(`Unknown round strategy type: ${name}`);
+  }
+}
 
 export type RoundVisibilityType = "public" | "private";
 

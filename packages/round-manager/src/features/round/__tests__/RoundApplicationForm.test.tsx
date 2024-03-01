@@ -11,7 +11,6 @@ import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
 import { saveToIPFS } from "../../api/ipfs";
-import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import {
   ApplicationMetadata,
@@ -87,9 +86,6 @@ describe("<RoundApplicationForm />", () => {
       address: "0x0",
     });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
-    (deployRoundContract as jest.Mock).mockResolvedValue({
-      transactionBlockNumber: 0,
-    });
     (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(0);
   });
 

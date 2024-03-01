@@ -4,6 +4,7 @@ import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types"
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { RoundCategory } from "common/dist/types";
 import {
   fetchApplicationData,
   submitApplication,
@@ -15,7 +16,6 @@ import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantsPath, projectPath } from "../../routes";
 import colors from "../../styles/colors";
 import { isInfinite } from "../../utils/components";
-import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -67,7 +67,6 @@ function ViewApplication() {
       round,
       applicationState,
       applicationStatus,
-      // applicationError,
       applicationMetadata: round?.applicationMetadata,
       publishedApplicationMetadata,
       showErrorModal,
@@ -118,7 +117,7 @@ function ViewApplication() {
     </div>;
   }
 
-  const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
+  const isDirectRound = props.round?.payoutStrategy === RoundCategory.Direct;
   const roundInReview = props.roundApplicationStatus === "IN_REVIEW";
   const roundApproved = props.roundApplicationStatus === "APPROVED";
   const hasProperStatus = roundInReview || roundApproved;

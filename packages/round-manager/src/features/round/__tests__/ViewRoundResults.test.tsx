@@ -7,7 +7,6 @@ import {
   makeApprovedProjectData,
   makeQFDistribution,
   makeRoundData,
-  wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithFinalizeRoundContext,
   wrapWithReadProgramContext,
@@ -160,14 +159,12 @@ describe("View Round Results", () => {
 
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithFinalizeRoundContext(
-              wrapWithRoundContext(<ViewRoundPage />, {
-                data: [mockRoundData],
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              })
-            )
+        wrapWithReadProgramContext(
+          wrapWithFinalizeRoundContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            })
           )
         )
       )

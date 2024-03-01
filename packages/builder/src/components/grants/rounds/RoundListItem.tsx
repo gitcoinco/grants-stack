@@ -1,10 +1,9 @@
 // eslint-disable max-len
 import { Badge, Box, Spinner } from "@chakra-ui/react";
-import { ROUND_PAYOUT_DIRECT } from "common";
-import { ApplicationStatus, ProjectApplication } from "data-layer";
+import { ApplicationStatus, ProjectApplicationWithRound } from "data-layer";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { RoundType } from "../../../actions/rounds";
+import { RoundCategory } from "common/dist/types";
 import { RootState } from "../../../reducers";
 import { roundApplicationPathForProject } from "../../../routes";
 import { Round, RoundDisplayType } from "../../../types";
@@ -16,7 +15,7 @@ export default function RoundListItem({
   displayType,
   projectId,
 }: {
-  applicationData?: ProjectApplication;
+  applicationData?: ProjectApplicationWithRound;
   displayType?: RoundDisplayType;
   projectId: string;
 }) {
@@ -55,14 +54,14 @@ export default function RoundListItem({
         }
       | undefined;
 
-    switch (roundData?.payoutStrategy as RoundType) {
-      case "MERKLE":
+    switch (roundData?.payoutStrategy) {
+      case RoundCategory.QuadraticFunding:
         colorScheme = {
           bg: "#E6FFF9",
           text: "gitcoin-grey-500",
         };
         break;
-      case "DIRECT":
+      case RoundCategory.Direct:
         colorScheme = {
           bg: "#FDDEE4",
           text: "gitcoin-grey-500",
@@ -85,12 +84,12 @@ export default function RoundListItem({
           p={2}
           textTransform="inherit"
         >
-          {roundPayoutStrategy === "MERKLE" ? (
+          {roundPayoutStrategy === RoundCategory.QuadraticFunding ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Quadratic Funding
             </span>
           ) : null}
-          {roundPayoutStrategy === "DIRECT" ? (
+          {roundPayoutStrategy === RoundCategory.Direct ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Direct Grant
             </span>
@@ -138,8 +137,7 @@ export default function RoundListItem({
     }
 
     const applicationStatus = applicationData?.status;
-    const isDirectRound = props.round?.payoutStrategy === ROUND_PAYOUT_DIRECT;
-    const applicationInReview = applicationData?.inReview;
+    const isDirectRound = props.round?.payoutStrategy === RoundCategory.Direct;
 
     if (RoundDisplayType.Current === dt) {
       return (
@@ -155,15 +153,13 @@ export default function RoundListItem({
               Rejected
             </span>
           ) : null}
-          {applicationStatus === "PENDING" &&
-          isDirectRound &&
-          !applicationInReview ? (
+          {applicationStatus === "PENDING" && isDirectRound ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               Received
             </span>
           ) : null}
-          {(applicationStatus === "PENDING" && !isDirectRound) ||
-          (isDirectRound && applicationInReview) ? (
+          {(applicationStatus === "IN_REVIEW" && !isDirectRound) ||
+          isDirectRound ? (
             <span className={`text-${colorScheme?.text} text-sm`}>
               In Review
             </span>
@@ -194,12 +190,12 @@ export default function RoundListItem({
     }
 
     if (RoundDisplayType.Active === dt) {
-      if (applicationData?.status === "PENDING" && !applicationInReview) {
+      if (applicationData?.status === "PENDING") {
         return <span className={`text-${colorScheme?.text}`}>Received</span>;
       }
       if (
-        (applicationStatus === "PENDING" && !isDirectRound) ||
-        (isDirectRound && applicationInReview)
+        (applicationStatus === "IN_REVIEW" && !isDirectRound) ||
+        isDirectRound
       ) {
         return <span className={`text-${colorScheme?.text}`}>In Review</span>;
       }

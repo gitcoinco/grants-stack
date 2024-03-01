@@ -1,6 +1,6 @@
 import {
-  Allo as AlloV2Contract,
   AlloAbi,
+  Allo as AlloV2Contract,
   CreateProfileArgs,
   DirectGrantsStrategy,
   DirectGrantsStrategyTypes,
@@ -20,6 +20,9 @@ import {
   zeroAddress,
 } from "viem";
 import { AnyJson, ChainId } from "../..";
+import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
+import { payoutTokens } from "../../payoutTokens";
+import { RoundCategory, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { dateToEthereumTimestamp, error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -30,15 +33,13 @@ import {
   TransactionReceipt,
   TransactionSender,
 } from "../transaction-sender";
-import { RoundCategory, VotingToken } from "../../types";
 import { PermitSignature } from "../voting";
-import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { payoutTokens } from "../../payoutTokens";
+import { RoundApplicationAnswers } from "data-layer";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
     "0x2f9920e473E30E54bD9D56F571BcebC2470A37B0",
-  [RoundCategory.Direct]: "0xaC3f288a7A3efA3D33d9Dd321ad31072915D155d",
+  [RoundCategory.Direct]: "0x726d2398E79c9535Dd81FB1576A8aCB798c35951",
 };
 
 export class AlloV2 implements Allo {
@@ -347,6 +348,12 @@ export class AlloV2 implements Allo {
           registryGating: true,
           metadataRequired: true,
           grantAmountRequired: true,
+          registrationStartTime: dateToEthereumTimestamp(
+            args.roundData.roundStartTime
+          ), // in seconds, must be in future
+          registrationEndTime: dateToEthereumTimestamp(
+            args.roundData.roundEndTime
+          ), // in seconds, must be after registrationStartTime
         };
 
         const strategy = new DirectGrantsStrategy({
@@ -438,6 +445,7 @@ export class AlloV2 implements Allo {
     projectId: Hex;
     roundId: Hex | number;
     metadata: AnyJson;
+    strategy?: RoundCategory;
   }): AlloOperation<
     Result<Hex>,
     {
@@ -451,11 +459,6 @@ export class AlloV2 implements Allo {
         return error(new AlloError("roundId must be number"));
       }
 
-      const strategyInstance = new DonationVotingMerkleDistributionStrategy({
-        chain: this.chainId,
-        poolId: args.roundId,
-      });
-
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
@@ -465,17 +468,57 @@ export class AlloV2 implements Allo {
       }
 
       const metadata = args.metadata as unknown as {
-        application: { recipient: Hex };
+        application: { recipient: Hex; answers: RoundApplicationAnswers[] };
       };
 
-      const registerRecipientTx = strategyInstance.getRegisterRecipientData({
-        registryAnchor: args.projectId,
-        recipientAddress: metadata.application.recipient,
-        metadata: {
-          protocol: 1n,
-          pointer: ipfsResult.value,
-        },
-      });
+      let registerRecipientTx: TransactionData;
+
+      switch (args.strategy) {
+        case RoundCategory.QuadraticFunding: {
+          const strategyInstance = new DonationVotingMerkleDistributionStrategy(
+            {
+              chain: this.chainId,
+              poolId: args.roundId,
+            }
+          );
+
+          registerRecipientTx = strategyInstance.getRegisterRecipientData({
+            registryAnchor: args.projectId,
+            recipientAddress: metadata.application.recipient,
+            metadata: {
+              protocol: 1n,
+              pointer: ipfsResult.value,
+            },
+          });
+          break;
+        }
+
+        case RoundCategory.Direct: {
+          const strategyInstance = new DirectGrantsStrategy({
+            chain: this.chainId,
+            poolId: args.roundId,
+          });
+
+          const answers = metadata.application.answers;
+          const amountAnswer = answers.find(
+            (a) => a.question === "Amount requested"
+          );
+
+          registerRecipientTx = strategyInstance.getRegisterRecipientData({
+            registryAnchor: args.projectId,
+            recipientAddress: metadata.application.recipient,
+            grantAmount: BigInt((amountAnswer?.answer as string) ?? 0),
+            metadata: {
+              protocol: 1n,
+              pointer: ipfsResult.value,
+            },
+          });
+          break;
+        }
+
+        default:
+          throw new AlloError("Unsupported strategy");
+      }
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: registerRecipientTx.to,

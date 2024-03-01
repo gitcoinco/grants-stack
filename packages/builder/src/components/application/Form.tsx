@@ -14,7 +14,8 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
-import { ProjectApplication, useDataLayer } from "data-layer";
+import { ProjectApplicationWithRound, useDataLayer } from "data-layer";
+import { RoundCategory } from "common/dist/types";
 import { resetApplicationError } from "../../actions/roundApplication";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
@@ -26,7 +27,6 @@ import {
   ProjectOption,
   Round,
 } from "../../types";
-import { ROUND_PAYOUT_DIRECT } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
@@ -82,7 +82,7 @@ export default function Form({
   const { chains } = useNetwork();
 
   const [projectApplications, setProjectApplications] = useState<
-    ProjectApplication[]
+    ProjectApplicationWithRound[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
@@ -354,7 +354,7 @@ export default function Form({
 
   const isDirectRound =
     round.payoutStrategy !== null &&
-    round.payoutStrategy === ROUND_PAYOUT_DIRECT;
+    round.payoutStrategy === RoundCategory.Direct;
   // todo: ensure that the applications are made by a project owner
   const isValidProjectSelected =
     (isDirectRound || !hasExistingApplication) &&

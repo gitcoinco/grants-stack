@@ -12,7 +12,6 @@ import { useDisconnect, useNetwork } from "wagmi";
 import {
   makeDirectGrantRoundData,
   makeRoundData,
-  wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
@@ -85,18 +84,12 @@ describe("View Round", () => {
   it("when edit is clicked, it enables the imputs for editing and shows the update round button and cancel button", () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );
@@ -119,18 +112,12 @@ describe("View Round", () => {
   it("when cancel is clicked, it disables the imputs for editing and hides the update round button and cancel button", async () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );
@@ -157,18 +144,12 @@ describe("View Round", () => {
   it("when update round is clicked, it updates the round name", async () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );
@@ -206,18 +187,12 @@ describe("View Round", () => {
   it("adds a requirement successfully", async () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );
@@ -235,18 +210,12 @@ describe("View Round", () => {
   it("removes a requirement successfully", async () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );
@@ -264,18 +233,12 @@ describe("View Round", () => {
   it("round and application periods tab for quadratic funding round settings", async () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );
@@ -284,7 +247,9 @@ describe("View Round", () => {
       const roundSettingsTab = await screen.findByTestId("round-settings");
       expect(roundSettingsTab).toBeInTheDocument();
       fireEvent.click(roundSettingsTab);
-      const periodTab = await screen.findAllByText("Round & Application Period");
+      const periodTab = await screen.findAllByText(
+        "Round & Application Period"
+      );
       expect(periodTab.length).toBe(1);
     });
   });
@@ -297,18 +262,12 @@ describe("View Round", () => {
     });
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockDirectGrantRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockDirectGrantRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );
@@ -330,18 +289,12 @@ describe("View Round", () => {
     });
     render(
       wrapWithBulkUpdateGrantApplicationContext(
-        wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockDirectGrantRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
-            { programs: [] }
-          ),
-          {
-            applications: [],
-            isLoading: false,
-          }
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockDirectGrantRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
         )
       )
     );

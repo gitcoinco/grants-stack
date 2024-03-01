@@ -28,7 +28,6 @@ import {
   Cancel,
   Select,
 } from "./BulkApplicationCommon";
-import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
 import ProgressModal from "../common/ProgressModal";
@@ -38,6 +37,7 @@ import { renderToPlainText } from "common";
 import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
 import { CheckIcon } from "@heroicons/react/solid";
+import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 
 async function exportAndDownloadCSV(roundId: string, chainId: number) {
   const csv = await roundApplicationsToCSV(roundId, chainId);
@@ -71,7 +71,7 @@ export default function ApplicationsToReview() {
     throw new Error("id is undefined");
   }
 
-  const { applications, isLoading } = useApplicationByRoundId(id);
+  const { data: applications, isLoading } = useApplicationsByRoundId(id);
   const filteredApplications =
     applications?.filter(
       (a) => a.status === ApplicationStatus.PENDING.toString() && !a.inReview

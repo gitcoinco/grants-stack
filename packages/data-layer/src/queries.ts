@@ -138,9 +138,7 @@ export const getProjects = gql`
 export const getApplicationsByProjectId = gql`
   query getApplicationsByProjectId($projectId: String!, $chainIds: [Int!]!) {
     applications(
-      filter: {
-        project: { id: { equalTo: $projectId }, chainId: { in: $chainIds } }
-      }
+      filter: { projectId: { equalTo: $projectId }, chainId: { in: $chainIds } }
     ) {
       id
       projectId
@@ -155,6 +153,32 @@ export const getApplicationsByProjectId = gql`
         donationsStartTime
         donationsEndTime
         roundMetadata
+      }
+    }
+  }
+`;
+
+export const getApplicationsForManager = gql`
+  query getApplicationsForManager($chainId: Int!, $roundId: String!) {
+    applications(
+      filter: { roundId: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      id
+      projectId
+      chainId
+      roundId
+      status
+      metadataCid
+      metadata
+      statusSnapshots
+      round {
+        strategyName
+        strategyAddress
+      }
+      canonicalProject {
+        roles {
+          address
+        }
       }
     }
   }
@@ -238,14 +262,6 @@ export const getApplicationsByRoundIdAndProjectIds = gql`
         donationsEndTime
         roundMetadata
       }
-    }
-  }
-`;
-
-export const getProgramName = gql`
-  query getProgramNameQuery($projectId: String!) {
-    projects(filter: { id: { equalTo: $projectId } }) {
-      metadata
     }
   }
 `;

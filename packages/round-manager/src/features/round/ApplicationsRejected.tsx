@@ -1,7 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
+import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import {
   ApplicationStatus,
   GrantApplication,
@@ -39,7 +39,7 @@ export default function ApplicationsRejected() {
     throw new Error("id is undefined");
   }
 
-  const { applications, isLoading } = useApplicationByRoundId(id);
+  const { data: applications, isLoading } = useApplicationsByRoundId(id);
   const rejectedApplications =
     applications?.filter(
       (a) => a.status == ApplicationStatus.REJECTED.toString()
