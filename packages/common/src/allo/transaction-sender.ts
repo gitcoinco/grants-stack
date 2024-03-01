@@ -150,7 +150,6 @@ export function createViemTransactionSender(
       timeout?: number,
       customPublicClient?: PublicClient
     ): Promise<TransactionReceipt> {
-      debugger;
       const receipt = await (
         customPublicClient ?? publicClient
       ).waitForTransactionReceipt({
