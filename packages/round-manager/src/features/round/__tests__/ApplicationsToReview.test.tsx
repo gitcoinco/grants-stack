@@ -20,6 +20,12 @@ import { ProgressStatus } from "../../api/types";
 import { errorModalDelayMs } from "../../../constants";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
+import { AlloOperation, useAllo } from "common";
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
+}));
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({
@@ -90,12 +96,21 @@ function setupInBulkSelectionMode() {
 }
 
 describe("<ApplicationsReceived />", () => {
+  let mockBulkUpdateApplicationStatus: jest.Mock;
   beforeEach(() => {
     (useApplicationsByRoundId as jest.Mock).mockReturnValue({
       data: grantApplications,
       error: undefined,
       isLoading: false,
     });
+    mockBulkUpdateApplicationStatus = jest.fn().mockImplementation(() => {
+      return new AlloOperation(async () => ({
+        type: "success",
+      }));
+    });
+    (useAllo as jest.Mock).mockImplementation(() => ({
+      bulkUpdateApplicationStatus: mockBulkUpdateApplicationStatus,
+    }));
   });
 
   it("should display a loading spinner if received applications are loading", () => {

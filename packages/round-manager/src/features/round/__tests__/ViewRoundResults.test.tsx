@@ -18,6 +18,11 @@ import ViewRoundPage from "../ViewRoundPage";
 import { useRound, useRoundMatchingFunds } from "../../../hooks";
 import { Round } from "../../api/types";
 
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
+}));
+
 jest.mock("../../common/Auth");
 jest.mock("../../api/round");
 

@@ -305,6 +305,9 @@ function Apply() {
                   answers: RoundApplicationAnswers,
                   createProfile: boolean
                 ) => {
+                  if (allo === null) {
+                    return;
+                  }
                   dispatch(
                     submitApplication(
                       props.round!.id,

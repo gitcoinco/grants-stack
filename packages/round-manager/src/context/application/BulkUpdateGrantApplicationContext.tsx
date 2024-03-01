@@ -2,7 +2,6 @@ import {
   AppStatus,
   GrantApplication,
   ProgressStatus,
-  Status,
   StatusForDirectPayout,
 } from "../../features/api/types";
 import React, {
@@ -20,6 +19,8 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { Signer } from "@ethersproject/abstract-signer";
 import { useWallet } from "../../features/common/Auth";
+import { Allo, RoundStrategyType } from "common";
+import { Address } from "viem";
 
 export interface BulkUpdateGrantApplicationState {
   roundId: string;
@@ -59,10 +60,14 @@ export const initialBulkUpdateGrantApplicationState: BulkUpdateGrantApplicationS
   };
 
 export type BulkUpdateGrantApplicationParams = {
+  signer: Signer;
+  context: BulkUpdateGrantApplicationState;
   roundId: string;
+  roundStrategy: RoundStrategyType;
+  roundStrategyAddress: string;
   applications: GrantApplication[];
-  payoutAddress?: string;
   selectedApplications: GrantApplication[];
+  allo: Allo;
 };
 
 export const BulkUpdateGrantApplicationContext =
@@ -112,15 +117,6 @@ export const BulkUpdateGrantApplicationProvider = ({
   );
 };
 
-interface bulkUpdateGrantApplicationParams {
-  signer: Signer;
-  context: BulkUpdateGrantApplicationState;
-  roundId: string;
-  payoutAddress?: string;
-  applications: GrantApplication[];
-  selectedApplications: GrantApplication[];
-}
-
 function resetToInitialState(context: BulkUpdateGrantApplicationState) {
   const { setContractUpdatingStatus, setIndexingStatus } = context;
 
@@ -128,63 +124,6 @@ function resetToInitialState(context: BulkUpdateGrantApplicationState) {
     initialBulkUpdateGrantApplicationState.contractUpdatingStatus
   );
   setIndexingStatus(initialBulkUpdateGrantApplicationState.indexingStatus);
-}
-
-function convertStatus(status: string) {
-  switch (status) {
-    case "PENDING":
-      return 0;
-    case "APPROVED":
-      return 1;
-    case "REJECTED":
-      return 2;
-    case "CANCELLED":
-      return 3;
-    case "IN_REVIEW":
-      return 4;
-    default:
-      throw new Error(`Unknown status ${status}`);
-  }
-}
-
-function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
-  const statuses: Status[] = [];
-
-  const startApplicationIndex = rowIndex * 128;
-
-  for (let columnIndex = 0; columnIndex < 128; columnIndex++) {
-    const applicationIndex = startApplicationIndex + columnIndex;
-    const application = applications.find(
-      (app) => app.applicationIndex === applicationIndex
-    );
-
-    if (application !== undefined) {
-      statuses.push({
-        index: columnIndex,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        status: convertStatus(application.status!),
-      });
-    }
-  }
-  return statuses;
-}
-
-function createFullRow(statuses: Status[]) {
-  let fullRow = BigInt(0);
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  for (const statusObj of statuses!) {
-    const { index: columnIndex, status } = statusObj;
-
-    if (columnIndex >= 0 && columnIndex < 128 && status >= 0 && status <= 3) {
-      const statusBigInt = BigInt(status === 4 ? 0 : status); // 4 is IN_REVIEW, but for the round is still pending.
-      const shiftedStatus = statusBigInt << BigInt(columnIndex * 2);
-      fullRow |= shiftedStatus;
-    } else {
-      throw new Error("Invalid index or status value");
-    }
-  }
-  return fullRow.toString();
 }
 
 function fetchStatusesForPayoutStrategy(
@@ -232,13 +171,56 @@ async function _bulkUpdateGrantApplication({
   signer,
   context,
   roundId,
-  payoutAddress,
+  roundStrategyAddress,
   applications,
   selectedApplications,
-}: bulkUpdateGrantApplicationParams) {
+  allo,
+}: BulkUpdateGrantApplicationParams) {
   resetToInitialState(context);
-
   try {
+    const containsInReview = selectedApplications.some((a) => a.inReview);
+
+    if (!containsInReview) {
+      context.setContractUpdatingStatus(ProgressStatus.IN_PROGRESS);
+
+      const result = await allo
+        .bulkUpdateApplicationStatus({
+          roundId,
+          applicationsToUpdate: selectedApplications.map((a) => ({
+            index: a.applicationIndex,
+            status: a.status,
+          })),
+          currentApplications: applications.map((a) => ({
+            index: a.applicationIndex,
+            status: a.status,
+          })),
+          // FIXME: use getAddress when tests stop failing because of it
+          strategyAddress: roundStrategyAddress as Address,
+        })
+        .on("transactionStatus", (tx) => {
+          if (tx.type === "success") {
+            context.setContractUpdatingStatus(ProgressStatus.IS_SUCCESS);
+            context.setIndexingStatus(ProgressStatus.IN_PROGRESS);
+          } else {
+            context.setContractUpdatingStatus(ProgressStatus.IS_ERROR);
+          }
+        })
+        .on("indexingStatus", (tx) => {
+          if (tx.type === "success") {
+            context.setIndexingStatus(ProgressStatus.IS_SUCCESS);
+          } else {
+            context.setIndexingStatus(ProgressStatus.IS_ERROR);
+          }
+        })
+        .execute();
+
+      if (result.type === "error") {
+        console.error("failed to update application status", result.error);
+      }
+
+      return;
+    }
+
     const updatedApplications = applications.map((application) => {
       const newStatus = {
         status: application.status,
@@ -267,47 +249,26 @@ async function _bulkUpdateGrantApplication({
       )
     );
 
-    let transactionBlockNumber: number;
+    const statusRows: AppStatus[] = [];
 
-    if (payoutAddress) {
-      const statusRows: AppStatus[] = [];
-
-      for (let i = 0; i < rowsToUpdate.length; i++) {
-        const rowStatuses = fetchStatusesForPayoutStrategy(
-          rowsToUpdate[i],
-          updatedApplications
-        );
-        statusRows.push({
-          index: rowsToUpdate[i],
-          statusRow: createFullRowForPayoutStrategy(rowStatuses),
-        });
-      }
-      transactionBlockNumber = await updateContract({
-        signer,
-        roundId,
-        payoutAddress,
-        statusRows,
-        context,
-      });
-    } else {
-      const statusRows: AppStatus[] = [];
-
-      for (let i = 0; i < rowsToUpdate.length; i++) {
-        const rowStatuses = fetchStatuses(rowsToUpdate[i], updatedApplications);
-        statusRows.push({
-          index: rowsToUpdate[i],
-          statusRow: createFullRow(rowStatuses),
-        });
-      }
-
-      transactionBlockNumber = await updateContract({
-        signer,
-        roundId,
-        payoutAddress,
-        statusRows,
-        context,
+    for (let i = 0; i < rowsToUpdate.length; i++) {
+      const rowStatuses = fetchStatusesForPayoutStrategy(
+        rowsToUpdate[i],
+        updatedApplications
+      );
+      statusRows.push({
+        index: rowsToUpdate[i],
+        statusRow: createFullRowForPayoutStrategy(rowStatuses),
       });
     }
+
+    const transactionBlockNumber = await updateContract({
+      signer,
+      roundId,
+      payoutAddress: roundStrategyAddress,
+      statusRows,
+      context,
+    });
     await waitForSubgraphToUpdate(signer, transactionBlockNumber, context);
   } catch (error) {
     datadogLogs.logger.error(`error: _bulkUpdateGrantApplication - ${error}`);
@@ -328,7 +289,7 @@ export const useBulkUpdateGrantApplications = () => {
   const { signer } = useWallet();
 
   const handleBulkUpdateGrantApplications = async (
-    params: BulkUpdateGrantApplicationParams
+    params: Omit<BulkUpdateGrantApplicationParams, "signer" | "context">
   ) => {
     return _bulkUpdateGrantApplication({
       ...params,

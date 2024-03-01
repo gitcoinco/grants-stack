@@ -283,9 +283,9 @@ export type ProjectStatus =
   | "RECEIVED"
   | "APPROVED"
   | "REJECTED"
-  | "CANCELLED"
   | "APPEAL"
   | "FRAUD"
+  | "CANCELLED"
   | "IN_REVIEW";
 
 export type ProjectCredentials = {
@@ -352,7 +352,7 @@ export interface GrantApplication {
   /**
    * Status of each grant application
    */
-  status?: ProjectStatus; // handle round status 0,1,2,3
+  status: ProjectStatus; // handle round status 0,1,2,3
   inReview?: boolean; // handle payoutStatus for DirectStrategy
 
   projectId?: string;
@@ -376,7 +376,7 @@ export interface GrantApplication {
   /**
    * Index of a grant application
    */
-  applicationIndex?: number;
+  applicationIndex: number;
   /**
    * Created timestamp of a grant application
    */
