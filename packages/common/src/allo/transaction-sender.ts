@@ -31,11 +31,16 @@ export interface TransactionReceipt {
     data: Hex;
     topics: Hex[];
   }>;
+  status: "success" | "reverted";
 }
 
 export interface TransactionSender {
   send(tx: TransactionData): Promise<Hex>;
-  wait(txHash: Hex): Promise<TransactionReceipt>;
+  wait(
+    txHash: Hex,
+    timeout?: number,
+    publicClient?: PublicClient
+  ): Promise<TransactionReceipt>;
   address(): Promise<Address>;
 }
 
@@ -106,6 +111,7 @@ export function createEthersTransactionSender(
           data: log.data as Hex,
           topics: log.topics as Hex[],
         })),
+        status: txReceipt.status === 1 ? "success" : "reverted",
       };
     },
 
@@ -139,9 +145,16 @@ export function createViemTransactionSender(
       return transactionHash;
     },
 
-    async wait(txHash: Hex): Promise<TransactionReceipt> {
-      const receipt = await publicClient.waitForTransactionReceipt({
+    async wait(
+      txHash: Hex,
+      timeout?: number,
+      customPublicClient?: PublicClient
+    ): Promise<TransactionReceipt> {
+      const receipt = await (
+        customPublicClient ?? publicClient
+      ).waitForTransactionReceipt({
         hash: txHash,
+        timeout: timeout,
       });
 
       return {
@@ -152,6 +165,7 @@ export function createViemTransactionSender(
           data: log.data,
           topics: log.topics,
         })),
+        status: receipt.status,
       };
     },
 
@@ -210,6 +224,7 @@ export function createMockTransactionSender(): TransactionSender & {
         blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
         blockNumber: BigInt(1),
         logs: [],
+        status: "success",
       };
     },
 
@@ -242,7 +257,10 @@ export async function sendTransaction<
   TFunctionName extends string,
 >(
   sender: TransactionSender,
-  args: EncodeFunctionDataParameters<TAbi, TFunctionName> & { address: Address }
+  args: EncodeFunctionDataParameters<TAbi, TFunctionName> & {
+    address: Address;
+    value?: bigint;
+  }
 ): Promise<Result<Hex>> {
   try {
     const data = encodeFunctionData(args);
@@ -250,7 +268,7 @@ export async function sendTransaction<
     const tx = await sender.send({
       to: args.address,
       data: data,
-      value: 0n,
+      value: args.value ?? 0n,
     });
 
     return success(tx);

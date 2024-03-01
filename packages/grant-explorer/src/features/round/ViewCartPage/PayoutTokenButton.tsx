@@ -1,7 +1,7 @@
-import { VotingToken } from "../../api/types";
 import { Listbox } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/24/solid";
 import React from "react";
+import { VotingToken } from "common";
 
 export function PayoutTokenButton(props: { token?: VotingToken }) {
   const { token } = props;

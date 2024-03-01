@@ -7,7 +7,8 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { BreadcrumbItem } from "../../common/Breadcrumb";
 import { zeroAddress } from "viem";
-import { VotingToken } from "../../api/types";
+
+import { VotingToken } from "common";
 
 const mockAddress = faker.finance.ethereumAddress();
 

@@ -9,29 +9,45 @@ import {
   Registry,
   RegistryAbi,
   TransactionData,
+  DonationVotingMerkleDistributionDirectTransferStrategyAbi,
 } from "@allo-team/allo-v2-sdk";
+import { Abi, Address, getAddress, Hex, PublicClient, zeroAddress } from "viem";
+import { AnyJson, ChainId } from "../..";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { Abi, Address, Hex, getAddress, parseUnits, zeroAddress } from "viem";
-import { AnyJson } from "../..";
-import { payoutTokens } from "../../payoutTokens";
-import { RoundCategory } from "../../types";
+import { RoundCategory, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { Result, dateToEthereumTimestamp, error, success } from "../common";
+import { dateToEthereumTimestamp, error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
-  TransactionReceipt,
-  TransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
+  TransactionReceipt,
+  TransactionSender,
+  sendTransaction,
 } from "../transaction-sender";
-import { RoundApplicationAnswers } from "data-layer";
+import { PermitSignature } from "../voting";
+import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
+import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
     "0x2f9920e473E30E54bD9D56F571BcebC2470A37B0",
   [RoundCategory.Direct]: "0x726d2398E79c9535Dd81FB1576A8aCB798c35951",
 };
+
+function applicationStatusToNumber(status: ApplicationStatus) {
+  switch (status) {
+    case "PENDING":
+      return 1n;
+    case "APPROVED":
+      return 2n;
+    case "REJECTED":
+      return 3n;
+    default:
+      throw new Error(`Unknown status ${status}`);
+  }
+}
 
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
@@ -59,6 +75,28 @@ export class AlloV2 implements Allo {
     this.allo = new AlloV2Contract({
       chain: this.chainId,
     });
+  }
+
+  async voteUsingMRCContract(
+    _publicClient: PublicClient,
+    _chainId: ChainId,
+    _token: VotingToken,
+    _groupedVotes: Record<string, Hex[]>,
+    _groupedAmounts: Record<string, bigint>,
+    _nativeTokenAmount: bigint,
+    _permit?: {
+      sig: PermitSignature;
+      deadline: number;
+      nonce: bigint;
+    }
+  ) {
+    return {
+      transactionHash: "0x0",
+      blockHash: `0x${Math.random().toString(16).slice(2)}` as Hex,
+      blockNumber: BigInt(1),
+      logs: [],
+      status: "success",
+    } as TransactionReceipt;
   }
 
   createProject(args: {
@@ -272,7 +310,6 @@ export class AlloV2 implements Allo {
       }
 
       let initStrategyDataEncoded: Address;
-      let matchAmount = 0n;
       let token: Address = getAddress(NATIVE);
 
       if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
@@ -305,12 +342,6 @@ export class AlloV2 implements Allo {
         const alloToken =
           args.roundData.token === zeroAddress ? NATIVE : args.roundData.token;
 
-        const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
-        const payoutToken = payoutTokens.filter(
-          (t) => t.address.toLowerCase() === args.roundData.token.toLowerCase()
-        )[0];
-
-        matchAmount = parseUnits(tokenAmount.toString(), payoutToken.decimal);
         token = getAddress(alloToken);
       } else if (args.roundData.roundCategory === RoundCategory.Direct) {
         const initStrategyData: DirectGrantsStrategyTypes.InitializeParams = {
@@ -518,6 +549,71 @@ export class AlloV2 implements Allo {
       }
 
       return success(receipt.transactionHash);
+    });
+  }
+
+  bulkUpdateApplicationStatus(args: {
+    roundId: string;
+    strategyAddress: Address;
+    applicationsToUpdate: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+    currentApplications: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+  }): AlloOperation<
+    Result<void>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (args.applicationsToUpdate.some((app) => app.status === "IN_REVIEW")) {
+        throw new AlloError("DirectGrants is not supported yet!");
+      }
+
+      const rows = buildUpdatedRowsOfApplicationStatuses({
+        applicationsToUpdate: args.applicationsToUpdate,
+        currentApplications: args.currentApplications,
+        statusToNumber: applicationStatusToNumber,
+        bitsPerStatus: 4,
+      });
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: args.strategyAddress,
+        abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi as Abi,
+        functionName: "reviewRecipients",
+        args: [rows, args.currentApplications.length + 1],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to update application status");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(undefined));
+
+      return success(undefined);
     });
   }
 }

@@ -9,12 +9,13 @@ import {
   maxUint256,
   parseAbiParameters,
   parseUnits,
+  PublicClient,
   zeroAddress,
 } from "viem";
 import { AnyJson, ChainId } from "../..";
 import { parseChainId } from "../../chains";
 import { payoutTokens } from "../../payoutTokens";
-import { RoundCategory } from "../../types";
+import { RoundCategory, VotingToken } from "../../types";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import RoundImplementationABI from "../abis/allo-v1/RoundImplementation";
@@ -38,6 +39,11 @@ import {
   TransactionReceipt,
   TransactionSender,
 } from "../transaction-sender";
+import { getPermitType, PermitSignature } from "../voting";
+import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
+import { MRC_CONTRACTS } from "../addresses/mrc";
+import { ApplicationStatus } from "data-layer";
+import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 
 function createProjectId(args: {
   chainId: number;
@@ -50,6 +56,19 @@ function createProjectId(args: {
       [BigInt(args.chainId), args.registryAddress, args.projectIndex]
     )
   );
+}
+
+function applicationStatusToNumber(status: ApplicationStatus) {
+  switch (status) {
+    case "PENDING":
+      return 0n;
+    case "APPROVED":
+      return 1n;
+    case "REJECTED":
+      return 2n;
+    default:
+      throw new Error(`Unknown status ${status}`);
+  }
 }
 
 export class AlloV1 implements Allo {
@@ -72,6 +91,86 @@ export class AlloV1 implements Allo {
     this.roundFactoryAddress = roundFactoryMap[this.chainId];
     this.ipfsUploader = args.ipfsUploader;
     this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
+  }
+
+  async voteUsingMRCContract(
+    publicClient: PublicClient,
+    chainId: ChainId,
+    token: VotingToken,
+    groupedVotes: Record<string, Hex[]>,
+    groupedAmounts: Record<string, bigint>,
+    nativeTokenAmount: bigint,
+    permit?: {
+      sig: PermitSignature;
+      deadline: number;
+      nonce: bigint;
+    }
+  ) {
+    let tx: Result<Hex>;
+    const mrcAddress = MRC_CONTRACTS[chainId];
+
+    /* decide which function to use based on whether token is native, permit-compatible or DAI */
+    if (token.address === zeroAddress) {
+      tx = await sendTransaction(this.transactionSender, {
+        address: mrcAddress,
+        abi: MRC_ABI,
+        functionName: "vote",
+        args: [
+          Object.values(groupedVotes),
+          Object.keys(groupedVotes) as Hex[],
+          Object.values(groupedAmounts),
+        ],
+        value: nativeTokenAmount,
+      });
+    } else if (permit) {
+      if (getPermitType(token) === "dai") {
+        tx = await sendTransaction(this.transactionSender, {
+          address: mrcAddress,
+          abi: MRC_ABI,
+          functionName: "voteDAIPermit",
+          args: [
+            Object.values(groupedVotes),
+            Object.keys(groupedVotes) as Hex[],
+            Object.values(groupedAmounts),
+            Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+            token.address as Hex,
+            BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+            permit.nonce,
+            permit.sig.v,
+            permit.sig.r as Hex,
+            permit.sig.s as Hex,
+          ],
+        });
+      } else {
+        tx = await sendTransaction(this.transactionSender, {
+          address: mrcAddress,
+          abi: MRC_ABI,
+          functionName: "voteERC20Permit",
+          args: [
+            Object.values(groupedVotes),
+            Object.keys(groupedVotes) as Hex[],
+            Object.values(groupedAmounts),
+            Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+            token.address as Hex,
+            BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+            permit.sig.v,
+            permit.sig.r as Hex,
+            permit.sig.s as Hex,
+          ],
+        });
+      }
+    } else {
+      /* Tried voting using erc-20 but no permit signature provided */
+      throw new Error(
+        "Tried voting using erc-20 but no permit signature provided"
+      );
+    }
+
+    if (tx.type === "success") {
+      return this.transactionSender.wait(tx.value, 60_000, publicClient);
+    } else {
+      throw tx.error;
+    }
   }
 
   createProject(args: { name: string; metadata: AnyJson }): AlloOperation<
@@ -170,7 +269,7 @@ export class AlloV1 implements Allo {
 
       const programFactoryAddress = programFactoryMap[this.chainId];
 
-      let abiType = parseAbiParameters([
+      const abiType = parseAbiParameters([
         "(uint256 protocol, string pointer), address[], address[]",
       ]);
 
@@ -344,8 +443,9 @@ export class AlloV1 implements Allo {
         }
 
         let initRoundTimes: bigint[];
-        let admins: Address[];
-        admins = [getAddress(await args.walletSigner.getAddress())];
+        const admins: Address[] = [
+          getAddress(await args.walletSigner.getAddress()),
+        ];
         if (isQF) {
           if (args.roundData.applicationsEndTime === undefined) {
             args.roundData.applicationsEndTime = args.roundData.roundStartTime;
@@ -534,6 +634,72 @@ export class AlloV1 implements Allo {
       return success(args.projectId);
     });
   }
+
+  bulkUpdateApplicationStatus(args: {
+    roundId: string;
+    strategyAddress: Address;
+    applicationsToUpdate: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+    currentApplications: {
+      index: number;
+      status: ApplicationStatus;
+    }[];
+  }): AlloOperation<
+    Result<void>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (args.applicationsToUpdate.some((app) => app.status === "IN_REVIEW")) {
+        throw new AlloError("DirectGrants is not supported yet!");
+      }
+
+      const roundAddress = getAddress(args.roundId);
+      const rows = buildUpdatedRowsOfApplicationStatuses({
+        applicationsToUpdate: args.applicationsToUpdate,
+        currentApplications: args.currentApplications,
+        statusToNumber: applicationStatusToNumber,
+        bitsPerStatus: 2,
+      });
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: roundAddress,
+        abi: RoundImplementationABI,
+        functionName: "setApplicationStatuses",
+        args: [rows],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to update application status");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(undefined));
+
+      return success(undefined);
+    });
+  }
 }
 
 export type CreateRoundArgs = {
@@ -559,7 +725,7 @@ function constructCreateRoundArgs({
   roundMetadata,
   applicationMetadata,
 }: CreateRoundArgs) {
-  let abiType = parseAbiParameters([
+  const abiType = parseAbiParameters([
     "(address votingStrategy, address payoutStrategy),(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime),uint256,address,uint8,address,((uint256 protocol, string pointer), (uint256 protocol, string pointer)),(address[] adminRoles, address[] roundOperators)",
   ]);
   return encodeAbiParameters(abiType, [

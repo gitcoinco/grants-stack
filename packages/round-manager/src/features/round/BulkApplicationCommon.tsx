@@ -221,7 +221,7 @@ export function Continue(props: {
   onClick: () => void;
 }) {
   return (
-    <div className="fixed w-full left-0 bottom-0 bg-white">
+    <div className="fixed w-full left-0 bottom-0 bg-white z-20">
       <hr />
       <div className="flex justify-end items-center py-5 pr-20">
         <span className="text-grey-400 text-sm mr-6">

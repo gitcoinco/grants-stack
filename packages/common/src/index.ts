@@ -113,10 +113,12 @@ export type Payout = {
  * @param chainId Chain ID
  * @returns
  */
+// FIXME: the function should be prefixed by `use` since it's a hook
 export function fetchProjectPaidInARound(
   roundId: string,
   chainId: ChainId
 ): Promise<Payout[]> {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data } = useSWR(
     [roundId, chainId],
     ([roundId, chainId]: [roundId: string, chainId: ChainId]) => {
@@ -264,6 +266,7 @@ export const useTokenPrice = (tokenId: string | undefined) => {
       loading,
     };
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useMemo(async () => {
     setLoading(true);
 
@@ -386,7 +389,7 @@ export type AnyJson =
 interface JsonMap {
   [key: string]: AnyJson;
 }
-interface JsonArray extends Array<AnyJson> {}
+type JsonArray = Array<AnyJson>;
 
 /**
  * Wrapper hook to expose wallet auth information to other components
@@ -413,3 +416,5 @@ export interface Web3Instance {
 }
 
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
+
+export type { VotingToken } from "./types";

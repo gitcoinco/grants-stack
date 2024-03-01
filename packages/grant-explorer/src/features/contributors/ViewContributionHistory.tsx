@@ -1,7 +1,6 @@
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { VotingToken } from "../api/types";
 import { getChainIds, votingTokens } from "../api/utils";
 import Navbar from "../common/Navbar";
 import blockies from "ethereum-blockies";
@@ -15,6 +14,7 @@ import {
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
+import { VotingToken } from "common";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")

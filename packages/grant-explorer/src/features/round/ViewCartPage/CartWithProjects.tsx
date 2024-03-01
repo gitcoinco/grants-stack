@@ -4,11 +4,10 @@ import {
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
 import React, { useEffect, useState } from "react";
-import { VotingToken } from "../../api/types";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
-import { ChainId, useTokenPrice } from "common";
+import { ChainId, useTokenPrice, VotingToken } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
 

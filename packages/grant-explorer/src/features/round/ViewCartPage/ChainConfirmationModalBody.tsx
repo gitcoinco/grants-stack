@@ -1,6 +1,6 @@
 import React from "react";
-import { CartProject, VotingToken } from "../../api/types";
-import { ChainId } from "common";
+import { CartProject } from "../../api/types";
+import { ChainId, VotingToken } from "common";
 import { CHAINS } from "../../api/utils";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
