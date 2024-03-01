@@ -299,7 +299,7 @@ function AfterRoundStart(props: {
                 </p>
               </div>
 
-              <p className="text-grey-400 text-sm flex gap-2 mb-4">
+              <div className="text-grey-400 text-sm flex gap-2 mb-4">
                 <span>Deployed on:</span>
                 <div className="flex">
                   <img
@@ -309,7 +309,7 @@ function AfterRoundStart(props: {
                   />
                   <span>{CHAINS[chainId]?.name}</span>
                 </div>
-              </p>
+              </div>
 
               {!isDirectRound(round) && (
                 <p className="text-1xl mb-4">
