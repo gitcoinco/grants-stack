@@ -22,6 +22,7 @@ import {
   V2RoundWithRoles,
   V2RoundWithProject,
   v2Project,
+  v1LegacyProject,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -231,7 +232,10 @@ export class DataLayer {
       projectId,
     };
 
-    const response: { projects: v2Project[] } = await request(
+    const response: {
+      projects: v2Project[],
+      legacyProjects: v1LegacyProject[]
+    } = await request(
       this.gsIndexerEndpoint,
       getProjectById,
       requestVariables,
@@ -240,6 +244,9 @@ export class DataLayer {
     if (response.projects.length === 0) return null;
 
     const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
+    if (response.legacyProjects.length > 0) {
+      project.legacyProject = response.legacyProjects[0].v1ProjectId;
+    };
 
     return { project };
   }

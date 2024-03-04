@@ -200,10 +200,11 @@ export type v2Project = {
    * The linked chains to the canonical project
    */
   linkedChains?: number[];
+  legacyProject?: string;
 };
 
-export type V1LegacyProjects = {
-  // TODO
+export type v1LegacyProject = {
+  v1ProjectId: string;
 }
 
 /**
