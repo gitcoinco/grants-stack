@@ -3,6 +3,7 @@ import { faker } from "@faker-js/faker";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useParams } from "react-router-dom";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { useRound, useRoundMatchingFunds } from "../../../hooks";
 import {
   makeApprovedProjectData,
   makeQFDistribution,
@@ -13,10 +14,8 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/payoutStrategy";
-import { ProgressStatus } from "../../api/types";
+import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-import { useRound, useRoundMatchingFunds } from "../../../hooks";
-import { Round } from "../../api/types";
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
@@ -52,6 +51,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
   useDataLayer: () => ({}),
 }));
 

@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
-import ViewRoundPage from "../ViewRoundPage";
-import { ProgressStatus, Round } from "../../api/types";
+import { useTokenPrice } from "common";
+import { useParams } from "react-router-dom";
+import {
+  useAccount,
+  useBalance,
+  useDisconnect,
+  useSigner,
+  useSwitchNetwork,
+} from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import {
-  useAccount,
-  useBalance,
-  useDisconnect,
-  useSwitchNetwork,
-  useSigner,
-} from "wagmi";
-import { useParams } from "react-router-dom";
-import { faker } from "@faker-js/faker";
-import { useTokenPrice } from "common";
+import { ProgressStatus, Round } from "../../api/types";
+import ViewRoundPage from "../ViewRoundPage";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -60,7 +60,9 @@ jest.mock("common", () => ({
 }));
 
 jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
   useDataLayer: () => ({}),
+  useApplicationsByRoundId: () => {},
 }));
 
 describe("fund contract tab", () => {
