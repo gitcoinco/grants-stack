@@ -273,12 +273,17 @@ export const fetchProjectApplications =
         return;
       }
 
-      const id = projectId;
 
       const chainIds = web3Provider.chains.map((chain) => chain.id);
 
-      const projectIds = [id];
-      // TODO:FIX 
+      const legacyProjectId = await dataLayer.getLegacyProjectId({
+        projectId: projectId,
+      });
+      
+      const projectIds = [projectId];
+      if (legacyProjectId) {
+        projectIds.push(legacyProjectId);
+      }
 
       const applications = await dataLayer.getApplicationsByProjectIds({
         projectIds,

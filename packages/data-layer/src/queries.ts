@@ -94,14 +94,23 @@ export const getProjectById = gql`
         createdAtBlock
       }
     }
+  }
+`;
 
-    # Migrated V1 Project
+/**
+ * Get a getLegacyProjectId by its ID
+ * @param $projectId - The Allo v2 ID of the project
+ *
+ * @returns The project
+ */
+export const getLegacyProjectId = gql`
+ query ($projectId: String!) {
     legacyProjects(filter: {
       v2ProjectId: {equalTo: $projectId}
     }) {
       v1ProjectId
     }
-  }
+ }
 `;
 
 /**
