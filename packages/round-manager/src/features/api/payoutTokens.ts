@@ -360,6 +360,14 @@ const ARBITRUM_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["USDGLO"],
     redstoneTokenId: RedstoneTokenIds["USDGLO"],
   },
+  {
+    name: "GTC",
+    chainId: ChainId.ARBITRUM,
+    address: "0x7f9a7db853ca816b9a138aee3380ef34c437dee0",
+    decimal: 18,
+    logo: TokenNamesAndLogos["GTC"],
+    redstoneTokenId: RedstoneTokenIds["GTC"],
+  },
 ];
 const AVALANCHE_TOKENS: PayoutToken[] = [
   {
