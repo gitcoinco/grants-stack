@@ -94,6 +94,13 @@ export const getProjectById = gql`
         createdAtBlock
       }
     }
+
+    # Migrated V1 Project
+    legacyProjects(filter: {
+      v2ProjectId: {equalTo: $projectId}
+    }) {
+      v1ProjectId
+    }
   }
 `;
 

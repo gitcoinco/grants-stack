@@ -202,6 +202,10 @@ export type v2Project = {
   linkedChains?: number[];
 };
 
+export type V1LegacyProjects = {
+  // TODO
+}
+
 /**
  * The program type for v1
  **/
