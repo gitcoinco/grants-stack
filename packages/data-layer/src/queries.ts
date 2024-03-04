@@ -152,7 +152,10 @@ export const getProjects = gql`
 `;
 
 export const getApplicationsByProjectIds = gql`
-  query getApplicationsByProjectIds($projectIds: [String!]!, $chainIds: [Int!]!) {
+  query getApplicationsByProjectIds(
+    $projectIds: [String!]!
+    $chainIds: [Int!]!
+  ) {
     applications(
       filter: { projectId: { in: $projectIds }, chainId: { in: $chainIds } }
     ) {
@@ -169,6 +172,7 @@ export const getApplicationsByProjectIds = gql`
         donationsStartTime
         donationsEndTime
         roundMetadata
+        strategyName
       }
     }
   }

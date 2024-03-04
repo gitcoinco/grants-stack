@@ -67,6 +67,7 @@ const mockApplications: ProjectApplicationWithRound[] = [
     metadataCid: "",
     metadata: {} as ProjectApplicationMetadata,
     round: {
+      strategyName: "test",
       applicationsStartTime: "2024-02-20T17:27:40+00:00",
       applicationsEndTime: "2024-02-27T17:24:40+00:00",
       donationsStartTime: "2024-02-20T18:54:40+00:00",

@@ -21,12 +21,11 @@ export default function ApplicationCard({
   const dispatch = useDispatch();
 
   const props = useSelector((state: RootState) => {
-    const roundState = state.rounds[applicationData.roundID];
-    const round = roundState ? roundState.round : undefined;
+    const round = applicationData.application.round;
 
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
 
-    const payoutStrategy = round?.payoutStrategy;
+    const payoutStrategy = round.strategyName as RoundCategory;
 
     const applicationChainName = networkPrettyName(
       Number(applicationData.chainId)
@@ -34,6 +33,8 @@ export default function ApplicationCard({
     const applicationChainIconUri = getNetworkIcon(
       Number(applicationData.chainId)
     );
+
+    console.log("applicationDta", applicationData);
 
     const isDirectRound = payoutStrategy === RoundCategory.Direct;
 
@@ -58,10 +59,10 @@ export default function ApplicationCard({
   const renderApplicationDate = () =>
     props.round && (
       <>
-        {formatDateFromSecs(props.round?.applicationsStartTime!)} -{" "}
+        {formatDateFromSecs(Number(props.round?.applicationsStartTime!))} -{" "}
         {!isInfinite(Number(props.round?.applicationsEndTime!)) &&
         props.round?.applicationsEndTime
-          ? formatDateFromSecs(props.round?.applicationsEndTime!)
+          ? formatDateFromSecs(Number(props.round?.applicationsEndTime!))
           : "No End Date"}
       </>
     );
@@ -187,6 +188,7 @@ export default function ApplicationCard({
   );
 
   if (!props.round?.roundMetadata) {
+    console.log("props.round?.roundMetadata", props.round?.roundMetadata);
     return null;
   }
 
