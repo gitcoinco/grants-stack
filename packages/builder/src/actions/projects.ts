@@ -276,8 +276,12 @@ export const fetchProjectApplications =
       const id = projectId;
 
       const chainIds = web3Provider.chains.map((chain) => chain.id);
-      const applications = await dataLayer.getApplicationsByProjectId({
-        projectId: id,
+
+      const projectIds = [id];
+      // TODO:FIX 
+
+      const applications = await dataLayer.getApplicationsByProjectIds({
+        projectIds,
         chainIds,
       });
 

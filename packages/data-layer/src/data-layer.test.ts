@@ -678,9 +678,9 @@ describe("v2 projects retrieval", () => {
       indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
     });
 
-    const applications = await dataLayer.getApplicationsByProjectId({
-      projectId:
-        "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+    const applications = await dataLayer.getApplicationsByProjectIds({
+      projectIds:
+       ["0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6"],
       chainIds: [11155111],
     });
 

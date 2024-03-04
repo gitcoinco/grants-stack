@@ -31,7 +31,7 @@ import {
 } from "./openapi-search-client/index";
 import {
   getApplication,
-  getApplicationsByProjectId,
+  getApplicationsByProjectIds,
   getApplicationsByRoundIdAndProjectIds,
   getApplicationsForManager,
   getProgramById,
@@ -280,26 +280,26 @@ export class DataLayer {
   }
 
   /**
-   * getApplicationsByProjectId() returns a list of projects by address.
-   * @param projectId
+   * getApplicationsByProjectIds() returns a list of projects by address.
+   * @param projectIds
    * @param chainIds
    */
-  async getApplicationsByProjectId({
-    projectId,
+  async getApplicationsByProjectIds({
+    projectIds,
     chainIds,
   }: {
-    projectId: string;
+    projectIds: string[];
     chainIds: number[];
   }): Promise<ProjectApplicationWithRound[]> {
     const requestVariables = {
-      projectId: projectId,
+      projectIds: projectIds,
       chainIds: chainIds,
     };
 
     const response: { applications: ProjectApplicationWithRound[] } =
       await request(
         this.gsIndexerEndpoint,
-        getApplicationsByProjectId,
+        getApplicationsByProjectIds,
         requestVariables,
       );
 

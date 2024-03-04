@@ -135,10 +135,10 @@ export const getProjects = gql`
   }
 `;
 
-export const getApplicationsByProjectId = gql`
-  query getApplicationsByProjectId($projectId: String!, $chainIds: [Int!]!) {
+export const getApplicationsByProjectIds = gql`
+  query getApplicationsByProjectIds($projectIds: [String!]!, $chainIds: [Int!]!) {
     applications(
-      filter: { projectId: { equalTo: $projectId }, chainId: { in: $chainIds } }
+      filter: { projectId: { in: $projectIds }, chainId: { in: $chainIds } }
     ) {
       id
       projectId
