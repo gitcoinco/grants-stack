@@ -1,8 +1,8 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { ApplicationStatus, Round } from "data-layer";
+import { ApplicationStatus, Round, RoundCategory } from "data-layer";
 import { Address, Hex, PublicClient } from "viem";
 import { AnyJson, ChainId } from "..";
-import { CreateRoundData, RoundCategory, VotingToken } from "../types";
+import { CreateRoundData, VotingToken } from "../types";
 import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";

@@ -1,6 +1,5 @@
 import { Badge, Box, Button, Image, Spinner } from "@chakra-ui/react";
-import { RoundCategory } from "common/dist/types";
-import { ApplicationStatus, useDataLayer } from "data-layer";
+import { ApplicationStatus, RoundCategory, useDataLayer } from "data-layer";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";

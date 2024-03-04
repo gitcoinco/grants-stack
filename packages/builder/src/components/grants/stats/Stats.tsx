@@ -1,9 +1,9 @@
 import { Spinner } from "@chakra-ui/react";
 import { ChainId } from "common";
+import { RoundCategory } from "data-layer";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { RoundCategory } from "common/dist/types";
 import { loadProjectStats } from "../../../actions/projects";
 import { RootState } from "../../../reducers";
 import { ProjectStats } from "../../../reducers/projects";

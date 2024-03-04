@@ -1,8 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { RoundCategory } from "common/dist/types";
 import { getConfig } from "common/src/config";
-import { DataLayer } from "data-layer";
+import { DataLayer, RoundCategory } from "data-layer";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { Status } from "../reducers/rounds";

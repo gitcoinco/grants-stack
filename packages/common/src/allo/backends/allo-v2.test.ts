@@ -3,9 +3,9 @@ import {
   DonationVotingMerkleDistributionDirectTransferStrategyAbi,
   RegistryAbi,
 } from "@allo-team/allo-v2-sdk";
+import { RoundCategory } from "data-layer";
 import { Abi, Hex, encodeEventTopics } from "viem";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { RoundCategory } from "../../types";
 import { Result, success } from "../common";
 import {
   TransactionReceipt,

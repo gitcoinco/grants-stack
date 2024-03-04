@@ -1,10 +1,9 @@
 import { useAllo } from "common";
-import { useDataLayer } from "data-layer";
+import { RoundCategory, useDataLayer } from "data-layer";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { RoundCategory } from "common/dist/types";
 import {
   fetchApplicationData,
   submitApplication,

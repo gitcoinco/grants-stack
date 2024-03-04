@@ -6,10 +6,10 @@ import {
   ApplicationStatus,
   DataLayer,
   ProjectApplicationWithRound,
+  RoundCategory,
 } from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
-import { RoundCategory } from "common/dist/types";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectStats } from "../reducers/projects";
