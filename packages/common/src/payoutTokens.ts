@@ -393,6 +393,14 @@ const POLYGON_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
+  {
+    name: "USDGLO",
+    chainId: ChainId.POLYGON,
+    address: "0x4f604735c1cf31399c6e711d5962b2b3e0225ad3",
+    decimal: 18,
+    logo: TokenNamesAndLogos["USDGLO"],
+    redstoneTokenId: RedstoneTokenIds["USDGLO"],
+  },
 ];
 const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
   {
