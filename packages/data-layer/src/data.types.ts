@@ -1,11 +1,17 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Address } from "viem";
 import { RoundApplicationMetadata } from "./roundApplication.types";
-import { RoundCategory } from "common/dist/types";
+// import { RoundCategory } from "common/dist/types";
 // TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
 // avoid further spaghetti dependencies. They should probably be relocated here.
 export type RoundPayoutType = "allov1.Direct" | "allov1.QF";
 export type RoundVisibilityType = "public" | "private";
+
+// Note: this also exists in `common` and not able to import from there due to circular dependency.
+export enum RoundCategory {
+  QuadraticFunding,
+  Direct,
+}
 
 export type ApplicationStatus =
   | "PENDING"

@@ -3,10 +3,10 @@ import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { getAddress } from "viem";
 import { describe, expect, test, vi } from "vitest";
 import {
-  ProjectApplication,
   ProjectApplicationMetadata,
   ProjectApplicationWithRound,
-  v2Project,
+  RoundCategory,
+  v2Project
 } from ".";
 import { DataLayer } from "./data-layer";
 
@@ -67,7 +67,7 @@ const mockApplications: ProjectApplicationWithRound[] = [
     metadataCid: "",
     metadata: {} as ProjectApplicationMetadata,
     round: {
-      strategyName: "test",
+      strategyName: RoundCategory.Direct,
       applicationsStartTime: "2024-02-20T17:27:40+00:00",
       applicationsEndTime: "2024-02-27T17:24:40+00:00",
       donationsStartTime: "2024-02-20T18:54:40+00:00",

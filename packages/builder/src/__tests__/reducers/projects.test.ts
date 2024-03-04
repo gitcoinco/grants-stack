@@ -1,8 +1,9 @@
 import "@testing-library/jest-dom";
 import { ChainId } from "common/src/chain-ids";
 import {
-  ProjectApplicationMetadata,
   ApplicationStatus,
+  ProjectApplicationMetadata,
+  RoundCategory,
   RoundVisibilityType,
 } from "data-layer";
 import {
@@ -13,6 +14,7 @@ import {
 } from "../../reducers/projects";
 import { addressFrom } from "../../utils/test_utils";
 
+// Note: these tests are only testing QuadraticFunding RoundCategory type
 describe("projects reducer", () => {
   let state: ProjectsState;
 
@@ -52,6 +54,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 1",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
         ],
@@ -83,6 +86,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 2",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
         ],
@@ -123,6 +127,7 @@ describe("projects reducer", () => {
               },
             },
             name: "Round 1",
+            strategyName: RoundCategory.QuadraticFunding,
           },
         },
       ],
@@ -161,6 +166,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 1",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
         ],
@@ -198,6 +204,7 @@ describe("projects reducer", () => {
               },
             },
             name: "Round 2",
+            strategyName: RoundCategory.QuadraticFunding,
           },
         },
       ],
@@ -232,6 +239,7 @@ describe("projects reducer", () => {
               },
             },
             name: "Round 1",
+            strategyName: RoundCategory.QuadraticFunding,
           },
         },
       ],
@@ -263,6 +271,7 @@ describe("projects reducer", () => {
               },
             },
             name: "Round 2",
+            strategyName: RoundCategory.QuadraticFunding,
           },
         },
       ],
@@ -311,6 +320,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 1",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
         ],
@@ -342,6 +352,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 1",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
           {
@@ -371,6 +382,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 2",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
           {
@@ -400,6 +412,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 3",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
           {
@@ -429,6 +442,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 4",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
         ],
@@ -460,6 +474,7 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 3",
+              strategyName: RoundCategory.QuadraticFunding,
             },
           },
         ],
@@ -500,6 +515,7 @@ describe("projects reducer", () => {
           },
         },
         name: "Round 3",
+        strategyName: RoundCategory.QuadraticFunding,
       },
     });
   });

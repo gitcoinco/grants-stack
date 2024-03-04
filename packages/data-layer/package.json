@@ -55,7 +55,6 @@
     "@gitcoinco/passport-sdk-types": "^0.2.0",
     "@gitcoinco/passport-sdk-verifier": "^0.2.2",
     "cross-fetch": "^4.0.0",
-    "common": "workspace:*",
     "debug": "^4.3.4",
     "dotenv-flow": "^3.3.0",
     "graphql-request": "^6.1.0",

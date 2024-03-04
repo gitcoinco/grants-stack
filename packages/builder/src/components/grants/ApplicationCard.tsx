@@ -1,11 +1,10 @@
 import { Badge, Box, Button, Image, Spinner } from "@chakra-ui/react";
+import { RoundCategory } from "common/dist/types";
 import { ApplicationStatus, useDataLayer } from "data-layer";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { RoundCategory } from "common/dist/types";
 import { loadRound } from "../../actions/rounds";
-import { RootState } from "../../reducers";
 import { roundApplicationViewPath } from "../../routes";
 import { ApplicationCardType, RoundSupport } from "../../types";
 import { formatDateFromSecs, isInfinite } from "../../utils/components";
@@ -20,11 +19,12 @@ export default function ApplicationCard({
   const dataLayer = useDataLayer();
   const dispatch = useDispatch();
 
-  const props = useSelector((state: RootState) => {
-    const round = applicationData.application.round;
+  const props = useSelector(() => {
+    const { round } = applicationData.application;
 
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
 
+    // fixme: this is breaking the render of the application card.
     const payoutStrategy = round.strategyName as RoundCategory;
 
     const applicationChainName = networkPrettyName(
