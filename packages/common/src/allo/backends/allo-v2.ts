@@ -4,31 +4,31 @@ import {
   CreateProfileArgs,
   DirectGrantsStrategy,
   DirectGrantsStrategyTypes,
+  DonationVotingMerkleDistributionDirectTransferStrategyAbi,
   DonationVotingMerkleDistributionStrategy,
   DonationVotingMerkleDistributionStrategyTypes,
   Registry,
   RegistryAbi,
   TransactionData,
-  DonationVotingMerkleDistributionDirectTransferStrategyAbi,
 } from "@allo-team/allo-v2-sdk";
-import { Abi, Address, getAddress, Hex, PublicClient, zeroAddress } from "viem";
-import { AnyJson, ChainId } from "../..";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
+import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
+import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
+import { AnyJson, ChainId } from "../..";
 import { RoundCategory, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { dateToEthereumTimestamp, error, Result, success } from "../common";
+import { buildUpdatedRowsOfApplicationStatuses } from "../application";
+import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
-  decodeEventFromReceipt,
-  sendRawTransaction,
   TransactionReceipt,
   TransactionSender,
+  decodeEventFromReceipt,
+  sendRawTransaction,
   sendTransaction,
 } from "../transaction-sender";
 import { PermitSignature } from "../voting";
-import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
-import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -614,6 +614,36 @@ export class AlloV2 implements Allo {
       emit("indexingStatus", success(undefined));
 
       return success(undefined);
+    });
+  }
+
+  editRound(args: {
+    roundId: Hex | number;
+    metadata: AnyJson;
+    strategy: RoundCategory;
+  }): AlloOperation<
+    Result<Hex>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (typeof args.roundId != "number") {
+        return error(new AlloError("roundId must be number"));
+      }
+
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      return success("0x0");
     });
   }
 }

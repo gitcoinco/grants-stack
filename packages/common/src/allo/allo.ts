@@ -143,6 +143,7 @@ export interface Allo {
   }) => AlloOperation<
     Result<Hex>,
     {
+      ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<void>;

@@ -1,3 +1,4 @@
+import { ApplicationStatus } from "data-layer";
 import {
   Address,
   encodeAbiParameters,
@@ -16,20 +17,23 @@ import { AnyJson, ChainId } from "../..";
 import { parseChainId } from "../../chains";
 import { payoutTokens } from "../../payoutTokens";
 import { RoundCategory, VotingToken } from "../../types";
+import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
+import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import RoundImplementationABI from "../abis/allo-v1/RoundImplementation";
-import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import {
   dgVotingStrategyDummyContractMap,
   directPayoutStrategyFactoryContractMap,
-  programFactoryMap,
   merklePayoutStrategyFactoryMap,
+  programFactoryMap,
   projectRegistryMap,
   qfVotingStrategyFactoryMap,
   roundFactoryMap,
 } from "../addresses/allo-v1";
+import { MRC_CONTRACTS } from "../addresses/mrc";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
+import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { error, Result, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
@@ -40,10 +44,6 @@ import {
   TransactionSender,
 } from "../transaction-sender";
 import { getPermitType, PermitSignature } from "../voting";
-import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
-import { MRC_CONTRACTS } from "../addresses/mrc";
-import { ApplicationStatus } from "data-layer";
-import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 
 function createProjectId(args: {
   chainId: number;
@@ -701,75 +701,68 @@ export class AlloV1 implements Allo {
     });
   }
 
-    /**
-   * Applies to a round for Allo v1
-   *
-   * @param args { projectId: Hex; roundId: Hex; metadata: AnyJson }
-   *
-   * @public
-   *
-   * @returns AllotOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
-   */
-    editRound(args: {
-      roundId: Hex | number;
-      metadata: AnyJson;
-      strategy: RoundCategory;
-    }): AlloOperation<
-      Result<Hex>,
-      {
-        ipfs: Result<string>;
-        transaction: Result<Hex>;
-        transactionStatus: Result<TransactionReceipt>;
-      }
-    > {
-      return new AlloOperation(async ({ emit }) => {
-        if (typeof args.roundId == "number") {
-          return error(new AlloError("roundId must be Hex"));
-        }
-  
-        const ipfsResult = await this.ipfsUploader(args.metadata);
-  
-        emit("ipfs", ipfsResult);
-  
-        if (ipfsResult.type === "error") {
-          return ipfsResult;
-        }
-  
-        // const txResult = await sendTransaction(this.transactionSender, {
-        //   address: args.roundId,
-        //   abi: RoundImplementationABI,
-        //   functionName: "applyToRound",
-        //   args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
-        // });
-  
-        // emit("transaction", txResult);
-  
-        // if (txResult.type === "error") {
-        //   return txResult;
-        // }
-  
-        let receipt: TransactionReceipt;
-        try {
-          receipt = await this.transactionSender.wait(txResult.value);
-  
-          emit("transactionStatus", success(receipt));
-        } catch (err) {
-          const result = new AlloError("Failed to apply to round");
-          emit("transactionStatus", error(result));
-          return error(result);
-        }
-  
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
-  
-        return success(args.roundId);
-      });
+  editRound(args: {
+    roundId: Hex | number;
+    metadata: AnyJson;
+    strategy: RoundCategory;
+  }): AlloOperation<
+    Result<Hex>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
-  
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (typeof args.roundId == "number") {
+        return error(new AlloError("roundId must be Hex"));
+      }
+
+      const ipfsResult = await this.ipfsUploader(args.metadata);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: args.roundId,
+        abi: RoundImplementationABI,
+        functionName: "updateRoundMetaPtr",
+        args: [{ protocol: 1n, pointer: ipfsResult.value }],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to edit round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(undefined));
+
+      return success(args.roundId);
+    });
+  }
 }
 
+// todo: move this out?
 export type CreateRoundArgs = {
   roundMetadata: { protocol: bigint; pointer: string };
   applicationMetadata: { protocol: bigint; pointer: string };
