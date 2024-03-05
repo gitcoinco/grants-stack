@@ -324,7 +324,8 @@ export type RoundPayoutTypeNew =
   | "allov2.MicroGrantsStrategy"
   | "allov2.MicroGrantsHatsStrategy"
   | "allov2.SQFSuperFluidStrategy"
-  | "allov2.MicroGrantsGovStrategy";
+  | "allov2.MicroGrantsGovStrategy"
+  | "allov2.DirectGrantsSimpleStrategy";
 
 export type RoundStrategyType = "QuadraticFunding" | "DirectGrants";
 
