@@ -41,7 +41,6 @@ export default function About({
     project?.projectGithub
   );
 
-  console.log("About:applications", applications);
   const renderApplications = () => (
     <>
       <Box p={1}>

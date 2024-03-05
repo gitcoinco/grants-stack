@@ -25,6 +25,8 @@ export default function Rounds({
 }) {
   const params = useParams();
 
+  console.log("apps", applications);
+
   const props = useSelector((state: RootState) => {
     const projectId = params.id!;
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
