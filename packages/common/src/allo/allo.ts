@@ -167,7 +167,7 @@ export class AlloError extends Error {
     message: string,
     public inner: unknown = undefined
   ) {
-    super(message);
+    super(message, { cause: inner });
 
     this.name = "AlloError";
   }

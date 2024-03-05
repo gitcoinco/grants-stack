@@ -95,13 +95,13 @@ export const useCreateRoundStore = create<CreateRoundStoreState>((set) => ({
     } catch (e) {
       let err: Error;
 
-      console.error("creating round error", e);
-
       if (e instanceof AlloError) {
         err = e;
       } else {
         err = new Error("An unknown error occurred while creating round");
       }
+
+      console.error("creating round error", err, err.cause);
 
       set({
         error: err,
