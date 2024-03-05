@@ -700,6 +700,74 @@ export class AlloV1 implements Allo {
       return success(undefined);
     });
   }
+
+    /**
+   * Applies to a round for Allo v1
+   *
+   * @param args { projectId: Hex; roundId: Hex; metadata: AnyJson }
+   *
+   * @public
+   *
+   * @returns AllotOperation<Result<Hex>, { ipfs: Result<string>; transaction: Result<Hex>; transactionStatus: Result<TransactionReceipt> }>
+   */
+    editRound(args: {
+      roundId: Hex | number;
+      metadata: AnyJson;
+      strategy: RoundCategory;
+    }): AlloOperation<
+      Result<Hex>,
+      {
+        ipfs: Result<string>;
+        transaction: Result<Hex>;
+        transactionStatus: Result<TransactionReceipt>;
+      }
+    > {
+      return new AlloOperation(async ({ emit }) => {
+        if (typeof args.roundId == "number") {
+          return error(new AlloError("roundId must be Hex"));
+        }
+  
+        const ipfsResult = await this.ipfsUploader(args.metadata);
+  
+        emit("ipfs", ipfsResult);
+  
+        if (ipfsResult.type === "error") {
+          return ipfsResult;
+        }
+  
+        // const txResult = await sendTransaction(this.transactionSender, {
+        //   address: args.roundId,
+        //   abi: RoundImplementationABI,
+        //   functionName: "applyToRound",
+        //   args: [args.projectId, { protocol: 1n, pointer: ipfsResult.value }],
+        // });
+  
+        // emit("transaction", txResult);
+  
+        // if (txResult.type === "error") {
+        //   return txResult;
+        // }
+  
+        let receipt: TransactionReceipt;
+        try {
+          receipt = await this.transactionSender.wait(txResult.value);
+  
+          emit("transactionStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to apply to round");
+          emit("transactionStatus", error(result));
+          return error(result);
+        }
+  
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+  
+        return success(args.roundId);
+      });
+    }
+  
 }
 
 export type CreateRoundArgs = {
