@@ -34,30 +34,21 @@ import { useWallet } from "../../common/Auth";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import ViewApplicationPage from "../ViewApplicationPage";
 
-jest.mock("common", () => ({
-  ...jest.requireActual("common"),
-  useAllo: jest.fn(),
-}));
-
 jest.mock("data-layer", () => ({
   ...jest.requireActual("data-layer"),
   useDataLayer: () => ({}),
-  fetchProgramsByAddress: () => {
-    return Promise.resolve([]);
-  },
-  useApplicationsByRoundId: () => {
-    return {};
-  },
-  listPrograms: () => {
-    return Promise.resolve([]);
-  },
+}));
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
 }));
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth");
 
 jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
+  // ...jest.requireActual("../../../constants"),
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
@@ -96,9 +87,6 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 jest.mock("wagmi");
 
-jest.mock("data-layer", () => ({
-  useDataLayer: () => ({}),
-}));
 jest.mock("../../common/useApplicationsByRoundId");
 
 const verifyCredentialMock = jest.spyOn(
