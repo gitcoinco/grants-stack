@@ -50,6 +50,11 @@ export type ProjectMetadata = {
   lastUpdated: number;
 };
 
+export type ProgramMetadata = {
+  name: string;
+  type: string;
+};
+
 export type AddressAndRole = {
   address: string;
   role: string;
@@ -295,6 +300,7 @@ export type V2RoundWithProject = V2RoundWithRoles & {
   project: {
     id: string;
     name: string;
+    metadata: ProgramMetadata;
   };
 };
 
