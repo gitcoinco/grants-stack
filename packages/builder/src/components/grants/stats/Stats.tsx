@@ -169,7 +169,7 @@ export default function RoundStats() {
     </>
   );
 
-  if (props.projectApplications?.length === 0)
+  if (!props.projectApplications || props.projectApplications?.length === 0)
     return (
       <div className="text-base text-gitcoin-grey-400 flex items-center justify-center p-10">
         No stats available yet for this project.
