@@ -270,11 +270,11 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               <div className="mt-6 mb-3 text-sm text-grey-400">
                 {roundCategory === RoundCategory.QuadraticFunding ? (
                   <>
-                    <p>
+                    <div className="text-base">
                       What are the dates for the Applications and Round voting
                       period(s)?
                       <ApplicationDatesInformation />
-                    </p>
+                    </div>
                     <p className="text-sm mt-0.5">
                       Tips: You can accept applications even after the round
                       starts by setting up overlapping Applications and Round
@@ -1040,7 +1040,7 @@ function ApplicationDatesInformation() {
         type="dark"
         effect="solid"
       >
-        <p className="text-xs">All dates are in UTC.</p>
+        <span className="text-xs">All dates are in UTC.</span>
       </ReactTooltip>
     </>
   );
