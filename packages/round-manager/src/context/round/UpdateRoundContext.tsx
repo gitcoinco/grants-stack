@@ -1,7 +1,7 @@
 import { Signer } from "ethers";
 import React, { SetStateAction, createContext, useContext } from "react";
 // todo: update type
-import { EditedGroups, ProgressStatus, Round } from "../../features/api/types";
+import { ProgressStatus, Round } from "../../features/api/types";
 import { useWallet } from "../../features/common/Auth";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;

@@ -56,6 +56,7 @@ type EditMode = {
 };
 
 // returns a boolean for each group of fields that have been edited
+// TODO: REPLACE with generateUpdateRoundData() : UpdateRoundParams
 const compareRounds = (
   oldRoundData: Round,
   newRoundData: Round

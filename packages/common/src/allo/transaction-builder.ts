@@ -1,23 +1,18 @@
-import { Round } from "data-layer";
 import { ethers } from "ethers";
 import roundImplementationContract from "./abis/allo-v1/RoundImplementation";
 
 export class TransactionBuilder {
-  round: Round;
+  roundId: string;
   transactions: any[];
   contract: any;
 
-  constructor(round: Round) {
-    this.round = round;
+  constructor(roundId: string) {
+    this.roundId = roundId;
     this.transactions = [];
-    if (round.id) {
-      this.contract = new ethers.Contract(
-        round.id,
-        roundImplementationContract
-      );
-    } else {
-      throw new Error("Round ID is undefined");
-    }
+    this.contract = new ethers.Contract(
+      roundId,
+      roundImplementationContract
+    )
   }
 
   add(action: any, args: any[]) {

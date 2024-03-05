@@ -16,11 +16,11 @@ import {
 } from "viem";
 import { AnyJson, ChainId } from "../..";
 import { parseChainId } from "../../chains";
-import { getPayoutTokenOptions, payoutTokens } from "../../payoutTokens";
+import { payoutTokens } from "../../payoutTokens";
 import {
-  EditedGroups,
   RoundCategory,
   UpdateAction,
+  UpdateRoundParams,
   VotingToken,
 } from "../../types";
 import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
@@ -711,9 +711,7 @@ export class AlloV1 implements Allo {
 
   editRound(args: {
     roundId: Hex | number;
-    metadata: AnyJson;
-    round: Round;
-    editedGroups: EditedGroups;
+    data: UpdateRoundParams;
     strategy: RoundCategory;
   }): AlloOperation<
     Result<Hex | number>,
@@ -725,123 +723,93 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      const { round, metadata, editedGroups } = args;
 
       if (typeof args.roundId == "number") {
         return error(new AlloError("roundId must be Hex"));
       }
 
-      const metadataPointer = await this.ipfsUploader(metadata);
+      const transactionBuilder = new TransactionBuilder(args.roundId);
 
-      emit("ipfs", metadataPointer);
+      const data = args.data;
 
-      if (metadataPointer.type === "error") {
-        return metadataPointer;
+      // upload application metadata to IPFS + add to transactionBuilder
+      if (data.applicationMetadata) {
+        console.log("updating application metadata");
+        const ipfsResult: Result<string> = await this.ipfsUploader({
+          content: data.applicationMetadata,
+        });
+        
+        emit("ipfs", ipfsResult);
+        if (ipfsResult.type === "error") {
+          return ipfsResult;
+        }
+
+        transactionBuilder.add(UpdateAction.UPDATE_APPLICATION_META_PTR, [
+          { protocol: 1, pointer: ipfsResult.value },
+        ]);
       }
 
-      const transactionBuilder = new TransactionBuilder(round);
+      // upload round metadata to IPFS + add to transactionBuilder
+      if (data.roundMetadata) {
+        console.log("updating round metadata");
+        const ipfsResult: Result<string> = await this.ipfsUploader({
+          content: data.roundMetadata,
+        });
 
+        emit("ipfs", ipfsResult);
+        if (ipfsResult.type === "error") {
+          return ipfsResult;
+        }
+      
+        transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [
+          { protocol: 1, pointer: ipfsResult.value },
+        ]);
+      }
+
+      if (data.matchAmount) {
+        // NOTE : This is parseUnits format of the token
+        console.log("updating match amount");
+        transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [data.matchAmount]);
+      }
+      
+      /* Special case - if the application period or round has already started, and we are editing times,
+       * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
+       * This won't actually update the values, it's done just to pass the checks in the contract
+       * (and to confuse the developer).
+       *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1 
+       **/
+      if (
+        data.roundStartTime &&
+        data.roundEndTime &&
+        data.applicationsStartTime &&
+        data.applicationsEndTime) {
+
+        if (Date.now() > data.applicationsStartTime.getTime()) {
+          data.applicationsStartTime = new Date(
+            data.applicationsEndTime.getTime() - 10
+          );
+        }
+        if (Date.now() > data.roundStartTime.getTime()) {
+          data.roundStartTime = new Date(
+            data.applicationsEndTime.getTime() - 10
+          );
+        }
+      
+        console.log("updating start and end times");
+        transactionBuilder.add(
+          UpdateAction.UPDATE_ROUND_START_AND_END_TIMES,
+          [
+            data.applicationsStartTime.getTime() / 1000,
+            data.applicationsEndTime.getTime() / 1000,
+            data.roundStartTime.getTime() / 1000,
+            data.roundEndTime.getTime() / 1000,
+          ]
+        );
+      }
+     
       try {
-        // datadogLogs.logger.info(`_updateRound: ${round}`);
-
-        // ipfs/metapointer related updates
-        // todo: move to handler - ref: update builder metadata
-        try {
-          if (
-            editedGroups.RoundMetaPointer ||
-            editedGroups.ApplicationMetaPointer
-          ) {
-            // setIPFSCurrentStatus(ProgressStatus.IN_PROGRESS);
-            if (editedGroups.RoundMetaPointer) {
-              console.log("updating round metadata");
-              const ipfsHash: Result<string> = await this.ipfsUploader({
-                content: round.roundMetadata,
-              });
-              transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [
-                { protocol: 1, pointer: ipfsHash },
-              ]);
-            }
-            // if (editedGroups.ApplicationMetaPointer) {
-            //   console.log("updating application metadata");
-            //   if (round.applicationMetadata === undefined)
-            //     throw new Error("Application metadata is undefined");
-            //   const ipfsHash: Result<string> = await this.ipfsUploader({
-            //     content: round.applicationMetadata,
-            //   });
-            //   transactionBuilder.add(UpdateAction.UPDATE_APPLICATION_META_PTR, [
-            //     { protocol: 1, pointer: ipfsHash },
-            //   ]);
-            // }
-            // setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
-          }
-        } catch (error) {
-          console.error("error updating round metadata", error);
-          // datadogLogs.logger.error(`_updateRound: ${error}`);
-          // setIPFSCurrentStatus(ProgressStatus.IS_ERROR);
-          throw error;
-        }
-
-        // direct contract updates
-        if (editedGroups.MatchAmount) {
-          console.log("updating match amount");
-          // todo: update the Round types to play nice with each other...
-          // fixme: round.chainId - this is using the Round type from data-layer
-          const decimals = getPayoutTokenOptions(10).find(
-            (token) => token.address === round.token
-          )?.decimal;
-          // use ethers to convert amount using decimals
-          const arg = ethers.utils.parseUnits(
-            round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString() ??
-              "0",
-            decimals
-          );
-          transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [arg]);
-          console.log(arg.toString());
-        }
-
-        if (editedGroups.RoundFeePercentage) {
-          console.log("updating round fee percentage");
-          const arg =
-            round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable;
-          transactionBuilder.add(UpdateAction.UPDATE_ROUND_FEE_PERCENTAGE, [
-            arg,
-          ]);
-        }
-
-        /* Special case - if the application period or round has already started, and we are editing times,
-         * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
-         * This won't actually update the values, it's done just to pass the checks in the contract
-         * (and to confuse the developer).
-         *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1 */
-        if (Date.now() > round.applicationsStartTime.getTime()) {
-          round.applicationsStartTime = new Date(
-            round.applicationsEndTime.getTime() - 10
-          );
-        }
-        if (Date.now() > round.roundStartTime.getTime()) {
-          round.roundStartTime = new Date(
-            round.applicationsEndTime.getTime() - 10
-          );
-        }
-
-        if (editedGroups.StartAndEndTimes) {
-          console.log("updating start and end times");
-          transactionBuilder.add(
-            UpdateAction.UPDATE_ROUND_START_AND_END_TIMES,
-            [
-              round?.applicationsStartTime.getTime() / 1000,
-              round?.applicationsEndTime.getTime() / 1000,
-              round?.roundStartTime.getTime() / 1000,
-              round?.roundEndTime.getTime() / 1000,
-            ]
-          );
-        }
 
         const transactionBody = transactionBuilder.generate();
-
-        // setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
-        // setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
-        // setIndexingStatus(ProgressStatus.IN_PROGRESS);
 
         let receipt: TransactionReceipt;
         try {
@@ -874,13 +842,12 @@ export class AlloV1 implements Allo {
         emit("indexingStatus", success(undefined));
 
         return success(0);
-      } catch (error) {
-        // datadogLogs.logger.error(`_updateRound: ${error}`);
-        // setRoundUpdateStatus(ProgressStatus.IS_ERROR);
-        console.log("_updateRound error: ", error);
+      } catch (err) {
+        const result = new AlloError("Failed to update round");
+        emit("transactionStatus", error(result));
+        return error(result);
       }
 
-      return success(round?.id as Hex);
     });
   }
 }

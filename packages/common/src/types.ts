@@ -1,6 +1,8 @@
 import { Round } from "data-layer";
 import { Hex } from "viem";
 import { ChainId } from "./chain-ids";
+import { AnyJson } from ".";
+import { BigNumber } from "ethers";
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
@@ -16,6 +18,7 @@ export type CreateRoundData = {
   roundCategory: RoundCategory;
 };
 
+// TODO-SHITZU: remove this type
 export type EditedGroups = {
   ApplicationMetaPointer: boolean;
   MatchAmount: boolean;
@@ -24,6 +27,16 @@ export type EditedGroups = {
   RoundMetaPointer: boolean;
   StartAndEndTimes: boolean;
 };
+
+export type UpdateRoundParams = {
+  applicationMetadata?: AnyJson;
+  roundMetadata?: AnyJson;
+  matchAmount?: BigNumber;
+  roundStartTime?: Date;
+  roundEndTime?: Date;
+  applicationsStartTime?: Date;
+  applicationsEndTime?: Date;
+}
 
 export type SchemaQuestion = {
   id: number;

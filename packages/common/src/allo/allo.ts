@@ -4,8 +4,8 @@ import { Address, Hex, PublicClient } from "viem";
 import { AnyJson, ChainId } from "..";
 import {
   CreateRoundData,
-  EditedGroups,
   RoundCategory,
+  UpdateRoundParams,
   VotingToken,
 } from "../types";
 import { Result } from "./common";
@@ -143,9 +143,7 @@ export interface Allo {
 
   editRound: (args: {
     roundId: Hex | number;
-    metadata: AnyJson;
-    round: Round;
-    editedGroups: EditedGroups;
+    data: UpdateRoundParams;
     strategy: RoundCategory;
   }) => AlloOperation<
     Result<Hex | number>,
