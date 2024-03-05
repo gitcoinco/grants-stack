@@ -26,6 +26,9 @@ export default function ApplicationCard({
   const props = useSelector(() => {
     const { round } = applicationData.application;
 
+    console.log("rrrrr");
+    console.log(round);
+
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
 
     // fixme: this is breaking the render of the application card.
@@ -58,6 +61,8 @@ export default function ApplicationCard({
     }
   }, [dispatch, applicationData.roundID]);
 
+  console.log(">===========================");
+  console.log(formatDateFromSecs(Number(props.round?.applicationsStartTime!)));
   const renderApplicationDate = () =>
     props.round && (
       <>
@@ -68,6 +73,8 @@ export default function ApplicationCard({
           : "No End Date"}
       </>
     );
+  console.log(formatDateFromSecs(Number(props.round?.applicationsEndTime!)));
+  console.log("===========================<");
 
   const renderRoundBadge = () => {
     let colorScheme:

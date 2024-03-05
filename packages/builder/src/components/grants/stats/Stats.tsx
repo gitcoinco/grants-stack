@@ -24,8 +24,6 @@ export default function RoundStats() {
       ? state.projects.applications[params.id!]
       : [];
 
-    console.log(state);
-
     return {
       projectID: params.id!,
       stats,
@@ -171,12 +169,12 @@ export default function RoundStats() {
     </>
   );
 
-  // if (noStats)
-  //   return (
-  //     <div className="text-base text-gitcoin-grey-400 flex items-center justify-center p-10">
-  //       No stats available yet for this project.
-  //     </div>
-  //   );
+  if (props.projectApplications?.length === 0)
+    return (
+      <div className="text-base text-gitcoin-grey-400 flex items-center justify-center p-10">
+        No stats available yet for this project.
+      </div>
+    );
 
   if (details?.length === 0 || details?.length !== allTimeStats.roundsLength)
     return (

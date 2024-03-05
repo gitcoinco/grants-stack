@@ -40,6 +40,7 @@ export default function Rounds({
       );
       const infiniteRoundEndDate = isInfinite(Number(round?.donationsEndTime));
 
+      console.log("round", round);
       if (round) {
         let category = null;
         const currentTime = secondsSinceEpoch();
