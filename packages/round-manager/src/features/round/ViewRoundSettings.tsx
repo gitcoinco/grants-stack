@@ -1053,6 +1053,7 @@ function RoundType(props: {
                 {...roundTypeField}
                 {...props.register}
                 value={type.value}
+                key={type.value}
               >
                 {({ checked, active }) => (
                   <span className="flex items-center text-sm mt-2">
