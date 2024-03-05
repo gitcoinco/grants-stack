@@ -362,7 +362,7 @@ export default function ApplicationDirectPayout({
             </div>
             <div className="flex flex-col max-w-xl">
               <div className="flex flex-row justify-start mt-2">
-                <p className="flex flex-row text-sm w-1/3">
+                <div className="flex flex-row text-sm w-1/3">
                   Protocol fee:
                   <span>
                     <InformationCircleIcon
@@ -391,13 +391,13 @@ export default function ApplicationDirectPayout({
                       </p>
                     </ReactTooltip>
                   </span>
-                </p>
+                </div>
                 <p className="text-sm">
                   {(round.protocolFeePercentage || 0) * 100} %
                 </p>
               </div>
               <div className="flex flex-row justify-start mt-4">
-                <p className="flex flex-row text-sm w-1/3">
+                <div className="flex flex-row text-sm w-1/3">
                   Round fee:
                   <span>
                     <InformationCircleIcon
@@ -426,13 +426,13 @@ export default function ApplicationDirectPayout({
                       </p>
                     </ReactTooltip>
                   </span>
-                </p>
+                </div>
                 <p className="text-sm">
                   {(round.roundFeePercentage || 0) * 100}%
                 </p>
               </div>
             </div>
-            <p className="rounded-md bg-violet-100 py-4 px-4 text-violet-400 flex mt-2 text-sm">
+            <div className="rounded-md bg-violet-100 py-4 px-4 text-violet-400 flex mt-2 text-sm">
               <InformationCircleIcon className="w-4 h-4 mr-2 mt-0.5" />
               <span className="font-medium">
                 <strong>Important:</strong>
@@ -449,7 +449,7 @@ export default function ApplicationDirectPayout({
                     </p>
                   )}
               </span>
-            </p>
+            </div>
           </div>
           <div className="px-6 align-middle py-3.5 bg-[#F3F3F5]">
             <Button
