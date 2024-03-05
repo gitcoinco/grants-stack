@@ -29,7 +29,6 @@ export default function RoundListItem({
     const round = roundState ? roundState.round : undefined;
     const roundAddress = round?.address;
 
-    console.log("round", round);
     return {
       round,
       roundId,
