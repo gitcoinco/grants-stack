@@ -1,24 +1,29 @@
-import { ApplicationStatus, RoundCategory } from "data-layer";
+import { ApplicationStatus } from "data-layer";
 import {
   Address,
+  Hex,
+  PublicClient,
   encodeAbiParameters,
   encodePacked,
   getAddress,
-  Hex,
   hexToBigInt,
   keccak256,
   maxUint256,
   parseAbiParameters,
   parseUnits,
-  PublicClient,
   zeroAddress,
 } from "viem";
-import { AnyJson, ChainId } from "../..";
+import { AnyJson, ChainId, TransactionBuilder } from "../..";
 import { parseChainId } from "../../chains";
 import { payoutTokens } from "../../payoutTokens";
-import { VotingToken } from "../../types";
-import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
+import {
+  RoundCategory,
+  UpdateAction,
+  UpdateRoundParams,
+  VotingToken,
+} from "../../types";
 import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
+import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import RoundImplementationABI from "../abis/allo-v1/RoundImplementation";
@@ -31,19 +36,20 @@ import {
   qfVotingStrategyFactoryMap,
   roundFactoryMap,
 } from "../addresses/allo-v1";
-import { MRC_CONTRACTS } from "../addresses/mrc";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
-import { error, Result, success } from "../common";
+import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
-  decodeEventFromReceipt,
-  sendTransaction,
   TransactionReceipt,
   TransactionSender,
+  decodeEventFromReceipt,
+  sendRawTransaction,
+  sendTransaction,
 } from "../transaction-sender";
 import { getPermitType, PermitSignature } from "../voting";
+import { MRC_CONTRACTS } from "../addresses/mrc";
 import Erc20ABI from "../abis/erc20";
 
 function createProjectId(args: {
@@ -786,8 +792,135 @@ export class AlloV1 implements Allo {
       return success(null);
     });
   }
+
+  editRound(args: {
+    roundId: Hex | number;
+    data: UpdateRoundParams;
+    strategy?: RoundCategory;
+  }): AlloOperation<
+    Result<Hex | number>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (typeof args.roundId == "number") {
+        return error(new AlloError("roundId must be Hex"));
+      }
+      const transactionBuilder = new TransactionBuilder(args.roundId);
+
+      const data = args.data;
+      // upload application metadata to IPFS + add to transactionBuilder
+      if (data.applicationMetadata) {
+        const ipfsResult: Result<string> = await this.ipfsUploader(
+          data.applicationMetadata
+        );
+        emit("ipfs", ipfsResult);
+        if (ipfsResult.type === "error") {
+          return ipfsResult;
+        }
+        transactionBuilder.add(UpdateAction.UPDATE_APPLICATION_META_PTR, [
+          { protocol: 1, pointer: ipfsResult.value },
+        ]);
+      }
+      // upload round metadata to IPFS + add to transactionBuilder
+      if (data.roundMetadata) {
+        const ipfsResult: Result<string> = await this.ipfsUploader(
+          data.roundMetadata
+        );
+        emit("ipfs", ipfsResult);
+        if (ipfsResult.type === "error") {
+          return ipfsResult;
+        }
+        transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [
+          { protocol: 1, pointer: ipfsResult.value },
+        ]);
+      }
+
+      if (!data.roundMetadata && !data.applicationMetadata) {
+        // NOTE : This is for the progreds modal
+        const voidEmit : Result<string> = success("");
+        emit("ipfs", voidEmit);
+      }
+
+      if (data.matchAmount) {
+        // NOTE : This is parseUnits format of the token
+        transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [
+          data.matchAmount,
+        ]);
+      }
+
+      /* Special case - if the application period or round has already started, and we are editing times,
+       * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
+       * This won't actually update the values, it's done just to pass the checks in the contract
+       * (and to confuse the developer).
+       *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1
+       **/
+      if (
+        data.roundStartTime &&
+        data.roundEndTime &&
+        data.applicationsStartTime &&
+        data.applicationsEndTime
+      ) {
+        if (Date.now() > data.applicationsStartTime.getTime()) {
+          data.applicationsStartTime = new Date(
+            data.applicationsEndTime.getTime() - 1000000
+          );
+        }
+        if (Date.now() > data.roundStartTime.getTime()) {
+          data.roundStartTime = new Date(
+            data.applicationsEndTime.getTime() - 1000000
+          );
+        }
+
+        transactionBuilder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
+          (data.applicationsStartTime.getTime() / 1000).toFixed(0),
+          (data.applicationsEndTime.getTime() / 1000).toFixed(0),
+          (data.roundStartTime.getTime() / 1000).toFixed(0),
+          (data.roundEndTime.getTime() / 1000).toFixed(0),
+        ]);
+      }
+      const transactionBody = transactionBuilder.generate();
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: transactionBody.to,
+        data: transactionBody.data,
+        value: BigInt(transactionBody.value),
+      });
+
+      emit("transaction", txResult);
+      if (txResult.type === "error") {
+        return error(txResult.error);
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        console.log(err);
+        const result = new AlloError("Failed to update round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(undefined));
+
+      return success(args.roundId);
+    });
+  }
 }
 
+// todo: move this out?
 export type CreateRoundArgs = {
   roundMetadata: { protocol: bigint; pointer: string };
   applicationMetadata: { protocol: bigint; pointer: string };
@@ -836,6 +969,3 @@ function constructCreateRoundArgs({
     },
   ]);
 }
-
-const dateToEthereumTimestamp = (date: Date) =>
-  BigInt(Math.floor(date.getTime() / 1000));

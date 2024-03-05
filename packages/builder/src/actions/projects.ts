@@ -1,5 +1,6 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { ChainId } from "common";
+import { RoundCategory } from "common/dist/types";
 import { getConfig } from "common/src/config";
 import {
   ApplicationStatus,

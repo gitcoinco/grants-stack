@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
 
-import { RoundCategory } from "data-layer";
+import { RoundCategory } from "../api/types";
 import { FormStepper } from "./FormStepper";
 
 export interface FormWizardProps {
