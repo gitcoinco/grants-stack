@@ -406,6 +406,11 @@ export const getRoundByIdAndChainId = gql`
         role
         address
       }
+      project {
+        id
+        name
+        metadata
+      }
     }
   }
 `;
