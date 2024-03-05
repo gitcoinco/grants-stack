@@ -4,10 +4,10 @@ import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ChainId,
+  RoundVisibilityType,
   classNames,
   getUTCDate,
   getUTCTime,
-  RoundVisibilityType,
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
@@ -20,25 +20,22 @@ import {
   ControllerRenderProps,
   FieldErrors,
   SubmitHandler,
-  useController,
-  useForm,
   UseFormRegister,
   UseFormRegisterReturn,
   UseFormResetField,
   UseFormSetValue,
+  useController,
+  useForm,
 } from "react-hook-form";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import ReactTooltip from "react-tooltip";
 import { useNetwork } from "wagmi";
 import * as yup from "yup";
+import { maxDateForUint256 } from "../../constants";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useUpdateRound } from "../../context/round/UpdateRoundContext";
-import {
-  EditedGroups,
-  ProgressStatus,
-  ProgressStep,
-  Round,
-} from "../api/types";
+import { payoutTokens } from "../api/payoutTokens";
+import { ProgressStatus, ProgressStep, Round } from "../api/types";
 import { CHAINS, SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
@@ -52,8 +49,6 @@ import {
   supportTypes,
 } from "./RoundDetailForm";
 import { isDirectRound } from "./ViewRoundPage";
-import { maxDateForUint256 } from "../../constants";
-import { payoutTokens } from "../api/payoutTokens";
 
 type EditMode = {
   canEdit: boolean;
@@ -79,16 +74,6 @@ const compareRounds = (
       dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
     ),
     RoundFeeAddress: false,
-    // todo feesAddress not found in roundMetadata
-    // RoundFeeAddress: _.isEqual(
-    //   dOldRound?.roundMetadata?.feesAddress.toLowerCase(),
-    //   dNewRound?.roundMetadata?.feesAddress.toLowerCase()
-    // ),
-    RoundFeePercentage: false,
-    // !_.isEqual(
-    //   dOldRound.roundFeePercentage,
-    //   dNewRound.roundFeePercentage
-    // ),
     RoundMetaPointer: !_.isEqual(
       dOldRound.roundMetadata,
       dNewRound.roundMetadata
@@ -342,7 +327,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     try {
       // @ts-expect-error TS upgrade broke this, TODO fix this
       handleSubmit(submit(editedRound as Round));
-      const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
+      const editedGroups: any = compareRounds(round!, editedRound!);
       setIpfsStep(
         editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer
       );

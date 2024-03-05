@@ -622,7 +622,7 @@ export class AlloV2 implements Allo {
     metadata: AnyJson;
     strategy: RoundCategory;
   }): AlloOperation<
-    Result<Hex>,
+    Result<Hex | number>,
     {
       ipfs: Result<string>;
       transaction: Result<Hex>;

@@ -1,27 +1,33 @@
-import { ApplicationStatus } from "data-layer";
+import { ApplicationStatus, Round } from "data-layer";
+import { ethers } from "ethers";
 import {
   Address,
+  Hex,
+  PublicClient,
   encodeAbiParameters,
   encodePacked,
   getAddress,
-  Hex,
   hexToBigInt,
   keccak256,
   maxUint256,
   parseAbiParameters,
   parseUnits,
-  PublicClient,
   zeroAddress,
 } from "viem";
 import { AnyJson, ChainId } from "../..";
 import { parseChainId } from "../../chains";
-import { payoutTokens } from "../../payoutTokens";
-import { RoundCategory, VotingToken } from "../../types";
-import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
+import { getPayoutTokenOptions, payoutTokens } from "../../payoutTokens";
+import {
+  EditedGroups,
+  RoundCategory,
+  UpdateAction,
+  VotingToken,
+} from "../../types";
 import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import RoundImplementationABI from "../abis/allo-v1/RoundImplementation";
+import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
 import {
   dgVotingStrategyDummyContractMap,
   directPayoutStrategyFactoryContractMap,
@@ -34,16 +40,18 @@ import {
 import { MRC_CONTRACTS } from "../addresses/mrc";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
-import { error, Result, success } from "../common";
+import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
+import { TransactionBuilder } from "../transaction-builder";
 import {
-  decodeEventFromReceipt,
-  sendTransaction,
   TransactionReceipt,
   TransactionSender,
+  decodeEventFromReceipt,
+  sendRawTransaction,
+  sendTransaction,
 } from "../transaction-sender";
-import { getPermitType, PermitSignature } from "../voting";
+import { PermitSignature, getPermitType } from "../voting";
 
 function createProjectId(args: {
   chainId: number;
@@ -704,9 +712,11 @@ export class AlloV1 implements Allo {
   editRound(args: {
     roundId: Hex | number;
     metadata: AnyJson;
+    round: Round;
+    editedGroups: EditedGroups;
     strategy: RoundCategory;
   }): AlloOperation<
-    Result<Hex>,
+    Result<Hex | number>,
     {
       ipfs: Result<string>;
       transaction: Result<Hex>;
@@ -715,49 +725,162 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
+      const { round, metadata, editedGroups } = args;
+
       if (typeof args.roundId == "number") {
         return error(new AlloError("roundId must be Hex"));
       }
 
-      const ipfsResult = await this.ipfsUploader(args.metadata);
+      const metadataPointer = await this.ipfsUploader(metadata);
 
-      emit("ipfs", ipfsResult);
+      emit("ipfs", metadataPointer);
 
-      if (ipfsResult.type === "error") {
-        return ipfsResult;
+      if (metadataPointer.type === "error") {
+        return metadataPointer;
       }
 
-      const txResult = await sendTransaction(this.transactionSender, {
-        address: args.roundId,
-        abi: RoundImplementationABI,
-        functionName: "updateRoundMetaPtr",
-        args: [{ protocol: 1n, pointer: ipfsResult.value }],
-      });
+      const transactionBuilder = new TransactionBuilder(round);
 
-      emit("transaction", txResult);
-
-      if (txResult.type === "error") {
-        return txResult;
-      }
-
-      let receipt: TransactionReceipt;
       try {
-        receipt = await this.transactionSender.wait(txResult.value);
-        emit("transactionStatus", success(receipt));
-      } catch (err) {
-        const result = new AlloError("Failed to edit round");
-        emit("transactionStatus", error(result));
-        return error(result);
+        // datadogLogs.logger.info(`_updateRound: ${round}`);
+
+        // ipfs/metapointer related updates
+        // todo: move to handler - ref: update builder metadata
+        try {
+          if (
+            editedGroups.RoundMetaPointer ||
+            editedGroups.ApplicationMetaPointer
+          ) {
+            // setIPFSCurrentStatus(ProgressStatus.IN_PROGRESS);
+            if (editedGroups.RoundMetaPointer) {
+              console.log("updating round metadata");
+              const ipfsHash: Result<string> = await this.ipfsUploader({
+                content: round.roundMetadata,
+              });
+              transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [
+                { protocol: 1, pointer: ipfsHash },
+              ]);
+            }
+            // if (editedGroups.ApplicationMetaPointer) {
+            //   console.log("updating application metadata");
+            //   if (round.applicationMetadata === undefined)
+            //     throw new Error("Application metadata is undefined");
+            //   const ipfsHash: Result<string> = await this.ipfsUploader({
+            //     content: round.applicationMetadata,
+            //   });
+            //   transactionBuilder.add(UpdateAction.UPDATE_APPLICATION_META_PTR, [
+            //     { protocol: 1, pointer: ipfsHash },
+            //   ]);
+            // }
+            // setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
+          }
+        } catch (error) {
+          console.error("error updating round metadata", error);
+          // datadogLogs.logger.error(`_updateRound: ${error}`);
+          // setIPFSCurrentStatus(ProgressStatus.IS_ERROR);
+          throw error;
+        }
+
+        // direct contract updates
+        if (editedGroups.MatchAmount) {
+          console.log("updating match amount");
+          // todo: update the Round types to play nice with each other...
+          // fixme: round.chainId - this is using the Round type from data-layer
+          const decimals = getPayoutTokenOptions(10).find(
+            (token) => token.address === round.token
+          )?.decimal;
+          // use ethers to convert amount using decimals
+          const arg = ethers.utils.parseUnits(
+            round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString() ??
+              "0",
+            decimals
+          );
+          transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [arg]);
+          console.log(arg.toString());
+        }
+
+        if (editedGroups.RoundFeePercentage) {
+          console.log("updating round fee percentage");
+          const arg =
+            round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable;
+          transactionBuilder.add(UpdateAction.UPDATE_ROUND_FEE_PERCENTAGE, [
+            arg,
+          ]);
+        }
+
+        /* Special case - if the application period or round has already started, and we are editing times,
+         * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
+         * This won't actually update the values, it's done just to pass the checks in the contract
+         * (and to confuse the developer).
+         *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1 */
+        if (Date.now() > round.applicationsStartTime.getTime()) {
+          round.applicationsStartTime = new Date(
+            round.applicationsEndTime.getTime() - 10
+          );
+        }
+        if (Date.now() > round.roundStartTime.getTime()) {
+          round.roundStartTime = new Date(
+            round.applicationsEndTime.getTime() - 10
+          );
+        }
+
+        if (editedGroups.StartAndEndTimes) {
+          console.log("updating start and end times");
+          transactionBuilder.add(
+            UpdateAction.UPDATE_ROUND_START_AND_END_TIMES,
+            [
+              round?.applicationsStartTime.getTime() / 1000,
+              round?.applicationsEndTime.getTime() / 1000,
+              round?.roundStartTime.getTime() / 1000,
+              round?.roundEndTime.getTime() / 1000,
+            ]
+          );
+        }
+
+        const transactionBody = transactionBuilder.generate();
+
+        // setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
+        // setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
+        // setIndexingStatus(ProgressStatus.IN_PROGRESS);
+
+        let receipt: TransactionReceipt;
+        try {
+          const txResult = await sendRawTransaction(this.transactionSender, {
+            to: transactionBody.to,
+            data: transactionBody.data,
+            value: transactionBody.value,
+          });
+
+          emit("transaction", txResult);
+
+          if (txResult.type === "error") {
+            return txResult;
+          }
+
+          receipt = await this.transactionSender.wait(txResult.value);
+
+          emit("transactionStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to update application status");
+          emit("transactionStatus", error(result));
+          return error(result);
+        }
+
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("indexingStatus", success(undefined));
+
+        return success(0);
+      } catch (error) {
+        // datadogLogs.logger.error(`_updateRound: ${error}`);
+        // setRoundUpdateStatus(ProgressStatus.IS_ERROR);
+        console.log("_updateRound error: ", error);
       }
 
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
-
-      emit("indexingStatus", success(undefined));
-
-      return success(args.roundId);
+      return success(round?.id as Hex);
     });
   }
 }
@@ -811,6 +934,3 @@ function constructCreateRoundArgs({
     },
   ]);
 }
-
-const dateToEthereumTimestamp = (date: Date) =>
-  BigInt(Math.floor(date.getTime() / 1000));

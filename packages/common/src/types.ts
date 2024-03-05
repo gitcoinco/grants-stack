@@ -1,6 +1,6 @@
 import { Round } from "data-layer";
-import { ChainId } from "./chain-ids";
 import { Hex } from "viem";
+import { ChainId } from "./chain-ids";
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
@@ -14,6 +14,15 @@ export type CreateRoundData = {
   };
   round: Round;
   roundCategory: RoundCategory;
+};
+
+export type EditedGroups = {
+  ApplicationMetaPointer: boolean;
+  MatchAmount: boolean;
+  RoundFeeAddress: boolean;
+  RoundFeePercentage: boolean;
+  RoundMetaPointer: boolean;
+  StartAndEndTimes: boolean;
 };
 
 export type SchemaQuestion = {
@@ -42,6 +51,15 @@ export type ProjectRequirements = {
 export enum RoundCategory {
   QuadraticFunding,
   Direct,
+}
+
+export enum UpdateAction {
+  UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
+  UPDATE_ROUND_META_PTR = "updateRoundMetaPtr",
+  UPDATE_ROUND_START_AND_END_TIMES = "updateStartAndEndTimes",
+  UPDATE_MATCH_AMOUNT = "updateMatchAmount",
+  UPDATE_ROUND_FEE_ADDRESS = "updateRoundFeeAddress",
+  UPDATE_ROUND_FEE_PERCENTAGE = "updateRoundFeePercentage",
 }
 
 export type InputType =

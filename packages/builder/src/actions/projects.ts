@@ -1,6 +1,7 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { Client as AlloClient } from "allo-indexer-client";
 import { ChainId } from "common";
+import { RoundCategory } from "common/dist/types";
 import { getConfig } from "common/src/config";
 import {
   ApplicationStatus,
@@ -9,7 +10,6 @@ import {
 } from "data-layer";
 import { utils } from "ethers";
 import { Dispatch } from "redux";
-import { RoundCategory } from "common/dist/types";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectStats } from "../reducers/projects";

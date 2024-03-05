@@ -4,10 +4,10 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { BigNumber } from "ethers";
-import { SchemaQuestion } from "./utils";
 import { RoundVisibilityType } from "common";
+import { BigNumber } from "ethers";
 import { Address } from "viem";
+import { SchemaQuestion } from "./utils";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -450,13 +450,4 @@ export type Project = {
 export type TransactionBlock = {
   transactionBlockNumber: number;
   error?: unknown;
-};
-
-export type EditedGroups = {
-  ApplicationMetaPointer: boolean;
-  MatchAmount: boolean;
-  RoundFeeAddress: boolean;
-  RoundFeePercentage: boolean;
-  RoundMetaPointer: boolean;
-  StartAndEndTimes: boolean;
 };
