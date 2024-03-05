@@ -135,6 +135,19 @@ export interface Allo {
       indexingStatus: Result<void>;
     }
   >;
+
+  editRound: (args: {
+    roundId: Hex | number;
+    metadata: AnyJson;
+    strategy: RoundCategory;
+  }) => AlloOperation<
+    Result<Hex>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  >
 }
 
 export { AlloOperation };
