@@ -1,5 +1,9 @@
 import { Divider } from "@chakra-ui/react";
-import { ProjectApplicationWithRound } from "data-layer";
+import {
+  ProjectApplicationWithRound,
+  RoundCategory,
+  strategyNameToCategory,
+} from "data-layer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../../reducers";
@@ -35,12 +39,20 @@ export default function Rounds({
     const mappedApplications = applications.map((app) => {
       const { round } = app;
 
-      const infiniteApplicationsEndDate = isInfinite(
-        Number(round?.applicationsEndTime)
-      );
-      const infiniteRoundEndDate = isInfinite(Number(round?.donationsEndTime));
+      const isDirectGrants =
+        strategyNameToCategory(round?.strategyName) === RoundCategory.Direct;
 
       console.log("round", round);
+
+      const infiniteApplicationsEndDate = isInfinite(
+        formatDateAsNumber(round?.applicationsEndTime)
+      );
+      const infiniteRoundEndDate = isInfinite(
+        formatDateAsNumber(
+          isDirectGrants ? round?.applicationsEndTime : round?.donationsEndTime
+        )
+      );
+
       if (round) {
         let category = null;
         const currentTime = secondsSinceEpoch();
@@ -51,13 +63,39 @@ export default function Rounds({
         const applicationsEndTime = formatDateAsNumber(
           round.applicationsEndTime
         );
-        const donationsStartTime = formatDateAsNumber(round.donationsStartTime);
-        const donationsEndTime = formatDateAsNumber(round.donationsEndTime);
+        const donationsStartTime = isDirectGrants
+          ? applicationsStartTime
+          : formatDateAsNumber(round.donationsStartTime);
+        const donationsEndTime = isDirectGrants
+          ? applicationsEndTime
+          : formatDateAsNumber(round.donationsEndTime);
 
         // Current Applications
         // FOCUS on Direct Rounds infinite periods
         // FOCUS on Both Rounds application dates period
         // FOCUS on Quadratic Rounds roundStartTime not met
+
+        console.log("infiniteApplicationsEndDate", infiniteApplicationsEndDate);
+        console.log("infiniteRoundEndDate", infiniteRoundEndDate);
+        console.log(
+          Number(round?.applicationsEndTime) === Number.MAX_SAFE_INTEGER
+        );
+        console.log(!Number(round?.applicationsEndTime));
+        console.log("round?.applicationsEndTime", round?.applicationsEndTime);
+        console.log("applicationsStartTime", applicationsStartTime);
+        console.log("currentTime", currentTime);
+        console.log("applicationsEndTime", applicationsEndTime);
+        console.log("donationsStartTime", donationsStartTime);
+        console.log("donationsEndTime", donationsEndTime);
+
+        console.log("bools", {
+          1: !infiniteApplicationsEndDate && !infiniteRoundEndDate,
+          2: applicationsStartTime < currentTime,
+          3: applicationsEndTime > currentTime,
+          4: donationsStartTime !== applicationsStartTime,
+          5: donationsStartTime > currentTime,
+        });
+
         if (
           !infiniteApplicationsEndDate &&
           !infiniteRoundEndDate &&

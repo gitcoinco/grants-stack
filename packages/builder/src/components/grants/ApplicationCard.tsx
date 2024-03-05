@@ -11,7 +11,11 @@ import { Link } from "react-router-dom";
 import { loadRound } from "../../actions/rounds";
 import { roundApplicationViewPath } from "../../routes";
 import { ApplicationCardType, RoundSupport } from "../../types";
-import { formatDateFromSecs, isInfinite } from "../../utils/components";
+import {
+  formatDate,
+  formatDateAsNumber,
+  isInfinite,
+} from "../../utils/components";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 
 export default function ApplicationCard({
@@ -61,20 +65,16 @@ export default function ApplicationCard({
     }
   }, [dispatch, applicationData.roundID]);
 
-  console.log(">===========================");
-  console.log(formatDateFromSecs(Number(props.round?.applicationsStartTime!)));
   const renderApplicationDate = () =>
     props.round && (
       <>
-        {formatDateFromSecs(Number(props.round?.applicationsStartTime!))} -{" "}
-        {!isInfinite(Number(props.round?.applicationsEndTime!)) &&
+        {formatDate(props.round?.applicationsStartTime!)} -{" "}
+        {!isInfinite(formatDateAsNumber(props.round?.applicationsEndTime!)) &&
         props.round?.applicationsEndTime
-          ? formatDateFromSecs(Number(props.round?.applicationsEndTime!))
+          ? formatDate(props.round?.applicationsEndTime!)
           : "No End Date"}
       </>
     );
-  console.log(formatDateFromSecs(Number(props.round?.applicationsEndTime!)));
-  console.log("===========================<");
 
   const renderRoundBadge = () => {
     let colorScheme:
