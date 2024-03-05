@@ -1,5 +1,10 @@
 import { Badge, Box, Button, Image, Spinner } from "@chakra-ui/react";
-import { ApplicationStatus, RoundCategory, useDataLayer } from "data-layer";
+import {
+  ApplicationStatus,
+  RoundCategory,
+  strategyNameToCategory,
+  useDataLayer,
+} from "data-layer";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -24,7 +29,7 @@ export default function ApplicationCard({
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
 
     // fixme: this is breaking the render of the application card.
-    const payoutStrategy = round.strategyName as RoundCategory;
+    const payoutStrategy = strategyNameToCategory(round.strategyName);
 
     const applicationChainName = networkPrettyName(
       Number(applicationData.chainId)
@@ -32,8 +37,6 @@ export default function ApplicationCard({
     const applicationChainIconUri = getNetworkIcon(
       Number(applicationData.chainId)
     );
-
-    console.log("applicationDta", applicationData);
 
     const isDirectRound = payoutStrategy === RoundCategory.Direct;
 

@@ -1,4 +1,4 @@
-import { v2Project } from ".";
+import { RoundCategory, RoundPayoutType, v2Project } from ".";
 
 /**
  * Merges canonical and linked projects into a single array of projects
@@ -31,4 +31,20 @@ export const mergeCanonicalAndLinkedProjects = (projects: v2Project[]) => {
   }
 
   return Object.values(allProjects);
+};
+
+export const strategyNameToCategory = (
+  name: RoundPayoutType | string,
+): RoundCategory => {
+  switch (name) {
+    case "allov1.Direct":
+    case "allov2.DirectGrantsSimpleStrategy":
+      return RoundCategory.Direct;
+
+    case "allov1.QF":
+    case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
+      return RoundCategory.QuadraticFunding;
+    default:
+      throw new Error(`Unknown round strategy: ${name}`);
+  }
 };

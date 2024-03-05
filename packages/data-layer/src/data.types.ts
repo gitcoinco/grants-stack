@@ -1,7 +1,11 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Address } from "viem";
 import { RoundApplicationMetadata } from "./roundApplication.types";
-export type RoundPayoutType = "allov1.Direct" | "allov1.QF";
+export type RoundPayoutType =
+  | "allov1.Direct"
+  | "allov1.QF"
+  | "allov2.DirectGrantsSimpleStrategy"
+  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy";
 export type RoundVisibilityType = "public" | "private";
 
 // Note: this also exists in `common` and not able to import from there due to circular dependency.
@@ -272,7 +276,7 @@ export type ProjectApplicationWithRound = ProjectApplication & {
     donationsEndTime: string;
     roundMetadata: RoundMetadata;
     name: string;
-    strategyName: RoundCategory;
+    strategyName: RoundPayoutType;
   };
 };
 
