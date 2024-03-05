@@ -3,7 +3,7 @@ import { ChainId } from "common/src/chain-ids";
 import {
   ApplicationStatus,
   ProjectApplicationMetadata,
-  RoundCategory,
+  // RoundCategory,
   RoundVisibilityType,
 } from "data-layer";
 import {
