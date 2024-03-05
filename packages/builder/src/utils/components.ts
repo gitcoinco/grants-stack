@@ -44,9 +44,7 @@ export const formatDateFromMs = (ts: number) => {
 };
 
 export const formatDateFromSecs = (ts: number) => {
-  console.log("ts", ts);
   const date = new Date(ts * 1000);
-  console.log("date", date);
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",

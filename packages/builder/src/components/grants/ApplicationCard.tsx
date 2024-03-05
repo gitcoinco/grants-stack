@@ -30,9 +30,6 @@ export default function ApplicationCard({
   const props = useSelector(() => {
     const { round } = applicationData.application;
 
-    console.log("rrrrr");
-    console.log(round);
-
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
 
     // fixme: this is breaking the render of the application card.
@@ -197,7 +194,6 @@ export default function ApplicationCard({
   );
 
   if (!props.round?.roundMetadata) {
-    console.log("props.round?.roundMetadata", props.round?.roundMetadata);
     return null;
   }
 

@@ -29,8 +29,6 @@ export default function Rounds({
 }) {
   const params = useParams();
 
-  console.log("apps", applications);
-
   const props = useSelector((state: RootState) => {
     const projectId = params.id!;
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
@@ -41,8 +39,6 @@ export default function Rounds({
 
       const isDirectGrants =
         strategyNameToCategory(round?.strategyName) === RoundCategory.Direct;
-
-      console.log("round", round);
 
       const infiniteApplicationsEndDate = isInfinite(
         formatDateAsNumber(round?.applicationsEndTime)
@@ -74,28 +70,6 @@ export default function Rounds({
         // FOCUS on Direct Rounds infinite periods
         // FOCUS on Both Rounds application dates period
         // FOCUS on Quadratic Rounds roundStartTime not met
-
-        console.log("infiniteApplicationsEndDate", infiniteApplicationsEndDate);
-        console.log("infiniteRoundEndDate", infiniteRoundEndDate);
-        console.log(
-          Number(round?.applicationsEndTime) === Number.MAX_SAFE_INTEGER
-        );
-        console.log(!Number(round?.applicationsEndTime));
-        console.log("round?.applicationsEndTime", round?.applicationsEndTime);
-        console.log("applicationsStartTime", applicationsStartTime);
-        console.log("currentTime", currentTime);
-        console.log("applicationsEndTime", applicationsEndTime);
-        console.log("donationsStartTime", donationsStartTime);
-        console.log("donationsEndTime", donationsEndTime);
-
-        console.log("bools", {
-          1: !infiniteApplicationsEndDate && !infiniteRoundEndDate,
-          2: applicationsStartTime < currentTime,
-          3: applicationsEndTime > currentTime,
-          4: donationsStartTime !== applicationsStartTime,
-          5: donationsStartTime > currentTime,
-        });
-
         if (
           !infiniteApplicationsEndDate &&
           !infiniteRoundEndDate &&
