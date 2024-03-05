@@ -251,6 +251,9 @@ export type ProjectApplication = {
   status: ApplicationStatus;
   metadataCid: string;
   metadata: ProjectApplicationMetadata;
+  totalDonationsCount: number;
+  totalAmountDonatedInUsd: number;
+  uniqueDonorsCount: number;
 };
 
 export type ProjectApplicationForManager = ProjectApplication & {

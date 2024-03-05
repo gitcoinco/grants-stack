@@ -166,6 +166,9 @@ export const getApplicationsByProjectIds = gql`
       status
       metadataCid
       metadata
+      totalDonationsCount
+      totalAmountDonatedInUsd
+      uniqueDonorsCount
       round {
         applicationsStartTime
         applicationsEndTime

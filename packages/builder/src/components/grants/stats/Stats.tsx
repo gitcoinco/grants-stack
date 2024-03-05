@@ -1,10 +1,7 @@
 import { Spinner } from "@chakra-ui/react";
-import { ChainId } from "common";
-import { RoundCategory } from "data-layer";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { loadProjectStats } from "../../../actions/projects";
 import { RootState } from "../../../reducers";
 import { ProjectStats } from "../../../reducers/projects";
 import RoundDetailsCard from "./RoundDetailsCard";
@@ -13,9 +10,7 @@ import StatCard from "./StatCard";
 export default function RoundStats() {
   const NA = -1;
   const NAText = "N/A";
-  const [noStats, setNoStats] = useState(false);
 
-  const dispatch = useDispatch();
   const params = useParams();
   const [details, setDetails] = useState<any>([]);
   const [allTimeStats, setAllTimeStats] = useState<any>({
@@ -29,6 +24,8 @@ export default function RoundStats() {
       ? state.projects.applications[params.id!]
       : [];
 
+    console.log(state);
+
     return {
       projectID: params.id!,
       stats,
@@ -36,42 +33,6 @@ export default function RoundStats() {
       rounds: state.rounds,
     };
   });
-
-  useEffect(() => {
-    // TODO: Remove DIRECT ROUND filter condition after Stats view rework #11
-    const applications = props.projectApplications?.filter(
-      (app) => app.status === "APPROVED"
-    );
-
-    if (applications?.length > 0) {
-      setNoStats(false);
-      const rounds: Array<{
-        roundId: string;
-        chainId: ChainId;
-        roundType: RoundCategory;
-      }> = [];
-      applications.forEach((app) => {
-        const roundType = props.rounds[app.roundId]?.round?.payoutStrategy;
-        if (roundType === RoundCategory.QuadraticFunding) {
-          rounds.push({
-            roundId: app.roundId,
-            chainId: app.chainId,
-            roundType,
-          });
-        }
-      });
-      dispatch(
-        loadProjectStats(
-          params.id!,
-          params.registryAddress!,
-          params.chainId!,
-          rounds
-        )
-      );
-    } else {
-      setNoStats(true);
-    }
-  }, [props.projectApplications, props.rounds]);
 
   useEffect(() => {
     const detailsTmp: any[] = [];
@@ -210,12 +171,12 @@ export default function RoundStats() {
     </>
   );
 
-  if (noStats)
-    return (
-      <div className="text-base text-gitcoin-grey-400 flex items-center justify-center p-10">
-        No stats available yet for this project.
-      </div>
-    );
+  // if (noStats)
+  //   return (
+  //     <div className="text-base text-gitcoin-grey-400 flex items-center justify-center p-10">
+  //       No stats available yet for this project.
+  //     </div>
+  //   );
 
   if (details?.length === 0 || details?.length !== allTimeStats.roundsLength)
     return (

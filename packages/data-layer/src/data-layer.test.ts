@@ -66,6 +66,9 @@ const mockApplications: ProjectApplicationWithRound[] = [
     status: "PENDING",
     metadataCid: "",
     metadata: {} as ProjectApplicationMetadata,
+    totalDonationsCount: 0,
+    totalAmountDonatedInUsd: 0,
+    uniqueDonorsCount: 0,
     round: {
       strategyName: "allov1.QF",
       applicationsStartTime: "2024-02-20T17:27:40+00:00",
