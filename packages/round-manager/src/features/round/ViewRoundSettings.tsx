@@ -311,7 +311,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   useEffect(() => {
     setHasChanged(
-      _.isEmpty(
+      !_.isEmpty(
         generateUpdateRoundData(round!, editedRound!)
       )
     );
