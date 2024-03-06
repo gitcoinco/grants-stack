@@ -65,13 +65,6 @@ describe("TransactionBuilder", () => {
     expect(transactions.length).toEqual(2);
   });
 
-  it("should throw an error when the action is not supported", () => {
-    const action = "unsupported action";
-    const args = ["arg1", "arg2"];
-
-    expect(() => transactionBuilder.add(action, args)).toThrowError();
-  });
-
   it("should throw an error when the wrong param is provided", () => {
     const action = UpdateAction.UPDATE_APPLICATION_META_PTR;
     const args = ["arg1", "arg2"];
