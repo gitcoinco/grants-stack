@@ -684,7 +684,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
     "https://goerli.explorer.zksync.io/tx/",
   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
   [ChainId.BASE]: "https://basescan.org/tx/",
-  [ChainId.SEPOLIA]: "https://sepolia.etherscan.io//tx/",
+  [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
   [ChainId.SCROLL]: "https://scrollscan.com/tx/",
 };
 
