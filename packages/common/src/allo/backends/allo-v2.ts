@@ -114,7 +114,7 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      // --- upload metadata to IPFS
+      /** upload metadata to IPFS */
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
@@ -144,7 +144,7 @@ export class AlloV2 implements Allo {
       const txCreateProfile: TransactionData =
         this.registry.createProfile(createProfileData);
 
-      // --- send transaction to create project
+      /** send transaction to create project */
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: txCreateProfile.to,
         data: txCreateProfile.data,
@@ -157,7 +157,7 @@ export class AlloV2 implements Allo {
         return txResult;
       }
 
-      // --- wait for transaction to be mined
+      /** wait for transaction to be mined */
       let receipt: TransactionReceipt;
 
       try {
@@ -231,7 +231,7 @@ export class AlloV2 implements Allo {
     return new AlloOperation(async ({ emit }) => {
       const projectId = args.projectId;
 
-      // --- upload metadata to IPFS
+      /** upload metadata to IPFS */
       const ipfsResult = await this.ipfsUploader(args.metadata);
 
       emit("ipfs", ipfsResult);
@@ -251,7 +251,7 @@ export class AlloV2 implements Allo {
       const txUpdateProfile: TransactionData =
         this.registry.updateProfileMetadata(data);
 
-      // --- send transaction to create project
+      /** send transaction to create project */
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: txUpdateProfile.to,
         data: txUpdateProfile.data,
@@ -264,7 +264,7 @@ export class AlloV2 implements Allo {
         return txResult;
       }
 
-      // --- wait for transaction to be mined
+      /** wait for transaction to be mined */
       let receipt: TransactionReceipt;
 
       try {
@@ -631,13 +631,121 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
+      const data = args.data;
+
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
       }
 
-      emit("ipfs", success("0x0"));
+      /** Upload roundMetadata ( includes applicationMetadata ) to IPFS */
+      console.log("metadata", data.roundMetadata);
+      if (data.roundMetadata) {
+        const ipfsResult: Result<string> = await this.ipfsUploader(
+          data.applicationMetadata
+        );
 
-      return success("0x0");
+        emit("ipfs", ipfsResult);
+
+        if (ipfsResult.type === "error") {
+          return ipfsResult;
+        }
+
+        /** Note: the pool metadata always calls `this.allo.updatePoolMetadata` and not the strategy */
+        const updatePoolMetadataTx = this.allo.updatePoolMetadata({
+          poolId: args.roundId,
+          metadata: {
+            protocol: 1n,
+            pointer: ipfsResult.value,
+          },
+        });
+
+        const updatePoolMetadataTxResult = await sendRawTransaction(
+          this.transactionSender,
+          {
+            to: updatePoolMetadataTx.to,
+            data: updatePoolMetadataTx.data,
+            value: BigInt(updatePoolMetadataTx.value),
+          }
+        );
+
+        emit("transaction", updatePoolMetadataTxResult);
+      }
+
+      let updateTimestampTxn: TransactionData = {
+        to: zeroAddress,
+        data: "0x0",
+        value: "0",
+      };
+
+      /** Note: timestamps updates happen by calling the strategy contract directly `this.strategy.updatePoolTimestamps` */
+      switch (args.strategy) {
+        case RoundCategory.QuadraticFunding: {
+          const strategyInstance = new DonationVotingMerkleDistributionStrategy(
+            {
+              chain: this.chainId,
+              poolId: args.roundId,
+            }
+          );
+
+          if (
+            data.roundStartTime &&
+            data.roundEndTime &&
+            data.applicationsStartTime &&
+            data.applicationsEndTime
+          ) {
+            updateTimestampTxn = strategyInstance.updatePoolTimestamps(
+              dateToEthereumTimestamp(data.applicationsStartTime),
+              dateToEthereumTimestamp(data.applicationsEndTime),
+              dateToEthereumTimestamp(data.roundStartTime),
+              dateToEthereumTimestamp(data.roundEndTime)
+            );
+          }
+
+          break;
+        }
+        case RoundCategory.Direct: {
+          // fixme: temp fix for null roundEndTime - no end date or uint64max
+          let endTime: bigint;
+          if (data.roundEndTime) {
+            endTime = dateToEthereumTimestamp(data.roundEndTime);
+          } else {
+            endTime = BigInt(9999999999n);
+          }
+          const strategyInstance = new DirectGrantsStrategy({
+            chain: this.chainId,
+            poolId: args.roundId,
+          });
+
+          if (data.roundStartTime && data.roundEndTime) {
+            updateTimestampTxn = strategyInstance.getUpdatePoolTimestampsData(
+              dateToEthereumTimestamp(data.roundStartTime),
+              endTime
+            );
+          }
+
+          break;
+        }
+
+        default:
+          throw new AlloError("Unsupported strategy");
+      }
+
+      const timestampTxResult = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: updateTimestampTxn.to,
+          data: updateTimestampTxn.data,
+          value: BigInt(updateTimestampTxn.value),
+        }
+      );
+
+      emit("transaction", timestampTxResult);
+
+      if (timestampTxResult.type === "error") {
+        return error(timestampTxResult.error);
+      }
+
+      return success(timestampTxResult.value);
     });
   }
 }

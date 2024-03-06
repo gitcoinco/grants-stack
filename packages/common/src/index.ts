@@ -357,14 +357,14 @@ export function getRoundStrategyType(name: string): RoundStrategyType {
 
 export type RoundVisibilityType = "public" | "private";
 
-export type { Allo } from "./allo/allo";
 export { AlloError, AlloOperation } from "./allo/allo";
+export type { Allo } from "./allo/allo";
 export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
 export {
   createWaitForIndexerSyncTo,
   getCurrentSubgraphBlockNumber,
-  waitForSubgraphSyncTo,
+  waitForSubgraphSyncTo
 } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
@@ -375,7 +375,7 @@ export {
   createViemTransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
-  sendTransaction,
+  sendTransaction
 } from "./allo/transaction-sender";
 
 export type AnyJson =
@@ -417,5 +417,6 @@ export interface Web3Instance {
 
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
-export type { VotingToken } from "./types";
 export * from "./allo/transaction-builder";
+export type { VotingToken } from "./types";
+
