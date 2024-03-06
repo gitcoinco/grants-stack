@@ -731,6 +731,7 @@ export class AlloV1 implements Allo {
       const transactionBuilder = new TransactionBuilder(args.roundId);
 
       const data = args.data;
+      
 
       // upload application metadata to IPFS + add to transactionBuilder
       if (data.applicationMetadata) {
