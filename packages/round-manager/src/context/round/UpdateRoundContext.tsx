@@ -4,7 +4,6 @@ import { UpdateRoundParams } from "common/dist/types";
 import { Allo } from "common";
 import { Hex } from "viem";
 import { datadogLogs } from "@datadog/browser-logs";
-import { getConfig } from "common/src/config";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 

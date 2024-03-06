@@ -8,17 +8,12 @@ import {
 } from "../UpdateRoundContext";
 import { makeRoundData } from "../../../test-utils";
 import {
-  TransactionReceipt,
-  TransactionResponse,
-} from "@ethersproject/providers";
-import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
-import {
   AlloProvider,
   AlloV1,
   createMockTransactionSender,
   useAllo,
 } from "common";
-import { Hex, zeroAddress } from "viem";
+import { Hex } from "viem";
 
 const mockWallet = {
   address: "0x0",

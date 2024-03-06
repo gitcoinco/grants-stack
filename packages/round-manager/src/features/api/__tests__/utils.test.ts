@@ -7,7 +7,6 @@ import {
   initialQuestionsQF,
   initialRequirements,
 } from "../../round/RoundApplicationForm";
-import { MetadataPointer } from "../types";
 import { graphql_fetch } from "common";
 
 enableFetchMocks();

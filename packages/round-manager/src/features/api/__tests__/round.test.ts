@@ -1,6 +1,5 @@
 import { Round } from "../types";
 import { makeRoundData } from "../../../test-utils";
-import { Signer } from "@ethersproject/abstract-signer";
 import { ethers } from "ethers";
 import { TransactionBuilder } from "common";
 import { UpdateAction } from "common/dist/types";
