@@ -310,6 +310,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
   });
 
   useEffect(() => {
+    console.log("UPDATEDROUND", generateUpdateRoundData(round!, editedRound!));
+    
     setHasChanged(
       !_.isEmpty(
         generateUpdateRoundData(round!, editedRound!)
@@ -378,7 +380,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
       setTimeout(() => {
         setIsProgressModalOpen(false);
         setIpfsStep(false);
-        window.location.reload();
+        // window.location.reload();
       }, 2000);
     } catch (e) {
       console.log("error", e);

@@ -731,7 +731,6 @@ export class AlloV1 implements Allo {
       const transactionBuilder = new TransactionBuilder(args.roundId);
 
       const data = args.data;
-      
 
       // upload application metadata to IPFS + add to transactionBuilder
       if (data.applicationMetadata) {
@@ -813,27 +812,22 @@ export class AlloV1 implements Allo {
         const transactionBody = transactionBuilder.generate();
 
         let receipt: TransactionReceipt;
-        try {
-          const txResult = await sendRawTransaction(this.transactionSender, {
-            to: transactionBody.to,
-            data: transactionBody.data,
-            value: transactionBody.value,
-          });
 
-          emit("transaction", txResult);
+        const txResult = await sendRawTransaction(this.transactionSender, {
+          to: transactionBody.to,
+          data: transactionBody.data,
+          value: transactionBody.value,
+        });
 
-          if (txResult.type === "error") {
-            return txResult;
-          }
+        emit("transaction", txResult);
 
-          receipt = await this.transactionSender.wait(txResult.value);
-
-          emit("transactionStatus", success(receipt));
-        } catch (err) {
-          const result = new AlloError("Failed to update application status");
-          emit("transactionStatus", error(result));
-          return error(result);
+        if (txResult.type === "error") {
+          return txResult;
         }
+
+        receipt = await this.transactionSender.wait(txResult.value);
+
+        emit("transactionStatus", success(receipt));
 
         await this.waitUntilIndexerSynced({
           chainId: this.chainId,
@@ -844,6 +838,8 @@ export class AlloV1 implements Allo {
 
         return success(0);
       } catch (err) {
+        console.log(err);
+        
         const result = new AlloError("Failed to update round");
         emit("transactionStatus", error(result));
         return error(result);
