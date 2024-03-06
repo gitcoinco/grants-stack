@@ -103,6 +103,7 @@ const _updateRound = async ({
   }).on("ipfs", (res) => {
     if (res.type === "success") {
       setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
+      setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
     } else {
       console.error("IPFS Error", res.error);
       datadogLogs.logger.error(`_updateRound: ${res.error}`);
@@ -111,6 +112,7 @@ const _updateRound = async ({
   }).on("transactionStatus", (res) => {
     if (res.type === "success") {
       setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
+      setIndexingStatus(ProgressStatus.IN_PROGRESS);
     } else {
       console.error("Transaction Status Error", res.error);
       datadogLogs.logger.error(`_updateRound: ${res.error}`);
