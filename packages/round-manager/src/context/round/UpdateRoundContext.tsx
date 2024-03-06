@@ -1,15 +1,18 @@
 import { Signer } from "ethers";
 import React, { SetStateAction, createContext, useContext } from "react";
-// todo: update type
 import { ProgressStatus } from "../../features/api/types";
 import { useWallet } from "../../features/common/Auth";
 import { UpdateRoundParams } from "common/dist/types";
+import { Allo } from "common";
+import { Hex } from "viem";
+import { datadogLogs } from "@datadog/browser-logs";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
 export type UpdateRoundData = {
   roundId: string;
-  updatedRoundData: UpdateRoundParams;
+  data: UpdateRoundParams;
+  allo: Allo;
 };
 
 export interface UpdateRoundState {
@@ -76,18 +79,46 @@ interface _updateRoundParams {
   updateRoundData: UpdateRoundData;
 }
 
-// todo: update this
 const _updateRound = async ({
   context,
-  signerOrProvider,
   updateRoundData,
 }: _updateRoundParams) => {
   const { setIPFSCurrentStatus, setRoundUpdateStatus, setIndexingStatus } =
     context;
 
-  const { roundId, updatedRoundData } = updateRoundData;
+  const { roundId, data, allo } = updateRoundData;
 
-  // call data-layer
+  const round = await allo.editRound({
+    roundId: roundId as any as Hex,
+    data,
+  }).on("ipfs", (res) => {
+  
+    if (res.type === "success") {
+      setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
+    } else {
+      console.error("IPFS Error", res.error);
+      datadogLogs.logger.error(`_updateRound: ${res.error}`);
+      setIPFSCurrentStatus(ProgressStatus.IS_ERROR);
+    }
+  }).on("transactionStatus", (res) => {
+    if (res.type === "success") {
+      setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
+    } else {
+      console.error("Transaction Status Error", res.error);
+      datadogLogs.logger.error(`_updateRound: ${res.error}`);
+      setRoundUpdateStatus(ProgressStatus.IS_ERROR);
+    }
+  
+  }).on("indexingStatus", (res) => {
+    if (res.type === "success") {
+      setIndexingStatus(ProgressStatus.IS_SUCCESS);
+    } else {
+      console.error("Indexing Status Error", res.error);
+      datadogLogs.logger.error(`_updateRound: ${res.error}`);
+      setIndexingStatus(ProgressStatus.IS_ERROR);
+    }
+  })
+  .execute();
 
 };
 

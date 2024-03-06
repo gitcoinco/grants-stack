@@ -9,6 +9,7 @@ import {
   classNames,
   getUTCDate,
   getUTCTime,
+  useAllo,
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
@@ -118,6 +119,7 @@ const generateUpdateRoundData = (
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round } = useRoundById(props.id?.toLowerCase());
+  const allo = useAllo();
   const [editMode, setEditMode] = useState<EditMode>({
     canEdit: false,
     canEditOnlyRoundEndDate: false,
@@ -352,10 +354,11 @@ export default function ViewRoundSettings(props: { id?: string }) {
   };
 
   const updateRoundHandler = async () => {
+    if (!allo) return;
     try {
       // @ts-expect-error TS upgrade broke this, TODO fix this
       handleSubmit(submit(editedRound as Round));
-      const updatedRoundData = generateUpdateRoundData(round!, editedRound!);
+      const data = generateUpdateRoundData(round!, editedRound!);
 
       setIpfsStep(
         !_.isNil(updatedRoundData?.applicationMetadata)||
@@ -368,7 +371,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
       
       await updateRound({
         roundId: round.id!,
-        updatedRoundData
+        data,
+        allo,
       });
   
       setTimeout(() => {
