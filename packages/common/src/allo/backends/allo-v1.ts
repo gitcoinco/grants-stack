@@ -735,9 +735,7 @@ export class AlloV1 implements Allo {
       // upload application metadata to IPFS + add to transactionBuilder
       if (data.applicationMetadata) {
         console.log("updating application metadata");
-        const ipfsResult: Result<string> = await this.ipfsUploader({
-          content: data.applicationMetadata,
-        });
+        const ipfsResult: Result<string> = await this.ipfsUploader(data.applicationMetadata);
         
         emit("ipfs", ipfsResult);
         if (ipfsResult.type === "error") {
@@ -752,9 +750,7 @@ export class AlloV1 implements Allo {
       // upload round metadata to IPFS + add to transactionBuilder
       if (data.roundMetadata) {
         console.log("updating round metadata");
-        const ipfsResult: Result<string> = await this.ipfsUploader({
-          content: data.roundMetadata,
-        });
+        const ipfsResult: Result<string> = await this.ipfsUploader(data.roundMetadata);
 
         emit("ipfs", ipfsResult);
         if (ipfsResult.type === "error") {
