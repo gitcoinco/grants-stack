@@ -309,9 +309,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
     resolver: yupResolver(ValidationSchema),
   });
 
-  useEffect(() => {
-    console.log("UPDATEDROUND", generateUpdateRoundData(round!, editedRound!));
-    
+  useEffect(() => {    
     setHasChanged(
       !_.isEmpty(
         generateUpdateRoundData(round!, editedRound!)

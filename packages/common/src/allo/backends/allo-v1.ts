@@ -835,7 +835,7 @@ export class AlloV1 implements Allo {
 
       emit("indexingStatus", success(undefined));
 
-      return success(undefined);
+      return success(args.roundId);
     });
   }
 }
