@@ -725,40 +725,31 @@ export class AlloV1 implements Allo {
       if (typeof args.roundId == "number") {
         return error(new AlloError("roundId must be Hex"));
       }
-
       const transactionBuilder = new TransactionBuilder(args.roundId);
 
       const data = args.data;
-
       // upload application metadata to IPFS + add to transactionBuilder
       if (data.applicationMetadata) {
-        console.log("updating application metadata");
         const ipfsResult: Result<string> = await this.ipfsUploader(
           data.applicationMetadata
         );
-
         emit("ipfs", ipfsResult);
         if (ipfsResult.type === "error") {
           return ipfsResult;
         }
-
         transactionBuilder.add(UpdateAction.UPDATE_APPLICATION_META_PTR, [
           { protocol: 1, pointer: ipfsResult.value },
         ]);
       }
-
       // upload round metadata to IPFS + add to transactionBuilder
       if (data.roundMetadata) {
-        console.log("updating round metadata");
         const ipfsResult: Result<string> = await this.ipfsUploader(
           data.roundMetadata
         );
-
         emit("ipfs", ipfsResult);
         if (ipfsResult.type === "error") {
           return ipfsResult;
         }
-
         transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [
           { protocol: 1, pointer: ipfsResult.value },
         ]);
@@ -804,7 +795,7 @@ export class AlloV1 implements Allo {
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: transactionBody.to,
         data: transactionBody.data,
-        value: transactionBody.value,
+        value: BigInt(transactionBody.value),
       });
 
       emit("transaction", txResult);
