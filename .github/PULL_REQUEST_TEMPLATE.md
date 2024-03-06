@@ -12,6 +12,7 @@ Fixes: #issue
 
 This PR:
 
+- [ ] Does it add new payout or donation token? In this case, have they been added to the indexer to avoid it to crash?
 - [ ] Includes only changes relevant to the original ticket. Significant refactoring needs to be separated.
 - [ ] Doesn't disable eslint rules.
 - [ ] Doesn't work around the type checker (including but not limited to: type casts, non-null assertions, `@ts-ignore`, unjustified optional values).
