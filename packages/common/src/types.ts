@@ -18,16 +18,6 @@ export type CreateRoundData = {
   roundCategory: RoundCategory;
 };
 
-// TODO-SHITZU: remove this type
-export type EditedGroups = {
-  ApplicationMetaPointer: boolean;
-  MatchAmount: boolean;
-  RoundFeeAddress: boolean;
-  RoundFeePercentage: boolean;
-  RoundMetaPointer: boolean;
-  StartAndEndTimes: boolean;
-};
-
 export type UpdateRoundParams = {
   applicationMetadata?: AnyJson;
   roundMetadata?: AnyJson;

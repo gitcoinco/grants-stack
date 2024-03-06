@@ -1,14 +1,15 @@
 import { Signer } from "ethers";
 import React, { SetStateAction, createContext, useContext } from "react";
 // todo: update type
-import { ProgressStatus, Round } from "../../features/api/types";
+import { ProgressStatus } from "../../features/api/types";
 import { useWallet } from "../../features/common/Auth";
+import { UpdateRoundParams } from "common/dist/types";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
 export type UpdateRoundData = {
-  round: Round;
-  editedGroups: EditedGroups;
+  roundId: string;
+  updatedRoundData: UpdateRoundParams;
 };
 
 export interface UpdateRoundState {
@@ -84,10 +85,10 @@ const _updateRound = async ({
   const { setIPFSCurrentStatus, setRoundUpdateStatus, setIndexingStatus } =
     context;
 
-  const { round, editedGroups } = updateRoundData;
-  const chainId = await signerOrProvider.getChainId();
+  const { roundId, updatedRoundData } = updateRoundData;
 
   // call data-layer
+
 };
 
 export const useUpdateRound = () => {
