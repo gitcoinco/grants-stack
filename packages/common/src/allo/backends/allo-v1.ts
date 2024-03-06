@@ -736,7 +736,7 @@ export class AlloV1 implements Allo {
       if (data.applicationMetadata) {
         console.log("updating application metadata");
         const ipfsResult: Result<string> = await this.ipfsUploader(data.applicationMetadata);
-        
+
         emit("ipfs", ipfsResult);
         if (ipfsResult.type === "error") {
           return ipfsResult;
@@ -756,7 +756,7 @@ export class AlloV1 implements Allo {
         if (ipfsResult.type === "error") {
           return ipfsResult;
         }
-      
+
         transactionBuilder.add(UpdateAction.UPDATE_ROUND_META_PTR, [
           { protocol: 1, pointer: ipfsResult.value },
         ]);
@@ -767,12 +767,12 @@ export class AlloV1 implements Allo {
         console.log("updating match amount");
         transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [data.matchAmount]);
       }
-      
+
       /* Special case - if the application period or round has already started, and we are editing times,
        * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
        * This won't actually update the values, it's done just to pass the checks in the contract
        * (and to confuse the developer).
-       *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1 
+       *  https://github.com/allo-protocol/allo-contracts/blob/9c50f53cbdc2844fbf3cfa760df438f6fe3f0368/contracts/round/RoundImplementation.sol#L339C1-L339C1
        **/
       if (
         data.roundStartTime &&
@@ -790,7 +790,7 @@ export class AlloV1 implements Allo {
             data.applicationsEndTime.getTime() - 10
           );
         }
-      
+
         console.log("updating start and end times");
         transactionBuilder.add(
           UpdateAction.UPDATE_ROUND_START_AND_END_TIMES,
@@ -802,45 +802,40 @@ export class AlloV1 implements Allo {
           ]
         );
       }
-     
-      try {
+      const transactionBody = transactionBuilder.generate();
 
-        const transactionBody = transactionBuilder.generate();
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: transactionBody.to,
+        data: transactionBody.data,
+        value: transactionBody.value,
+      });
 
-        let receipt: TransactionReceipt;
+      emit("transaction", txResult);
 
-        const txResult = await sendRawTransaction(this.transactionSender, {
-          to: transactionBody.to,
-          data: transactionBody.data,
-          value: transactionBody.value,
-        });
+      if (txResult.type === "error") {
+        return txResult;
+      }
 
-        emit("transaction", txResult);
+      let receipt: TransactionReceipt;
 
-        if (txResult.type === "error") {
-          return txResult;
-        }
-
+      try  {
         receipt = await this.transactionSender.wait(txResult.value);
-
         emit("transactionStatus", success(receipt));
-
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
-
-        emit("indexingStatus", success(undefined));
-
-        return success(0);
       } catch (err) {
         console.log(err);
-        
         const result = new AlloError("Failed to update round");
         emit("transactionStatus", error(result));
         return error(result);
       }
 
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(undefined));
+
+      return success(undefined);
     });
   }
 }
