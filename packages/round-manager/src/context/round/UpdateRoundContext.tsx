@@ -1,7 +1,5 @@
-import { Signer } from "ethers";
 import React, { SetStateAction, createContext, useContext } from "react";
 import { ProgressStatus } from "../../features/api/types";
-import { useWallet } from "../../features/common/Auth";
 import { UpdateRoundParams } from "common/dist/types";
 import { Allo } from "common";
 import { Hex } from "viem";
@@ -76,7 +74,6 @@ export const UpdateRoundProvider = ({
 
 interface _updateRoundParams {
   context: UpdateRoundState;
-  signerOrProvider: Signer;
   updateRoundData: UpdateRoundData;
 }
 
@@ -139,8 +136,6 @@ export const useUpdateRound = () => {
   const { setIPFSCurrentStatus, setRoundUpdateStatus, setIndexingStatus } =
     context;
 
-  const { signer: walletSigner } = useWallet();
-
   const updateRound = async (updateRoundData: UpdateRoundData) => {
     setIPFSCurrentStatus(initialUpdateRoundState.IPFSCurrentStatus);
     setRoundUpdateStatus(initialUpdateRoundState.roundUpdateStatus);
@@ -148,7 +143,6 @@ export const useUpdateRound = () => {
 
     return _updateRound({
       context,
-      signerOrProvider: walletSigner as Signer,
       updateRoundData,
     });
   };

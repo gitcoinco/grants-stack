@@ -811,9 +811,8 @@ export class AlloV1 implements Allo {
       });
 
       emit("transaction", txResult);
-
       if (txResult.type === "error") {
-        return txResult;
+        return error(txResult.error);
       }
 
       let receipt: TransactionReceipt;
