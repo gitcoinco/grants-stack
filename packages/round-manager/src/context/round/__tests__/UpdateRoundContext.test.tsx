@@ -37,14 +37,9 @@ jest.mock("../../../features/api/ipfs");
 jest.mock("../../../features/api/subgraph");
 
 const mockRoundData: Round = makeRoundData();
-
-// const mockTransactionSender = {
-//   send: jest.fn(), // Mocking the send function
-//   wait: jest.fn(),
-//   address: jest.fn(),
-// };
-
 const mockTransactionSender = createMockTransactionSender();
+
+const mockWaitUntilIndexerSynced = jest.fn();
 
 describe("<UpdateRoundProvider />", () => {
   function callUpdateRound() {
@@ -92,14 +87,11 @@ describe("<UpdateRoundProvider />", () => {
     it("sets update status to in progress when updating round", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
 
-      // spy on mockTransactionsender.send
       jest.spyOn(mockTransactionSender, "send").mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
         })
       );
-
-      // mockTransactionSender.send.mockReturnValue(new Promise(() => {})); // Mocking send function to return a promise that never resolves
 
       renderWithProvider(
         <TestUseUpdateRoundComponent mockRoundData={mockRoundData} />
@@ -132,7 +124,13 @@ describe("<UpdateRoundProvider />", () => {
   describe("Set Indexing Status", () => {
     it("sets indexing status to in progress when updating round", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
-      // todo: mock waitUntilIndexerSynced to return new Promise(() => {/* do nothing.*/})
+
+      (mockWaitUntilIndexerSynced as jest.Mock).mockResolvedValue(
+        new Promise(() => {
+          /* do nothing.*/
+        })
+      );
+
       renderWithProvider(
         <TestUseUpdateRoundComponent mockRoundData={mockRoundData} />
       );
@@ -202,7 +200,7 @@ const alloBackend = new AlloV1({
       type: "success",
       value: "ipfsHash",
     }),
-  waitUntilIndexerSynced: async () => Promise.resolve(BigInt(1)),
+  waitUntilIndexerSynced: mockWaitUntilIndexerSynced,
   transactionSender: mockTransactionSender,
 });
 
