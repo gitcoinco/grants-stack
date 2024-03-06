@@ -9,10 +9,11 @@ export class TransactionBuilder {
   constructor(roundId: string) {
     this.roundId = roundId;
     this.transactions = [];
-    this.contract = new ethers.Contract(
-      roundId,
-      roundImplementationContract
-    )
+    try {
+      this.contract = new ethers.Contract(roundId, roundImplementationContract);
+    } catch (e) {
+      throw new Error("Invalid roundId");
+    }
   }
 
   add(action: any, args: any[]) {
@@ -21,14 +22,11 @@ export class TransactionBuilder {
     );
   }
 
-  // async execute(): Promise<TransactionResponse> {
-  //   if (this.transactions.length === 0) {
-  //     throw new Error("No transactions to execute");
-  //   }
-  //   return await this.contract.multicall(this.transactions);
-  // }
-
   generate() {
+    if (this.transactions.length === 0) {
+      throw new Error("No transactions added");
+    }
+
     const data = this.contract.interface.encodeFunctionData("multicall", [
       this.transactions,
     ]);

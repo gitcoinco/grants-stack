@@ -1,8 +1,9 @@
 import { Round } from "../types";
 import { makeRoundData } from "../../../test-utils";
 import { Signer } from "@ethersproject/abstract-signer";
-import { TransactionBuilder, UpdateAction } from "../round";
 import { ethers } from "ethers";
+import { TransactionBuilder } from "common";
+import { UpdateAction } from "common/dist/types";
 
 const mockWallet = {
   address: "0x0",
@@ -24,24 +25,22 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 describe("TransactionBuilder", () => {
   const round: Round = makeRoundData();
 
-  const signer = ethers.Wallet.createRandom() as Signer;
   let transactionBuilder: TransactionBuilder;
 
   beforeEach(() => {
-    transactionBuilder = new TransactionBuilder(round, signer);
+    transactionBuilder = new TransactionBuilder(round.id!);
   });
 
   it("should initialize correctly", () => {
-    expect(transactionBuilder.round).toBe(round);
-    expect(transactionBuilder.signer).toBe(signer);
+    expect(transactionBuilder.roundId).toBe(round.id);
     expect(transactionBuilder.transactions).toEqual([]);
     expect(transactionBuilder.contract).toBeInstanceOf(ethers.Contract);
   });
 
   it("should throw an error when round ID is undefined", () => {
     expect(
-      () => new TransactionBuilder({ ...round, id: undefined }, signer)
-    ).toThrowError("Round ID is undefined");
+      () => new TransactionBuilder(undefined as unknown as string)
+    ).toThrowError("Invalid roundId");
   });
 
   it("should add a transaction to the builder", () => {
@@ -81,9 +80,9 @@ describe("TransactionBuilder", () => {
     expect(() => transactionBuilder.add(action, args)).toThrowError();
   });
 
-  it("should throw an error when there are no transactions to execute", async () => {
-    await expect(transactionBuilder.execute()).rejects.toThrowError(
-      "No transactions to execute"
+  it("should throw an error when there are no transactions to generate", async () => {
+    expect(() => transactionBuilder.generate()).toThrowError(
+      "No transactions added"
     );
   });
 

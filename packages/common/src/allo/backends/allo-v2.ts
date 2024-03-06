@@ -635,6 +635,8 @@ export class AlloV2 implements Allo {
         return error(new AlloError("roundId must be number"));
       }
 
+      emit("ipfs", success("0x0"));
+
       return success("0x0");
     });
   }
