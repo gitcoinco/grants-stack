@@ -361,8 +361,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
       const data = generateUpdateRoundData(round!, editedRound!);
 
       setIpfsStep(
-        !_.isNil(updatedRoundData?.applicationMetadata)||
-        !_.isNil(updatedRoundData?.roundMetadata)
+        !_.isNil(data?.applicationMetadata)||
+        !_.isNil(data?.roundMetadata)
       );
     
       setEditMode({ ...editMode, canEdit: false });
