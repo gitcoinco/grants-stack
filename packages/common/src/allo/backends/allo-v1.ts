@@ -778,16 +778,17 @@ export class AlloV1 implements Allo {
         data.roundStartTime &&
         data.roundEndTime &&
         data.applicationsStartTime &&
-        data.applicationsEndTime) {
+        data.applicationsEndTime
+      ) {
 
         if (Date.now() > data.applicationsStartTime.getTime()) {
           data.applicationsStartTime = new Date(
-            data.applicationsEndTime.getTime() - 10
+            Date.now() + 100
           );
         }
         if (Date.now() > data.roundStartTime.getTime()) {
           data.roundStartTime = new Date(
-            data.applicationsEndTime.getTime() - 10
+            Date.now() + 100
           );
         }
 
@@ -795,10 +796,10 @@ export class AlloV1 implements Allo {
         transactionBuilder.add(
           UpdateAction.UPDATE_ROUND_START_AND_END_TIMES,
           [
-            data.applicationsStartTime.getTime() / 1000,
-            data.applicationsEndTime.getTime() / 1000,
-            data.roundStartTime.getTime() / 1000,
-            data.roundEndTime.getTime() / 1000,
+            (data.applicationsStartTime.getTime() / 1000).toFixed(0),
+            (data.applicationsEndTime.getTime() / 1000).toFixed(0),
+            (data.roundStartTime.getTime() / 1000).toFixed(0),
+            (data.roundEndTime.getTime() / 1000).toFixed(0),
           ]
         );
       }
