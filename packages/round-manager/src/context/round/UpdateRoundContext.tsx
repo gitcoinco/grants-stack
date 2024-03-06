@@ -87,46 +87,49 @@ const _updateRound = async ({
   const { roundId, data, allo } = updateRoundData;
 
   let id;
-  const config = getConfig();
-  if (config.allo.version === "allo-v2") {
+  if (!roundId.toString().startsWith("0x")) {
     id = Number(roundId);
   } else {
     id = roundId as Hex;
   }
 
-  await allo.editRound({
-    roundId: id,
-    data,
-  }).on("ipfs", (res) => {
-    if (res.type === "success") {
-      setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
-      setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
-    } else {
-      console.error("IPFS Error", res.error);
-      datadogLogs.logger.error(`_updateRound: ${res.error}`);
-      setIPFSCurrentStatus(ProgressStatus.IS_ERROR);
-    }
-  }).on("transactionStatus", (res) => {
-    if (res.type === "success") {
-      setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
-      setIndexingStatus(ProgressStatus.IN_PROGRESS);
-    } else {
-      console.error("Transaction Status Error", res.error);
-      datadogLogs.logger.error(`_updateRound: ${res.error}`);
-      setRoundUpdateStatus(ProgressStatus.IS_ERROR);
-    }
-  
-  }).on("indexingStatus", (res) => {
-    if (res.type === "success") {
-      setIndexingStatus(ProgressStatus.IS_SUCCESS);
-    } else {
-      console.error("Indexing Status Error", res.error);
-      datadogLogs.logger.error(`_updateRound: ${res.error}`);
-      setIndexingStatus(ProgressStatus.IS_ERROR);
-    }
-  })
-  .execute();
+  setIPFSCurrentStatus(ProgressStatus.IN_PROGRESS);
 
+  await allo
+    .editRound({
+      roundId: id,
+      data,
+    })
+    .on("ipfs", (res) => {
+      if (res.type === "success") {
+        setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
+        setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
+      } else {
+        console.error("IPFS Error", res.error);
+        datadogLogs.logger.error(`_updateRound: ${res.error}`);
+        setIPFSCurrentStatus(ProgressStatus.IS_ERROR);
+      }
+    })
+    .on("transactionStatus", (res) => {
+      if (res.type === "success") {
+        setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
+        setIndexingStatus(ProgressStatus.IN_PROGRESS);
+      } else {
+        console.error("Transaction Status Error", res.error);
+        datadogLogs.logger.error(`_updateRound: ${res.error}`);
+        setRoundUpdateStatus(ProgressStatus.IS_ERROR);
+      }
+    })
+    .on("indexingStatus", (res) => {
+      if (res.type === "success") {
+        setIndexingStatus(ProgressStatus.IS_SUCCESS);
+      } else {
+        console.error("Indexing Status Error", res.error);
+        datadogLogs.logger.error(`_updateRound: ${res.error}`);
+        setIndexingStatus(ProgressStatus.IS_ERROR);
+      }
+    })
+    .execute();
 };
 
 export const useUpdateRound = () => {
