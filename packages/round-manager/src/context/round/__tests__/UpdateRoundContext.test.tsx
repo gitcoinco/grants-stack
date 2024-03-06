@@ -38,6 +38,14 @@ jest.mock("../../../features/api/subgraph");
 
 const mockRoundData: Round = makeRoundData();
 
+// const mockTransactionSender = {
+//   send: jest.fn(), // Mocking the send function
+//   wait: jest.fn(),
+//   address: jest.fn(),
+// };
+
+const mockTransactionSender = createMockTransactionSender();
+
 describe("<UpdateRoundProvider />", () => {
   function callUpdateRound() {
     const updateRound = screen.getByTestId("update-round");
@@ -81,21 +89,29 @@ describe("<UpdateRoundProvider />", () => {
   });
 
   describe("Set Update Status", () => {
-    // it("sets update status to in progress when updating round", async () => {
-    //   (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
+    it("sets update status to in progress when updating round", async () => {
+      (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
 
-    // todo: mock transactionSender.send to return new Promise(() => {/* do nothing.*/})
-    //   renderWithProvider(
-    //     <TestUseUpdateRoundComponent mockRoundData={mockRoundData} />
-    //   );
-    //   callUpdateRound();
+      // spy on mockTransactionsender.send
+      jest.spyOn(mockTransactionSender, "send").mockReturnValue(
+        new Promise(() => {
+          /* do nothing.*/
+        })
+      );
 
-    //   expect(
-    //     await screen.findByTestId(
-    //       `update-status-is-${ProgressStatus.IN_PROGRESS}`
-    //     )
-    //   );
-    // });
+      // mockTransactionSender.send.mockReturnValue(new Promise(() => {})); // Mocking send function to return a promise that never resolves
+
+      renderWithProvider(
+        <TestUseUpdateRoundComponent mockRoundData={mockRoundData} />
+      );
+      callUpdateRound();
+
+      expect(
+        await screen.findByTestId(
+          `update-status-is-${ProgressStatus.IN_PROGRESS}`
+        )
+      );
+    });
 
     it("sets update status to success when updating round succeeds", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
@@ -114,20 +130,20 @@ describe("<UpdateRoundProvider />", () => {
   });
 
   describe("Set Indexing Status", () => {
-    // it("sets indexing status to in progress when updating round", async () => {
-    //   (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
-    // todo: mock waitUntilIndexerSynced to return new Promise(() => {/* do nothing.*/})
-    //   renderWithProvider(
-    //     <TestUseUpdateRoundComponent mockRoundData={mockRoundData} />
-    //   );
-    //   callUpdateRound();
+    it("sets indexing status to in progress when updating round", async () => {
+      (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
+      // todo: mock waitUntilIndexerSynced to return new Promise(() => {/* do nothing.*/})
+      renderWithProvider(
+        <TestUseUpdateRoundComponent mockRoundData={mockRoundData} />
+      );
+      callUpdateRound();
 
-    //   expect(
-    //     await screen.findByTestId(
-    //       `indexing-status-is-${ProgressStatus.IN_PROGRESS}`
-    //     )
-    //   );
-    // });
+      expect(
+        await screen.findByTestId(
+          `indexing-status-is-${ProgressStatus.IN_PROGRESS}`
+        )
+      );
+    });
 
     it("sets indexing status to success when updating round succeeds", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
@@ -187,7 +203,7 @@ const alloBackend = new AlloV1({
       value: "ipfsHash",
     }),
   waitUntilIndexerSynced: async () => Promise.resolve(BigInt(1)),
-  transactionSender: createMockTransactionSender(),
+  transactionSender: mockTransactionSender,
 });
 
 function renderWithProvider(ui: JSX.Element) {
