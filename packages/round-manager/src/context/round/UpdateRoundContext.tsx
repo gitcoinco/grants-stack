@@ -6,6 +6,7 @@ import { UpdateRoundParams } from "common/dist/types";
 import { Allo } from "common";
 import { Hex } from "viem";
 import { datadogLogs } from "@datadog/browser-logs";
+import { getConfig } from "common/src/config";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
@@ -88,11 +89,18 @@ const _updateRound = async ({
 
   const { roundId, data, allo } = updateRoundData;
 
-  const round = await allo.editRound({
-    roundId: roundId as any as Hex,
+  let id;
+  const config = getConfig();
+  if (config.allo.version === "allo-v2") {
+    id = Number(roundId);
+  } else {
+    id = roundId as Hex;
+  }
+
+  await allo.editRound({
+    roundId: id,
     data,
   }).on("ipfs", (res) => {
-  
     if (res.type === "success") {
       setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
     } else {
