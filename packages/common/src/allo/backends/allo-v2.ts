@@ -15,7 +15,7 @@ import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
 import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
-import { RoundCategory, VotingToken } from "../../types";
+import { RoundCategory, UpdateRoundParams, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
@@ -619,8 +619,8 @@ export class AlloV2 implements Allo {
 
   editRound(args: {
     roundId: Hex | number;
-    metadata: AnyJson;
-    strategy: RoundCategory;
+    data: UpdateRoundParams;
+    strategy?: RoundCategory;
   }): AlloOperation<
     Result<Hex | number>,
     {
@@ -633,14 +633,6 @@ export class AlloV2 implements Allo {
     return new AlloOperation(async ({ emit }) => {
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
-      }
-
-      const ipfsResult = await this.ipfsUploader(args.metadata);
-
-      emit("ipfs", ipfsResult);
-
-      if (ipfsResult.type === "error") {
-        return ipfsResult;
       }
 
       return success("0x0");

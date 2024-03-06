@@ -1,14 +1,19 @@
 import { Signer } from "ethers";
 import React, { SetStateAction, createContext, useContext } from "react";
-// todo: update type
-import { EditedGroups, ProgressStatus, Round } from "../../features/api/types";
+import { ProgressStatus } from "../../features/api/types";
 import { useWallet } from "../../features/common/Auth";
+import { UpdateRoundParams } from "common/dist/types";
+import { Allo } from "common";
+import { Hex } from "viem";
+import { datadogLogs } from "@datadog/browser-logs";
+import { getConfig } from "common/src/config";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
 export type UpdateRoundData = {
-  round: Round;
-  editedGroups: EditedGroups;
+  roundId: string;
+  data: UpdateRoundParams;
+  allo: Allo;
 };
 
 export interface UpdateRoundState {
@@ -75,19 +80,56 @@ interface _updateRoundParams {
   updateRoundData: UpdateRoundData;
 }
 
-// todo: update this
 const _updateRound = async ({
   context,
-  signerOrProvider,
   updateRoundData,
 }: _updateRoundParams) => {
   const { setIPFSCurrentStatus, setRoundUpdateStatus, setIndexingStatus } =
     context;
 
-  const { round, editedGroups } = updateRoundData;
-  const chainId = await signerOrProvider.getChainId();
+  const { roundId, data, allo } = updateRoundData;
 
-  // call data-layer
+  let id;
+  const config = getConfig();
+  if (config.allo.version === "allo-v2") {
+    id = Number(roundId);
+  } else {
+    id = roundId as Hex;
+  }
+
+  await allo.editRound({
+    roundId: id,
+    data,
+  }).on("ipfs", (res) => {
+    if (res.type === "success") {
+      setIPFSCurrentStatus(ProgressStatus.IS_SUCCESS);
+      setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
+    } else {
+      console.error("IPFS Error", res.error);
+      datadogLogs.logger.error(`_updateRound: ${res.error}`);
+      setIPFSCurrentStatus(ProgressStatus.IS_ERROR);
+    }
+  }).on("transactionStatus", (res) => {
+    if (res.type === "success") {
+      setRoundUpdateStatus(ProgressStatus.IS_SUCCESS);
+      setIndexingStatus(ProgressStatus.IN_PROGRESS);
+    } else {
+      console.error("Transaction Status Error", res.error);
+      datadogLogs.logger.error(`_updateRound: ${res.error}`);
+      setRoundUpdateStatus(ProgressStatus.IS_ERROR);
+    }
+  
+  }).on("indexingStatus", (res) => {
+    if (res.type === "success") {
+      setIndexingStatus(ProgressStatus.IS_SUCCESS);
+    } else {
+      console.error("Indexing Status Error", res.error);
+      datadogLogs.logger.error(`_updateRound: ${res.error}`);
+      setIndexingStatus(ProgressStatus.IS_ERROR);
+    }
+  })
+  .execute();
+
 };
 
 export const useUpdateRound = () => {

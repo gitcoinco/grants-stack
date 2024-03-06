@@ -3,11 +3,13 @@ import { Listbox, RadioGroup, Tab, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
+  AnyJson,
   ChainId,
   RoundVisibilityType,
   classNames,
   getUTCDate,
   getUTCTime,
+  useAllo,
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
@@ -34,7 +36,7 @@ import * as yup from "yup";
 import { maxDateForUint256 } from "../../constants";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useUpdateRound } from "../../context/round/UpdateRoundContext";
-import { payoutTokens } from "../api/payoutTokens";
+import { getPayoutTokenOptions, payoutTokens } from "../api/payoutTokens";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
 import { CHAINS, SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
@@ -49,49 +51,75 @@ import {
   supportTypes,
 } from "./RoundDetailForm";
 import { isDirectRound } from "./ViewRoundPage";
+import { UpdateRoundParams } from "common/dist/types";
+import { ethers } from "ethers";
 
 type EditMode = {
   canEdit: boolean;
   canEditOnlyRoundEndDate: boolean;
 };
 
-// returns a boolean for each group of fields that have been edited
-const compareRounds = (
+const generateUpdateRoundData = (
   oldRoundData: Round,
   newRoundData: Round
-): EditedGroups => {
+): UpdateRoundParams => {
   // create deterministic copies of the data
   const dOldRound: Round = _.cloneDeep(oldRoundData);
   const dNewRound: Round = _.cloneDeep(newRoundData);
 
-  return {
-    ApplicationMetaPointer: !_.isEqual(
-      dOldRound.applicationMetadata,
-      dNewRound.applicationMetadata
-    ),
-    MatchAmount: !_.isEqual(
-      dOldRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable,
-      dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
-    ),
-    RoundFeeAddress: false,
-    RoundMetaPointer: !_.isEqual(
-      dOldRound.roundMetadata,
-      dNewRound.roundMetadata
-    ),
-    StartAndEndTimes: !(
-      _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
-      _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
-      _.isEqual(
-        dOldRound.applicationsStartTime,
-        dNewRound.applicationsStartTime
-      ) &&
-      _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
-    ),
-  };
+  const updateRoundData : UpdateRoundParams= {};
+
+  if (!_.isEqual(
+    dOldRound.applicationMetadata,
+    dNewRound.applicationMetadata
+  )) {
+    updateRoundData.applicationMetadata = dNewRound.applicationMetadata as AnyJson;
+  }
+
+  if (
+    dNewRound.chainId &&
+    !_.isEqual(
+    dOldRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable,
+    dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
+  )) {
+
+    const decimals = getPayoutTokenOptions(dNewRound.chainId).find(
+      (token) => token.address === dNewRound.token
+    )?.decimal;
+
+    const matchAmount = ethers.utils.parseUnits(
+      dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString(),
+      decimals
+    );
+
+    updateRoundData.matchAmount = matchAmount;
+  }
+
+  if (!_.isEqual(
+    dOldRound.roundMetadata,
+    dNewRound.roundMetadata
+  )) {
+    updateRoundData.roundMetadata = dNewRound.roundMetadata as AnyJson;
+  }
+
+  if (!(
+    _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
+    _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
+    _.isEqual(dOldRound.applicationsStartTime, dNewRound.applicationsStartTime) &&
+    _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
+  )) {
+    updateRoundData.roundStartTime = dNewRound.roundStartTime;
+    updateRoundData.roundEndTime = dNewRound.roundEndTime;
+    updateRoundData.applicationsStartTime = dNewRound.applicationsStartTime;
+    updateRoundData.applicationsEndTime = dNewRound.applicationsEndTime;
+  }
+
+  return updateRoundData;
 };
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round } = useRoundById(props.id?.toLowerCase());
+  const allo = useAllo();
   const [editMode, setEditMode] = useState<EditMode>({
     canEdit: false,
     canEditOnlyRoundEndDate: false,
@@ -281,9 +309,11 @@ export default function ViewRoundSettings(props: { id?: string }) {
     resolver: yupResolver(ValidationSchema),
   });
 
-  useEffect(() => {
+  useEffect(() => {    
     setHasChanged(
-      Object.values(compareRounds(round!, editedRound!)).some((value) => value)
+      !_.isEmpty(
+        generateUpdateRoundData(round!, editedRound!)
+      )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
@@ -324,17 +354,27 @@ export default function ViewRoundSettings(props: { id?: string }) {
   };
 
   const updateRoundHandler = async () => {
+    if (!allo) return;
     try {
       // @ts-expect-error TS upgrade broke this, TODO fix this
       handleSubmit(submit(editedRound as Round));
-      const editedGroups: any = compareRounds(round!, editedRound!);
+      const data = generateUpdateRoundData(round!, editedRound!);
+
       setIpfsStep(
-        editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer
+        !_.isNil(data?.applicationMetadata)||
+        !_.isNil(data?.roundMetadata)
       );
+    
       setEditMode({ ...editMode, canEdit: false });
       setIsConfirmationModalOpen(false);
       setIsProgressModalOpen(true);
-      await updateRound({ editedGroups, round: editedRound! });
+      
+      await updateRound({
+        roundId: round.id!,
+        data,
+        allo,
+      });
+  
       setTimeout(() => {
         setIsProgressModalOpen(false);
         setIpfsStep(false);
