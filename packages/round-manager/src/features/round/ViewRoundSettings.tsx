@@ -380,6 +380,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
       await updateRound({
         roundId: round.id!,
+        roundAddress: round.payoutStrategy.id as `0x${string}`,
         data,
         allo,
         roundCategory: isDirectRound(round)

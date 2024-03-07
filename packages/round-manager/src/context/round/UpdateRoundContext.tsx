@@ -9,6 +9,7 @@ type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
 export type UpdateRoundData = {
   roundId: string;
+  roundAddress: Hex;
   data: UpdateRoundParams;
   allo: Allo;
   roundCategory?: RoundCategory;
@@ -84,7 +85,7 @@ const _updateRound = async ({
   const { setIPFSCurrentStatus, setRoundUpdateStatus, setIndexingStatus } =
     context;
 
-  const { roundId, data, allo, roundCategory } = updateRoundData;
+  const { roundId, roundAddress, data, allo, roundCategory } = updateRoundData;
 
   let id;
   if (!roundId.toString().startsWith("0x")) {
@@ -98,6 +99,7 @@ const _updateRound = async ({
   await allo
     .editRound({
       roundId: id,
+      roundAddress,
       data,
       strategy: roundCategory,
     })
