@@ -755,6 +755,12 @@ export class AlloV1 implements Allo {
         ]);
       }
 
+      if (!data.roundMetadata && !data.applicationMetadata) {
+        // NOTE : This is for the progreds modal
+        const voidEmit : Result<string> = success("");
+        emit("ipfs", voidEmit);
+      }
+
       if (data.matchAmount) {
         // NOTE : This is parseUnits format of the token
         console.log("updating match amount");
@@ -762,6 +768,7 @@ export class AlloV1 implements Allo {
           data.matchAmount,
         ]);
       }
+
 
       /* Special case - if the application period or round has already started, and we are editing times,
        * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
