@@ -1,5 +1,8 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { InformationCircleIcon } from "@heroicons/react/solid";
+import { classNames, useTokenPrice } from "common";
+import { assertAddress } from "common/src/address";
+import { getConfig } from "common/src/config";
 import { BigNumber, ethers } from "ethers";
 import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
@@ -8,15 +11,13 @@ import ReactTooltip from "react-tooltip";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
+import { payoutTokens } from "../api/payoutTokens";
 import { ProgressStatus, Round } from "../api/types";
 import { getTxExplorerForContract } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { classNames, useTokenPrice } from "common";
-import { assertAddress } from "common/src/address";
-import { payoutTokens } from "../api/payoutTokens";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -98,8 +99,12 @@ export default function FundContract(props: {
     )[0];
 
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
+  const alloVersion = getConfig().allo.version;
   const tokenDetail = {
-    address: assertAddress(props.roundId),
+    address:
+      alloVersion === "allo-v1"
+        ? assertAddress(props.roundId)
+        : assertAddress(props.round?.strategyAddress),
     token:
       matchingFundPayoutToken?.address ===
       "0x0000000000000000000000000000000000000000"

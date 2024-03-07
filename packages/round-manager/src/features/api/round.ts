@@ -66,6 +66,7 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
     operatorWallets: operatorWallets,
     finalized: false,
     createdByAddress: round.createdByAddress,
+    strategyAddress: round.strategyAddress,
   };
 }
 
