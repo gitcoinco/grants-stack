@@ -12,15 +12,7 @@ import {
   InboxIcon,
   UserGroupIcon,
 } from "@heroicons/react/solid";
-import {
-  ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_DIRECT_OLD,
-  ROUND_PAYOUT_DIRECT_V2,
-  getRoundStrategyType,
-} from "common";
-import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
-import moment from "moment";
 import { Link, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
@@ -35,6 +27,7 @@ import {
 import AccessDenied from "../common/AccessDenied";
 import { useWallet } from "../common/Auth";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
+import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
@@ -43,23 +36,27 @@ import {
   horizontalTabStyles,
   verticalTabStyles,
 } from "../common/Utils";
-import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
-import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsRejected from "./ApplicationsRejected";
-import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
-import ApplicationsToReview from "./ApplicationsToReview";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
 import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundResults from "./ViewRoundResults/ViewRoundResults";
 import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
+import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
+import moment from "moment";
+import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
+import ApplicationsToReview from "./ApplicationsToReview";
+import { getRoundStrategyType } from "common";
+import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 
-export const isDirectRound = (round: Round) =>
-  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_OLD ||
-  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT ||
-  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_V2;
+export const isDirectRound = (round: Round | undefined) => {
+  return (
+    round?.payoutStrategy?.strategyName &&
+    getRoundStrategyType(round.payoutStrategy.strategyName) === "DirectGrants"
+  );
+};
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -321,10 +318,7 @@ export default function ViewRoundPage() {
                   <Tab.Panels className="flex-grow ml-6">
                     <Tab.Panel>
                       <GrantApplications
-                        isDirectRound={
-                          roundStrategyType ===
-                          ("DirectGrants" || ROUND_PAYOUT_DIRECT_V2)
-                        }
+                        isDirectRound={roundStrategyType === "DirectGrants"}
                         applications={applications}
                         isRoundsFetched={isRoundFetched}
                         fetchRoundStatus={fetchRoundStatus}
