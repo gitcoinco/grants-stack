@@ -260,7 +260,7 @@ export default function FundContract(props: {
               </ReactTooltip>
             </span>
           </p>
-          <p className="text-sm">{props.round?.id}</p>
+          <p className="text-sm">{props.round?.strategyAddress}</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Payout token:</p>
