@@ -631,12 +631,11 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-
-      let receipt: TransactionReceipt|null = null;
+      let receipt: TransactionReceipt | null = null;
 
       const data = args.data;
 
-      console.log ("DATA", data);
+      console.log("DATA", data);
 
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
@@ -644,12 +643,12 @@ export class AlloV2 implements Allo {
 
       /** Upload roundMetadata ( includes applicationMetadata ) to IPFS */
       console.log("metadata", data.roundMetadata);
-      if (data.roundMetadata) {
-        const ipfsResult: Result<string> = await this.ipfsUploader(
-          data.roundMetadata
-        );
-
-        // TODO: PACK 
+      if (data.roundMetadata && data.applicationMetadata) {
+        console.log("update metadata");
+        const ipfsResult = await this.ipfsUploader({
+          round: data.roundMetadata,
+          application: data.applicationMetadata,
+        });
 
         emit("ipfs", ipfsResult);
 
@@ -666,14 +665,11 @@ export class AlloV2 implements Allo {
           },
         });
 
-        const txResult = await sendRawTransaction(
-          this.transactionSender,
-          {
-            to: txUpdateMetadata.to,
-            data: txUpdateMetadata.data,
-            value: BigInt(txUpdateMetadata.value),
-          }
-        );
+        const txResult = await sendRawTransaction(this.transactionSender, {
+          to: txUpdateMetadata.to,
+          data: txUpdateMetadata.data,
+          value: BigInt(txUpdateMetadata.value),
+        });
 
         if (txResult.type === "error") {
           return error(txResult.error);
@@ -689,7 +685,7 @@ export class AlloV2 implements Allo {
         }
       }
 
-      let updateTimestampTxn: TransactionData|null = null;
+      let updateTimestampTxn: TransactionData | null = null;
 
       /** Note: timestamps updates happen by calling the strategy contract directly `this.strategy.updatePoolTimestamps` */
       switch (args.strategy) {
@@ -726,9 +722,9 @@ export class AlloV2 implements Allo {
           });
 
           if (data.applicationsStartTime && data.applicationsEndTime) {
-              updateTimestampTxn = strategyInstance.getUpdatePoolTimestampsData(
-                dateToEthereumTimestamp(data.applicationsStartTime),
-                dateToEthereumTimestamp(data.applicationsEndTime)
+            updateTimestampTxn = strategyInstance.getUpdatePoolTimestampsData(
+              dateToEthereumTimestamp(data.applicationsStartTime),
+              dateToEthereumTimestamp(data.applicationsEndTime)
             );
           }
 
@@ -748,7 +744,7 @@ export class AlloV2 implements Allo {
             value: BigInt(updateTimestampTxn.value),
           }
         );
-        
+
         if (timestampTxResult.type === "error") {
           return error(timestampTxResult.error);
         }
