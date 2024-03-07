@@ -54,6 +54,8 @@ import { isDirectRound } from "./ViewRoundPage";
 import { RoundCategory, UpdateRoundParams } from "common/dist/types";
 import { ethers } from "ethers";
 import { getConfig } from "common/src/config";
+import { zeroAddress } from "viem";
+import { NATIVE } from "common/dist/allo/common";
 
 type EditMode = {
   canEdit: boolean;
@@ -1828,6 +1830,18 @@ function RoundApplicationPeriod(props: {
   );
 }
 
+function getMatchingFundToken(
+  tokenAddress: string,
+  chainId: number | undefined
+) {
+  return payoutTokens.filter(
+    (t) =>
+      t.address.toLowerCase() ==
+        (tokenAddress == NATIVE ? zeroAddress : tokenAddress.toLowerCase()) &&
+      t.chainId == chainId
+  )[0];
+}
+
 function Funding(props: {
   editMode: EditMode;
   editedRound: Round;
@@ -1841,12 +1855,7 @@ function Funding(props: {
 
   console.log(editedRound);
   const matchingFundPayoutToken =
-    editedRound &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLowerCase() == editedRound.token.toLowerCase() &&
-        t.chainId == editedRound.chainId
-    )[0];
+    editedRound && getMatchingFundToken(editedRound.token, editedRound.chainId);
 
   const matchingFunds =
     (editedRound &&
