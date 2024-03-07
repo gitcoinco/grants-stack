@@ -1839,6 +1839,7 @@ function Funding(props: {
 }) {
   const { editedRound } = props;
 
+  console.log(editedRound);
   const matchingFundPayoutToken =
     editedRound &&
     payoutTokens.filter(

@@ -32,7 +32,7 @@ import { PermitSignature } from "../voting";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
-    "0x2f9920e473E30E54bD9D56F571BcebC2470A37B0",
+    "0xe9F05cADda950ac2D5CE5127f1A42988E3aAfC41",
   [RoundCategory.Direct]: "0x726d2398E79c9535Dd81FB1576A8aCB798c35951",
 };
 
@@ -129,7 +129,7 @@ export class AlloV2 implements Allo {
       const senderAddress = await this.transactionSender.address();
 
       const createProfileData: CreateProfileArgs = {
-        nonce: profileNonce,
+        nonce: BigInt(profileNonce),
         name: args.name,
         metadata: {
           protocol: 1n,
@@ -477,7 +477,7 @@ export class AlloV2 implements Allo {
           const strategyInstance = new DonationVotingMerkleDistributionStrategy(
             {
               chain: this.chainId,
-              poolId: args.roundId,
+              poolId: BigInt(args.roundId),
             }
           );
 
@@ -495,7 +495,7 @@ export class AlloV2 implements Allo {
         case RoundCategory.Direct: {
           const strategyInstance = new DirectGrantsStrategy({
             chain: this.chainId,
-            poolId: args.roundId,
+            poolId: BigInt(args.roundId),
           });
 
           const answers = metadata.application.answers;
@@ -662,7 +662,7 @@ export class AlloV2 implements Allo {
 
         /** Note: the pool metadata always calls `this.allo.updatePoolMetadata` and not the strategy */
         const txUpdateMetadata = this.allo.updatePoolMetadata({
-          poolId: args.roundId,
+          poolId: BigInt(args.roundId),
           metadata: {
             protocol: 1n,
             pointer: ipfsResult.value,
@@ -698,7 +698,8 @@ export class AlloV2 implements Allo {
           const strategyInstance = new DonationVotingMerkleDistributionStrategy(
             {
               chain: this.chainId,
-              poolId: args.roundId,
+              poolId: BigInt(args.roundId),
+              address: args.roundAddress,
             }
           );
 
@@ -735,7 +736,8 @@ export class AlloV2 implements Allo {
 
           const strategyInstance = new DirectGrantsStrategy({
             chain: this.chainId,
-            poolId: args.roundId,
+            poolId: BigInt(args.roundId),
+            address: args.roundAddress,
           });
 
           if (data.applicationsStartTime && data.applicationsEndTime) {
@@ -768,6 +770,7 @@ export class AlloV2 implements Allo {
 
         if (timestampTxResult.type === "error") {
           console.log("====> 3");
+          console.log(timestampTxResult.error);
           return error(timestampTxResult.error);
         }
 

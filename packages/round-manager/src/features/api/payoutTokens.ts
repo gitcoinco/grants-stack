@@ -2,6 +2,7 @@ import { ChainId } from "common";
 import { ethers } from "ethers";
 import { Address } from "wagmi";
 import { RedstoneTokenIds } from "common/src/chain-ids";
+import { NATIVE } from "common/dist/allo/common";
 
 export type PayoutToken = {
   name: string;
@@ -33,6 +34,9 @@ export const TokenNamesAndLogos = {
   DATA: "/logos/data-logo.svg", // Streamr DATA
   USDGLO: "/logos/usdglo-logo.svg", // USDGLO
 } as const;
+
+const NATIVE_TOKEN = NATIVE as `0x${string}`;
+
 const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
@@ -46,6 +50,14 @@ const MAINNET_TOKENS: PayoutToken[] = [
     name: "ETH",
     chainId: ChainId.MAINNET,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.MAINNET,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -78,6 +90,14 @@ const SEPOLIA_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
   {
+    name: "ETH",
+    chainId: ChainId.SEPOLIA,
+    address: NATIVE_TOKEN,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
     name: "DAI",
     chainId: ChainId.SEPOLIA,
     address: "0x8db0F9eE54753B91ec1d81Bf68074Be82ED30fEb",
@@ -105,6 +125,14 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
   {
+    name: "ETH",
+    chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+    address: NATIVE_TOKEN,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
     name: "USDGLO",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     address: "0x4f604735c1cf31399c6e711d5962b2b3e0225ad3",
@@ -126,6 +154,14 @@ const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
     name: "FTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
+  },
+  {
+    name: "FTM",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["FTM"],
     redstoneTokenId: RedstoneTokenIds["FTM"],
@@ -172,6 +208,14 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["FTM"],
     redstoneTokenId: RedstoneTokenIds["FTM"],
   },
+  {
+    name: "FTM",
+    chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
+    address: NATIVE_TOKEN,
+    decimal: 18,
+    logo: TokenNamesAndLogos["FTM"],
+    redstoneTokenId: RedstoneTokenIds["FTM"],
+  },
 ];
 
 const ZKSYNC_ERA_TESTNET_TOKENS: PayoutToken[] = [
@@ -179,6 +223,14 @@ const ZKSYNC_ERA_TESTNET_TOKENS: PayoutToken[] = [
     name: "ETH",
     chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -198,6 +250,14 @@ const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
     name: "ETH",
     chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -251,12 +311,27 @@ const PGN_TESTNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["ETH"],
     decimal: 18,
   },
+  {
+    name: "ETH",
+    chainId: ChainId.PGN_TESTNET,
+    address: NATIVE_TOKEN,
+    logo: TokenNamesAndLogos["ETH"],
+    decimal: 18,
+  },
 ];
 const PGN_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.PGN,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.PGN,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -289,6 +364,14 @@ const BASE_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
   {
+    name: "ETH",
+    chainId: ChainId.BASE,
+    address: NATIVE_TOKEN,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
     name: "USDC",
     chainId: ChainId.BASE,
     address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
@@ -303,6 +386,14 @@ const SCROLL_TOKENS: PayoutToken[] = [
     name: "ETH",
     chainId: ChainId.SCROLL,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.SCROLL,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -326,12 +417,28 @@ const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM_GOERLI,
+    address: NATIVE_TOKEN,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
 ];
 const ARBITRUM_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
     chainId: ChainId.ARBITRUM,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.ARBITRUM,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -379,6 +486,14 @@ const AVALANCHE_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["AVAX"],
   },
   {
+    name: "AVAX",
+    chainId: ChainId.AVALANCHE,
+    address: NATIVE_TOKEN,
+    decimal: 18,
+    logo: TokenNamesAndLogos["AVAX"],
+    redstoneTokenId: RedstoneTokenIds["AVAX"],
+  },
+  {
     name: "USDC",
     chainId: ChainId.AVALANCHE,
     address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
@@ -397,6 +512,14 @@ const FUJI_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["AVAX"],
   },
   {
+    name: "AVAX",
+    chainId: ChainId.FUJI,
+    address: NATIVE_TOKEN,
+    decimal: 18,
+    logo: TokenNamesAndLogos["AVAX"],
+    redstoneTokenId: RedstoneTokenIds["AVAX"],
+  },
+  {
     name: "USDC",
     chainId: ChainId.FUJI,
     address: "0x5425890298aed601595a70ab815c96711a31bc65",
@@ -410,6 +533,14 @@ const POLYGON_TOKENS: PayoutToken[] = [
     name: "MATIC",
     chainId: ChainId.POLYGON,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
+  },
+  {
+    name: "MATIC",
+    chainId: ChainId.POLYGON,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["MATIC"],
     redstoneTokenId: RedstoneTokenIds["MATIC"],
@@ -436,6 +567,14 @@ const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
     name: "MATIC",
     chainId: ChainId.POLYGON_MUMBAI,
     address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["MATIC"],
+    redstoneTokenId: RedstoneTokenIds["MATIC"],
+  },
+  {
+    name: "MATIC",
+    chainId: ChainId.POLYGON_MUMBAI,
+    address: NATIVE_TOKEN,
     decimal: 18,
     logo: TokenNamesAndLogos["MATIC"],
     redstoneTokenId: RedstoneTokenIds["MATIC"],
