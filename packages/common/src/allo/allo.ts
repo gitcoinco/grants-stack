@@ -143,6 +143,7 @@ export interface Allo {
 
   editRound: (args: {
     roundId: Hex | number;
+    roundAddress?: Hex;
     data: UpdateRoundParams;
     strategy?: RoundCategory;
   }) => AlloOperation<

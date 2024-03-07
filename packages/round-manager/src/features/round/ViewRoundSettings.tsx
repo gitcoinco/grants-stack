@@ -51,8 +51,11 @@ import {
   supportTypes,
 } from "./RoundDetailForm";
 import { isDirectRound } from "./ViewRoundPage";
-import { UpdateRoundParams } from "common/dist/types";
+import { RoundCategory, UpdateRoundParams } from "common/dist/types";
 import { ethers } from "ethers";
+import { getConfig } from "common/src/config";
+import { zeroAddress } from "viem";
+import { NATIVE } from "common/dist/allo/common";
 
 type EditMode = {
   canEdit: boolean;
@@ -67,22 +70,37 @@ const generateUpdateRoundData = (
   const dOldRound: Round = _.cloneDeep(oldRoundData);
   const dNewRound: Round = _.cloneDeep(newRoundData);
 
-  const updateRoundData : UpdateRoundParams= {};
+  const isV2 = getConfig().allo.version === "allo-v2";
 
-  if (!_.isEqual(
-    dOldRound.applicationMetadata,
-    dNewRound.applicationMetadata
-  )) {
-    updateRoundData.applicationMetadata = dNewRound.applicationMetadata as AnyJson;
+  const updateRoundData: UpdateRoundParams = {};
+
+  if (
+    !_.isEqual(dOldRound.applicationMetadata, dNewRound.applicationMetadata)
+  ) {
+    updateRoundData.applicationMetadata =
+      dNewRound.applicationMetadata as AnyJson;
+
+    if (isV2) {
+      updateRoundData.roundMetadata = dNewRound.roundMetadata as AnyJson;
+    }
+  }
+
+  if (!_.isEqual(dOldRound.roundMetadata, dNewRound.roundMetadata)) {
+    updateRoundData.roundMetadata = dNewRound.roundMetadata as AnyJson;
+
+    if (isV2) {
+      updateRoundData.applicationMetadata =
+        dNewRound.applicationMetadata as AnyJson;
+    }
   }
 
   if (
     dNewRound.chainId &&
     !_.isEqual(
-    dOldRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable,
-    dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
-  )) {
-
+      dOldRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable,
+      dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
+    )
+  ) {
     const decimals = getPayoutTokenOptions(dNewRound.chainId).find(
       (token) => token.address === dNewRound.token
     )?.decimal;
@@ -95,19 +113,17 @@ const generateUpdateRoundData = (
     updateRoundData.matchAmount = matchAmount;
   }
 
-  if (!_.isEqual(
-    dOldRound.roundMetadata,
-    dNewRound.roundMetadata
-  )) {
-    updateRoundData.roundMetadata = dNewRound.roundMetadata as AnyJson;
-  }
-
-  if (!(
-    _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
-    _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
-    _.isEqual(dOldRound.applicationsStartTime, dNewRound.applicationsStartTime) &&
-    _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
-  )) {
+  if (
+    !(
+      _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
+      _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
+      _.isEqual(
+        dOldRound.applicationsStartTime,
+        dNewRound.applicationsStartTime
+      ) &&
+      _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
+    )
+  ) {
     updateRoundData.roundStartTime = dNewRound.roundStartTime;
     updateRoundData.roundEndTime = dNewRound.roundEndTime;
     updateRoundData.applicationsStartTime = dNewRound.applicationsStartTime;
@@ -309,12 +325,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
     resolver: yupResolver(ValidationSchema),
   });
 
-  useEffect(() => {    
-    setHasChanged(
-      !_.isEmpty(
-        generateUpdateRoundData(round!, editedRound!)
-      )
-    );
+  useEffect(() => {
+    setHasChanged(!_.isEmpty(generateUpdateRoundData(round!, editedRound!)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
 
@@ -361,20 +373,23 @@ export default function ViewRoundSettings(props: { id?: string }) {
       const data = generateUpdateRoundData(round!, editedRound!);
 
       setIpfsStep(
-        !_.isNil(data?.applicationMetadata)||
-        !_.isNil(data?.roundMetadata)
+        !_.isNil(data?.applicationMetadata) || !_.isNil(data?.roundMetadata)
       );
-    
+
       setEditMode({ ...editMode, canEdit: false });
       setIsConfirmationModalOpen(false);
       setIsProgressModalOpen(true);
-      
+
       await updateRound({
         roundId: round.id!,
+        roundAddress: round.payoutStrategy.id as `0x${string}`,
         data,
         allo,
+        roundCategory: isDirectRound(round)
+          ? RoundCategory.Direct
+          : RoundCategory.QuadraticFunding,
       });
-  
+
       setTimeout(() => {
         setIsProgressModalOpen(false);
         setIpfsStep(false);
@@ -1815,6 +1830,18 @@ function RoundApplicationPeriod(props: {
   );
 }
 
+function getMatchingFundToken(
+  tokenAddress: string,
+  chainId: number | undefined
+) {
+  return payoutTokens.filter(
+    (t) =>
+      t.address.toLowerCase() ==
+        (tokenAddress == NATIVE ? zeroAddress : tokenAddress.toLowerCase()) &&
+      t.chainId == chainId
+  )[0];
+}
+
 function Funding(props: {
   editMode: EditMode;
   editedRound: Round;
@@ -1826,13 +1853,9 @@ function Funding(props: {
 }) {
   const { editedRound } = props;
 
+  console.log(editedRound);
   const matchingFundPayoutToken =
-    editedRound &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLowerCase() == editedRound.token.toLowerCase() &&
-        t.chainId == editedRound.chainId
-    )[0];
+    editedRound && getMatchingFundToken(editedRound.token, editedRound.chainId);
 
   const matchingFunds =
     (editedRound &&

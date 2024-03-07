@@ -16,7 +16,7 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@allo-team/allo-v2-sdk": "1.0.53",
+    "@allo-team/allo-v2-sdk": "1.0.55",
     "eslint-config-gitcoin": "workspace:*",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",

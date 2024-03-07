@@ -1,6 +1,6 @@
 import React, { SetStateAction, createContext, useContext } from "react";
 import { ProgressStatus } from "../../features/api/types";
-import { UpdateRoundParams } from "common/dist/types";
+import { RoundCategory, UpdateRoundParams } from "common/dist/types";
 import { Allo } from "common";
 import { Hex } from "viem";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -9,8 +9,10 @@ type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
 export type UpdateRoundData = {
   roundId: string;
+  roundAddress: Hex;
   data: UpdateRoundParams;
   allo: Allo;
+  roundCategory?: RoundCategory;
 };
 
 export interface UpdateRoundState {
@@ -83,7 +85,7 @@ const _updateRound = async ({
   const { setIPFSCurrentStatus, setRoundUpdateStatus, setIndexingStatus } =
     context;
 
-  const { roundId, data, allo } = updateRoundData;
+  const { roundId, roundAddress, data, allo, roundCategory } = updateRoundData;
 
   let id;
   if (!roundId.toString().startsWith("0x")) {
@@ -97,7 +99,9 @@ const _updateRound = async ({
   await allo
     .editRound({
       roundId: id,
+      roundAddress,
       data,
+      strategy: roundCategory,
     })
     .on("ipfs", (res) => {
       if (res.type === "success") {

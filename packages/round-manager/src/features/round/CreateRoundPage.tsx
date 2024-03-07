@@ -1,17 +1,17 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { XIcon } from "@heroicons/react/solid";
+import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
 import "react-datetime/css/react-datetime.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useProgramById } from "../../context/program/ReadProgramContext";
-import Footer from "common/src/components/Footer";
+import { RoundCategory } from "../api/types";
 import { FormWizard } from "../common/FormWizard";
 import Navbar from "../common/Navbar";
 import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
+import QuadraticFundingForm from "./QuadraticFundingForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
 import { RoundDetailForm } from "./RoundDetailForm";
-import QuadraticFundingForm from "./QuadraticFundingForm";
-import { RoundCategory } from "../api/types";
 
 function ExitCreateRound(props: { onClick: () => void }) {
   return (
@@ -60,7 +60,10 @@ export default function CreateRound() {
           <header>
             <div className="flow-root">
               <h1 className="float-left text-[32px] mb-7">
-                Create a {roundCategoryParam == "direct" && "Direct Grants"}
+                Create a
+                {roundCategoryParam == "direct"
+                  ? "Direct Grants"
+                  : "Quadratic Funding"}
                 &nbsp;Round
               </h1>
               <ExitCreateRound onClick={() => navigate("/")} />
