@@ -313,6 +313,7 @@ export async function getTokenPrice(tokenId: string) {
 export const ROUND_PAYOUT_MERKLE_OLD = "MERKLE";
 export const ROUND_PAYOUT_MERKLE = "allov1.QF";
 export const ROUND_PAYOUT_DIRECT = "allov1.Direct";
+export const ROUND_PAYOUT_DIRECT_V2 = "allov2.DirectGrantsSimpleStrategy";
 export const ROUND_PAYOUT_DIRECT_OLD = "DIRECT";
 export type RoundPayoutType =
   | typeof ROUND_PAYOUT_DIRECT_OLD
@@ -324,7 +325,8 @@ export type RoundPayoutTypeNew =
   | "allov2.MicroGrantsStrategy"
   | "allov2.MicroGrantsHatsStrategy"
   | "allov2.SQFSuperFluidStrategy"
-  | "allov2.MicroGrantsGovStrategy";
+  | "allov2.MicroGrantsGovStrategy"
+  | "allov2.DirectGrantsSimpleStrategy";
 
 export type RoundStrategyType = "QuadraticFunding" | "DirectGrants";
 

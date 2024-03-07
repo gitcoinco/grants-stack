@@ -18,7 +18,13 @@ import { AnyJson, ChainId } from "../..";
 import { RoundCategory, UpdateRoundParams, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
-import { Result, dateToEthereumTimestamp, error, success } from "../common";
+import {
+  Result,
+  UINT64_MAX,
+  dateToEthereumTimestamp,
+  error,
+  success,
+} from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
@@ -344,6 +350,7 @@ export class AlloV2 implements Allo {
 
         token = getAddress(alloToken);
       } else if (args.roundData.roundCategory === RoundCategory.Direct) {
+        const noEndDate = UINT64_MAX;
         const initStrategyData: DirectGrantsStrategyTypes.InitializeParams = {
           registryGating: true,
           metadataRequired: true,
@@ -351,9 +358,11 @@ export class AlloV2 implements Allo {
           registrationStartTime: dateToEthereumTimestamp(
             args.roundData.roundStartTime
           ), // in seconds, must be in future
-          registrationEndTime: dateToEthereumTimestamp(
-            args.roundData.roundEndTime
-          ), // in seconds, must be after registrationStartTime
+          registrationEndTime:
+            args.roundData.roundEndTime === null
+              ? noEndDate
+              : dateToEthereumTimestamp(args.roundData.roundEndTime),
+          // in seconds, must be after registrationStartTime
         };
 
         const strategy = new DirectGrantsStrategy({
