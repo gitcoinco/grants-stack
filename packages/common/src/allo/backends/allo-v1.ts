@@ -775,11 +775,11 @@ export class AlloV1 implements Allo {
         data.applicationsStartTime &&
         data.applicationsEndTime
       ) {
-        if (Date.now() > data.applicationsStartTime.getTime()) {
-          data.applicationsStartTime = new Date(Date.now() + 100);
+        if (Date.now() > data.applicationsStartTime.getTime()) {          
+          data.applicationsStartTime = new Date(data.applicationsEndTime.getTime() - 1000000);
         }
         if (Date.now() > data.roundStartTime.getTime()) {
-          data.roundStartTime = new Date(Date.now() + 100);
+          data.roundStartTime = new Date(data.applicationsEndTime.getTime()- 1000000);
         }
 
         console.log("updating start and end times");
