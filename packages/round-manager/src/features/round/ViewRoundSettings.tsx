@@ -1853,7 +1853,6 @@ function Funding(props: {
 }) {
   const { editedRound } = props;
 
-  console.log(editedRound);
   const matchingFundPayoutToken =
     editedRound && getMatchingFundToken(editedRound.token, editedRound.chainId);
 
