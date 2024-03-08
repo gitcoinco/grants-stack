@@ -635,8 +635,6 @@ export class AlloV2 implements Allo {
 
       const data = args.data;
 
-      console.log("DATA", data);
-
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
       }
@@ -646,9 +644,7 @@ export class AlloV2 implements Allo {
       }
 
       /** Upload roundMetadata ( includes applicationMetadata ) to IPFS */
-      console.log("metadata", data.roundMetadata);
       if (data.roundMetadata && data.applicationMetadata) {
-        console.log("update metadata");
         const ipfsResult = await this.ipfsUploader({
           round: data.roundMetadata,
           application: data.applicationMetadata,
@@ -690,7 +686,6 @@ export class AlloV2 implements Allo {
       }
 
       let updateTimestampTxn: TransactionData | null = null;
-      console.log("stategy: ", args.strategy);
 
       /** Note: timestamps updates happen by calling the strategy contract directly `this.strategy.updatePoolTimestamps` */
       switch (args.strategy) {
@@ -703,21 +698,12 @@ export class AlloV2 implements Allo {
             }
           );
 
-          console.log("timestampd:");
-          console.log(
-            data.applicationsStartTime,
-            data.applicationsEndTime,
-            data.roundStartTime,
-            data.roundEndTime
-          );
-
           if (
             data.roundStartTime &&
             data.roundEndTime &&
             data.applicationsStartTime &&
             data.applicationsEndTime
           ) {
-            console.log("yes baby, update timestamps");
             updateTimestampTxn = strategyInstance.updatePoolTimestamps(
               dateToEthereumTimestamp(data.applicationsStartTime),
               dateToEthereumTimestamp(data.applicationsEndTime),
@@ -725,9 +711,6 @@ export class AlloV2 implements Allo {
               dateToEthereumTimestamp(data.roundEndTime)
             );
           }
-
-          console.log("====> 1");
-          console.log(updateTimestampTxn);
 
           break;
         }
@@ -754,9 +737,7 @@ export class AlloV2 implements Allo {
           throw new AlloError("Unsupported strategy");
       }
 
-      console.log("updateTimestampTxn: ", updateTimestampTxn);
       if (updateTimestampTxn) {
-        console.log("send it raw baby");
         const timestampTxResult = await sendRawTransaction(
           this.transactionSender,
           {
@@ -766,15 +747,9 @@ export class AlloV2 implements Allo {
           }
         );
 
-        console.log("====> 2");
-
         if (timestampTxResult.type === "error") {
-          console.log("====> 3");
-          console.log(timestampTxResult.error);
           return error(timestampTxResult.error);
         }
-
-        console.log("====> 4");
 
         try {
           // wait for 2nd transaction to be mined

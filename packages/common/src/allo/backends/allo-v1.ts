@@ -763,12 +763,10 @@ export class AlloV1 implements Allo {
 
       if (data.matchAmount) {
         // NOTE : This is parseUnits format of the token
-        console.log("updating match amount");
         transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [
           data.matchAmount,
         ]);
       }
-
 
       /* Special case - if the application period or round has already started, and we are editing times,
        * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
@@ -782,14 +780,17 @@ export class AlloV1 implements Allo {
         data.applicationsStartTime &&
         data.applicationsEndTime
       ) {
-        if (Date.now() > data.applicationsStartTime.getTime()) {          
-          data.applicationsStartTime = new Date(data.applicationsEndTime.getTime() - 1000000);
+        if (Date.now() > data.applicationsStartTime.getTime()) {
+          data.applicationsStartTime = new Date(
+            data.applicationsEndTime.getTime() - 1000000
+          );
         }
         if (Date.now() > data.roundStartTime.getTime()) {
-          data.roundStartTime = new Date(data.applicationsEndTime.getTime()- 1000000);
+          data.roundStartTime = new Date(
+            data.applicationsEndTime.getTime() - 1000000
+          );
         }
 
-        console.log("updating start and end times");
         transactionBuilder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
           (data.applicationsStartTime.getTime() / 1000).toFixed(0),
           (data.applicationsEndTime.getTime() / 1000).toFixed(0),
