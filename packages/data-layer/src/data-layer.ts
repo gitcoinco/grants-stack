@@ -258,7 +258,7 @@ export class DataLayer {
     const response: { legacyProjects: { v1ProjectId: string }[] } =
       await request(this.gsIndexerEndpoint, getLegacyProjectId, { projectId });
 
-    return response.legacyProjects[0].v1ProjectId ?? null;
+    return response.legacyProjects[0]?.v1ProjectId ?? null;
   }
 
   // getProjectsByAddress
