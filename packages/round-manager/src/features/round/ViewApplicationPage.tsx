@@ -881,7 +881,7 @@ function vcProviderMatchesProject(
 function vcIssuedToAddress(vc: VerifiableCredential, address: string) {
   const vcIdSplit = vc.credentialSubject.id.split(":");
   const addressFromId = vcIdSplit[vcIdSplit.length - 1];
-  return addressFromId === address;
+  return addressFromId.toLowerCase() === address.toLowerCase();
 }
 
 async function isVerified(
