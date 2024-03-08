@@ -326,7 +326,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
   });
 
   useEffect(() => {
-    console.log("editedRound", editedRound);
     setHasChanged(!_.isEmpty(generateUpdateRoundData(round!, editedRound!)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
