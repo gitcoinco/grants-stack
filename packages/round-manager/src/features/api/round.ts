@@ -53,12 +53,6 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
   const donationsEndTime =
     strategyName == "MERKLE" ? round.donationsEndTime : applicationsEndTime;
 
-  console.log("id", round.id);
-  console.log("dates");
-  console.log(applicationsStartTime);
-  console.log(applicationsEndTime);
-  console.log(donationsStartTime);
-  console.log(donationsEndTime);
   return {
     id: round.id,
     chainId: round.chainId,
