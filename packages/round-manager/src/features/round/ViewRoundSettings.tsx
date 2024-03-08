@@ -326,6 +326,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   });
 
   useEffect(() => {
+    console.log("editedRound", editedRound);
     setHasChanged(!_.isEmpty(generateUpdateRoundData(round!, editedRound!)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
@@ -392,8 +393,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
       setTimeout(() => {
         setIsProgressModalOpen(false);
-        setIpfsStep(false);
         window.location.reload();
+        setIpfsStep(false);
       }, 2000);
     } catch (e) {
       console.log("error", e);
