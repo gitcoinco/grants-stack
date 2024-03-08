@@ -32,8 +32,10 @@ export default function ApplicationCard({
 
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
 
-    // fixme: this is breaking the render of the application card.
-    const payoutStrategy = strategyNameToCategory(round.strategyName);
+    // todo: ensure the strategy name is always set on the indexer and remove the fallback
+    const payoutStrategy = round.strategyName
+      ? strategyNameToCategory(round.strategyName)
+      : RoundCategory.QuadraticFunding;
 
     const applicationChainName = networkPrettyName(
       Number(applicationData.chainId)

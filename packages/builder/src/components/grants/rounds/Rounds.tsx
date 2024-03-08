@@ -38,6 +38,7 @@ export default function Rounds({
       const { round } = app;
 
       const isDirectGrants =
+        round?.strategyName &&
         strategyNameToCategory(round?.strategyName) === RoundCategory.Direct;
 
       const infiniteApplicationsEndDate = isInfinite(
