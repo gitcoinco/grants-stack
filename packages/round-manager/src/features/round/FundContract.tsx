@@ -37,15 +37,15 @@ function useContractAmountFunded(args: {
       isLoading: false;
       error: undefined;
       data: {
-        amountFunded: bigint;
-        amountFundedInUsd: number;
+        fundedAmount: bigint;
+        fundedAmountInUsd: number;
       };
     } {
   const { round, payoutToken } = args;
   const isAlloV2 = round?.tags?.includes("allo-v2");
 
   const { data: balanceData, error: balanceError } = useBalance(
-    isAlloV2
+    isAlloV2 || round === undefined
       ? undefined
       : {
           address: assertAddress(round?.id),
@@ -61,11 +61,13 @@ function useContractAmountFunded(args: {
     payoutToken?.redstoneTokenId
   );
 
+  console.log("isAlloV2", isAlloV2);
+
   if (isAlloV2) {
     if (round !== undefined) {
       if (
-        round.amountFunded === undefined ||
-        round.amountFundedInUsd === undefined
+        round.fundedAmount === undefined ||
+        round.fundedAmountInUsd === undefined
       ) {
         return {
           isLoading: false,
@@ -78,8 +80,8 @@ function useContractAmountFunded(args: {
         isLoading: false,
         error: undefined,
         data: {
-          amountFunded: round.amountFunded,
-          amountFundedInUsd: round.amountFundedInUsd,
+          fundedAmount: round.fundedAmount,
+          fundedAmountInUsd: round.fundedAmountInUsd,
         },
       };
     } else {
@@ -96,8 +98,8 @@ function useContractAmountFunded(args: {
       isLoading: false,
       error: undefined,
       data: {
-        amountFunded: balanceData.value.toBigInt(),
-        amountFundedInUsd: Number(balanceData.formatted) * Number(priceData),
+        fundedAmount: balanceData.value.toBigInt(),
+        fundedAmountInUsd: Number(balanceData.formatted) * Number(priceData),
       },
     };
   }
@@ -212,7 +214,7 @@ export default function FundContract(props: {
   });
 
   const amountFundedInUnits = formatUnits(
-    data?.amountFunded ?? 0n,
+    data?.fundedAmount ?? 0n,
     matchingFundPayoutToken?.decimal ?? 18
   );
 
@@ -233,7 +235,7 @@ export default function FundContract(props: {
   const matchingFundsInUSD = props.round?.matchAmountInUsd;
 
   const amountLeftToFundInUSD =
-    matchingFundsInUSD && matchingFundsInUSD - Number(data?.amountFundedInUsd);
+    matchingFundsInUSD && matchingFundsInUSD - Number(data?.fundedAmountInUsd);
 
   // NOTE: round and protocol fee percentages are stored as decimals
   const roundFeePercentage = (props.round?.roundFeePercentage ?? 0) * 100;
@@ -247,7 +249,7 @@ export default function FundContract(props: {
   const totalDue = matchingFunds + combinedFees;
 
   const fundContractDisabled = Number(amountFundedInUnits) >= Number(totalDue);
-  const tokenBalanceInUSD = data?.amountFundedInUsd;
+  const tokenBalanceInUSD = data?.fundedAmountInUsd;
 
   const { data: matchingFundPayoutTokenBalance } = useBalance(tokenDetailUser);
 
@@ -360,7 +362,7 @@ export default function FundContract(props: {
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
-          <p className="flex flex-row text-sm w-1/3">
+          <div className="flex flex-row text-sm w-1/3">
             Protocol fee:
             <span>
               <InformationIcon
@@ -386,7 +388,7 @@ export default function FundContract(props: {
                 </p>
               </ReactTooltip>
             </span>
-          </p>
+          </div>
           <p className="text-sm">{protocolFeePercentage}%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -477,21 +479,26 @@ export default function FundContract(props: {
               >
                 Fund Contract
               </button>
-              <button
-                className="bg-white hover:text-violet-700 hover:border-violet-700 text-gray py-2 px-4 rounded border border-gray ml-4"
-                data-testid="view-contract-btn"
-                onClick={() =>
-                  window.open(
-                    getTxExplorerForContract(chainId, props.roundId as string),
-                    "_blank"
-                  )
-                }
-              >
-                View Contract
-              </button>
+              {props.round.tags?.includes("allo-v1") && (
+                <button
+                  className="bg-white hover:text-violet-700 hover:border-violet-700 text-gray py-2 px-4 rounded border border-gray ml-4"
+                  data-testid="view-contract-btn"
+                  onClick={() =>
+                    window.open(
+                      getTxExplorerForContract(
+                        chainId,
+                        props.roundId as string
+                      ),
+                      "_blank"
+                    )
+                  }
+                >
+                  View Contract
+                </button>
+              )}
             </div>
             {insufficientBalance && (
-              <p
+              <div
                 data-testid="insufficientBalance"
                 className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
               >
@@ -499,7 +506,7 @@ export default function FundContract(props: {
                 <span>
                   You do not have enough funds for funding the matching pool.
                 </span>
-              </p>
+              </div>
             )}
             <FundContractModals />
           </>

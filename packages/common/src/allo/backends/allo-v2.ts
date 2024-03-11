@@ -663,12 +663,12 @@ export class AlloV2 implements Allo {
         }
       }
 
-      const txData = this.allo.fundPool(poolId, args.amount);
-
       const tx = await sendTransaction(this.transactionSender, {
-        address: txData.to,
-        data: txData.data,
-        value: BigInt(txData.value),
+        address: this.allo.address(),
+        abi: AlloAbi,
+        functionName: "fundPool",
+        args: [poolId, args.amount],
+        value: args.tokenAddress === zeroAddress ? args.amount : 0n,
       });
 
       emit("transaction", tx);

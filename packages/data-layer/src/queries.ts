@@ -456,34 +456,59 @@ export const getRoundWithApplications = gql`
   }
 `;
 
-export const getRoundsByProgramIdAndChainId = gql`
-  query getRoundsByProgramIdAndChainId($chainId: Int!, $programId: String!) {
+const getRoundForManagerFields = `
+  id
+  chainId
+  applicationsStartTime
+  applicationsEndTime
+  donationsStartTime
+  donationsEndTime
+  matchTokenAddress
+  roundMetadata
+  roundMetadataCid
+  applicationMetadata
+  applicationMetadataCid
+  strategyAddress
+  strategyName
+  isReadyForPayout
+  projectId
+  matchAmount
+  matchAmountInUsd
+  createdByAddress
+  fundedAmount
+  fundedAmountInUsd
+  roles {
+    role
+    address
+    createdAtBlock
+  }
+  tags
+  project {
+    id
+    name
+    metadata
+  }
+`;
+
+export const getRoundForManager = gql`
+  query getRoundForManager($roundId: String!, $chainId: Int!) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      ${getRoundForManagerFields}
+    }
+  }
+`;
+
+export const getRoundsForManager = gql`
+  query getRoundsForManager($chainId: Int!, $programId: String!) {
     rounds(
       filter: {
         chainId: { equalTo: $chainId }
         projectId: { equalTo: $programId }
       }
     ) {
-      id
-      chainId
-      applicationsStartTime
-      applicationsEndTime
-      donationsStartTime
-      donationsEndTime
-      matchTokenAddress
-      roundMetadata
-      roundMetadataCid
-      applicationMetadata
-      applicationMetadataCid
-      strategyAddress
-      strategyName
-      createdByAddress
-      projectId
-      roles {
-        role
-        address
-        createdAtBlock
-      }
+      ${getRoundForManagerFields}
     }
   }
 `;

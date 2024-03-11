@@ -22,6 +22,7 @@ import {
   V2RoundWithRoles,
   V2RoundWithProject,
   v2Project,
+  RoundForManager,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -39,7 +40,9 @@ import {
   getProjectById,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
+  getRoundForManager,
   getRoundsByProgramIdAndChainId,
+  getRoundsForManager,
   getRoundsQuery,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
@@ -384,13 +387,34 @@ export class DataLayer {
     return response.rounds[0] ?? [];
   }
 
-  async getRoundsByProgramIdAndChainId(args: {
+  async getRoundForManager({
+    roundId,
+    chainId,
+  }: {
+    roundId: string;
+    chainId: number;
+  }): Promise<RoundForManager | null> {
+    const requestVariables = {
+      roundId,
+      chainId,
+    };
+
+    const response: { rounds: RoundForManager[] } = await request(
+      this.gsIndexerEndpoint,
+      getRoundForManager,
+      requestVariables,
+    );
+
+    return response.rounds[0] ?? null;
+  }
+
+  async getRoundsForManager(args: {
     chainId: number;
     programId: string;
-  }): Promise<V2RoundWithRoles[]> {
-    const response: { rounds: V2RoundWithRoles[] } = await request(
+  }): Promise<RoundForManager[]> {
+    const response: { rounds: RoundForManager[] } = await request(
       this.gsIndexerEndpoint,
-      getRoundsByProgramIdAndChainId,
+      getRoundsForManager,
       args,
     );
 

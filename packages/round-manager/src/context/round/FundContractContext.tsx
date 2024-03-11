@@ -153,7 +153,7 @@ async function _fundContract({
       .parseUnits(fundAmount.toString(), payoutToken.decimal)
       .toBigInt();
 
-    await allo
+    const result = await allo
       .fundRound({
         roundId,
         tokenAddress: payoutToken.address,
@@ -165,6 +165,11 @@ async function _fundContract({
         } else {
           context.setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
           context.setFundStatus(ProgressStatus.IN_PROGRESS);
+        }
+      })
+      .on("transaction", (tx) => {
+        if (tx.type === "error") {
+          context.setFundStatus(ProgressStatus.IS_ERROR);
         }
       })
       .on("transactionStatus", (tx) => {
@@ -179,6 +184,10 @@ async function _fundContract({
         }
       })
       .execute();
+
+    if (result.type === "error") {
+      throw result.error;
+    }
   } catch (error) {
     datadogLogs.logger.error(`error: _fundContract - ${error}`);
     console.error("Error while funding contract: ", error);

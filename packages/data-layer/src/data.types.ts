@@ -304,6 +304,14 @@ export type V2RoundWithProject = V2RoundWithRoles & {
   };
 };
 
+export type RoundForManager = V2RoundWithProject & {
+  tags: string[];
+  matchAmount: string;
+  matchAmountInUsd: number;
+  fundedAmount: string;
+  fundedAmountInUsd: number;
+};
+
 export type ProjectApplicationWithProject = {
   id: string;
   name: string;

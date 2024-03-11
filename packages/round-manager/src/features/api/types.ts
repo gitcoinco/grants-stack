@@ -263,8 +263,8 @@ export interface Round {
   createdByAddress?: string;
 
   tags?: string[];
-  amountFunded?: bigint;
-  amountFundedInUsd?: number;
+  fundedAmount?: bigint;
+  fundedAmountInUsd?: number;
   matchAmount?: bigint;
   matchAmountInUsd?: number;
 }

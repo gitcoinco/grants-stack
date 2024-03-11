@@ -19,8 +19,8 @@ import { error, Result, success } from "./common";
 
 export interface TransactionData {
   to: Hex;
-  data: Hex;
-  value: bigint;
+  data?: Hex;
+  value?: bigint;
 }
 
 export interface TransactionReceipt {
@@ -266,8 +266,8 @@ export async function sendTransaction<
     | { address: Address; value: bigint; data: Hex }
 ): Promise<Result<Hex>> {
   try {
-    let data: Hex = "0x0";
-    let value = 0n;
+    let data;
+    let value;
 
     if ("value" in args) {
       value = args.value;
@@ -284,7 +284,7 @@ export async function sendTransaction<
     const tx = await sender.send({
       to: args.address,
       data: data,
-      value: value ?? 0n,
+      value: value,
     });
 
     return success(tx);

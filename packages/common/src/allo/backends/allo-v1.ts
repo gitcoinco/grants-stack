@@ -730,7 +730,7 @@ export class AlloV1 implements Allo {
           args: [roundAddress, args.amount],
         });
 
-        if(approvalTx.type === "error") {
+        if (approvalTx.type === "error") {
           return approvalTx;
         }
 
