@@ -61,8 +61,6 @@ function useContractAmountFunded(args: {
     payoutToken?.redstoneTokenId
   );
 
-  console.log("isAlloV2", isAlloV2);
-
   if (isAlloV2) {
     if (round !== undefined) {
       if (
