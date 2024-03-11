@@ -35,7 +35,9 @@ export const FILTER_OPTIONS: RoundFilterUiOption[] = [
       },
       {
         label: "Direct grants",
-        value: isAlloV2 ? "allov2.DirectGrantsSimpleStrategy" : ROUND_PAYOUT_DIRECT,
+        value: isAlloV2
+          ? "allov2.DirectGrantsSimpleStrategy"
+          : ROUND_PAYOUT_DIRECT,
       },
     ],
   },
