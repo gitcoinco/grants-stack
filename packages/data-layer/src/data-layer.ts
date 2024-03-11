@@ -6,7 +6,6 @@ import shuffle from "knuth-shuffle-seeded";
 import { Address } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
-import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Application,
@@ -23,9 +22,9 @@ import {
   RoundsQueryVariables,
   RoundWithApplications,
   SearchBasedProjectCategory,
-  V2RoundWithRoles,
   V2RoundWithProject,
   v2Project,
+  RoundForManager,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -44,8 +43,9 @@ import {
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundUniqueDonorsCount,
+  getRoundForManager,
+  getRoundsForManager,
   getRoundByIdAndChainIdWithApprovedApplications,
-  getRoundsByProgramIdAndChainId,
   getRoundsQuery,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
@@ -421,13 +421,34 @@ export class DataLayer {
     return response.rounds[0] ?? [];
   }
 
-  async getRoundsByProgramIdAndChainId(args: {
+  async getRoundForManager({
+    roundId,
+    chainId,
+  }: {
+    roundId: string;
+    chainId: number;
+  }): Promise<RoundForManager | null> {
+    const requestVariables = {
+      roundId,
+      chainId,
+    };
+
+    const response: { rounds: RoundForManager[] } = await request(
+      this.gsIndexerEndpoint,
+      getRoundForManager,
+      requestVariables,
+    );
+
+    return response.rounds[0] ?? null;
+  }
+
+  async getRoundsForManager(args: {
     chainId: number;
     programId: string;
-  }): Promise<V2RoundWithRoles[]> {
-    const response: { rounds: V2RoundWithRoles[] } = await request(
+  }): Promise<RoundForManager[]> {
+    const response: { rounds: RoundForManager[] } = await request(
       this.gsIndexerEndpoint,
-      getRoundsByProgramIdAndChainId,
+      getRoundsForManager,
       args,
     );
 

@@ -167,7 +167,7 @@ describe("View Round", () => {
     );
 
     expect(screen.getByTestId("side-nav-bar")).toBeInTheDocument();
-    expect(screen.getByText("Fund Contract")).toBeInTheDocument();
+    expect(screen.getByText("Fund Round")).toBeInTheDocument();
     expect(screen.getByText("Grant Applications")).toBeInTheDocument();
     expect(screen.getByText("Round Settings")).toBeInTheDocument();
     expect(screen.getByText("Round Stats")).toBeInTheDocument();
