@@ -9,10 +9,12 @@ import {
   slice,
   toHex,
   TypedDataDomain,
+  zeroAddress,
 } from "viem";
 import { CartProject } from "./types";
 import { WalletClient } from "wagmi";
 import { VotingToken } from "common";
+import { NATIVE } from "common/dist/allo/common";
 
 type SignPermitProps = {
   walletClient: WalletClient;
@@ -167,4 +169,43 @@ export function encodeQFVotes(
       vote
     );
   });
+}
+
+export function encodedQFAllocation(
+  donationToken: VotingToken,
+  donations: Pick<
+    CartProject,
+    | "amount"
+    | "recipient"
+    | "projectRegistryId"
+    | "applicationIndex"
+    | "anchorAddress"
+  >[]
+): Hex[] {
+  const tokenAddress = donationToken.address === zeroAddress ? NATIVE : donationToken.address;
+
+  const encodedData = donations.map((donation) => {
+    return encodeAbiParameters(
+      parseAbiParameters(
+        "address,uint8,(((address,uint256),uint256,uint256),bytes)"
+      ),
+      [
+        getAddress(donation.anchorAddress!),
+        0, // permit type of none on the strategy
+        [
+          [
+            [
+              getAddress(tokenAddress),
+              parseUnits(donation.amount, donationToken.decimal),
+            ],
+            0n, // nonce, since permit type is none
+            0n, // deadline, since permit type is none
+          ],
+          "0x0000000000000000000000000000000000000000000000000000000000000000", // signature, since permit type is none
+        ],
+      ]
+    );
+  });
+
+  return encodedData;
 }

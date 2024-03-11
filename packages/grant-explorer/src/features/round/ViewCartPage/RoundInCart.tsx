@@ -13,6 +13,7 @@ import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor, usePassport } from "../../api/passport";
 import { VotingToken } from "common";
+import { getFormattedRoundId } from "../../common/utils/utils";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {
@@ -42,10 +43,10 @@ export function RoundInCart(
     isLoading: matchingEstimateLoading,
   } = useMatchingEstimates([
     {
-      roundId: getAddress(round?.id ?? zeroAddress),
+      roundId: getFormattedRoundId(round?.id ?? zeroAddress),
       chainId: props.roundCart[0].chainId,
       potentialVotes: props.roundCart.map((proj) => ({
-        roundId: getAddress(round?.id ?? zeroAddress),
+        roundId: getFormattedRoundId(round?.id ?? zeroAddress),
         projectId: proj.projectRegistryId,
         amount: parseUnits(
           proj.amount ?? "0",

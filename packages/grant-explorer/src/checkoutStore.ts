@@ -5,7 +5,6 @@ import { CartProject, ProgressStatus } from "./features/api/types";
 import { Allo, ChainId } from "common";
 import { useCartStorage } from "./store";
 import {
-  getAddress,
   Hex,
   InternalRpcError,
   parseAbi,
@@ -16,6 +15,7 @@ import {
 } from "viem";
 import {
   encodeQFVotes,
+  encodedQFAllocation,
   signPermit2612,
   signPermitDai,
 } from "./features/api/voting";
@@ -26,9 +26,11 @@ import { WalletClient } from "wagmi";
 import { getContract, getPublicClient } from "@wagmi/core";
 import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
+import { getConfig } from "common/src/config";
 
 type ChainMap<T> = Record<ChainId, T>;
 
+const isV2 = getConfig().allo.version === "allo-v2";
 interface CheckoutState {
   permitStatus: ChainMap<ProgressStatus>;
   setPermitStatusForChain: (
@@ -221,17 +223,16 @@ export const useCheckoutStore = create<CheckoutState>()(
           const groupedDonations = groupBy(
             donations.map((d) => ({
               ...d,
-              roundId: getAddress(d.roundId),
+              roundId: d.roundId,
             })),
             "roundId"
           );
 
           const groupedEncodedVotes: Record<string, Hex[]> = {};
           for (const roundId in groupedDonations) {
-            groupedEncodedVotes[roundId] = encodeQFVotes(
-              token,
-              groupedDonations[roundId]
-            );
+            groupedEncodedVotes[roundId] = isV2
+              ? encodedQFAllocation(token, groupedDonations[roundId])
+              : encodeQFVotes(token, groupedDonations[roundId]);
           }
 
           const groupedAmounts: Record<string, bigint> = {};
@@ -243,14 +244,21 @@ export const useCheckoutStore = create<CheckoutState>()(
             );
           }
 
-          const receipt = await allo.voteUsingMRCContract(
+          const amountArray: bigint[] = [];
+          for (const roundId in groupedDonations) {
+            groupedDonations[roundId].map((donation) => {
+              amountArray.push(parseUnits(donation.amount, token.decimal));
+            });
+          }
+
+          const receipt = await allo.donate(
             getPublicClient({
               chainId,
             }),
             chainId,
             token,
             groupedEncodedVotes,
-            groupedAmounts,
+            isV2 ? amountArray : groupedAmounts,
             totalDonationPerChain[chainId],
             sig
               ? {
@@ -277,7 +285,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           }
 
           console.log(
-            "Voting succesful for chain",
+            "Voting successful for chain",
             chainId,
             " receipt",
             receipt

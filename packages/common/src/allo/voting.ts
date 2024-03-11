@@ -14,7 +14,7 @@ export type PermitSignature = {
 export const getPermitType = (token: VotingToken): PermitType => {
   if (
     /DAI/i.test(token.name) &&
-    (token.chainId === 1 || token.chainId === 137)
+    ([1, 137, 11155111].includes(token.chainId))
   ) {
     return "dai";
   } else {
