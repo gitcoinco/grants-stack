@@ -275,13 +275,18 @@ export default function FundContract(props: {
 
   const progressSteps = [
     {
-      name: "Submit",
-      description: "Finalize your funding",
+      name: "Token Approval",
+      description: "Approving token transfer.",
+      status: tokenApprovalStatus,
+    },
+    {
+      name: "Funding",
+      description: "Funding the round.",
       status: fundStatus,
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "Indexing the data.",
       status: indexingStatus,
     },
     {
