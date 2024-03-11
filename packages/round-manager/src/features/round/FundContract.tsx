@@ -304,39 +304,50 @@ export default function FundContract(props: {
       >
         Fund Contract
       </p>
-      <p className="font-bold text-sm">Contract Details</p>
+      <p className="font-bold text-sm">Details</p>
       <hr className="mt-2 mb-4" />
-      <p className="text-sm text-grey-400 mb-4">
-        You must fund the smart contract with the matching pool amount you
-        pledged during round creation or more if you choose. You can either fund
-        the contract through your connected wallet or send the funds directly to
-        the contract address.
-      </p>
+      {props.round.tags?.includes("allo-v1") && (
+        <p className="text-sm text-grey-400 mb-4">
+          You must fund the smart contract with the matching pool amount you
+          pledged during round creation or more if you choose. You can either
+          fund the contract through your connected wallet or send the funds
+          directly to the contract address.
+        </p>
+      )}
+      {props.round.tags?.includes("allo-v2") && (
+        <p className="text-sm text-grey-400 mb-4">
+          You must fund the round with the matching pool amount you pledged
+          during round creation or more if you choose. Fund the contract here
+          through your connected wallet.
+        </p>
+      )}
       <div className="flex flex-col mt-4 max-w-xl">
-        <div className="flex flex-row justify-start">
-          <p className="flex flex-row text-sm w-1/3">
-            Contract Address:
-            <span>
-              <InformationIcon
-                dataFor="contract-tooltip"
-                dataTestId="contract-tooltip"
-              />
-              <ReactTooltip
-                id="contract-tooltip"
-                place="bottom"
-                type="dark"
-                effect="solid"
-              >
-                <p className="text-xs">
-                  This is the contract address of your round's core
-                  <br />
-                  contract.
-                </p>
-              </ReactTooltip>
-            </span>
-          </p>
-          <p className="text-sm">{props.round?.id}</p>
-        </div>
+        {props.round.tags?.includes("allo-v1") && (
+          <div className="flex flex-row justify-start">
+            <p className="flex flex-row text-sm w-1/3">
+              Contract Address:
+              <span>
+                <InformationIcon
+                  dataFor="contract-tooltip"
+                  dataTestId="contract-tooltip"
+                />
+                <ReactTooltip
+                  id="contract-tooltip"
+                  place="bottom"
+                  type="dark"
+                  effect="solid"
+                >
+                  <p className="text-xs">
+                    This is the contract address of your round's core
+                    <br />
+                    contract.
+                  </p>
+                </ReactTooltip>
+              </span>
+            </p>
+            <p className="text-sm">{props.round?.id}</p>
+          </div>
+        )}
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Payout token:</p>
           <p className="flex flex-row text-sm">
@@ -425,7 +436,7 @@ export default function FundContract(props: {
         {!props.round.payoutStrategy.isReadyForPayout ? (
           <>
             <div className="flex flex-row justify-start mt-6">
-              <p className="text-sm w-1/3">Amount in contract:</p>
+              <p className="text-sm w-1/3">Amount funded:</p>
               <p className="text-sm">
                 {amountFundedInUnits} {matchingFundPayoutToken?.name}{" "}
                 {tokenBalanceInUSD && Number(tokenBalanceInUSD) > 0 ? (

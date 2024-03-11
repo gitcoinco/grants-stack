@@ -19,7 +19,6 @@ import {
   RoundGetRound,
   RoundsQueryVariables,
   SearchBasedProjectCategory,
-  V2RoundWithRoles,
   V2RoundWithProject,
   v2Project,
   RoundForManager,
@@ -41,7 +40,6 @@ import {
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundForManager,
-  getRoundsByProgramIdAndChainId,
   getRoundsForManager,
   getRoundsQuery,
 } from "./queries";
