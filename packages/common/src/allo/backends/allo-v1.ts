@@ -44,7 +44,7 @@ import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
 import { MRC_CONTRACTS } from "../addresses/mrc";
 import { ApplicationStatus } from "data-layer";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
-import { erc20ABI } from "wagmi";
+import Erc20ABI from "../abis/erc20";
 
 function createProjectId(args: {
   chainId: number;
@@ -725,7 +725,7 @@ export class AlloV1 implements Allo {
       } else {
         const approvalTx = await sendTransaction(this.transactionSender, {
           address: args.tokenAddress,
-          abi: erc20ABI,
+          abi: Erc20ABI,
           functionName: "approve",
           args: [roundAddress, args.amount],
         });
@@ -752,7 +752,7 @@ export class AlloV1 implements Allo {
       } else {
         tx = await sendTransaction(this.transactionSender, {
           address: args.tokenAddress,
-          abi: erc20ABI,
+          abi: Erc20ABI,
           functionName: "transfer",
           args: [roundAddress, args.amount],
         });

@@ -29,7 +29,7 @@ import {
 import { PermitSignature } from "../voting";
 import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
-import { erc20ABI } from "wagmi";
+import Erc20ABI from "../abis/erc20";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -644,7 +644,7 @@ export class AlloV2 implements Allo {
       } else {
         const approvalTx = await sendTransaction(this.transactionSender, {
           address: args.tokenAddress,
-          abi: erc20ABI,
+          abi: Erc20ABI,
           functionName: "approve",
           args: [this.allo.address(), args.amount],
         });
