@@ -94,7 +94,11 @@ const _updateRound = async ({
     id = roundId as Hex;
   }
 
-  setIPFSCurrentStatus(ProgressStatus.IN_PROGRESS);
+  if (data.applicationMetadata || data.roundMetadata) {
+    setIPFSCurrentStatus(ProgressStatus.IN_PROGRESS);
+  } else {
+    setRoundUpdateStatus(ProgressStatus.IN_PROGRESS);
+  }
 
   await allo
     .editRound({

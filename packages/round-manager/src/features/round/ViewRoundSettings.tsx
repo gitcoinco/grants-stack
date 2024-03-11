@@ -13,7 +13,7 @@ import {
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { Fragment, useEffect, useState } from "react";
 import Datetime from "react-datetime";
 import {
@@ -62,6 +62,8 @@ type EditMode = {
   canEditOnlyRoundEndDate: boolean;
 };
 
+const isV2 = getConfig().allo.version === "allo-v2";
+
 const generateUpdateRoundData = (
   oldRoundData: Round,
   newRoundData: Round
@@ -69,8 +71,6 @@ const generateUpdateRoundData = (
   // create deterministic copies of the data
   const dOldRound: Round = _.cloneDeep(oldRoundData);
   const dNewRound: Round = _.cloneDeep(newRoundData);
-
-  const isV2 = getConfig().allo.version === "allo-v2";
 
   const updateRoundData: UpdateRoundParams = {};
 
@@ -178,6 +178,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
       setRollingApplicationsEnabled(true);
     }
   }, [round]);
+
+  console.log(round);
 
   const ValidationSchema = !isDirectRound(round!)
     ? RoundValidationSchema.shape({
@@ -1314,9 +1316,10 @@ function RoundApplicationPeriod(props: {
               <div className="leading-8 font-normal">
                 <div>
                   {props.editMode.canEdit &&
-                  !moment(editedRound.applicationsStartTime).isBefore(
-                    new Date()
-                  ) ? (
+                  (isV2 ||
+                    !moment(editedRound.applicationsStartTime).isBefore(
+                      new Date()
+                    )) ? (
                     <div className="col-span-6 sm:col-span-3">
                       <div
                         className={`${
@@ -1347,17 +1350,22 @@ function RoundApplicationPeriod(props: {
                               utc={true}
                               dateFormat={"YYYY/MM/DD"}
                               timeFormat={"HH:mm UTC"}
-                              isValidDate={disablePastDate}
+                              isValidDate={
+                                isV2
+                                  ? (current: Moment) => true
+                                  : disablePastDate
+                              }
                               inputProps={{
                                 id: "applicationsStartTime",
                                 placeholder: "",
                                 className: `${
                                   props.editMode.canEdit &&
-                                  !timeHasPassed(
-                                    moment(
-                                      props.editedRound.applicationsStartTime
-                                    )
-                                  )
+                                  (isV2 ||
+                                    !timeHasPassed(
+                                      moment(
+                                        props.editedRound.applicationsStartTime
+                                      )
+                                    ))
                                     ? ""
                                     : "bg-grey-50"
                                 } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
@@ -1607,7 +1615,8 @@ function RoundApplicationPeriod(props: {
           </div>
           <div className="leading-8 font-normal">
             {props.editMode.canEdit &&
-            !moment(editedRound.roundStartTime).isBefore(new Date()) ? (
+            (isV2 ||
+              !moment(editedRound.roundStartTime).isBefore(new Date())) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`${
@@ -1639,7 +1648,9 @@ function RoundApplicationPeriod(props: {
                           utc={true}
                           dateFormat={"YYYY/MM/DD"}
                           timeFormat={"HH:mm UTC"}
-                          isValidDate={disablePastDate}
+                          isValidDate={
+                            isV2 ? (current: Moment) => true : disablePastDate
+                          }
                           inputProps={{
                             id: "roundStartTime",
                             placeholder: "",
