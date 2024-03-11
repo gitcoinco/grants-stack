@@ -97,7 +97,7 @@ export default function ViewProjectDetails() {
     {
       chainId: Number(chainId as string),
       roundId,
-      applicationId: applicationId?.split("-")[1],
+      applicationId: applicationId,
     },
     dataLayer
   );
@@ -498,7 +498,7 @@ export function ProjectStats() {
     {
       chainId: Number(chainId as string),
       roundId,
-      applicationId: applicationId.split("-")[1],
+      applicationId: applicationId,
     },
     dataLayer
   );
