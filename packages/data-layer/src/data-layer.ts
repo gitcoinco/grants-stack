@@ -6,18 +6,21 @@ import shuffle from "knuth-shuffle-seeded";
 import { Address } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
-import * as legacy from "./backends/legacy";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
 import {
   Application,
+  ApplicationStatus,
   Collection,
+  GrantApplicationFormAnswer,
   OrderByRounds,
   Program,
+  Project,
   ProjectApplicationForManager,
   ProjectApplicationWithRound,
   Round,
   RoundGetRound,
   RoundsQueryVariables,
+  RoundWithApplications,
   SearchBasedProjectCategory,
   V2RoundWithProject,
   v2Project,
@@ -40,7 +43,7 @@ import {
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundForManager,
-  getRoundsForManager,
+  getRoundByIdAndChainIdWithApprovedApplications,
   getRoundsQuery,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
@@ -419,6 +422,84 @@ export class DataLayer {
     return response.rounds;
   }
 
+  async getRoundByIdAndChainIdWithApprovedApplications({
+    roundId,
+    chainId,
+  }: {
+    roundId: string;
+    chainId: number;
+  }): Promise<{ round: Round } | null> {
+    const requestVariables = {
+      roundId,
+      chainId,
+    };
+
+    const response: { rounds: RoundWithApplications[] } = await request(
+      this.gsIndexerEndpoint,
+      getRoundByIdAndChainIdWithApprovedApplications,
+      requestVariables,
+    );
+
+    if (response.rounds.length === 0) {
+      return null;
+    }
+
+    const _round = response.rounds[0] ?? [];
+
+    const projects: Project[] = _round.applications.map(
+      (application: Application) => ({
+        grantApplicationId: application.id,
+        projectRegistryId: application.projectId,
+        recipient: application.metadata.application.recipient,
+        projectMetadata: {
+          title: application.project.metadata.title,
+          description: application.project.metadata.description,
+          website: application.project.metadata.website,
+          logoImg: application.project.metadata.logoImg,
+          bannerImg: application.project.metadata.bannerImg,
+          projectTwitter: application.project.metadata.projectTwitter,
+          userGithub: application.project.metadata.userGithub,
+          projectGithub: application.project.metadata.projectGithub,
+          credentials: application.project.metadata.credentials,
+          owners: application.project.metadata.owners,
+          createdAt: application.project.metadata.createdAt,
+          lastUpdated: application.project.metadata.lastUpdated,
+        },
+        grantApplicationFormAnswers:
+          application.metadata.application.answers.map(
+            (answer: GrantApplicationFormAnswer) => ({
+              questionId: answer.questionId,
+              question: answer.question,
+              answer: answer.answer,
+              hidden: answer.hidden,
+              type: answer.type,
+            }),
+          ),
+        status: application.status as ApplicationStatus,
+        applicationIndex: Number(application.id),
+      }),
+    );
+
+    return {
+      round: {
+        id: _round.id,
+        chainId: _round.chainId,
+        applicationsStartTime: new Date(_round.applicationsStartTime),
+        applicationsEndTime: new Date(_round.applicationsEndTime),
+        roundStartTime: new Date(_round.donationsStartTime),
+        roundEndTime: new Date(_round.donationsEndTime),
+        token: _round.matchTokenAddress,
+        ownedBy: _round.ownedBy,
+        roundMetadata: _round.roundMetadata,
+        payoutStrategy: {
+          id: _round.strategyAddress,
+          strategyName: _round.strategyName,
+        },
+        approvedProjects: projects,
+      },
+    };
+  }
+
   async getApplicationsForManager(args: {
     chainId: number;
     roundId: string;
@@ -530,25 +611,6 @@ export class DataLayer {
         ),
         totalItems: filteredApplicationSummaries.length,
       },
-    };
-  }
-
-  async getLegacyRoundById({
-    roundId,
-    chainId,
-  }: {
-    roundId: string;
-    chainId: number;
-  }): Promise<{ round: Round }> {
-    const graphqlEndpoint = this.subgraphEndpointsByChainId[chainId];
-    if (!graphqlEndpoint) {
-      throw new Error(`No Graph endpoint defined for chain id ${chainId}`);
-    }
-    return {
-      round: await legacy.getRoundById(
-        { roundId, chainId },
-        { graphqlEndpoint, ipfsGateway: this.ipfsGateway },
-      ),
     };
   }
 

@@ -11,6 +11,7 @@ import { Project, Round } from "../../api/types";
 import { votingTokens } from "../../api/utils";
 import { vi } from "vitest";
 import { parseUnits, zeroAddress } from "viem";
+import { DataLayer } from "data-layer";
 
 fetchMock.mockIf(/summary/, JSON.stringify({}));
 
@@ -78,6 +79,12 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
+const mockDataLayer = {
+  getRoundByIdAndChainIdWithApprovedApplications: vi.fn().mockResolvedValue({
+    rounds: [],
+  }),
+} as unknown as DataLayer;
+
 describe("<ViewRound /> in case of before the application start date", () => {
   let stubRound: Round;
 
@@ -135,6 +142,7 @@ describe("<ViewRound /> in case of during the application period", () => {
   it("should display 404 when round is not found", () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [], isLoading: false },
+      dataLayer: mockDataLayer,
     });
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
@@ -224,6 +232,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
   it("should display 404 when round is not found", () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [], isLoading: false },
+      dataLayer: mockDataLayer,
     });
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
@@ -245,7 +254,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
   });
 
   it("displays a loading spinner if loading", () => {
-    renderWithContext(<ViewRound />, { roundState: { isLoading: true } });
+    renderWithContext(<ViewRound />, {
+      roundState: { isLoading: true },
+      dataLayer: mockDataLayer,
+    });
 
     screen.getByTestId("loading-spinner");
   });
