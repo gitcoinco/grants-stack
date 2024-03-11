@@ -24,69 +24,6 @@ While there is no central backend application, all three dApps rely on various e
 5. **[Pinata](https://www.pinata.cloud/)**: Pinata is used to upload and pin files to IPFS, ensuring the availability of data.
 
 
-Depending on the configuration in your local `.env` file, you can choose to use these services directly or opt for a local version of them.
-
-For faster development and a more responsive feedback loop, we recommend setting up a local development environment instead of relying on testnets
-and external services directly.
-We have provided a Docker Compose configuration that allows you to run local instances of the necessary services.
-
-⚠️ Please note that the local development environment is still a work in progress,
-and not all functionality may be available locally.
-We are continuously improving it to make your development experience as seamless as possible.
-
-
-# Dependencies
-
-* node
-* docker
-
-### Setup your wallet
-
-All the contracts and test data in the local chains are owned by accounts derived from the same test mnemonic phrase.
-To avoid confusion with your real accounts, you can create a new profile in your browser, install Metamask or any other wallets
-that manages [hierarchical-deterministic wallets](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki), and import the following test mnemonic to be able to derive all the used accounts:
-
-```
-test test test test test test test test test test test junk
-```
-
-Contracts are deployed with the default account at derivation path `m/44'/60'/0'/0/0`.
-The same accounts owns some ready to use data, like projects, rounds, etc.
-
-⚠️⚠️⚠️
-When you start your local services, the main account's nonce gets reset,
-so you should reset it manually in your wallet to make sure you don't accidentally send transactions with the wrong nonce.
-
-If you use metamask keep your expanded view open:
-
-`Menu -> Expand view`
-
-And reset the wallet every time you restart the local chains:
-
-`Menu -> Settings -> Advance -> CLear activity tab data`
-⚠️⚠️⚠️
-
-### Run local services
-
-Clone the repo:
-
-```sh
-git clone git@github.com:gitcoinco/grants-stack.git
-cd grants-stack
-```
-
-Run the services with `docker-compose` and follow the logs:
-
-```sh
-docker-compose up -d && docker-compose logs -f
-```
-
-To kill the containers run:
-
-```sh
-docker-compose kill
-```
-
 ### Setup root project dependencies
 
 ```sh
@@ -94,11 +31,38 @@ cd grants-stack
 pnpm install
 ```
 
-### Setup and run Builder
+### Setup Builder
 
 ```sh
 cd packages/builder
 cp .env.example .env
+```
+
+Create a WalletConnect application needed for RainbowKit: https://www.rainbowkit.com/docs/installation#configure
+Set the WalletConnect applicationId in the .env file:
+
+```
+REACT_APP_WALLETCONNECT_PROJECT_ID=[YOUR APPLICATION ID]
+```
+
+Set your Alchemy API Key:
+
+```
+REACT_APP_ALCHEMY_ID=[YOUR ALCHEMY API KEY]
+```
+
+The default configuration loads data from the production indexer.
+You can point your dapps to a local indexer changing the following variable:
+
+```
+REACT_APP_INDEXER_V2_API_URL=http://localhost:PORT_NUMBER
+```
+
+### Run Builder
+
+Inside `packages/builder` run:
+
+```
 pnpm start
 ```
 
@@ -172,3 +136,74 @@ formatting and pre-push checks, which should help you catch issues early, before
 Before submitting a PR for review, ensure that it passes all the checks of the PR checklist. Also consider doing a self-review of the changes to reduce back-and-forth.
 
 When the CI is green, PR checklist is ticked off and the PR is in good shape, submit it for review by clicking the "Ready for review" button.
+
+## Local Development Environment
+
+Depending on the configuration in your local `.env` file, you can choose to use these services directly or opt for a local version of them.
+
+For faster development and a more responsive feedback loop, we recommend setting up a local development environment instead of relying on testnets
+and external services directly.
+We have provided a Docker Compose configuration that allows you to run local instances of the necessary services.
+
+⚠️ Please note that the local development environment is still a work in progress,
+and not all functionality are available locally.
+We are continuously improving it to make your development experience as seamless as possible.
+
+### Dependencies
+
+* node
+* docker
+
+### Setup your wallet
+
+All the contracts and test data in the local chains are owned by accounts derived from the same test mnemonic phrase.
+To avoid confusion with your real accounts, you can create a new profile in your browser, install Metamask or any other wallets
+that manages [hierarchical-deterministic wallets](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki), and import the following test mnemonic to be able to derive all the used accounts:
+
+```
+test test test test test test test test test test test junk
+```
+
+Contracts are deployed with the default account at derivation path `m/44'/60'/0'/0/0`.
+The same accounts owns some ready to use data, like projects, rounds, etc.
+
+⚠️⚠️⚠️
+When you start your local services, the main account's nonce gets reset,
+so you should reset it manually in your wallet to make sure you don't accidentally send transactions with the wrong nonce.
+
+If you use metamask keep your expanded view open:
+
+`Menu -> Expand view`
+
+And reset the wallet every time you restart the local chains:
+
+`Menu -> Settings -> Advance -> CLear activity tab data`
+⚠️⚠️⚠️
+
+### Run local services
+
+Clone the repo:
+
+```sh
+git clone git@github.com:gitcoinco/grants-stack.git
+cd grants-stack
+pnpm i
+```
+
+Run the services with `docker-compose` and follow the logs:
+
+```sh
+./scripts/dev up
+```
+
+Stop the services with:
+
+```sh
+./scripts/dev down
+```
+
+Populates the local chains with contracts and test data for Allo V1 and V2:
+
+```sh
+./scripts/dev setup
+```

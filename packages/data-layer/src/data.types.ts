@@ -240,6 +240,14 @@ export type ProjectApplicationMetadata = {
 };
 
 /**
+ * The round type with applications for v1
+ **/
+
+export type RoundWithApplications = Omit<RoundGetRound, "applications"> & {
+  applications: Application[];
+};
+
+/**
  * The project application type for v2
  *
  */
@@ -316,6 +324,14 @@ export type V2RoundWithProject = V2RoundWithRoles & {
   };
 };
 
+export type RoundForManager = V2RoundWithProject & {
+  tags: string[];
+  matchAmount: string;
+  matchAmountInUsd: number;
+  fundedAmount: string;
+  fundedAmountInUsd: number;
+};
+
 export type ProjectApplicationWithProject = {
   id: string;
   name: string;
@@ -369,17 +385,24 @@ export type Eligibility = {
   requirements?: Requirement[];
 };
 
+/**
+ * Legacy round type
+ */
 export interface Round {
   /**
    * The on-chain unique round ID
    */
   id?: string;
   /**
+   * The chain ID of the network
+   */
+  chainId?: number;
+  /**
    * Metadata of the Round to be stored off-chain
    */
   roundMetadata?: {
     name: string;
-    roundType: RoundVisibilityType;
+    roundType?: RoundVisibilityType;
     eligibility: Eligibility;
     programContractAddress: string;
     quadraticFundingConfig?: {
@@ -410,7 +433,7 @@ export interface Round {
   /**
    * Voting contract address
    */
-  votingStrategy: string;
+  votingStrategy?: string;
   /**
    * Unix timestamp of the start of the round
    */
@@ -435,7 +458,7 @@ export interface Round {
   /**
    * Contract address of the program to which the round belongs
    */
-  ownedBy: string;
+  ownedBy?: string;
   /**
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
@@ -537,6 +560,7 @@ export type RoundGetRound = {
   id: string;
   tags: string[];
   chainId: number;
+  ownedBy?: string;
   createdAtBlock: number;
   roundMetadataCid: string;
   roundMetadata: RoundMetadataGetRound;
@@ -554,7 +578,7 @@ export type RoundGetRound = {
 };
 
 export interface RoundMetadataGetRound {
-  name?: string;
+  name: string;
   support?: Support;
   eligibility: Eligibility;
   feesAddress?: string;
@@ -562,7 +586,7 @@ export interface RoundMetadataGetRound {
   feesPercentage?: number;
   programContractAddress: string;
   quadraticFundingConfig?: QuadraticFundingConfig;
-  roundType?: "public" | "private";
+  roundType?: RoundVisibilityType;
 }
 
 export interface Support {

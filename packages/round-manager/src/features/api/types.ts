@@ -256,6 +256,12 @@ export interface Round {
    * CreatedByAddress
    */
   createdByAddress?: string;
+
+  tags?: string[];
+  fundedAmount?: bigint;
+  fundedAmountInUsd?: number;
+  matchAmount?: bigint;
+  matchAmountInUsd?: number;
 }
 
 export type MatchingStatsData = {
@@ -350,6 +356,8 @@ export interface GrantApplication {
   status: ProjectStatus; // handle round status 0,1,2,3
   inReview?: boolean; // handle payoutStatus for DirectStrategy
 
+  // FIXME: this is needed in useApplciationsByRound.tsx because it's mandatory
+  // in the direct payout flow. Why is it optional? can we set it as mandatory?
   projectId?: string;
 
   payoutStrategy?: {

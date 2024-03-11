@@ -46,7 +46,7 @@ describe("getRoundById", () => {
           {
             id: expectedRoundData.id!,
             program: {
-              id: expectedRoundData.ownedBy,
+              id: expectedRoundData.ownedBy!,
             },
             roundMetaPtr: expectedRoundData.store!,
             applicationMetaPtr: expectedRoundData.applicationStore!,
@@ -67,7 +67,7 @@ describe("getRoundById", () => {
               id: "some-id",
               strategyName: "allov1.QF",
             },
-            votingStrategy: expectedRoundData.votingStrategy,
+            votingStrategy: expectedRoundData.votingStrategy ?? "",
             projectsMetaPtr: null,
             projects: [],
           },

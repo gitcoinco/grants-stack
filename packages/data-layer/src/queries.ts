@@ -479,13 +479,70 @@ export const getRoundWithApplications = gql`
   }
 `;
 
-export const getRoundsByProgramIdAndChainId = gql`
-  query getRoundsByProgramIdAndChainId($chainId: Int!, $programId: String!) {
+const getRoundForManagerFields = `
+  id
+  chainId
+  applicationsStartTime
+  applicationsEndTime
+  donationsStartTime
+  donationsEndTime
+  matchTokenAddress
+  roundMetadata
+  roundMetadataCid
+  applicationMetadata
+  applicationMetadataCid
+  strategyAddress
+  strategyName
+  isReadyForPayout
+  projectId
+  matchAmount
+  matchAmountInUsd
+  createdByAddress
+  fundedAmount
+  fundedAmountInUsd
+  roles {
+    role
+    address
+    createdAtBlock
+  }
+  tags
+  project {
+    id
+    name
+    metadata
+  }
+`;
+
+export const getRoundForManager = gql`
+  query getRoundForManager($roundId: String!, $chainId: Int!) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      ${getRoundForManagerFields}
+    }
+  }
+`;
+
+export const getRoundsForManager = gql`
+  query getRoundsForManager($chainId: Int!, $programId: String!) {
     rounds(
       filter: {
         chainId: { equalTo: $chainId }
         projectId: { equalTo: $programId }
       }
+    ) {
+      ${getRoundForManagerFields}
+    }
+  }
+`;
+
+export const getRoundByIdAndChainIdWithApprovedApplications = gql`
+  query getRoundByIdAndChainIdWithApprovedApplications(
+    $roundId: String!
+    $chainId: Int!
+  ) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
     ) {
       id
       chainId
@@ -498,14 +555,20 @@ export const getRoundsByProgramIdAndChainId = gql`
       roundMetadataCid
       applicationMetadata
       applicationMetadataCid
+      strategyId
+      projectId
       strategyAddress
       strategyName
-      createdByAddress
-      projectId
-      roles {
-        role
-        address
-        createdAtBlock
+      isReadyForPayout
+      applications(filter: { status: { equalTo: APPROVED } }) {
+        id
+        projectId
+        status
+        metadata
+        project {
+          id
+          metadata
+        }
       }
     }
   }
