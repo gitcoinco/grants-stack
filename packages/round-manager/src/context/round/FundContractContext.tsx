@@ -1,5 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { ethers, Signer } from "ethers";
+import { ethers } from "ethers";
 import React, {
   createContext,
   ReactNode,
@@ -7,13 +7,11 @@ import React, {
   useContext,
   useState,
 } from "react";
-import { useSigner } from "wagmi";
-import { fundRoundContract } from "../../features/api/application";
-import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 
 import { ProgressStatus } from "../../features/api/types";
 
 import { PayoutToken } from "../../features/api/payoutTokens";
+import { Allo } from "common";
 
 export interface FundContractState {
   tokenApprovalStatus: ProgressStatus;
@@ -29,18 +27,15 @@ export interface FundContractState {
 }
 
 export type FundContractParams = {
+  allo: Allo;
   roundId: string;
   fundAmount: number;
   payoutToken: PayoutToken;
 };
 
-interface SubmitFundParams {
-  signer: Signer;
+type SubmitFundParams = FundContractParams & {
   context: FundContractState;
-  roundId: string;
-  payoutToken: PayoutToken;
-  fundAmount: number;
-}
+};
 
 export const FundContractProvider = ({ children }: { children: ReactNode }) => {
   const [tokenApprovalStatus, setTokenApprovalStatus] = useState(
@@ -112,12 +107,9 @@ export const useFundContract = () => {
     );
   }
 
-  const { data: signer } = useSigner();
-
   const handleFundContract = async (params: FundContractParams) => {
     return _fundContract({
       ...params,
-      signer: signer as Signer,
       context,
     });
   };
@@ -148,7 +140,7 @@ function resetToInitialState(context: FundContractState) {
 }
 
 async function _fundContract({
-  signer,
+  allo,
   context,
   roundId,
   fundAmount,
@@ -157,119 +149,38 @@ async function _fundContract({
   resetToInitialState(context);
 
   try {
-    // Token Approval
-    await approveTokenForFunding(
-      signer,
-      roundId,
-      payoutToken,
-      fundAmount,
-      context
-    );
+    const amount = ethers.utils
+      .parseUnits(fundAmount.toString(), payoutToken.decimal)
+      .toBigInt();
 
-    // Invoke fund
-    await fund(signer, roundId, payoutToken, fundAmount, context);
+    await allo
+      .fundRound({
+        roundId,
+        tokenAddress: payoutToken.address,
+        amount,
+      })
+      .on("tokenApprovalStatus", (tx) => {
+        if (tx.type === "error") {
+          context.setTokenApprovalStatus(ProgressStatus.IS_ERROR);
+        } else {
+          context.setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
+          context.setFundStatus(ProgressStatus.IN_PROGRESS);
+        }
+      })
+      .on("transactionStatus", (tx) => {
+        if (tx.type === "error") {
+          context.setFundStatus(ProgressStatus.IS_ERROR);
+        } else {
+          context.setFundStatus(ProgressStatus.IS_SUCCESS);
+          context.setTxHash(tx.value.transactionHash);
+          context.setTxBlockNumber(Number(tx.value.blockNumber));
 
-    // Wait for indexing on subgraph
-    await waitForSubgraphToUpdate(signer, context);
+          context.setIndexingStatus(ProgressStatus.IN_PROGRESS);
+        }
+      })
+      .execute();
   } catch (error) {
     datadogLogs.logger.error(`error: _fundContract - ${error}`);
     console.error("Error while funding contract: ", error);
-  }
-}
-
-async function approveTokenForFunding(
-  signerOrProvider: Signer,
-  roundId: string,
-  token: PayoutToken,
-  amount: number,
-  context: FundContractState
-): Promise<void> {
-  const { setTokenApprovalStatus } = context;
-
-  try {
-    setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
-  } catch (error) {
-    datadogLogs.logger.error(
-      `error: approveTokenForFunding - ${error}. Data - ${amount} ${token.name}`
-    );
-    console.error(
-      `approveTokenForFunding - amount ${amount} ${token.name}`,
-      error
-    );
-    setTokenApprovalStatus(ProgressStatus.IS_ERROR);
-    throw error;
-  }
-}
-
-async function fund(
-  signerOrProvider: Signer,
-  roundId: string,
-  token: PayoutToken,
-  fundAmount: number,
-  context: FundContractState
-): Promise<void> {
-  const { setFundStatus, setTxHash, setTxBlockNumber } = context;
-
-  try {
-    setFundStatus(ProgressStatus.IN_PROGRESS);
-
-    const amountInUnits = ethers.utils.parseUnits(
-      fundAmount.toString(),
-      token.decimal
-    );
-
-    const { txBlockNumber, txHash } = await fundRoundContract(
-      roundId,
-      signerOrProvider,
-      token,
-      amountInUnits
-    );
-
-    setFundStatus(ProgressStatus.IS_SUCCESS);
-    setTxHash(txHash);
-    setTxBlockNumber(txBlockNumber);
-  } catch (error) {
-    datadogLogs.logger.error(
-      `error: fundRoundContract - ${error}. Data - ${fund.toString()}`
-    );
-    console.error(
-      `fundRoundContract - roundId ${roundId}, token ${token.name}`,
-      error
-    );
-    setFundStatus(ProgressStatus.IS_ERROR);
-    throw error;
-  }
-}
-
-async function waitForSubgraphToUpdate(
-  signerOrProvider: Signer,
-  context: FundContractState
-) {
-  const { setIndexingStatus, txBlockNumber } = context;
-
-  try {
-    datadogLogs.logger.error(
-      `waitForSubgraphToUpdate: txnBlockNumber - ${txBlockNumber}`
-    );
-
-    setIndexingStatus(ProgressStatus.IN_PROGRESS);
-
-    const chainId = await signerOrProvider?.getChainId();
-
-    await waitForSubgraphSyncTo(chainId, txBlockNumber);
-
-    setIndexingStatus(ProgressStatus.IS_SUCCESS);
-  } catch (error) {
-    datadogLogs.logger.error(
-      `error: waitForSubgraphToUpdate - ${error}. Data - ${txBlockNumber}`
-    );
-
-    console.error(
-      `waitForSubgraphToUpdate. TxnBlockNumber - ${txBlockNumber}`,
-      error
-    );
-
-    setIndexingStatus(ProgressStatus.IS_ERROR);
-    throw error;
   }
 }

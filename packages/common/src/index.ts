@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Network, Web3Provider } from "@ethersproject/providers";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
 import { useOutletContext } from "react-router-dom";
 import useSWR from "swr";

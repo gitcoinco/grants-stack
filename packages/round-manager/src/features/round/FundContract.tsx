@@ -14,7 +14,7 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { classNames, useTokenPrice } from "common";
+import { classNames, useAllo, useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
 import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 import { formatUnits } from "viem";
@@ -145,6 +145,8 @@ export default function FundContract(props: {
   const { chain } = useNetwork() || {};
   const chainId = chain?.id ?? 5;
 
+  const allo = useAllo();
+
   const {
     fundContract,
     tokenApprovalStatus,
@@ -204,7 +206,7 @@ export default function FundContract(props: {
         t.chainId === props.round?.chainId
     )[0];
 
-  const { isLoading, error, data } = useContractAmountFunded({
+  const { isLoading, data } = useContractAmountFunded({
     round: props.round,
     payoutToken: matchingFundPayoutToken,
   });
@@ -602,19 +604,25 @@ export default function FundContract(props: {
   }
 
   async function handleSubmitFund() {
+    if (
+      props.roundId === undefined ||
+      allo === null ||
+      matchingFundPayoutToken === undefined
+    ) {
+      return;
+    }
     try {
       setTimeout(() => {
         setOpenProgressModal(true);
       }, errorModalDelayMs);
 
       await fundContract({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        roundId: props.roundId!,
+        allo,
+        roundId: props.roundId,
         fundAmount: Number(
-          parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+          parseFloat(amountToFund).toFixed(matchingFundPayoutToken.decimal)
         ),
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        payoutToken: matchingFundPayoutToken!,
+        payoutToken: matchingFundPayoutToken,
       });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {

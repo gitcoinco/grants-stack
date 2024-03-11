@@ -124,9 +124,10 @@ export class AlloV2 implements Allo {
         return ipfsResult;
       }
 
-      const profileNonce: number = args.nonce
-        ? Number(args.nonce)
-        : Math.floor(Math.random() * 1000000) + 1000000;
+      const profileNonce = args.nonce
+        ? args.nonce
+        : BigInt(Math.floor(Math.random() * 1000000) + 1000000);
+
       const senderAddress = await this.transactionSender.address();
 
       const createProfileData: CreateProfileArgs = {
@@ -372,12 +373,12 @@ export class AlloV2 implements Allo {
         args.roundData.roundMetadataWithProgramContractAddress
           ?.programContractAddress;
 
-      if (!profileId) {
+      if (!profileId || !profileId.startsWith("0x")) {
         throw new Error("Program contract address is required");
       }
 
       const createPoolArgs: CreatePoolArgs = {
-        profileId,
+        profileId: profileId as Hex,
         strategy: STRATEGY_ADDRESSES[args.roundData.roundCategory],
         initStrategyData: initStrategyDataEncoded,
         token,
@@ -479,7 +480,7 @@ export class AlloV2 implements Allo {
           const strategyInstance = new DonationVotingMerkleDistributionStrategy(
             {
               chain: this.chainId,
-              poolId: args.roundId,
+              poolId: BigInt(args.roundId),
             }
           );
 
@@ -497,7 +498,7 @@ export class AlloV2 implements Allo {
         case RoundCategory.Direct: {
           const strategyInstance = new DirectGrantsStrategy({
             chain: this.chainId,
-            poolId: args.roundId,
+            poolId: BigInt(args.roundId),
           });
 
           const answers = metadata.application.answers;
@@ -647,6 +648,10 @@ export class AlloV2 implements Allo {
           functionName: "approve",
           args: [this.allo.address(), args.amount],
         });
+
+        if (approvalTx.type === "error") {
+          return approvalTx;
+        }
 
         try {
           const receipt = await this.transactionSender.wait(approvalTx.value);

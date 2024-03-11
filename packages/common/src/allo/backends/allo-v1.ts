@@ -730,6 +730,10 @@ export class AlloV1 implements Allo {
           args: [roundAddress, args.amount],
         });
 
+        if(approvalTx.type === "error") {
+          return approvalTx;
+        }
+
         try {
           const receipt = await this.transactionSender.wait(approvalTx.value);
           emit("tokenApprovalStatus", success(receipt));
