@@ -1,12 +1,11 @@
 /* eslint-disable no-nested-ternary */
 import { ChainId } from "common";
 import { getConfig } from "common/src/config";
-import { useDataLayer } from "data-layer";
+import { RoundCategory, useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
-import { RoundCategory } from "common/dist/types";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";

@@ -6,7 +6,10 @@ import {
   LockOpenIcon,
 } from "@heroicons/react/outline";
 import { PencilIcon, PlusSmIcon, XIcon } from "@heroicons/react/solid";
+import { useAllo } from "common";
 import { Button } from "common/src/styles";
+import { RoundCategory } from "data-layer";
+import _ from "lodash";
 import { useContext, useEffect, useState } from "react";
 import {
   DeepRequired,
@@ -15,7 +18,9 @@ import {
   useForm,
 } from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
+import { getAddress } from "viem";
 import { errorModalDelayMs } from "../../constants";
+import { useCreateRoundStore } from "../../stores/createRoundStore";
 import {
   ApplicationMetadata,
   EditQuestion,
@@ -23,14 +28,14 @@ import {
   ProgressStatus,
   ProjectRequirements,
   Round,
-  RoundCategory,
 } from "../api/types";
 import {
-  generateApplicationSchema,
   SchemaQuestion,
+  generateApplicationSchema,
   typeToText,
 } from "../api/utils";
 import AddQuestionModal from "../common/AddQuestionModal";
+import { useWallet } from "../common/Auth";
 import BaseSwitch from "../common/BaseSwitch";
 import ErrorModal from "../common/ErrorModal";
 import { FormStepper as FS } from "../common/FormStepper";
@@ -38,11 +43,6 @@ import { FormContext } from "../common/FormWizard";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
-import _ from "lodash";
-import { useCreateRoundStore } from "../../stores/createRoundStore";
-import { useAllo } from "common";
-import { getAddress } from "viem";
-import { useWallet } from "../common/Auth";
 
 export const initialQuestionsQF: SchemaQuestion[] = [
   {

@@ -5,14 +5,14 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { useWallet } from "../../common/Auth";
-import CreateProgramPage from "../CreateProgramPage";
-import { MemoryRouter } from "react-router-dom";
-import { errorModalDelayMs } from "../../../constants";
 import { AlloOperation, useAllo } from "common";
 import { error } from "common/dist/allo/common";
-import { zeroAddress } from "viem";
 import { success } from "common/src/allo/common";
+import { MemoryRouter } from "react-router-dom";
+import { zeroAddress } from "viem";
+import { errorModalDelayMs } from "../../../constants";
+import { useWallet } from "../../common/Auth";
+import CreateProgramPage from "../CreateProgramPage";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
@@ -26,6 +26,7 @@ jest.mock("../../../constants", () => ({
 }));
 
 jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
   useDataLayer: () => ({
     getProgramsByUser: jest.fn(),
   }),

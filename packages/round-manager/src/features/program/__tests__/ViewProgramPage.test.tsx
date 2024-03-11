@@ -1,19 +1,19 @@
-import ViewProgram from "../ViewProgramPage";
+import { faker } from "@faker-js/faker";
 import { render, screen } from "@testing-library/react";
-import { useWallet } from "../../common/Auth";
+import {
+  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
+  formatUTCDateAsISOString,
+} from "common";
 import {
   makeProgramData,
   makeRoundData,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { faker } from "@faker-js/faker";
 import { Program, ProgressStatus } from "../../api/types";
-import { formatUTCDateAsISOString } from "common";
-import {
-  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
-} from "common";
+import { useWallet } from "../../common/Auth";
+import ViewProgram from "../ViewProgramPage";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });
@@ -30,8 +30,10 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
   useDataLayer: () => ({
     getProgramsByUser: jest.fn(),
+    fetchRounds: jest.fn(),
   }),
 }));
 

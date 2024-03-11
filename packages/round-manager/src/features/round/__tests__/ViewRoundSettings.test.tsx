@@ -67,7 +67,10 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("data-layer", () => ({
-  useDataLayer: () => ({}),
+  ...jest.requireActual("data-layer"),
+  useDataLayer: () => ({
+    useApplicationsByRoundId: () => {},
+  }),
 }));
 
 const mockRoundData: Round = makeRoundData();

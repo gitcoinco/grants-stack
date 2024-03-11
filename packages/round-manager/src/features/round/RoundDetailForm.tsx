@@ -22,9 +22,10 @@ import {
 } from "react-hook-form";
 
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
+import { RoundCategory } from "data-layer";
 import ReactTooltip from "react-tooltip";
 import * as yup from "yup";
-import { Program, Round, RoundCategory } from "../api/types";
+import { Program, Round } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
