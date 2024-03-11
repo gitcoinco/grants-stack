@@ -261,6 +261,12 @@ export interface Round {
    * CreatedByAddress
    */
   createdByAddress?: string;
+
+  tags?: string[];
+  fundedAmount?: bigint;
+  fundedAmountInUsd?: number;
+  matchAmount?: bigint;
+  matchAmountInUsd?: number;
 }
 
 export type MatchingStatsData = {

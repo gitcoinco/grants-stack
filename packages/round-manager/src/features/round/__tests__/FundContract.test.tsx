@@ -85,7 +85,7 @@ describe("fund contract tab", () => {
     }));
 
     (useBalance as jest.Mock).mockImplementation(() => ({
-      data: { formatted: "0", value: "0" },
+      data: { formatted: "0", value: { toBigInt: () => 0n } },
       error: null,
       loading: false,
     }));
@@ -113,13 +113,13 @@ describe("fund contract tab", () => {
     );
     const fundContractTab = screen.getByTestId("fund-contract");
     fireEvent.click(fundContractTab);
-    expect(screen.getByText("Contract Details")).toBeInTheDocument();
+    expect(screen.getByText("Details")).toBeInTheDocument();
     expect(screen.getByText("Contract Address:")).toBeInTheDocument();
     expect(screen.getByText("Payout token:")).toBeInTheDocument();
     expect(screen.getByText("Matching pool size:")).toBeInTheDocument();
     expect(screen.getByText("Protocol fee:")).toBeInTheDocument();
     expect(screen.getByText("Round fee:")).toBeInTheDocument();
-    expect(screen.getByText("Amount in contract:")).toBeInTheDocument();
+    expect(screen.getByText("Amount funded:")).toBeInTheDocument();
     expect(screen.getByTestId("fund-contract-btn")).toBeInTheDocument();
     expect(screen.getByTestId("view-contract-btn")).toBeInTheDocument();
   });

@@ -186,7 +186,7 @@ export default function ViewRoundPage() {
                                 className="mt-0.5"
                                 data-testid="fund-contract"
                               >
-                                Fund Contract
+                                Fund Round
                               </span>
                             </div>
                           )}

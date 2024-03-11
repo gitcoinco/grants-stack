@@ -135,6 +135,20 @@ export interface Allo {
       indexingStatus: Result<void>;
     }
   >;
+
+  fundRound: (args: {
+    tokenAddress: Address;
+    roundId: string;
+    amount: bigint;
+  }) => AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
 }
 
 export { AlloOperation };

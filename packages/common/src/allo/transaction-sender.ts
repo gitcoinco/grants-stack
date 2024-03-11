@@ -19,8 +19,8 @@ import { error, Result, success } from "./common";
 
 export interface TransactionData {
   to: Hex;
-  data: Hex;
-  value: bigint;
+  data?: Hex;
+  value?: bigint;
 }
 
 export interface TransactionReceipt {
@@ -257,18 +257,34 @@ export async function sendTransaction<
   TFunctionName extends string,
 >(
   sender: TransactionSender,
-  args: EncodeFunctionDataParameters<TAbi, TFunctionName> & {
-    address: Address;
-    value?: bigint;
-  }
+  args:
+    | (EncodeFunctionDataParameters<TAbi, TFunctionName> & {
+        address: Address;
+      })
+    | { address: Address; value: bigint }
+    | { address: Address; data: Hex }
+    | { address: Address; value: bigint; data: Hex }
 ): Promise<Result<Hex>> {
   try {
-    const data = encodeFunctionData(args);
+    let data;
+    let value;
+
+    if ("value" in args) {
+      value = args.value;
+    }
+
+    if ("data" in args) {
+      data = args.data;
+    }
+
+    if ("functionName" in args) {
+      data = encodeFunctionData(args);
+    }
 
     const tx = await sender.send({
       to: args.address,
       data: data,
-      value: args.value ?? 0n,
+      value: value,
     });
 
     return success(tx);
