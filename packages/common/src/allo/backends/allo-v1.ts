@@ -44,10 +44,6 @@ import {
   TransactionSender,
 } from "../transaction-sender";
 import { getPermitType, PermitSignature } from "../voting";
-import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
-import { MRC_CONTRACTS } from "../addresses/mrc";
-import { ApplicationStatus } from "data-layer";
-import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import Erc20ABI from "../abis/erc20";
 
 function createProjectId(args: {

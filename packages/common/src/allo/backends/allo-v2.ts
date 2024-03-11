@@ -29,8 +29,6 @@ import {
   sendTransaction,
 } from "../transaction-sender";
 import { PermitSignature } from "../voting";
-import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
-import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import Erc20ABI from "../abis/erc20";
 
 const STRATEGY_ADDRESSES = {
