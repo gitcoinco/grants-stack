@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom";
 import { ChainId } from "common/src/chain-ids";
 import {
-  ProjectApplicationMetadata,
   ApplicationStatus,
+  ProjectApplicationMetadata,
   RoundVisibilityType,
 } from "data-layer";
 import {
@@ -13,6 +13,7 @@ import {
 } from "../../reducers/projects";
 import { addressFrom } from "../../utils/test_utils";
 
+// Note: these tests are only testing QuadraticFunding RoundCategory type
 describe("projects reducer", () => {
   let state: ProjectsState;
 
@@ -52,7 +53,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 1",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
         ],
         "2": [
@@ -83,7 +88,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 2",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
         ],
       },
@@ -123,7 +132,11 @@ describe("projects reducer", () => {
               },
             },
             name: "Round 1",
+            strategyName: "allov1.QF",
           },
+          totalDonationsCount: 0,
+          totalAmountDonatedInUsd: 0,
+          uniqueDonorsCount: 0,
         },
       ],
     });
@@ -161,7 +174,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 1",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
         ],
       },
@@ -198,7 +215,11 @@ describe("projects reducer", () => {
               },
             },
             name: "Round 2",
+            strategyName: "allov1.QF",
           },
+          totalDonationsCount: 0,
+          totalAmountDonatedInUsd: 0,
+          uniqueDonorsCount: 0,
         },
       ],
     });
@@ -232,7 +253,11 @@ describe("projects reducer", () => {
               },
             },
             name: "Round 1",
+            strategyName: "allov1.QF",
           },
+          totalDonationsCount: 0,
+          totalAmountDonatedInUsd: 0,
+          uniqueDonorsCount: 0,
         },
       ],
       "2": [
@@ -263,7 +288,11 @@ describe("projects reducer", () => {
               },
             },
             name: "Round 2",
+            strategyName: "allov1.QF",
           },
+          totalDonationsCount: 0,
+          totalAmountDonatedInUsd: 0,
+          uniqueDonorsCount: 0,
         },
       ],
     });
@@ -311,7 +340,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 1",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
         ],
         "2": [
@@ -342,7 +375,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 1",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
           {
             roundId: "0x2",
@@ -371,7 +408,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 2",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
           {
             roundId: "0x3",
@@ -400,7 +441,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 3",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
           {
             roundId: "0x4",
@@ -429,7 +474,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 4",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
         ],
         "3": [
@@ -460,7 +509,11 @@ describe("projects reducer", () => {
                 },
               },
               name: "Round 3",
+              strategyName: "allov1.QF",
             },
+            totalDonationsCount: 0,
+            totalAmountDonatedInUsd: 0,
+            uniqueDonorsCount: 0,
           },
         ],
       },
@@ -500,7 +553,11 @@ describe("projects reducer", () => {
           },
         },
         name: "Round 3",
+        strategyName: "allov1.QF",
       },
+      totalDonationsCount: 0,
+      totalAmountDonatedInUsd: 0,
+      uniqueDonorsCount: 0,
     });
   });
 

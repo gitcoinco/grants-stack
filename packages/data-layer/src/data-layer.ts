@@ -34,9 +34,10 @@ import {
 } from "./openapi-search-client/index";
 import {
   getApplication,
-  getApplicationsByProjectId,
+  getApplicationsByProjectIds,
   getApplicationsByRoundIdAndProjectIds,
   getApplicationsForManager,
+  getLegacyProjectId,
   getProgramById,
   getProgramsByUserAndTag,
   getProjectById,
@@ -250,6 +251,22 @@ export class DataLayer {
     return { project };
   }
 
+  /**
+   * Gets a legacy project ID by its Allo v2 ID.
+   * @param projectId - the Allo v2 ID of the project.
+   * @returns string | null
+   */
+  async getLegacyProjectId({
+    projectId,
+  }: {
+    projectId: string;
+  }): Promise<string | null> {
+    const response: { legacyProjects: { v1ProjectId: string }[] } =
+      await request(this.gsIndexerEndpoint, getLegacyProjectId, { projectId });
+
+    return response.legacyProjects[0]?.v1ProjectId ?? null;
+  }
+
   // getProjectsByAddress
   /**
    * getProjectsByAddress() returns a list of projects by address.
@@ -286,26 +303,26 @@ export class DataLayer {
   }
 
   /**
-   * getApplicationsByProjectId() returns a list of projects by address.
-   * @param projectId
+   * getApplicationsByProjectIds() returns a list of projects by address.
+   * @param projectIds
    * @param chainIds
    */
-  async getApplicationsByProjectId({
-    projectId,
+  async getApplicationsByProjectIds({
+    projectIds,
     chainIds,
   }: {
-    projectId: string;
+    projectIds: string[];
     chainIds: number[];
   }): Promise<ProjectApplicationWithRound[]> {
     const requestVariables = {
-      projectId: projectId,
+      projectIds: projectIds,
       chainIds: chainIds,
     };
 
     const response: { applications: ProjectApplicationWithRound[] } =
       await request(
         this.gsIndexerEndpoint,
-        getApplicationsByProjectId,
+        getApplicationsByProjectIds,
         requestVariables,
       );
 

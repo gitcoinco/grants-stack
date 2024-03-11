@@ -1,10 +1,18 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Address } from "viem";
 import { RoundApplicationMetadata } from "./roundApplication.types";
-// TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
-// avoid further spaghetti dependencies. They should probably be relocated here.
-export type RoundPayoutType = "allov1.Direct" | "allov1.QF";
+export type RoundPayoutType =
+  | "allov1.Direct"
+  | "allov1.QF"
+  | "allov2.DirectGrantsSimpleStrategy"
+  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy";
 export type RoundVisibilityType = "public" | "private";
+
+// Note: this also exists in `common` and not able to import from there due to circular dependency.
+export enum RoundCategory {
+  QuadraticFunding,
+  Direct,
+}
 
 export type ApplicationStatus =
   | "PENDING"
@@ -251,6 +259,9 @@ export type ProjectApplication = {
   status: ApplicationStatus;
   metadataCid: string;
   metadata: ProjectApplicationMetadata;
+  totalDonationsCount: number;
+  totalAmountDonatedInUsd: number;
+  uniqueDonorsCount: number;
 };
 
 export type ProjectApplicationForManager = ProjectApplication & {
@@ -276,6 +287,7 @@ export type ProjectApplicationWithRound = ProjectApplication & {
     donationsEndTime: string;
     roundMetadata: RoundMetadata;
     name: string;
+    strategyName: RoundPayoutType;
   };
 };
 

@@ -47,7 +47,7 @@ export default function Details({
     if (params.id!) {
       dispatch(fetchProjectApplications(params.id!, dataLayer));
     }
-  }, [params.id!, params.chainId]);
+  }, [params.id!]);
 
   return (
     <>

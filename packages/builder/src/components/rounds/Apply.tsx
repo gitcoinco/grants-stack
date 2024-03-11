@@ -1,10 +1,10 @@
-import { getConfig } from "common/src/config";
 import { useAllo } from "common";
+import { getConfig } from "common/src/config";
+import { RoundCategory } from "data-layer";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { RoundCategory } from "common/dist/types";
 import {
   resetApplication,
   submitApplication,

@@ -1,9 +1,8 @@
-import { ProjectApplicationWithRound } from "data-layer";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ChainId } from "common";
-import { ReactNode } from "react";
+import { ProjectApplicationWithRound, RoundCategory } from "data-layer";
 import { RoundApplicationMetadata } from "data-layer/dist/roundApplication.types";
-import { RoundCategory } from "common/dist/types";
+import { ReactNode } from "react";
 
 export type Images = {
   bannerImg?: Blob;

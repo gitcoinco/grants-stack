@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { describe, expect, test } from "vitest";
-import { cleanRoundData, sortRounds } from "./legacy";
 import { RoundMetadata, RoundOverview } from "..";
+import { cleanRoundData, sortRounds } from "./legacy";
 
 // TODO switch to ESM and move these tests into `legacy.ts` using in-source test
 // definition with `import.meta.vitest`

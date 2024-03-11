@@ -1,6 +1,6 @@
-import { Round } from "data-layer";
-import { ChainId } from "./chain-ids";
+import { Round, RoundCategory } from "data-layer";
 import { Hex } from "viem";
+import { ChainId } from "./chain-ids";
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
@@ -38,11 +38,6 @@ export type ProjectRequirements = {
     verification: boolean;
   };
 };
-
-export enum RoundCategory {
-  QuadraticFunding,
-  Direct,
-}
 
 export type InputType =
   | "email"

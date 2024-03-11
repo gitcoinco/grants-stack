@@ -3,10 +3,10 @@ import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { getAddress } from "viem";
 import { describe, expect, test, vi } from "vitest";
 import {
-  ProjectApplication,
   ProjectApplicationMetadata,
   ProjectApplicationWithRound,
-  v2Project,
+  RoundCategory,
+  v2Project
 } from ".";
 import { DataLayer } from "./data-layer";
 
@@ -66,7 +66,11 @@ const mockApplications: ProjectApplicationWithRound[] = [
     status: "PENDING",
     metadataCid: "",
     metadata: {} as ProjectApplicationMetadata,
+    totalDonationsCount: 0,
+    totalAmountDonatedInUsd: 0,
+    uniqueDonorsCount: 0,
     round: {
+      strategyName: "allov1.QF",
       applicationsStartTime: "2024-02-20T17:27:40+00:00",
       applicationsEndTime: "2024-02-27T17:24:40+00:00",
       donationsStartTime: "2024-02-20T18:54:40+00:00",
@@ -678,9 +682,9 @@ describe("v2 projects retrieval", () => {
       indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
     });
 
-    const applications = await dataLayer.getApplicationsByProjectId({
-      projectId:
-        "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
+    const applications = await dataLayer.getApplicationsByProjectIds({
+      projectIds:
+       ["0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6"],
       chainIds: [11155111],
     });
 

@@ -98,6 +98,22 @@ export const getProjectById = gql`
 `;
 
 /**
+ * Get a getLegacyProjectId by its ID
+ * @param $projectId - The Allo v2 ID of the project
+ *
+ * @returns The project
+ */
+export const getLegacyProjectId = gql`
+ query ($projectId: String!) {
+    legacyProjects(filter: {
+      v2ProjectId: {equalTo: $projectId}
+    }) {
+      v1ProjectId
+    }
+ }
+`;
+
+/**
  * Get projects by their address
  * @param $alloVersion - The version of Allo
  * @param $first - The number of projects to return
@@ -135,10 +151,13 @@ export const getProjects = gql`
   }
 `;
 
-export const getApplicationsByProjectId = gql`
-  query getApplicationsByProjectId($projectId: String!, $chainIds: [Int!]!) {
+export const getApplicationsByProjectIds = gql`
+  query getApplicationsByProjectIds(
+    $projectIds: [String!]!
+    $chainIds: [Int!]!
+  ) {
     applications(
-      filter: { projectId: { equalTo: $projectId }, chainId: { in: $chainIds } }
+      filter: { projectId: { in: $projectIds }, chainId: { in: $chainIds } }
     ) {
       id
       projectId
@@ -147,12 +166,16 @@ export const getApplicationsByProjectId = gql`
       status
       metadataCid
       metadata
+      totalDonationsCount
+      totalAmountDonatedInUsd
+      uniqueDonorsCount
       round {
         applicationsStartTime
         applicationsEndTime
         donationsStartTime
         donationsEndTime
         roundMetadata
+        strategyName
       }
     }
   }

@@ -1,16 +1,16 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { useTokenPrice } from "common";
+import { useParams } from "react-router-dom";
+import { useBalance, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import ReclaimFunds from "../ReclaimFunds";
 import { ProgressStatus, Round } from "../../api/types";
-import { useBalance, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
+import ReclaimFunds from "../ReclaimFunds";
 import ViewRoundPage from "../ViewRoundPage";
-import { useParams } from "react-router-dom";
-import { useTokenPrice } from "common";
 
 jest.mock("wagmi");
 jest.mock("../../common/Auth");
@@ -47,7 +47,9 @@ jest.mock("common", () => ({
 }));
 
 jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
   useDataLayer: () => ({}),
+  useApplicationsByRoundId: () => {},
 }));
 
 const chainId = "0";

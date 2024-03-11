@@ -1,14 +1,13 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
 
-import { fetchFromIPFS, generateApplicationSchema, pinToIPFS } from "../utils";
 import { ChainId } from "common";
+import { fetchFromIPFS, generateApplicationSchema, pinToIPFS } from "../utils";
 
+import { graphql_fetch } from "common";
 import {
   initialQuestionsQF,
   initialRequirements,
 } from "../../round/RoundApplicationForm";
-import { MetadataPointer } from "../types";
-import { graphql_fetch } from "common";
 
 enableFetchMocks();
 

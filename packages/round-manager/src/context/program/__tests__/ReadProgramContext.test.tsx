@@ -1,12 +1,12 @@
+import { render, screen } from "@testing-library/react";
+import { getProgramById, listPrograms } from "../../../features/api/program";
+import { Program, ProgressStatus } from "../../../features/api/types";
+import { makeProgramData } from "../../../test-utils";
 import {
   ReadProgramProvider,
   useProgramById,
   usePrograms,
 } from "../ReadProgramContext";
-import { render, screen } from "@testing-library/react";
-import { makeProgramData } from "../../../test-utils";
-import { getProgramById, listPrograms } from "../../../features/api/program";
-import { Program, ProgressStatus } from "../../../features/api/types";
 
 const mockWallet = {
   address: "0x0",
@@ -26,6 +26,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
 jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
   useDataLayer: () => ({
     getProgramsByUser: jest.fn(),
   }),

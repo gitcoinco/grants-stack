@@ -1,7 +1,7 @@
 import { createContext, useState } from "react";
 
+import { RoundCategory } from "data-layer";
 import { FormStepper } from "./FormStepper";
-import { RoundCategory } from "../api/types";
 
 export interface FormWizardProps {
   initialCurrentStep?: number;
