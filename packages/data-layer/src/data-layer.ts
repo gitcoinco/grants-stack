@@ -447,39 +447,46 @@ export class DataLayer {
 
     const _round = response.rounds[0] ?? [];
 
-    const projects: Project[] = _round.applications.map(
-      (application: Application) => ({
-        grantApplicationId: application.id,
-        projectRegistryId: application.projectId,
-        recipient: application.metadata.application.recipient,
-        projectMetadata: {
-          title: application.project.metadata.title,
-          description: application.project.metadata.description,
-          website: application.project.metadata.website,
-          logoImg: application.project.metadata.logoImg,
-          bannerImg: application.project.metadata.bannerImg,
-          projectTwitter: application.project.metadata.projectTwitter,
-          userGithub: application.project.metadata.userGithub,
-          projectGithub: application.project.metadata.projectGithub,
-          credentials: application.project.metadata.credentials,
-          owners: application.project.metadata.owners,
-          createdAt: application.project.metadata.createdAt,
-          lastUpdated: application.project.metadata.lastUpdated,
-        },
-        grantApplicationFormAnswers:
-          application.metadata.application.answers.map(
-            (answer: GrantApplicationFormAnswer) => ({
-              questionId: answer.questionId,
-              question: answer.question,
-              answer: answer.answer,
-              hidden: answer.hidden,
-              type: answer.type,
-            }),
-          ),
-        status: application.status as ApplicationStatus,
-        applicationIndex: Number(application.id),
-      }),
-    );
+    const projects: Project[] = _round.applications
+      .map((application: Application) => {
+        if (application.project === null) {
+          console.error(`Project not found for application ${application.id}`);
+          return null;
+        }
+
+        return {
+          grantApplicationId: application.id,
+          projectRegistryId: application.projectId,
+          recipient: application.metadata.application.recipient,
+          projectMetadata: {
+            title: application.project.metadata.title,
+            description: application.project.metadata.description,
+            website: application.project.metadata.website,
+            logoImg: application.project.metadata.logoImg,
+            bannerImg: application.project.metadata.bannerImg,
+            projectTwitter: application.project.metadata.projectTwitter,
+            userGithub: application.project.metadata.userGithub,
+            projectGithub: application.project.metadata.projectGithub,
+            credentials: application.project.metadata.credentials,
+            owners: application.project.metadata.owners,
+            createdAt: application.project.metadata.createdAt,
+            lastUpdated: application.project.metadata.lastUpdated,
+          },
+          grantApplicationFormAnswers:
+            application.metadata.application.answers.map(
+              (answer: GrantApplicationFormAnswer) => ({
+                questionId: answer.questionId,
+                question: answer.question,
+                answer: answer.answer,
+                hidden: answer.hidden,
+                type: answer.type,
+              }),
+            ),
+          status: application.status as ApplicationStatus,
+          applicationIndex: Number(application.id),
+        };
+      })
+      .filter((p) => p !== null) as Project[];
 
     return {
       round: {
