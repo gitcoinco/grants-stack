@@ -44,6 +44,7 @@ import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
 import { MRC_CONTRACTS } from "../addresses/mrc";
 import { ApplicationStatus } from "data-layer";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
+import { erc20ABI } from "wagmi";
 
 function createProjectId(args: {
   chainId: number;
@@ -698,6 +699,86 @@ export class AlloV1 implements Allo {
       emit("indexingStatus", success(undefined));
 
       return success(undefined);
+    });
+  }
+
+  fundRound(args: {
+    tokenAddress: Address;
+    roundId: string;
+    amount: bigint;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      // round ID on Allo v1 is the address of the round
+      const roundAddress = getAddress(args.roundId);
+      let tx;
+
+      if (args.tokenAddress === zeroAddress) {
+        emit("tokenApprovalStatus", success(null));
+      } else {
+        const approvalTx = await sendTransaction(this.transactionSender, {
+          address: args.tokenAddress,
+          abi: erc20ABI,
+          functionName: "approve",
+          args: [roundAddress, args.amount],
+        });
+
+        try {
+          const receipt = await this.transactionSender.wait(approvalTx.value);
+          emit("tokenApprovalStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to approve token transfer", err);
+          emit("tokenApprovalStatus", error(result));
+          return error(result);
+        }
+      }
+
+      if (args.tokenAddress === zeroAddress) {
+        tx = await sendTransaction(this.transactionSender, {
+          address: roundAddress,
+          value: args.amount,
+        });
+      } else {
+        tx = await sendTransaction(this.transactionSender, {
+          address: args.tokenAddress,
+          abi: erc20ABI,
+          functionName: "transfer",
+          args: [roundAddress, args.amount],
+        });
+      }
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to fund round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
     });
   }
 }

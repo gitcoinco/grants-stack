@@ -257,18 +257,34 @@ export async function sendTransaction<
   TFunctionName extends string,
 >(
   sender: TransactionSender,
-  args: EncodeFunctionDataParameters<TAbi, TFunctionName> & {
-    address: Address;
-    value?: bigint;
-  }
+  args:
+    | (EncodeFunctionDataParameters<TAbi, TFunctionName> & {
+        address: Address;
+      })
+    | { address: Address; value: bigint }
+    | { address: Address; data: Hex }
+    | { address: Address; value: bigint; data: Hex }
 ): Promise<Result<Hex>> {
   try {
-    const data = encodeFunctionData(args);
+    let data: Hex = "0x0";
+    let value = 0n;
+
+    if ("value" in args) {
+      value = args.value;
+    }
+
+    if ("data" in args) {
+      data = args.data;
+    }
+
+    if ("functionName" in args) {
+      data = encodeFunctionData(args);
+    }
 
     const tx = await sender.send({
       to: args.address,
       data: data,
-      value: args.value ?? 0n,
+      value: value ?? 0n,
     });
 
     return success(tx);

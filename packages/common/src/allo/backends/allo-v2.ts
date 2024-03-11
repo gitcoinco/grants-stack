@@ -29,6 +29,7 @@ import {
 import { PermitSignature } from "../voting";
 import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
+import { erc20ABI } from "wagmi";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -614,6 +615,82 @@ export class AlloV2 implements Allo {
       emit("indexingStatus", success(undefined));
 
       return success(undefined);
+    });
+  }
+
+  fundRound(args: {
+    tokenAddress: Address;
+    roundId: string;
+    amount: bigint;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (isNaN(Number(args.roundId))) {
+        return error(new AlloError("Round ID is not a valid Allo V2 pool ID"));
+      }
+
+      const poolId = BigInt(args.roundId);
+
+      if (args.tokenAddress === zeroAddress) {
+        emit("tokenApprovalStatus", success(null));
+      } else {
+        const approvalTx = await sendTransaction(this.transactionSender, {
+          address: args.tokenAddress,
+          abi: erc20ABI,
+          functionName: "approve",
+          args: [this.allo.address(), args.amount],
+        });
+
+        try {
+          const receipt = await this.transactionSender.wait(approvalTx.value);
+          emit("tokenApprovalStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to approve token transfer", err);
+          emit("tokenApprovalStatus", error(result));
+          return error(result);
+        }
+      }
+
+      const txData = this.allo.fundPool(poolId, args.amount);
+
+      const tx = await sendTransaction(this.transactionSender, {
+        address: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to fund round", err);
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
     });
   }
 }
