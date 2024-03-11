@@ -261,6 +261,7 @@ export interface Round {
    * CreatedByAddress
    */
   createdByAddress?: string;
+  strategyAddress?: string;
 }
 
 export type MatchingStatsData = {

@@ -772,6 +772,8 @@ export class AlloV2 implements Allo {
         blockNumber: receipt.blockNumber,
       });
 
+      emit("indexingStatus", success(void 0));
+
       return success(args.roundId);
     });
   }

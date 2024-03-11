@@ -38,34 +38,49 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
     (account: { address: string }) => account.address
   );
 
+  const strategyName =
+    round.strategyName === "allov1.Direct" ||
+    round.strategyName === "allov2.DirectGrantsSimpleStrategy"
+      ? "DIRECT"
+      : "MERKLE";
+
+  const applicationsStartTime = round.applicationsStartTime;
+  const applicationsEndTime = round.applicationsEndTime;
+
+  // Direct grants strategy uses the application start and end time for donations
+  const donationsStartTime =
+    strategyName == "MERKLE" ? round.donationsStartTime : applicationsStartTime;
+  const donationsEndTime =
+    strategyName == "MERKLE" ? round.donationsEndTime : applicationsEndTime;
+
   return {
     id: round.id,
     chainId: round.chainId,
     roundMetadata: round.roundMetadata as Round["roundMetadata"],
     applicationMetadata:
       round.applicationMetadata as unknown as Round["applicationMetadata"],
-    applicationsStartTime: new Date(round.applicationsStartTime),
+    applicationsStartTime: new Date(applicationsStartTime),
     applicationsEndTime:
-      round.applicationsEndTime === null
+      applicationsEndTime === null
         ? maxDateForUint256
-        : new Date(round.applicationsEndTime),
-    roundStartTime: new Date(round.donationsStartTime),
+        : new Date(applicationsEndTime),
+    roundStartTime: new Date(donationsStartTime),
     roundEndTime:
-      round.donationsEndTime === null
+      donationsEndTime === null
         ? maxDateForUint256
-        : new Date(round.donationsEndTime),
+        : new Date(donationsEndTime),
     token: round.matchTokenAddress,
     votingStrategy: "unknown",
     payoutStrategy: {
       id: round.strategyAddress,
       isReadyForPayout: round.isReadyForPayout,
-      strategyName: 
-        round.strategyName === "allov1.Direct" ? "DIRECT" : "MERKLE",
+      strategyName,
     },
     ownedBy: round.projectId,
     operatorWallets: operatorWallets,
     finalized: false,
     createdByAddress: round.createdByAddress,
+    strategyAddress: round.strategyAddress,
   };
 }
 
