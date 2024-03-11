@@ -179,8 +179,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
     }
   }, [round]);
 
-  console.log(round);
-
   const ValidationSchema = !isDirectRound(round!)
     ? RoundValidationSchema.shape({
         // Overrides for validation schema that was not included in imported schema.
