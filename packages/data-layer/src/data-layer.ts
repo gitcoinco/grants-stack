@@ -43,6 +43,7 @@ import {
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundForManager,
+  getRoundsForManager,
   getRoundByIdAndChainIdWithApprovedApplications,
   getRoundsQuery,
 } from "./queries";
