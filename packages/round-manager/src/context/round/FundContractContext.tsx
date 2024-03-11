@@ -153,6 +153,8 @@ async function _fundContract({
       .parseUnits(fundAmount.toString(), payoutToken.decimal)
       .toBigInt();
 
+    context.setFundStatus(ProgressStatus.IN_PROGRESS);
+
     const result = await allo
       .fundRound({
         roundId,
@@ -161,9 +163,8 @@ async function _fundContract({
       })
       .on("tokenApprovalStatus", (tx) => {
         if (tx.type === "error") {
-          context.setTokenApprovalStatus(ProgressStatus.IS_ERROR);
+          context.setFundStatus(ProgressStatus.IS_ERROR);
         } else {
-          context.setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
           context.setFundStatus(ProgressStatus.IN_PROGRESS);
         }
       })
