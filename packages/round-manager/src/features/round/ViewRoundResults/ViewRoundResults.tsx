@@ -148,7 +148,6 @@ function useRevisedMatchingFunds(
     isLoading,
     error,
     isRevised,
-    readyForPayoutTransactionHash: "asdasdasd",
     mutate() {
       revisedMatches.mutate();
       originalMatches.mutate();
@@ -227,7 +226,6 @@ function ViewRoundResults({
   const {
     matches,
     isRevised: areMatchingFundsRevised,
-    readyForPayoutTransactionHash,
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: reloadMatchingFunds,
@@ -237,10 +235,11 @@ function ViewRoundResults({
     overridesFile
   );
 
+  const readyForPayoutTransactionHash = round.readyForPayoutTransaction;
+  const isReadyForPayout = readyForPayoutTransactionHash !== null;
+
   const shouldShowRevisedTable =
     areMatchingFundsRevised || Boolean(readyForPayoutTransactionHash);
-
-  const isReadyForPayout = Boolean(round.payoutStrategy.isReadyForPayout);
 
   const isRoundFullyFunded = round.fundedAmount >= round.matchAmount;
 
@@ -267,9 +266,6 @@ function ViewRoundResults({
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-
-  const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
-    useState<TransactionResponse>();
 
   const { finalizeRound, finalizeRoundToContractStatus, IPFSCurrentStatus } =
     useFinalizeRound();

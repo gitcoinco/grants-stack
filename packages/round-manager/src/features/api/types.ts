@@ -265,6 +265,7 @@ export interface Round {
   matchAmountInUsd: number;
 
   matchingDistribution: RoundForManager["matchingDistribution"];
+  readyForPayoutTransaction: RoundForManager["readyForPayoutTransaction"];
 }
 
 export type MatchingStatsData = {

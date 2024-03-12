@@ -124,6 +124,7 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
     fundedAmount: BigInt(round.fundedAmount),
     fundedAmountInUsd: round.fundedAmountInUsd,
     matchingDistribution: round.matchingDistribution,
+    readyForPayoutTransaction: round.readyForPayoutTransaction,
   };
 }
 
