@@ -1,10 +1,18 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Address } from "viem";
 import { RoundApplicationMetadata } from "./roundApplication.types";
-// TODO `RoundPayoutType` and `RoundVisibilityType` are duplicated from `common` to
-// avoid further spaghetti dependencies. They should probably be relocated here.
-export type RoundPayoutType = "allov1.Direct" | "allov1.QF";
+export type RoundPayoutType =
+  | "allov1.Direct"
+  | "allov1.QF"
+  | "allov2.DirectGrantsSimpleStrategy"
+  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy";
 export type RoundVisibilityType = "public" | "private";
+
+// Note: this also exists in `common` and not able to import from there due to circular dependency.
+export enum RoundCategory {
+  QuadraticFunding,
+  Direct,
+}
 
 export type ApplicationStatus =
   | "PENDING"
@@ -232,6 +240,14 @@ export type ProjectApplicationMetadata = {
 };
 
 /**
+ * The round type with applications for v1
+ **/
+
+export type RoundWithApplications = Omit<RoundGetRound, "applications"> & {
+  applications: Application[];
+};
+
+/**
  * The project application type for v2
  *
  */
@@ -243,6 +259,9 @@ export type ProjectApplication = {
   status: ApplicationStatus;
   metadataCid: string;
   metadata: ProjectApplicationMetadata;
+  totalDonationsCount: number;
+  totalAmountDonatedInUsd: number;
+  uniqueDonorsCount: number;
 };
 
 export type ProjectApplicationForManager = ProjectApplication & {
@@ -268,6 +287,7 @@ export type ProjectApplicationWithRound = ProjectApplication & {
     donationsEndTime: string;
     roundMetadata: RoundMetadata;
     name: string;
+    strategyName: RoundPayoutType;
   };
 };
 
@@ -302,6 +322,14 @@ export type V2RoundWithProject = V2RoundWithRoles & {
     name: string;
     metadata: ProgramMetadata;
   };
+};
+
+export type RoundForManager = V2RoundWithProject & {
+  tags: string[];
+  matchAmount: string;
+  matchAmountInUsd: number;
+  fundedAmount: string;
+  fundedAmountInUsd: number;
 };
 
 export type ProjectApplicationWithProject = {
@@ -357,18 +385,24 @@ export type Eligibility = {
   requirements?: Requirement[];
 };
 
-// 
+/**
+ * Legacy round type
+ */
 export interface Round {
   /**
    * The on-chain unique round ID
    */
   id?: string;
   /**
+   * The chain ID of the network
+   */
+  chainId?: number;
+  /**
    * Metadata of the Round to be stored off-chain
    */
   roundMetadata?: {
     name: string;
-    roundType: RoundVisibilityType;
+    roundType?: RoundVisibilityType;
     eligibility: Eligibility;
     programContractAddress: string;
     quadraticFundingConfig?: {
@@ -399,7 +433,7 @@ export interface Round {
   /**
    * Voting contract address
    */
-  votingStrategy: string;
+  votingStrategy?: string;
   /**
    * Unix timestamp of the start of the round
    */
@@ -424,7 +458,7 @@ export interface Round {
   /**
    * Contract address of the program to which the round belongs
    */
-  ownedBy: string;
+  ownedBy?: string;
   /**
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
@@ -526,6 +560,7 @@ export type RoundGetRound = {
   id: string;
   tags: string[];
   chainId: number;
+  ownedBy?: string;
   createdAtBlock: number;
   roundMetadataCid: string;
   roundMetadata: RoundMetadataGetRound;
@@ -543,7 +578,7 @@ export type RoundGetRound = {
 };
 
 export interface RoundMetadataGetRound {
-  name?: string;
+  name: string;
   support?: Support;
   eligibility: Eligibility;
   feesAddress?: string;
@@ -551,7 +586,7 @@ export interface RoundMetadataGetRound {
   feesPercentage?: number;
   programContractAddress: string;
   quadraticFundingConfig?: QuadraticFundingConfig;
-  roundType?: "public" | "private";
+  roundType?: RoundVisibilityType;
 }
 
 export interface Support {

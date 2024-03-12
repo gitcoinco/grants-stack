@@ -1,4 +1,4 @@
-import { ApplicationStatus } from "data-layer";
+import { ApplicationStatus, RoundCategory } from "data-layer";
 import {
   Address,
   Hex,
@@ -17,16 +17,15 @@ import { AnyJson, ChainId } from "../..";
 import { parseChainId } from "../../chains";
 import { payoutTokens } from "../../payoutTokens";
 import {
-  RoundCategory,
   UpdateAction,
   UpdateRoundParams,
   VotingToken,
 } from "../../types";
+import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
 import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import RoundImplementationABI from "../abis/allo-v1/RoundImplementation";
-import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
 import {
   dgVotingStrategyDummyContractMap,
   directPayoutStrategyFactoryContractMap,
@@ -50,7 +49,8 @@ import {
   sendRawTransaction,
   sendTransaction,
 } from "../transaction-sender";
-import { PermitSignature, getPermitType } from "../voting";
+import { getPermitType, PermitSignature } from "../voting";
+import Erc20ABI from "../abis/erc20";
 
 function createProjectId(args: {
   chainId: number;
@@ -763,12 +763,10 @@ export class AlloV1 implements Allo {
 
       if (data.matchAmount) {
         // NOTE : This is parseUnits format of the token
-        console.log("updating match amount");
         transactionBuilder.add(UpdateAction.UPDATE_MATCH_AMOUNT, [
           data.matchAmount,
         ]);
       }
-
 
       /* Special case - if the application period or round has already started, and we are editing times,
        * we need to set newApplicationsStartTime and newRoundStartTime to something bigger than the block timestamp.
@@ -782,14 +780,17 @@ export class AlloV1 implements Allo {
         data.applicationsStartTime &&
         data.applicationsEndTime
       ) {
-        if (Date.now() > data.applicationsStartTime.getTime()) {          
-          data.applicationsStartTime = new Date(data.applicationsEndTime.getTime() - 1000000);
+        if (Date.now() > data.applicationsStartTime.getTime()) {
+          data.applicationsStartTime = new Date(
+            data.applicationsEndTime.getTime() - 1000000
+          );
         }
         if (Date.now() > data.roundStartTime.getTime()) {
-          data.roundStartTime = new Date(data.applicationsEndTime.getTime()- 1000000);
+          data.roundStartTime = new Date(
+            data.applicationsEndTime.getTime() - 1000000
+          );
         }
 
-        console.log("updating start and end times");
         transactionBuilder.add(UpdateAction.UPDATE_ROUND_START_AND_END_TIMES, [
           (data.applicationsStartTime.getTime() / 1000).toFixed(0),
           (data.applicationsEndTime.getTime() / 1000).toFixed(0),
@@ -830,6 +831,90 @@ export class AlloV1 implements Allo {
       emit("indexingStatus", success(undefined));
 
       return success(args.roundId);
+    });
+  }
+
+  fundRound(args: {
+    tokenAddress: Address;
+    roundId: string;
+    amount: bigint;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      // round ID on Allo v1 is the address of the round
+      const roundAddress = getAddress(args.roundId);
+      let tx;
+
+      if (args.tokenAddress === zeroAddress) {
+        emit("tokenApprovalStatus", success(null));
+      } else {
+        const approvalTx = await sendTransaction(this.transactionSender, {
+          address: args.tokenAddress,
+          abi: Erc20ABI,
+          functionName: "approve",
+          args: [roundAddress, args.amount],
+        });
+
+        if (approvalTx.type === "error") {
+          return approvalTx;
+        }
+
+        try {
+          const receipt = await this.transactionSender.wait(approvalTx.value);
+          emit("tokenApprovalStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to approve token transfer", err);
+          emit("tokenApprovalStatus", error(result));
+          return error(result);
+        }
+      }
+
+      if (args.tokenAddress === zeroAddress) {
+        tx = await sendTransaction(this.transactionSender, {
+          address: roundAddress,
+          value: args.amount,
+        });
+      } else {
+        tx = await sendTransaction(this.transactionSender, {
+          address: args.tokenAddress,
+          abi: Erc20ABI,
+          functionName: "transfer",
+          args: [roundAddress, args.amount],
+        });
+      }
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to fund round");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
     });
   }
 }

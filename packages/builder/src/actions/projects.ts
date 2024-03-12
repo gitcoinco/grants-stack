@@ -1,5 +1,4 @@
 import { datadogRum } from "@datadog/browser-rum";
-import { Client as AlloClient } from "allo-indexer-client";
 import { ChainId } from "common";
 import { RoundCategory } from "common/dist/types";
 import { getConfig } from "common/src/config";
@@ -8,7 +7,6 @@ import {
   DataLayer,
   ProjectApplicationWithRound,
 } from "data-layer";
-import { utils } from "ethers";
 import { Dispatch } from "redux";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -273,18 +271,52 @@ export const fetchProjectApplications =
         return;
       }
 
-      const id = projectId;
-
       const chainIds = web3Provider.chains.map((chain) => chain.id);
-      const applications = await dataLayer.getApplicationsByProjectId({
-        projectId: id,
+
+      const legacyProjectId = await dataLayer.getLegacyProjectId({
+        projectId,
+      });
+
+      const projectIds = [projectId];
+      if (legacyProjectId) {
+        projectIds.push(legacyProjectId);
+      }
+
+      const applications = await dataLayer.getApplicationsByProjectIds({
+        projectIds,
         chainIds,
       });
+
+      const stats: ProjectStats[] = [];
+
+      // for each application, get the round data
+      for (const application of applications) {
+        const singleStats: ProjectStats = {
+          roundId: application.roundId,
+          fundingReceived: application.totalAmountDonatedInUsd,
+          uniqueContributors: application.uniqueDonorsCount,
+          avgContribution:
+            application.uniqueDonorsCount === 0
+              ? 0
+              : application.totalAmountDonatedInUsd /
+                application.uniqueDonorsCount,
+          totalContributions: application.totalDonationsCount,
+          success: true,
+        };
+
+        stats.push(singleStats);
+      }
 
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID: projectId,
         applications,
+      });
+
+      dispatch({
+        type: PROJECT_STATS_LOADED,
+        projectID: projectId,
+        stats,
       });
     } catch (error: any) {
       console.error(
@@ -295,102 +327,6 @@ export const fetchProjectApplications =
       );
       datadogRum.addError(error, { projectId });
     }
-  };
-
-/**
- * Load project stats for a given project and network
- *
- * @param projectID
- * @param projectRegistryAddress
- * @param projectChainId
- * @param rounds
- *
- * @returns
- */
-export const loadProjectStats =
-  (
-    projectID: string,
-    projectRegistryAddress: string,
-    projectChainId: string,
-    rounds: Array<{
-      roundId: string;
-      chainId: ChainId;
-      roundType: RoundCategory;
-    }>
-  ) =>
-  async (dispatch: Dispatch) => {
-    dispatch({
-      type: PROJECT_STATS_LOADING,
-      projectID,
-    });
-    const boundFetch = fetch.bind(window);
-    const stats: ProjectStats[] = [];
-
-    const updateStats = async (projectRoundData: any, roundId: string) => {
-      const singleStats: ProjectStats = {
-        roundId,
-        ...projectRoundData,
-      };
-
-      stats.push(singleStats);
-    };
-
-    const loadingErrorUpdate = async (roundId: string) => {
-      await updateStats(
-        {
-          fundingReceived: -1,
-          uniqueContributors: -1,
-          avgContribution: -1,
-          totalContributions: -1,
-          success: false,
-        },
-        roundId
-      );
-    };
-
-    for await (const round of rounds) {
-      // NOTE: Consider finding a way for singleton Client to be used
-      const client = new AlloClient(
-        boundFetch,
-        process.env.REACT_APP_INDEXER_V2_API_URL ?? "",
-        round.chainId
-      );
-
-      const applications = await client.getRoundApplications(
-        utils.getAddress(round.roundId.toLowerCase())
-      );
-
-      const project = applications.find(
-        (app) =>
-          app.projectId === projectID &&
-          app.status === "APPROVED" &&
-          round.roundType === RoundCategory.QuadraticFunding
-      );
-
-      if (project) {
-        await updateStats(
-          {
-            fundingReceived: project.amountUSD,
-            uniqueContributors: project.uniqueContributors,
-            avgContribution:
-              project.uniqueContributors === 0
-                ? 0
-                : project.amountUSD / project.uniqueContributors,
-            totalContributions: project.votes,
-            success: true,
-          },
-          round.roundId
-        );
-      } else {
-        await loadingErrorUpdate(round.roundId);
-      }
-    }
-
-    dispatch({
-      type: PROJECT_STATS_LOADED,
-      projectID,
-      stats,
-    });
   };
 
 export const unloadProjects = () => projectsUnload();

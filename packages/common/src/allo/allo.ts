@@ -1,10 +1,9 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { ApplicationStatus, Round } from "data-layer";
+import { ApplicationStatus, Round, RoundCategory } from "data-layer";
 import { Address, Hex, PublicClient } from "viem";
 import { AnyJson, ChainId } from "..";
 import {
   CreateRoundData,
-  RoundCategory,
   UpdateRoundParams,
   VotingToken,
 } from "../types";
@@ -143,6 +142,7 @@ export interface Allo {
 
   editRound: (args: {
     roundId: Hex | number;
+    roundAddress?: Hex;
     data: UpdateRoundParams;
     strategy?: RoundCategory;
   }) => AlloOperation<
@@ -152,6 +152,20 @@ export interface Allo {
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<void>;
+    }
+  >;
+
+  fundRound: (args: {
+    tokenAddress: Address;
+    roundId: string;
+    amount: bigint;
+  }) => AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   >;
 }

@@ -107,6 +107,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     ownedBy: faker.finance.ethereumAddress(),
     operatorWallets: [mockedOperatorWallet],
     finalized: false,
+    tags: ["allo-v1"],
     ...overrides,
   };
 };

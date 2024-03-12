@@ -1,5 +1,9 @@
 import { Divider } from "@chakra-ui/react";
-import { ProjectApplicationWithRound } from "data-layer";
+import {
+  ProjectApplicationWithRound,
+  RoundCategory,
+  strategyNameToCategory,
+} from "data-layer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../../reducers";
@@ -33,10 +37,18 @@ export default function Rounds({
     const mappedApplications = applications.map((app) => {
       const { round } = app;
 
+      const isDirectGrants =
+        round?.strategyName &&
+        strategyNameToCategory(round?.strategyName) === RoundCategory.Direct;
+
       const infiniteApplicationsEndDate = isInfinite(
-        Number(round?.applicationsEndTime)
+        formatDateAsNumber(round?.applicationsEndTime)
       );
-      const infiniteRoundEndDate = isInfinite(Number(round?.donationsEndTime));
+      const infiniteRoundEndDate = isInfinite(
+        formatDateAsNumber(
+          isDirectGrants ? round?.applicationsEndTime : round?.donationsEndTime
+        )
+      );
 
       if (round) {
         let category = null;
@@ -48,8 +60,12 @@ export default function Rounds({
         const applicationsEndTime = formatDateAsNumber(
           round.applicationsEndTime
         );
-        const donationsStartTime = formatDateAsNumber(round.donationsStartTime);
-        const donationsEndTime = formatDateAsNumber(round.donationsEndTime);
+        const donationsStartTime = isDirectGrants
+          ? applicationsStartTime
+          : formatDateAsNumber(round.donationsStartTime);
+        const donationsEndTime = isDirectGrants
+          ? applicationsEndTime
+          : formatDateAsNumber(round.donationsEndTime);
 
         // Current Applications
         // FOCUS on Direct Rounds infinite periods

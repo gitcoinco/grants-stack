@@ -1,4 +1,4 @@
-import { Round } from "data-layer";
+import { Round, RoundCategory} from "data-layer";
 import { Hex } from "viem";
 import { ChainId } from "./chain-ids";
 import { AnyJson } from ".";
@@ -51,11 +51,6 @@ export type ProjectRequirements = {
   };
 };
 
-export enum RoundCategory {
-  QuadraticFunding,
-  Direct,
-}
-
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
   UPDATE_ROUND_META_PTR = "updateRoundMetaPtr",
@@ -66,8 +61,6 @@ export enum UpdateAction {
 }
 
 export type InputType =
-  | "email"
-  | "address"
   | "number"
   | "text"
   | "short-answer"

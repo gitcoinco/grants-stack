@@ -98,6 +98,22 @@ export const getProjectById = gql`
 `;
 
 /**
+ * Get a getLegacyProjectId by its ID
+ * @param $projectId - The Allo v2 ID of the project
+ *
+ * @returns The project
+ */
+export const getLegacyProjectId = gql`
+ query ($projectId: String!) {
+    legacyProjects(filter: {
+      v2ProjectId: {equalTo: $projectId}
+    }) {
+      v1ProjectId
+    }
+ }
+`;
+
+/**
  * Get projects by their address
  * @param $alloVersion - The version of Allo
  * @param $first - The number of projects to return
@@ -135,10 +151,13 @@ export const getProjects = gql`
   }
 `;
 
-export const getApplicationsByProjectId = gql`
-  query getApplicationsByProjectId($projectId: String!, $chainIds: [Int!]!) {
+export const getApplicationsByProjectIds = gql`
+  query getApplicationsByProjectIds(
+    $projectIds: [String!]!
+    $chainIds: [Int!]!
+  ) {
     applications(
-      filter: { projectId: { equalTo: $projectId }, chainId: { in: $chainIds } }
+      filter: { projectId: { in: $projectIds }, chainId: { in: $chainIds } }
     ) {
       id
       projectId
@@ -147,12 +166,16 @@ export const getApplicationsByProjectId = gql`
       status
       metadataCid
       metadata
+      totalDonationsCount
+      totalAmountDonatedInUsd
+      uniqueDonorsCount
       round {
         applicationsStartTime
         applicationsEndTime
         donationsStartTime
         donationsEndTime
         roundMetadata
+        strategyName
       }
     }
   }
@@ -456,13 +479,70 @@ export const getRoundWithApplications = gql`
   }
 `;
 
-export const getRoundsByProgramIdAndChainId = gql`
-  query getRoundsByProgramIdAndChainId($chainId: Int!, $programId: String!) {
+const getRoundForManagerFields = `
+  id
+  chainId
+  applicationsStartTime
+  applicationsEndTime
+  donationsStartTime
+  donationsEndTime
+  matchTokenAddress
+  roundMetadata
+  roundMetadataCid
+  applicationMetadata
+  applicationMetadataCid
+  strategyAddress
+  strategyName
+  isReadyForPayout
+  projectId
+  matchAmount
+  matchAmountInUsd
+  createdByAddress
+  fundedAmount
+  fundedAmountInUsd
+  roles {
+    role
+    address
+    createdAtBlock
+  }
+  tags
+  project {
+    id
+    name
+    metadata
+  }
+`;
+
+export const getRoundForManager = gql`
+  query getRoundForManager($roundId: String!, $chainId: Int!) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+    ) {
+      ${getRoundForManagerFields}
+    }
+  }
+`;
+
+export const getRoundsForManager = gql`
+  query getRoundsForManager($chainId: Int!, $programId: String!) {
     rounds(
       filter: {
         chainId: { equalTo: $chainId }
         projectId: { equalTo: $programId }
       }
+    ) {
+      ${getRoundForManagerFields}
+    }
+  }
+`;
+
+export const getRoundByIdAndChainIdWithApprovedApplications = gql`
+  query getRoundByIdAndChainIdWithApprovedApplications(
+    $roundId: String!
+    $chainId: Int!
+  ) {
+    rounds(
+      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
     ) {
       id
       chainId
@@ -475,14 +555,20 @@ export const getRoundsByProgramIdAndChainId = gql`
       roundMetadataCid
       applicationMetadata
       applicationMetadataCid
+      strategyId
+      projectId
       strategyAddress
       strategyName
-      createdByAddress
-      projectId
-      roles {
-        role
-        address
-        createdAtBlock
+      isReadyForPayout
+      applications(filter: { status: { equalTo: APPROVED } }) {
+        id
+        projectId
+        status
+        metadata
+        project {
+          id
+          metadata
+        }
       }
     }
   }

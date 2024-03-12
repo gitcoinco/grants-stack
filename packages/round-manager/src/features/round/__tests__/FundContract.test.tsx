@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
-import ViewRoundPage from "../ViewRoundPage";
-import { ProgressStatus, Round } from "../../api/types";
+import { useTokenPrice } from "common";
+import { useParams } from "react-router-dom";
+import {
+  useAccount,
+  useBalance,
+  useDisconnect,
+  useSigner,
+  useSwitchNetwork,
+} from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import {
-  useAccount,
-  useBalance,
-  useDisconnect,
-  useSwitchNetwork,
-  useSigner,
-} from "wagmi";
-import { useParams } from "react-router-dom";
-import { faker } from "@faker-js/faker";
-import { useTokenPrice } from "common";
+import { ProgressStatus, Round } from "../../api/types";
+import ViewRoundPage from "../ViewRoundPage";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -60,7 +60,9 @@ jest.mock("common", () => ({
 }));
 
 jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
   useDataLayer: () => ({}),
+  useApplicationsByRoundId: () => {},
 }));
 
 describe("fund contract tab", () => {
@@ -85,7 +87,7 @@ describe("fund contract tab", () => {
     }));
 
     (useBalance as jest.Mock).mockImplementation(() => ({
-      data: { formatted: "0", value: "0" },
+      data: { formatted: "0", value: { toBigInt: () => 0n } },
       error: null,
       loading: false,
     }));
@@ -113,13 +115,13 @@ describe("fund contract tab", () => {
     );
     const fundContractTab = screen.getByTestId("fund-contract");
     fireEvent.click(fundContractTab);
-    expect(screen.getByText("Contract Details")).toBeInTheDocument();
+    expect(screen.getByText("Details")).toBeInTheDocument();
     expect(screen.getByText("Contract Address:")).toBeInTheDocument();
     expect(screen.getByText("Payout token:")).toBeInTheDocument();
     expect(screen.getByText("Matching pool size:")).toBeInTheDocument();
     expect(screen.getByText("Protocol fee:")).toBeInTheDocument();
     expect(screen.getByText("Round fee:")).toBeInTheDocument();
-    expect(screen.getByText("Amount in contract:")).toBeInTheDocument();
+    expect(screen.getByText("Amount funded:")).toBeInTheDocument();
     expect(screen.getByTestId("fund-contract-btn")).toBeInTheDocument();
     expect(screen.getByTestId("view-contract-btn")).toBeInTheDocument();
   });

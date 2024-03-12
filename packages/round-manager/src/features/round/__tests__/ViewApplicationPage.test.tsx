@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  makeGrantApplicationData,
-  MakeGrantApplicationDataParams,
-  makeRoundData,
-} from "../../../test-utils";
-import ViewApplicationPage from "../ViewApplicationPage";
+import { faker } from "@faker-js/faker";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   act,
   fireEvent,
@@ -13,26 +9,35 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import {
+  AlloOperation,
+  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
+  useAllo,
+} from "common";
+import moment from "moment";
 import { MemoryRouter } from "react-router-dom";
-import { faker } from "@faker-js/faker";
-import { RoundContext } from "../../../context/round/RoundContext";
-import { useWallet } from "../../common/Auth";
+import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { errorModalDelayMs } from "../../../constants";
 import {
   BulkUpdateGrantApplicationContext,
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
-import { GrantApplication, ProgressStatus } from "../../api/types";
-import { errorModalDelayMs } from "../../../constants";
-import moment from "moment";
-import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import { RoundContext } from "../../../context/round/RoundContext";
 import {
-  AlloOperation,
-  useAllo,
-  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
-} from "common";
+  MakeGrantApplicationDataParams,
+  makeGrantApplicationData,
+  makeRoundData,
+} from "../../../test-utils";
+import { GrantApplication, ProgressStatus } from "../../api/types";
+import { useWallet } from "../../common/Auth";
+import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import ViewApplicationPage from "../ViewApplicationPage";
+
+jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
+  useDataLayer: () => ({}),
+}));
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
@@ -43,7 +48,7 @@ jest.mock("../../api/application");
 jest.mock("../../common/Auth");
 
 jest.mock("../../../constants", () => ({
-  ...jest.requireActual("../../../constants"),
+  // ...jest.requireActual("../../../constants"),
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
@@ -82,9 +87,6 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 jest.mock("wagmi");
 
-jest.mock("data-layer", () => ({
-  useDataLayer: () => ({}),
-}));
 jest.mock("../../common/useApplicationsByRoundId");
 
 const verifyCredentialMock = jest.spyOn(

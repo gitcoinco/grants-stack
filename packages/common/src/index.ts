@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Network, Web3Provider } from "@ethersproject/providers";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
 import { useOutletContext } from "react-router-dom";
 import useSWR from "swr";
@@ -256,18 +256,10 @@ export const getUTCDateTime = (date: Date): string => {
 
 export const useTokenPrice = (tokenId: string | undefined) => {
   const [tokenPrice, setTokenPrice] = useState<number>();
-  const [error, setError] = useState<Response | undefined>();
+  const [error, setError] = useState<Error | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
-  if (!tokenId)
-    return {
-      data: 0,
-      error,
-      loading,
-    };
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useMemo(async () => {
+  useEffect(() => {
     setLoading(true);
 
     const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
@@ -276,25 +268,38 @@ export const useTokenPrice = (tokenId: string | undefined) => {
         if (resp.ok) {
           return resp.json();
         } else {
-          setError(resp);
-          setLoading(false);
+          return resp.text().then((text) => {
+            throw new Error(text);
+          });
         }
       })
       .then((data) => {
-        if (data) {
+        if (data && data.length > 0) {
           setTokenPrice(data[0].value);
         } else {
-          setError(data);
+          throw new Error(`No data returned: ${data.toString()}`);
         }
-
-        setLoading(false);
       })
       .catch((err) => {
-        console.log("error fetching token price", { err });
+        console.log("error fetching token price", {
+          tokenId,
+          tokenPriceEndpoint,
+          err,
+        });
         setError(err);
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [tokenId]);
+
+  if (!tokenId) {
+    return {
+      data: 0,
+      error,
+      loading,
+    };
+  }
 
   return {
     data: tokenPrice,
@@ -324,7 +329,8 @@ export type RoundPayoutTypeNew =
   | "allov2.MicroGrantsStrategy"
   | "allov2.MicroGrantsHatsStrategy"
   | "allov2.SQFSuperFluidStrategy"
-  | "allov2.MicroGrantsGovStrategy";
+  | "allov2.MicroGrantsGovStrategy"
+  | "allov2.DirectGrantsSimpleStrategy";
 
 export type RoundStrategyType = "QuadraticFunding" | "DirectGrants";
 

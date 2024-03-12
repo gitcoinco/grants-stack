@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Signer } from "@ethersproject/abstract-signer";
 import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
-import { DataLayer, V2RoundWithRoles } from "data-layer";
 import { BigNumber, ethers } from "ethers";
 import { maxDateForUint256 } from "../../constants";
 import {
@@ -10,6 +9,7 @@ import {
 } from "./contracts";
 import { MatchingStatsData, Round } from "./types";
 import { fetchFromIPFS } from "./utils";
+import { DataLayer, RoundForManager } from "data-layer";
 
 /**
  * Fetch a round by ID
@@ -24,7 +24,11 @@ export async function getRoundById(args: {
   try {
     const { chainId, roundId, dataLayer } = args;
 
-    const round = await dataLayer.getRoundByIdAndChainId({ roundId, chainId });
+    const round = await dataLayer.getRoundForManager({ roundId, chainId });
+
+    if (round === null) {
+      throw "Round not found";
+    }
 
     return indexerV2RoundToRound(round);
   } catch (error) {
@@ -33,7 +37,7 @@ export async function getRoundById(args: {
   }
 }
 
-function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
+function indexerV2RoundToRound(round: RoundForManager): Round {
   const operatorWallets = round.roles.map(
     (account: { address: string }) => account.address
   );
@@ -65,7 +69,12 @@ function indexerV2RoundToRound(round: V2RoundWithRoles): Round {
     ownedBy: round.projectId,
     operatorWallets: operatorWallets,
     finalized: false,
+    tags: round.tags,
     createdByAddress: round.createdByAddress,
+    matchAmount: BigInt(round.matchAmount),
+    matchAmountInUsd: round.matchAmountInUsd,
+    fundedAmount: BigInt(round.fundedAmount),
+    fundedAmountInUsd: round.fundedAmountInUsd,
   };
 }
 
@@ -80,7 +89,7 @@ export async function listRounds(args: {
   const { chainId, dataLayer, programId } = args;
 
   let rounds = await dataLayer
-    .getRoundsByProgramIdAndChainId({
+    .getRoundsForManager({
       chainId: chainId,
       programId,
     })

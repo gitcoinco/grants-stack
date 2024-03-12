@@ -52,6 +52,13 @@ export const formatDateFromSecs = (ts: number) => {
   });
 };
 
+export const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
 export const formatTimeUTC = (ts: number) => {
   const date = new Date(ts * 1000);
   return date.toUTCString().replace("GMT", "UTC");

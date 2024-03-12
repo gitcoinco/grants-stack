@@ -10,22 +10,22 @@ import { randomInt } from "crypto";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
+import { RoundCategory } from "data-layer";
+import { errorModalDelayMs } from "../../../constants";
+import { useCreateRoundStore } from "../../../stores/createRoundStore";
 import { saveToIPFS } from "../../api/ipfs";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import {
   ApplicationMetadata,
   ProgressStatus,
-  RoundCategory,
 } from "../../api/types";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
-  initialQuestionsQF,
   RoundApplicationForm,
+  initialQuestionsQF,
 } from "../RoundApplicationForm";
-import { errorModalDelayMs } from "../../../constants";
-import { useCreateRoundStore } from "../../../stores/createRoundStore";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");

@@ -4,16 +4,16 @@ import { render, screen } from "@testing-library/react";
 import { useParams } from "react-router-dom";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
+  makeDirectGrantRoundData,
   makeGrantApplicationData,
   makeRoundData,
-  makeDirectGrantRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
-import ViewRoundPage from "../ViewRoundPage";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import ViewRoundPage from "../ViewRoundPage";
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
@@ -28,7 +28,10 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 
 jest.mock("data-layer", () => ({
-  useDataLayer: () => ({}),
+  ...jest.requireActual("data-layer"),
+  useDataLayer: () => ({
+   getRoundById: jest.fn(),
+  }),
 }));
 
 jest.mock("../../common/useApplicationsByRoundId");
@@ -167,7 +170,7 @@ describe("View Round", () => {
     );
 
     expect(screen.getByTestId("side-nav-bar")).toBeInTheDocument();
-    expect(screen.getByText("Fund Contract")).toBeInTheDocument();
+    expect(screen.getByText("Fund Round")).toBeInTheDocument();
     expect(screen.getByText("Grant Applications")).toBeInTheDocument();
     expect(screen.getByText("Round Settings")).toBeInTheDocument();
     expect(screen.getByText("Round Stats")).toBeInTheDocument();

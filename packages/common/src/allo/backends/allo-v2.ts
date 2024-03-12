@@ -12,10 +12,10 @@ import {
   TransactionData,
 } from "@allo-team/allo-v2-sdk";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
-import { RoundCategory, UpdateRoundParams, VotingToken } from "../../types";
+import { UpdateRoundParams, VotingToken } from "../../types";
+import { ApplicationStatus, RoundApplicationAnswers, RoundCategory } from "data-layer";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
@@ -29,6 +29,7 @@ import {
   sendTransaction,
 } from "../transaction-sender";
 import { PermitSignature } from "../voting";
+import Erc20ABI from "../abis/erc20";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -123,9 +124,10 @@ export class AlloV2 implements Allo {
         return ipfsResult;
       }
 
-      const profileNonce: number = args.nonce
-        ? Number(args.nonce)
-        : Math.floor(Math.random() * 1000000) + 1000000;
+      const profileNonce = args.nonce
+        ? args.nonce
+        : BigInt(Math.floor(Math.random() * 1000000) + 1000000);
+
       const senderAddress = await this.transactionSender.address();
 
       const createProfileData: CreateProfileArgs = {
@@ -371,12 +373,12 @@ export class AlloV2 implements Allo {
         args.roundData.roundMetadataWithProgramContractAddress
           ?.programContractAddress;
 
-      if (!profileId) {
+      if (!profileId || !profileId.startsWith("0x")) {
         throw new Error("Program contract address is required");
       }
 
       const createPoolArgs: CreatePoolArgs = {
-        profileId,
+        profileId: profileId as Hex,
         strategy: STRATEGY_ADDRESSES[args.roundData.roundCategory],
         initStrategyData: initStrategyDataEncoded,
         token,
@@ -478,7 +480,7 @@ export class AlloV2 implements Allo {
           const strategyInstance = new DonationVotingMerkleDistributionStrategy(
             {
               chain: this.chainId,
-              poolId: args.roundId,
+              poolId: BigInt(args.roundId),
             }
           );
 
@@ -496,7 +498,7 @@ export class AlloV2 implements Allo {
         case RoundCategory.Direct: {
           const strategyInstance = new DirectGrantsStrategy({
             chain: this.chainId,
-            poolId: args.roundId,
+            poolId: BigInt(args.roundId),
           });
 
           const answers = metadata.application.answers;
@@ -619,6 +621,7 @@ export class AlloV2 implements Allo {
 
   editRound(args: {
     roundId: Hex | number;
+    roundAddress?: Hex;
     data: UpdateRoundParams;
     strategy?: RoundCategory;
   }): AlloOperation<
@@ -631,13 +634,230 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
+      let receipt: TransactionReceipt | null = null;
+
+      const data = args.data;
+
       if (typeof args.roundId != "number") {
         return error(new AlloError("roundId must be number"));
       }
 
-      emit("ipfs", success("0x0"));
+      if (!args.roundAddress) {
+        return error(new AlloError("roundAddress must be provided"));
+      }
 
-      return success("0x0");
+      /** Upload roundMetadata ( includes applicationMetadata ) to IPFS */
+      if (data.roundMetadata && data.applicationMetadata) {
+        const ipfsResult = await this.ipfsUploader({
+          round: data.roundMetadata,
+          application: data.applicationMetadata,
+        });
+
+        emit("ipfs", ipfsResult);
+
+        if (ipfsResult.type === "error") {
+          return ipfsResult;
+        }
+
+        /** Note: the pool metadata always calls `this.allo.updatePoolMetadata` and not the strategy */
+        const txUpdateMetadata = this.allo.updatePoolMetadata({
+          poolId: BigInt(args.roundId),
+          metadata: {
+            protocol: 1n,
+            pointer: ipfsResult.value,
+          },
+        });
+
+        const txResult = await sendRawTransaction(this.transactionSender, {
+          to: txUpdateMetadata.to,
+          data: txUpdateMetadata.data,
+          value: BigInt(txUpdateMetadata.value),
+        });
+
+        if (txResult.type === "error") {
+          return error(txResult.error);
+        }
+
+        try {
+          // wait for 1st transaction to be mined
+          receipt = await this.transactionSender.wait(txResult.value);
+        } catch (err) {
+          const result = new AlloError("Failed to update metadata");
+          emit("transactionStatus", error(result));
+          return error(result);
+        }
+      }
+
+      let updateTimestampTxn: TransactionData | null = null;
+
+      /** Note: timestamps updates happen by calling the strategy contract directly `this.strategy.updatePoolTimestamps` */
+      switch (args.strategy) {
+        case RoundCategory.QuadraticFunding: {
+          const strategyInstance = new DonationVotingMerkleDistributionStrategy(
+            {
+              chain: this.chainId,
+              poolId: BigInt(args.roundId),
+              address: args.roundAddress,
+            }
+          );
+
+          if (
+            data.roundStartTime &&
+            data.roundEndTime &&
+            data.applicationsStartTime &&
+            data.applicationsEndTime
+          ) {
+            updateTimestampTxn = strategyInstance.updatePoolTimestamps(
+              dateToEthereumTimestamp(data.applicationsStartTime),
+              dateToEthereumTimestamp(data.applicationsEndTime),
+              dateToEthereumTimestamp(data.roundStartTime),
+              dateToEthereumTimestamp(data.roundEndTime)
+            );
+          }
+
+          break;
+        }
+        case RoundCategory.Direct: {
+          // NOTE: TEST AFTER CREATION WORKS ON UI
+
+          const strategyInstance = new DirectGrantsStrategy({
+            chain: this.chainId,
+            poolId: BigInt(args.roundId),
+            address: args.roundAddress,
+          });
+
+          if (data.applicationsStartTime && data.applicationsEndTime) {
+            updateTimestampTxn = strategyInstance.getUpdatePoolTimestampsData(
+              dateToEthereumTimestamp(data.applicationsStartTime),
+              dateToEthereumTimestamp(data.applicationsEndTime)
+            );
+          }
+
+          break;
+        }
+
+        default:
+          throw new AlloError("Unsupported strategy");
+      }
+
+      if (updateTimestampTxn) {
+        const timestampTxResult = await sendRawTransaction(
+          this.transactionSender,
+          {
+            to: updateTimestampTxn.to,
+            data: updateTimestampTxn.data,
+            value: BigInt(updateTimestampTxn.value),
+          }
+        );
+
+        if (timestampTxResult.type === "error") {
+          return error(timestampTxResult.error);
+        }
+
+        try {
+          // wait for 2nd transaction to be mined
+          receipt = await this.transactionSender.wait(timestampTxResult.value);
+        } catch (err) {
+          const result = new AlloError("Failed to update timestamps");
+          emit("transactionStatus", error(result));
+          return error(result);
+        }
+      }
+
+      if (!receipt) return error(new AlloError("No receipt found"));
+
+      // note: we have 2 txns, allo.updatePoolMetadata and strategy.timestamp
+      // handle the case where only 1 happens or both
+      emit("transactionStatus", success(receipt));
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(void 0));
+
+      return success(args.roundId);
+    });
+  }
+
+  fundRound(args: {
+    tokenAddress: Address;
+    roundId: string;
+    amount: bigint;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (isNaN(Number(args.roundId))) {
+        return error(new AlloError("Round ID is not a valid Allo V2 pool ID"));
+      }
+
+      const poolId = BigInt(args.roundId);
+
+      if (args.tokenAddress === zeroAddress) {
+        emit("tokenApprovalStatus", success(null));
+      } else {
+        const approvalTx = await sendTransaction(this.transactionSender, {
+          address: args.tokenAddress,
+          abi: Erc20ABI,
+          functionName: "approve",
+          args: [this.allo.address(), args.amount],
+        });
+
+        if (approvalTx.type === "error") {
+          return approvalTx;
+        }
+
+        try {
+          const receipt = await this.transactionSender.wait(approvalTx.value);
+          emit("tokenApprovalStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to approve token transfer", err);
+          emit("tokenApprovalStatus", error(result));
+          return error(result);
+        }
+      }
+
+      const tx = await sendTransaction(this.transactionSender, {
+        address: this.allo.address(),
+        abi: AlloAbi,
+        functionName: "fundPool",
+        args: [poolId, args.amount],
+        value: args.tokenAddress === zeroAddress ? args.amount : 0n,
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to fund round", err);
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
     });
   }
 }

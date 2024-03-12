@@ -1,10 +1,11 @@
+import { ChainId } from "common";
+import { makeProgramData } from "../../../test-utils";
 import { getProgramById, listPrograms } from "../program";
 import { Program } from "../types";
-import { makeProgramData } from "../../../test-utils";
 import { CHAINS } from "../utils";
-import { ChainId } from "common";
 
 jest.mock("data-layer", () => ({
+  ...jest.requireActual("data-layer"),
   DataLayer: jest.fn().mockImplementation(() => ({
     getProgramsByUser: jest.fn().mockResolvedValue({
       programs: [],

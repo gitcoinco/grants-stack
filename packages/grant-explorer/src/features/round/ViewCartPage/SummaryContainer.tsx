@@ -120,17 +120,22 @@ export function SummaryContainer() {
     );
   }, [chainIds, tokenBalancesPerChain, totalDonationsPerChain]);
 
-  const { data: rounds } = useSWR(projects, (projects) => {
-    const uniqueProjects = uniqBy(projects, "roundId");
+  const { data: rounds } = useSWR(projects, async (projects) => {
+    const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
     return Promise.all(
       uniqueProjects.map(async (proj) => {
-        const { round } = await dataLayer.getLegacyRoundById({
-          roundId: proj.roundId,
-          chainId: proj.chainId,
-        });
-        return round;
+        const results =
+          await dataLayer.getRoundByIdAndChainIdWithApprovedApplications({
+            roundId: proj.roundId,
+            chainId: proj.chainId,
+          });
+        if (results === null) {
+          return null;
+        } else {
+          return results.round;
+        }
       })
-    );
+    ).then((rounds) => rounds.filter(isPresent));
   });
 
   /** useEffect to clear projects from expired rounds (no longer accepting donations) */
