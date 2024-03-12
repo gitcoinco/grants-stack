@@ -35,6 +35,7 @@ import {
 } from "../transaction-sender";
 import { PermitSignature } from "../voting";
 import Erc20ABI from "../abis/erc20";
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -704,7 +705,7 @@ export class AlloV2 implements Allo {
     });
   }
 
-  finalizeRound(_args: {
+  finalizeRound(args: {
     strategyAddress: Address;
     matchingDistribution: DistributionMatch[];
   }): AlloOperation<
@@ -716,8 +717,64 @@ export class AlloV2 implements Allo {
       indexingStatus: Result<null>;
     }
   > {
-    return new AlloOperation(async () => {
-      throw new AlloError("Not implemented yet");
+    return new AlloOperation(async ({ emit }) => {
+      const ipfsResult = await this.ipfsUploader(args.matchingDistribution);
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      const distribution = args.matchingDistribution.map((d, index) => [
+        index,
+        d.applicationId,
+        d.projectPayoutAddress,
+        d.matchAmountInToken,
+      ]);
+
+      const tree = StandardMerkleTree.of(distribution, [
+        "uint256",
+        "address",
+        "address",
+        "uint256",
+      ]);
+
+      const merkleRoot = tree.root as Hex;
+
+      {
+        const txResult = await sendTransaction(this.transactionSender, {
+          address: args.strategyAddress,
+          abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi,
+          functionName: "updateDistribution",
+          args: [merkleRoot, { protocol: 1n, pointer: ipfsResult.value }],
+        });
+
+        emit("transaction", txResult);
+
+        if (txResult.type === "error") {
+          return txResult;
+        }
+
+        let receipt: TransactionReceipt;
+        try {
+          receipt = await this.transactionSender.wait(txResult.value);
+          emit("transactionStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to update application status");
+          emit("transactionStatus", error(result));
+          return error(result);
+        }
+
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("indexingStatus", success(null));
+      }
+
+      return success(null);
     });
   }
 }
