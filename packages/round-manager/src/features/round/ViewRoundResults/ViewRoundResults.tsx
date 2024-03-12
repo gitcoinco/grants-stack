@@ -1,5 +1,5 @@
 import { useCallback, useState, useRef, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
 import {
@@ -23,7 +23,6 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
 import { roundApplicationsToCSV } from "../../api/exports";
-import { TransactionResponse } from "@ethersproject/providers";
 import { PayoutToken, payoutTokens } from "../../api/payoutTokens";
 import { DistributionMatch } from "data-layer";
 import { utils } from "ethers";
@@ -212,6 +211,7 @@ function ViewRoundResults({
   const { data: signer } = useSigner();
   const debugModeEnabled = useDebugMode();
   const network = useNetwork();
+  const navigate = useNavigate();
 
   const matchingTableRef = useRef<HTMLDivElement>(null);
   const [overridesFileDraft, setOverridesFileDraft] = useState<
@@ -293,16 +293,9 @@ function ViewRoundResults({
 
       await finalizeRound(round.payoutStrategy.id, matchingJson);
 
-      // const setReadyForPayoutTx = await setReadyForPayout({
-      //   roundId: round.id,
-      //   signerOrProvider: signer,
-      // });
-      //
-      // setReadyforPayoutTransaction(setReadyForPayoutTx);
-      // reloadMatchingFunds();
-
       setTimeout(() => {
         setProgressModalOpen(false);
+        navigate(0);
       }, errorModalDelayMs);
     } catch (error) {
       setTimeout(() => {
@@ -324,6 +317,14 @@ function ViewRoundResults({
       description:
         "The matching distribution is being uploaded to the contract.",
       status: finalizeRoundToContractStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
     },
   ];
 
