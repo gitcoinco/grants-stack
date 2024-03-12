@@ -14,6 +14,7 @@ import {
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
 import {
   ApplicationStatus,
+  DistributionMatch,
   RoundApplicationAnswers,
   RoundCategory,
 } from "data-layer";
@@ -700,6 +701,23 @@ export class AlloV2 implements Allo {
       emit("indexingStatus", success(null));
 
       return success(null);
+    });
+  }
+
+  finalizeRound(_args: {
+    strategyAddress: Address;
+    matchingDistribution: DistributionMatch[];
+  }): AlloOperation<
+    Result<null>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async () => {
+      throw new AlloError("Not implemented yet");
     });
   }
 }

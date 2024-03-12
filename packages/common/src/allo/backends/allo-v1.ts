@@ -794,7 +794,6 @@ export class AlloV1 implements Allo {
   }
 
   finalizeRound(args: {
-    roundId: string;
     strategyAddress: Address;
     matchingDistribution: DistributionMatch[];
   }): AlloOperation<
