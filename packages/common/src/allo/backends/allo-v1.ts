@@ -26,7 +26,6 @@ import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import ProjectRegistryABI from "../abis/allo-v1/ProjectRegistry";
 import RoundFactoryABI from "../abis/allo-v1/RoundFactory";
 import RoundImplementationABI from "../abis/allo-v1/RoundImplementation";
-import QuadraticFundingVotingStrategyImplementationABI from "../abis/allo-v1/QuadraticFundingVotingStrategyImplementation";
 import {
   dgVotingStrategyDummyContractMap,
   directPayoutStrategyFactoryContractMap,
