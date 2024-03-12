@@ -808,7 +808,7 @@ export class AlloV1 implements Allo {
   > {
     return new AlloOperation(async ({ emit }) => {
       if (typeof args.roundId == "number") {
-        return error(new AlloError("roundId must be Hex"));
+        return error(new AlloError("roundId must be a number"));
       }
       const transactionBuilder = new TransactionBuilder(args.roundId);
 
