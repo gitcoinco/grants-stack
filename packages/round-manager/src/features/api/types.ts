@@ -8,6 +8,7 @@ import { RoundVisibilityType } from "common";
 import { BigNumber } from "ethers";
 import { Address } from "viem";
 import { SchemaQuestion } from "./utils";
+import { RoundForManager } from "data-layer";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -262,6 +263,8 @@ export interface Round {
   fundedAmountInUsd: number;
   matchAmount: bigint;
   matchAmountInUsd: number;
+
+  matchingDistribution: RoundForManager["matchingDistribution"];
 }
 
 export type MatchingStatsData = {

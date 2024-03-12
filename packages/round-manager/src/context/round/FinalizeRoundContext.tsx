@@ -11,6 +11,9 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { ethers } from "ethers";
 import { generateMerkleTree } from "../../features/api/utils";
 import { updateDistributionToContract } from "../../features/api/payoutStrategy/payoutStrategy";
+import { useAllo } from "common";
+import { Address } from "viem";
+import { DistributionMatch } from "data-layer";
 
 export interface FinalizeRoundState {
   IPFSCurrentStatus: ProgressStatus;
@@ -143,6 +146,7 @@ const _finalizeRound = async ({
 
 export const useFinalizeRound = () => {
   const context = useContext(FinalizeRoundContext);
+  const allo = useAllo();
   if (context === undefined) {
     throw new Error(
       "useFinalizeRound must be used within a FinalizeRoundProvider"
@@ -153,8 +157,17 @@ export const useFinalizeRound = () => {
 
   const finalizeRound = (
     payoutStrategy: string,
-    matchingJSON: MatchingStatsData[] | undefined
+    matchingJSON: DistributionMatch[]
   ) => {
+    if (allo === null) {
+      return;
+    }
+
+    const result = allo.finalizeRound({
+      strategyAddress: payoutStrategy as Address,
+      matchingDistribution: matchingJSON,
+    });
+
     return _finalizeRound({
       dispatch: context.dispatch,
       payoutStrategy,

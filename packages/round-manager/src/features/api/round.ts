@@ -9,7 +9,7 @@ import {
 import { MatchingStatsData, Round } from "./types";
 import { fetchFromIPFS } from "./utils";
 import { maxDateForUint256 } from "../../constants";
-import { DataLayer, RoundForManager, V2RoundWithRoles } from "data-layer";
+import { DataLayer, RoundForManager } from "data-layer";
 
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
@@ -123,6 +123,7 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
     matchAmountInUsd: round.matchAmountInUsd,
     fundedAmount: BigInt(round.fundedAmount),
     fundedAmountInUsd: round.fundedAmountInUsd,
+    matchingDistribution: round.matchingDistribution,
   };
 }
 
@@ -206,26 +207,3 @@ export async function fetchMatchingDistribution(
     throw new Error("Unable to fetch matching distribution");
   }
 }
-
-/**
- * Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
- * @param roundId
- * @param signerOrProvider
- * @returns
- */
-export const setReadyForPayout = async ({
-  roundId,
-  signerOrProvider,
-}: {
-  roundId: string;
-  signerOrProvider: Signer;
-}): Promise<TransactionResponse> => {
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
-    signerOrProvider
-  );
-
-  const tx = await roundImplementation.setReadyForPayout();
-  return tx.wait();
-};

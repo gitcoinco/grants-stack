@@ -29,7 +29,6 @@ import {
   ApplicationStatus,
   ApprovedProject,
   GrantApplication,
-  MatchingStatsData,
   Program,
   ProjectCredentials,
   ProjectMetadata,
@@ -43,6 +42,7 @@ import {
   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
 } from "common";
 import { zeroAddress } from "viem";
+import { DistributionMatch } from "data-layer";
 
 export const mockedOperatorWallet = faker.finance.ethereumAddress();
 
@@ -112,6 +112,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     matchAmountInUsd: 0,
     fundedAmount: 0n,
     fundedAmountInUsd: 0,
+    matchingDistribution: null,
     ...overrides,
   };
 };
@@ -169,20 +170,20 @@ export const makeDirectGrantRoundData = (
     matchAmountInUsd: 0,
     fundedAmount: 0n,
     fundedAmountInUsd: 0,
+    matchingDistribution: null,
     ...overrides,
   };
 };
 
-export const makeMatchingStatsData = (): MatchingStatsData => {
+export const makeMatchingStatsData = (): DistributionMatch => {
   return {
     projectName: faker.company.name(),
     applicationId: faker.datatype.number().toString(),
     projectId: formatBytes32String(faker.company.name().slice(0, 31)),
-    uniqueContributorsCount: faker.datatype.number(),
     contributionsCount: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
-    matchAmountInToken: parseEther(faker.datatype.number().toString()),
-    originalMatchAmountInToken: parseEther(faker.datatype.number().toString()),
+    matchAmountInToken: faker.datatype.number().toString(),
+    originalMatchAmountInToken: faker.datatype.number().toString(),
     projectPayoutAddress: faker.finance.ethereumAddress(),
   };
 };
