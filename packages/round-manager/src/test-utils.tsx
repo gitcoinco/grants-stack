@@ -108,6 +108,10 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     operatorWallets: [mockedOperatorWallet],
     finalized: false,
     tags: ["allo-v1"],
+    matchAmount: 0n,
+    matchAmountInUsd: 0,
+    fundedAmount: 0n,
+    fundedAmountInUsd: 0,
     ...overrides,
   };
 };
@@ -161,6 +165,10 @@ export const makeDirectGrantRoundData = (
     ownedBy: faker.finance.ethereumAddress(),
     operatorWallets: [mockedOperatorWallet],
     finalized: false,
+    matchAmount: 0n,
+    matchAmountInUsd: 0,
+    fundedAmount: 0n,
+    fundedAmountInUsd: 0,
     ...overrides,
   };
 };

@@ -146,7 +146,7 @@ export interface Round {
   /**
    * The on-chain unique round ID
    */
-  id?: string;
+  id: string;
 
   chainId?: number;
 
@@ -258,10 +258,10 @@ export interface Round {
   createdByAddress?: string;
 
   tags?: string[];
-  fundedAmount?: bigint;
-  fundedAmountInUsd?: number;
-  matchAmount?: bigint;
-  matchAmountInUsd?: number;
+  fundedAmount: bigint;
+  fundedAmountInUsd: number;
+  matchAmount: bigint;
+  matchAmountInUsd: number;
 }
 
 export type MatchingStatsData = {

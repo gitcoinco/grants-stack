@@ -38,12 +38,6 @@ describe("TransactionBuilder", () => {
     expect(transactionBuilder.contract).toBeInstanceOf(ethers.Contract);
   });
 
-  it("should throw an error when round ID is undefined", () => {
-    expect(
-      () => new TransactionBuilder({ ...round, id: undefined }, signer)
-    ).toThrowError("Round ID is undefined");
-  });
-
   it("should add a transaction to the builder", () => {
     const action = UpdateAction.UPDATE_APPLICATION_META_PTR;
     const args = [{ protocol: 1, pointer: "abcd" }];

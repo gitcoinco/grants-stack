@@ -16,7 +16,7 @@ import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  Round as GraphRound,
+  Round,
 } from "../../api/types";
 import { LoadingRing, Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
@@ -32,7 +32,6 @@ import { useRoundById } from "../../../context/round/RoundContext";
 import { fetchFromIPFS } from "../../api/utils";
 import { roundApplicationsToCSV } from "../../api/exports";
 import { Signer } from "@ethersproject/abstract-signer";
-import { Round } from "allo-indexer-client";
 import {
   merklePayoutStrategyImplementationContract,
   roundImplementationContract,
@@ -65,34 +64,6 @@ const distributionOptions = [
   { value: "keep", label: "Keep distribution as is" },
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
-
-function useIsRoundFullyFunded({
-  roundId,
-  matchAmount,
-  matchTokenAddress,
-}: {
-  roundId: Address;
-  matchAmount: bigint;
-  matchTokenAddress: Address;
-}) {
-  const balanceOptions =
-    matchTokenAddress == ethers.constants.AddressZero
-      ? { address: roundId }
-      : {
-          address: roundId,
-          token: matchTokenAddress,
-        };
-
-  const roundBalance = useBalance(balanceOptions);
-
-  if (roundBalance.isLoading === true || roundBalance.data === undefined) {
-    return false;
-  }
-
-  const roundBalanceValue = roundBalance.data.value.toBigInt();
-
-  return roundBalanceValue >= matchAmount;
-}
 
 type FinalizedMatches = {
   readyForPayoutTransactionHash: string;
@@ -311,26 +282,21 @@ export default function ViewRoundResultsWrapper() {
 }
 
 function ViewRoundResultsWithId({ id }: { id: Address }) {
-  const round = useRound(id);
-  const roundFromGraph = useRoundById(id.toLowerCase());
+  const round = useRoundById(id.toLowerCase());
 
-  if (
-    round.isLoading ||
-    roundFromGraph.fetchRoundStatus === ProgressStatus.IN_PROGRESS
-  ) {
+  if (round.fetchRoundStatus === ProgressStatus.IN_PROGRESS) {
     return <Spinner text="We're fetching the matching data." />;
   }
 
   if (
     round.error ||
-    roundFromGraph.fetchRoundStatus === ProgressStatus.IS_ERROR ||
-    round.data === undefined ||
-    roundFromGraph.round === undefined
+    round.fetchRoundStatus === ProgressStatus.IS_ERROR ||
+    round.round === undefined
   ) {
     return <div>Failed to load the round</div>;
   }
 
-  const matchTokenAddress = round.data.token;
+  const matchTokenAddress = round.round.token;
 
   const matchToken = payoutTokens.find(
     (t) => t.address.toLowerCase() == matchTokenAddress.toLowerCase()
@@ -343,8 +309,7 @@ function ViewRoundResultsWithId({ id }: { id: Address }) {
   return (
     <ViewRoundResults
       roundId={id}
-      round={round.data}
-      oldRoundFromGraph={roundFromGraph.round}
+      round={round.round}
       matchToken={matchToken}
     />
   );
@@ -353,12 +318,10 @@ function ViewRoundResultsWithId({ id }: { id: Address }) {
 function ViewRoundResults({
   roundId,
   round,
-  oldRoundFromGraph,
   matchToken,
 }: {
   roundId: Address;
   round: Round;
-  oldRoundFromGraph: GraphRound;
   matchToken: PayoutToken;
 }) {
   const { chain } = useNetwork();
@@ -393,15 +356,9 @@ function ViewRoundResults({
   const shouldShowRevisedTable =
     areMatchingFundsRevised || Boolean(readyForPayoutTransactionHash);
 
-  const isReadyForPayout = Boolean(
-    oldRoundFromGraph?.payoutStrategy.isReadyForPayout
-  );
+  const isReadyForPayout = Boolean(round.payoutStrategy.isReadyForPayout);
 
-  const isRoundFullyFunded = useIsRoundFullyFunded({
-    roundId,
-    matchAmount: round.matchAmount,
-    matchTokenAddress: matchToken.address,
-  });
+  const isRoundFullyFunded = round.fundedAmount >= round.matchAmount;
 
   const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
     useState(false);
@@ -434,7 +391,7 @@ function ViewRoundResults({
     useFinalizeRound();
 
   const onFinalizeResults = async () => {
-    if (!matches || !signer || !oldRoundFromGraph?.payoutStrategy.id) {
+    if (!matches || !signer) {
       return;
     }
 
@@ -454,7 +411,7 @@ function ViewRoundResults({
         originalMatchAmountInToken: BigNumber.from(match.matched),
       }));
 
-      await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
+      await finalizeRound(round.payoutStrategy.id, matchingJson);
 
       const setReadyForPayoutTx = await setReadyForPayout({
         roundId: round.id,
