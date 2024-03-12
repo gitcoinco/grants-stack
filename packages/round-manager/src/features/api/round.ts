@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Signer } from "@ethersproject/abstract-signer";
 import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
-import { DataLayer, V2RoundWithRoles } from "data-layer";
+import { DataLayer, RoundForManager, V2RoundWithRoles } from "data-layer";
 import { BigNumber, ethers } from "ethers";
 import { maxDateForUint256 } from "../../constants";
 import {
