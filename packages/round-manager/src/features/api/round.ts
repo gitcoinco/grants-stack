@@ -110,7 +110,7 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
     votingStrategy: "unknown",
     payoutStrategy: {
       id: round.strategyAddress,
-      isReadyForPayout: round.isReadyForPayout,
+      isReadyForPayout: round.readyForPayoutTransaction !== null,
       strategyName:
         round.strategyName === "allov1.Direct" ? "DIRECT" : "MERKLE",
     },

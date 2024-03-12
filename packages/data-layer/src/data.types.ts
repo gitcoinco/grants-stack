@@ -310,7 +310,7 @@ export type V2Round = {
   projectId: string;
   strategyAddress: Address;
   strategyName: string;
-  isReadyForPayout: boolean;
+  readyForPayoutTransaction: string | null;
 };
 
 /**
