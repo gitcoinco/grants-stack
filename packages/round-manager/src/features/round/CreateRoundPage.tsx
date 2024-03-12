@@ -6,7 +6,6 @@ import { RoundCategory } from "data-layer";
 import "react-datetime/css/react-datetime.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useProgramById } from "../../context/program/ReadProgramContext";
-import { RoundCategory } from "../api/types";
 import { FormWizard } from "../common/FormWizard";
 import Navbar from "../common/Navbar";
 import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
