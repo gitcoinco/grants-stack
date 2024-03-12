@@ -104,13 +104,11 @@ export const getProjectById = gql`
  * @returns The project
  */
 export const getLegacyProjectId = gql`
- query ($projectId: String!) {
-    legacyProjects(filter: {
-      v2ProjectId: {equalTo: $projectId}
-    }) {
+  query ($projectId: String!) {
+    legacyProjects(filter: { v2ProjectId: { equalTo: $projectId } }) {
       v1ProjectId
     }
- }
+  }
 `;
 
 /**
@@ -423,7 +421,7 @@ export const getRoundByIdAndChainId = gql`
       applicationMetadataCid
       strategyAddress
       strategyName
-      isReadyForPayout
+      readyForPayoutTransaction
       projectId
       roles {
         role
@@ -454,7 +452,7 @@ export const getRoundWithApplications = gql`
       applicationMetadataCid
       strategyAddress
       strategyName
-      isReadyForPayout
+      readyForPayoutTransaction
       applications {
         id
         status
@@ -493,7 +491,7 @@ const getRoundForManagerFields = `
   applicationMetadataCid
   strategyAddress
   strategyName
-  isReadyForPayout
+  readyForPayoutTransaction
   projectId
   matchAmount
   matchAmountInUsd
@@ -571,7 +569,7 @@ export const getRoundByIdAndChainIdWithApprovedApplications = gql`
       projectId
       strategyAddress
       strategyName
-      isReadyForPayout
+      readyForPayoutTransaction
       applications(filter: { status: { equalTo: APPROVED } }) {
         id
         projectId
