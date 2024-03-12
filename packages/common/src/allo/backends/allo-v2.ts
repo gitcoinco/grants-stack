@@ -12,7 +12,11 @@ import {
   TransactionData,
 } from "@allo-team/allo-v2-sdk";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { ApplicationStatus, RoundApplicationAnswers, RoundCategory } from "data-layer";
+import {
+  ApplicationStatus,
+  RoundApplicationAnswers,
+  RoundCategory,
+} from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
 import { VotingToken } from "../../types";
@@ -40,6 +44,7 @@ const STRATEGY_ADDRESSES = {
 function applicationStatusToNumber(status: ApplicationStatus) {
   switch (status) {
     case "PENDING":
+    case "IN_REVIEW":
       return 1n;
     case "APPROVED":
       return 2n;
