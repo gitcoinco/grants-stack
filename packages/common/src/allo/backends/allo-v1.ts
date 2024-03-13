@@ -793,6 +793,7 @@ export class AlloV1 implements Allo {
   }
 
   finalizeRound(args: {
+    roundId: string;
     strategyAddress: Address;
     matchingDistribution: DistributionMatch[];
   }): AlloOperation<
@@ -815,7 +816,11 @@ export class AlloV1 implements Allo {
     }
 
     return new AlloOperation(async ({ emit }) => {
-      const ipfsResult = await this.ipfsUploader(args.matchingDistribution);
+      const roundAddress = getAddress(args.roundId);
+
+      const ipfsResult = await this.ipfsUploader({
+        matchingDistribution: args.matchingDistribution,
+      });
 
       emit("ipfs", ipfsResult);
 
@@ -868,8 +873,8 @@ export class AlloV1 implements Allo {
 
       {
         const txResult = await sendTransaction(this.transactionSender, {
-          address: args.strategyAddress,
-          abi: MerklePayoutStrategyImplementationABI,
+          address: roundAddress,
+          abi: RoundImplementationABI,
           functionName: "setReadyForPayout",
         });
 

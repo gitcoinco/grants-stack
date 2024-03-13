@@ -118,10 +118,11 @@ export function fetchProjectPaidInARound(
   roundId: string,
   chainId: ChainId
 ): Promise<Payout[]> {
+  console.log(roundId, chainId);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data } = useSWR(
-    [roundId, chainId],
-    ([roundId, chainId]: [roundId: string, chainId: ChainId]) => {
+    ["payouts", roundId, chainId],
+    ([_, roundId, chainId]) => {
       return graphql_fetch(
         `
         query GetPayouts($roundId: String) {

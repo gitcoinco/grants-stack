@@ -706,6 +706,7 @@ export class AlloV2 implements Allo {
   }
 
   finalizeRound(args: {
+    roundId: string;
     strategyAddress: Address;
     matchingDistribution: DistributionMatch[];
   }): AlloOperation<
@@ -718,7 +719,9 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      const ipfsResult = await this.ipfsUploader(args.matchingDistribution);
+      const ipfsResult = await this.ipfsUploader({
+        matchingDistribution: args.matchingDistribution,
+      });
 
       emit("ipfs", ipfsResult);
 

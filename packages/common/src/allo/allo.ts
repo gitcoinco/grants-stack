@@ -156,6 +156,7 @@ export interface Allo {
   >;
 
   finalizeRound: (args: {
+    roundId: string;
     strategyAddress: Address;
     matchingDistribution: DistributionMatch[];
   }) => AlloOperation<

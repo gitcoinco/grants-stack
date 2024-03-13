@@ -1,15 +1,5 @@
-import {
-  MatchingStatsData,
-  MetadataPointer,
-  ProgressStatus,
-  Web3Instance,
-} from "../../features/api/types";
+import { ProgressStatus } from "../../features/api/types";
 import React, { createContext, useContext, useReducer } from "react";
-import { useWallet } from "../../features/common/Auth";
-import { saveToIPFS } from "../../features/api/ipfs";
-import { datadogLogs } from "@datadog/browser-logs";
-import { ethers } from "ethers";
-import { updateDistributionToContract } from "../../features/api/payoutStrategy/payoutStrategy";
 import { useAllo } from "common";
 import { Address } from "viem";
 import { DistributionMatch } from "data-layer";
@@ -110,6 +100,7 @@ export const useFinalizeRound = () => {
   }
 
   const finalizeRound = async (
+    roundId: string,
     payoutStrategy: string,
     matchingJSON: DistributionMatch[]
   ) => {
@@ -127,6 +118,7 @@ export const useFinalizeRound = () => {
 
     const result = await allo
       .finalizeRound({
+        roundId,
         strategyAddress: payoutStrategy as Address,
         matchingDistribution: matchingJSON,
       })
@@ -200,92 +192,3 @@ export const useFinalizeRound = () => {
     finalizeRoundToContractStatus: context.state.finalizeRoundToContractStatus,
   };
 };
-
-async function storeDocument(
-  dispatch: (action: Action) => void,
-  matchingJSON: MatchingStatsData[]
-) {
-  datadogLogs.logger.info(`storeDocument: matchingDistribution`);
-
-  dispatch({
-    type: ActionType.SET_STORING_STATUS,
-    payload: { IPFSCurrentStatus: ProgressStatus.IN_PROGRESS },
-  });
-
-  try {
-    const IpfsHash: string = await saveToIPFS({
-      content: { matchingDistribution: matchingJSON },
-      metadata: {
-        name: "matching-distribution",
-      },
-    });
-
-    dispatch({
-      type: ActionType.SET_STORING_STATUS,
-      payload: { IPFSCurrentStatus: ProgressStatus.IS_SUCCESS },
-    });
-
-    return IpfsHash;
-  } catch (error) {
-    datadogLogs.logger.error(`error: storeDocument - ${error}`);
-    console.error(`storeDocument`, error);
-    dispatch({
-      type: ActionType.SET_STORING_STATUS,
-      payload: { IPFSCurrentStatus: ProgressStatus.IS_ERROR },
-    });
-    throw error;
-  }
-}
-
-async function finalizeToContract(
-  dispatch: (action: Action) => void,
-  payoutStrategy: string,
-  merkleRoot: string,
-  distributionMetaPtr: { protocol: number; pointer: string },
-  signerOrProvider: Web3Instance["provider"]
-) {
-  try {
-    dispatch({
-      type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { finalizeRoundToContractStatus: ProgressStatus.IN_PROGRESS },
-    });
-
-    const encodedDistribution = encodeDistributionParameters(
-      merkleRoot,
-      distributionMetaPtr
-    );
-
-    const { transactionBlockNumber } = await updateDistributionToContract({
-      payoutStrategy,
-      encodedDistribution,
-      // @ts-expect-error TODO: resolve this situation around signers and providers
-      signerOrProvider: signerOrProvider,
-    });
-
-    dispatch({
-      type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { finalizeRoundToContractStatus: ProgressStatus.IS_SUCCESS },
-    });
-
-    return transactionBlockNumber;
-  } catch (error) {
-    datadogLogs.logger.error(`error: finalizeRoundToContract - ${error}`);
-    console.error(`finalizeRoundToContract`, error);
-    dispatch({
-      type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { finalizeRoundToContractStatus: ProgressStatus.IS_ERROR },
-    });
-
-    throw error;
-  }
-}
-
-function encodeDistributionParameters(
-  merkleRoot: string,
-  distributionMetaPtr: MetadataPointer
-) {
-  return ethers.utils.defaultAbiCoder.encode(
-    ["bytes32", "tuple(uint256 protocol, string pointer)"],
-    [merkleRoot, distributionMetaPtr]
-  );
-}

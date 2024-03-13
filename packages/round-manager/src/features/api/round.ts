@@ -197,7 +197,11 @@ export async function fetchMatchingDistribution(
       matchingDistribution.map((distribution) => {
         distribution.matchAmountInToken = BigNumber.from(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (distribution.matchAmountInToken as any).hex
+          typeof distribution.matchAmountInToken === "object" &&
+            distribution.matchAmountInToken !== null &&
+            "hex" in distribution.matchAmountInToken
+            ? (distribution.matchAmountInToken as any).hex
+            : distribution.matchAmountInToken
         );
       });
     }

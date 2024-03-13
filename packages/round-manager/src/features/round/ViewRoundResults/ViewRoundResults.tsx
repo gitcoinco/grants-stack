@@ -81,8 +81,11 @@ function useRevisedMatchingFunds(
       return undefined;
     }
 
-    // if the round has an uploaded distribution, return it immedately
-    if (round.matchingDistribution !== null) {
+    // if the round is set to payout, return the finalized matches
+    if (
+      round.matchingDistribution !== null &&
+      round.readyForPayoutTransaction !== null
+    ) {
       return round.matchingDistribution.matchingDistribution.map((m) => {
         return {
           applicationId: m.applicationId,
@@ -141,6 +144,7 @@ function useRevisedMatchingFunds(
     revisedMatches.data,
     error,
     round.matchingDistribution,
+    round.readyForPayoutTransaction,
   ]);
 
   return {
@@ -298,7 +302,7 @@ function ViewRoundResults({
         originalMatchAmountInToken: match.matched.toString(),
       }));
 
-      await finalizeRound(round.payoutStrategy.id, matchingJson);
+      await finalizeRound(roundId, round.payoutStrategy.id, matchingJson);
 
       setTimeout(() => {
         setProgressModalOpen(false);
