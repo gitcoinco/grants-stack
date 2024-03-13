@@ -26,6 +26,7 @@ import { roundApplicationsToCSV } from "../../api/exports";
 import { PayoutToken, payoutTokens } from "../../api/payoutTokens";
 import { DistributionMatch } from "data-layer";
 import { utils } from "ethers";
+import { useContractAmountFunded } from "../FundContract";
 
 type RevisedMatch = {
   revisedContributionCount: number;
@@ -241,7 +242,13 @@ function ViewRoundResults({
   const shouldShowRevisedTable =
     areMatchingFundsRevised || Boolean(readyForPayoutTransactionHash);
 
-  const isRoundFullyFunded = round.fundedAmount >= round.matchAmount;
+  const { data: amountFunded } = useContractAmountFunded({
+    round: round,
+    payoutToken: matchToken,
+  });
+
+  const isRoundFullyFunded =
+    (amountFunded?.fundedAmount ?? 0) >= round.matchAmount;
 
   const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
     useState(false);
