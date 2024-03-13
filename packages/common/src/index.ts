@@ -118,7 +118,6 @@ export function fetchProjectPaidInARound(
   roundId: string,
   chainId: ChainId
 ): Promise<Payout[]> {
-  console.log(roundId, chainId);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data } = useSWR(
     ["payouts", roundId, chainId],
