@@ -68,6 +68,7 @@ function createProjectId(args: {
 function applicationStatusToNumber(status: ApplicationStatus) {
   switch (status) {
     case "PENDING":
+    case "IN_REVIEW":
       return 0n;
     case "APPROVED":
       return 1n;

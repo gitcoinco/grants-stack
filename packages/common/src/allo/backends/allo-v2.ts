@@ -46,6 +46,7 @@ const STRATEGY_ADDRESSES = {
 function applicationStatusToNumber(status: ApplicationStatus) {
   switch (status) {
     case "PENDING":
+    case "IN_REVIEW":
       return 1n;
     case "APPROVED":
       return 2n;
