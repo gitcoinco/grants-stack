@@ -1,6 +1,8 @@
-import { Round, RoundCategory } from "data-layer";
+import { Round } from "data-layer";
 import { Hex } from "viem";
 import { ChainId } from "./chain-ids";
+import { AnyJson } from ".";
+import { BigNumber } from "ethers";
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
@@ -15,6 +17,16 @@ export type CreateRoundData = {
   round: Round;
   roundCategory: RoundCategory;
 };
+
+export type UpdateRoundParams = {
+  applicationMetadata?: AnyJson;
+  roundMetadata?: AnyJson;
+  matchAmount?: BigNumber;
+  roundStartTime?: Date;
+  roundEndTime?: Date;
+  applicationsStartTime?: Date;
+  applicationsEndTime?: Date;
+}
 
 export type SchemaQuestion = {
   id: number;
@@ -38,6 +50,20 @@ export type ProjectRequirements = {
     verification: boolean;
   };
 };
+
+export enum RoundCategory {
+  QuadraticFunding,
+  Direct,
+}
+
+export enum UpdateAction {
+  UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
+  UPDATE_ROUND_META_PTR = "updateRoundMetaPtr",
+  UPDATE_ROUND_START_AND_END_TIMES = "updateStartAndEndTimes",
+  UPDATE_MATCH_AMOUNT = "updateMatchAmount",
+  UPDATE_ROUND_FEE_ADDRESS = "updateRoundFeeAddress",
+  UPDATE_ROUND_FEE_PERCENTAGE = "updateRoundFeePercentage",
+}
 
 export type InputType =
   | "email"

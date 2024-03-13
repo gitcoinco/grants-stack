@@ -60,7 +60,10 @@ export default function CreateRound() {
           <header>
             <div className="flow-root">
               <h1 className="float-left text-[32px] mb-7">
-                Create a {roundCategoryParam == "direct" && "Direct Grants"}
+                Create a
+                {roundCategoryParam == "direct"
+                  ? "Direct Grants"
+                  : "Quadratic Funding"}
                 &nbsp;Round
               </h1>
               <ExitCreateRound onClick={() => navigate("/")} />
