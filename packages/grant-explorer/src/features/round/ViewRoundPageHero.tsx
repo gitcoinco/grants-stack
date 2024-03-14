@@ -54,7 +54,7 @@ export default function ViewRoundPageHero({
         ? undefined
         : getDaysLeft(getUnixTime(round.roundEndTime).toString());
 
-    if (!roundEndsIn || roundEndsIn < 0) return;
+    if (roundEndsIn === undefined || roundEndsIn < 0) return;
 
     if (roundEndsIn === 0) return "Ends today";
 
