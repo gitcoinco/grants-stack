@@ -54,6 +54,11 @@ function getLocalStorageConfigOverrides(): LocalStorageConfigOverrides {
   return JSON.parse(configOverrides);
 }
 
+export function switchAlloVersion(version: AlloVersion) {
+  setLocalStorageConfigOverride("allo-version", version);
+  window.location.reload();
+}
+
 export function setLocalStorageConfigOverride(key: string, value: string) {
   if (typeof window === "undefined") {
     throw new Error("window is not defined");
