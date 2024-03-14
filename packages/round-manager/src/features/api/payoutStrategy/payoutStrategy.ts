@@ -1,6 +1,6 @@
 import { ChainId } from "common";
 import { BigNumber, ethers, Signer } from "ethers";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   directPayoutStrategyFactoryContract,
   merklePayoutStrategyImplementationContract,
@@ -62,29 +62,31 @@ export const useGroupProjectsByPaymentStatus = (
       distributionTransaction: application.distributionTransaction,
     }));
 
-  const paidProjectIds = applications
-    ?.filter((application) => application.distributionTransaction !== null)
-    .map((application) => application.projectId);
+  const paidProjectIds = paidProjects?.map((project) => project.projectId);
 
-  const allProjects: MatchingStatsData[] =
-    round.matchingDistribution?.matchingDistribution.map(
-      (matchingStatsData) => {
-        return {
-          projectName: matchingStatsData.projectName,
-          contributionsCount: matchingStatsData.contributionsCount,
-          matchPoolPercentage: matchingStatsData.matchPoolPercentage,
-          projectId: matchingStatsData.projectId,
-          applicationId: matchingStatsData.applicationId,
-          matchAmountInToken: BigNumber.from(
-            matchingStatsData.matchAmountInToken
-          ),
-          originalMatchAmountInToken: BigNumber.from(
-            matchingStatsData.originalMatchAmountInToken
-          ),
-          projectPayoutAddress: matchingStatsData.projectPayoutAddress,
-        };
-      }
-    ) ?? [];
+  const allProjects: MatchingStatsData[] = useMemo(
+    () =>
+      round.matchingDistribution?.matchingDistribution.map(
+        (matchingStatsData) => {
+          return {
+            projectName: matchingStatsData.projectName,
+            contributionsCount: matchingStatsData.contributionsCount,
+            matchPoolPercentage: matchingStatsData.matchPoolPercentage,
+            projectId: matchingStatsData.projectId,
+            applicationId: matchingStatsData.applicationId,
+            matchAmountInToken: BigNumber.from(
+              matchingStatsData.matchAmountInToken
+            ),
+            originalMatchAmountInToken: BigNumber.from(
+              matchingStatsData.originalMatchAmountInToken
+            ),
+            projectPayoutAddress: matchingStatsData.projectPayoutAddress,
+          };
+        }
+      ) ?? [],
+    [round.matchingDistribution?.matchingDistribution]
+  );
+
   useEffect(() => {
     async function fetchData() {
       const groupedProjectsTmp: GroupedProjects = {
@@ -118,7 +120,6 @@ export const useGroupProjectsByPaymentStatus = (
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allProjects]);
-  // TODO: Add txn hash and other needs
   return groupedProjects;
 };
 
