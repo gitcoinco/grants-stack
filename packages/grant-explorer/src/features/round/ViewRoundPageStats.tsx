@@ -5,7 +5,12 @@ import {
   merklePayoutStrategyImplementationContract,
   roundImplementationContract,
 } from "common/src/contracts";
-import { ChainId, VotingToken, formatDateWithOrdinal, useTokenPrice } from "common";
+import {
+  ChainId,
+  VotingToken,
+  formatDateWithOrdinal,
+  useTokenPrice,
+} from "common";
 import { Button } from "common/src/styles";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
 import { useRoundById } from "../../context/RoundContext";
@@ -206,14 +211,13 @@ const ReportCard = ({
     { chainId, roundId },
     dataLayer
   );
-
   const { data: applications, isLoading: isGetApplicationsLoading } =
     useRoundApprovedApplications(
       {
         chainId,
         roundId,
         projectIds: round.approvedProjects?.map(
-          (proj) => proj.grantApplicationId.split("-")[1]
+          (proj) => proj.grantApplicationId
         ),
       },
       dataLayer
