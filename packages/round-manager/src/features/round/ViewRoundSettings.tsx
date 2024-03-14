@@ -1647,7 +1647,12 @@ function RoundApplicationPeriod(props: {
                           dateFormat={"YYYY/MM/DD"}
                           timeFormat={"HH:mm UTC"}
                           isValidDate={
-                            isV2 ? (current: Moment) => true : disablePastDate
+                            isV2
+                              ? () => true
+                              : () =>
+                                  moment(roundStartDate).isAfter(
+                                    applicationEndDate
+                                  )
                           }
                           inputProps={{
                             id: "roundStartTime",
@@ -1702,7 +1707,9 @@ function RoundApplicationPeriod(props: {
                   type="text"
                   className={`${
                     !props.editMode.canEdit ||
-                    timeHasPassed(moment(props.editedRound.roundStartTime))
+                    timeHasPassed(
+                      moment(props.editedRound.applicationsStartTime)
+                    )
                       ? "bg-grey-50 text-gray-400"
                       : ""
                   } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
