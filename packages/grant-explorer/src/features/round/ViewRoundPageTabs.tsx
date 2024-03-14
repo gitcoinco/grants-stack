@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs } from "@chakra-ui/react";
+import { Box, Tab, Tabs, defineStyle, defineStyleConfig } from "@chakra-ui/react";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import {
   ComponentPropsWithRef,
@@ -63,12 +63,18 @@ function RoundTabs(props: {
   tabs: { tabs: Tab[]; defaultSelectedIndex: number };
 }) {
   return (
-    <Box className="" bottom={0.5}>
+    <Box className="font-modern-era-medium" bottom={0.5}>
       {props.tabs.tabs.length > 0 && (
         <Tabs display="flex" defaultIndex={props.tabs.defaultSelectedIndex}>
           {props.tabs.tabs.map((tab, index) => (
             <Link to={tab.to} key={tab.name}>
-              <Tab key={index} className="flex items-center gap-2">
+              <Tab
+                color={"blackAlpha.600"}
+                fontSize={"lg"}
+                key={index}
+                className="flex items-center gap-2"
+                _selected={{ color: "black", borderBottom: "3px solid black" }}
+              >
                 {tab.icon && (
                   <div>
                     {createElement(tab.icon, {
