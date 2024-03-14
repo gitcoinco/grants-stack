@@ -71,7 +71,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
         </div>
       </nav>
       {getConfig().allo.version === "allo-v1" && (
-        <div className="bg-[#D3EDFE] p-4 text-center font-bold flex items-center justify-center">
+        <div className="bg-[#D3EDFE] p-4 text-center font-medium flex items-center justify-center">
           <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
           You are currently on Allo v1. To switch to the most current version of
           Manager,&nbsp;
@@ -83,9 +83,9 @@ export default function Navbar({ programCta = true }: NavbarProps) {
               switchAlloVersion("allo-v2");
             }}
           >
-            switch to Allo v2
+            switch to Allo v2.
           </a>
-          .
+          &nbsp;Allo v1 will be sunset on April 1st.
         </div>
       )}
     </>
