@@ -1,14 +1,14 @@
-import { ChainId, fetchProjectPaidInARound, Payout } from "common";
+import { ChainId } from "common";
 import { BigNumber, ethers, Signer } from "ethers";
 import { useEffect, useState } from "react";
-import { useWallet } from "../../common/Auth";
-import { fetchMatchingDistribution } from "../round";
 import { generateMerkleTree } from "../utils";
 import {
   directPayoutStrategyFactoryContract,
   merklePayoutStrategyImplementationContract,
 } from "../contracts";
 import { MatchingStatsData } from "../types";
+import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import { Round } from "../types";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -32,46 +32,6 @@ export const getDirectPayoutFactoryAddress = async (
   };
 };
 
-export const useFetchMatchingDistributionFromContract = (
-  roundId: string | undefined
-): {
-  distributionMetaPtr: string;
-  matchingDistributionContract: MatchingStatsData[];
-  isLoading: boolean;
-  isError: boolean;
-} => {
-  const { provider: walletProvider } = useWallet();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [matchingData, setMatchingData] = useState<any>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const matchingDataRes = await fetchMatchingDistribution(
-          roundId,
-          walletProvider
-        );
-        setMatchingData(matchingDataRes);
-        setIsLoading(false);
-      } catch (error) {
-        setIsError(true);
-        console.error(error);
-      }
-    }
-
-    fetchData();
-  }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return {
-    distributionMetaPtr: matchingData.distributionMetaPtr,
-    matchingDistributionContract: matchingData.matchingDistribution,
-    isLoading: isLoading,
-    isError: isError,
-  };
-};
-
 interface GroupedProjects {
   all: MatchingStatsData[];
   paid: MatchingStatsData[];
@@ -86,7 +46,7 @@ interface GroupedProjects {
  */
 export const useGroupProjectsByPaymentStatus = (
   chainId: ChainId,
-  roundId: string
+  round: Round
 ): GroupedProjects => {
   const [groupedProjects, setGroupedProjects] = useState<GroupedProjects>({
     paid: [],
@@ -94,13 +54,38 @@ export const useGroupProjectsByPaymentStatus = (
     unpaid: [],
   });
 
-  const paidProjectsFromGraph = fetchProjectPaidInARound(roundId, chainId);
+  const { data: applications } = useApplicationsByRoundId(round.id);
 
-  const allProjects =
-    useFetchMatchingDistributionFromContract(
-      roundId
-    ).matchingDistributionContract;
+  const paidProjects = applications
+    ?.filter((application) => application.distributionTransaction !== null)
+    .map((application) => ({
+      projectId: application.projectId,
+      distributionTransaction: application.distributionTransaction,
+    }));
 
+  const paidProjectIds = applications
+    ?.filter((application) => application.distributionTransaction !== null)
+    .map((application) => application.projectId);
+
+  const allProjects: MatchingStatsData[] =
+    round.matchingDistribution?.matchingDistribution.map(
+      (matchingStatsData) => {
+        return {
+          projectName: matchingStatsData.projectName,
+          contributionsCount: matchingStatsData.contributionsCount,
+          matchPoolPercentage: matchingStatsData.matchPoolPercentage,
+          projectId: matchingStatsData.projectId,
+          applicationId: matchingStatsData.applicationId,
+          matchAmountInToken: BigNumber.from(
+            matchingStatsData.matchAmountInToken
+          ),
+          originalMatchAmountInToken: BigNumber.from(
+            matchingStatsData.originalMatchAmountInToken
+          ),
+          projectPayoutAddress: matchingStatsData.projectPayoutAddress,
+        };
+      }
+    ) ?? [];
   useEffect(() => {
     async function fetchData() {
       const groupedProjectsTmp: GroupedProjects = {
@@ -109,11 +94,8 @@ export const useGroupProjectsByPaymentStatus = (
         unpaid: [],
       };
 
-      const paidProjects: Payout[] = await paidProjectsFromGraph;
-      const paidProjectIds = paidProjects.map((project) => project.projectId);
-
       allProjects?.forEach((project) => {
-        const projectStatus = paidProjectIds.includes(project.projectId)
+        const projectStatus = paidProjectIds?.includes(project.projectId)
           ? "paid"
           : "unpaid";
 
@@ -122,8 +104,9 @@ export const useGroupProjectsByPaymentStatus = (
         if (projectStatus === "paid") {
           tmpProject = {
             ...project,
-            hash: paidProjects.find((p) => p.projectId === project.projectId)
-              ?.txnHash,
+            hash:
+              paidProjects?.find((p) => p.projectId === project.projectId)
+                ?.distributionTransaction || undefined,
             status: "",
           };
         }

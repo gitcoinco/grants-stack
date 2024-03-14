@@ -95,7 +95,7 @@ const TabApplicationCounter = tw.div`
 function FinalizedRoundContent(props: { round: Round }) {
   const { chain } = useWallet();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round.id!);
+  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round);
   const [paidProjects, setPaidProjects] = useState<MatchingStatsData[]>([]);
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);

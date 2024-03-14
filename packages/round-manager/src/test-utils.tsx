@@ -204,6 +204,7 @@ export const makeApplication = (): GrantApplication => {
     ] as ProjectStatus,
     applicationIndex: faker.datatype.number(),
     createdAt: faker.date.past().toDateString(),
+    distributionTransaction: null,
   };
 };
 
@@ -333,6 +334,7 @@ export const makeGrantApplicationData = (
     ],
 
     recipient: faker.finance.ethereumAddress(),
+    distributionTransaction: null,
     inReview: inReview ?? false,
     project: {
       lastUpdated: 1659714564,

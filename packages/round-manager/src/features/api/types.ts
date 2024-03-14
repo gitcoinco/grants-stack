@@ -375,6 +375,8 @@ export interface GrantApplication {
     }[];
   };
 
+  distributionTransaction: string | null;
+
   statusSnapshots?: {
     status: ProjectStatus;
     updatedAt: Date;

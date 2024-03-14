@@ -262,6 +262,7 @@ export type ProjectApplication = {
   totalDonationsCount: number;
   totalAmountDonatedInUsd: number;
   uniqueDonorsCount: number;
+  distributionTransaction: string | null;
 };
 
 export type ProjectApplicationForManager = ProjectApplication & {

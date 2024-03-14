@@ -3,10 +3,8 @@ import { Network, Web3Provider } from "@ethersproject/providers";
 import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
 import { useOutletContext } from "react-router-dom";
-import useSWR from "swr";
 import z from "zod";
 import { ChainId } from "./chain-ids";
-import { graphql_fetch } from "./graphql_fetch";
 
 export * from "./icons";
 export * from "./markdown";
@@ -106,55 +104,6 @@ export type Payout = {
   version: string;
   createdAt: string;
 };
-
-/**
- * Fetches the payouts that happened for a given round from TheGraph
- * @param roundId Round ID
- * @param chainId Chain ID
- * @returns
- */
-// FIXME: the function should be prefixed by `use` since it's a hook
-export function fetchProjectPaidInARound(
-  roundId: string,
-  chainId: ChainId
-): Promise<Payout[]> {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { data } = useSWR(
-    ["payouts", roundId, chainId],
-    ([_, roundId, chainId]) => {
-      return graphql_fetch(
-        `
-        query GetPayouts($roundId: String) {
-          payoutStrategies(
-            where:{
-              round_:{
-                id: $roundId
-              }
-            }
-          ) {
-            payouts {
-              id
-              version
-              createdAt
-              token
-              amount
-              grantee
-              projectId
-              txnHash
-            }
-          }
-        }
-      `,
-        chainId,
-        { roundId }
-      );
-    }
-  );
-
-  const payouts = data?.data?.payoutStrategies[0]?.payouts || [];
-
-  return payouts;
-}
 
 export function formatDateWithOrdinal(date: Date) {
   const options = {
