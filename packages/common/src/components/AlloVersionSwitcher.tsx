@@ -42,25 +42,22 @@ export default function AlloVersionSwitcher() {
           ></path>
         </svg>
       </button>
-      <div
+      <button
         className={classNames(
           "absolute bg-white/80 p-4 rounded-[8px] hover:bg-white backdrop-blur-sm mt-0.5 font-mono font-medium right-0 whitespace-nowrap z-30",
           {
             hidden: !isExpanded,
           }
         )}
+        onClick={() => {
+          setIsExpanded(false);
+          switchAlloVersion(
+            currentVersion === "allo-v1" ? "allo-v2" : "allo-v1"
+          );
+        }}
       >
-        <button
-          onClick={() => {
-            setIsExpanded(false);
-            switchAlloVersion(
-              currentVersion === "allo-v1" ? "allo-v2" : "allo-v1"
-            );
-          }}
-        >
-          Switch to Allo {currentVersion === "allo-v1" ? "v2" : "v1"}
-        </button>
-      </div>
+        Switch to Allo {currentVersion === "allo-v1" ? "v2" : "v1"}
+      </button>
     </div>
   );
 }
