@@ -1,39 +1,39 @@
-import { Link, useParams } from "react-router-dom";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { RefreshIcon } from "@heroicons/react/outline";
 import {
+  CalendarIcon,
   ChevronRightIcon,
+  ClockIcon,
   PlusIcon,
   PlusSmIcon,
   UserIcon,
-  CalendarIcon,
-  ClockIcon,
 } from "@heroicons/react/solid";
-import { RefreshIcon } from "@heroicons/react/outline";
+import { Fragment } from "react";
+import { Link, useParams } from "react-router-dom";
 
-import QuadraticFundingSVG from "../../assets/quadratic-funding.svg";
-import DirectGrants from "../../assets/direct-grants.svg";
 import Close from "../../assets/close.svg";
+import DirectGrants from "../../assets/direct-grants.svg";
+import QuadraticFundingSVG from "../../assets/quadratic-funding.svg";
 
+import { datadogLogs } from "@datadog/browser-logs";
+import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
+import { useEffect, useState } from "react";
+import { abbreviateAddress } from "../api/utils";
+import AccessDenied from "../common/AccessDenied";
 import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
-import Footer from "common/src/components/Footer";
-import { abbreviateAddress } from "../api/utils";
-import { datadogLogs } from "@datadog/browser-logs";
-import { useEffect, useState } from "react";
 import NotFoundPage from "../common/NotFoundPage";
-import AccessDenied from "../common/AccessDenied";
 
 import { useProgramById } from "../../context/program/ReadProgramContext";
-import { Spinner } from "../common/Spinner";
 import { useRounds } from "../../context/round/RoundContext";
-import { ProgressStatus } from "../api/types";
 import { useDebugMode } from "../../hooks";
-import { getRoundDescriptionStatus } from "./getRoundDescriptionStatus";
-import { parseRoundDates } from "../common/parseRoundDates";
+import { ProgressStatus } from "../api/types";
+import { Spinner } from "../common/Spinner";
 import { getPayoutRoundDescription } from "../common/Utils";
+import { parseRoundDates } from "../common/parseRoundDates";
 import { isDirectRound } from "../round/ViewRoundPage";
+import { getRoundDescriptionStatus } from "./getRoundDescriptionStatus";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -90,7 +90,7 @@ export default function ViewProgram() {
               <div className="flex-1 min-w-0">
                 {/* Round type */}
                 {getPayoutRoundDescription(
-                  round.payoutStrategy.strategyName || "",
+                  round.payoutStrategy.strategyName || ""
                 ) && (
                   <div
                     className={`text-xs text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-3`}
@@ -98,7 +98,7 @@ export default function ViewProgram() {
                     data-testid="round-payout-strategy-type"
                   >
                     {getPayoutRoundDescription(
-                      round.payoutStrategy.strategyName || "",
+                      round.payoutStrategy.strategyName || ""
                     )}
                   </div>
                 )}

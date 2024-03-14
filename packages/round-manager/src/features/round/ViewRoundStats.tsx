@@ -1,20 +1,23 @@
 import { Match } from "allo-indexer-client";
-import { useParams } from "react-router-dom";
+import { getUTCDate } from "common";
+import { getConfig } from "common/src/config";
 import { utils } from "ethers";
 import { useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { useChainId } from "wagmi";
 import {
   useRound,
   useRoundApplications,
   useRoundMatchingFunds,
 } from "../../hooks";
-import { getUTCDate } from "common";
-import { useChainId } from "wagmi";
 import { payoutTokens } from "../api/payoutTokens";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
   const chainId = useChainId();
-  const roundId = utils.getAddress(id?.toLowerCase() ?? "");
+  const alloVersion = getConfig().allo.version;
+  const roundId =
+    alloVersion === "allo-v1" ? utils.getAddress(id?.toLowerCase() ?? "") : id as string;
 
   const { data: round } = useRound(roundId);
   const { data: applications } = useRoundApplications(roundId);
