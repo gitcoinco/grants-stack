@@ -1,8 +1,4 @@
-import {
-  ApplicationStatus,
-  DistributionMatch,
-  RoundCategory,
-} from "data-layer";
+import { ApplicationStatus, DistributionMatch } from "data-layer";
 import {
   Address,
   Hex,
@@ -915,6 +911,7 @@ export class AlloV1 implements Allo {
 
   editRound(args: {
     roundId: Hex | number;
+    roundAddress?: Hex;
     data: UpdateRoundParams;
     strategy?: RoundCategory;
   }): AlloOperation<

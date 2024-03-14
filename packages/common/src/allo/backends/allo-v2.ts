@@ -16,7 +16,6 @@ import {
   ApplicationStatus,
   DistributionMatch,
   RoundApplicationAnswers,
-  RoundCategory,
 } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
@@ -783,6 +782,7 @@ export class AlloV2 implements Allo {
 
   editRound(args: {
     roundId: Hex | number;
+    roundAddress?: Hex;
     data: UpdateRoundParams;
     strategy?: RoundCategory;
   }): AlloOperation<
