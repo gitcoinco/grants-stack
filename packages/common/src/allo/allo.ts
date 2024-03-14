@@ -7,7 +7,7 @@ import {
 } from "data-layer";
 import { Address, Hex, PublicClient } from "viem";
 import { AnyJson, ChainId } from "..";
-import { CreateRoundData, VotingToken } from "../types";
+import { CreateRoundData, MatchingStatsData, VotingToken } from "../types";
 import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";
@@ -166,6 +166,18 @@ export interface Allo {
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<null>;
+    }
+  >;
+
+  batchDistributeFunds: (args: {
+    payoutStrategy: Address;
+    allProjects: MatchingStatsData[];
+    projectIdsToBePaid: string[];
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
     }
   >;
 }

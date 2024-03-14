@@ -8,10 +8,7 @@ import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
-import {
-  batchDistributeFunds,
-  useGroupProjectsByPaymentStatus,
-} from "../api/payoutStrategy/payoutStrategy";
+import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/payoutStrategy";
 import {
   MatchingStatsData,
   ProgressStatus,
@@ -27,6 +24,8 @@ import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { assertAddress } from "common/src/address";
 import { PayoutToken, payoutTokens } from "../api/payoutTokens";
+import { useAllo } from "common";
+import { getAddress } from "viem";
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;
@@ -192,6 +191,7 @@ export function PayProjectsTable(props: {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
   const { signer } = useWallet();
+  const allo = useAllo();
   const roundId = props.round.id;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkbox = useRef<any>();
@@ -291,20 +291,24 @@ export function PayProjectsTable(props: {
     setShowConfirmationModal(false);
     setOpenReadyForDistributionProgressModal(true);
 
-    if (signer && roundId) {
-      const tx: TransactionBlock = await batchDistributeFunds(
-        props.round?.payoutStrategy.id,
-        props.allProjects,
-        selectedProjects.map((p) => p.projectId),
-        signer
-      );
+    if (allo == null) {
+      return;
+    }
 
-      if (tx && tx.error) {
-        setFinalizingDistributionStatus(ProgressStatus.IS_ERROR);
-      } else {
-        // success handling
-        setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
-      }
+    if (roundId) {
+      const result = await allo
+        .batchDistributeFunds({
+          payoutStrategy: getAddress(props.round.payoutStrategy.id),
+          allProjects: props.allProjects,
+          projectIdsToBePaid: selectedProjects.map((p) => p.projectId),
+        })
+        .on("transactionStatus", (result) => {
+          if (result.type === "error") {
+            setFinalizingDistributionStatus(ProgressStatus.IS_ERROR);
+          } else {
+            setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
+          }
+        });
 
       setTimeout(() => {
         setOpenReadyForDistributionProgressModal(false);

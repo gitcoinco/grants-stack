@@ -20,7 +20,7 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
-import { VotingToken } from "../../types";
+import { MatchingStatsData, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
@@ -778,6 +778,23 @@ export class AlloV2 implements Allo {
         emit("indexingStatus", success(null));
       }
 
+      return success(null);
+    });
+  }
+
+  batchDistributeFunds(_args: {
+    payoutStrategy: Address;
+    allProjects: MatchingStatsData[];
+    projectIdsToBePaid: string[];
+  }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+    }
+  > {
+    // eslint-disable-next-line no-empty-pattern
+    return new AlloOperation(async ({}) => {
       return success(null);
     });
   }

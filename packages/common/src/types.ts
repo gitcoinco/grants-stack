@@ -1,6 +1,7 @@
 import { Round, RoundCategory } from "data-layer";
 import { Hex } from "viem";
 import { ChainId } from "./chain-ids";
+import { BigNumber } from "ethers";
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
@@ -14,6 +15,21 @@ export type CreateRoundData = {
   };
   round: Round;
   roundCategory: RoundCategory;
+};
+
+export type MatchingStatsData = {
+  index?: number;
+  projectName: string;
+  uniqueContributorsCount?: number;
+  contributionsCount: number;
+  matchPoolPercentage: number;
+  projectId: string;
+  applicationId: string;
+  matchAmountInToken: BigNumber;
+  originalMatchAmountInToken: BigNumber;
+  projectPayoutAddress: string;
+  status?: string;
+  hash?: string;
 };
 
 export type SchemaQuestion = {
