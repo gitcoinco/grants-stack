@@ -1,14 +1,5 @@
 import { Signer } from "@ethersproject/abstract-signer";
-<<<<<<< HEAD
-import {
-  ApplicationStatus,
-  DistributionMatch,
-  Round,
-  RoundCategory,
-} from "data-layer";
-=======
-import { ApplicationStatus, Round } from "data-layer";
->>>>>>> origin
+import { ApplicationStatus, DistributionMatch, Round } from "data-layer";
 import { Address, Hex, PublicClient } from "viem";
 import { AnyJson, ChainId } from "..";
 import {
