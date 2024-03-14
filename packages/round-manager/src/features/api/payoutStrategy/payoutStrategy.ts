@@ -1,7 +1,6 @@
 import { ChainId } from "common";
 import { BigNumber, ethers, Signer } from "ethers";
 import { useEffect, useState } from "react";
-import { generateMerkleTree } from "../utils";
 import {
   directPayoutStrategyFactoryContract,
   merklePayoutStrategyImplementationContract,
