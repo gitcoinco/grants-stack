@@ -309,11 +309,6 @@ export function PayProjectsTable(props: {
             setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
           }
         });
-
-      setTimeout(() => {
-        setOpenReadyForDistributionProgressModal(false);
-        navigate(0);
-      }, errorModalDelayMs);
     }
   };
 
