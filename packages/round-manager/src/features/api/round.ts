@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Signer } from "@ethersproject/abstract-signer";
-import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
-import { BigNumber, ethers } from "ethers";
-import {
-  merklePayoutStrategyImplementationContract,
-  roundImplementationContract,
-} from "./contracts";
-import { MatchingStatsData, Round } from "./types";
-import { fetchFromIPFS } from "./utils";
+import { TransactionResponse } from "@ethersproject/providers";
+import { ethers } from "ethers";
+import { roundImplementationContract } from "./contracts";
+import { Round } from "./types";
 import { maxDateForUint256 } from "../../constants";
 import { DataLayer, RoundForManager } from "data-layer";
 
