@@ -9,7 +9,6 @@ import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Web3Provider } from "@ethersproject/providers";
 import { DataLayer, useDataLayer } from "data-layer";
-import { switchAlloVersion } from "common/src/config";
 
 export interface ReadProgramState {
   programs: Program[];
@@ -202,14 +201,6 @@ export const useProgramById = (
   }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const program = context.state.programs.find((program) => program.id === id);
-
-  useEffect(() => {
-    if (program?.tags?.includes("allo-v1")) {
-      switchAlloVersion("allo-v1");
-    } else if (program?.tags?.includes("allo-v2")) {
-      switchAlloVersion("allo-v2");
-    }
-  }, [program]);
 
   return {
     program: program,

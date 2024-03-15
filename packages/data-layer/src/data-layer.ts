@@ -149,22 +149,22 @@ export class DataLayer {
   async getProgramsByUser({
     address,
     chainId,
-    alloVersion,
+    tags,
   }: {
     address: string;
     chainId: number;
-    alloVersion: AlloVersion;
+    tags: string[];
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
       userAddress: address.toLowerCase(),
-      alloVersion,
       chainId,
+      tags: ["program", ...tags],
     };
 
     const response: { projects: Program[] } = await request(
       this.gsIndexerEndpoint,
       getProgramsByUserAndTag,
-      { ...requestVariables, tags: ["program", alloVersion] },
+      requestVariables,
     );
 
     return { programs: response.projects };

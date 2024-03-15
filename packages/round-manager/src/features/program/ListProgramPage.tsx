@@ -22,6 +22,8 @@ import Footer from "common/src/components/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { usePrograms } from "../../context/program/ReadProgramContext";
 import { ProgressStatus } from "../api/types";
+import AlloV1 from "common/src/icons/AlloV1";
+import AlloV2 from "common/src/icons/AlloV2";
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element;
@@ -40,7 +42,7 @@ const ProgramCard: React.FC<ProgramCardProps> = (props: ProgramCardProps) => (
       </CardDescription>
     </CardContent>
     <CardFooter>
-      <CardFooterContent className="justify-end p-6">
+      <CardFooterContent className="p-6">
         {props.footerContent}
       </CardFooterContent>
     </CardFooter>
@@ -94,10 +96,16 @@ function ListPrograms() {
         title={program.metadata.name}
         description={`${program.operatorWallets.length} Round Operators`}
         footerContent={
-          <p className="text-violet-400" data-testid="program-card">
-            View details{" "}
-            <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
-          </p>
+          <>
+            <div className="mr-auto">
+              {program.tags?.includes("allo-v1") && <AlloV1 color="black" />}
+              {program.tags?.includes("allo-v2") && <AlloV2 color="black" />}
+            </div>
+            <div className="text-violet-400 ml-auto" data-testid="program-card">
+              View details{" "}
+              <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
+            </div>
+          </>
         }
       />
     </Link>

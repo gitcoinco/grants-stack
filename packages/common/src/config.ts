@@ -98,14 +98,18 @@ function overrideConfigFromLocalStorage(config: Config): Config {
 
 // listen for allo version changes in other tabs
 if (typeof window !== "undefined") {
-  const currentAlloVersion = getConfig().allo.version;
+  const currentAlloVersion = getAlloVersion();
   window.addEventListener("storage", () => {
     config = null;
-    const newAlloVersion = getConfig().allo.version;
+    const newAlloVersion = getAlloVersion();
     if (currentAlloVersion !== newAlloVersion) {
       window.location.reload();
     }
   });
+}
+
+export function getAlloVersion(): AlloVersion {
+  return getConfig().allo.version;
 }
 
 export function getConfig(): Config {
