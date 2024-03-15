@@ -373,6 +373,9 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@openzeppelin/merkle-tree':
+        specifier: ^1.0.2
+        version: 1.0.5
       '@rainbow-me/rainbowkit':
         specifier: ^0.12.16
         version: 0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.19)

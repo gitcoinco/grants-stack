@@ -12,7 +12,11 @@ import {
   TransactionData,
 } from "@allo-team/allo-v2-sdk";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
-import { ApplicationStatus, RoundApplicationAnswers } from "data-layer";
+import {
+  ApplicationStatus,
+  DistributionMatch,
+  RoundApplicationAnswers,
+} from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
 import { RoundCategory, UpdateRoundParams, VotingToken } from "../../types";
@@ -29,6 +33,7 @@ import {
 } from "../transaction-sender";
 import { PermitSignature } from "../voting";
 import Erc20ABI from "../abis/erc20";
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 
 const STRATEGY_ADDRESSES = {
@@ -694,6 +699,82 @@ export class AlloV2 implements Allo {
       });
 
       emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
+
+  finalizeRound(args: {
+    roundId: string;
+    strategyAddress: Address;
+    matchingDistribution: DistributionMatch[];
+  }): AlloOperation<
+    Result<null>,
+    {
+      ipfs: Result<string>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const ipfsResult = await this.ipfsUploader({
+        matchingDistribution: args.matchingDistribution,
+      });
+
+      emit("ipfs", ipfsResult);
+
+      if (ipfsResult.type === "error") {
+        return ipfsResult;
+      }
+
+      const distribution = args.matchingDistribution.map((d, index) => [
+        index,
+        d.applicationId,
+        d.projectPayoutAddress,
+        d.matchAmountInToken,
+      ]);
+
+      const tree = StandardMerkleTree.of(distribution, [
+        "uint256",
+        "address",
+        "address",
+        "uint256",
+      ]);
+
+      const merkleRoot = tree.root as Hex;
+
+      {
+        const txResult = await sendTransaction(this.transactionSender, {
+          address: args.strategyAddress,
+          abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi,
+          functionName: "updateDistribution",
+          args: [merkleRoot, { protocol: 1n, pointer: ipfsResult.value }],
+        });
+
+        emit("transaction", txResult);
+
+        if (txResult.type === "error") {
+          return txResult;
+        }
+
+        let receipt: TransactionReceipt;
+        try {
+          receipt = await this.transactionSender.wait(txResult.value);
+          emit("transactionStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to update application status");
+          emit("transactionStatus", error(result));
+          return error(result);
+        }
+
+        await this.waitUntilIndexerSynced({
+          chainId: this.chainId,
+          blockNumber: receipt.blockNumber,
+        });
+
+        emit("indexingStatus", success(null));
+      }
 
       return success(null);
     });

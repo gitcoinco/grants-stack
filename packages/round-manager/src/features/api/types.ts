@@ -8,6 +8,7 @@ import { RoundVisibilityType } from "common";
 import { BigNumber } from "ethers";
 import { Address } from "viem";
 import { SchemaQuestion } from "./utils";
+import { RoundForManager } from "data-layer";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -146,7 +147,7 @@ export interface Round {
   /**
    * The on-chain unique round ID
    */
-  id?: string;
+  id: string;
 
   chainId?: number;
 
@@ -259,10 +260,13 @@ export interface Round {
   strategyAddress?: string;
 
   tags?: string[];
-  fundedAmount?: bigint;
-  fundedAmountInUsd?: number;
-  matchAmount?: bigint;
-  matchAmountInUsd?: number;
+  fundedAmount: bigint;
+  fundedAmountInUsd: number;
+  matchAmount: bigint;
+  matchAmountInUsd: number;
+
+  matchingDistribution: RoundForManager["matchingDistribution"];
+  readyForPayoutTransaction: RoundForManager["readyForPayoutTransaction"];
 }
 
 export type MatchingStatsData = {

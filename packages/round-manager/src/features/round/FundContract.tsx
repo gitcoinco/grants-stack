@@ -20,7 +20,7 @@ import { assertAddress } from "common/src/address";
 import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 import { formatUnits } from "viem";
 
-function useContractAmountFunded(args: {
+export function useContractAmountFunded(args: {
   round: Round | undefined;
   payoutToken: PayoutToken | undefined;
 }):
