@@ -7,6 +7,7 @@ import {
 } from "react";
 import { Round } from "../features/api/types";
 import { DataLayer, useDataLayer } from "data-layer";
+import { switchAlloVersion } from "common/src/config";
 
 export interface RoundState {
   rounds: Round[];

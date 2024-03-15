@@ -99,6 +99,7 @@ export async function getProgramById(
     operatorWallets: program.roles.map(
       (role: { address: string }) => role.address
     ),
+    tags: program.tags,
     chain: {
       id: chainId,
       name: CHAINS[chainId]?.name,

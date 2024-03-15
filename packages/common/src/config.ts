@@ -55,6 +55,12 @@ function getLocalStorageConfigOverrides(): LocalStorageConfigOverrides {
 }
 
 export function switchAlloVersion(version: AlloVersion) {
+  const currentAlloVersion = getConfig().allo.version;
+
+  if (currentAlloVersion === version) {
+    return;
+  }
+
   setLocalStorageConfigOverride("allo-version", version);
   window.location.reload();
 }
@@ -65,6 +71,7 @@ export function setLocalStorageConfigOverride(key: string, value: string) {
   }
 
   const configOverrides = getLocalStorageConfigOverrides();
+
   configOverrides[key] = value;
   window.localStorage.setItem(
     "configOverrides",
@@ -87,6 +94,18 @@ function overrideConfigFromLocalStorage(config: Config): Config {
       version: alloVersion,
     },
   };
+}
+
+// listen for allo version changes in other tabs
+if (typeof window !== "undefined") {
+  const currentAlloVersion = getConfig().allo.version;
+  window.addEventListener("storage", () => {
+    config = null;
+    const newAlloVersion = getConfig().allo.version;
+    if (currentAlloVersion !== newAlloVersion) {
+      window.location.reload();
+    }
+  });
 }
 
 export function getConfig(): Config {

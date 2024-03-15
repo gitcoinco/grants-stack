@@ -4,9 +4,17 @@ import AlloV1 from "../icons/AlloV1";
 import AlloV2 from "../icons/AlloV2";
 import classNames from "classnames";
 
-export default function AlloVersionSwitcher() {
+export default function AlloVersionSwitcher({
+  isHidden,
+}: {
+  isHidden?: boolean;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const currentVersion = getConfig().allo.version;
+
+  if (isHidden) {
+    return null;
+  }
 
   return (
     <div className="relative">

@@ -4,6 +4,7 @@ import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer, useDataLayer } from "data-layer";
+import { switchAlloVersion } from "common/src/config";
 
 export interface RoundState {
   data: Round[];
@@ -184,6 +185,15 @@ export const useRoundById = (roundId?: string) => {
   }, [provider, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const round = context.state.data.find((round) => round.id === roundId);
+
+  useEffect(() => {
+    if (round?.tags?.includes("allo-v1")) {
+      switchAlloVersion("allo-v1");
+    } else if (round?.tags?.includes("allo-v2")) {
+      switchAlloVersion("allo-v2");
+    }
+  }, [round]);
+
   return {
     round,
     fetchRoundStatus: context.state.fetchRoundStatus,
