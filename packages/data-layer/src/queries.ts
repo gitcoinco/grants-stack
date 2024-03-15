@@ -498,6 +498,7 @@ const getRoundForManagerFields = `
   createdByAddress
   fundedAmount
   fundedAmountInUsd
+  matchingDistribution
   roles {
     role
     address

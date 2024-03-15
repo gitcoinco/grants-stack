@@ -19,6 +19,7 @@
     "@allo-team/allo-v2-sdk": "1.0.55",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
+    "@openzeppelin/merkle-tree": "^1.0.2",
     "@rainbow-me/rainbowkit": "^0.12.16",
     "@wagmi/chains": "^1.8.0",
     "abitype": "^0.10.3",

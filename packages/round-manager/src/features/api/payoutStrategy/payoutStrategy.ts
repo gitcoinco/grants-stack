@@ -32,41 +32,6 @@ export const getDirectPayoutFactoryAddress = async (
   };
 };
 
-interface UpdateDistributionProps {
-  payoutStrategy: string;
-  encodedDistribution: string;
-  signerOrProvider: Signer;
-}
-
-export async function updateDistributionToContract({
-  payoutStrategy,
-  encodedDistribution,
-  signerOrProvider,
-}: UpdateDistributionProps) {
-  try {
-    const merklePayoutStrategyImplementation = new ethers.Contract(
-      payoutStrategy,
-      merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider
-    );
-
-    const tx =
-      await merklePayoutStrategyImplementation.updateDistribution(
-        encodedDistribution
-      );
-    const receipt = await tx.wait();
-
-    console.log("✅ Transaction hash: ", tx.hash);
-    const blockNumber = receipt.blockNumber;
-    return {
-      transactionBlockNumber: blockNumber,
-    };
-  } catch (error) {
-    console.error("updateDistributionToContract", error);
-    throw new Error("Unable to finalize Round");
-  }
-}
-
 export const useFetchMatchingDistributionFromContract = (
   roundId: string | undefined
 ): {

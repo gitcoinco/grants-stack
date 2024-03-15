@@ -324,7 +324,21 @@ export type V2RoundWithProject = V2RoundWithRoles & {
   };
 };
 
+export type DistributionMatch = {
+  projectId: string;
+  projectName: string;
+  applicationId: string;
+  matchPoolPercentage: number;
+  contributionsCount: number;
+  matchAmountInToken: string;
+  projectPayoutAddress: string;
+  originalMatchAmountInToken: string;
+};
+
 export type RoundForManager = V2RoundWithProject & {
+  matchingDistribution: {
+    matchingDistribution: DistributionMatch[];
+  } | null;
   tags: string[];
   matchAmount: string;
   matchAmountInUsd: number;

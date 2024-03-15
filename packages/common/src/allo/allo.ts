@@ -1,5 +1,5 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { ApplicationStatus, Round } from "data-layer";
+import { ApplicationStatus, DistributionMatch, Round } from "data-layer";
 import { Address, Hex, PublicClient } from "viem";
 import { AnyJson, ChainId } from "..";
 import {
@@ -149,6 +149,20 @@ export interface Allo {
     Result<null>,
     {
       tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
+
+  finalizeRound: (args: {
+    roundId: string;
+    strategyAddress: Address;
+    matchingDistribution: DistributionMatch[];
+  }) => AlloOperation<
+    Result<null>,
+    {
+      ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<null>;
