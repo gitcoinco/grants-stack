@@ -1,6 +1,5 @@
-import { useCallback, useState, useRef, useMemo, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { BigNumber, ethers, utils } from "ethers";
+import { useCallback, useState, useRef, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
 import {
@@ -11,34 +10,23 @@ import {
 import { useDropzone } from "react-dropzone";
 import { classNames } from "common";
 import { Button } from "common/src/styles";
-import { useDebugMode, useRound, useRoundMatchingFunds } from "../../../hooks";
-import {
-  MatchingStatsData,
-  ProgressStatus,
-  ProgressStep,
-  Round as GraphRound,
-} from "../../api/types";
+import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
+import { ProgressStatus, ProgressStep, Round } from "../../api/types";
 import { LoadingRing, Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
-import { Address, useBalance, useNetwork, useSigner } from "wagmi";
+import { useNetwork, useSigner } from "wagmi";
 import InfoModal from "../../common/InfoModal";
 import ProgressModal from "../../common/ProgressModal";
 import ErrorModal from "../../common/ErrorModal";
 import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
-import { setReadyForPayout } from "../../api/round";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
-import { fetchFromIPFS } from "../../api/utils";
 import { roundApplicationsToCSV } from "../../api/exports";
-import { Signer } from "@ethersproject/abstract-signer";
-import { Round } from "allo-indexer-client";
-import {
-  merklePayoutStrategyImplementationContract,
-  roundImplementationContract,
-} from "../../api/contracts";
-import { TransactionResponse } from "@ethersproject/providers";
 import { PayoutToken, payoutTokens } from "../../api/payoutTokens";
+import { DistributionMatch } from "data-layer";
+import { utils } from "ethers";
+import { useContractAmountFunded } from "../FundContract";
 
 type RevisedMatch = {
   revisedContributionCount: number;
@@ -66,172 +54,50 @@ const distributionOptions = [
   { value: "scale", label: "Scale up and distribute full pool" },
 ];
 
-function useIsRoundFullyFunded({
-  roundId,
-  matchAmount,
-  matchTokenAddress,
-}: {
-  roundId: Address;
-  matchAmount: bigint;
-  matchTokenAddress: Address;
-}) {
-  const balanceOptions =
-    matchTokenAddress == ethers.constants.AddressZero
-      ? { address: roundId }
-      : {
-          address: roundId,
-          token: matchTokenAddress,
-        };
-
-  const roundBalance = useBalance(balanceOptions);
-
-  if (roundBalance.isLoading === true || roundBalance.data === undefined) {
-    return false;
-  }
-
-  const roundBalanceValue = roundBalance.data.value.toBigInt();
-
-  return roundBalanceValue >= matchAmount;
-}
-
-type FinalizedMatches = {
-  readyForPayoutTransactionHash: string;
-  matches: RevisedMatch[];
-};
-
-async function fetchFinalizedMatches(
-  roundId: string,
-  signer: Signer
-): Promise<FinalizedMatches | undefined> {
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
-    signer
-  );
-
-  const filter =
-    roundImplementation.filters.PayFeeAndEscrowFundsToPayoutContract();
-
-  const payoutEvents = await roundImplementation.provider.getLogs({
-    ...filter,
-    fromBlock: 0,
-    toBlock: "latest",
-  });
-
-  if (payoutEvents.length > 0) {
-    const readyForPayoutTransactionHash = payoutEvents[0].transactionHash;
-
-    const payoutStrategyAddress = await roundImplementation.payoutStrategy();
-
-    const payoutStrategy = new ethers.Contract(
-      payoutStrategyAddress,
-      merklePayoutStrategyImplementationContract.abi,
-      signer
-    );
-
-    const distributionMetaPtr = await payoutStrategy.distributionMetaPtr();
-
-    const distribution = await fetchFromIPFS(distributionMetaPtr.pointer);
-
-    const distributionMatches =
-      distribution.matchingDistribution as MatchingStatsData[];
-
-    const matches: RevisedMatch[] = distributionMatches.map((m) => {
-      return {
-        applicationId: m.applicationId,
-        payoutAddress: m.projectPayoutAddress,
-        projectId: m.projectId,
-        projectName: m.projectName,
-        contributionsCount: 0,
-        revisedContributionCount: m.contributionsCount,
-        matched: BigNumber.from(m.originalMatchAmountInToken ?? 0).toBigInt(),
-        revisedMatch: BigNumber.from(m.matchAmountInToken ?? 0).toBigInt(),
-      };
-    });
-
-    return {
-      readyForPayoutTransactionHash,
-      matches,
-    };
-  }
-
-  return undefined;
-}
-
 /** Manages the state of the matching funds,
  * fetching revised matches and merging them with the original matches
  */
 function useRevisedMatchingFunds(
-  roundId: string,
-  signer: Signer | undefined,
+  round: Round,
   ignoreSaturation: boolean,
   overridesFile?: File
 ) {
+  const roundId = round.id;
   const originalMatches = useRoundMatchingFunds(roundId);
   const revisedMatches = useRoundMatchingFunds(
     roundId,
     ignoreSaturation,
     overridesFile
   );
-  const [finalizedMatchesLoading, setFinalizedMatchesLoading] =
-    useState<boolean>(false);
-  const [finalizedMatches, setFinalizedMatches] = useState<
-    FinalizedMatches | undefined
-  >(undefined);
-
-  async function reloadFinalizedMatches() {
-    if (!signer) return;
-    try {
-      setFinalizedMatchesLoading(true);
-      const res = await fetchFinalizedMatches(roundId, signer);
-      setFinalizedMatches(res);
-    } finally {
-      setFinalizedMatchesLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    let active = true;
-
-    load();
-
-    return () => {
-      active = false;
-    };
-
-    async function load() {
-      // TODO: ~signer.call is a check to avoid calling contracts on a mocked signer
-      if (!signer || !signer.call) return;
-
-      try {
-        setFinalizedMatchesLoading(true);
-        const res = await fetchFinalizedMatches(roundId, signer);
-        setFinalizedMatches(res);
-        if (!active) {
-          return;
-        }
-      } finally {
-        setFinalizedMatchesLoading(false);
-      }
-    }
-  }, [signer, roundId]);
 
   const isRevised =
     (Boolean(overridesFile) || ignoreSaturation) && !revisedMatches.isLoading;
 
   const error = revisedMatches.error || originalMatches.error;
-  const isLoading =
-    revisedMatches.isLoading ||
-    originalMatches.isLoading ||
-    finalizedMatchesLoading;
+  const isLoading = revisedMatches.isLoading || originalMatches.isLoading;
 
   const matches = useMemo(() => {
     if (!originalMatches.data || !revisedMatches.data || error) {
       return undefined;
     }
 
-    if (finalizedMatches) {
-      return finalizedMatches.matches;
+    // if the round is set to payout, return the finalized matches
+    if (
+      round.matchingDistribution !== null &&
+      round.readyForPayoutTransaction !== null
+    ) {
+      return round.matchingDistribution.matchingDistribution.map((m) => {
+        return {
+          applicationId: m.applicationId,
+          payoutAddress: m.projectPayoutAddress,
+          projectId: m.projectId,
+          projectName: m.projectName,
+          contributionsCount: m.contributionsCount,
+          revisedContributionCount: m.contributionsCount,
+          matched: BigInt(m.originalMatchAmountInToken ?? 0),
+          revisedMatch: BigInt(m.matchAmountInToken ?? 0),
+        };
+      });
     }
 
     const mergedMatchesMap: Record<string, RevisedMatch> = {};
@@ -273,17 +139,20 @@ function useRevisedMatchingFunds(
     });
 
     return mergedMatches;
-  }, [originalMatches.data, revisedMatches.data, finalizedMatches, error]);
+  }, [
+    originalMatches.data,
+    revisedMatches.data,
+    error,
+    round.matchingDistribution,
+    round.readyForPayoutTransaction,
+  ]);
 
   return {
     matches,
     isLoading,
     error,
     isRevised,
-    readyForPayoutTransactionHash:
-      finalizedMatches?.readyForPayoutTransactionHash,
     mutate() {
-      reloadFinalizedMatches();
       revisedMatches.mutate();
       originalMatches.mutate();
     },
@@ -293,44 +162,29 @@ function useRevisedMatchingFunds(
 export default function ViewRoundResultsWrapper() {
   const { id } = useParams();
 
-  let roundId: Address | null = null;
-
-  if (id !== undefined) {
-    try {
-      roundId = utils.getAddress(id);
-    } catch (e) {
-      // ethers failed to parse the address
-    }
+  if (id === undefined) {
+    return <div>Invalid round ID</div>;
   }
 
-  if (roundId === null) {
-    return <div>Invalid round address</div>;
-  }
-
-  return <ViewRoundResultsWithId id={roundId} />;
+  return <ViewRoundResultsWithId id={id} />;
 }
 
-function ViewRoundResultsWithId({ id }: { id: Address }) {
-  const round = useRound(id);
-  const roundFromGraph = useRoundById(id.toLowerCase());
+function ViewRoundResultsWithId({ id }: { id: string }) {
+  const round = useRoundById(id.toLowerCase());
 
-  if (
-    round.isLoading ||
-    roundFromGraph.fetchRoundStatus === ProgressStatus.IN_PROGRESS
-  ) {
+  if (round.fetchRoundStatus === ProgressStatus.IN_PROGRESS) {
     return <Spinner text="We're fetching the matching data." />;
   }
 
   if (
     round.error ||
-    roundFromGraph.fetchRoundStatus === ProgressStatus.IS_ERROR ||
-    round.data === undefined ||
-    roundFromGraph.round === undefined
+    round.fetchRoundStatus === ProgressStatus.IS_ERROR ||
+    round.round === undefined
   ) {
     return <div>Failed to load the round</div>;
   }
 
-  const matchTokenAddress = round.data.token;
+  const matchTokenAddress = round.round.token;
 
   const matchToken = payoutTokens.find(
     (t) => t.address.toLowerCase() == matchTokenAddress.toLowerCase()
@@ -343,8 +197,7 @@ function ViewRoundResultsWithId({ id }: { id: Address }) {
   return (
     <ViewRoundResults
       roundId={id}
-      round={round.data}
-      oldRoundFromGraph={roundFromGraph.round}
+      round={round.round}
       matchToken={matchToken}
     />
   );
@@ -353,18 +206,17 @@ function ViewRoundResultsWithId({ id }: { id: Address }) {
 function ViewRoundResults({
   roundId,
   round,
-  oldRoundFromGraph,
   matchToken,
 }: {
-  roundId: Address;
+  roundId: string;
   round: Round;
-  oldRoundFromGraph: GraphRound;
   matchToken: PayoutToken;
 }) {
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
   const debugModeEnabled = useDebugMode();
   const network = useNetwork();
+  const navigate = useNavigate();
 
   const matchingTableRef = useRef<HTMLDivElement>(null);
   const [overridesFileDraft, setOverridesFileDraft] = useState<
@@ -379,29 +231,28 @@ function ViewRoundResults({
   const {
     matches,
     isRevised: areMatchingFundsRevised,
-    readyForPayoutTransactionHash,
     error: matchingFundsError,
     isLoading: isLoadingMatchingFunds,
     mutate: reloadMatchingFunds,
   } = useRevisedMatchingFunds(
-    roundId,
-    signer as Signer | undefined,
+    round,
     distributionOption === "scale",
     overridesFile
   );
 
+  const readyForPayoutTransactionHash = round.readyForPayoutTransaction;
+  const isReadyForPayout = readyForPayoutTransactionHash !== null;
+
   const shouldShowRevisedTable =
     areMatchingFundsRevised || Boolean(readyForPayoutTransactionHash);
 
-  const isReadyForPayout = Boolean(
-    oldRoundFromGraph?.payoutStrategy.isReadyForPayout
-  );
-
-  const isRoundFullyFunded = useIsRoundFullyFunded({
-    roundId,
-    matchAmount: round.matchAmount,
-    matchTokenAddress: matchToken.address,
+  const { data: amountFunded } = useContractAmountFunded({
+    round: round,
+    payoutToken: matchToken,
   });
+
+  const isRoundFullyFunded =
+    (amountFunded?.fundedAmount ?? 0) >= round.matchAmount;
 
   const [isExportingApplicationsCSV, setIsExportingApplicationsCSV] =
     useState(false);
@@ -427,45 +278,35 @@ function ViewRoundResults({
   const [progressModalOpen, setProgressModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
 
-  const [readyForPayoutTransaction, setReadyforPayoutTransaction] =
-    useState<TransactionResponse>();
-
   const { finalizeRound, finalizeRoundToContractStatus, IPFSCurrentStatus } =
     useFinalizeRound();
 
   const onFinalizeResults = async () => {
-    if (!matches || !signer || !oldRoundFromGraph?.payoutStrategy.id) {
+    if (!matches || !signer) {
       return;
     }
 
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      const matchingJson: MatchingStatsData[] = matches.map((match) => ({
+      const matchingJson: DistributionMatch[] = matches.map((match) => ({
         contributionsCount: match.contributionsCount,
         projectPayoutAddress: match.payoutAddress,
         applicationId: match.applicationId,
-        projectId: match.projectId,
         matchPoolPercentage:
           Number((BigInt(1000000) * match.revisedMatch) / round.matchAmount) /
           1000000,
+        projectId: match.projectId,
         projectName: match.projectName,
-        matchAmountInToken: BigNumber.from(match.revisedMatch),
-        originalMatchAmountInToken: BigNumber.from(match.matched),
+        matchAmountInToken: match.revisedMatch.toString(),
+        originalMatchAmountInToken: match.matched.toString(),
       }));
 
-      await finalizeRound(oldRoundFromGraph.payoutStrategy.id, matchingJson);
-
-      const setReadyForPayoutTx = await setReadyForPayout({
-        roundId: round.id,
-        signerOrProvider: signer,
-      });
-
-      setReadyforPayoutTransaction(setReadyForPayoutTx);
-      reloadMatchingFunds();
+      await finalizeRound(roundId, round.payoutStrategy.id, matchingJson);
 
       setTimeout(() => {
         setProgressModalOpen(false);
+        navigate(0);
       }, errorModalDelayMs);
     } catch (error) {
       setTimeout(() => {
@@ -478,32 +319,21 @@ function ViewRoundResults({
 
   const progressSteps: ProgressStep[] = [
     {
-      name: "uploading to IPFS",
+      name: "Uploading to IPFS",
       description: "The matching distribution is being uploaded to IPFS.",
       status: IPFSCurrentStatus,
     },
     {
-      name: "saving",
+      name: "Finalizing",
       description:
-        "The matching distribution is being saved onto the contract.",
+        "The matching distribution is being uploaded to the contract.",
       status: finalizeRoundToContractStatus,
     },
     {
-      name: "Finalizing",
-      description: `The contract is being marked as eligible for payouts.`,
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
       status:
         finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
-          ? readyForPayoutTransaction
-            ? ProgressStatus.IS_SUCCESS
-            : ProgressStatus.IN_PROGRESS
-          : ProgressStatus.NOT_STARTED,
-    },
-    {
-      name: "finishing up",
-      description: "We’re wrapping up.",
-      status:
-        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS &&
-        readyForPayoutTransaction !== undefined
           ? ProgressStatus.IN_PROGRESS
           : ProgressStatus.NOT_STARTED,
     },

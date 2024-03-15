@@ -66,7 +66,6 @@ describe("<RoundProvider />", () => {
       render(
         <DataLayerProvider client={{} as DataLayer}>
           <RoundProvider>
-            {/*// @ts-expect-error test file*/}
             <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
           </RoundProvider>
         </DataLayerProvider>
@@ -155,7 +154,6 @@ describe("<RoundProvider />", () => {
       render(
         <DataLayerProvider client={{} as DataLayer}>
           <RoundProvider>
-            {/*// @ts-expect-error test file*/}
             <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
           </RoundProvider>
         </DataLayerProvider>
@@ -176,7 +174,6 @@ describe("<RoundProvider />", () => {
       render(
         <DataLayerProvider client={{} as DataLayer}>
           <RoundProvider>
-            {/*// @ts-expect-error test file*/}
             <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
           </RoundProvider>
         </DataLayerProvider>
@@ -199,7 +196,6 @@ describe("<RoundProvider />", () => {
       render(
         <DataLayerProvider client={{} as DataLayer}>
           <RoundProvider>
-            {/*// @ts-expect-error test file*/}
             <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
           </RoundProvider>
         </DataLayerProvider>

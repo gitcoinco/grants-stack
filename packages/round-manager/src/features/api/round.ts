@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Signer } from "@ethersproject/abstract-signer";
-import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
-import { DataLayer, RoundForManager, V2RoundWithRoles } from "data-layer";
+import { Web3Provider } from "@ethersproject/providers";
+import { DataLayer, RoundForManager } from "data-layer";
 import { BigNumber, ethers } from "ethers";
 import { maxDateForUint256 } from "../../constants";
 import {
@@ -90,6 +89,8 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
     matchAmountInUsd: round.matchAmountInUsd,
     fundedAmount: BigInt(round.fundedAmount),
     fundedAmountInUsd: round.fundedAmountInUsd,
+    matchingDistribution: round.matchingDistribution,
+    readyForPayoutTransaction: round.readyForPayoutTransaction,
   };
 }
 
@@ -162,7 +163,11 @@ export async function fetchMatchingDistribution(
       matchingDistribution.map((distribution) => {
         distribution.matchAmountInToken = BigNumber.from(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (distribution.matchAmountInToken as any).hex
+          typeof distribution.matchAmountInToken === "object" &&
+            distribution.matchAmountInToken !== null &&
+            "hex" in distribution.matchAmountInToken
+            ? (distribution.matchAmountInToken as any).hex
+            : distribution.matchAmountInToken
         );
       });
     }
@@ -173,26 +178,3 @@ export async function fetchMatchingDistribution(
     throw new Error("Unable to fetch matching distribution");
   }
 }
-
-/**
- * Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
- * @param roundId
- * @param signerOrProvider
- * @returns
- */
-export const setReadyForPayout = async ({
-  roundId,
-  signerOrProvider,
-}: {
-  roundId: string;
-  signerOrProvider: Signer;
-}): Promise<TransactionResponse> => {
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
-    signerOrProvider
-  );
-
-  const tx = await roundImplementation.setReadyForPayout();
-  return tx.wait();
-};
