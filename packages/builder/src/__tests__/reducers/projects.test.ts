@@ -115,6 +115,7 @@ describe("projects reducer", () => {
           projectId: "1",
           metadataCid: "0x1",
           metadata: {},
+          distributionTransaction: null,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -238,6 +239,7 @@ describe("projects reducer", () => {
           id: "1",
           metadataCid: "0x1",
           metadata: {} as ProjectApplicationMetadata,
+          distributionTransaction: null,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -273,6 +275,7 @@ describe("projects reducer", () => {
           id: "2",
           metadataCid: "0x2",
           metadata: {} as ProjectApplicationMetadata,
+          distributionTransaction: null,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -544,6 +547,7 @@ describe("projects reducer", () => {
       id: "3",
       metadataCid: "0x3",
       metadata: {},
+      distributionTransaction: null,
       round: {
         applicationsStartTime: "0",
         applicationsEndTime: "0",
