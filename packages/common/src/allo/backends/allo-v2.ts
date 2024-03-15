@@ -158,7 +158,7 @@ export class AlloV2 implements Allo {
       }
     } else {
       /* Tried voting using erc-20 but no permit signature provided */
-      throw new Error(
+      throw new AlloError(
         "Tried voting using erc-20 but no permit signature provided"
       );
     }
