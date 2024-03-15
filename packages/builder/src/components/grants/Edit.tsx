@@ -193,19 +193,6 @@ function EditProject() {
           </div>
         </div>
         <div className="w-full sm:w-2/3 flex sm:flex-row flex-col items-center justify-end">
-          {/* <div className="flex flex-row">
-            {formStatus === ProjectFormStatus.Preview && (
-              <div className="flex flex-row items-center">
-                <span className="icon mr-2">
-                  <EyeIcon className="w-6 h-5 inline-block text-violet-500 align-middle" />
-                </span>
-                <span className="text-sm text-gray-500">
-                  This is a preview of your project&apos;s public page on
-                  Gitcoin Explorer.
-                </span>
-              </div>
-            )}
-          </div> */}
           <div className="flex flex-row">
             <Button
               variant={ButtonVariants.outlineDanger}

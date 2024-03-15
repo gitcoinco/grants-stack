@@ -257,6 +257,7 @@ export interface Round {
    * CreatedByAddress
    */
   createdByAddress?: string;
+  strategyAddress?: string;
 
   tags?: string[];
   fundedAmount: bigint;
@@ -459,13 +460,4 @@ export type Project = {
 export type TransactionBlock = {
   transactionBlockNumber: number;
   error?: unknown;
-};
-
-export type EditedGroups = {
-  ApplicationMetaPointer: boolean;
-  MatchAmount: boolean;
-  RoundFeeAddress: boolean;
-  RoundFeePercentage: boolean;
-  RoundMetaPointer: boolean;
-  StartAndEndTimes: boolean;
 };

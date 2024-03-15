@@ -3,15 +3,17 @@ import { Listbox, RadioGroup, Tab, Transition } from "@headlessui/react";
 import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
+  AnyJson,
   ChainId,
+  RoundVisibilityType,
   classNames,
   getUTCDate,
   getUTCTime,
-  RoundVisibilityType,
+  useAllo,
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { Fragment, useEffect, useState } from "react";
 import Datetime from "react-datetime";
 import {
@@ -20,25 +22,22 @@ import {
   ControllerRenderProps,
   FieldErrors,
   SubmitHandler,
-  useController,
-  useForm,
   UseFormRegister,
   UseFormRegisterReturn,
   UseFormResetField,
   UseFormSetValue,
+  useController,
+  useForm,
 } from "react-hook-form";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import ReactTooltip from "react-tooltip";
 import { useNetwork } from "wagmi";
 import * as yup from "yup";
+import { maxDateForUint256 } from "../../constants";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useUpdateRound } from "../../context/round/UpdateRoundContext";
-import {
-  EditedGroups,
-  ProgressStatus,
-  ProgressStep,
-  Round,
-} from "../api/types";
+import { getPayoutTokenOptions, payoutTokens } from "../api/payoutTokens";
+import { ProgressStatus, ProgressStep, Round } from "../api/types";
 import { CHAINS, SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
@@ -52,48 +51,70 @@ import {
   supportTypes,
 } from "./RoundDetailForm";
 import { isDirectRound } from "./ViewRoundPage";
-import { maxDateForUint256 } from "../../constants";
-import { payoutTokens } from "../api/payoutTokens";
+import { RoundCategory, UpdateRoundParams } from "common/dist/types";
+import { ethers } from "ethers";
+import { getConfig } from "common/src/config";
+import { zeroAddress } from "viem";
+import { NATIVE } from "common/dist/allo/common";
 
 type EditMode = {
   canEdit: boolean;
   canEditOnlyRoundEndDate: boolean;
 };
 
-// returns a boolean for each group of fields that have been edited
-const compareRounds = (
+const isV2 = getConfig().allo.version === "allo-v2";
+
+const generateUpdateRoundData = (
   oldRoundData: Round,
   newRoundData: Round
-): EditedGroups => {
+): UpdateRoundParams => {
   // create deterministic copies of the data
   const dOldRound: Round = _.cloneDeep(oldRoundData);
   const dNewRound: Round = _.cloneDeep(newRoundData);
 
-  return {
-    ApplicationMetaPointer: !_.isEqual(
-      dOldRound.applicationMetadata,
-      dNewRound.applicationMetadata
-    ),
-    MatchAmount: !_.isEqual(
+  const updateRoundData: UpdateRoundParams = {};
+
+  if (
+    !_.isEqual(dOldRound.applicationMetadata, dNewRound.applicationMetadata)
+  ) {
+    updateRoundData.applicationMetadata =
+      dNewRound.applicationMetadata as AnyJson;
+
+    if (isV2) {
+      updateRoundData.roundMetadata = dNewRound.roundMetadata as AnyJson;
+    }
+  }
+
+  if (!_.isEqual(dOldRound.roundMetadata, dNewRound.roundMetadata)) {
+    updateRoundData.roundMetadata = dNewRound.roundMetadata as AnyJson;
+
+    if (isV2) {
+      updateRoundData.applicationMetadata =
+        dNewRound.applicationMetadata as AnyJson;
+    }
+  }
+
+  if (
+    dNewRound.chainId &&
+    !_.isEqual(
       dOldRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable,
       dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
-    ),
-    RoundFeeAddress: false,
-    // todo feesAddress not found in roundMetadata
-    // RoundFeeAddress: _.isEqual(
-    //   dOldRound?.roundMetadata?.feesAddress.toLowerCase(),
-    //   dNewRound?.roundMetadata?.feesAddress.toLowerCase()
-    // ),
-    RoundFeePercentage: false,
-    // !_.isEqual(
-    //   dOldRound.roundFeePercentage,
-    //   dNewRound.roundFeePercentage
-    // ),
-    RoundMetaPointer: !_.isEqual(
-      dOldRound.roundMetadata,
-      dNewRound.roundMetadata
-    ),
-    StartAndEndTimes: !(
+    )
+  ) {
+    const decimals = getPayoutTokenOptions(dNewRound.chainId).find(
+      (token) => token.address === dNewRound.token
+    )?.decimal;
+
+    const matchAmount = ethers.utils.parseUnits(
+      dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString(),
+      decimals
+    );
+
+    updateRoundData.matchAmount = matchAmount;
+  }
+
+  if (
+    !(
       _.isEqual(dOldRound.roundStartTime, dNewRound.roundStartTime) &&
       _.isEqual(dOldRound.roundEndTime, dNewRound.roundEndTime) &&
       _.isEqual(
@@ -101,12 +122,20 @@ const compareRounds = (
         dNewRound.applicationsStartTime
       ) &&
       _.isEqual(dOldRound.applicationsEndTime, dNewRound.applicationsEndTime)
-    ),
-  };
+    )
+  ) {
+    updateRoundData.roundStartTime = dNewRound.roundStartTime;
+    updateRoundData.roundEndTime = dNewRound.roundEndTime;
+    updateRoundData.applicationsStartTime = dNewRound.applicationsStartTime;
+    updateRoundData.applicationsEndTime = dNewRound.applicationsEndTime;
+  }
+
+  return updateRoundData;
 };
 
 export default function ViewRoundSettings(props: { id?: string }) {
   const { round } = useRoundById(props.id?.toLowerCase());
+  const allo = useAllo();
   const [editMode, setEditMode] = useState<EditMode>({
     canEdit: false,
     canEditOnlyRoundEndDate: false,
@@ -297,9 +326,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   });
 
   useEffect(() => {
-    setHasChanged(
-      Object.values(compareRounds(round!, editedRound!)).some((value) => value)
-    );
+    setHasChanged(!_.isEmpty(generateUpdateRoundData(round!, editedRound!)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedRound]);
 
@@ -339,21 +366,34 @@ export default function ViewRoundSettings(props: { id?: string }) {
   };
 
   const updateRoundHandler = async () => {
+    if (!allo) return;
     try {
       // @ts-expect-error TS upgrade broke this, TODO fix this
       handleSubmit(submit(editedRound as Round));
-      const editedGroups: EditedGroups = compareRounds(round!, editedRound!);
+      const data = generateUpdateRoundData(round!, editedRound!);
+
       setIpfsStep(
-        editedGroups.ApplicationMetaPointer || editedGroups.RoundMetaPointer
+        !_.isNil(data?.applicationMetadata) || !_.isNil(data?.roundMetadata)
       );
+
       setEditMode({ ...editMode, canEdit: false });
       setIsConfirmationModalOpen(false);
       setIsProgressModalOpen(true);
-      await updateRound({ editedGroups, round: editedRound! });
+
+      await updateRound({
+        roundId: round.id!,
+        roundAddress: round.payoutStrategy.id as `0x${string}`,
+        data,
+        allo,
+        roundCategory: isDirectRound(round)
+          ? RoundCategory.Direct
+          : RoundCategory.QuadraticFunding,
+      });
+
       setTimeout(() => {
         setIsProgressModalOpen(false);
-        setIpfsStep(false);
         window.location.reload();
+        setIpfsStep(false);
       }, 2000);
     } catch (e) {
       console.log("error", e);
@@ -1274,9 +1314,10 @@ function RoundApplicationPeriod(props: {
               <div className="leading-8 font-normal">
                 <div>
                   {props.editMode.canEdit &&
-                  !moment(editedRound.applicationsStartTime).isBefore(
-                    new Date()
-                  ) ? (
+                  (isV2 ||
+                    !moment(editedRound.applicationsStartTime).isBefore(
+                      new Date()
+                    )) ? (
                     <div className="col-span-6 sm:col-span-3">
                       <div
                         className={`${
@@ -1307,17 +1348,22 @@ function RoundApplicationPeriod(props: {
                               utc={true}
                               dateFormat={"YYYY/MM/DD"}
                               timeFormat={"HH:mm UTC"}
-                              isValidDate={disablePastDate}
+                              isValidDate={
+                                isV2
+                                  ? (current: Moment) => true
+                                  : disablePastDate
+                              }
                               inputProps={{
                                 id: "applicationsStartTime",
                                 placeholder: "",
                                 className: `${
                                   props.editMode.canEdit &&
-                                  !timeHasPassed(
-                                    moment(
-                                      props.editedRound.applicationsStartTime
-                                    )
-                                  )
+                                  (isV2 ||
+                                    !timeHasPassed(
+                                      moment(
+                                        props.editedRound.applicationsStartTime
+                                      )
+                                    ))
                                     ? ""
                                     : "bg-grey-50"
                                 } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
@@ -1567,7 +1613,8 @@ function RoundApplicationPeriod(props: {
           </div>
           <div className="leading-8 font-normal">
             {props.editMode.canEdit &&
-            !moment(editedRound.roundStartTime).isBefore(new Date()) ? (
+            (isV2 ||
+              !moment(editedRound.roundStartTime).isBefore(new Date())) ? (
               <div className="col-span-6 sm:col-span-3">
                 <div
                   className={`${
@@ -1599,7 +1646,9 @@ function RoundApplicationPeriod(props: {
                           utc={true}
                           dateFormat={"YYYY/MM/DD"}
                           timeFormat={"HH:mm UTC"}
-                          isValidDate={disablePastDate}
+                          isValidDate={
+                            isV2 ? (current: Moment) => true : disablePastDate
+                          }
                           inputProps={{
                             id: "roundStartTime",
                             placeholder: "",
@@ -1790,6 +1839,18 @@ function RoundApplicationPeriod(props: {
   );
 }
 
+function getMatchingFundToken(
+  tokenAddress: string,
+  chainId: number | undefined
+) {
+  return payoutTokens.filter(
+    (t) =>
+      t.address.toLowerCase() ==
+        (tokenAddress == NATIVE ? zeroAddress : tokenAddress.toLowerCase()) &&
+      t.chainId == chainId
+  )[0];
+}
+
 function Funding(props: {
   editMode: EditMode;
   editedRound: Round;
@@ -1802,12 +1863,7 @@ function Funding(props: {
   const { editedRound } = props;
 
   const matchingFundPayoutToken =
-    editedRound &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLowerCase() == editedRound.token.toLowerCase() &&
-        t.chainId == editedRound.chainId
-    )[0];
+    editedRound && getMatchingFundToken(editedRound.token, editedRound.chainId);
 
   const matchingFunds =
     (editedRound &&

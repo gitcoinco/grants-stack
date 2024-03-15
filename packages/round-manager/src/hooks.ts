@@ -1,8 +1,8 @@
-import useSWR from "swr";
 import { Client } from "allo-indexer-client";
-import { useWallet } from "./features/common/Auth";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import useSWR from "swr";
+import { useWallet } from "./features/common/Auth";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -40,7 +40,7 @@ export function useRoundMatchingFunds(
   );
 }
 
-export function useRound(roundId: string) {
+export function useRound(roundId: string | number) {
   const client = useAlloIndexerClient();
   return useSWR([roundId, "/stats"], ([roundId]) => {
     return client.getRoundBy("id", roundId);

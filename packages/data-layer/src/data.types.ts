@@ -400,9 +400,7 @@ export type Eligibility = {
   requirements?: Requirement[];
 };
 
-/**
- * Legacy round type
- */
+// 
 export interface Round {
   /**
    * The on-chain unique round ID

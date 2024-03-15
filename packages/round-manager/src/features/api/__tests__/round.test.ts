@@ -1,8 +1,8 @@
 import { Round } from "../types";
 import { makeRoundData } from "../../../test-utils";
-import { Signer } from "@ethersproject/abstract-signer";
-import { TransactionBuilder, UpdateAction } from "../round";
 import { ethers } from "ethers";
+import { TransactionBuilder } from "common";
+import { UpdateAction } from "common/dist/types";
 
 const mockWallet = {
   address: "0x0",
@@ -24,16 +24,14 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 describe("TransactionBuilder", () => {
   const round: Round = makeRoundData();
 
-  const signer = ethers.Wallet.createRandom() as Signer;
   let transactionBuilder: TransactionBuilder;
 
   beforeEach(() => {
-    transactionBuilder = new TransactionBuilder(round, signer);
+    transactionBuilder = new TransactionBuilder(round.id!);
   });
 
   it("should initialize correctly", () => {
-    expect(transactionBuilder.round).toBe(round);
-    expect(transactionBuilder.signer).toBe(signer);
+    expect(transactionBuilder.roundId).toBe(round.id);
     expect(transactionBuilder.transactions).toEqual([]);
     expect(transactionBuilder.contract).toBeInstanceOf(ethers.Contract);
   });
@@ -61,13 +59,6 @@ describe("TransactionBuilder", () => {
     expect(transactions.length).toEqual(2);
   });
 
-  it("should throw an error when the action is not supported", () => {
-    const action = "unsupported action";
-    const args = ["arg1", "arg2"];
-
-    expect(() => transactionBuilder.add(action, args)).toThrowError();
-  });
-
   it("should throw an error when the wrong param is provided", () => {
     const action = UpdateAction.UPDATE_APPLICATION_META_PTR;
     const args = ["arg1", "arg2"];
@@ -75,9 +66,9 @@ describe("TransactionBuilder", () => {
     expect(() => transactionBuilder.add(action, args)).toThrowError();
   });
 
-  it("should throw an error when there are no transactions to execute", async () => {
-    await expect(transactionBuilder.execute()).rejects.toThrowError(
-      "No transactions to execute"
+  it("should throw an error when there are no transactions to generate", async () => {
+    expect(() => transactionBuilder.generate()).toThrowError(
+      "No transactions added"
     );
   });
 
