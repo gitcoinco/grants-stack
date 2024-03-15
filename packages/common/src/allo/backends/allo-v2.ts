@@ -40,6 +40,8 @@ import { PermitSignature } from "../voting";
 import Erc20ABI from "../abis/erc20";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
+import { generateMerkleTree } from "./allo-v1";
+import { BigNumber } from "ethers";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -947,7 +949,7 @@ export class AlloV2 implements Allo {
     });
   }
 
-  batchDistributeFunds(_args: {
+  batchDistributeFunds(args: {
     payoutStrategy: Address;
     allProjects: MatchingStatsData[];
     projectIdsToBePaid: string[];
@@ -959,8 +961,74 @@ export class AlloV2 implements Allo {
       indexingStatus: Result<null>;
     }
   > {
-    // eslint-disable-next-line no-empty-pattern
-    return new AlloOperation(async ({}) => {
+    return new AlloOperation(async ({ emit }) => {
+      const poolId = BigInt(args.payoutStrategy);
+      const recipientIds: Address[] = args.projectIdsToBePaid.map((id) =>
+        getAddress(id)
+      );
+
+      // Generate merkle tree
+      const { tree, matchingResults } = generateMerkleTree(args.allProjects);
+
+      // Filter projects to be paid from matching results
+      const projectsToBePaid = matchingResults.filter((project) =>
+        args.projectIdsToBePaid.includes(project.projectId)
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const projectsWithMerkleProof: any[] = [];
+
+      projectsToBePaid.forEach((project) => {
+        const distribution: [number, string, BigNumber, string] = [
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          project.index!,
+          project.projectPayoutAddress,
+          project.matchAmountInToken,
+          project.projectId,
+        ];
+
+        // Generate merkle proof
+        const validMerkleProof = tree.getProof(distribution);
+
+        projectsWithMerkleProof.push({
+          index: distribution[0],
+          grantee: distribution[1],
+          amount: distribution[2],
+          merkleProof: validMerkleProof,
+          projectId: distribution[3],
+        });
+      });
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: this.allo.address(),
+        abi: AlloAbi,
+        functionName: "distribute",
+        args: [poolId, recipientIds, projectsWithMerkleProofBytes],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to distribute funds");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
       return success(null);
     });
   }
