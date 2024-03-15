@@ -34,6 +34,7 @@ describe("projects reducer", () => {
             status: "PENDING" as ApplicationStatus,
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -69,6 +70,7 @@ describe("projects reducer", () => {
             status: "PENDING" as ApplicationStatus,
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -155,6 +157,7 @@ describe("projects reducer", () => {
             projectId: "1",
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -196,6 +199,7 @@ describe("projects reducer", () => {
           projectId: "2",
           metadataCid: "0x2",
           metadata: {} as ProjectApplicationMetadata,
+          distributionTransaction: null,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -321,6 +325,7 @@ describe("projects reducer", () => {
             projectId: "1",
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -356,6 +361,7 @@ describe("projects reducer", () => {
             projectId: "1",
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -389,6 +395,7 @@ describe("projects reducer", () => {
             projectId: "2",
             metadataCid: "0x2",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -422,6 +429,7 @@ describe("projects reducer", () => {
             projectId: "3",
             metadataCid: "0x3",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -455,6 +463,7 @@ describe("projects reducer", () => {
             projectId: "4",
             metadataCid: "0x4",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -490,6 +499,7 @@ describe("projects reducer", () => {
             projectId: "1",
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
+            distributionTransaction: null,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
