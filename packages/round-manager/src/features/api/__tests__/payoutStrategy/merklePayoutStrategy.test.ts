@@ -1,7 +1,5 @@
-import { fetchProjectPaidInARound } from "common";
 import { makeQFDistribution, makeRoundData } from "../../../../test-utils";
 import { ChainId } from "common";
-import { fetchMatchingDistribution } from "../../round";
 import React, { useState as useStateMock } from "react";
 import { useGroupProjectsByPaymentStatus } from "../../payoutStrategy/payoutStrategy";
 
@@ -59,22 +57,10 @@ describe("merklePayoutStrategy", () => {
       const round = makeRoundData();
       const chainId = ChainId.MAINNET;
 
-      const projects = [...paidProjects, ...unProjects];
-      // TODO: Fix this test
-      (fetchProjectPaidInARound as any).mockImplementation(() => ({
-        paidProjects,
-      }));
-      (fetchMatchingDistribution as any).mockImplementation(() => ({
-        distributionMetaPtr: "",
-        matchingDistribution: projects,
-      }));
-
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const result = useGroupProjectsByPaymentStatus(chainId, round.id!);
-
-      // FIXME: hans pls
-      // expect(result.paid).toEqual(paidProjects);
-      // expect(result.paid).toEqual(unProjects);
+      const result = useGroupProjectsByPaymentStatus(chainId, round);
+      expect(result.paid).toEqual(paidProjects);
+      expect(result.unpaid).toEqual(unProjects);
     });
   });
 });
