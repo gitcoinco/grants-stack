@@ -12,7 +12,6 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import * as merklePayoutStrategy from "../../api/payoutStrategy/payoutStrategy";
-import * as roundTs from "../../api/round";
 import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
 import { faker } from "@faker-js/faker";
@@ -46,6 +45,11 @@ jest.mock("../../common/Auth", () => ({
     address: mockRoundData.operatorWallets![0],
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
+}));
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
 }));
 
 const useGroupProjectsByPaymentStatusMock = jest.spyOn(
