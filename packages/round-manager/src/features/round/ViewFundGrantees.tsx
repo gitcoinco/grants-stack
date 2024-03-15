@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
-import { classNames, useTokenPrice } from "common";
+import { classNames, getTxBlockExplorerLink, useTokenPrice } from "common";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
-import { errorModalDelayMs } from "../../constants";
+import { errorModalDelayMs, modalDelayMs } from "../../constants";
 import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/payoutStrategy";
 import {
   MatchingStatsData,
@@ -212,6 +212,10 @@ export function PayProjectsTable(props: {
   const [finalizingDistributionStatus, setFinalizingDistributionStatus] =
     useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
 
+  const [indexingStatus, setIndexingStatus] = useState<ProgressStatus>(
+    ProgressStatus.NOT_STARTED
+  );
+
   const tokenDetail =
     props.token.address == ethers.constants.AddressZero
       ? { address: assertAddress(props.round?.payoutStrategy.id) }
@@ -232,10 +236,7 @@ export function PayProjectsTable(props: {
     {
       name: "Finishing up",
       description: "We're wrapping up.",
-      status:
-        finalizingDistributionStatus == ProgressStatus.IS_SUCCESS
-          ? ProgressStatus.IS_SUCCESS
-          : ProgressStatus.NOT_STARTED,
+      status: indexingStatus,
     },
   ];
 
@@ -302,13 +303,39 @@ export function PayProjectsTable(props: {
           allProjects: props.allProjects,
           projectIdsToBePaid: selectedProjects.map((p) => p.projectId),
         })
+        .on("transaction", (result) => {
+          if (result.type === "error") {
+            setFinalizingDistributionStatus(ProgressStatus.IS_ERROR);
+          }
+        })
         .on("transactionStatus", (result) => {
           if (result.type === "error") {
             setFinalizingDistributionStatus(ProgressStatus.IS_ERROR);
           } else {
             setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
+            setIndexingStatus(ProgressStatus.IN_PROGRESS);
           }
-        });
+        })
+        .on("indexingStatus", (result) => {
+          if (result.type === "error") {
+            setIndexingStatus(ProgressStatus.IS_ERROR);
+          } else {
+            setIndexingStatus(ProgressStatus.IS_SUCCESS);
+          }
+        })
+        .execute();
+
+      if (result.type === "error") {
+        console.error("Error while distributing funds", result.error);
+        setTimeout(() => {
+          setOpenReadyForDistributionProgressModal(false);
+        }, errorModalDelayMs);
+      } else {
+        setTimeout(() => {
+          setOpenReadyForDistributionProgressModal(false);
+          navigate(0);
+        }, modalDelayMs);
+      }
     }
   };
 
@@ -515,25 +542,6 @@ export function PaidProjectsTable(props: {
   token: PayoutToken;
   price: number;
 }) {
-  // todo: such a nice table should be in a separate and shared file
-  let blockScanUrl: string;
-  switch (props.chainId) {
-    case 1:
-      blockScanUrl = "https://etherscan.io/tx/";
-      break;
-    case 10:
-      blockScanUrl = "https://optimistic.etherscan.io/tx/";
-      break;
-    case 250:
-      blockScanUrl = "https://ftmscan.com/tx/";
-      break;
-    case 4002:
-      blockScanUrl = "https://testnet.ftmscan.com/tx/";
-      break;
-    default:
-      blockScanUrl = "https://etherscan.io/tx/";
-  }
-
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
@@ -630,7 +638,10 @@ export function PaidProjectsTable(props: {
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <a
-                          href={`${blockScanUrl}${project.hash}`}
+                          href={getTxBlockExplorerLink(
+                            props.chainId,
+                            project.hash ?? ""
+                          )}
                           className="text-indigo-600 hover:text-indigo-900"
                           target={"_blank"}
                         >

@@ -791,6 +791,7 @@ export class AlloV2 implements Allo {
     {
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   > {
     // eslint-disable-next-line no-empty-pattern

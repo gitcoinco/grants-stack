@@ -917,41 +917,42 @@ export class AlloV1 implements Allo {
     {
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   > {
-    // Generate merkle tree
-    const { tree, matchingResults } = generateMerkleTree(args.allProjects);
-
-    // Filter projects to be paid from matching results
-    const projectsToBePaid = matchingResults.filter((project) =>
-      args.projectIdsToBePaid.includes(project.projectId)
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const projectsWithMerkleProof: any[] = [];
-
-    projectsToBePaid.forEach((project) => {
-      const distribution: [number, string, BigNumber, string] = [
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        project.index!,
-        project.projectPayoutAddress,
-        project.matchAmountInToken,
-        project.projectId,
-      ];
-
-      // Generate merkle proof
-      const validMerkleProof = tree.getProof(distribution);
-
-      projectsWithMerkleProof.push({
-        index: distribution[0],
-        grantee: distribution[1],
-        amount: distribution[2],
-        merkleProof: validMerkleProof,
-        projectId: distribution[3],
-      });
-    });
-
     return new AlloOperation(async ({ emit }) => {
+      // Generate merkle tree
+      const { tree, matchingResults } = generateMerkleTree(args.allProjects);
+
+      // Filter projects to be paid from matching results
+      const projectsToBePaid = matchingResults.filter((project) =>
+        args.projectIdsToBePaid.includes(project.projectId)
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const projectsWithMerkleProof: any[] = [];
+
+      projectsToBePaid.forEach((project) => {
+        const distribution: [number, string, BigNumber, string] = [
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          project.index!,
+          project.projectPayoutAddress,
+          project.matchAmountInToken,
+          project.projectId,
+        ];
+
+        // Generate merkle proof
+        const validMerkleProof = tree.getProof(distribution);
+
+        projectsWithMerkleProof.push({
+          index: distribution[0],
+          grantee: distribution[1],
+          amount: distribution[2],
+          merkleProof: validMerkleProof,
+          projectId: distribution[3],
+        });
+      });
+
       const txResult = await sendTransaction(this.transactionSender, {
         address: args.payoutStrategy,
         abi: MerklePayoutStrategyImplementationABI,
@@ -965,14 +966,22 @@ export class AlloV1 implements Allo {
         return txResult;
       }
 
+      let receipt: TransactionReceipt;
       try {
-        const receipt = await this.transactionSender.wait(txResult.value);
+        receipt = await this.transactionSender.wait(txResult.value);
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to distribute funds");
         emit("transactionStatus", error(result));
         return error(result);
       }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
 
       return success(null);
     });

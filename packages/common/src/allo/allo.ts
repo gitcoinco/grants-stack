@@ -178,6 +178,7 @@ export interface Allo {
     {
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   >;
 }
