@@ -373,3 +373,37 @@ export interface Web3Instance {
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
 export type { VotingToken } from "./types";
+
+export const txBlockExplorerLinks: Record<ChainId, string> = {
+  [ChainId.DEV1]: "",
+  [ChainId.DEV2]: "",
+  [ChainId.MAINNET]: "https://etherscan.io/tx/",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "https://optimistic.etherscan.io/tx/",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "https://ftmscan.com/tx/",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",
+  [ChainId.PGN_TESTNET]: "https://explorer.sepolia.publicgoods.network/tx/",
+  [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
+  [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
+  [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
+  [ChainId.POLYGON]: "https://polygonscan.com/tx/",
+  [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
+  [ChainId.FUJI]: "https://snowtrace.io/tx/",
+  [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "https://goerli.explorer.zksync.io/tx/",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
+  [ChainId.BASE]: "https://basescan.org/tx/",
+  [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
+  [ChainId.SCROLL]: "https://scrollscan.com/tx/",
+};
+
+/**
+ * Fetch the correct transaction block explorer link for the provided web3 network
+ *
+ * @param chainId - The chain ID of the blockchain
+ * @param txHash - The transaction hash
+ * @returns the transaction block explorer URL for the provided transaction hash and network
+ */
+export const getTxBlockExplorerLink = (chainId: ChainId, txHash: string) => {
+  return txBlockExplorerLinks[chainId] + txHash;
+};

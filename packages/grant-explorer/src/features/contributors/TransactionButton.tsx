@@ -1,12 +1,12 @@
 import { Button } from "common/src/styles";
-import { getTxExplorerTxLink } from "../api/utils";
+import { getTxBlockExplorerLink } from "common";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 export function TransactionButton(props: { chainId: number; txHash: string }) {
   return (
     <a
       target={"_blank"}
-      href={getTxExplorerTxLink(props.chainId, props.txHash)}
+      href={getTxBlockExplorerLink(props.chainId, props.txHash)}
     >
       <Button
         type="button"
