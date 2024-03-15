@@ -1168,9 +1168,6 @@ function constructCreateRoundArgs({
   ]);
 }
 
-const dateToEthereumTimestamp = (date: Date) =>
-  BigInt(Math.floor(date.getTime() / 1000));
-
 /**
  * Generate merkle tree
  *
