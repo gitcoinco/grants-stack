@@ -1,10 +1,8 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import {
-  merklePayoutStrategyImplementationContract,
-  roundImplementationContract,
-} from "common/src/contracts";
+import roundImplementationABI from "common/src/allo/abis/allo-v1/RoundImplementation";
+import merklePayoutStrategyImplementationABI from "common/src/allo/abis/allo-v1/MerklePayoutStrategyImplementation";
 import {
   ChainId,
   VotingToken,
@@ -887,13 +885,13 @@ async function fetchMatchingDistribution(
     let matchingDistribution: MatchingStatsData[] = [];
     const roundImplementation = new ethers.Contract(
       roundId,
-      roundImplementationContract.abi,
+      roundImplementationABI,
       signerOrProvider
     );
     const payoutStrategyAddress = await roundImplementation.payoutStrategy();
     const payoutStrategy = new ethers.Contract(
       payoutStrategyAddress,
-      merklePayoutStrategyImplementationContract.abi,
+      merklePayoutStrategyImplementationABI,
       signerOrProvider
     );
     const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
