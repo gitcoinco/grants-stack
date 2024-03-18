@@ -89,7 +89,7 @@ export default function ViewRoundPage() {
       {!hasAccess && <AccessDenied />}
       {round && hasAccess && (
         <>
-          <Navbar />
+          <Navbar alloVersionSwitcherVisible={false} />
           <div className="flex flex-col w-screen mx-0">
             <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
               <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">

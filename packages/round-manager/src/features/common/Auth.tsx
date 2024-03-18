@@ -27,7 +27,7 @@ export default function Auth() {
 
   return !isConnected ? (
     <div>
-      <Navbar programCta={false} isWalletConnected={false} />
+      <Navbar programCta={false} alloVersionSwitcherVisible={false} />
       <main className="pt-4">
         {isConnecting ? (
           <Spinner text="Connecting Wallet" />

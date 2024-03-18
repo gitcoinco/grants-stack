@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ExclamationCircleIcon, PlusSmIcon } from "@heroicons/react/solid";
+import { PlusSmIcon } from "@heroicons/react/solid";
 import { PGN as PGNLogoIcon } from "common/src/icons/PGN";
 import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
 import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dark.svg";
@@ -10,11 +10,11 @@ import AlloVersionSwitcher from "common/src/components/AlloVersionSwitcher";
 
 export interface NavbarProps {
   programCta?: boolean;
-  isWalletConnected?: boolean;
+  alloVersionSwitcherVisible?: boolean;
 }
 
 export default function Navbar({
-  isWalletConnected = true,
+  alloVersionSwitcherVisible: alloVersionSwitcherVisible = true,
   programCta: programCta = true,
 }: NavbarProps) {
   return (
@@ -56,7 +56,7 @@ export default function Navbar({
                   </Link>
                 )}
               </div>
-              {isWalletConnected && <AlloVersionSwitcher />}
+              {alloVersionSwitcherVisible && <AlloVersionSwitcher />}
               <ConnectButton />
               <div>
                 <a
