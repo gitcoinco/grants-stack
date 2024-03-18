@@ -6,9 +6,7 @@ import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dar
 import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo-dark.svg";
 import { Button } from "common/src/styles";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import AlloVersionSwitcher, {
-  useAlloVersion,
-} from "common/src/components/AlloVersionSwitcher";
+import AlloVersionSwitcher from "common/src/components/AlloVersionSwitcher";
 
 export interface NavbarProps {
   programCta?: boolean;
@@ -19,8 +17,6 @@ export default function Navbar({
   isWalletConnected = true,
   programCta: programCta = true,
 }: NavbarProps) {
-  const { version, switchToVersion } = useAlloVersion();
-
   return (
     <>
       <nav className="bg-moon-600">
@@ -77,24 +73,6 @@ export default function Navbar({
           </div>
         </div>
       </nav>
-      {version === "allo-v1" && (
-        <div className="bg-[#D3EDFE] p-4 text-center font-medium flex items-center justify-center">
-          <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-          You are currently on Allo v1. To switch to the most current version of
-          Manager,&nbsp;
-          <a
-            href="#"
-            className="underline"
-            onClick={(e) => {
-              e.preventDefault();
-              switchToVersion("allo-v2");
-            }}
-          >
-            switch to Allo v2.
-          </a>
-          &nbsp;Allo v1 will be sunset on April 1st.
-        </div>
-      )}
     </>
   );
 }
