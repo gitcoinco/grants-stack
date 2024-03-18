@@ -54,7 +54,7 @@ function getLocalStorageConfigOverrides(): LocalStorageConfigOverrides {
   return JSON.parse(configOverrides);
 }
 
-export function switchAlloVersion(version: AlloVersion) {
+export function switchAlloVersionAndReloadPage(version: AlloVersion) {
   const currentAlloVersion = getConfig().allo.version;
 
   if (currentAlloVersion === version) {
@@ -100,20 +100,21 @@ function overrideConfigFromLocalStorage(config: Config): Config {
 if (typeof window !== "undefined") {
   const currentAlloVersion = getAlloVersion();
   window.addEventListener("storage", () => {
-    config = null;
-    const newAlloVersion = getAlloVersion();
+    const newAlloVersion = getAlloVersion({ reload: true });
     if (currentAlloVersion !== newAlloVersion) {
       window.location.reload();
     }
   });
 }
 
-export function getAlloVersion(): AlloVersion {
-  return getConfig().allo.version;
+export function getAlloVersion(opts?: { reload: boolean }): AlloVersion {
+  return getConfig(opts).allo.version;
 }
 
-export function getConfig(): Config {
-  if (config !== null) {
+export function getConfig(
+  opts: { reload: boolean } = { reload: false }
+): Config {
+  if (config !== null && !opts?.reload) {
     return config;
   }
 

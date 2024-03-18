@@ -11,6 +11,7 @@ import { useNetwork, useProvider, useSigner } from "wagmi";
 import { getConfig } from "common/src/config";
 import { addressesByChainID } from "./deployments";
 import { useMemo } from "react";
+import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -57,7 +58,11 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     return alloBackend;
   }, [web3Provider, signer, chainID]);
 
-  return <AlloProvider backend={backend}>{children}</AlloProvider>;
+  return (
+    <AlloProvider backend={backend}>
+      <AlloVersionProvider>{children}</AlloVersionProvider>
+    </AlloProvider>
+  );
 }
 
 export default AlloWrapper;

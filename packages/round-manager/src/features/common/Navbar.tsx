@@ -6,14 +6,21 @@ import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dar
 import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo-dark.svg";
 import { Button } from "common/src/styles";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { getConfig, switchAlloVersion } from "common/src/config";
-import AlloVersionSwitcher from "common/src/components/AlloVersionSwitcher";
+import AlloVersionSwitcher, {
+  useAlloVersion,
+} from "common/src/components/AlloVersionSwitcher";
 
 export interface NavbarProps {
   programCta?: boolean;
+  isWalletConnected?: boolean;
 }
 
-export default function Navbar({ programCta = true }: NavbarProps) {
+export default function Navbar({
+  isWalletConnected = true,
+  programCta: programCta = true,
+}: NavbarProps) {
+  const { version, switchToVersion } = useAlloVersion();
+
   return (
     <>
       <nav className="bg-moon-600">
@@ -53,7 +60,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
                   </Link>
                 )}
               </div>
-              <AlloVersionSwitcher />
+              {isWalletConnected && <AlloVersionSwitcher />}
               <ConnectButton />
               <div>
                 <a
@@ -70,7 +77,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
           </div>
         </div>
       </nav>
-      {getConfig().allo.version === "allo-v1" && (
+      {version === "allo-v1" && (
         <div className="bg-[#D3EDFE] p-4 text-center font-medium flex items-center justify-center">
           <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
           You are currently on Allo v1. To switch to the most current version of
@@ -80,7 +87,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
             className="underline"
             onClick={(e) => {
               e.preventDefault();
-              switchAlloVersion("allo-v2");
+              switchToVersion("allo-v2");
             }}
           >
             switch to Allo v2.
