@@ -50,6 +50,8 @@ import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
 import { getRoundStrategyType } from "common";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
+import AlloV1 from "common/src/icons/AlloV1";
+import AlloV2 from "common/src/icons/AlloV2";
 
 export const isDirectRound = (round: Round | undefined) => {
   return (
@@ -121,6 +123,10 @@ export default function ViewRoundPage() {
               )}
               <div className="flex flex-row mb-1 items-center">
                 <RoundName round={round} />
+              </div>
+              <div className="mb-3">
+                {round?.tags?.includes("allo-v1") && <AlloV1 color="black" />}
+                {round?.tags?.includes("allo-v2") && <AlloV2 color="black" />}
               </div>
               <div className="flex flex-row flex-wrap relative gap-2 md:gap-8 xl:gap-36 pr-44">
                 {!isDirectRound(round) && (
