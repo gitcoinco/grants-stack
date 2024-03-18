@@ -5,7 +5,6 @@ import AlloV2 from "../icons/AlloV2";
 import classNames from "classnames";
 import { Spinner } from "./Spinner";
 import { AlloVersion } from "data-layer/dist/data-layer.types";
-import { useAllo } from "../allo/react";
 
 const AlloVersionContext = createContext<{
   version: AlloVersion;
