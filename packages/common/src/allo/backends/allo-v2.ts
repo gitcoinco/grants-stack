@@ -774,6 +774,23 @@ export class AlloV2 implements Allo {
     });
   }
 
+  withdrawFundsFromStrategy(_args: {
+    payoutStrategyAddress: Address;
+    recipientAddress: Address;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async () => {
+      throw new Error("not implemented.");
+    });
+  }
+
   finalizeRound(args: {
     roundId: string;
     strategyAddress: Address;

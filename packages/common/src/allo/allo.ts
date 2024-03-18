@@ -156,6 +156,18 @@ export interface Allo {
     }
   >;
 
+  withdrawFundsFromStrategy: (args: {
+    payoutStrategyAddress: Address;
+    recipientAddress: Address;
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
+
   finalizeRound: (args: {
     roundId: string;
     strategyAddress: Address;
