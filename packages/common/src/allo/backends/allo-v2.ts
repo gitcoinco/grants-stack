@@ -538,6 +538,7 @@ export class AlloV2 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -633,6 +634,13 @@ export class AlloV2 implements Allo {
         emit("transactionStatus", error(result));
         return error(result);
       }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
 
       return success(receipt.transactionHash);
     });

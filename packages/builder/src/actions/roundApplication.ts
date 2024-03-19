@@ -211,6 +211,13 @@ const applyToRound =
           console.log("Transaction Status Error", res.error);
         }
       })
+      .on("indexingStatus", (res) => {
+        if (res.type === "success") {
+          console.log("Indexing Status", res.value);
+        } else {
+          console.error("Indexing Status Error", res.error);
+        }
+      })
       .execute();
   };
 
