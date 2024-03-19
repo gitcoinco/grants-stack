@@ -54,15 +54,6 @@ export default function Header() {
               </Button>
             </Link>
             <ConnectButton />
-            <a
-              href="https://bridge.gitcoin.co"
-              target="_blank"
-              rel="noreferrer"
-              className="flex-shrink-0 flex items-center mx-3"
-            >
-              <PGNLogoIcon className="mr-2" />
-              <PGNTextLogoIcon fill="black" />
-            </a>
             <CustomerSupport />
           </div>
         </div>
