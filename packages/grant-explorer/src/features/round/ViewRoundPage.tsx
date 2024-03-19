@@ -419,8 +419,6 @@ function ProjectCard(props: {
 
   const { projects, add, remove } = useCartStorage();
 
-  console.log("projects", projects);
-
   const isAlreadyInCart = projects.some(
     (cartProject) =>
       cartProject.grantApplicationId === project.grantApplicationId &&
