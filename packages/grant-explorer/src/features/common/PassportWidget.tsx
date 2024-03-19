@@ -58,7 +58,7 @@ export function PassportWidget() {
             }
             text-lg font-semibold hidden md:block`}
           >
-            {passportScore}
+            {passportScore.toFixed()}
           </div>
         )}
         <DropdownIcon
@@ -86,7 +86,9 @@ export function PassportWidget() {
                     } w-40 p-4 justify-start rounded-2xl`}
                   >
                     <p className="mb-2">Passport Score</p>
-                    <p className={"font-modern-era-regular"}>{passportScore}</p>
+                    <p className={"font-modern-era-regular"}>
+                      {passportScore.toFixed()}
+                    </p>
                   </div>
                   <div
                     className={`${
