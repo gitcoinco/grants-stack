@@ -185,12 +185,15 @@ export function encodedQFAllocation(
   const tokenAddress = donationToken.address === zeroAddress ? NATIVE : donationToken.address;
 
   const encodedData = donations.map((donation) => {
+    if (!donation.anchorAddress) {
+      throw new Error("Anchor address is required for QF allocation");
+    }
     return encodeAbiParameters(
       parseAbiParameters(
         "address,uint8,(((address,uint256),uint256,uint256),bytes)"
       ),
       [
-        getAddress(donation.anchorAddress!),
+        getAddress(donation.anchorAddress),
         0, // permit type of none on the strategy
         [
           [

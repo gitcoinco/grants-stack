@@ -144,7 +144,7 @@ describe("useCartStorage Zustand store", () => {
   test("should handle removal of non-existing project gracefully", () => {
     const initialProjects = [...useCartStorage.getState().projects];
     const nonExistingId = "1234"; // Mock ID
-    let nonExistingProject: CartProject = makeApprovedProjectData();
+    const nonExistingProject: CartProject = makeApprovedProjectData();
     nonExistingProject.grantApplicationId = nonExistingId;
 
     useCartStorage.getState().remove(nonExistingProject);
