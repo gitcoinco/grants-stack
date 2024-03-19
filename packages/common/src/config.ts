@@ -35,6 +35,9 @@ export type Config = {
   explorer: {
     disableEstimates: boolean;
   };
+  manager: {
+    disableDirectGrantsForAlloV2: boolean;
+  };
   allo: {
     version: AlloVersion;
   };
@@ -224,6 +227,9 @@ export function getConfig(
         .enum(["allo-v1", "allo-v2"])
         .default("allo-v1")
         .parse(process.env.REACT_APP_ALLO_VERSION),
+    },
+    manager: {
+      disableDirectGrantsForAlloV2: true,
     },
   };
 

@@ -132,7 +132,13 @@ function ListPrograms() {
           >
             switch to Allo v2.
           </a>
-          &nbsp;Allo v1 will be sunset on April 1st.
+          &nbsp;
+          <a
+            href="https://gitcoin.notion.site/Navigating-the-Transition-to-Allo-v2-A-Guide-for-Grants-Managers-63e2bdddccb94792af83fdffb1530b85?pvs=74"
+            target="_blank"
+          >
+            What is Allo v2?
+          </a>
         </div>
       )}
       <header className="mb-2.5 bg-grey-500 overflow-hidden">

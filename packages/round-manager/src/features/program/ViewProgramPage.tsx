@@ -34,6 +34,11 @@ import { getPayoutRoundDescription } from "../common/Utils";
 import { parseRoundDates } from "../common/parseRoundDates";
 import { isDirectRound } from "../round/ViewRoundPage";
 import { getRoundDescriptionStatus } from "./getRoundDescriptionStatus";
+import { getAlloVersion, getConfig } from "common/src/config";
+
+const {
+  manager: { disableDirectGrantsForAlloV2 },
+} = getConfig();
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -292,42 +297,44 @@ export default function ViewProgram() {
                 className="object-cover pl-6 pr-4"
               />
             </button>
-            <button
-              onClick={() => setGrantType("directGrant")}
-              className={`flex w-full rounded border  ${
-                grantType === "directGrant"
-                  ? "border-violet-400 shadow-lg"
-                  : "border-grey-100"
-              } bg-white p-6 cursor-pointer`}
-            >
-              <div className="flex pr-6 m-auto">
-                <div
-                  className={`rounded-full border ${
-                    grantType === "directGrant"
-                      ? "border-violet-400"
-                      : "border-grey-100"
-                  } h-[24px] w-[24px]`}
-                  style={{
-                    borderWidth: grantType === "directGrant" ? "6px" : "2px",
-                  }}
+            {!disableDirectGrantsForAlloV2 && (
+              <button
+                onClick={() => setGrantType("directGrant")}
+                className={`flex w-full rounded border  ${
+                  grantType === "directGrant"
+                    ? "border-violet-400 shadow-lg"
+                    : "border-grey-100"
+                } bg-white p-6 cursor-pointer`}
+              >
+                <div className="flex pr-6 m-auto">
+                  <div
+                    className={`rounded-full border ${
+                      grantType === "directGrant"
+                        ? "border-violet-400"
+                        : "border-grey-100"
+                    } h-[24px] w-[24px]`}
+                    style={{
+                      borderWidth: grantType === "directGrant" ? "6px" : "2px",
+                    }}
+                  />
+                </div>
+                <div className="pr-6 flex-grow text-left mt-auto mb-auto">
+                  <h3 className="text-xl mb-2">Direct Grants</h3>
+                  <p
+                    className="text-grey-400 text-sm pr-4"
+                    data-testid="program-details-intro"
+                  >
+                    Choose this type of round to directly allocate funds to
+                    selected projects yourself.
+                  </p>
+                </div>
+                <img
+                  src={DirectGrants}
+                  alt="Direct Grants"
+                  className="object-cover pl-6 pr-4"
                 />
-              </div>
-              <div className="pr-6 flex-grow text-left mt-auto mb-auto">
-                <h3 className="text-xl mb-2">Direct Grants</h3>
-                <p
-                  className="text-grey-400 text-sm pr-4"
-                  data-testid="program-details-intro"
-                >
-                  Choose this type of round to directly allocate funds to
-                  selected projects yourself.
-                </p>
-              </div>
-              <img
-                src={DirectGrants}
-                alt="Direct Grants"
-                className="object-cover pl-6 pr-4"
-              />
-            </button>
+              </button>
+            )}
           </div>
           <div className="w-full px-12">
             <div className="border-t border-grey-100 h-[1px] mt-6 mb-6" />
@@ -403,19 +410,24 @@ export default function ViewProgram() {
                   <div className="md:mb-8">
                     <div className="flex flex-row justify-between">
                       <p className="font-bold">My Rounds</p>
-                      <span
-                        onClick={() => {
-                          setIsModalOpen(true);
-                        }}
-                        className="text-violet-400 font-thin ml-auto mr-4 cursor-pointer"
-                        data-testid="create-round-small-link"
-                      >
-                        <PlusSmIcon
-                          className="h-5 w-5 inline -translate-y-0.5"
-                          aria-hidden="true"
-                        />
-                        &nbsp;Create round
-                      </span>
+                      {!(
+                        programToRender?.tags?.includes("allo-v1") &&
+                        getAlloVersion() === "allo-v2"
+                      ) && (
+                        <span
+                          onClick={() => {
+                            setIsModalOpen(true);
+                          }}
+                          className="text-violet-400 font-thin ml-auto mr-4 cursor-pointer"
+                          data-testid="create-round-small-link"
+                        >
+                          <PlusSmIcon
+                            className="h-5 w-5 inline -translate-y-0.5"
+                            aria-hidden="true"
+                          />
+                          &nbsp;Create round
+                        </span>
+                      )}
                     </div>
                     {roundItems}
                   </div>
