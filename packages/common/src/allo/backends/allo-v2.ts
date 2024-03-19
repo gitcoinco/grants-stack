@@ -41,7 +41,7 @@ import Erc20ABI from "../abis/erc20";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { generateMerkleTree } from "./allo-v1";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, utils } from "ethers";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -982,7 +982,7 @@ export class AlloV2 implements Allo {
         const distribution: [number, string, BigNumber, string] = [
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           project.index!,
-          project.projectPayoutAddress,
+          project.applicationId,
           project.matchAmountInToken,
           project.projectId,
         ];
@@ -1040,20 +1040,20 @@ export class AlloV2 implements Allo {
 }
 
 export function serializeProject(project: ProjectWithMerkleProof) {
-  return ethers.utils.defaultAbiCoder.encode(
+  return utils.defaultAbiCoder.encode(
     ["uint256", "address", "uint256", "bytes32[]"],
     [
       project.index,
       project.recipientId,
       project.amount,
-      project.merkleProof.map(ethers.utils.formatBytes32String),
+      project.merkleProof.map(utils.formatBytes32String),
     ]
   );
 }
 
 export function serializeProjects(projects: ProjectWithMerkleProof[]) {
   const serializedProjects = projects.map(serializeProject);
-  return ethers.utils.defaultAbiCoder.encode(["bytes[]"], [serializedProjects]);
+  return utils.defaultAbiCoder.encode(["bytes[]"], [serializedProjects]);
 }
 
 export type ProjectWithMerkleProof = {
