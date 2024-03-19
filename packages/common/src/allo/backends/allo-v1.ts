@@ -936,11 +936,9 @@ export class AlloV1 implements Allo {
       const projectsWithMerkleProof: any[] = [];
 
       projectsToBePaid.forEach((project) => {
-        if (!project.index) {
-          throw new Error("Project index is required");
-        }
         const distribution: [number, string, BigNumber, string] = [
-          project.index,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          project.index!,
           project.projectPayoutAddress,
           project.matchAmountInToken,
           project.projectId,
