@@ -135,6 +135,7 @@ function ListPrograms() {
           &nbsp;
           <a
             href="https://gitcoin.notion.site/Navigating-the-Transition-to-Allo-v2-A-Guide-for-Grants-Managers-63e2bdddccb94792af83fdffb1530b85?pvs=74"
+            className="underline"
             target="_blank"
           >
             What is Allo v2?
