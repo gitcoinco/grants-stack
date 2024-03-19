@@ -124,7 +124,8 @@ export function ExploreProjectsPage(): JSX.Element {
   }
 
   function removeApplicationFromCart(application: ApplicationSummary) {
-    remove(createCompositeRoundApplicationId(application));
+    const cartProject = createCartProjectFromApplication(application);
+    remove(cartProject);
   }
 
   function applicationExistsInCart(application: ApplicationSummary) {

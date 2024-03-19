@@ -1,5 +1,5 @@
 import useSWRImmutable from "swr/immutable";
-import { Address, zeroAddress } from "viem";
+import { zeroAddress } from "viem";
 import { ChainId } from "common";
 import { getConfig } from "common/src/config";
 
@@ -19,7 +19,7 @@ export type MatchingEstimateResult = {
 };
 
 type UseMatchingEstimatesParams = {
-  roundId: Address;
+  roundId: string;
   chainId: ChainId;
   potentialVotes: {
     projectId: string;

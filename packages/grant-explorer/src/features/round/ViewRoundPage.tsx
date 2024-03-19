@@ -421,7 +421,8 @@ function ProjectCard(props: {
 
   const isAlreadyInCart = projects.some(
     (cartProject) =>
-      cartProject.grantApplicationId === project.grantApplicationId
+      cartProject.grantApplicationId === project.grantApplicationId &&
+      cartProject.roundId === props.roundId
   );
 
   const cartProject = project as CartProject;
@@ -469,7 +470,7 @@ function ProjectCard(props: {
                 project={project}
                 isAlreadyInCart={isAlreadyInCart}
                 removeFromCart={() => {
-                  remove(cartProject.grantApplicationId);
+                  remove(cartProject);
                 }}
                 addToCart={() => {
                   add(cartProject);

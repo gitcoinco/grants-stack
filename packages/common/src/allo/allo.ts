@@ -107,12 +107,12 @@ export interface Allo {
     }
   >;
 
-  voteUsingMRCContract: (
+  donate: (
     publicClient: PublicClient,
     chainId: ChainId,
     token: VotingToken,
     groupedVotes: Record<string, Hex[]>,
-    groupedAmounts: Record<string, bigint>,
+    groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,
     permit?: {
       sig: PermitSignature;
