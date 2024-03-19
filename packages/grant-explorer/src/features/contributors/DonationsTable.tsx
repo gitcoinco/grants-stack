@@ -8,10 +8,10 @@ import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
 import { ChainId, VotingToken } from "common";
 import { formatUnits } from "viem";
-import { ContributionWithTimestamp } from "../api/round";
+import { Contribution } from "data-layer";
 
 export function DonationsTable(props: {
-  contributions: { chainId: ChainId; data: ContributionWithTimestamp[] }[];
+  contributions: { chainId: ChainId; data: Contribution[] }[];
   tokens: Record<string, VotingToken>;
   activeRound: boolean;
 }) {

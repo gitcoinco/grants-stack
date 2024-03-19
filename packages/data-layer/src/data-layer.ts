@@ -25,6 +25,7 @@ import {
   V2RoundWithProject,
   v2Project,
   RoundForManager,
+  Contribution,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -47,7 +48,7 @@ import {
   getRoundsForManager,
   getRoundByIdAndChainIdWithApprovedApplications,
   getRoundsQuery,
-  getDonationsByRoundIdAndChainId,
+  getDonationsByDonorAddressAndChainId,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -537,24 +538,23 @@ export class DataLayer {
     return response.applications;
   }
 
-  async getDonationsByRoundIdAndChaindId(args: {
-    roundId: string | number;
+  async getDonationsByDonorAddressAndChainId(args: {
+    address: Address;
     chainId: number;
-  }): Promise<{ donations: any[] }> {
-    const response: { donations: any[] } = await request(
+  }): Promise<Contribution[]> {
+    const response: { donations: Contribution[] } = await request(
       this.gsIndexerEndpoint,
-      getDonationsByRoundIdAndChainId,
+      getDonationsByDonorAddressAndChainId,
       args,
     );
 
     console.log(
-      `response from data-layer getDonationsByRoundIdAndChainId(${0},${1})`,
-      args.roundId,
+      `response from data-layer getDonationsByDonorAddressAndChainId(${args.address},${args.chainId})`,
       args.chainId,
       { response },
     );
 
-    return response.donations as any;
+    return response.donations;
   }
 
   /**

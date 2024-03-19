@@ -711,3 +711,24 @@ export type Application = {
     };
   };
 };
+
+export type Vote = {
+  id: string;
+  projectId: string;
+  roundId: string;
+  applicationId: string;
+  token: string;
+  voter: string;
+  grantAddress: string;
+  amount: string;
+  amountUSD: number;
+  transaction: string;
+};
+
+export type Contribution = Vote & {
+  timestamp: bigint;
+  roundName: string;
+  projectTitle: string;
+  roundStartTime: number;
+  roundEndTime: number;
+};

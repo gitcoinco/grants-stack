@@ -8,13 +8,13 @@ import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import {
-  ContributionWithTimestamp,
   useContributionHistory,
 } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
 import { VotingToken } from "common";
+import { Contribution } from "data-layer";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")
@@ -118,7 +118,7 @@ function ViewContributionHistoryFetcher(props: {
 
 export function ViewContributionHistory(props: {
   tokens: Record<string, VotingToken>;
-  contributions: { chainId: number; data: ContributionWithTimestamp[] }[];
+  contributions: { chainId: number; data: Contribution[] }[];
   address: string;
   addressLogo: string;
   ensName?: string | null;
@@ -153,7 +153,7 @@ export function ViewContributionHistory(props: {
   const [activeRoundDonations] = useMemo(() => {
     const activeRoundDonations: {
       chainId: number;
-      data: ContributionWithTimestamp[];
+      data: Contribution[];
     }[] = [];
     const now = Date.now();
 
@@ -177,7 +177,7 @@ export function ViewContributionHistory(props: {
   const [pastRoundDonations] = useMemo(() => {
     const pastRoundDonations: {
       chainId: number;
-      data: ContributionWithTimestamp[];
+      data: Contribution[];
     }[] = [];
     const now = Date.now();
 

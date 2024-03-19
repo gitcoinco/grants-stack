@@ -575,15 +575,20 @@ export const getRoundByIdAndChainIdWithApprovedApplications = gql`
   }
 `;
 
-export const getDonationsByRoundIdAndChainId = gql`
-  query getDonationsByRoundIdAndChainId($roundId: String!, $chainId: Int!) {
+export const getDonationsByDonorAddressAndChainId = gql`
+  query getDonationsByDonorAddressAndChainId(
+    $address: String!
+    $chainId: Int!
+  ) {
     donations(
-      filter: { roundId: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+      filter: {
+        chainId: { equalTo: $chainId }
+        donorAddress: { equalTo: $address }
+      }
     ) {
       id
       chainId
       roundId
-      donorAddress
       recipientAddress
       projectId
       transactionHash
@@ -592,6 +597,15 @@ export const getDonationsByRoundIdAndChainId = gql`
       amount
       amountInUsd
       amountInRoundMatchToken
+      round {
+        totalAmountDonatedInUsd
+        roundMetadata
+        applicationsStartTime
+        applicationsEndTime
+        donationsStartTime
+        donationsEndTime
+        tags
+      }
     }
   }
 `;
