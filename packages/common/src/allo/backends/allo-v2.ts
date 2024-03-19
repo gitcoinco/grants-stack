@@ -975,13 +975,14 @@ export class AlloV2 implements Allo {
         args.projectIdsToBePaid.includes(project.projectId)
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const projectsWithMerkleProof: any[] = [];
+      const projectsWithMerkleProof: ProjectWithMerkleProof[] = [];
 
       projectsToBePaid.forEach((project) => {
+        if (!project.index) {
+          throw new AlloError("Project index is required");
+        }
         const distribution: [number, string, BigNumber, string] = [
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          project.index!,
+          project.index,
           project.applicationId,
           project.matchAmountInToken,
           project.projectId,
@@ -1002,13 +1003,11 @@ export class AlloV2 implements Allo {
         projectsWithMerkleProof
       );
 
-      const txData = projectsWithMerkleProofBytes as `0x${string}`;
-
       const txResult = await sendTransaction(this.transactionSender, {
         address: this.allo.address(),
         abi: AlloAbi,
         functionName: "distribute",
-        args: [poolId, recipientIds, txData],
+        args: [poolId, recipientIds, projectsWithMerkleProofBytes],
       });
 
       emit("transaction", txResult);
@@ -1051,9 +1050,9 @@ export function serializeProject(project: ProjectWithMerkleProof) {
   );
 }
 
-export function serializeProjects(projects: ProjectWithMerkleProof[]) {
+export function serializeProjects(projects: ProjectWithMerkleProof[]): Hex {
   const serializedProjects = projects.map(serializeProject);
-  return utils.defaultAbiCoder.encode(["bytes[]"], [serializedProjects]);
+  return utils.defaultAbiCoder.encode(["bytes[]"], [serializedProjects]) as Hex;
 }
 
 export type ProjectWithMerkleProof = {

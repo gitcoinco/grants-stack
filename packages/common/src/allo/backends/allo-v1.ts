@@ -55,6 +55,7 @@ import { MRC_CONTRACTS } from "../addresses/mrc";
 import Erc20ABI from "../abis/erc20";
 import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutStrategyImplementation";
 import { BigNumber } from "ethers";
+import { ProjectWithMerkleProof } from "./allo-v2";
 
 function createProjectId(args: {
   chainId: number;
@@ -932,13 +933,14 @@ export class AlloV1 implements Allo {
         args.projectIdsToBePaid.includes(project.projectId)
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const projectsWithMerkleProof: any[] = [];
+      const projectsWithMerkleProof: ProjectWithMerkleProof[] = [];
 
       projectsToBePaid.forEach((project) => {
+        if (!project.index) {
+          throw new Error("Project index is required");
+        }
         const distribution: [number, string, BigNumber, string] = [
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          project.index!,
+          project.index,
           project.projectPayoutAddress,
           project.matchAmountInToken,
           project.projectId,
