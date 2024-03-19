@@ -19,6 +19,7 @@ import { getAddress, Hex } from "viem";
 import { RoundVisibilityType } from "common";
 import _ from "lodash";
 import { getPublicClient } from "@wagmi/core";
+import { DataLayer } from "data-layer";
 
 /**
  * Shape of subgraph response
@@ -314,65 +315,75 @@ export const useContributionHistory = (
           throw new Error("REACT_APP_ALLO_API_URL is not set");
         }
 
-        const client = new AlloIndexerClient(
-          fetch.bind(window),
-          process.env.REACT_APP_ALLO_API_URL,
-          chainId
-        );
+        // todo: replace this with new indexer call getDonationsByRoundIdAndChainId()
 
-        let address = "";
-        try {
-          // ensure the address is a valid address
-          address = getAddress(rawAddress.toLowerCase());
-        } catch (e) {
-          return Promise.resolve({
-            chainId,
-            error: "Invalid address",
-            data: [],
-          });
-        }
+        // const client = new AlloIndexerClient(
+        //   fetch.bind(window),
+        //   process.env.REACT_APP_ALLO_API_URL,
+        //   chainId
+        // );
 
-        return client
-          .getContributionsByAddress(address)
-          .then(async (data) => {
-            const txTimestamps = await Promise.all(
-              data.map(async (contribution) => {
-                const tx = await publicClient.getTransaction({
-                  /* We are casting to Hex here as viem doesn't yet include a getHex parsing method */
-                  hash: contribution.transaction as Hex,
-                });
+        // let address = "";
+        // try {
+        //   // ensure the address is a valid address
+        //   address = getAddress(rawAddress.toLowerCase());
+        // } catch (e) {
+        //   return Promise.resolve({
+        //     chainId,
+        //     error: "Invalid address",
+        //     data: [],
+        //   });
+        // }
 
-                const block = await publicClient.getBlock({
-                  blockHash: tx.blockHash,
-                });
+        // return client
+        //   .getContributionsByAddress(address)
+        //   .then(async (data) => {
+        //     console.log("Fetched contributions for chain", chainId, data, address);
 
-                return { tx: tx.hash, timestamp: block.timestamp };
-              })
-            );
+        //     const txTimestamps = await Promise.all(
+        //       data.map(async (contribution) => {
+        //         const tx = await publicClient.getTransaction({
+        //           /* We are casting to Hex here as viem doesn't yet include a getHex parsing method */
+        //           hash: contribution.transaction as Hex,
+        //         });
 
-            return {
-              chainId,
-              error: undefined,
-              data: _(data)
-                .map((contribution) => ({
-                  ...contribution,
-                  timestamp:
-                    txTimestamps.find(
-                      (txTimestamp) =>
-                        txTimestamp.tx === contribution.transaction
-                    )?.timestamp ?? 0n,
-                }))
-                .orderBy("timestamp", "desc")
-                .value(),
-            };
-          })
-          .catch((error) => {
-            console.log(
-              `Error fetching contribution history for chain ${chainId}:`,
-              error
-            );
-            return { chainId, error: error.toString() as string, data: [] };
-          });
+        //         const block = await publicClient.getBlock({
+        //           blockHash: tx.blockHash,
+        //         });
+
+        //         return { tx: tx.hash, timestamp: block.timestamp };
+        //       })
+        //     );
+
+        //     return {
+        //       chainId,
+        //       error: undefined,
+        //       data: _(data)
+        //         .map((contribution) => ({
+        //           ...contribution,
+        //           timestamp:
+        //             txTimestamps.find(
+        //               (txTimestamp) =>
+        //                 txTimestamp.tx === contribution.transaction
+        //             )?.timestamp ?? 0n,
+        //         }))
+        //         .orderBy("timestamp", "desc")
+        //         .value(),
+        //     };
+        //   })
+        //   .catch((error) => {
+        //     console.log(
+        //       `Error fetching contribution history for chain ${chainId}:`,
+        //       error
+        //     );
+        //     return { chainId, error: error.toString() as string, data: [] };
+        //   });
+
+        return Promise.resolve({
+          chainId,
+          error: undefined,
+          data: [],
+        });
       });
 
       const fetchResults = await Promise.all(fetchPromises);

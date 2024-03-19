@@ -47,6 +47,7 @@ import {
   getRoundsForManager,
   getRoundByIdAndChainIdWithApprovedApplications,
   getRoundsQuery,
+  getDonationsByRoundIdAndChainId,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -534,6 +535,26 @@ export class DataLayer {
       await request(this.gsIndexerEndpoint, getApplicationsForManager, args);
 
     return response.applications;
+  }
+
+  async getDonationsByRoundIdAndChaindId(args: {
+    roundId: string | number;
+    chainId: number;
+  }): Promise<{ donations: any[] }> {
+    const response: { donations: any[] } = await request(
+      this.gsIndexerEndpoint,
+      getDonationsByRoundIdAndChainId,
+      args,
+    );
+
+    console.log(
+      `response from data-layer getDonationsByRoundIdAndChainId(${0},${1})`,
+      args.roundId,
+      args.chainId,
+      { response },
+    );
+
+    return response.donations as any;
   }
 
   /**
