@@ -2,8 +2,6 @@ import { Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { PGN as PGNLogoIcon } from "common/src/icons/PGN";
-import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
 import { grantsPath, newGrantPath } from "../routes";
 import CustomerSupport from "./base/CustomerSupport";
 import colors from "../styles/colors";
