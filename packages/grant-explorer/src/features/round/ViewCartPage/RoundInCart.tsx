@@ -19,7 +19,7 @@ export function RoundInCart(
   props: React.ComponentProps<"div"> & {
     roundCart: CartProject[];
     selectedPayoutToken: VotingToken;
-    handleRemoveProjectFromCart: (projectsToRemove: string) => void;
+    handleRemoveProjectFromCart: (project: CartProject) => void;
     payoutTokenPrice: number;
   }
 ) {

@@ -292,7 +292,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           );
           /* Remove checked out projects from cart */
           donations.forEach((donation) => {
-            useCartStorage.getState().remove(donation.grantApplicationId);
+            useCartStorage.getState().remove(donation);
           });
           set((oldState) => ({
             voteStatus: {

@@ -34,7 +34,7 @@ describe("useCartStorage Zustand store", () => {
     const project = makeApprovedProjectData();
 
     useCartStorage.getState().add(project);
-    useCartStorage.getState().remove(project.grantApplicationId);
+    useCartStorage.getState().remove(project);
 
     expect(useCartStorage.getState().projects).not.toContain(project);
   });
@@ -142,10 +142,12 @@ describe("useCartStorage Zustand store", () => {
   });
 
   test("should handle removal of non-existing project gracefully", () => {
-    const nonExistingId = "1234"; // Mock ID
     const initialProjects = [...useCartStorage.getState().projects];
+    const nonExistingId = "1234"; // Mock ID
+    let nonExistingProject: CartProject = makeApprovedProjectData();
+    nonExistingProject.grantApplicationId = nonExistingId;
 
-    useCartStorage.getState().remove(nonExistingId);
+    useCartStorage.getState().remove(nonExistingProject);
 
     // Assert that the store state remains unchanged
     expect(useCartStorage.getState().projects).toEqual(initialProjects);

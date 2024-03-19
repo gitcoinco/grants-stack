@@ -154,7 +154,7 @@ export function SummaryContainer() {
       expiredRounds.includes(project.roundId)
     );
     expiredProjects.forEach((project) => {
-      removeProjectFromCart(project.grantApplicationId);
+      removeProjectFromCart(project);
     });
   }, [projects, removeProjectFromCart, rounds]);
 
