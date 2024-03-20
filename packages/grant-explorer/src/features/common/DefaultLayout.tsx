@@ -1,8 +1,12 @@
 import { ComponentProps } from "react";
 import Footer from "common/src/components/Footer";
 import Navbar from "./Navbar";
+import { classNames } from "common";
 
-type LayoutProps = { showWalletInteraction?: boolean } & ComponentProps<"main">;
+type LayoutProps = {
+  showAlloVersionBanner?: boolean;
+  showWalletInteraction?: boolean;
+} & ComponentProps<"main">;
 
 export function DefaultLayout({
   showWalletInteraction = true,
@@ -22,6 +26,7 @@ export function DefaultLayout({
 
 export function GradientLayout({
   showWalletInteraction = true,
+  showAlloVersionBanner = false,
   children,
 }: LayoutProps) {
   return (
@@ -32,9 +37,14 @@ export function GradientLayout({
     >
       <Navbar
         showWalletInteraction={showWalletInteraction}
-        showAlloVersionBanner={true}
+        showAlloVersionBanner={showAlloVersionBanner}
       />
-      <div className="container mx-auto max-w-screen-xl pt-[120px] relative z-10 px-2 xl:px-0">
+      <div
+        className={classNames(
+          "container mx-auto max-w-screen-xl relative z-10 px-2 xl:px-0",
+          showAlloVersionBanner ? "pt-[120px]" : "pt-16"
+        )}
+      >
         {children}
       </div>
 

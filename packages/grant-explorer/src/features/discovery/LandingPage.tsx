@@ -38,7 +38,7 @@ const LandingPage = () => {
   }, [roundsEndingSoon.data]);
 
   return (
-    <GradientLayout showWalletInteraction>
+    <GradientLayout showWalletInteraction showAlloVersionBanner>
       <LandingHero />
       <LandingSection
         title="Donate now"
