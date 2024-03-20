@@ -112,21 +112,36 @@ export default function ViewRound() {
 
 export function AlloVersionBanner({ roundId }: { roundId: string }) {
   const isAlloV1 = roundId.startsWith("0x");
+  const currentVersion = getAlloVersion();
 
   return (
     <>
       <div className="fixed z-20 left-0 top-[64px] w-full bg-[#FFEFBE] p-4 text-center font-medium flex items-center justify-center">
         <ExclamationCircleIcon className="h-5 w-5 mr-2" />
-        <span>
-          This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}. Any
-          projects that you add to your cart will have to be donated to
-          separately from projects on rounds deployed on Allo{" "}
-          {isAlloV1 ? "v2" : "v1"}. Learn more{" "}
-          <a href="#" target="_blank" rel="noreferrer" className="underline">
-            here
-          </a>
-          .
-        </span>
+        {isAlloV1 && currentVersion === "allo-v2" ? (
+          <span>
+            This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}.
+            Please go to{" "}
+            <a
+              href={`https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`}
+              className="underline"
+            >
+              Explorer V1
+            </a>{" "}
+            to donate .
+          </span>
+        ) : (
+          <span>
+            This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}. Any
+            projects that you add to your cart will have to be donated to
+            separately from projects on rounds deployed on Allo{" "}
+            {isAlloV1 ? "v2" : "v1"}. Learn more{" "}
+            <a href="#" target="_blank" rel="noreferrer" className="underline">
+              here
+            </a>
+            .
+          </span>
+        )}
       </div>
       <div className="h-[64px] w-full"></div>
     </>
@@ -163,6 +178,8 @@ function BeforeRoundStart(props: {
   );
 }
 
+const alloVersion = getAlloVersion();
+
 function AfterRoundStart(props: {
   round: Round;
   chainId: ChainId;
@@ -180,11 +197,9 @@ function AfterRoundStart(props: {
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
     useState<Project>({} as Project);
 
-  useEffect(() => {
-    if (roundId.startsWith("0x") && getAlloVersion() === "allo-v2") {
-      window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
-    }
-  }, [roundId]);
+  const disableAddToCartButton =
+    (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
+    props.isAfterRoundEndDate;
 
   useEffect(() => {
     if (showCartNotification) {
@@ -397,7 +412,7 @@ function AfterRoundStart(props: {
             <ProjectList
               projects={projects}
               roundRoutePath={`/round/${chainId}/${roundId}`}
-              isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+              isBeforeRoundEndDate={!disableAddToCartButton}
               roundId={roundId}
               round={round}
               chainId={chainId}

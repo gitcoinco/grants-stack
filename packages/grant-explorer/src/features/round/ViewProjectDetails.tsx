@@ -76,10 +76,6 @@ enum VerifiedCredentialState {
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
-const {
-  allo: { version },
-} = getConfig();
-
 const useProjectDetailsParams = useParams<{
   chainId: string;
   roundId: string;
@@ -105,11 +101,11 @@ export default function ViewProjectDetails() {
     dataLayer
   );
 
-  useEffect(() => {
-    if (roundId.startsWith("0x") && getAlloVersion() === "allo-v2") {
-      window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
-    }
-  }, [roundId]);
+  // useEffect(() => {
+  //   if (roundId.startsWith("0x") && getAlloVersion() === "allo-v2") {
+  //     window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
+  //   }
+  // }, [roundId]);
 
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
@@ -123,7 +119,11 @@ export default function ViewProjectDetails() {
       ? false
       : round && round.roundEndTime <= currentTime);
 
-  const disableAddToCartButton = version === "allo-v2" || isAfterRoundEndDate;
+  const alloVersion = getAlloVersion();
+
+  const disableAddToCartButton =
+    (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
+    isAfterRoundEndDate;
   const { projects, add, remove } = useCartStorage();
 
   const isAlreadyInCart = projects.some(

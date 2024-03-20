@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 import { CartProject } from "./features/api/types";
 import { votingTokensMap } from "./features/api/utils";
 import { zeroAddress } from "viem";
+import { getAlloVersion } from "common/src/config";
 
 interface CartState {
   projects: CartProject[];
