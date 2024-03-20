@@ -48,7 +48,9 @@ jest.mock("common", () => ({
 
 jest.mock("data-layer", () => ({
   ...jest.requireActual("data-layer"),
-  useDataLayer: () => ({}),
+  useDataLayer: () => ({
+    getApplicationsForManager: () => [],
+  }),
   useApplicationsByRoundId: () => {},
 }));
 
@@ -104,19 +106,16 @@ describe("ReclaimFunds", () => {
         error: null,
         loading: false,
       }));
-
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: "0" },
         error: null,
         loading: false,
       }));
-
       (useSigner as jest.Mock).mockImplementation(() => ({
         signer: {
           getBalance: () => Promise.resolve("0"),
         },
       }));
-
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithReadProgramContext(
@@ -130,7 +129,6 @@ describe("ReclaimFunds", () => {
       );
       const fundContractTab = screen.getByTestId("reclaim-funds");
       fireEvent.click(fundContractTab);
-
       expect(screen.getByTestId("reclaim-funds-title")).toBeInTheDocument();
       expect(screen.getByText("Contract Balance")).toBeInTheDocument();
       expect(screen.getByText("Payout token:")).toBeInTheDocument();

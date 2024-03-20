@@ -122,39 +122,3 @@ export const useGroupProjectsByPaymentStatus = (
   }, [allProjects]);
   return groupedProjects;
 };
-
-/**
- * Reclaims funds from contract to provided address
- *
- * @param payoutStrategy
- * @param signerOrProvider
- * @param recipient
- * @returns
- */
-export async function reclaimFundsFromContract(
-  payoutStrategy: string,
-  signerOrProvider: Signer,
-  recipient: string
-) {
-  try {
-    const merklePayoutStrategyImplementation = new ethers.Contract(
-      payoutStrategy,
-      merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider
-    );
-
-    const tx =
-      await merklePayoutStrategyImplementation.withdrawFunds(recipient);
-
-    const receipt = await tx.wait();
-
-    console.log("✅ Transaction hash: ", tx.hash);
-    const blockNumber = receipt.blockNumber;
-    return {
-      transactionBlockNumber: blockNumber,
-    };
-  } catch (error) {
-    console.error("reclaimFundsFromContract", error);
-    throw new Error("Unable to reclaim funds from round");
-  }
-}

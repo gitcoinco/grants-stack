@@ -16,6 +16,7 @@ import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
 import { useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
 import { payoutTokens } from "../api/payoutTokens";
+import { useAllo } from "common";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;
@@ -90,6 +91,8 @@ function ReclaimFundsContent(props: {
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
 
+  const allo = useAllo();
+
   const { reclaimFunds, reclaimStatus } = useReclaimFunds();
 
   const payoutStrategy = props.round?.payoutStrategy.id ?? "";
@@ -117,10 +120,15 @@ function ReclaimFundsContent(props: {
   }, [navigate, transactionReplaced, props.roundId, reclaimStatus]);
 
   async function handleSubmitFund() {
+    if (allo === null) {
+      return;
+    }
+
     try {
       await reclaimFunds({
+        allo,
         payoutStrategy,
-        recipientAddress: walletAddress,
+        recipient: walletAddress,
       });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {

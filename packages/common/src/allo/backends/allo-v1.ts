@@ -797,6 +797,54 @@ export class AlloV1 implements Allo {
     });
   }
 
+  withdrawFundsFromStrategy(args: {
+    payoutStrategyAddress: Address;
+    recipientAddress: Address;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const tx = await sendTransaction(this.transactionSender, {
+        address: args.payoutStrategyAddress,
+        abi: MerklePayoutStrategyImplementationABI,
+        functionName: "withdrawFunds",
+        args: [args.recipientAddress],
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to withdraw from strategy");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
+
   finalizeRound(args: {
     roundId: string;
     strategyAddress: Address;
