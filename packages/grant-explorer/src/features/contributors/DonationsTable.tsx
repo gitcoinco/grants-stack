@@ -105,12 +105,10 @@ export function DonationsTable(props: {
                           <Link
                             className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
                             title={contribution.application.project.name}
-                            to={`/round/${
-                              contribution.chainId
-                            }/${contribution.roundId.toLowerCase()}/${
+                            to={`/round/${contribution.chainId}/${
                               getConfig().allo.version === "allo-v1"
-                                ? `${contribution.roundId.toLowerCase()}-`
-                                : ""
+                                ? `${contribution.roundId.toLowerCase()}/`
+                                : `${contribution.roundId.toString()}/`
                             }${contribution.applicationId}`}
                             target="_blank"
                           >

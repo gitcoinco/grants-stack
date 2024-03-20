@@ -97,6 +97,8 @@ export default function ViewProjectDetails() {
     dataLayer
   );
 
+  console.log("application to pass ->", { application });
+
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
 

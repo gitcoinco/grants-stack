@@ -12,6 +12,7 @@ const {
   allo: { version },
 } = getConfig();
 
+// fixme: 
 export function useApplication(params: Params, dataLayer: DataLayer) {
   const shouldFetch = Object.values(params).every(Boolean);
   return useSWR(shouldFetch ? ["applications", params] : null, async () => {
@@ -39,6 +40,8 @@ export function mapApplicationToProject(
   application?: Application
 ): Project | undefined {
   if (!application) return;
+
+  console.log("application from map", { application });
   return {
     grantApplicationId: application.id,
     applicationIndex: Number(application.id),
