@@ -26,6 +26,7 @@ import { assertAddress } from "common/src/address";
 import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 import { useAllo } from "common";
 import { getAddress } from "viem";
+import { getConfig } from "common/src/config";
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;
@@ -192,6 +193,7 @@ export function PayProjectsTable(props: {
   // TOOD: Connect wallet and payout contracts to pay grantees
   const { signer } = useWallet();
   const allo = useAllo();
+  const alloVersion = getConfig().allo.version;
   const roundId = props.round.id;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkbox = useRef<any>();
@@ -299,7 +301,10 @@ export function PayProjectsTable(props: {
     if (roundId) {
       const result = await allo
         .batchDistributeFunds({
-          payoutStrategy: getAddress(props.round.payoutStrategy.id),
+          payoutStrategy:
+            alloVersion === "allo-v1"
+              ? getAddress(props.round.payoutStrategy.id)
+              : getAddress(props.round.id),
           allProjects: props.allProjects,
           projectIdsToBePaid: selectedProjects.map((p) => p.projectId),
         })

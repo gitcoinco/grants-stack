@@ -42,6 +42,8 @@ import { PermitSignature, getPermitType } from "../voting";
 import Erc20ABI from "../abis/erc20";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
+import { generateMerkleTree } from "./allo-v1";
+import { BigNumber, utils } from "ethers";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
@@ -1010,7 +1012,7 @@ export class AlloV2 implements Allo {
     });
   }
 
-  batchDistributeFunds(_args: {
+  batchDistributeFunds(args: {
     payoutStrategy: Address;
     allProjects: MatchingStatsData[];
     projectIdsToBePaid: string[];
@@ -1022,9 +1024,103 @@ export class AlloV2 implements Allo {
       indexingStatus: Result<null>;
     }
   > {
-    // eslint-disable-next-line no-empty-pattern
-    return new AlloOperation(async ({}) => {
+    return new AlloOperation(async ({ emit }) => {
+      const poolId = BigInt(args.payoutStrategy);
+      const recipientIds: Address[] = args.projectIdsToBePaid.map((id) =>
+        getAddress(id)
+      );
+
+      // Generate merkle tree
+      const { tree, matchingResults } = generateMerkleTree(args.allProjects);
+
+      // Filter projects to be paid from matching results
+      const projectsToBePaid = matchingResults.filter((project) =>
+        args.projectIdsToBePaid.includes(project.projectId)
+      );
+
+      const projectsWithMerkleProof: ProjectWithMerkleProof[] = [];
+
+      projectsToBePaid.forEach((project) => {
+        if (!project.index) {
+          throw new AlloError("Project index is required");
+        }
+        const distribution: [number, string, BigNumber, string] = [
+          project.index,
+          project.applicationId,
+          project.matchAmountInToken,
+          project.projectId,
+        ];
+
+        // Generate merkle proof
+        const validMerkleProof = tree.getProof(distribution);
+
+        projectsWithMerkleProof.push({
+          index: distribution[0],
+          recipientId: distribution[1],
+          amount: distribution[2],
+          merkleProof: validMerkleProof,
+        });
+      });
+
+      const projectsWithMerkleProofBytes = serializeProjects(
+        projectsWithMerkleProof
+      );
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: this.allo.address(),
+        abi: AlloAbi,
+        functionName: "distribute",
+        args: [poolId, recipientIds, projectsWithMerkleProofBytes],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to distribute funds");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
       return success(null);
     });
   }
 }
+
+export function serializeProject(project: ProjectWithMerkleProof) {
+  return utils.defaultAbiCoder.encode(
+    ["uint256", "address", "uint256", "bytes32[]"],
+    [
+      project.index,
+      project.recipientId,
+      project.amount,
+      project.merkleProof.map(utils.formatBytes32String),
+    ]
+  );
+}
+
+export function serializeProjects(projects: ProjectWithMerkleProof[]): Hex {
+  const serializedProjects = projects.map(serializeProject);
+  return utils.defaultAbiCoder.encode(["bytes[]"], [serializedProjects]) as Hex;
+}
+
+export type ProjectWithMerkleProof = {
+  index: number;
+  recipientId: string;
+  amount: BigNumber;
+  merkleProof: string[];
+};
