@@ -46,7 +46,7 @@ export default function Navbar(props: NavbarProps) {
     <nav
       className={`blurred fixed w-full z-20 shadow-[0_4px_24px_0px_rgba(0,0,0,0.08)] ${props.customBackground}`}
     >
-      <div className="mx-auto px-20 sm:p-4">
+      <div className="mx-auto lg:px-20 px-4">
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link
