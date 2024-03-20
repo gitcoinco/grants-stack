@@ -181,6 +181,12 @@ function AfterRoundStart(props: {
     useState<Project>({} as Project);
 
   useEffect(() => {
+    if (roundId.startsWith("0x") && getAlloVersion() === "allo-v2") {
+      window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
+    }
+  }, [roundId]);
+
+  useEffect(() => {
     if (showCartNotification) {
       setTimeout(() => {
         setShowCartNotification(false);

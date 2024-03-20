@@ -5,7 +5,7 @@ import {
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
-import { getConfig } from "common/src/config";
+import { getAlloVersion, getConfig } from "common/src/config";
 
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
@@ -14,6 +14,7 @@ import React, {
   createElement,
   FunctionComponent,
   PropsWithChildren,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -103,6 +104,12 @@ export default function ViewProjectDetails() {
     },
     dataLayer
   );
+
+  useEffect(() => {
+    if (roundId.startsWith("0x") && getAlloVersion() === "allo-v2") {
+      window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
+    }
+  }, [roundId]);
 
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
