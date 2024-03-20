@@ -20,6 +20,7 @@ export function useApplication(params: Params, dataLayer: DataLayer) {
       chainId: params.chainId as number,
       applicationId: params.applicationId as string,
       roundId: getAddress(
+        // TODO: in v2 this is not an address anymore!
         params.roundId ?? zeroAddress
       ).toLowerCase() as Lowercase<Address>,
     };
