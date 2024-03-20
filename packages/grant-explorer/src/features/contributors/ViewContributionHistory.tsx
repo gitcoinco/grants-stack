@@ -7,13 +7,11 @@ import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import {
-  useContributionHistory,
-} from "../api/round";
+import { useContributionHistory } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
-import { VotingToken } from "common";
+import { VotingToken, dateToEthereumTimestamp } from "common";
 import { Contribution } from "data-layer";
 
 const DonationHistoryBanner = lazy(
@@ -131,59 +129,62 @@ export function ViewContributionHistory(props: {
       let totalUniqueContributions = 0;
       const projects: string[] = [];
 
-      props.contributions.data.forEach(contribution => {
-          const tokenId =
-            contribution.tokenAddress.toLowerCase() + "-" + contribution.chainId;
-          const token = props.tokens[tokenId];
-          if (token) {
-            totalDonations += contribution.amountInUsd;
-            totalUniqueContributions += 1;
-            const project = contribution.projectId;
-            if (!projects.includes(project)) {
-              projects.push(project);
-            }
+      props.contributions.data.forEach((contribution) => {
+        const tokenId =
+          contribution.tokenAddress.toLowerCase() + "-" + contribution.chainId;
+        const token = props.tokens[tokenId];
+        if (token) {
+          totalDonations += contribution.amountInUsd;
+          totalUniqueContributions += 1;
+          const project = contribution.projectId;
+          if (!projects.includes(project)) {
+            projects.push(project);
           }
-        });
+        }
+      });
 
       return [totalDonations, totalUniqueContributions, projects.length];
     }, [props.contributions, props.tokens]);
 
-  const [activeRoundDonations] = useMemo(() => {
-    const activeRoundDonations: {
-      data: Contribution[];
-    }[] = [];
+  const activeRoundDonations = useMemo(() => {
     const now = Date.now();
 
-    const filteredRoundDonations = props.contributions.data.filter((contribution) => {
-      const formattedRoundEndTime = contribution.round.donationsEndTime * 1000;
-      return formattedRoundEndTime >= now;
-    });
-    if (filteredRoundDonations.length > 0) {
-      activeRoundDonations.push({
-        data: filteredRoundDonations,
-      });
+    const filteredRoundDonations = props.contributions.data.filter(
+      (contribution) => {
+        const formattedRoundEndTime =
+          Number(
+            dateToEthereumTimestamp(
+              new Date(contribution.round.donationsEndTime)
+            )
+          ) * 1000;
+        return formattedRoundEndTime >= now;
+      }
+    );
+    if (filteredRoundDonations.length === 0) {
+      return [];
     }
-
-    return [activeRoundDonations];
+    return filteredRoundDonations;
   }, [props.contributions]);
 
-  const [pastRoundDonations] = useMemo(() => {
-    const pastRoundDonations: {
-      data: Contribution[];
-    }[] = [];
+  const pastRoundDonations = useMemo(() => {
     const now = Date.now();
 
-    const filteredRoundDonations = props.contributions.data.filter((contribution) => {
-      const formattedRoundEndTime = contribution.round.donationsEndTime * 1000;
-      return formattedRoundEndTime < now;
-    });
-    if (filteredRoundDonations.length > 0) {
-      pastRoundDonations.push({
-        data: filteredRoundDonations,
-      });
+    const filteredRoundDonations = props.contributions.data.filter(
+      (contribution) => {
+        const formattedRoundEndTime =
+          Number(
+            dateToEthereumTimestamp(
+              new Date(contribution.round.donationsEndTime)
+            )
+          ) * 1000;
+        return formattedRoundEndTime < now;
+      }
+    );
+    if (filteredRoundDonations.length === 0) {
+      return [];
     }
 
-    return [pastRoundDonations];
+    return filteredRoundDonations;
   }, [props.contributions]);
 
   return (
