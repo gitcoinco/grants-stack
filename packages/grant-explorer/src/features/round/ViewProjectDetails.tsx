@@ -101,12 +101,6 @@ export default function ViewProjectDetails() {
     dataLayer
   );
 
-  // useEffect(() => {
-  //   if (roundId.startsWith("0x") && getAlloVersion() === "allo-v2") {
-  //     window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
-  //   }
-  // }, [roundId]);
-
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
 
@@ -120,6 +114,17 @@ export default function ViewProjectDetails() {
       : round && round.roundEndTime <= currentTime);
 
   const alloVersion = getAlloVersion();
+
+  useEffect(() => {
+    if (
+      isAfterRoundEndDate !== undefined &&
+      roundId?.startsWith("0x") &&
+      alloVersion === "allo-v2" &&
+      !isAfterRoundEndDate
+    ) {
+      window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
+    }
+  }, [roundId, alloVersion, isAfterRoundEndDate]);
 
   const disableAddToCartButton =
     (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||

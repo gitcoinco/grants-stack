@@ -50,10 +50,7 @@ import { useCartStorage } from "../../store";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
 import { getAlloVersion } from "common/src/config";
-import {
-  ExclamationCircleIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/24/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -78,6 +75,19 @@ export default function ViewRound() {
   const isBeforeRoundEndDate =
     round &&
     (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
+
+  const alloVersion = getAlloVersion();
+
+  useEffect(() => {
+    if (
+      isAfterRoundEndDate !== undefined &&
+      roundId?.startsWith("0x") &&
+      alloVersion === "allo-v2" &&
+      !isAfterRoundEndDate
+    ) {
+      window.location.href = `https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`;
+    }
+  }, [roundId, alloVersion, isAfterRoundEndDate]);
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
@@ -112,36 +122,21 @@ export default function ViewRound() {
 
 export function AlloVersionBanner({ roundId }: { roundId: string }) {
   const isAlloV1 = roundId.startsWith("0x");
-  const currentVersion = getAlloVersion();
 
   return (
     <>
       <div className="fixed z-20 left-0 top-[64px] w-full bg-[#FFEFBE] p-4 text-center font-medium flex items-center justify-center">
         <ExclamationCircleIcon className="h-5 w-5 mr-2" />
-        {isAlloV1 && currentVersion === "allo-v2" ? (
-          <span>
-            This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}.
-            Please go to{" "}
-            <a
-              href={`https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`}
-              className="underline"
-            >
-              Explorer V1
-            </a>{" "}
-            to donate .
-          </span>
-        ) : (
-          <span>
-            This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}. Any
-            projects that you add to your cart will have to be donated to
-            separately from projects on rounds deployed on Allo{" "}
-            {isAlloV1 ? "v2" : "v1"}. Learn more{" "}
-            <a href="#" target="_blank" rel="noreferrer" className="underline">
-              here
-            </a>
-            .
-          </span>
-        )}
+        <span>
+          This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}. Any
+          projects that you add to your cart will have to be donated to
+          separately from projects on rounds deployed on Allo{" "}
+          {isAlloV1 ? "v2" : "v1"}. Learn more{" "}
+          <a href="#" target="_blank" rel="noreferrer" className="underline">
+            here
+          </a>
+          .
+        </span>
       </div>
       <div className="h-[64px] w-full"></div>
     </>
@@ -158,7 +153,6 @@ function BeforeRoundStart(props: {
   return (
     <>
       <Navbar customBackground="bg-[#F0F0F0]" />
-      <AlloVersionBanner roundId={roundId} />
       <div className="relative top-16 px-4 pt-7 h-screen bg-gradient-to-b from-[#F0F0F0] to-[#FFFFFF] h-full">
         <main>
           <PreRoundPage
@@ -303,7 +297,7 @@ function AfterRoundStart(props: {
     <>
       {showCartNotification && renderCartNotification()}
       <Navbar />
-      <AlloVersionBanner roundId={roundId} />
+      {props.isBeforeRoundEndDate && <AlloVersionBanner roundId={roundId} />}
       {props.isAfterRoundEndDate && (
         <div className="relative top-16">
           <RoundEndedBanner />
