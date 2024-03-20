@@ -5,7 +5,7 @@ import {
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
-import { getAlloVersion, getConfig } from "common/src/config";
+import { getAlloVersion } from "common/src/config";
 
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
