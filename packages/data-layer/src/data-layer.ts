@@ -473,8 +473,6 @@ export class DataLayer {
           return null;
         }
 
-        console.log("application", { application });
-
         return {
           grantApplicationId: application.id,
           projectRegistryId: application.projectId,

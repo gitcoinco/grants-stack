@@ -12,7 +12,6 @@ const {
   allo: { version },
 } = getConfig();
 
-// fixme: 
 export function useApplication(params: Params, dataLayer: DataLayer) {
   const shouldFetch = Object.values(params).every(Boolean);
   return useSWR(shouldFetch ? ["applications", params] : null, async () => {

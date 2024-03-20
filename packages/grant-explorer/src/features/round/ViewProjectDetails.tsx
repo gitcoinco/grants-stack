@@ -97,8 +97,6 @@ export default function ViewProjectDetails() {
     dataLayer
   );
 
-  console.log("application to pass ->", { application });
-
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
 
@@ -117,8 +115,6 @@ export default function ViewProjectDetails() {
   const isAlreadyInCart = projects.some(
     (project) => project.grantApplicationId === applicationId
   );
-
-  /*TODO: projectToRender can be undefined, casting will hide that condition.*/
   const cartProject = projectToRender as CartProject;
 
   if (cartProject !== undefined) {
@@ -249,7 +245,6 @@ function ProjectDetailsTabs(props: {
     <Box className="" bottom={0.5}>
       {props.tabs.length > 0 && (
         <Tabs
-          // className="text-blue-300"
           display="flex"
           onChange={props.onChange}
           defaultIndex={props.selected}
