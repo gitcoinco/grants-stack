@@ -22,7 +22,11 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
-import { UpdateRoundParams, VotingToken } from "../../types";
+import {
+  UpdateRoundParams,
+  MatchingStatsData,
+  VotingToken,
+} from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -1003,6 +1007,24 @@ export class AlloV2 implements Allo {
       emit("indexingStatus", success(void 0));
 
       return success(args.roundId);
+    });
+  }
+
+  batchDistributeFunds(_args: {
+    payoutStrategy: Address;
+    allProjects: MatchingStatsData[];
+    projectIdsToBePaid: string[];
+  }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    // eslint-disable-next-line no-empty-pattern
+    return new AlloOperation(async ({}) => {
+      return success(null);
     });
   }
 }

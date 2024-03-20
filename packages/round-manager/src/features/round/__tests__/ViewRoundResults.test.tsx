@@ -13,7 +13,6 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/payoutStrategy";
 import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
 
@@ -66,11 +65,6 @@ jest.mock("../../../hooks", () => ({
     loading: false,
     mutate: jest.fn(),
   })),
-}));
-
-jest.mock("../../api/payoutStrategy/payoutStrategy", () => ({
-  ...jest.requireActual("../../api/payoutStrategy/payoutStrategy"),
-  useFetchMatchingDistributionFromContract: jest.fn(),
 }));
 
 jest.mock("../../common/Auth", () => ({
@@ -153,15 +147,6 @@ describe("View Round Results", () => {
   });
 
   it("View Round Results before distribution data is finalized to contract", async () => {
-    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(
-      () => ({
-        distributionMetaPtr: "",
-        matchingDistribution: [],
-        isLoading: false,
-        isError: null,
-      })
-    );
-
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithReadProgramContext(

@@ -12,7 +12,6 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import * as merklePayoutStrategy from "../../api/payoutStrategy/payoutStrategy";
-import * as roundTs from "../../api/round";
 import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
 import { faker } from "@faker-js/faker";
@@ -48,19 +47,14 @@ jest.mock("../../common/Auth", () => ({
   }),
 }));
 
-const useFetchMatchingDistributionFromContractMock = jest.spyOn(
-  merklePayoutStrategy,
-  "useFetchMatchingDistributionFromContract"
-);
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
+}));
 
 const useGroupProjectsByPaymentStatusMock = jest.spyOn(
   merklePayoutStrategy,
   "useGroupProjectsByPaymentStatus"
-);
-
-const fetchMatchingDistributionMock = jest.spyOn(
-  roundTs,
-  "fetchMatchingDistribution"
 );
 
 describe("View Fund Grantees", () => {
@@ -126,20 +120,6 @@ describe("View Fund Grantees", () => {
   ];
 
   beforeEach(() => {
-    useFetchMatchingDistributionFromContractMock.mockReturnValue({
-      distributionMetaPtr: "some-meta-ptr",
-      matchingDistributionContract: matchingStatsData,
-      isLoading: false,
-      isError: false,
-    });
-
-    fetchMatchingDistributionMock.mockReturnValue(
-      Promise.resolve({
-        distributionMetaPtr: "some-meta-ptr",
-        matchingDistribution: matchingStatsData,
-      })
-    );
-
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
       paid: [matchingStatsData[0], matchingStatsData[1]],
       unpaid: [matchingStatsData[2], matchingStatsData[3]],
@@ -160,13 +140,6 @@ describe("View Fund Grantees", () => {
   });
 
   it("displays non-finalized status when round is not finalized", () => {
-    useFetchMatchingDistributionFromContractMock.mockReturnValue({
-      distributionMetaPtr: "some-meta-ptr",
-      matchingDistributionContract: [],
-      isLoading: false,
-      isError: false,
-    });
-
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithReadProgramContext(
