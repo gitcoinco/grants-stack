@@ -1,4 +1,4 @@
-import { ChainId, getTokenPrice, PassportState } from "common";
+import { ChainId, getTokenPrice, NATIVE, PassportState } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -74,7 +74,8 @@ export function SummaryContainer() {
           const { value } = await fetchBalance({
             address: address ?? zeroAddress,
             token:
-              votingToken.address === zeroAddress
+              votingToken.address === zeroAddress ||
+              votingToken.address === NATIVE
                 ? undefined
                 : votingToken.address,
             chainId,
@@ -217,7 +218,8 @@ export function SummaryContainer() {
         const votingToken = getVotingTokenForChain(chainId);
         const balance = await fetchBalance({
           token:
-            votingToken.address === zeroAddress
+            votingToken.address === zeroAddress ||
+            votingToken.address === NATIVE
               ? undefined
               : votingToken.address,
           chainId,

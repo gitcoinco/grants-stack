@@ -182,7 +182,10 @@ export function encodedQFAllocation(
     | "anchorAddress"
   >[]
 ): Hex[] {
-  const tokenAddress = donationToken.address === zeroAddress ? NATIVE : donationToken.address;
+  const tokenAddress =
+    donationToken.address === zeroAddress ? NATIVE : donationToken.address;
+
+  console.log("donations", donations);
 
   const encodedData = donations.map((donation) => {
     if (!donation.anchorAddress) {

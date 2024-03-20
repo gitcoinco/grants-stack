@@ -339,7 +339,7 @@ export class DataLayer {
     chainId,
     applicationId,
   }: {
-    roundId: Lowercase<Address>;
+    roundId: Lowercase<Address> | string;
     chainId: number;
     applicationId: string;
   }): Promise<Application | undefined> {
