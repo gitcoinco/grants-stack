@@ -2,8 +2,6 @@ import { Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { PGN as PGNLogoIcon } from "common/src/icons/PGN";
-import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import { getAlloVersion } from "common/src/config";
 import {
@@ -74,15 +72,6 @@ export default function Header({
                 <AlloVersionSwitcher color="black" />
               )}
               <ConnectButton />
-              <a
-                href="https://bridge.gitcoin.co"
-                target="_blank"
-                rel="noreferrer"
-                className="flex-shrink-0 flex items-center mx-3"
-              >
-                <PGNLogoIcon className="mr-2" />
-                <PGNTextLogoIcon fill="black" />
-              </a>
               <CustomerSupport />
             </div>
           </div>

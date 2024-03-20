@@ -48,6 +48,7 @@ export const useApplicationsByRoundId = (roundId: string) => {
                 id: application.round.strategyAddress,
                 payouts: [],
               },
+              distributionTransaction: application.distributionTransaction,
               statusSnapshots: application.statusSnapshots.map((snapshot) => ({
                 ...snapshot,
                 updatedAt: new Date(snapshot.updatedAt),

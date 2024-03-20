@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
 import { PlusSmIcon } from "@heroicons/react/solid";
-import { PGN as PGNLogoIcon } from "common/src/icons/PGN";
-import { PGNText as PGNTextLogoIcon } from "common/src/icons/PGNText";
 import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dark.svg";
 import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo-dark.svg";
 import { Button } from "common/src/styles";
@@ -60,17 +58,6 @@ export default function Navbar({
                 <AlloVersionSwitcher color="black" />
               )}
               <ConnectButton />
-              <div>
-                <a
-                  href="https://bridge.gitcoin.co"
-                  rel="noreferrer"
-                  target="_blank"
-                  className="flex-shrink-0 flex items-center"
-                >
-                  <PGNLogoIcon className="mr-2" />
-                  <PGNTextLogoIcon fill="white" />
-                </a>
-              </div>
             </div>
           </div>
         </div>

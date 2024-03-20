@@ -191,6 +191,7 @@ export const getApplicationsForManager = gql`
       status
       metadataCid
       metadata
+      distributionTransaction
       statusSnapshots
       round {
         strategyName

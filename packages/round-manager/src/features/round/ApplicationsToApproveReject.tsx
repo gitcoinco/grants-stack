@@ -136,6 +136,7 @@ export default function ApplicationsToApproveReject({
             status: application.status,
             applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
+            distributionTransaction: application.distributionTransaction,
           };
         })
       );

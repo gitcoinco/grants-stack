@@ -1,14 +1,29 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { reclaimFundsFromContract } from "../../../features/api/payoutStrategy/payoutStrategy";
 import { ProgressStatus } from "../../../features/api/types";
 import {
   ReclaimFundsParams,
   ReclaimFundsProvider,
   useReclaimFunds,
 } from "../ReclaimFundsContext";
+import { error, success } from "common/dist/allo/common";
+import {
+  AlloV1,
+  createMockTransactionSender,
+  useAllo,
+  AlloOperation,
+} from "common";
 
 jest.mock("wagmi");
 jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
+
+jest.mock("viem", () => ({
+  getAddress: jest.fn(),
+}));
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  useAllo: jest.fn(),
+}));
 
 const mockSigner = {
   getChainId: () => {
@@ -19,20 +34,32 @@ jest.mock("wagmi", () => ({
   useSigner: () => ({ data: mockSigner }),
 }));
 
+const alloBackend = new AlloV1({
+  chainId: 1,
+  ipfsUploader: async () =>
+    Promise.resolve({
+      type: "success",
+      value: "ipfsHash",
+    }),
+  waitUntilIndexerSynced: jest.fn(),
+  transactionSender: createMockTransactionSender(),
+});
+
 const testParams: ReclaimFundsParams = {
-  payoutStrategy: "testPayoutStrategy",
-  recipientAddress: "0x1234567890123456789012345678901234567890",
+  allo: alloBackend,
+  payoutStrategy: "0x0000000000000000000000000000000000000001",
+  recipient: "0x0000000000000000000000000000000000000002",
 };
 
 describe("<ReclaimFundsProvider />", () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    (reclaimFundsFromContract as jest.Mock).mockReturnValue(
-      new Promise(() => {
-        /* do nothing.*/
-      })
-    );
+    alloBackend.withdrawFundsFromStrategy = jest.fn().mockImplementation(() => {
+      return new AlloOperation(async ({ emit }) => {
+        return success(null);
+      });
+    });
   });
 
   it("renders without crashing", () => {
@@ -67,7 +94,11 @@ describe("useReclaimFunds Errors", () => {
   });
 
   it("sets reclaim status to error when invoking fund fails", async () => {
-    (reclaimFundsFromContract as jest.Mock).mockRejectedValue(new Error(":("));
+    alloBackend.withdrawFundsFromStrategy = jest.fn().mockImplementation(() => {
+      return new AlloOperation(async ({ emit }) => {
+        return error(new Error("test error"));
+      });
+    });
 
     renderWithProvider(<TestUseReclaimFundsComponent {...testParams} />);
 
@@ -79,13 +110,11 @@ describe("useReclaimFunds Errors", () => {
   });
 
   it("if reclaim fails, resets reclaim status when reclaim contract is retried", async () => {
-    (reclaimFundsFromContract as jest.Mock)
-      .mockRejectedValueOnce(new Error(":("))
-      .mockReturnValue(
-        new Promise(() => {
-          /* do nothing.*/
-        })
-      );
+    alloBackend.withdrawFundsFromStrategy = jest.fn().mockImplementation(() => {
+      return new AlloOperation(async ({ emit }) => {
+        return error(new Error("test error"));
+      });
+    });
 
     renderWithProvider(<TestUseReclaimFundsComponent {...testParams} />);
     fireEvent.click(screen.getByTestId("reclaim-funds"));

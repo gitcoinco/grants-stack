@@ -26,7 +26,22 @@ export type UpdateRoundParams = {
   roundEndTime?: Date;
   applicationsStartTime?: Date;
   applicationsEndTime?: Date;
-}
+};
+
+export type MatchingStatsData = {
+  index?: number;
+  projectName: string;
+  uniqueContributorsCount?: number;
+  contributionsCount: number;
+  matchPoolPercentage: number;
+  projectId: string;
+  applicationId: string;
+  matchAmountInToken: BigNumber;
+  originalMatchAmountInToken: BigNumber;
+  projectPayoutAddress: string;
+  status?: string;
+  hash?: string;
+};
 
 export type SchemaQuestion = {
   id: number;

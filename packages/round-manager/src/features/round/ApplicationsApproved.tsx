@@ -110,6 +110,7 @@ export default function ApplicationsApproved() {
             status: application.status,
             applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
+            distributionTransaction: application.distributionTransaction,
           };
         })
       );

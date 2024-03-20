@@ -20,6 +20,7 @@ import {
   RoundCategory,
   UpdateAction,
   UpdateRoundParams,
+  MatchingStatsData,
   VotingToken,
 } from "../../types";
 import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
@@ -53,6 +54,7 @@ import { getPermitType, PermitSignature } from "../voting";
 import { MRC_CONTRACTS } from "../addresses/mrc";
 import Erc20ABI from "../abis/erc20";
 import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutStrategyImplementation";
+import { BigNumber } from "ethers";
 
 function createProjectId(args: {
   chainId: number;
@@ -795,6 +797,54 @@ export class AlloV1 implements Allo {
     });
   }
 
+  withdrawFundsFromStrategy(args: {
+    payoutStrategyAddress: Address;
+    recipientAddress: Address;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const tx = await sendTransaction(this.transactionSender, {
+        address: args.payoutStrategyAddress,
+        abi: MerklePayoutStrategyImplementationABI,
+        functionName: "withdrawFunds",
+        args: [args.recipientAddress],
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to withdraw from strategy");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
+
   finalizeRound(args: {
     roundId: string;
     strategyAddress: Address;
@@ -904,6 +954,85 @@ export class AlloV1 implements Allo {
 
         emit("indexingStatus", success(null));
       }
+
+      return success(null);
+    });
+  }
+
+  batchDistributeFunds(args: {
+    payoutStrategy: Address;
+    allProjects: MatchingStatsData[];
+    projectIdsToBePaid: string[];
+  }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      // Generate merkle tree
+      const { tree, matchingResults } = generateMerkleTree(args.allProjects);
+
+      // Filter projects to be paid from matching results
+      const projectsToBePaid = matchingResults.filter((project) =>
+        args.projectIdsToBePaid.includes(project.projectId)
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const projectsWithMerkleProof: any[] = [];
+
+      projectsToBePaid.forEach((project) => {
+        const distribution: [number, string, BigNumber, string] = [
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          project.index!,
+          project.projectPayoutAddress,
+          project.matchAmountInToken,
+          project.projectId,
+        ];
+
+        // Generate merkle proof
+        const validMerkleProof = tree.getProof(distribution);
+
+        projectsWithMerkleProof.push({
+          index: distribution[0],
+          grantee: distribution[1],
+          amount: distribution[2],
+          merkleProof: validMerkleProof,
+          projectId: distribution[3],
+        });
+      });
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: args.payoutStrategy,
+        abi: MerklePayoutStrategyImplementationABI,
+        functionName: "payout",
+        args: [projectsWithMerkleProof],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to distribute funds");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
 
       return success(null);
     });
@@ -1086,3 +1215,40 @@ function constructCreateRoundArgs({
     },
   ]);
 }
+
+/**
+ * Generate merkle tree
+ *
+ * To get merkle Proof: tree.getProof(distributions[0]);
+ * @param matchingResults MatchingStatsData[]
+ * @returns
+ */
+export const generateMerkleTree = (
+  matchingResults: MatchingStatsData[]
+): {
+  distribution: [number, string, BigNumber, string][];
+  tree: StandardMerkleTree<[number, string, BigNumber, string]>;
+  matchingResults: MatchingStatsData[];
+} => {
+  const distribution: [number, string, BigNumber, string][] = [];
+
+  matchingResults.forEach((matchingResult, index) => {
+    matchingResults[index].index = index;
+
+    distribution.push([
+      index,
+      matchingResult.projectPayoutAddress,
+      matchingResult.matchAmountInToken, // TODO: FIX
+      matchingResult.projectId,
+    ]);
+  });
+
+  const tree = StandardMerkleTree.of(distribution, [
+    "uint256",
+    "address",
+    "uint256",
+    "bytes32",
+  ]);
+
+  return { distribution, tree, matchingResults };
+};
