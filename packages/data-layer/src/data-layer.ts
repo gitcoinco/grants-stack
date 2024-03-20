@@ -552,12 +552,6 @@ export class DataLayer {
       },
     );
 
-    console.log(
-      `response from data-layer getDonationsByDonorAddress(${args.address},${args.chainIds})`,
-      args.chainIds,
-      { response },
-    );
-
     return response.donations;
   }
 

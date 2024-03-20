@@ -185,8 +185,6 @@ export function encodedQFAllocation(
   const tokenAddress =
     donationToken.address === zeroAddress ? NATIVE : donationToken.address;
 
-  console.log("donations", donations);
-
   const encodedData = donations.map((donation) => {
     if (!donation.anchorAddress) {
       throw new Error("Anchor address is required for QF allocation");
