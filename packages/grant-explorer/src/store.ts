@@ -9,7 +9,7 @@ interface CartState {
   projects: CartProject[];
   add: (project: CartProject) => void;
   clear: () => void;
-  remove: (grantApplicationId: string) => void;
+  remove: (project: CartProject) => void;
   updateDonationsForChain: (chainId: ChainId, amount: string) => void;
   updateDonationAmount: (grantApplicationId: string, amount: string) => void;
   chainToVotingToken: Record<ChainId, VotingToken>;
@@ -49,7 +49,8 @@ const defaultVotingTokens = Object.fromEntries(
 function isSameProject(a: CartProject, b: CartProject): boolean {
   return (
     a.grantApplicationId.toLowerCase() === b.grantApplicationId.toLowerCase() &&
-    a.chainId === b.chainId
+    a.chainId === b.chainId &&
+    a.roundId === b.roundId
   );
 }
 
@@ -93,10 +94,13 @@ export const useCartStorage = create<CartState>()(
         });
       },
       /** @param grantApplicationId - ${roundAddress}-${applicationId} */
-      remove: (grantApplicationId: string) => {
+      remove: (projectToRemove) => {
         set({
           projects: get().projects.filter(
-            (proj) => proj.grantApplicationId !== grantApplicationId
+            (proj) =>
+              proj.grantApplicationId !== projectToRemove.grantApplicationId ||
+              proj.chainId !== projectToRemove.chainId ||
+              proj.roundId !== projectToRemove.roundId
           ),
         });
       },
