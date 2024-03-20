@@ -55,7 +55,7 @@ export default function Navbar({
                 )}
               </div>
               {alloVersionSwitcherVisible && (
-                <AlloVersionSwitcher color="black" />
+                <AlloVersionSwitcher color="white" />
               )}
               <ConnectButton />
             </div>
