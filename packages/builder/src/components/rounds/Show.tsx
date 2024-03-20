@@ -1,11 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import { ChainId } from "common";
-import { getAlloVersion, getConfig } from "common/src/config";
 import { RoundCategory, useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
+import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
+import { AlloVersion } from "data-layer/dist/data-layer.types";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -22,8 +23,6 @@ import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
-import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
-import { AlloVersion } from "data-layer/dist/data-layer.types";
 
 interface ApplyButtonProps {
   round: Round;

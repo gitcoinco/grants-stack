@@ -1,10 +1,11 @@
 import { useAllo } from "common";
-import { getConfig } from "common/src/config";
 import { RoundCategory } from "data-layer";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
+import { AlloVersion } from "data-layer/dist/data-layer.types";
 import {
   resetApplication,
   submitApplication,
@@ -29,8 +30,6 @@ import ExitModal from "../base/ExitModal";
 import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import StatusModal from "../base/StatusModal";
 import Cross from "../icons/Cross";
-import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
-import { AlloVersion } from "data-layer/dist/data-layer.types";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
