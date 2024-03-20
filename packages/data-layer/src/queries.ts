@@ -568,6 +568,7 @@ export const getRoundByIdAndChainIdWithApprovedApplications = gql`
         project {
           id
           metadata
+          anchorAddress
         }
       }
     }

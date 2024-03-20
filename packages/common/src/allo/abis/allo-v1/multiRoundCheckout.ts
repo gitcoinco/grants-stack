@@ -11,6 +11,43 @@ export default [
   },
   {
     inputs: [],
+    name: "INVALID_INPUT",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidInitialization",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotInitializing",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "OwnableInvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "VotesNotEqualRoundsLength",
     type: "error",
   },
@@ -74,6 +111,159 @@ export default [
   },
   {
     inputs: [],
+    name: "allo",
+    outputs: [
+      {
+        internalType: "contract IAllo",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "_poolIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_amounts",
+        type: "uint256[]",
+      },
+      {
+        internalType: "bytes[]",
+        name: "_data",
+        type: "bytes[]",
+      },
+    ],
+    name: "allocate",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes[]",
+        name: "_data",
+        type: "bytes[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_poolIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_amounts",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256",
+        name: "totalAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "nonce",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "v",
+        type: "uint8",
+      },
+      {
+        internalType: "bytes32",
+        name: "r",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "s",
+        type: "bytes32",
+      },
+    ],
+    name: "allocateDAIPermit",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes[]",
+        name: "_data",
+        type: "bytes[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_poolIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_amounts",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256",
+        name: "totalAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "v",
+        type: "uint8",
+      },
+      {
+        internalType: "bytes32",
+        name: "r",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "s",
+        type: "bytes32",
+      },
+    ],
+    name: "allocateERC20Permit",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_allo",
+        type: "address",
+      },
+    ],
     name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
@@ -135,6 +325,19 @@ export default [
   {
     inputs: [],
     name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_allo",
+        type: "address",
+      },
+    ],
+    name: "updateAllo",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

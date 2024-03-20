@@ -218,7 +218,7 @@ export default function ViewProjectDetails() {
               isAlreadyInCart={isAlreadyInCart}
               isBeforeRoundEndDate={!disableAddToCartButton}
               removeFromCart={() => {
-                remove(applicationId);
+                remove(cartProject);
               }}
               addToCart={() => {
                 add(cartProject);
