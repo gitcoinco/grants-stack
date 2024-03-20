@@ -82,6 +82,7 @@ export type AddressAndRole = {
 export type Project = {
   grantApplicationId: string;
   projectRegistryId: string;
+  anchorAddress?: string;
   recipient: string;
   projectMetadata: ProjectMetadata;
   grantApplicationFormAnswers: GrantApplicationFormAnswer[];
@@ -399,7 +400,6 @@ export type Eligibility = {
   requirements?: Requirement[];
 };
 
-// 
 export interface Round {
   /**
    * The on-chain unique round ID
@@ -701,6 +701,7 @@ export type Application = {
   project: {
     id: string;
     metadata: ProjectMetadata;
+    anchorAddress?: string;
   };
   metadata: {
     application: {

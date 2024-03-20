@@ -103,12 +103,12 @@ export class AlloV1 implements Allo {
     this.waitUntilIndexerSynced = args.waitUntilIndexerSynced;
   }
 
-  async voteUsingMRCContract(
+  async donate(
     publicClient: PublicClient,
     chainId: ChainId,
     token: VotingToken,
     groupedVotes: Record<string, Hex[]>,
-    groupedAmounts: Record<string, bigint>,
+    groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,
     permit?: {
       sig: PermitSignature;

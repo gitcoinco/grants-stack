@@ -81,7 +81,7 @@ export default function ThankYou() {
     cart.projects
       .filter((proj) => checkedOutChains.includes(proj.chainId))
       .forEach((proj) => {
-        cart.remove(proj.grantApplicationId);
+        cart.remove(proj);
       });
 
     checkoutStore.setChainsToCheckout([]);

@@ -1,6 +1,6 @@
 import { ChainId, getTokenPrice, PassportState } from "common";
 import { useCartStorage } from "../../../store";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
 import ErrorModal from "../../common/ErrorModal";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
@@ -19,7 +19,7 @@ import { groupBy, uniqBy } from "lodash-es";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { formatUnits, getAddress, parseUnits, zeroAddress } from "viem";
+import { formatUnits, parseUnits, zeroAddress } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   matchingEstimatesToText,
@@ -32,6 +32,7 @@ import { useDataLayer } from "data-layer";
 import { fetchBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
 import { useAllo } from "../../api/AlloWrapper";
+import { getFormattedRoundId } from "../../common/utils/utils";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -153,7 +154,7 @@ export function SummaryContainer() {
       expiredRounds.includes(project.roundId)
     );
     expiredProjects.forEach((project) => {
-      removeProjectFromCart(project.grantApplicationId);
+      removeProjectFromCart(project);
     });
   }, [projects, removeProjectFromCart, rounds]);
 
@@ -362,8 +363,9 @@ export function SummaryContainer() {
     }
   );
 
-  const totalDonationAcrossChainsInUSD =
-    totalDonationAcrossChainsInUSDData?.reduce((acc, curr) => acc + curr, 0);
+  const totalDonationAcrossChainsInUSD = (
+    totalDonationAcrossChainsInUSDData ?? []
+  ).reduce((acc, curr) => acc + curr, 0);
 
   /* Matching estimates are calculated per-round */
   const matchingEstimateParamsPerRound =
@@ -372,7 +374,7 @@ export function SummaryContainer() {
         (project) => project.roundId === round.id
       );
       return {
-        roundId: getAddress(round.id ?? zeroAddress),
+        roundId: getFormattedRoundId(round.id),
         chainId: projectFromRound?.chainId ?? ChainId.MAINNET,
         potentialVotes: projects
           .filter((proj) => proj.roundId === round.id)
@@ -388,7 +390,7 @@ export function SummaryContainer() {
             ).address.toLowerCase(),
             projectId: proj.projectRegistryId,
             applicationId: proj.grantApplicationId,
-            roundId: getAddress(round.id ?? zeroAddress),
+            roundId: getFormattedRoundId(round.id ?? zeroAddress),
           })),
       };
     }) ?? [];
