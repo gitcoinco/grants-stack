@@ -133,13 +133,14 @@ const createRoundWhereFilter = (
         }),
       },
       {
-        ...(version && {
-          or: {
-            tags: {
-              contains: version,
+        ...(version &&
+          version === "allo-v1" && {
+            or: {
+              tags: {
+                contains: "allo-v1",
+              },
             },
-          },
-        }),
+          }),
       },
     ]
       .filter((prop) => !isEmpty(prop))

@@ -26,6 +26,12 @@ export const useRounds = (
       return rounds.filter(
         (round) => !spamRounds[round.chainId]?.[round.id.toLowerCase()]
       );
+    },
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateFirstPage: false,
     }
   );
 

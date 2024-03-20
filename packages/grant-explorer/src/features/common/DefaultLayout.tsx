@@ -30,8 +30,11 @@ export function GradientLayout({
         "font-sans min-h-screen bg-gradient-to-b from-[#D3EDFE] to-[#FFD9CD]"
       }
     >
-      <Navbar showWalletInteraction={showWalletInteraction} />
-      <div className="container mx-auto max-w-screen-xl pt-16 relative z-10 px-2 xl:px-0">
+      <Navbar
+        showWalletInteraction={showWalletInteraction}
+        showAlloVersionBanner={true}
+      />
+      <div className="container mx-auto max-w-screen-xl pt-[120px] relative z-10 px-2 xl:px-0">
         {children}
       </div>
 

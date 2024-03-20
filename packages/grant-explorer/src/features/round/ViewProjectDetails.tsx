@@ -44,6 +44,7 @@ import {
   mapApplicationToRound,
   useApplication,
 } from "../projects/hooks/useApplication";
+import { AlloVersionBanner } from "./ViewRoundPage";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -185,6 +186,7 @@ export default function ViewProjectDetails() {
   return (
     <>
       <DefaultLayout>
+        <AlloVersionBanner roundId={roundId} />
         {isAfterRoundEndDate && <RoundEndedBanner />}
         <div className="py-8 flex items-center" data-testid="bread-crumbs">
           <Breadcrumb items={breadCrumbs} />

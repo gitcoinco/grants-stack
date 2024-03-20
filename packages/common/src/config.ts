@@ -121,6 +121,11 @@ export function getConfig(
     return config;
   }
 
+  const hostnameAlloVersion =
+    window.location.hostname === "explorer-v1.gitcoin.co"
+      ? "allo-v1"
+      : undefined;
+
   config = {
     appEnv: z
       .enum(["development", "test", "production"])
@@ -226,7 +231,7 @@ export function getConfig(
       version: z
         .enum(["allo-v1", "allo-v2"])
         .default("allo-v1")
-        .parse(process.env.REACT_APP_ALLO_VERSION),
+        .parse(hostnameAlloVersion ?? process.env.REACT_APP_ALLO_VERSION),
     },
     manager: {
       disableDirectGrantsForAlloV2: true,

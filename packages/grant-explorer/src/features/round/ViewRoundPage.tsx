@@ -10,6 +10,8 @@ import {
   truncateDescription,
 } from "common";
 import { Button, Input } from "common/src/styles";
+import AlloV1 from "common/src/icons/AlloV1";
+import AlloV2 from "common/src/icons/AlloV2";
 
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
@@ -47,6 +49,11 @@ import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
+import { getAlloVersion } from "common/src/config";
+import {
+  ExclamationCircleIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/solid";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -103,6 +110,29 @@ export default function ViewRound() {
   );
 }
 
+export function AlloVersionBanner({ roundId }: { roundId: string }) {
+  const isAlloV1 = roundId.startsWith("0x");
+
+  return (
+    <>
+      <div className="fixed z-20 left-0 top-[64px] w-full bg-[#FFEFBE] p-4 text-center font-medium flex items-center justify-center">
+        <ExclamationCircleIcon className="h-5 w-5 mr-2" />
+        <span>
+          This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}. Any
+          projects that you add to your cart will have to be donated to
+          separately from projects on rounds deployed on Allo{" "}
+          {isAlloV1 ? "v2" : "v1"}. Learn more{" "}
+          <a href="#" target="_blank" rel="noreferrer" className="underline">
+            here
+          </a>
+          .
+        </span>
+      </div>
+      <div className="h-[64px] w-full"></div>
+    </>
+  );
+}
+
 function BeforeRoundStart(props: {
   round: Round;
   chainId: string;
@@ -113,6 +143,7 @@ function BeforeRoundStart(props: {
   return (
     <>
       <Navbar customBackground="bg-[#F0F0F0]" />
+      <AlloVersionBanner roundId={roundId} />
       <div className="relative top-16 px-4 pt-7 h-screen bg-gradient-to-b from-[#F0F0F0] to-[#FFFFFF] h-full">
         <main>
           <PreRoundPage
@@ -245,10 +276,13 @@ function AfterRoundStart(props: {
     (isInfiniteDate(round.applicationsEndTime) ||
       round.applicationsEndTime >= currentTime);
 
+  const isAlloV1 = roundId.startsWith("0x");
+
   return (
     <>
       {showCartNotification && renderCartNotification()}
       <Navbar />
+      <AlloVersionBanner roundId={roundId} />
       {props.isAfterRoundEndDate && (
         <div className="relative top-16">
           <RoundEndedBanner />
@@ -261,6 +295,10 @@ function AfterRoundStart(props: {
         <main>
           <div className="flex flex-col md:items-center md:justify-between md:gap-8 md:flex-row md:mb-0 mb-4">
             <div>
+              <div className="pb-4">
+                {isAlloV1 && <AlloV1 color="black" />}
+                {!isAlloV1 && <AlloV2 color="black" />}
+              </div>
               <p data-testid="round-title" className="text-3xl mb-5">
                 {round.roundMetadata?.name}
               </p>
