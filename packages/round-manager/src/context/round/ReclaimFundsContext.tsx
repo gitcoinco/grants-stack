@@ -78,7 +78,7 @@ export const useReclaimFunds = () => {
   };
 };
 
-export const _reclaimFunds = async ({
+const _reclaimFunds = async ({
   allo,
   payoutStrategy,
   recipient,
