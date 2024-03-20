@@ -578,7 +578,12 @@ export function ViewGrantsExplorerButton(props: ViewGrantsExplorerButtonType) {
 }
 
 function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
-  const url = `${process.env.REACT_APP_GRANT_EXPLORER}/#/round/${chainId}/${roundId}`;
+  const isAlloV1 = roundId?.startsWith("0x");
+  const explorerBaseUrl = isAlloV1
+    ? "https://explorer-v1.gitcoin.co"
+    : process.env.REACT_APP_GRANT_EXPLORER;
+
+  const url = `${explorerBaseUrl}/#/round/${chainId}/${roundId}`;
   setTimeout(() => {
     window.open(url, "_blank", "noopener,noreferrer");
   }, 1000);
