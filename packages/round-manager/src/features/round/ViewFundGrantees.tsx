@@ -101,7 +101,9 @@ function FinalizedRoundContent(props: { round: Round }) {
   const [price, setPrice] = useState<number>(0);
 
   const matchingFundPayoutToken: PayoutToken = payoutTokens.filter(
-    (t) => t.address.toLowerCase() == props.round.token.toLowerCase()
+    (t) =>
+      t.address.toLowerCase() == props.round.token.toLowerCase() &&
+      t.chainId == props.round.chainId
   )[0];
 
   const { data, error, loading } = useTokenPrice(
