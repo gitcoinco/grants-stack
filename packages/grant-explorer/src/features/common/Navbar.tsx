@@ -167,7 +167,7 @@ export default function Navbar(props: NavbarProps) {
           <div>
             <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
             To check out rounds on that are running on Allo{" "}
-            {alloVersion === "allo-v1" ? "v1" : "v2"}, please click{" "}
+            {alloVersion === "allo-v1" ? "v2" : "v1"}, please click{" "}
             <a
               href={
                 alloVersion === "allo-v1"
