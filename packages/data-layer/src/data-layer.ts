@@ -542,10 +542,14 @@ export class DataLayer {
     address: Address;
     chainIds: number[];
   }): Promise<Contribution[]> {
+    const { address, chainIds } = args;
     const response: { donations: Contribution[] } = await request(
       this.gsIndexerEndpoint,
       getDonationsByDonorAddress,
-      args,
+      {
+        address: address.toLowerCase(),
+        chainIds,
+      },
     );
 
     console.log(

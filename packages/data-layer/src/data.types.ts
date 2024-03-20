@@ -725,15 +725,15 @@ export type Contribution = {
   amountInUsd: number;
   transactionHash: string;
   blockNumber: number;
-  round : {
-    roundMetadata: RoundMetadata
+  round: {
+    roundMetadata: RoundMetadata;
     donationsStartTime: string;
     donationsEndTime: string;
   };
   application: {
     project: {
       name: string;
-    }
-  }
+    };
+  };
   timestamp?: bigint;
 };
