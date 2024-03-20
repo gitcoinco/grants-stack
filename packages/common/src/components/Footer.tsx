@@ -47,7 +47,7 @@ export default function Footer() {
   return (
     <footer
       className={
-        "mx-auto max-w-screen-xl px-2 sm:px-4 py-3 flex flex-row justify-between items-center relative z-10"
+        "mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl py-3 flex flex-row justify-between items-center relative z-10"
       }
     >
       <div className={"text-gray-500 text-xs"}>
