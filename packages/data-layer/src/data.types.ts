@@ -311,6 +311,7 @@ export type V2Round = {
   strategyAddress: Address;
   strategyName: string;
   readyForPayoutTransaction: string | null;
+  tags: string[];
 };
 
 /**
@@ -399,7 +400,7 @@ export type Eligibility = {
   requirements?: Requirement[];
 };
 
-// 
+//
 export interface Round {
   /**
    * The on-chain unique round ID

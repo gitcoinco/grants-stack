@@ -432,6 +432,7 @@ export const getRoundByIdAndChainId = gql`
         name
         metadata
       }
+      tags
     }
   }
 `;

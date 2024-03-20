@@ -73,10 +73,12 @@ export function useAlloVersion() {
   return useContext(AlloVersionContext);
 }
 
-export default function AlloVersionSwitcher({
+export function AlloVersionSwitcher({
+  color,
   isHidden,
 }: {
   isHidden?: boolean;
+  color: "white" | "black";
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { version: currentVersion, switchToVersion } = useAlloVersion();
@@ -98,10 +100,10 @@ export default function AlloVersionSwitcher({
           }}
         >
           {currentVersion === "allo-v1" && (
-            <AlloV1 color="white" className="h-[24px]" />
+            <AlloV1 color={color} className="h-[24px]" />
           )}
           {currentVersion === "allo-v2" && (
-            <AlloV2 color="white" className="h-[24px]" />
+            <AlloV2 color={color} className="h-[24px]" />
           )}
           <svg
             fill="none"
@@ -112,7 +114,7 @@ export default function AlloVersionSwitcher({
           >
             <path
               d="M12.75 1.54001L8.51647 5.0038C7.77974 5.60658 6.72026 5.60658 5.98352 5.0038L1.75 1.54001"
-              stroke="white"
+              stroke={color}
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2.5"

@@ -9,8 +9,9 @@ import {
   createWaitForIndexerSyncTo,
 } from "common";
 import { getConfig } from "common/src/config";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNetwork, useProvider, useSigner } from "wagmi";
+import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
 import { addressesByChainID } from "../contracts/deployments";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
@@ -71,7 +72,11 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     }
   }, [web3Provider, signer, chainID]);
 
-  return <AlloProvider backend={backend}>{children}</AlloProvider>;
+  return (
+    <AlloProvider backend={backend}>
+      <AlloVersionProvider>{children}</AlloVersionProvider>
+    </AlloProvider>
+  );
 }
 
 export default AlloWrapper;

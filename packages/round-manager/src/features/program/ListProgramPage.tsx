@@ -118,28 +118,35 @@ function ListPrograms() {
     <div className="bg-grey-150">
       <Navbar programCta={isSuccess} />
       {version === "allo-v1" && (
-        <div className="bg-[#D3EDFE] p-4 text-center font-medium flex items-center justify-center">
-          <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-          You are currently on Allo v1. To switch to the most current version of
-          Manager,&nbsp;
-          <a
-            href="#"
-            className="underline"
-            onClick={(e) => {
-              e.preventDefault();
-              switchToVersion("allo-v2");
-            }}
-          >
-            switch to Allo v2.
-          </a>
-          &nbsp;
-          <a
-            href="https://gitcoin.notion.site/Navigating-the-Transition-to-Allo-v2-A-Guide-for-Grants-Managers-63e2bdddccb94792af83fdffb1530b85?pvs=74"
-            className="underline"
-            target="_blank"
-          >
-            What is Allo v2?
-          </a>
+        <div className="bg-[#D3EDFE] p-4 text-center font-medium flex flex-col items-center justify-center">
+          <div>
+            <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
+            You are currently on Allo v1. To switch to the most current version
+            of Manager,&nbsp;
+            <button
+              type="button"
+              className="underline"
+              onClick={(e) => {
+                e.preventDefault();
+                switchToVersion("allo-v2");
+              }}
+            >
+              switch to Allo v2.
+            </button>
+            &nbsp;
+          </div>
+          <div>
+            Click&nbsp;
+            <a
+              href="https://gitcoin.notion.site/Navigating-the-Transition-to-Allo-v2-A-Guide-for-Grants-Managers-63e2bdddccb94792af83fdffb1530b85?pvs=74"
+              rel="noreferrer"
+              className="underline"
+              target="_blank"
+            >
+              here
+            </a>
+            &nbsp;to learn more about Allo v2.
+          </div>
         </div>
       )}
       <header className="mb-2.5 bg-grey-500 overflow-hidden">

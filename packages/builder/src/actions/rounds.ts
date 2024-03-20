@@ -123,6 +123,7 @@ export const loadRound =
       applicationMetadata,
       programName: v2Round.project.name || v2Round.project.metadata.name || "",
       payoutStrategy: roundPayoutStrategy,
+      tags: v2Round.tags,
     };
 
     dispatch(roundLoaded(roundId, round));

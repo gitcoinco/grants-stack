@@ -6,7 +6,7 @@ import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dar
 import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo-dark.svg";
 import { Button } from "common/src/styles";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import AlloVersionSwitcher from "common/src/components/AlloVersionSwitcher";
+import { AlloVersionSwitcher } from "common/src/components/AlloVersionSwitcher";
 
 export interface NavbarProps {
   programCta?: boolean;
@@ -56,7 +56,9 @@ export default function Navbar({
                   </Link>
                 )}
               </div>
-              {alloVersionSwitcherVisible && <AlloVersionSwitcher />}
+              {alloVersionSwitcherVisible && (
+                <AlloVersionSwitcher color="black" />
+              )}
               <ConnectButton />
               <div>
                 <a

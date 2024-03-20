@@ -29,6 +29,8 @@ import ExitModal from "../base/ExitModal";
 import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import StatusModal from "../base/StatusModal";
 import Cross from "../icons/Cross";
+import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
+import { AlloVersion } from "data-layer/dist/data-layer.types";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -38,7 +40,7 @@ function Apply() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const allo = useAllo();
-  const isV2 = getConfig().allo.version === "allo-v2";
+  const { version: alloVersion, switchToVersion } = useAlloVersion();
 
   const [createLinkedProject, setCreateLinkedProject] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
@@ -70,10 +72,6 @@ function Apply() {
     const showErrorModal =
       applicationError && applicationStatus === ApplicationStatus.Error;
 
-    const versionError =
-      (isV2 && roundId?.startsWith("0x")) ||
-      (!isV2 && !roundId?.startsWith("0x"));
-
     return {
       roundState,
       roundStatus,
@@ -82,7 +80,6 @@ function Apply() {
       applicationState,
       applicationStatus,
       applicationError,
-      versionError,
       applicationMetadata: round?.applicationMetadata,
       showErrorModal,
     };
@@ -100,6 +97,16 @@ function Apply() {
   useEffect(() => {
     if (props.round) {
       setRoundData(props.round);
+
+      if (!props.round.tags.includes(alloVersion)) {
+        const roundVersion = props.round.tags.find((tag) =>
+          tag.startsWith("allo-")
+        );
+        if (roundVersion === undefined) {
+          throw new Error("no allo version found, should never happen");
+        }
+        switchToVersion(roundVersion as AlloVersion);
+      }
     }
   }, [props.round]);
 
@@ -194,11 +201,7 @@ function Apply() {
     return <div>loading...</div>;
   }
 
-  if (
-    props.roundState === undefined ||
-    props.round === undefined ||
-    props.versionError
-  ) {
+  if (props.roundState === undefined || props.round === undefined) {
     return (
       <div>
         <ErrorModal
@@ -209,7 +212,7 @@ function Apply() {
           onClose={() => navigate(0)}
         >
           <>
-            There has been an error loading the grant round data. Please try
+            There has been an error loading the round data. Please try
             refreshing the page. If the issue persists, please reach out to us
             on{" "}
             <a
