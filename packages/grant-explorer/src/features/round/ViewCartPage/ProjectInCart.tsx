@@ -17,7 +17,7 @@ export function ProjectInCart(
     last?: boolean;
     selectedPayoutToken: VotingToken;
     payoutTokenPrice: number;
-    removeProjectFromCart: (grantApplicationId: string) => void;
+    removeProjectFromCart: (project: CartProject) => void;
     matchingEstimateUSD: number | undefined;
   }
 ) {
@@ -115,7 +115,7 @@ export function ProjectInCart(
           <TrashIcon
             data-testid="remove-from-cart"
             onClick={() => {
-              props.removeProjectFromCart(props.project.grantApplicationId);
+              props.removeProjectFromCart(props.project);
             }}
             className="w-5 h-5 m-auto cursor-pointer mb-4"
           />

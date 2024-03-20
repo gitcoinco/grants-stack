@@ -78,10 +78,18 @@ const SEPOLIA_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.SEPOLIA,
-    address: "0x8db0F9eE54753B91ec1d81Bf68074Be82ED30fEb",
+    address: "0xa9dd7983B57E1865024d27110bAB098B66087e8F",
     decimal: 18,
     logo: TokenNamesAndLogos["DAI"],
     redstoneTokenId: RedstoneTokenIds["DAI"],
+  },
+  {
+    name: "USDC",
+    chainId: ChainId.SEPOLIA,
+    address: "0x78e0D07C4A08adFfe610113310163b40E7e47e81",
+    decimal: 6,
+    logo: TokenNamesAndLogos["USDC"],
+    redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
 
