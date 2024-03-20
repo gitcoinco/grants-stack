@@ -11,9 +11,10 @@ import {
   Round,
 } from "./types";
 import { useEffect, useState } from "react";
-import { Address, getAddress } from "viem";
+import { Address, Hex, getAddress } from "viem";
 import { RoundVisibilityType } from "common";
 import { Contribution, useDataLayer } from "data-layer";
+import { getPublicClient } from "@wagmi/core";
 
 /**
  * Shape of subgraph response
@@ -72,7 +73,7 @@ export type ContributionHistoryState =
   | { type: "loading" }
   | {
       type: "loaded";
-      data: { chainId: number; data: Contribution[] }[];
+      data: { chainIds: number[]; data: Contribution[] };
     }
   | { type: "error"; error: string };
 
@@ -294,65 +295,65 @@ export const useContributionHistory = (
     }
 
     const fetchContributions = async () => {
-      const fetchPromises: Promise<{
-        chainId: number;
-        data: Contribution[];
-        error?: string;
-      }>[] = chainIds.map(async (chainId: number) => {
-        if (!process.env.REACT_APP_ALLO_API_URL) {
-          throw new Error("REACT_APP_ALLO_API_URL is not set");
-        }
 
-        // todo: wip - replace this with new indexer call getDonationsByDonorAddressAndChainId()
-
-        let address: Address = "0x";
-        try {
-          address = getAddress(rawAddress.toLowerCase());
-        } catch (e) {
-          return Promise.resolve({
-            chainId,
-            error: "Invalid address",
-            data: [],
-          });
-        }
-
-        // call data-layer to get contributions
-        const response = await dataLayer.getDonationsByDonorAddressAndChainId({
-          address,
-          chainId,
+      let address: Address = "0x";
+      try {
+        address = getAddress(rawAddress.toLowerCase());
+      } catch (e) {
+        return Promise.resolve({
+          chainIds,
+          error: "Invalid address",
+          data: [],
         });
+      }
 
-        console.info(
-          "Fetched contributions for chain",
-          chainId,
-          await response,
-          address
-        );
-
-        const contribution: Contribution[] =
-          response.map((contribution: Contribution) => {
-            return {
-              ...contribution,
-              timestamp: BigInt(contribution.timestamp),
-            };
-          });
-
-        return {
-          chainId,
-          data: contribution,
-          error: undefined,
-        };
+      const contributions = await dataLayer.getDonationsByDonorAddress({
+        address,
+        chainIds,
       });
 
-      const fetchResults = await Promise.all(fetchPromises);
+      console.info(
+        "Fetched contributions for chains",
+        chainIds,
+        contributions,
+        address
+      );
 
-      if (fetchResults.every((result) => result.error)) {
+      try {
+
+        const contributionsWithTimestamp: Contribution[] = await Promise.all(
+          contributions.map(async (contribution) => {
+            const publicClient = getPublicClient({
+              chainId: contribution.chainId,
+            });
+            const tx = await publicClient.getTransaction({
+              hash: contribution.transactionHash as Hex,
+            });
+
+            const block = await publicClient.getBlock({
+              blockHash: tx.blockHash,
+            });
+
+            return {
+              ...contribution,
+              timestamp: BigInt(block.timestamp),
+            };
+          })
+        );
+
+        setState({
+          type: "loaded",
+          data: {
+            chainIds: chainIds,
+            data: contributionsWithTimestamp
+          }
+        });
+      } catch (e) {
+        console.error("Error fetching contribution history for all chains", e);
         setState({
           type: "error",
           error: "Error fetching contribution history for all chains",
         });
-      } else {
-        setState({ type: "loaded", data: fetchResults });
       }
     };
 

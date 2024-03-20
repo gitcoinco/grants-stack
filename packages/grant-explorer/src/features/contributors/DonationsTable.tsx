@@ -6,12 +6,12 @@ import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
-import { ChainId, VotingToken } from "common";
+import { VotingToken } from "common";
 import { formatUnits } from "viem";
 import { Contribution } from "data-layer";
 
 export function DonationsTable(props: {
-  contributions: { chainId: ChainId; data: Contribution[] }[];
+  contributions: Contribution[];
   tokens: Record<string, VotingToken>;
   activeRound: boolean;
 }) {
@@ -53,10 +53,10 @@ export function DonationsTable(props: {
           </tr>
           {props.contributions.length > 0 &&
             props.contributions
-              .map((contributions) => {
-                return contributions.data.map((contribution) => ({
+              .map(contributions => {
+                return contributions.map(contribution => ({
                   ...contribution,
-                  chainId: contributions.chainId,
+                  chainId: contribution.chainId,
                 }));
               })
               .flat()

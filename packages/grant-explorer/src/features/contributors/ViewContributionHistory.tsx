@@ -118,7 +118,7 @@ function ViewContributionHistoryFetcher(props: {
 
 export function ViewContributionHistory(props: {
   tokens: Record<string, VotingToken>;
-  contributions: { chainId: number; data: Contribution[] }[];
+  contributions: { chainIds: number[]; data: Contribution[] };
   address: string;
   addressLogo: string;
   ensName?: string | null;
@@ -130,14 +130,13 @@ export function ViewContributionHistory(props: {
       let totalDonations = 0;
       let totalUniqueContributions = 0;
       const projects: string[] = [];
-      props.contributions.forEach((chainContribution) => {
-        const { data } = chainContribution;
-        data.forEach((contribution) => {
+
+      props.contributions.data.forEach(contribution => {
           const tokenId =
-            contribution.token.toLowerCase() + "-" + chainContribution.chainId;
+            contribution.tokenAddress.toLowerCase() + "-" + contribution.chainId;
           const token = props.tokens[tokenId];
           if (token) {
-            totalDonations += contribution.amountUSD;
+            totalDonations += contribution.amountInUsd;
             totalUniqueContributions += 1;
             const project = contribution.projectId;
             if (!projects.includes(project)) {
@@ -145,55 +144,44 @@ export function ViewContributionHistory(props: {
             }
           }
         });
-      });
 
       return [totalDonations, totalUniqueContributions, projects.length];
     }, [props.contributions, props.tokens]);
 
   const [activeRoundDonations] = useMemo(() => {
     const activeRoundDonations: {
-      chainId: number;
       data: Contribution[];
     }[] = [];
     const now = Date.now();
 
-    props.contributions.forEach((chainContribution) => {
-      const { data } = chainContribution;
-      const filteredRoundDonations = data.filter((contribution) => {
-        const formattedRoundEndTime = contribution.roundEndTime * 1000;
-        return formattedRoundEndTime >= now;
-      });
-      if (filteredRoundDonations.length > 0) {
-        activeRoundDonations.push({
-          chainId: chainContribution.chainId,
-          data: filteredRoundDonations,
-        });
-      }
+    const filteredRoundDonations = props.contributions.data.filter((contribution) => {
+      const formattedRoundEndTime = contribution.round.donationsEndTime * 1000;
+      return formattedRoundEndTime >= now;
     });
+    if (filteredRoundDonations.length > 0) {
+      activeRoundDonations.push({
+        data: filteredRoundDonations,
+      });
+    }
 
     return [activeRoundDonations];
   }, [props.contributions]);
 
   const [pastRoundDonations] = useMemo(() => {
     const pastRoundDonations: {
-      chainId: number;
       data: Contribution[];
     }[] = [];
     const now = Date.now();
 
-    props.contributions.forEach((chainContribution) => {
-      const { data } = chainContribution;
-      const filteredRoundDonations = data.filter((contribution) => {
-        const formattedRoundEndTime = contribution.roundEndTime * 1000;
-        return formattedRoundEndTime < now;
-      });
-      if (filteredRoundDonations.length > 0) {
-        pastRoundDonations.push({
-          chainId: chainContribution.chainId,
-          data: filteredRoundDonations,
-        });
-      }
+    const filteredRoundDonations = props.contributions.data.filter((contribution) => {
+      const formattedRoundEndTime = contribution.round.donationsEndTime * 1000;
+      return formattedRoundEndTime < now;
     });
+    if (filteredRoundDonations.length > 0) {
+      pastRoundDonations.push({
+        data: filteredRoundDonations,
+      });
+    }
 
     return [pastRoundDonations];
   }, [props.contributions]);
