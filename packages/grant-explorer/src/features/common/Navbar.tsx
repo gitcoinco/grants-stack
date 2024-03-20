@@ -166,7 +166,8 @@ export default function Navbar(props: NavbarProps) {
         <div className="bg-white/40 backdrop-blur-sm p-4 text-center w-full font-medium flex flex-col items-center justify-center text-black">
           <div>
             <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-            To check out rounds on that are running on Allo v2, please click{" "}
+            To check out rounds on that are running on Allo{" "}
+            {alloVersion === "allo-v1" ? "v1" : "v2"}, please click{" "}
             <a
               href={
                 alloVersion === "allo-v1"
