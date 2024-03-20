@@ -11,7 +11,7 @@ export function DefaultLayout({
   return (
     <main className={"font-sans min-h-screen text-grey-500"}>
       <Navbar showWalletInteraction={showWalletInteraction} />
-      <div className="container  pt-16 relative z-10 max-w-screen-xl mx-auto px-2 sm:px-4">
+      <div className="container  pt-16 relative z-10 mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl">
         {children}
       </div>
 
@@ -31,7 +31,7 @@ export function GradientLayout({
       }
     >
       <Navbar showWalletInteraction={showWalletInteraction} />
-      <div className="container pt-16 relative z-10 max-w-screen-xl mx-auto px-2 sm:px-4">
+      <div className="container pt-16 relative z-10 mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl">
         {children}
       </div>
 
