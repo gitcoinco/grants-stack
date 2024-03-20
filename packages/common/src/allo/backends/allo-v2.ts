@@ -41,8 +41,8 @@ import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
-    "0x25551cbfc377501ef0be053ce61ff7ecef411f51",
-  [RoundCategory.Direct]: "0x726d2398E79c9535Dd81FB1576A8aCB798c35951",
+    "0x787eC93Dd71a90563979417879F5a3298389227f",
+  [RoundCategory.Direct]: "0x8564d522b19836b7F5B4324E7Ee8Cb41810E9F9e",
 };
 
 function applicationStatusToNumber(status: ApplicationStatus) {
