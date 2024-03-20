@@ -122,7 +122,8 @@ export function getConfig(
   }
 
   const hostnameAlloVersion =
-    window?.location?.hostname === "explorer-v1.gitcoin.co"
+    typeof window !== undefined &&
+    window.location.hostname === "explorer-v1.gitcoin.co"
       ? "allo-v1"
       : undefined;
 
