@@ -22,11 +22,7 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
-import {
-  UpdateRoundParams,
-  MatchingStatsData,
-  VotingToken,
-} from "../../types";
+import { UpdateRoundParams, MatchingStatsData, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -76,7 +72,6 @@ export class AlloV2 implements Allo {
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
-    allo: Address;
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {

@@ -9,7 +9,6 @@ import {
 } from "common";
 import { useNetwork, useProvider, useSigner } from "wagmi";
 import { getConfig } from "common/src/config";
-import { addressesByChainID } from "./deployments";
 import { useMemo } from "react";
 import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
 
@@ -24,7 +23,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       return null;
     }
 
-    const addresses = addressesByChainID(chainID);
     const config = getConfig();
     let alloBackend: Allo;
 
@@ -39,7 +37,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
         waitUntilIndexerSynced: createWaitForIndexerSyncTo(
           `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
         ),
-        allo: addresses.projectRegistry as `0x${string}`,
       });
     } else {
       alloBackend = new AlloV1({

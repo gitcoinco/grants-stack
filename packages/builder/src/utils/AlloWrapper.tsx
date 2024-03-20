@@ -12,7 +12,6 @@ import { getConfig } from "common/src/config";
 import { useEffect, useState } from "react";
 import { useNetwork, useProvider, useSigner } from "wagmi";
 import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
-import { addressesByChainID } from "../contracts/deployments";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -26,8 +25,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     if (!web3Provider || !signer || !chainID) {
       setBackend(null);
     } else {
-      const addresses = addressesByChainID(chainID) ?? addressesByChainID(1);
-
       const chainIdSupported = Object.values(ChainId).includes(chainID);
 
       const config = getConfig();
@@ -47,7 +44,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
           waitUntilIndexerSynced: createWaitForIndexerSyncTo(
             `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
           ),
-          allo: addresses.projectRegistry as `0x${string}`,
         });
 
         setBackend(alloBackend);
