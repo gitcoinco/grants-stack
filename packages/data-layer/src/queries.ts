@@ -248,7 +248,7 @@ export const getApplication = gql`
         roundMetadata
       }
       metadata
-      project {
+      project: canonicalProject {
         tags
         id
         metadata
@@ -606,7 +606,7 @@ export const getDonationsByDonorAddress = gql`
         donationsEndTime
       }
       application {
-        project {
+        project: canonicalProject {
           name
         }
       }
