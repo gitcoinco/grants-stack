@@ -98,6 +98,21 @@ export const getProjectById = gql`
 `;
 
 /**
+ * Get a project by its ID and chainId
+ * @param $projectId - The ID of the project
+ * @param $chainId - The chainId
+ *
+ * @returns The project
+ */
+export const getProjectAnchorByIdAndChainId = gql`
+  query ($projectId: String!, $chainId: Int!) {
+    project(id: $projectId, chainId: $chainId) {
+      anchorAddress
+    }
+  }
+`;
+
+/**
  * Get a getLegacyProjectId by its ID
  * @param $projectId - The Allo v2 ID of the project
  *

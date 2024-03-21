@@ -1,5 +1,5 @@
 import { useAllo } from "common";
-import { RoundCategory } from "data-layer";
+import { RoundCategory, useDataLayer } from "data-layer";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -38,6 +38,7 @@ function Apply() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dataLayer = useDataLayer();
   const allo = useAllo();
   const { version: alloVersion, switchToVersion } = useAlloVersion();
 
@@ -315,7 +316,8 @@ function Apply() {
                       props.round!.id,
                       answers,
                       allo,
-                      createProfile
+                      createProfile,
+                      dataLayer
                     )
                   );
                   toggleStatusModal(true);

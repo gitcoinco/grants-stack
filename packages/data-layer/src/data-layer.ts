@@ -41,6 +41,7 @@ import {
   getProgramById,
   getProgramsByUserAndTag,
   getProjectById,
+  getProjectAnchorByIdAndChainId,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundForManager,
@@ -248,6 +249,25 @@ export class DataLayer {
     const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
     return { project };
+  }
+
+  async getProjectAnchorByIdAndChainId({
+    projectId,
+    chainId,
+  }: {
+    projectId: string;
+    chainId: number;
+  }): Promise<Address | undefined> {
+    const response: { project?: { anchorAddress: Address } } = await request(
+      this.gsIndexerEndpoint,
+      getProjectAnchorByIdAndChainId,
+      {
+        projectId,
+        chainId,
+      },
+    );
+
+    return response?.project?.anchorAddress;
   }
 
   /**
