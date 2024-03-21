@@ -239,9 +239,7 @@ export function getConfig(
     },
   };
 
-  if (config.appEnv === "development") {
-    config = overrideConfigFromLocalStorage(config);
-  }
+  config = overrideConfigFromLocalStorage(config);
 
   return config;
 }
