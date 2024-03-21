@@ -390,9 +390,6 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
   [ChainId.FUJI]: "https://snowtrace.io/tx/",
   [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
-  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
-    "https://goerli.explorer.zksync.io/tx/",
-  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
   [ChainId.BASE]: "https://basescan.org/tx/",
   [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
   [ChainId.SCROLL]: "https://scrollscan.com/tx/",

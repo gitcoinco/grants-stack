@@ -6,8 +6,6 @@ import {
   fantom as fantomOriginal,
   fantomTestnet as fantomTestnetOriginal,
   sepolia as ethereumSepolia,
-  zkSync as zkSyncOriginal,
-  zkSyncTestnet as zkSyncTestnetOriginal,
 } from "@wagmi/chains";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
@@ -15,8 +13,6 @@ import { error, Result, success } from "./allo/common";
 
 export const PublicGoodsNetworkIcon =
   "https://ipfs.io/ipfs/Qmagrvn2SY5TEoLgqUtcc1745ABZTFoPmod37tW37u7HYo";
-export const ZkSyncIcon =
-  "https://ipfs.io/ipfs/QmUcGLhpBWRXD3CMbXZQT99adetptxXPqQYA6Pghb4WKSR";
 export const BaseLogo =
   "https://ipfs.io/ipfs/QmQaAsfJpUuKmpX3eJEzgdZjqqFWmWHXnDy3MpPVJyDzcj";
 export const FantomFTMLogo =
@@ -91,32 +87,6 @@ export const avalanche: Chain = {
     },
     public: {
       http: ["https://api.avax.network/ext/bc/C/rpc"],
-    },
-  },
-};
-
-export const zkSyncEraTestnet: Chain = {
-  ...zkSyncTestnetOriginal,
-  iconUrl: ZkSyncIcon,
-  rpcUrls: {
-    default: {
-      http: ["https://testnet.era.zksync.dev"],
-    },
-    public: {
-      http: ["https://testnet.era.zksync.dev"],
-    },
-  },
-};
-
-export const zkSyncEraMainnet: Chain = {
-  ...zkSyncOriginal,
-  iconUrl: ZkSyncIcon,
-  rpcUrls: {
-    default: {
-      http: ["https://mainnet.era.zksync.io"],
-    },
-    public: {
-      http: ["https://mainnet.era.zksync.io"],
     },
   },
 };

@@ -27,8 +27,6 @@ import {
   pgnTestnet,
   base,
   scroll,
-  zkSyncEraMainnet,
-  zkSyncEraTestnet,
   sepolia,
 } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
@@ -38,7 +36,6 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 const testnetChains = () => {
   return [
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
-    zkSyncEraTestnet,
     pgnTestnet,
     arbitrumGoerli,
     polygonMumbai,
@@ -55,7 +52,6 @@ const mainnetChains = () => {
     arbitrum,
     avalanche,
     polygon,
-    zkSyncEraMainnet,
     base,
     scroll,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },

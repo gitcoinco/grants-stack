@@ -174,68 +174,6 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
   },
 ];
 
-const ZKSYNC_ERA_TESTNET_TOKENS: PayoutToken[] = [
-  {
-    name: "ETH",
-    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
-    address: ethers.constants.AddressZero,
-    decimal: 18,
-    logo: TokenNamesAndLogos["ETH"],
-    redstoneTokenId: RedstoneTokenIds["ETH"],
-  },
-  {
-    name: "TEST",
-    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
-    address: "0x8fd03Cd97Da068CC242Ab7551Dc4100DD405E8c7",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
-  },
-];
-
-const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
-  {
-    name: "ETH",
-    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    address: ethers.constants.AddressZero,
-    decimal: 18,
-    logo: TokenNamesAndLogos["ETH"],
-    redstoneTokenId: RedstoneTokenIds["ETH"],
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    address: "0x4B9eb6c0b6ea15176BBF62841C6B2A8a398cb656",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
-  },
-  {
-    name: "USDT",
-    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    address: "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C",
-    decimal: 6,
-    logo: TokenNamesAndLogos["USDT"],
-    redstoneTokenId: RedstoneTokenIds["USDT"],
-  },
-  {
-    name: "LUSD",
-    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    address: "0x503234F203fC7Eb888EEC8513210612a43Cf6115",
-    decimal: 18,
-    logo: TokenNamesAndLogos["LUSD"],
-    redstoneTokenId: RedstoneTokenIds["LUSD"],
-  },
-  {
-    name: "MUTE",
-    chainId: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    address: "0x0e97C7a0F8B2C9885C8ac9fC6136e829CbC21d42",
-    decimal: 18,
-    logo: TokenNamesAndLogos["MUTE"],
-    redstoneTokenId: RedstoneTokenIds["MUTE"],
-  },
-];
-
 const PGN_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "TEST",
@@ -470,8 +408,6 @@ export const payoutTokens = [
   ...FUJI_TOKENS,
   ...POLYGON_TOKENS,
   ...POLYGON_MUMBAI_TOKENS,
-  ...ZKSYNC_ERA_MAINNET_TOKENS,
-  ...ZKSYNC_ERA_TESTNET_TOKENS,
   ...BASE_TOKENS,
   ...SEPOLIA_TOKENS,
   ...SCROLL_TOKENS,

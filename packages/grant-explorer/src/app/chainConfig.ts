@@ -15,8 +15,6 @@ import {
   pgn,
   base,
   scroll,
-  zkSyncEraMainnet,
-  zkSyncEraTestnet,
   sepolia,
 } from "common/src/chains";
 import { ChainId } from "common/src/chain-ids";
@@ -35,7 +33,6 @@ const TESTNET_CHAINS = [
   arbitrumGoerli,
   avalancheFuji,
   polygonMumbai,
-  zkSyncEraTestnet,
   sepolia,
 ].map(ensureValidChainId);
 
@@ -46,7 +43,6 @@ const MAINNET_CHAINS = [
   arbitrum,
   avalanche,
   polygon,
-  zkSyncEraMainnet,
   base,
   scroll,
   { ...fantom, iconUrl: "/logos/fantom-logo.svg" },

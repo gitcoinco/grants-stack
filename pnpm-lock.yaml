@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 overrides:
   webpack: ^5
 
@@ -361,8 +365,8 @@ importers:
   packages/common:
     dependencies:
       '@allo-team/allo-v2-sdk':
-        specifier: 1.0.55
-        version: 1.0.55(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(ts-node@10.9.1)(typechain@8.3.2)(typescript@5.4.2)(zod@3.22.4)
+        specifier: 1.0.58
+        version: 1.0.58(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(ts-node@10.9.1)(typechain@8.3.2)(typescript@5.4.2)(zod@3.22.4)
       '@ethersproject/abstract-signer':
         specifier: ^5.7.0
         version: 5.7.0
@@ -428,7 +432,7 @@ importers:
         version: 1.10.7(typescript@5.4.2)(zod@3.22.4)
       wagmi:
         specifier: 0.12.19
-        version: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(lokijs@1.5.12)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
+        version: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.2)(zod@3.22.4)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -1274,8 +1278,8 @@ packages:
     resolution: {integrity: sha512-UK0bHA7hh9cR39V+4gl2/NnBBjoXIxkuWAPCaY4X7fbH4L/azIi7ilWOCjMUYfpJgraLUAqkRi2BqrjME8Rynw==}
     dev: false
 
-  /@allo-team/allo-v2-sdk@1.0.55(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(ts-node@10.9.1)(typechain@8.3.2)(typescript@5.4.2)(zod@3.22.4):
-    resolution: {integrity: sha512-lUFodCqOjPwbGqCQBbUtboNbTtwk2RPe9FIF7jHRswgs1fLaS/Q1BDm2rwYXj6dz1cmLeDN/XRZpPyoJYQJZZg==}
+  /@allo-team/allo-v2-sdk@1.0.58(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(ts-node@10.9.1)(typechain@8.3.2)(typescript@5.4.2)(zod@3.22.4):
+    resolution: {integrity: sha512-6yf0mwTLP7LG0mFQc3V+2YtJflH6K+9k22xOG9oW7+22rP0YrEEfqRLFVGTilBRyCa2Yn3WTy6BZzWSDqVzJxg==}
     engines: {node: '>=16.15.0', npm: '>=8.5.5'}
     dependencies:
       '@typechain/hardhat': 9.1.0(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(hardhat@2.20.1)(typechain@8.3.2)
@@ -4461,7 +4465,7 @@ packages:
       '@babel/preset-env': ^7.0.0
       babel-loader: ^8.3 || ^9
       cypress: '*'
-      webpack: ^4 || ^5
+      webpack: ^5
     dependencies:
       '@babel/core': 7.22.15
       '@babel/preset-env': 7.22.15(@babel/core@7.22.15)
@@ -4530,7 +4534,7 @@ packages:
       '@babel/core': ^7.0.1
       '@babel/preset-env': ^7.0.0
       babel-loader: ^8.3 || ^9
-      webpack: ^4 || ^5
+      webpack: ^5
     dependencies:
       '@babel/core': 7.22.15
       '@babel/preset-env': 7.22.15(@babel/core@7.22.15)
@@ -6712,7 +6716,7 @@ packages:
       react-refresh: '>=0.10.0 <1.0.0'
       sockjs-client: ^1.4.0
       type-fest: '>=0.17.0 <5.0.0'
-      webpack: '>=4.43.0 <6.0.0'
+      webpack: ^5
       webpack-dev-server: 3.x || 4.x
       webpack-hot-middleware: 2.x
       webpack-plugin-serve: 0.x || 1.x
@@ -6811,7 +6815,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-remove-scroll: 2.5.4(@types/react@18.2.21)(react@18.2.0)
-      wagmi: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(lokijs@1.5.12)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
+      wagmi: 0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.2)(zod@3.22.4)
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -10103,6 +10107,17 @@ packages:
       typescript: 5.3.3
     dev: false
 
+  /@wagmi/chains@0.2.22(typescript@5.4.2):
+    resolution: {integrity: sha512-TdiOzJT6TO1JrztRNjTA5Quz+UmQlbvWFG8N41u9tta0boHA1JCAzGGvU6KuIcOmJfRJkKOUIt67wlbopCpVHg==}
+    peerDependencies:
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.4.2
+    dev: false
+
   /@wagmi/chains@1.8.0(typescript@5.4.2):
     resolution: {integrity: sha512-UXo0GF0Cl0+neKC2KAmVAahv8L/5rACbFRRqkDvHMefzY6Fh7yzJd8F4GaGNNG3w4hj8eUB/E3+dEpaTYDN62w==}
     peerDependencies:
@@ -10173,6 +10188,41 @@ packages:
       ethers: 5.7.2
       eventemitter3: 4.0.7
       typescript: 5.3.3
+    transitivePeerDependencies:
+      - '@react-native-async-storage/async-storage'
+      - bufferutil
+      - encoding
+      - lokijs
+      - react
+      - supports-color
+      - utf-8-validate
+      - zod
+    dev: false
+
+  /@wagmi/connectors@0.3.24(@wagmi/core@0.10.17)(ethers@5.7.2)(react@18.2.0)(typescript@5.4.2)(zod@3.22.4):
+    resolution: {integrity: sha512-1pI0G9HRblc651dCz9LXuEu/zWQk23XwOUYqJEINb/c2TTLtw5TnTRIcefxxK6RnxeJvcKfnmK0rdZp/4ujFAA==}
+    peerDependencies:
+      '@wagmi/core': '>=0.9.x'
+      ethers: '>=5.5.1 <6'
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      '@wagmi/core':
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      '@coinbase/wallet-sdk': 3.7.1
+      '@ledgerhq/connect-kit-loader': 1.1.2
+      '@safe-global/safe-apps-provider': 0.15.2
+      '@safe-global/safe-apps-sdk': 7.11.0
+      '@wagmi/core': 0.10.17(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@5.4.2)(zod@3.22.4)
+      '@walletconnect/ethereum-provider': 2.9.0(@walletconnect/modal@2.6.1)(lokijs@1.5.12)
+      '@walletconnect/legacy-provider': 2.0.0
+      '@walletconnect/modal': 2.6.1(react@18.2.0)
+      abitype: 0.3.0(typescript@5.4.2)(zod@3.22.4)
+      ethers: 5.7.2
+      eventemitter3: 4.0.7
+      typescript: 5.4.2
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
       - bufferutil
@@ -10260,6 +10310,35 @@ packages:
       ethers: 5.7.2
       eventemitter3: 4.0.7
       typescript: 5.3.3
+      zustand: 4.4.1(@types/react@18.2.21)(react@18.2.0)
+    transitivePeerDependencies:
+      - '@react-native-async-storage/async-storage'
+      - '@types/react'
+      - bufferutil
+      - encoding
+      - immer
+      - lokijs
+      - react
+      - supports-color
+      - utf-8-validate
+      - zod
+    dev: false
+
+  /@wagmi/core@0.10.17(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@5.4.2)(zod@3.22.4):
+    resolution: {integrity: sha512-qud45y3IlHp7gYWzoFeyysmhyokRie59Xa5tcx5F1E/v4moD5BY0kzD26mZW/ZQ3WZuVK/lZwiiPRqpqWH52Gw==}
+    peerDependencies:
+      ethers: '>=5.5.1 <6'
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@wagmi/chains': 0.2.22(typescript@5.4.2)
+      '@wagmi/connectors': 0.3.24(@wagmi/core@0.10.17)(ethers@5.7.2)(react@18.2.0)(typescript@5.4.2)(zod@3.22.4)
+      abitype: 0.3.0(typescript@5.4.2)(zod@3.22.4)
+      ethers: 5.7.2
+      eventemitter3: 4.0.7
+      typescript: 5.4.2
       zustand: 4.4.1(@types/react@18.2.21)(react@18.2.0)
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
@@ -11257,6 +11336,20 @@ packages:
       zod: 3.22.4
     dev: false
 
+  /abitype@0.3.0(typescript@5.4.2)(zod@3.22.4):
+    resolution: {integrity: sha512-0YokyAV4hKMcy97Pl+6QgZBlBdZJN2llslOs7kiFY+cu7kMlVXDBpxMExfv0krzBCQt2t7hNovpQ3y/zvEm18A==}
+    engines: {pnpm: '>=7'}
+    peerDependencies:
+      typescript: '>=4.9.4'
+      zod: '>=3.19.1'
+    peerDependenciesMeta:
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.4.2
+      zod: 3.22.4
+    dev: false
+
   /abitype@0.8.7(typescript@5.2.2)(zod@3.22.4):
     resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
     peerDependencies:
@@ -11996,7 +12089,7 @@ packages:
     engines: {node: '>= 8.9'}
     peerDependencies:
       '@babel/core': ^7.0.0
-      webpack: '>=2'
+      webpack: ^5
     dependencies:
       '@babel/core': 7.22.15
       find-cache-dir: 3.3.2
@@ -13614,7 +13707,7 @@ packages:
     resolution: {integrity: sha512-xDAXtEVGlD0gJ07iclwWVkLoZOpEvAWaSyf6W18S2pOC//K8+qUDIx8IIT3D+HjnmkJPQeesOPv5aiUaJsCM2g==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.35)
       postcss: 8.4.35
@@ -13634,7 +13727,7 @@ packages:
       clean-css: '*'
       csso: '*'
       esbuild: '*'
-      webpack: ^5.0.0
+      webpack: ^5
     peerDependenciesMeta:
       '@parcel/css':
         optional: true
@@ -14899,7 +14992,7 @@ packages:
   /esbuild-loader@2.21.0(webpack@5.88.2):
     resolution: {integrity: sha512-k7ijTkCT43YBSZ6+fBCW1Gin7s46RrJ0VQaM8qA7lq7W+OLsGgtLyFV8470FzYi/4TeDexniTBTPTwZUnXXR5g==}
     peerDependencies:
-      webpack: ^4.40.0 || ^5.0.0
+      webpack: ^5
     dependencies:
       esbuild: 0.16.17
       joycon: 3.1.1
@@ -15732,7 +15825,7 @@ packages:
     engines: {node: '>= 12.13.0'}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       '@types/eslint': 8.44.2
       eslint: 8.48.0
@@ -15747,7 +15840,7 @@ packages:
     engines: {node: '>= 12.13.0'}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       '@types/eslint': 8.44.2
       eslint: 8.50.0
@@ -16374,7 +16467,7 @@ packages:
     resolution: {integrity: sha512-qo3glqyTa61Ytg4u73GultjHGjdRyig3tG6lPtyX/jOEJvHif9uB0/OCI2Kif6ctF3caQTW2G5gym21oAsI4pw==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
-      webpack: ^4.0.0 || ^5.0.0
+      webpack: ^5
     dependencies:
       loader-utils: 2.0.4
       schema-utils: 3.3.0
@@ -16635,7 +16728,7 @@ packages:
       eslint: '>= 6'
       typescript: '>= 2.7'
       vue-template-compiler: '*'
-      webpack: '>= 4'
+      webpack: ^5
     peerDependenciesMeta:
       eslint:
         optional: true
@@ -16667,7 +16760,7 @@ packages:
       eslint: '>= 6'
       typescript: '>= 2.7'
       vue-template-compiler: '*'
-      webpack: '>= 4'
+      webpack: ^5
     peerDependenciesMeta:
       eslint:
         optional: true
@@ -16698,7 +16791,7 @@ packages:
       eslint: '>= 6'
       typescript: '>= 2.7'
       vue-template-compiler: '*'
-      webpack: '>= 4'
+      webpack: ^5
     peerDependenciesMeta:
       eslint:
         optional: true
@@ -17683,7 +17776,7 @@ packages:
     resolution: {integrity: sha512-q5oYdzjKUIPQVjOosjgvCHQOv9Ett9CYYHlgvJeXG0qQvdSojnBq4vAdQBwn1+yGveAwHCoe/rMR86ozX3+c2A==}
     engines: {node: '>=6.9'}
     peerDependencies:
-      webpack: ^4.0.0 || ^5.0.0
+      webpack: ^5
     dependencies:
       '@types/html-minifier-terser': 5.1.2
       '@types/tapable': 1.0.12
@@ -17700,7 +17793,7 @@ packages:
     resolution: {integrity: sha512-6YrDKTuqaP/TquFH7h4srYWsZx+x6k6+FbsTm0ziCwGHDP78Unr1r9F/H4+sGmMbX08GQcJ+K64x55b+7VM/jg==}
     engines: {node: '>=10.13.0'}
     peerDependencies:
-      webpack: ^5.20.0
+      webpack: ^5
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -21332,7 +21425,7 @@ packages:
     resolution: {integrity: sha512-Qk7HcgaPkGG6eD77mLvZS1nmxlao3j+9PkrT9Uc7HAE1id3F41+DdBRYRYkbyfNRGzm8/YWtzhw7nVPmwhqTQw==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       schema-utils: 4.2.0
       webpack: 5.88.2(esbuild@0.18.20)
@@ -22974,7 +23067,7 @@ packages:
     engines: {node: '>= 12.13.0'}
     peerDependencies:
       postcss: ^7.0.0 || ^8.0.1
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       cosmiconfig: 7.1.0
       klona: 2.0.6
@@ -23865,7 +23958,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       typescript: '>=2.7'
-      webpack: '>=4'
+      webpack: ^5
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -23907,7 +24000,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       typescript: '>=2.7'
-      webpack: '>=4'
+      webpack: ^5
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -23948,7 +24041,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       typescript: '>=2.7'
-      webpack: '>=4'
+      webpack: ^5
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -25116,7 +25209,7 @@ packages:
       node-sass: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
       sass: ^1.3.0
       sass-embedded: '*'
-      webpack: ^5.0.0
+      webpack: ^5
     peerDependenciesMeta:
       fibers:
         optional: true
@@ -25560,7 +25653,7 @@ packages:
     resolution: {integrity: sha512-BokxPoLjyl3iOrgkWaakaxqnelAJSS+0V+De0kKIq6lyWrXuiPgYTGp6z3iHmqljKAaLXwZa+ctD8GccRJeVvg==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       abab: 2.0.6
       iconv-lite: 0.6.3
@@ -25682,7 +25775,7 @@ packages:
     resolution: {integrity: sha512-AtVzD0bnIy2/B0fWqJpJgmhcrfWFhBlduzSo0uwplr/QvB33ZNZj2NEth3NONgdnZJqicK0W0mSxnLSbsVCDbw==}
     engines: {node: '>=6.0.0'}
     peerDependencies:
-      webpack: ^1 || ^2 || ^3 || ^4 || ^5
+      webpack: ^5
     dependencies:
       chalk: 4.1.2
       webpack: 5.88.2(esbuild@0.18.20)
@@ -26021,7 +26114,7 @@ packages:
     resolution: {integrity: sha512-53BiGLXAcll9maCYtZi2RCQZKa8NQQai5C4horqKyRmHj9H7QmcUyucrH+4KW/gBQbXM2AsB0axoEcFZPlfPcw==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^5
     dependencies:
       webpack: 5.88.2(esbuild@0.18.20)
 
@@ -26289,7 +26382,7 @@ packages:
       '@swc/core': '*'
       esbuild: '*'
       uglify-js: '*'
-      webpack: ^5.1.0
+      webpack: ^5
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -28016,6 +28109,39 @@ packages:
       - zod
     dev: false
 
+  /wagmi@0.12.19(@types/react@18.2.21)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.2)(zod@3.22.4):
+    resolution: {integrity: sha512-S/el9BDb/HNeQWh1v8TvntMPX/CgKLDAoJqDb8i7jifLfWPqFL7gor3vnI1Vs6ZlB8uh7m+K1Qyg+mKhbITuDQ==}
+    peerDependencies:
+      ethers: '>=5.5.1 <6'
+      react: '>=17.0.0'
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@tanstack/query-sync-storage-persister': 4.35.0
+      '@tanstack/react-query': 4.35.0(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-query-persist-client': 4.35.0(@tanstack/react-query@4.35.0)
+      '@wagmi/core': 0.10.17(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(typescript@5.4.2)(zod@3.22.4)
+      abitype: 0.3.0(typescript@5.4.2)(zod@3.22.4)
+      ethers: 5.7.2
+      react: 18.2.0
+      typescript: 5.4.2
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    transitivePeerDependencies:
+      - '@react-native-async-storage/async-storage'
+      - '@types/react'
+      - bufferutil
+      - encoding
+      - immer
+      - lokijs
+      - react-dom
+      - react-native
+      - supports-color
+      - utf-8-validate
+      - zod
+    dev: false
+
   /wagmi@1.4.1(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(viem@1.10.7)(zod@3.22.4):
     resolution: {integrity: sha512-v3xd+uYZfLCAs1I4fLU7U9hg/gCw+Ud005J7kNR0mi20BcFAEU1EDN1LxHxpjUV0qKhOzSlMlrLjJyBCmSYhFA==}
     peerDependencies:
@@ -28147,7 +28273,7 @@ packages:
     resolution: {integrity: sha512-hj5CYrY0bZLB+eTO+x/j67Pkrquiy7kWepMHmUMoPsmcUaeEnQJqFzHJOyxgWlq746/wUuA64p9ta34Kyb01pA==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
-      webpack: ^4.0.0 || ^5.0.0
+      webpack: ^5
     dependencies:
       colorette: 2.0.20
       memfs: 3.5.3
@@ -28161,7 +28287,7 @@ packages:
     engines: {node: '>= 12.13.0'}
     hasBin: true
     peerDependencies:
-      webpack: ^4.37.0 || ^5.0.0
+      webpack: ^5
       webpack-cli: '*'
     peerDependenciesMeta:
       webpack:
@@ -28210,7 +28336,7 @@ packages:
     resolution: {integrity: sha512-YXUAwxtfKIJIKkhg03MKuiFAD72PlrqCiwdwO4VEXdRO5V0ORCNwaOwAZawPZalCbmH9kBDmXnNeQOw+BIEiow==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
-      webpack: ^4.44.2 || ^5.47.0
+      webpack: ^5
     dependencies:
       tapable: 2.2.1
       webpack: 5.88.2(esbuild@0.18.20)
@@ -28561,7 +28687,7 @@ packages:
     resolution: {integrity: sha512-xNZIZHalboZU66Wa7x1YkjIqEy1gTR+zPM+kjrYJzqN7iurYZBctBLISyScjhkJKYuRrZUP0iqViZTh8rS0+3A==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
-      webpack: ^4.4.0 || ^5.9.0
+      webpack: ^5
     dependencies:
       fast-json-stable-stringify: 2.1.0
       pretty-bytes: 5.6.0
@@ -28942,7 +29068,3 @@ packages:
     dependencies:
       '@types/node': 18.17.14
     dev: false
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false

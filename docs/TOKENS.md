@@ -25,8 +25,7 @@ This is the kb for token-related info in relation to GS/Allo
 | Optimism      | 0xda10009cbd5d07dd0cecc66161fc93d7c9000da1 | ⛔️         | ✅              | 2       | ⛔️                 |
 | Arbitrum      | 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1 | ⛔️         | ✅              | 2       | ⛔️                 |
 | Polygon zkEVM | 0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4 | ⛔️         | ✅              | 1       | ⛔️                 |
-| Polygon zkEVM | 0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4 | ⛔️         | ✅              | 1       | ⛔️                 |
-| zkSync Era    | No DAI yet                                 |            |                |         |                    |
+| Polygon zkEVM | 0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4 | ⛔️         | ✅              | 1       | ⛔️                 |                                 |            |                |         |                 |
 | Avax          | 0xd586E7F844cEa2F87f50152665BCbc2C279D8d70 | ⛔️         | ⛔              | ⛔       | ⛔️                 |
 
 # USDC Chains

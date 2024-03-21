@@ -5,7 +5,6 @@ import { ethers } from "ethers";
 import PGNIcon from "common/src/icons/PublicGoodsNetwork.svg";
 import AVAXIcon from "common/src/icons/AVAX.svg";
 import POLIcon from "common/src/icons/pol-logo.svg";
-import ZkSyncIcon from "common/src/icons/zksync-logo.svg";
 import ScrollIcon from "common/src/icons/scroll-logo.svg";
 import FantomFTMLogo from "common/src/assets/fantom-ftm-logo.png";
 import {
@@ -46,8 +45,6 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   fuji: "Fuji (Avalanche Testnet)",
   polygon: "Polygon PoS",
   polygonMumbai: "Polygon Mumbai",
-  zkSyncEraMainnet: "zkSync Era Mainnet",
-  zkSyncEraTestnet: "zkSync Era Testnet",
   base: "Base",
   scroll: "Scroll",
   sepolia: "sepolia",
@@ -69,8 +66,6 @@ export const networkIcon: { [key in ChainName]: string } = {
   fuji: AVAXIcon,
   polygon: POLIcon,
   polygonMumbai: POLIcon,
-  zkSyncEraMainnet: ZkSyncIcon,
-  zkSyncEraTestnet: ZkSyncIcon,
   base: EthDiamondGlyph,
   scroll: ScrollIcon,
   sepolia: EthDiamondGlyph,
@@ -92,8 +87,6 @@ export const payoutIcon: { [key in ChainName]: string } = {
   polygonMumbai: POLIcon,
   avalanche: AVAXIcon,
   fuji: AVAXIcon,
-  zkSyncEraMainnet: ZkSyncIcon,
-  zkSyncEraTestnet: ZkSyncIcon,
   base: EthDiamondGlyph,
   scroll: ScrollIcon,
   sepolia: EthDiamondGlyph,
