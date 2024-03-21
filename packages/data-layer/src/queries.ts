@@ -585,6 +585,7 @@ export const getDonationsByDonorAddress = gql`
       filter: {
         chainId: { in: $chainIds }
         donorAddress: { equalTo: $address }
+        application: {projectExists: true}
       }
     ) {
       id
