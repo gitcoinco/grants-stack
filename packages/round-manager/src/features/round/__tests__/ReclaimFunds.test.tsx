@@ -62,7 +62,7 @@ const mockRoundData: Round = makeRoundData();
 describe("ReclaimFunds", () => {
   it("displays NoInformationContent when round is not over", () => {
     const currentTime = new Date();
-    const roundEndTime = new Date(currentTime.getTime() + 1000 * 60 * 60 * 24);
+    const roundEndTime = new Date(currentTime.getTime() + 1000 * 60 * 60 * 25);
     mockRoundData.roundEndTime = roundEndTime;
 
     const daysLeft = Number(roundEndTime) - Number(currentTime);
