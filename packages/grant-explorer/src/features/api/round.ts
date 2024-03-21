@@ -310,14 +310,7 @@ export const useContributionHistory = (
       const contributions = await dataLayer.getDonationsByDonorAddress({
         address,
         chainIds,
-      });
-
-      console.info(
-        "Fetched contributions for chains",
-        chainIds,
-        contributions,
-        address
-      );
+      });    
 
       try {
 

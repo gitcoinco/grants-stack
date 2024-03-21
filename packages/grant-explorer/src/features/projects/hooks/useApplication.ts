@@ -40,7 +40,6 @@ export function mapApplicationToProject(
 ): Project | undefined {
   if (!application) return;
 
-  console.log("application from map", { application });
   return {
     grantApplicationId: application.id,
     applicationIndex: Number(application.id),
@@ -49,6 +48,7 @@ export function mapApplicationToProject(
     projectMetadata: application.project.metadata,
     status: application.status,
     grantApplicationFormAnswers: application.metadata.application.answers ?? [],
+    anchorAddress: application.project.anchorAddress,
   };
 }
 

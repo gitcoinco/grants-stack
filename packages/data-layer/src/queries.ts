@@ -252,6 +252,7 @@ export const getApplication = gql`
         tags
         id
         metadata
+        anchorAddress
       }
     }
   }

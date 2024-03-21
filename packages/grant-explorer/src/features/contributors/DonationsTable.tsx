@@ -9,7 +9,6 @@ import { TransactionButton } from "./TransactionButton";
 import { ChainId, VotingToken } from "common";
 import { formatUnits } from "viem";
 import { Contribution } from "data-layer";
-import { getConfig } from "common/src/config";
 
 export function DonationsTable(props: {
   contributions: Contribution[];
@@ -105,11 +104,11 @@ export function DonationsTable(props: {
                           <Link
                             className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
                             title={contribution.application.project.name}
-                            to={`/round/${contribution.chainId}/${
-                              getConfig().allo.version === "allo-v1"
-                                ? `${contribution.roundId.toLowerCase()}/`
-                                : `${contribution.roundId.toString()}/`
-                            }${contribution.applicationId}`}
+                            to={`/round/${
+                              contribution.chainId
+                            }/${contribution.roundId
+                              .toString()
+                              .toLowerCase()}/${contribution.applicationId}`}
                             target="_blank"
                           >
                             {contribution.application.project.name}
