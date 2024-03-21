@@ -124,9 +124,11 @@ export function AlloVersionSwitcher({
         </button>
         <button
           className={classNames(
-            "absolute bg-white/80 p-4 rounded-[8px] hover:bg-white backdrop-blur-sm mt-0.5 font-mono font-medium right-0 whitespace-nowrap z-30",
+            "absolute p-4 rounded-[8px] backdrop-blur-sm mt-0.5 font-mono font-medium right-0 whitespace-nowrap z-30",
             {
               hidden: !isExpanded,
+              "bg-gray-200/80 hover:bg-gray-200": color === "black",
+              "bg-white/80 hover:bg-white": color === "white",
             }
           )}
           onClick={() => {
