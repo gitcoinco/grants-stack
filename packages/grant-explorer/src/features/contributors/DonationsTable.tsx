@@ -104,11 +104,7 @@ export function DonationsTable(props: {
                           <Link
                             className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
                             title={contribution.application.project.name}
-                            to={`/round/${
-                              contribution.chainId
-                            }/${contribution.roundId
-                              .toString()
-                              .toLowerCase()}/${contribution.applicationId}`}
+                            to={`/round/${contribution.chainId}/${contribution.roundId.toString().toLowerCase()}/${contribution.applicationId}`}
                             target="_blank"
                           >
                             {contribution.application.project.name}
