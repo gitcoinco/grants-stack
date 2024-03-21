@@ -1,10 +1,7 @@
 import { ChainId } from "common";
-import { BigNumber, ethers, Signer } from "ethers";
+import { BigNumber, Signer } from "ethers";
 import { useEffect, useMemo, useState } from "react";
-import {
-  directPayoutStrategyFactoryContract,
-  merklePayoutStrategyImplementationContract,
-} from "../contracts";
+import { directPayoutStrategyFactoryContract } from "../contracts";
 import { MatchingStatsData } from "../types";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import { Round } from "../types";

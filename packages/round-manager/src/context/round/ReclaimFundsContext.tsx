@@ -13,12 +13,14 @@ type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 export type ReclaimFundsParams = {
   allo: Allo;
   payoutStrategy: string;
+  token: string;
   recipient: string;
 };
 
 export type SubmitReclaimFundsParams = {
   allo: Allo;
   payoutStrategy: string;
+  token: string;
   recipient: string;
   context: ReclaimFundsState;
 };
@@ -81,6 +83,7 @@ export const useReclaimFunds = () => {
 const _reclaimFunds = async ({
   allo,
   payoutStrategy,
+  token,
   recipient,
   context,
 }: SubmitReclaimFundsParams) => {
@@ -89,11 +92,13 @@ const _reclaimFunds = async ({
   try {
     context.setReclaimStatus(ProgressStatus.IN_PROGRESS);
     const payoutStrategyAddress = getAddress(payoutStrategy);
+    const tokenAddress = getAddress(token);
     const recipientAddress = getAddress(recipient);
 
     const result = await allo
       .withdrawFundsFromStrategy({
         payoutStrategyAddress,
+        tokenAddress,
         recipientAddress,
       })
       .on("transaction", (tx) => {
