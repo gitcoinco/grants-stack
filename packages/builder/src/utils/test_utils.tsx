@@ -165,7 +165,6 @@ const alloBackend = new AlloV2({
     }),
   waitUntilIndexerSynced: async () => Promise.resolve(BigInt(1)),
   transactionSender: createMockTransactionSender(),
-  allo: zeroAddress,
 });
 
 // todo: introduce mock data layer?
