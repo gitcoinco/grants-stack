@@ -54,6 +54,7 @@ export const buildRound = (round: any): Round => ({
   programName: "test-program",
   payoutStrategy: "0x",
   strategyName: "allov1.QF",
+  tags: ["allo-v1"],
   ...round,
 });
 
