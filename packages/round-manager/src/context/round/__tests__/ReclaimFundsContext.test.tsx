@@ -6,12 +6,7 @@ import {
   useReclaimFunds,
 } from "../ReclaimFundsContext";
 import { error, success } from "common/dist/allo/common";
-import {
-  AlloV1,
-  createMockTransactionSender,
-  useAllo,
-  AlloOperation,
-} from "common";
+import { AlloV1, createMockTransactionSender, AlloOperation } from "common";
 
 jest.mock("wagmi");
 jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
@@ -48,7 +43,8 @@ const alloBackend = new AlloV1({
 const testParams: ReclaimFundsParams = {
   allo: alloBackend,
   payoutStrategy: "0x0000000000000000000000000000000000000001",
-  recipient: "0x0000000000000000000000000000000000000002",
+  token: "0x0000000000000000000000000000000000000002",
+  recipient: "0x0000000000000000000000000000000000000003",
 };
 
 describe("<ReclaimFundsProvider />", () => {
@@ -56,7 +52,7 @@ describe("<ReclaimFundsProvider />", () => {
     jest.resetAllMocks();
 
     alloBackend.withdrawFundsFromStrategy = jest.fn().mockImplementation(() => {
-      return new AlloOperation(async ({ emit }) => {
+      return new AlloOperation(async () => {
         return success(null);
       });
     });
@@ -95,7 +91,7 @@ describe("useReclaimFunds Errors", () => {
 
   it("sets reclaim status to error when invoking fund fails", async () => {
     alloBackend.withdrawFundsFromStrategy = jest.fn().mockImplementation(() => {
-      return new AlloOperation(async ({ emit }) => {
+      return new AlloOperation(async () => {
         return error(new Error("test error"));
       });
     });
@@ -111,7 +107,7 @@ describe("useReclaimFunds Errors", () => {
 
   it("if reclaim fails, resets reclaim status when reclaim contract is retried", async () => {
     alloBackend.withdrawFundsFromStrategy = jest.fn().mockImplementation(() => {
-      return new AlloOperation(async ({ emit }) => {
+      return new AlloOperation(async () => {
         return error(new Error("test error"));
       });
     });
