@@ -171,6 +171,7 @@ export default function ViewRoundResultsWrapper() {
 
 function ViewRoundResultsWithId({ id }: { id: string }) {
   const round = useRoundById(id.toLowerCase());
+  const chainId = round?.round?.chainId;
 
   if (round.fetchRoundStatus === ProgressStatus.IN_PROGRESS) {
     return <Spinner text="We're fetching the matching data." />;
@@ -187,7 +188,9 @@ function ViewRoundResultsWithId({ id }: { id: string }) {
   const matchTokenAddress = round.round.token;
 
   const matchToken = payoutTokens.find(
-    (t) => t.address.toLowerCase() == matchTokenAddress.toLowerCase()
+    (t) =>
+      t.address.toLowerCase() == matchTokenAddress.toLowerCase() &&
+      t.chainId == chainId
   );
 
   if (matchToken === undefined) {

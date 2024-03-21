@@ -123,7 +123,9 @@ function ReclaimFundsContent(props: {
   const matchingFundPayoutToken =
     props.round &&
     payoutTokens.filter(
-      (t) => t.address.toLowerCase() === props.round?.token?.toLowerCase()
+      (t) =>
+        t.address.toLowerCase() === props.round?.token?.toLowerCase() &&
+        t.chainId === props.round.chainId
     )[0];
 
   const tokenDetail =
