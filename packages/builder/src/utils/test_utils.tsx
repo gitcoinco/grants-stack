@@ -15,7 +15,6 @@ import {
 } from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
-import { zeroAddress } from "viem";
 import { getConfig } from "common/src/config";
 import history from "../history";
 import setupStore from "../store";
