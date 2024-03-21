@@ -799,6 +799,7 @@ export class AlloV1 implements Allo {
 
   withdrawFundsFromStrategy(args: {
     payoutStrategyAddress: Address;
+    tokenAddress: Address;
     recipientAddress: Address;
   }): AlloOperation<
     Result<null>,

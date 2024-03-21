@@ -48,7 +48,8 @@ const alloBackend = new AlloV1({
 const testParams: ReclaimFundsParams = {
   allo: alloBackend,
   payoutStrategy: "0x0000000000000000000000000000000000000001",
-  recipient: "0x0000000000000000000000000000000000000002",
+  token: "0x0000000000000000000000000000000000000002",
+  recipient: "0x0000000000000000000000000000000000000003",
 };
 
 describe("<ReclaimFundsProvider />", () => {

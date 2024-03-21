@@ -158,6 +158,7 @@ export interface Allo {
 
   withdrawFundsFromStrategy: (args: {
     payoutStrategyAddress: Address;
+    tokenAddress: Address;
     recipientAddress: Address;
   }) => AlloOperation<
     Result<null>,

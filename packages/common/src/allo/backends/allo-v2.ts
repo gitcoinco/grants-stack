@@ -22,11 +22,7 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
-import {
-  UpdateRoundParams,
-  MatchingStatsData,
-  VotingToken,
-} from "../../types";
+import { UpdateRoundParams, MatchingStatsData, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -774,8 +770,9 @@ export class AlloV2 implements Allo {
     });
   }
 
-  withdrawFundsFromStrategy(_args: {
+  withdrawFundsFromStrategy(args: {
     payoutStrategyAddress: Address;
+    tokenAddress: Address;
     recipientAddress: Address;
   }): AlloOperation<
     Result<null>,
@@ -786,8 +783,44 @@ export class AlloV2 implements Allo {
       indexingStatus: Result<null>;
     }
   > {
-    return new AlloOperation(async () => {
-      throw new Error("not implemented.");
+    let token = args.tokenAddress;
+    if (token === zeroAddress) {
+      token = getAddress(NATIVE);
+    }
+
+    return new AlloOperation(async ({ emit }) => {
+      const tx = await sendTransaction(this.transactionSender, {
+        address: args.payoutStrategyAddress,
+        abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi,
+        functionName: "withdraw",
+        args: [token],
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to withdraw from strategy");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
     });
   }
 
