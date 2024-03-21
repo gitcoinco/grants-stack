@@ -566,7 +566,7 @@ export const getRoundByIdAndChainIdWithApprovedApplications = gql`
         projectId
         status
         metadata
-        project {
+        project: canonicalProject {
           id
           metadata
           anchorAddress

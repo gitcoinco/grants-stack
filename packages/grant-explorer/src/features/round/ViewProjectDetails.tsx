@@ -520,7 +520,7 @@ export function ProjectStats() {
       </Stat>
 
       <Stat
-        isLoading={isBeforeRoundEndDate}
+        isLoading={isBeforeRoundEndDate === undefined}
         value={timeRemaining}
         className={
           // Explicitly check for true - could be undefined if round hasn't been loaded yet
