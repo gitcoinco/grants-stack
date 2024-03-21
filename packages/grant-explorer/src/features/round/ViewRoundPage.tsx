@@ -1,6 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { getRoundStrategyTitle } from "common";
 
 import {
   ChainId,
@@ -21,7 +22,6 @@ import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
 import {
   CHAINS,
-  getRoundType,
   isDirectRound,
   isInfiniteDate,
   votingTokens,
@@ -322,7 +322,7 @@ function AfterRoundStart(props: {
                 className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4 rounded-[20px]"
               >
                 {round.payoutStrategy?.strategyName &&
-                  getRoundType(round.payoutStrategy?.strategyName)}
+                  getRoundStrategyTitle(round.payoutStrategy?.strategyName)}
               </p>
               <div className="flex text-grey-400 mb-1">
                 <p className="mr-4 text-sm">
