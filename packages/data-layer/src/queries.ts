@@ -454,47 +454,6 @@ export const getRoundByIdAndChainId = gql`
   }
 `;
 
-export const getRoundWithApplications = gql`
-  query getRoundWithApplications($roundId: String!, $chainId: Int!) {
-    round(id: $roundId, chainId: $chainId) {
-      id
-      chainId
-      applicationsStartTime
-      applicationsEndTime
-      donationsStartTime
-      donationsEndTime
-      matchTokenAddress
-      roundMetadata
-      roundMetadataCid
-      applicationMetadata
-      applicationMetadataCid
-      strategyAddress
-      strategyName
-      readyForPayoutTransaction
-      applications {
-        id
-        status
-        projectId
-        metadata
-      }
-      project {
-        id
-      }
-      roles {
-        role
-        address
-      }
-      strategyId
-      strategyAddress
-      strategyName
-      project {
-        id
-        name
-      }
-    }
-  }
-`;
-
 const getRoundForManagerFields = `
   id
   chainId
@@ -553,11 +512,8 @@ export const getRoundsForManager = gql`
   }
 `;
 
-export const getRoundByIdAndChainIdWithApprovedApplications = gql`
-  query getRoundByIdAndChainIdWithApprovedApplications(
-    $roundId: String!
-    $chainId: Int!
-  ) {
+export const getRoundForExplorer = gql`
+  query getRoundForExplorer($roundId: String!, $chainId: Int!) {
     rounds(
       filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
     ) {
@@ -582,6 +538,9 @@ export const getRoundByIdAndChainIdWithApprovedApplications = gql`
         projectId
         status
         metadata
+        actualProject: project {
+          anchorAddress
+        }
         project: canonicalProject {
           id
           metadata
@@ -593,15 +552,11 @@ export const getRoundByIdAndChainIdWithApprovedApplications = gql`
 `;
 
 export const getDonationsByDonorAddress = gql`
-  query getDonationsByDonorAddress(
-    $address: String!
-    $chainIds: [Int!]!
-  ) {
+  query getDonationsByDonorAddress($address: String!, $chainIds: [Int!]!) {
     donations(
       filter: {
         chainId: { in: $chainIds }
         donorAddress: { equalTo: $address }
-        application: {projectExists: true}
       }
     ) {
       id

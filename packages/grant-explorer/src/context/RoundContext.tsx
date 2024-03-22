@@ -101,7 +101,7 @@ function fetchRoundsById(
   dispatch({ type: ActionType.SET_LOADING, payload: true });
 
   dataLayer
-    .getRoundByIdAndChainIdWithApprovedApplications({
+    .getRoundForExplorer({
       roundId,
       chainId,
     })

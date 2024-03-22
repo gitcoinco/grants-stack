@@ -228,6 +228,8 @@ export const useCheckoutStore = create<CheckoutState>()(
             "roundId"
           );
 
+          console.log(groupedDonations);
+
           const groupedEncodedVotes: Record<string, Hex[]> = {};
           for (const roundId in groupedDonations) {
             groupedEncodedVotes[roundId] = isV2
