@@ -157,7 +157,7 @@ export const buildProjectApplication = (
 });
 
 const alloBackend = new AlloV2({
-  chainId: 11155111,
+  chainId: 10,
   ipfsUploader: async () =>
     Promise.resolve({
       type: "success",

@@ -263,10 +263,11 @@ export const getApplication = gql`
         roundMetadata
       }
       metadata
-      project {
+      project: canonicalProject {
         tags
         id
         metadata
+        anchorAddress
       }
     }
   }
@@ -585,6 +586,44 @@ export const getRoundByIdAndChainIdWithApprovedApplications = gql`
           id
           metadata
           anchorAddress
+        }
+      }
+    }
+  }
+`;
+
+export const getDonationsByDonorAddress = gql`
+  query getDonationsByDonorAddress(
+    $address: String!
+    $chainIds: [Int!]!
+  ) {
+    donations(
+      filter: {
+        chainId: { in: $chainIds }
+        donorAddress: { equalTo: $address }
+        application: {projectExists: true}
+      }
+    ) {
+      id
+      chainId
+      projectId
+      roundId
+      recipientAddress
+      applicationId
+      tokenAddress
+      donorAddress
+      amount
+      amountInUsd
+      transactionHash
+      blockNumber
+      round {
+        roundMetadata
+        donationsStartTime
+        donationsEndTime
+      }
+      application {
+        project: canonicalProject {
+          name
         }
       }
     }

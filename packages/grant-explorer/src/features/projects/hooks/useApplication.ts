@@ -1,7 +1,6 @@
 import useSWR from "swr";
 import { Application, DataLayer, Project, Round } from "data-layer";
 import { getConfig } from "common/src/config";
-import { Address, getAddress, zeroAddress } from "viem";
 
 type Params = {
   chainId?: number;
@@ -19,9 +18,7 @@ export function useApplication(params: Params, dataLayer: DataLayer) {
     const validatedParams = {
       chainId: params.chainId as number,
       applicationId: params.applicationId as string,
-      roundId: getAddress(
-        params.roundId ?? zeroAddress
-      ).toLowerCase() as Lowercase<Address>,
+      roundId: params.roundId as string,
     };
     return dataLayer.getApplication(validatedParams).then((application) => {
       /* Don't fetch v2 rounds when allo version is set to v1 */
@@ -42,6 +39,7 @@ export function mapApplicationToProject(
   application?: Application
 ): Project | undefined {
   if (!application) return;
+
   return {
     grantApplicationId: application.id,
     applicationIndex: Number(application.id),
@@ -50,6 +48,7 @@ export function mapApplicationToProject(
     projectMetadata: application.project.metadata,
     status: application.status,
     grantApplicationFormAnswers: application.metadata.application.answers ?? [],
+    anchorAddress: application.project.anchorAddress,
   };
 }
 

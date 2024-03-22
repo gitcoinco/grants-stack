@@ -6,7 +6,6 @@ import {
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
 import { getAlloVersion } from "common/src/config";
-
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
   ComponentProps,
@@ -134,8 +133,6 @@ export default function ViewProjectDetails() {
   const isAlreadyInCart = projects.some(
     (project) => project.grantApplicationId === applicationId
   );
-
-  /*TODO: projectToRender can be undefined, casting will hide that condition.*/
   const cartProject = projectToRender as CartProject;
 
   if (cartProject !== undefined) {
@@ -267,7 +264,6 @@ function ProjectDetailsTabs(props: {
     <Box className="" bottom={0.5}>
       {props.tabs.length > 0 && (
         <Tabs
-          // className="text-blue-300"
           display="flex"
           onChange={props.onChange}
           defaultIndex={props.selected}
