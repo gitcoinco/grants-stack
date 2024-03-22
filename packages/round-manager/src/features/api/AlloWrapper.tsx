@@ -3,6 +3,7 @@ import {
   AlloProvider,
   AlloV1,
   AlloV2,
+  ChainId,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
@@ -26,9 +27,11 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     const config = getConfig();
     let alloBackend: Allo;
 
+    const chainIdSupported = Object.values(ChainId).includes(chainID);
+
     if (config.allo.version === "allo-v2") {
       alloBackend = new AlloV2({
-        chainId: chainID,
+        chainId: chainIdSupported ? chainID : 1,
         transactionSender: createEthersTransactionSender(signer, web3Provider),
         ipfsUploader: createPinataIpfsUploader({
           token: getConfig().pinata.jwt,
@@ -40,7 +43,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       });
     } else {
       alloBackend = new AlloV1({
-        chainId: chainID,
+        chainId: chainIdSupported ? chainID : 1,
         transactionSender: createEthersTransactionSender(signer, web3Provider),
         ipfsUploader: createPinataIpfsUploader({
           token: getConfig().pinata.jwt,
