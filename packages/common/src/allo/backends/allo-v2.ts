@@ -165,7 +165,12 @@ export class AlloV2 implements Allo {
     }
 
     if (tx.type === "success") {
-      return this.transactionSender.wait(tx.value, 60_000, publicClient);
+      const receipt = await this.transactionSender.wait(tx.value, 60_000, publicClient);
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+      return receipt;
     } else {
       throw tx.error;
     }
