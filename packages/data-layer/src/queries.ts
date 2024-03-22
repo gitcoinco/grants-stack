@@ -538,9 +538,7 @@ export const getRoundForExplorer = gql`
         projectId
         status
         metadata
-        actualProject: project {
-          anchorAddress
-        }
+        anchorAddress
         project: canonicalProject {
           id
           metadata

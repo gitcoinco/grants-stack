@@ -249,7 +249,7 @@ export type RoundWithApplications = Omit<RoundGetRound, "applications"> & {
 };
 
 export type RoundForExplorer = Omit<RoundGetRound, "applications"> & {
-  applications: (Application & { actualProject: { anchorAddress: Address } })[];
+  applications: (Application & { anchorAddress: Address })[];
 };
 
 /**

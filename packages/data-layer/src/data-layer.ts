@@ -497,7 +497,7 @@ export class DataLayer {
         {
           grantApplicationId: application.id,
           projectRegistryId: application.projectId,
-          anchorAddress: application.actualProject.anchorAddress,
+          anchorAddress: application.anchorAddress,
           recipient: application.metadata.application.recipient,
           projectMetadata: {
             title: application.project.metadata.title,
