@@ -354,6 +354,7 @@ export class AlloV1 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -390,13 +391,14 @@ export class AlloV1 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
 
         await this.waitUntilIndexerSynced({
           chainId: this.chainId,
           blockNumber: receipt.blockNumber,
         });
 
-        emit("transactionStatus", success(receipt));
+        emit("indexingStatus", success(void 0));
       } catch (err) {
         const result = new AlloError("Failed to update project metadata");
         emit("transactionStatus", error(result));

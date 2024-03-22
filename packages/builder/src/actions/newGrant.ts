@@ -142,7 +142,7 @@ export const publishGrant =
           dispatch(grantError("transaction error", Status.Error));
         }
       })
-      .on("transactionStatus", async (res) => {
+      .on("indexingStatus", async (res) => {
         if (res.type === "success") {
           dispatch(grantStatus(Status.Completed));
         } else {
