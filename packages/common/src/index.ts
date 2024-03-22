@@ -8,6 +8,7 @@ import { ChainId } from "./chain-ids";
 
 export * from "./icons";
 export * from "./markdown";
+export * from "./allo/common";
 
 export { ChainId };
 

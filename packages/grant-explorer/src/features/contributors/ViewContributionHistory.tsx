@@ -7,14 +7,12 @@ import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import {
-  ContributionWithTimestamp,
-  useContributionHistory,
-} from "../api/round";
+import { useContributionHistory } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
-import { VotingToken } from "common";
+import { VotingToken, dateToEthereumTimestamp } from "common";
+import { Contribution } from "data-layer";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")
@@ -118,7 +116,7 @@ function ViewContributionHistoryFetcher(props: {
 
 export function ViewContributionHistory(props: {
   tokens: Record<string, VotingToken>;
-  contributions: { chainId: number; data: ContributionWithTimestamp[] }[];
+  contributions: { chainIds: number[]; data: Contribution[] };
   address: string;
   addressLogo: string;
   ensName?: string | null;
@@ -130,72 +128,63 @@ export function ViewContributionHistory(props: {
       let totalDonations = 0;
       let totalUniqueContributions = 0;
       const projects: string[] = [];
-      props.contributions.forEach((chainContribution) => {
-        const { data } = chainContribution;
-        data.forEach((contribution) => {
-          const tokenId =
-            contribution.token.toLowerCase() + "-" + chainContribution.chainId;
-          const token = props.tokens[tokenId];
-          if (token) {
-            totalDonations += contribution.amountUSD;
-            totalUniqueContributions += 1;
-            const project = contribution.projectId;
-            if (!projects.includes(project)) {
-              projects.push(project);
-            }
+
+      props.contributions.data.forEach((contribution) => {
+        const tokenId =
+          contribution.tokenAddress.toLowerCase() + "-" + contribution.chainId;
+        const token = props.tokens[tokenId];
+        if (token) {
+          totalDonations += contribution.amountInUsd;
+          totalUniqueContributions += 1;
+          const project = contribution.projectId;
+          if (!projects.includes(project)) {
+            projects.push(project);
           }
-        });
+        }
       });
 
       return [totalDonations, totalUniqueContributions, projects.length];
     }, [props.contributions, props.tokens]);
 
-  const [activeRoundDonations] = useMemo(() => {
-    const activeRoundDonations: {
-      chainId: number;
-      data: ContributionWithTimestamp[];
-    }[] = [];
+  const activeRoundDonations = useMemo(() => {
     const now = Date.now();
 
-    props.contributions.forEach((chainContribution) => {
-      const { data } = chainContribution;
-      const filteredRoundDonations = data.filter((contribution) => {
-        const formattedRoundEndTime = contribution.roundEndTime * 1000;
+    const filteredRoundDonations = props.contributions.data.filter(
+      (contribution) => {
+        const formattedRoundEndTime =
+          Number(
+            dateToEthereumTimestamp(
+              new Date(contribution.round.donationsEndTime)
+            )
+          ) * 1000;
         return formattedRoundEndTime >= now;
-      });
-      if (filteredRoundDonations.length > 0) {
-        activeRoundDonations.push({
-          chainId: chainContribution.chainId,
-          data: filteredRoundDonations,
-        });
       }
-    });
-
-    return [activeRoundDonations];
+    );
+    if (filteredRoundDonations.length === 0) {
+      return [];
+    }
+    return filteredRoundDonations;
   }, [props.contributions]);
 
-  const [pastRoundDonations] = useMemo(() => {
-    const pastRoundDonations: {
-      chainId: number;
-      data: ContributionWithTimestamp[];
-    }[] = [];
+  const pastRoundDonations = useMemo(() => {
     const now = Date.now();
 
-    props.contributions.forEach((chainContribution) => {
-      const { data } = chainContribution;
-      const filteredRoundDonations = data.filter((contribution) => {
-        const formattedRoundEndTime = contribution.roundEndTime * 1000;
+    const filteredRoundDonations = props.contributions.data.filter(
+      (contribution) => {
+        const formattedRoundEndTime =
+          Number(
+            dateToEthereumTimestamp(
+              new Date(contribution.round.donationsEndTime)
+            )
+          ) * 1000;
         return formattedRoundEndTime < now;
-      });
-      if (filteredRoundDonations.length > 0) {
-        pastRoundDonations.push({
-          chainId: chainContribution.chainId,
-          data: filteredRoundDonations,
-        });
       }
-    });
+    );
+    if (filteredRoundDonations.length === 0) {
+      return [];
+    }
 
-    return [pastRoundDonations];
+    return filteredRoundDonations;
   }, [props.contributions]);
 
   return (

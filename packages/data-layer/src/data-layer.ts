@@ -25,6 +25,7 @@ import {
   V2RoundWithProject,
   v2Project,
   RoundForManager,
+  Contribution,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -47,6 +48,7 @@ import {
   getRoundsForManager,
   getRoundByIdAndChainIdWithApprovedApplications,
   getRoundsQuery,
+  getDonationsByDonorAddress,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -337,7 +339,7 @@ export class DataLayer {
     chainId,
     applicationId,
   }: {
-    roundId: Lowercase<Address>;
+    roundId: Lowercase<Address> | string;
     chainId: number;
     applicationId: string;
   }): Promise<Application | undefined> {
@@ -534,6 +536,23 @@ export class DataLayer {
       await request(this.gsIndexerEndpoint, getApplicationsForManager, args);
 
     return response.applications;
+  }
+
+  async getDonationsByDonorAddress(args: {
+    address: Address;
+    chainIds: number[];
+  }): Promise<Contribution[]> {
+    const { address, chainIds } = args;
+    const response: { donations: Contribution[] } = await request(
+      this.gsIndexerEndpoint,
+      getDonationsByDonorAddress,
+      {
+        address: address.toLowerCase(),
+        chainIds,
+      },
+    );
+
+    return response.donations;
   }
 
   /**
