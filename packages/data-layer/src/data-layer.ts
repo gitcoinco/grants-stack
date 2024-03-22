@@ -485,7 +485,7 @@ export class DataLayer {
       return null;
     }
 
-    const round = response.rounds[0] ?? [];
+    const round = response.rounds[0];
 
     const projects: Project[] = round.applications.flatMap((application) => {
       if (application.project === null) {
