@@ -80,7 +80,7 @@ vi.mock("react-router-dom", async () => {
 });
 
 const mockDataLayer = {
-  getRoundByIdAndChainIdWithApprovedApplications: vi.fn().mockResolvedValue({
+  getRoundForExplorer: vi.fn().mockResolvedValue({
     rounds: [],
   }),
 } as unknown as DataLayer;
