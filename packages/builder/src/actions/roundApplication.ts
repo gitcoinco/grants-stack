@@ -410,7 +410,7 @@ export const submitApplication =
             );
           }
         })
-        .on("transactionStatus", async (res) => {
+        .on("indexingStatus", async (res) => {
           if (res.type === "success") {
             console.log(
               "profile creation: Transaction Status Success",

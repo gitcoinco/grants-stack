@@ -191,6 +191,7 @@ export class AlloV1 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -234,6 +235,8 @@ export class AlloV1 implements Allo {
         chainId: this.chainId,
         blockNumber: receipt.blockNumber,
       });
+
+      emit("indexingStatus", success(void 0));
 
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: ProjectRegistryABI,
