@@ -429,7 +429,12 @@ export default function ViewProgram() {
                   </div>
                 </div>
               )}
-              {isRoundsFetched && roundItems.length === 0 && noRoundsGroup}
+              {
+                isRoundsFetched 
+                && roundItems.length === 0  && 
+                !((programToRender?.tags?.includes("allo-v1") && getAlloVersion() === "allo-v2"))
+                && noRoundsGroup
+              }
               <Transition.Root show={isModalOpen} as={Fragment}>
                 <Dialog
                   as="div"
