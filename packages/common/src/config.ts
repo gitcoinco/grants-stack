@@ -235,7 +235,7 @@ export function getConfig(
         .parse(hostnameAlloVersion ?? process.env.REACT_APP_ALLO_VERSION),
     },
     manager: {
-      disableDirectGrantsForAlloV2: true,
+      disableDirectGrantsForAlloV2: config?.allo.version === "allo-v1",
     },
   };
 

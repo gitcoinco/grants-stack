@@ -34,11 +34,7 @@ import { getPayoutRoundDescription } from "../common/Utils";
 import { parseRoundDates } from "../common/parseRoundDates";
 import { isDirectRound } from "../round/ViewRoundPage";
 import { getRoundDescriptionStatus } from "./getRoundDescriptionStatus";
-import { getAlloVersion, getConfig } from "common/src/config";
-
-const {
-  manager: { disableDirectGrantsForAlloV2 },
-} = getConfig();
+import { getAlloVersion } from "common/src/config";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -297,7 +293,7 @@ export default function ViewProgram() {
                 className="object-cover pl-6 pr-4"
               />
             </button>
-            {!disableDirectGrantsForAlloV2 && (
+            {programToRender?.tags?.includes("allo-v1") && (
               <button
                 onClick={() => setGrantType("directGrant")}
                 className={`flex w-full rounded border  ${
