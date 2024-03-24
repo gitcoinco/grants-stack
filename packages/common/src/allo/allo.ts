@@ -6,6 +6,7 @@ import {
   CreateRoundData,
   RoundCategory,
   UpdateRoundParams,
+  MatchingStatsData,
   VotingToken,
 } from "../types";
 import { Result } from "./common";
@@ -155,6 +156,19 @@ export interface Allo {
     }
   >;
 
+  withdrawFundsFromStrategy: (args: {
+    payoutStrategyAddress: Address;
+    tokenAddress: Address;
+    recipientAddress: Address;
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
+
   finalizeRound: (args: {
     roundId: string;
     strategyAddress: Address;
@@ -181,6 +195,19 @@ export interface Allo {
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<void>;
+    }
+  >;
+
+  batchDistributeFunds: (args: {
+    payoutStrategy: Address;
+    allProjects: MatchingStatsData[];
+    projectIdsToBePaid: string[];
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   >;
 }

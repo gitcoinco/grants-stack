@@ -1,25 +1,27 @@
-import { Signer } from "ethers";
 import React, {
   createContext,
   SetStateAction,
   useContext,
   useState,
 } from "react";
-import { useSigner } from "wagmi";
-import { reclaimFundsFromContract } from "../../features/api/payoutStrategy/payoutStrategy";
 import { ProgressStatus } from "../../features/api/types";
+import { Allo } from "common";
+import { getAddress } from "viem";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
 export type ReclaimFundsParams = {
+  allo: Allo;
   payoutStrategy: string;
-  recipientAddress: string;
+  token: string;
+  recipient: string;
 };
 
 export type SubmitReclaimFundsParams = {
+  allo: Allo;
   payoutStrategy: string;
-  recipientAddress: string;
-  signer: Signer;
+  token: string;
+  recipient: string;
   context: ReclaimFundsState;
 };
 
@@ -68,10 +70,8 @@ export const useReclaimFunds = () => {
     );
   }
 
-  const { data: signer } = useSigner();
-
   const handleReclaimFunds = async (params: ReclaimFundsParams) => {
-    return _reclaimFunds({ ...params, signer: signer as Signer, context });
+    return _reclaimFunds({ ...params, context });
   };
 
   return {
@@ -81,25 +81,46 @@ export const useReclaimFunds = () => {
 };
 
 const _reclaimFunds = async ({
+  allo,
   payoutStrategy,
-  recipientAddress,
-  signer,
+  token,
+  recipient,
   context,
 }: SubmitReclaimFundsParams) => {
   resetToInitialState(context);
-  const { setReclaimStatus } = context;
+
   try {
-    setReclaimStatus(ProgressStatus.IN_PROGRESS);
-    const { transactionBlockNumber } = await reclaimFundsFromContract(
-      payoutStrategy,
-      signer,
-      recipientAddress
-    );
-    setReclaimStatus(ProgressStatus.IS_SUCCESS);
-    return transactionBlockNumber;
+    context.setReclaimStatus(ProgressStatus.IN_PROGRESS);
+    const payoutStrategyAddress = getAddress(payoutStrategy);
+    const tokenAddress = getAddress(token);
+    const recipientAddress = getAddress(recipient);
+
+    const result = await allo
+      .withdrawFundsFromStrategy({
+        payoutStrategyAddress,
+        tokenAddress,
+        recipientAddress,
+      })
+      .on("transaction", (tx) => {
+        if (tx.type === "error") {
+          context.setReclaimStatus(ProgressStatus.IS_ERROR);
+        }
+      })
+      .on("transactionStatus", (tx) => {
+        if (tx.type === "error") {
+          context.setReclaimStatus(ProgressStatus.IS_ERROR);
+        } else {
+          context.setReclaimStatus(ProgressStatus.IS_SUCCESS);
+        }
+      })
+      .execute();
+
+    if (result.type === "error") {
+      throw result.error;
+    }
   } catch (error) {
     console.error("Error while reclaiming funds: ", error);
-    setReclaimStatus(ProgressStatus.IS_ERROR);
+    context.setReclaimStatus(ProgressStatus.IS_ERROR);
   }
 };
 

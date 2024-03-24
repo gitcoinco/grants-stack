@@ -263,6 +263,7 @@ export type ProjectApplication = {
   totalDonationsCount: number;
   totalAmountDonatedInUsd: number;
   uniqueDonorsCount: number;
+  distributionTransaction: string | null;
 };
 
 export type ProjectApplicationForManager = ProjectApplication & {
@@ -711,4 +712,30 @@ export type Application = {
       answers: GrantApplicationFormAnswer[];
     };
   };
+};
+
+export type Contribution = {
+  id: string;
+  chainId: number;
+  projectId: string;
+  roundId: string;
+  recipientAddress: string;
+  applicationId: string;
+  tokenAddress: string;
+  donorAddress: string;
+  amount: string;
+  amountInUsd: number;
+  transactionHash: string;
+  blockNumber: number;
+  round: {
+    roundMetadata: RoundMetadata;
+    donationsStartTime: string;
+    donationsEndTime: string;
+  };
+  application: {
+    project: {
+      name: string;
+    };
+  };
+  timestamp?: bigint;
 };

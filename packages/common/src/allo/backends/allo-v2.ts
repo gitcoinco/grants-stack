@@ -22,7 +22,7 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
-import { UpdateRoundParams, VotingToken } from "../../types";
+import { UpdateRoundParams, MatchingStatsData, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import { Result, dateToEthereumTimestamp, error, success } from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
@@ -38,11 +38,13 @@ import { PermitSignature, getPermitType } from "../voting";
 import Erc20ABI from "../abis/erc20";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
+import { generateMerkleTree } from "./allo-v1";
+import { BigNumber, utils } from "ethers";
 
 const STRATEGY_ADDRESSES = {
   [RoundCategory.QuadraticFunding]:
-    "0x25551cbfc377501ef0be053ce61ff7ecef411f51",
-  [RoundCategory.Direct]: "0x726d2398E79c9535Dd81FB1576A8aCB798c35951",
+    "0x787eC93Dd71a90563979417879F5a3298389227f",
+  [RoundCategory.Direct]: "0x8564d522b19836b7F5B4324E7Ee8Cb41810E9F9e",
 };
 
 function applicationStatusToNumber(status: ApplicationStatus) {
@@ -768,6 +770,60 @@ export class AlloV2 implements Allo {
     });
   }
 
+  withdrawFundsFromStrategy(args: {
+    payoutStrategyAddress: Address;
+    tokenAddress: Address;
+    recipientAddress: Address;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    let token = args.tokenAddress;
+    if (token === zeroAddress) {
+      token = getAddress(NATIVE);
+    }
+
+    return new AlloOperation(async ({ emit }) => {
+      const tx = await sendTransaction(this.transactionSender, {
+        address: args.payoutStrategyAddress,
+        abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi,
+        functionName: "withdraw",
+        args: [token],
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to withdraw from strategy");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
+
   finalizeRound(args: {
     roundId: string;
     strategyAddress: Address;
@@ -1005,4 +1061,116 @@ export class AlloV2 implements Allo {
       return success(args.roundId);
     });
   }
+
+  batchDistributeFunds(args: {
+    payoutStrategy: Address;
+    allProjects: MatchingStatsData[];
+    projectIdsToBePaid: string[];
+  }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const poolId = BigInt(args.payoutStrategy);
+      const recipientIds: Address[] = args.projectIdsToBePaid.map((id) =>
+        getAddress(id)
+      );
+
+      // Generate merkle tree
+      const { tree, matchingResults } = generateMerkleTree(args.allProjects);
+
+      // Filter projects to be paid from matching results
+      const projectsToBePaid = matchingResults.filter((project) =>
+        args.projectIdsToBePaid.includes(project.projectId)
+      );
+
+      const projectsWithMerkleProof: ProjectWithMerkleProof[] = [];
+
+      projectsToBePaid.forEach((project) => {
+        if (!project.index) {
+          throw new AlloError("Project index is required");
+        }
+        const distribution: [number, string, BigNumber, string] = [
+          project.index,
+          project.applicationId,
+          project.matchAmountInToken,
+          project.projectId,
+        ];
+
+        // Generate merkle proof
+        const validMerkleProof = tree.getProof(distribution);
+
+        projectsWithMerkleProof.push({
+          index: distribution[0],
+          recipientId: distribution[1],
+          amount: distribution[2],
+          merkleProof: validMerkleProof,
+        });
+      });
+
+      const projectsWithMerkleProofBytes = serializeProjects(
+        projectsWithMerkleProof
+      );
+
+      const txResult = await sendTransaction(this.transactionSender, {
+        address: this.allo.address(),
+        abi: AlloAbi,
+        functionName: "distribute",
+        args: [poolId, recipientIds, projectsWithMerkleProofBytes],
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return txResult;
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to distribute funds");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
 }
+
+export function serializeProject(project: ProjectWithMerkleProof) {
+  return utils.defaultAbiCoder.encode(
+    ["uint256", "address", "uint256", "bytes32[]"],
+    [
+      project.index,
+      project.recipientId,
+      project.amount,
+      project.merkleProof.map(utils.formatBytes32String),
+    ]
+  );
+}
+
+export function serializeProjects(projects: ProjectWithMerkleProof[]): Hex {
+  const serializedProjects = projects.map(serializeProject);
+  return utils.defaultAbiCoder.encode(["bytes[]"], [serializedProjects]) as Hex;
+}
+
+export type ProjectWithMerkleProof = {
+  index: number;
+  recipientId: string;
+  amount: BigNumber;
+  merkleProof: string[];
+};

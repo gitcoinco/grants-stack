@@ -8,7 +8,6 @@ import {
   initialQuestionsQF,
   initialRequirements,
 } from "../../round/RoundApplicationForm";
-import { MetadataPointer } from "../types";
 
 enableFetchMocks();
 

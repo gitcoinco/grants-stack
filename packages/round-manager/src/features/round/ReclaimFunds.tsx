@@ -16,31 +16,33 @@ import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
 import { useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
 import { payoutTokens } from "../api/payoutTokens";
+import { useAllo } from "common";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;
   chainId: string;
   roundId: string | undefined;
 }) {
-  const currentTime = new Date();
-  const isBeforeRoundEndDate =
-    props.round && props.round.roundEndTime >= currentTime;
-  const isAfterRoundEndDate =
-    props.round && props.round.roundEndTime <= currentTime;
+  if (props.round === undefined) {
+    return <></>;
+  }
 
-  const daysLeft = props.round
-    ? Number(props.round?.roundEndTime) - Number(currentTime)
-    : 0;
+  const currentTime = new Date().getTime();
+  const roundEndTime = props.round.roundEndTime.getTime();
 
-  // convert unix time to days
-  const daysLeftInRound = Number((daysLeft / (1000 * 60 * 60 * 24)).toFixed(0));
+  let claimTime = roundEndTime;
+  if (props.round?.tags?.includes("allo-v2")) {
+    claimTime = roundEndTime + 1000 * 60 * 60 * 24 * 30;
+  }
+
+  const isBeforeClaimTime = currentTime < claimTime;
+  const timeDifference = claimTime - currentTime;
+  const daysLeft = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
   return (
     <div>
-      {isBeforeRoundEndDate && (
-        <NoInformationContent daysLeft={daysLeftInRound} />
-      )}
-      {isAfterRoundEndDate && (
+      {isBeforeClaimTime && <NoInformationContent daysLeft={daysLeft} />}
+      {!isBeforeClaimTime && (
         <InformationContent
           round={props.round}
           chainId={props.chainId}
@@ -90,6 +92,8 @@ function ReclaimFundsContent(props: {
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
 
+  const allo = useAllo();
+
   const { reclaimFunds, reclaimStatus } = useReclaimFunds();
 
   const payoutStrategy = props.round?.payoutStrategy.id ?? "";
@@ -116,28 +120,12 @@ function ReclaimFundsContent(props: {
     }
   }, [navigate, transactionReplaced, props.roundId, reclaimStatus]);
 
-  async function handleSubmitFund() {
-    try {
-      await reclaimFunds({
-        payoutStrategy,
-        recipientAddress: walletAddress,
-      });
-    } catch (error) {
-      if (error === Logger.errors.TRANSACTION_REPLACED) {
-        setTransactionReplaced(true);
-      } else {
-        datadogLogs.logger.error(
-          `error: handleSubmitFund - ${error}, id: ${props.roundId}`
-        );
-        console.error("handleSubmitFund - roundId", props.roundId, error);
-      }
-    }
-  }
-
   const matchingFundPayoutToken =
     props.round &&
     payoutTokens.filter(
-      (t) => t.address.toLowerCase() === props.round?.token?.toLowerCase()
+      (t) =>
+        t.address.toLowerCase() === props.round?.token?.toLowerCase() &&
+        t.chainId === props.round.chainId
     )[0];
 
   const tokenDetail =
@@ -153,6 +141,34 @@ function ReclaimFundsContent(props: {
     isError: isBalanceError,
     isLoading: isBalanceLoading,
   } = useBalance(tokenDetail);
+
+  async function handleSubmitFund() {
+    if (allo === null) {
+      return;
+    }
+
+    if (matchingFundPayoutToken === undefined) {
+      throw new Error("Matching fund payout token is undefined.");
+    }
+
+    try {
+      await reclaimFunds({
+        allo,
+        payoutStrategy,
+        token: matchingFundPayoutToken.address,
+        recipient: walletAddress,
+      });
+    } catch (error) {
+      if (error === Logger.errors.TRANSACTION_REPLACED) {
+        setTransactionReplaced(true);
+      } else {
+        datadogLogs.logger.error(
+          `error: handleSubmitFund - ${error}, id: ${props.roundId}`
+        );
+        console.error("handleSubmitFund - roundId", props.roundId, error);
+      }
+    }
+  }
 
   const matchingFunds =
     props.round &&

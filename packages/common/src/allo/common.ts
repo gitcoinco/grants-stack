@@ -10,7 +10,7 @@ export function error<T>(error: Error): Result<T> {
   return { type: "error", error };
 }
 
-export const dateToEthereumTimestamp = (date: Date) =>
+export const dateToEthereumTimestamp = (date: Date): bigint =>
   BigInt(Math.floor(date.getTime() / 1000));
 
 export const UINT64_MAX = 18446744073709551615n;

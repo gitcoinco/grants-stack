@@ -5,8 +5,6 @@ import {
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
-import { getConfig } from "common/src/config";
-
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
   ComponentProps,
@@ -73,10 +71,6 @@ enum VerifiedCredentialState {
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
-const {
-  allo: { version },
-} = getConfig();
-
 const useProjectDetailsParams = useParams<{
   chainId: string;
   roundId: string;
@@ -114,14 +108,12 @@ export default function ViewProjectDetails() {
       ? false
       : round && round.roundEndTime <= currentTime);
 
-  const disableAddToCartButton = version === "allo-v2" || isAfterRoundEndDate;
+  const disableAddToCartButton = isAfterRoundEndDate;
   const { projects, add, remove } = useCartStorage();
 
   const isAlreadyInCart = projects.some(
     (project) => project.grantApplicationId === applicationId
   );
-
-  /*TODO: projectToRender can be undefined, casting will hide that condition.*/
   const cartProject = projectToRender as CartProject;
 
   if (cartProject !== undefined) {
@@ -252,7 +244,6 @@ function ProjectDetailsTabs(props: {
     <Box className="" bottom={0.5}>
       {props.tabs.length > 0 && (
         <Tabs
-          // className="text-blue-300"
           display="flex"
           onChange={props.onChange}
           defaultIndex={props.selected}

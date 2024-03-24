@@ -8,10 +8,10 @@ import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
 import { ChainId, VotingToken } from "common";
 import { formatUnits } from "viem";
-import { ContributionWithTimestamp } from "../api/round";
+import { Contribution } from "data-layer";
 
 export function DonationsTable(props: {
-  contributions: { chainId: ChainId; data: ContributionWithTimestamp[] }[];
+  contributions: Contribution[];
   tokens: Record<string, VotingToken>;
   activeRound: boolean;
 }) {
@@ -53,17 +53,18 @@ export function DonationsTable(props: {
           </tr>
           {props.contributions.length > 0 &&
             props.contributions
-              .map((contributions) => {
-                return contributions.data.map((contribution) => ({
-                  ...contribution,
-                  chainId: contributions.chainId,
-                }));
-              })
               .flat()
-              .sort((a, b) => Number(b.timestamp - a.timestamp))
+              .sort(
+                (a, b) =>
+                  (Number(b.timestamp) || Number.MAX_SAFE_INTEGER) -
+                  (Number(a.timestamp) || Number.MAX_SAFE_INTEGER)
+              )
+
               .map((contribution) => {
                 const tokenId =
-                  contribution.token.toLowerCase() + "-" + contribution.chainId;
+                  contribution.tokenAddress.toLowerCase() +
+                  "-" +
+                  contribution.chainId;
                 const token = props.tokens[tokenId];
 
                 let formattedAmount = "N/A";
@@ -83,32 +84,30 @@ export function DonationsTable(props: {
                           <div className="flex items-center">
                             <img
                               className="w-4 h-4 mr-2"
-                              src={CHAINS[contribution.chainId]?.logo}
+                              src={
+                                CHAINS[contribution.chainId as ChainId]?.logo
+                              }
                               alt="Round Chain Logo"
                             />
                             <Link
                               className={`underline inline-block lg:pr-2 lg:max-w-[200px] max-w-[75px] 2xl:max-w-fit truncate`}
-                              title={contribution.roundName}
+                              title={contribution.round.roundMetadata.name}
                               to={`/round/${
                                 contribution.chainId
                               }/${contribution.roundId.toLowerCase()}`}
                               target="_blank"
                             >
-                              {contribution.roundName}
+                              {contribution.round.roundMetadata.name}
                             </Link>
                             <ChevronRightIcon className="h-4 inline lg:mx-2" />
                           </div>
                           <Link
                             className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
-                            title={contribution.projectTitle}
-                            to={`/round/${
-                              contribution.chainId
-                            }/${contribution.roundId.toLowerCase()}/${contribution.roundId.toLowerCase()}-${
-                              contribution.applicationId
-                            }`}
+                            title={contribution.application.project.name}
+                            to={`/round/${contribution.chainId}/${contribution.roundId.toString().toLowerCase()}/${contribution.applicationId}`}
                             target="_blank"
                           >
-                            {contribution.projectTitle}
+                            {contribution.application.project.name}
                           </Link>
                         </div>
                       </div>
@@ -118,14 +117,14 @@ export function DonationsTable(props: {
                     <td className="border-b py-4 truncate lg:pr-16 w-1/3 lg:w-1/4">
                       {formattedAmount}
                       <div className="text-md text-gray-500">
-                        ${contribution.amountUSD.toFixed(2)}
+                        ${contribution.amountInUsd.toFixed(2)}
                       </div>
                     </td>
                     <td className="border-b py-4 lg:pr-12 w-1/3 lg:w-1/4">
                       <div className="flex justify-end">
                         <TransactionButton
                           chainId={contribution.chainId}
-                          txHash={contribution.transaction}
+                          txHash={contribution.transactionHash}
                         />
                       </div>
                     </td>

@@ -3,13 +3,12 @@ import { Network, Web3Provider } from "@ethersproject/providers";
 import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
 import { useOutletContext } from "react-router-dom";
-import useSWR from "swr";
 import z from "zod";
 import { ChainId } from "./chain-ids";
-import { graphql_fetch } from "./graphql_fetch";
 
 export * from "./icons";
 export * from "./markdown";
+export * from "./allo/common";
 
 export { ChainId };
 
@@ -106,55 +105,6 @@ export type Payout = {
   version: string;
   createdAt: string;
 };
-
-/**
- * Fetches the payouts that happened for a given round from TheGraph
- * @param roundId Round ID
- * @param chainId Chain ID
- * @returns
- */
-// FIXME: the function should be prefixed by `use` since it's a hook
-export function fetchProjectPaidInARound(
-  roundId: string,
-  chainId: ChainId
-): Promise<Payout[]> {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { data } = useSWR(
-    ["payouts", roundId, chainId],
-    ([_, roundId, chainId]) => {
-      return graphql_fetch(
-        `
-        query GetPayouts($roundId: String) {
-          payoutStrategies(
-            where:{
-              round_:{
-                id: $roundId
-              }
-            }
-          ) {
-            payouts {
-              id
-              version
-              createdAt
-              token
-              amount
-              grantee
-              projectId
-              txnHash
-            }
-          }
-        }
-      `,
-        chainId,
-        { roundId }
-      );
-    }
-  );
-
-  const payouts = data?.data?.payoutStrategies[0]?.payouts || [];
-
-  return payouts;
-}
 
 export function formatDateWithOrdinal(date: Date) {
   const options = {
@@ -370,7 +320,7 @@ export { AlloV2 } from "./allo/backends/allo-v2";
 export {
   createWaitForIndexerSyncTo,
   getCurrentSubgraphBlockNumber,
-  waitForSubgraphSyncTo
+  waitForSubgraphSyncTo,
 } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
@@ -381,7 +331,7 @@ export {
   createViemTransactionSender,
   decodeEventFromReceipt,
   sendRawTransaction,
-  sendTransaction
+  sendTransaction,
 } from "./allo/transaction-sender";
 
 export type AnyJson =
@@ -426,3 +376,36 @@ export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 export * from "./allo/transaction-builder";
 export type { VotingToken } from "./types";
 
+export const txBlockExplorerLinks: Record<ChainId, string> = {
+  [ChainId.DEV1]: "",
+  [ChainId.DEV2]: "",
+  [ChainId.MAINNET]: "https://etherscan.io/tx/",
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "https://optimistic.etherscan.io/tx/",
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "https://ftmscan.com/tx/",
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",
+  [ChainId.PGN_TESTNET]: "https://explorer.sepolia.publicgoods.network/tx/",
+  [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
+  [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
+  [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
+  [ChainId.POLYGON]: "https://polygonscan.com/tx/",
+  [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
+  [ChainId.FUJI]: "https://snowtrace.io/tx/",
+  [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
+  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
+    "https://goerli.explorer.zksync.io/tx/",
+  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
+  [ChainId.BASE]: "https://basescan.org/tx/",
+  [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
+  [ChainId.SCROLL]: "https://scrollscan.com/tx/",
+};
+
+/**
+ * Fetch the correct transaction block explorer link for the provided web3 network
+ *
+ * @param chainId - The chain ID of the blockchain
+ * @param txHash - The transaction hash
+ * @returns the transaction block explorer URL for the provided transaction hash and network
+ */
+export const getTxBlockExplorerLink = (chainId: ChainId, txHash: string) => {
+  return txBlockExplorerLinks[chainId] + txHash;
+};

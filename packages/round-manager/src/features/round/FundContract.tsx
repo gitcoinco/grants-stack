@@ -218,17 +218,6 @@ export default function FundContract(props: {
   );
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
   const alloVersion = getConfig().allo.version;
-  const tokenDetail = {
-    address:
-      alloVersion === "allo-v1"
-        ? assertAddress(props.roundId)
-        : assertAddress(props.round?.strategyAddress),
-    token:
-      matchingFundPayoutToken?.address ===
-      "0x0000000000000000000000000000000000000000"
-        ? undefined
-        : assertAddress(matchingFundPayoutToken?.address),
-  };
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero

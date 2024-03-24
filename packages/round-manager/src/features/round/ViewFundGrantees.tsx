@@ -1,17 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
-import { classNames, useTokenPrice } from "common";
+import { classNames, getTxBlockExplorerLink, useTokenPrice } from "common";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
-import { errorModalDelayMs } from "../../constants";
-import {
-  batchDistributeFunds,
-  useGroupProjectsByPaymentStatus,
-} from "../api/payoutStrategy/payoutStrategy";
+import { errorModalDelayMs, modalDelayMs } from "../../constants";
+import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/payoutStrategy";
 import {
   MatchingStatsData,
   ProgressStatus,
@@ -27,6 +24,9 @@ import ProgressModal from "common/src/components/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { assertAddress } from "common/src/address";
 import { PayoutToken, payoutTokens } from "../api/payoutTokens";
+import { useAllo } from "common";
+import { getAddress } from "viem";
+import { getConfig } from "common/src/config";
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;
@@ -95,13 +95,15 @@ const TabApplicationCounter = tw.div`
 function FinalizedRoundContent(props: { round: Round }) {
   const { chain } = useWallet();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round.id!);
+  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round);
   const [paidProjects, setPaidProjects] = useState<MatchingStatsData[]>([]);
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);
 
   const matchingFundPayoutToken: PayoutToken = payoutTokens.filter(
-    (t) => t.address.toLowerCase() == props.round.token.toLowerCase()
+    (t) =>
+      t.address.toLowerCase() == props.round.token.toLowerCase() &&
+      t.chainId == props.round.chainId
   )[0];
 
   const { data, error, loading } = useTokenPrice(
@@ -192,6 +194,8 @@ export function PayProjectsTable(props: {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
   const { signer } = useWallet();
+  const allo = useAllo();
+  const alloVersion = getConfig().allo.version;
   const roundId = props.round.id;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkbox = useRef<any>();
@@ -211,6 +215,10 @@ export function PayProjectsTable(props: {
 
   const [finalizingDistributionStatus, setFinalizingDistributionStatus] =
     useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
+
+  const [indexingStatus, setIndexingStatus] = useState<ProgressStatus>(
+    ProgressStatus.NOT_STARTED
+  );
 
   const tokenDetail =
     props.token.address == ethers.constants.AddressZero
@@ -232,10 +240,7 @@ export function PayProjectsTable(props: {
     {
       name: "Finishing up",
       description: "We're wrapping up.",
-      status:
-        finalizingDistributionStatus == ProgressStatus.IS_SUCCESS
-          ? ProgressStatus.IS_SUCCESS
-          : ProgressStatus.NOT_STARTED,
+      status: indexingStatus,
     },
   ];
 
@@ -291,25 +296,53 @@ export function PayProjectsTable(props: {
     setShowConfirmationModal(false);
     setOpenReadyForDistributionProgressModal(true);
 
-    if (signer && roundId) {
-      const tx: TransactionBlock = await batchDistributeFunds(
-        props.round?.payoutStrategy.id,
-        props.allProjects,
-        selectedProjects.map((p) => p.projectId),
-        signer
-      );
+    if (allo == null) {
+      return;
+    }
 
-      if (tx && tx.error) {
-        setFinalizingDistributionStatus(ProgressStatus.IS_ERROR);
+    if (roundId) {
+      const result = await allo
+        .batchDistributeFunds({
+          payoutStrategy:
+            alloVersion === "allo-v1"
+              ? getAddress(props.round.payoutStrategy.id)
+              : getAddress(props.round.id),
+          allProjects: props.allProjects,
+          projectIdsToBePaid: selectedProjects.map((p) => p.projectId),
+        })
+        .on("transaction", (result) => {
+          if (result.type === "error") {
+            setFinalizingDistributionStatus(ProgressStatus.IS_ERROR);
+          }
+        })
+        .on("transactionStatus", (result) => {
+          if (result.type === "error") {
+            setFinalizingDistributionStatus(ProgressStatus.IS_ERROR);
+          } else {
+            setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
+            setIndexingStatus(ProgressStatus.IN_PROGRESS);
+          }
+        })
+        .on("indexingStatus", (result) => {
+          if (result.type === "error") {
+            setIndexingStatus(ProgressStatus.IS_ERROR);
+          } else {
+            setIndexingStatus(ProgressStatus.IS_SUCCESS);
+          }
+        })
+        .execute();
+
+      if (result.type === "error") {
+        console.error("Error while distributing funds", result.error);
+        setTimeout(() => {
+          setOpenReadyForDistributionProgressModal(false);
+        }, errorModalDelayMs);
       } else {
-        // success handling
-        setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
+        setTimeout(() => {
+          setOpenReadyForDistributionProgressModal(false);
+          navigate(0);
+        }, modalDelayMs);
       }
-
-      setTimeout(() => {
-        setOpenReadyForDistributionProgressModal(false);
-        navigate(0);
-      }, errorModalDelayMs);
     }
   };
 
@@ -516,25 +549,6 @@ export function PaidProjectsTable(props: {
   token: PayoutToken;
   price: number;
 }) {
-  // todo: such a nice table should be in a separate and shared file
-  let blockScanUrl: string;
-  switch (props.chainId) {
-    case 1:
-      blockScanUrl = "https://etherscan.io/tx/";
-      break;
-    case 10:
-      blockScanUrl = "https://optimistic.etherscan.io/tx/";
-      break;
-    case 250:
-      blockScanUrl = "https://ftmscan.com/tx/";
-      break;
-    case 4002:
-      blockScanUrl = "https://testnet.ftmscan.com/tx/";
-      break;
-    default:
-      blockScanUrl = "https://etherscan.io/tx/";
-  }
-
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
@@ -631,7 +645,10 @@ export function PaidProjectsTable(props: {
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <a
-                          href={`${blockScanUrl}${project.hash}`}
+                          href={getTxBlockExplorerLink(
+                            props.chainId,
+                            project.hash ?? ""
+                          )}
                           className="text-indigo-600 hover:text-indigo-900"
                           target={"_blank"}
                         >

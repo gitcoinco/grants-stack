@@ -1,14 +1,59 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Web3Provider } from "@ethersproject/providers";
 import { DataLayer, RoundForManager } from "data-layer";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { maxDateForUint256 } from "../../constants";
-import {
-  merklePayoutStrategyImplementationContract,
-  roundImplementationContract,
-} from "./contracts";
-import { MatchingStatsData, Round } from "./types";
-import { fetchFromIPFS } from "./utils";
+import { roundImplementationContract } from "./contracts";
+import { Round } from "./types";
+import { Signer } from "@ethersproject/abstract-signer";
+import { TransactionResponse } from "@ethersproject/providers";
+
+export enum UpdateAction {
+  UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
+  UPDATE_ROUND_META_PTR = "updateRoundMetaPtr",
+  UPDATE_ROUND_START_AND_END_TIMES = "updateStartAndEndTimes",
+  UPDATE_MATCH_AMOUNT = "updateMatchAmount",
+  UPDATE_ROUND_FEE_ADDRESS = "updateRoundFeeAddress",
+  UPDATE_ROUND_FEE_PERCENTAGE = "updateRoundFeePercentage",
+}
+
+export class TransactionBuilder {
+  round: Round;
+  signer: Signer;
+  transactions: any[];
+  contract: any;
+
+  constructor(round: Round, signer: Signer) {
+    this.round = round;
+    this.signer = signer;
+    this.transactions = [];
+    if (round.id) {
+      this.contract = new ethers.Contract(
+        round.id,
+        roundImplementationContract.abi,
+        signer
+      );
+    } else {
+      throw new Error("Round ID is undefined");
+    }
+  }
+
+  add(action: any, args: any[]) {
+    this.transactions.push(
+      this.contract.interface.encodeFunctionData(action, args)
+    );
+  }
+
+  async execute(): Promise<TransactionResponse> {
+    if (this.transactions.length === 0) {
+      throw new Error("No transactions to execute");
+    }
+    return await this.contract.multicall(this.transactions);
+  }
+
+  getTransactions() {
+    return this.transactions;
+  }
+}
 
 /**
  * Fetch a round by ID
@@ -121,60 +166,4 @@ export async function listRounds(args: {
   });
 
   return { rounds };
-}
-
-/**
- * Fetch finalized matching distribution
- * @param roundId - the ID of a specific round for detail
- * @param signerOrProvider
- */
-export async function fetchMatchingDistribution(
-  roundId: string | undefined,
-  signerOrProvider: Web3Provider
-): Promise<{
-  distributionMetaPtr: string;
-  matchingDistribution: MatchingStatsData[];
-}> {
-  try {
-    if (!roundId) {
-      throw new Error("Round ID is required");
-    }
-    let matchingDistribution: MatchingStatsData[] = [];
-    const roundImplementation = new ethers.Contract(
-      roundId,
-      roundImplementationContract.abi,
-      signerOrProvider
-    );
-    const payoutStrategyAddress = await roundImplementation.payoutStrategy();
-    const payoutStrategy = new ethers.Contract(
-      payoutStrategyAddress,
-      merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider
-    );
-    const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
-    const distributionMetaPtr = distributionMetaPtrRes.pointer;
-
-    if (distributionMetaPtr !== "") {
-      // fetch distribution from IPFS
-      const matchingDistributionRes = await fetchFromIPFS(distributionMetaPtr);
-      matchingDistribution = matchingDistributionRes.matchingDistribution;
-
-      // parse matchAmountInToken to a valid BigNumber
-      matchingDistribution.map((distribution) => {
-        distribution.matchAmountInToken = BigNumber.from(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          typeof distribution.matchAmountInToken === "object" &&
-            distribution.matchAmountInToken !== null &&
-            "hex" in distribution.matchAmountInToken
-            ? (distribution.matchAmountInToken as any).hex
-            : distribution.matchAmountInToken
-        );
-      });
-    }
-
-    return { distributionMetaPtr, matchingDistribution };
-  } catch (error) {
-    console.error("fetchMatchingDistribution", error);
-    throw new Error("Unable to fetch matching distribution");
-  }
 }

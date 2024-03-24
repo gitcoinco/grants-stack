@@ -128,6 +128,7 @@ export default function ApplicationsToReview() {
             inReview: application.inReview,
             applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
+            distributionTransaction: application.distributionTransaction,
           };
         })
       );
