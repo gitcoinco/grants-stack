@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
-import ProgressModal, { Step } from "../ProgressModal";
+import ProgressModal, { Step } from "common/src/components/ProgressModal";
 import { ProgressStatus } from "../../api/types";
 
 const completedStep = {

@@ -40,9 +40,9 @@ import { getPayoutTokenOptions, payoutTokens } from "../api/payoutTokens";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
 import { CHAINS, SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
-import ErrorModal from "../common/ErrorModal";
+import ErrorModal from "common/src/components/ErrorModal";
 import FormValidationErrorList from "../common/FormValidationErrorList";
-import ProgressModal from "../common/ProgressModal";
+import ProgressModal from "common/src/components/ProgressModal";
 import { horizontalTabStyles } from "../common/Utils";
 import { PayoutTokenInformation } from "./QuadraticFundingForm";
 import {

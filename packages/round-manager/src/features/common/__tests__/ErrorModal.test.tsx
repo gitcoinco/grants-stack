@@ -1,6 +1,6 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
-import ErrorModal from "../../common/ErrorModal";
+import ErrorModal from "common/src/components/ErrorModal";
 
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({

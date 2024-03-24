@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon, XIcon } from "@heroicons/react/solid";
-import { ProgressStatus } from "../api/types";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { ProgressStatus } from "../../../round-manager/src/features/api/types";
 
 export type Step = {
   name: string;
@@ -131,7 +131,7 @@ export default function ProgressModal({
                             step={step}
                             icon={
                               <span className="relative z-10 w-8 h-8 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
-                                <XIcon
+                                <XMarkIcon
                                   className="w-5 h-5 text-pink-500"
                                   data-testid={`${step.name}-error-icon`}
                                 />

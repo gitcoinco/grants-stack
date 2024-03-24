@@ -19,6 +19,8 @@
     "@allo-team/allo-v2-sdk": "1.0.55",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
+    "@headlessui/react": "^1.7.18",
+    "@heroicons/react": "^2.1.1",
     "@openzeppelin/merkle-tree": "^1.0.2",
     "@rainbow-me/rainbowkit": "^0.12.16",
     "@wagmi/chains": "^1.8.0",

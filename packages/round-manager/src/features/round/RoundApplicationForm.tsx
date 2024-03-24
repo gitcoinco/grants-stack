@@ -37,12 +37,12 @@ import {
 import AddQuestionModal from "../common/AddQuestionModal";
 import { useWallet } from "../common/Auth";
 import BaseSwitch from "../common/BaseSwitch";
-import ErrorModal from "../common/ErrorModal";
+import ErrorModal from "common/src/components/ErrorModal";
 import { FormStepper as FS } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
-import ProgressModal from "../common/ProgressModal";
+import ProgressModal from "common/src/components/ProgressModal";
 
 export const initialQuestionsQF: SchemaQuestion[] = [
   {

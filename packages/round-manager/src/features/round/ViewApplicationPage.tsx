@@ -27,7 +27,7 @@ import Rejected from "../../assets/rejected.svg";
 import Footer from "common/src/components/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
-import ProgressModal from "../common/ProgressModal";
+import ProgressModal from "common/src/components/ProgressModal";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   AnswerBlock,
@@ -46,7 +46,7 @@ import AccessDenied from "../common/AccessDenied";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
-import ErrorModal from "../common/ErrorModal";
+import ErrorModal from "common/src/components/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import {
   RoundName,

@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { Button } from "common/src/styles";
-import { InformationCircleIcon } from "@heroicons/react/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { Button } from "../styles";
 
 interface ErrorModalProps {
   isOpen: boolean;

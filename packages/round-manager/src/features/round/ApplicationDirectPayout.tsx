@@ -1,8 +1,8 @@
 import { useState } from "react";
-import ProgressModal from "../common/ProgressModal";
+import ProgressModal from "common/src/components/ProgressModal";
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import ReactTooltip from "react-tooltip";
-import ErrorModal from "../common/ErrorModal";
+import ErrorModal from "common/src/components/ErrorModal";
 import { useWallet } from "../common/Auth";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";

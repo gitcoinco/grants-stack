@@ -33,9 +33,9 @@ import {
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
-import ProgressModal from "../common/ProgressModal";
+import ProgressModal from "common/src/components/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
-import ErrorModal from "../common/ErrorModal";
+import ErrorModal from "common/src/components/ErrorModal";
 import { getRoundStrategyType, renderToPlainText, useAllo } from "common";
 import { roundApplicationsToCSV } from "../api/exports";
 import { utils } from "ethers";

@@ -30,9 +30,9 @@ import {
 } from "./BulkApplicationCommon";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
-import ProgressModal from "../common/ProgressModal";
+import ProgressModal from "common/src/components/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
-import ErrorModal from "../common/ErrorModal";
+import ErrorModal from "common/src/components/ErrorModal";
 import { getRoundStrategyType, renderToPlainText, useAllo } from "common";
 import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
