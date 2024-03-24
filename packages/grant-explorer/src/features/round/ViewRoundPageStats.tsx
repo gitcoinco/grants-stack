@@ -1,26 +1,34 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
+import { Formik, Field, Form, FieldArray, FormikProps } from "formik";
+import useSWR from "swr";
+import { Client } from "allo-indexer-client";
 import roundImplementationABI from "common/src/allo/abis/allo-v1/RoundImplementation";
 import merklePayoutStrategyImplementationABI from "common/src/allo/abis/allo-v1/MerklePayoutStrategyImplementation";
 import {
+  AnyJson,
   ChainId,
   VotingToken,
   formatDateWithOrdinal,
   useTokenPrice,
 } from "common";
-import { Button } from "common/src/styles";
-import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
+import _ from "lodash";
+import ProgressModal from "common/src/components/ProgressModal";
+import ErrorModal from "common/src/components/ErrorModal";
+import { ReactComponent as WarpcastIcon } from "../../assets/warpcast-logo.svg";
+import { ReactComponent as TwitterBlueIcon } from "../../assets/x-logo.svg";
 import { useRoundById } from "../../context/RoundContext";
-import { Project, Round } from "../api/types";
+import { ProgressStatus, Project, Round } from "../api/types";
 import {
   __deprecated_fetchFromIPFS,
+  isDirectRound,
   isInfiniteDate,
   votingTokens,
 } from "../api/utils";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
-import { useToken } from "wagmi";
+import { useAccount, useToken } from "wagmi";
 import { getAddress } from "viem";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import Plot from "react-plotly.js";
@@ -33,10 +41,20 @@ import { BaseProvider } from "@ethersproject/providers";
 import { DefaultLayout } from "../common/DefaultLayout";
 import ViewRoundPageHero from "./ViewRoundPageHero";
 import ViewRoundPageTabs from "./ViewRoundPageTabs";
-import BeforeRoundStart from "./BeforeRoundStart";
-import { Application, useDataLayer } from "data-layer";
+import { Application, RoundCategory, useDataLayer } from "data-layer";
 import { useRoundApprovedApplications } from "../projects/hooks/useRoundApplications";
+import { CheckIcon, LinkIcon, PencilIcon } from "@heroicons/react/24/outline";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { Tweet } from "react-tweet";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { FarcasterEmbed } from "react-farcaster-embed/dist/client";
+import "react-farcaster-embed/dist/styles.css";
+import ConfirmationModal from "../common/ConfirmationModal";
+import { ProgressStep, useUpdateRound } from "../../context/UpdateRoundContext";
+import { useAllo } from "../api/AlloWrapper";
 import { useRoundUniqueDonorsCount } from "../projects/hooks/useRoundUniqueDonorsCount";
+import BeforeRoundStart from "./BeforeRoundStart";
 
 export type MatchingStatsData = {
   index?: number;
@@ -202,13 +220,31 @@ const ReportCard = ({
   round: Round;
   chainId: ChainId;
 }): JSX.Element => {
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const dataLayer = useDataLayer();
+  const roundPreamble =
+    "Celebrate the impact of recent Gitcoin rounds through data, insights, and stories of participating grant projects and individuals. Our visual report cards highlight achievements, foster transparency, and track engagement in the open-source community.";
+  const defaultTweetURL =
+    "https://twitter.com/umarkhaneth/status/1718319104178753678";
+  const twitterRegex =
+    /^https?:\/\/(www.|m.|mobile.)?twitter|x\.com\/(?:#!\/)?\w+\/status?\/\d+/;
+  const warpcastRegex =
+    /^https?:\/\/(www.)?warpcast\.com\/(?:#!\/)?\w+\/(?:#!\/)?\w+/;
 
-  const { data: uniqueDonorsCount } = useRoundUniqueDonorsCount(
-    { chainId, roundId },
-    dataLayer
+  const allo = useAllo();
+  const dataLayer = useDataLayer();
+  const { isRoundOperator } = useRoundOperator(roundId, chainId);
+  const { updateRound, IPFSCurrentStatus, roundUpdateStatus, indexingStatus } =
+    useUpdateRound();
+
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [newRoundMetadata, setNewRoundMetadata] = useState(
+    _.cloneDeep(round.roundMetadata)
   );
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [ipfsStep, setIpfsStep] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+
   const { data: applications, isLoading: isGetApplicationsLoading } =
     useRoundApprovedApplications(
       {
@@ -225,11 +261,16 @@ const ReportCard = ({
     chainId
   );
 
+  const { data: uniqueDonorsCount } = useRoundUniqueDonorsCount(
+    { chainId, roundId },
+    dataLayer
+  );
+
+  const { data: tokenPrice } = useTokenPrice(token?.redstoneTokenId);
+
   const totalDonors: number = useMemo(() => {
     return !uniqueDonorsCount ? 0 : uniqueDonorsCount.uniqueDonorsCount;
   }, [uniqueDonorsCount]);
-
-  const { data: tokenPrice } = useTokenPrice(token?.redstoneTokenId);
 
   const applicationsWithMetadataAndMatchingData:
     | ApplicationWithMatchingData[]
@@ -308,8 +349,43 @@ const ReportCard = ({
     );
   }, [applications]);
 
-  const roundPreamble =
-    "Celebrate the impact of recent Gitcoin rounds through data, insights, and stories of participating grant projects and individuals. Our visual report cards highlight achievements, foster transparency, and track engagement in the open-source community.";
+  const isFinished = (): ProgressStatus => {
+    const ipfsSuccess = ipfsStep
+      ? IPFSCurrentStatus === ProgressStatus.IS_SUCCESS
+      : true;
+    const roundSuccess = roundUpdateStatus === ProgressStatus.IS_SUCCESS;
+    const indexingSuccess = indexingStatus === ProgressStatus.IS_SUCCESS;
+    return ipfsSuccess && roundSuccess && indexingSuccess
+      ? ProgressStatus.IS_SUCCESS
+      : ProgressStatus.NOT_STARTED;
+  };
+
+  const progressSteps: ProgressStep[] = [
+    ...(ipfsStep
+      ? [
+          {
+            name: "Storing",
+            description: "The metadata is being saved in a safe place.",
+            status: IPFSCurrentStatus,
+          },
+        ]
+      : []),
+    {
+      name: "Submitting",
+      description: `Sending transaction to update the round contract.`,
+      status: roundUpdateStatus,
+    },
+    {
+      name: "Reindexing",
+      description: "Making sure our data is up to date.",
+      status: indexingStatus,
+    },
+    {
+      name: "Finishing Up",
+      description: "We’re wrapping up.",
+      status: isFinished(),
+    },
+  ];
 
   function downloadProjectsCSV() {
     if (!applicationsWithMetadataAndMatchingData) return;
@@ -361,17 +437,90 @@ const ReportCard = ({
     return JSON.stringify(list);
   };
 
+  const handleEdit = () => {
+    setIsEditorOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditorOpen(false);
+    setNewRoundMetadata(round.roundMetadata);
+  };
+
+  const updateRoundHandler = async (newMetadata: AnyJson) => {
+    try {
+      if (!allo || !round.id) return;
+      setIpfsStep(true);
+      setIsConfirmationModalOpen(false);
+      setIsProgressModalOpen(true);
+
+      await updateRound({
+        roundId: round.id,
+        roundAddress: round.payoutStrategy.id as `0x${string}`,
+        data: { roundMetadata: newMetadata },
+        allo,
+        roundCategory: isDirectRound(round)
+          ? RoundCategory.Direct
+          : RoundCategory.QuadraticFunding,
+      });
+
+      setTimeout(() => {
+        setIsProgressModalOpen(false);
+        window.location.reload();
+        setIpfsStep(false);
+      }, 2000);
+    } catch (e) {
+      console.log("error", e);
+    }
+  };
+
+  const getTweetId = (tweetUrl: string) => {
+    if (!tweetUrl?.length) return "";
+    const tweetId = tweetUrl.split("/").pop()?.split("?")[0];
+    return tweetId ?? "";
+  };
+
+  const getSocialPostPlatform = (url: string) => {
+    if (url.includes("warpcast.com")) return "FARCASTER";
+    else return "TWITTER";
+  };
+
+  function validateSocialPostUrl(value: string) {
+    let error;
+
+    if (!!value && !twitterRegex.test(value) && !warpcastRegex.test(value)) {
+      error = "Invalid Twitter / Farcaster URL";
+    }
+    return error;
+  }
+
   const ShareModal = () => {
     const ShareModalBody = () => (
-      <div>
-        <TwitterButton round={round} />
+      <div className="items-center gap-y-2 gap-x-4 mt-10 w-full grid sm:grid-cols-2">
+        <ShareButton
+          round={round}
+          tokenSymbol={tokenSymbol}
+          totalUSDCrowdfunded={totalUSDCrowdfunded}
+          totalDonations={totalDonations}
+          chainId={chainId}
+          roundId={roundId}
+          type="TWITTER"
+        />
+        <ShareButton
+          round={round}
+          tokenSymbol={tokenSymbol}
+          totalUSDCrowdfunded={totalUSDCrowdfunded}
+          totalDonations={totalDonations}
+          chainId={chainId}
+          roundId={roundId}
+          type="FARCASTER"
+        />
       </div>
     );
 
     return (
       <GenericModal
-        data-test-id="modal-body"
-        title="Share"
+        title="Share this round’s stats on social media!"
+        titleSize={"lg"}
         body={<ShareModalBody />}
         isOpen={isShareModalOpen}
         setIsOpen={setIsShareModalOpen}
@@ -379,20 +528,60 @@ const ReportCard = ({
     );
   };
 
-  return (
+  const confirmationModalBody = (
+    <p className="text-md text-center font-normal mb-4">
+      You will need to sign a transaction to update your round with the latest
+      changes.
+    </p>
+  );
+
+  const RoundPageStatsContent = ({
+    formProps,
+  }: {
+    formProps?: FormikProps<{
+      tweets: string[];
+      statsDescription: string;
+    }>;
+  }) => (
     <section className="flex flex-col gap-10 sm:gap-16">
       <div className="w-full">
-        {/* <div className="flex justify-end">
-          <ShareStatsButton handleClick={() => setIsShareModalOpen(true)} />
-        </div> */}
+        <div className="flex justify-end items-center gap-2">
+          {isRoundOperator && (
+            <>
+              {!isEditorOpen ? (
+                <EditButton handleClick={handleEdit} />
+              ) : (
+                <>
+                  <CancelButton handleClick={handleCancel} />
+                  <SaveButton />
+                </>
+              )}
+            </>
+          )}
+          {!isEditorOpen && (
+            <ShareStatsButton handleClick={() => setIsShareModalOpen(true)} />
+          )}
+        </div>
+
         <div className="max-w-3xl w-full m-auto">
           <h2 className="md:text-3xl text-2xl mb-8 flex items-center gap-4 font-modern-era-medium tracking-tighter">
             Round stats
           </h2>
 
-          <p className="whitespace-pre-line break-words text-grey-500 font-modern-era-medium">
-            {roundPreamble}
-          </p>
+          {isRoundOperator && isEditorOpen ? (
+            <Field
+              as="textarea"
+              name="statsDescription"
+              rows={4}
+              placeholder="Type here..."
+              className="w-full border-gray-300 text-grey-500 px-2 font-modern-era-medium !text-base -mx-2 -mt-2.5"
+              aria-label={"Round stats page description"}
+            />
+          ) : (
+            <p className="whitespace-pre-line break-words text-grey-500 font-modern-era-medium">
+              {round.roundMetadata?.statsDescription ?? roundPreamble}
+            </p>
+          )}
         </div>
       </div>
 
@@ -426,19 +615,191 @@ const ReportCard = ({
         </div>
       )}
 
+      <div className="max-w-7xl m-auto">
+        <h2 className="w-fit m-auto md:text-3xl text-2xl mb-8 font-modern-era-medium tracking-tighter">
+          What people are tweeting{" "}
+        </h2>
+
+        {isEditorOpen && isRoundOperator && formProps ? (
+          <div className="w-full sm:min-w-[50rem]">
+            <p className="mb-4">
+              Add up to a maximum of 6 Twitter/Warpcast links below:
+            </p>
+
+            <FieldArray name="tweets">
+              {({ insert, remove, push }) => (
+                <div>
+                  {formProps.values.tweets?.length > 0 &&
+                    formProps.values.tweets.map((tweetURL, index) => (
+                      <div key={index}>
+                        <div className="flex flex-col gap-2">
+                          <label htmlFor={`tweets.${index}`}>
+                            Twitter / Warpcast post URL
+                          </label>
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex gap-4 items-center justify-between">
+                              <Field
+                                className="w-full"
+                                name={`tweets.${index}`}
+                                placeholder="https://twitter.com/umarkhaneth/status/1718319104178753678"
+                                type="url"
+                                validate={validateSocialPostUrl}
+                              />
+                              <div>
+                                <button
+                                  type="button"
+                                  className="text-3xl hover:opacity-75 transition-all"
+                                  onClick={() => remove(index)}
+                                >
+                                  &times;
+                                </button>
+                              </div>
+                            </div>
+                            {!!formProps.errors.tweets &&
+                              formProps.errors.tweets[index] &&
+                              formProps.touched.tweets !== undefined &&
+                              formProps.touched.tweets && (
+                                <div className="text-sm text-[#e5524d]">
+                                  {formProps.errors.tweets[index]}
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  <button
+                    type="button"
+                    className={`${
+                      (formProps.values.tweets?.length ?? 0) >= 6
+                        ? "cursor-not-allowed opacity-70"
+                        : "cursor-pointer hover:opacity-80"
+                    } mt-8 transition-all duration-300 rounded-lg px-4 py-2.5 font-mono border`}
+                    onClick={() => push("")}
+                    disabled={(formProps.values.tweets?.length ?? 0) >= 6}
+                  >
+                    Add tweet
+                  </button>
+                </div>
+              )}
+            </FieldArray>
+          </div>
+        ) : (
+          <div className="md:w-[80vw] max-w-4xl m-auto dark">
+            <ResponsiveMasonry
+              columnsCountBreakPoints={{
+                350: 1,
+                750:
+                  (round.roundMetadata?.socialPostUrls?.length ?? 0) >= 2
+                    ? 2
+                    : 1,
+              }}
+            >
+              <Masonry gutter="0.5rem">
+                {!round.roundMetadata?.socialPostUrls?.length ? (
+                  <div>
+                    <Tweet id={getTweetId(defaultTweetURL)} />
+                  </div>
+                ) : (
+                  round.roundMetadata?.socialPostUrls.map((url) => (
+                    <div key={url}>
+                      {getSocialPostPlatform(url) === "TWITTER" ? (
+                        <div className="mx-auto">
+                          <Tweet id={getTweetId(url)} />
+                        </div>
+                      ) : (
+                        <div className="mx-auto">
+                          <FarcasterEmbed url={url} />
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </Masonry>
+            </ResponsiveMasonry>
+          </div>
+        )}
+      </div>
+
       {!!applicationsWithMetadataAndMatchingData && !!totalUSDCrowdfunded && (
         <RoundLeaderboard
           applications={applicationsWithMetadataAndMatchingData}
         />
       )}
 
-      {/* <div className="max-w-4xl m-auto w-full bg-green-50 rounded-2xl py-8 px-2 flex justify-center items-center gap-5 flex-wrap">
+      <div className="max-w-4xl m-auto w-full bg-green-50 rounded-2xl py-8 px-2 flex justify-center items-center gap-5 flex-wrap">
         <p className="text-2xl">Share the results</p>
         <ShareStatsButton handleClick={() => setIsShareModalOpen(true)} />
-      </div> */}
+      </div>
 
+      {/* Modals */}
       <ShareModal />
+      <ConfirmationModal
+        title={"Update Round?"}
+        body={confirmationModalBody}
+        isOpen={isConfirmationModalOpen}
+        setIsOpen={() => {
+          /**/
+        }}
+        confirmButtonText={"Proceed to Update"}
+        confirmButtonAction={() => {
+          updateRoundHandler(newRoundMetadata);
+        }}
+        cancelButtonAction={() => {
+          setIsConfirmationModalOpen(false);
+        }}
+        modalStyle="wide"
+      />
+
+      <ProgressModal
+        isOpen={isProgressModalOpen}
+        subheading="Please hold while we update your round settings"
+        steps={progressSteps}
+      />
+      <ErrorModal
+        isOpen={isErrorModalOpen}
+        setIsOpen={() => {
+          /**/
+        }}
+        tryAgainFn={() => {
+          /**/
+        }}
+        doneFn={() => {
+          setIsErrorModalOpen(false);
+        }}
+      />
     </section>
+  );
+
+  return isEditorOpen ? (
+    <Formik
+      initialValues={{
+        tweets: round.roundMetadata?.socialPostUrls?.length
+          ? round.roundMetadata?.socialPostUrls
+          : [""],
+        statsDescription: round.roundMetadata?.statsDescription ?? "",
+      }}
+      validateOnChange={true}
+      onSubmit={(values) => {
+        const tweets: string[] | undefined = values.tweets?.filter(
+          (item) => !!item?.length
+        );
+        let metadata = _.cloneDeep(newRoundMetadata);
+        if (!metadata) return;
+        if (tweets) metadata = { ...metadata, socialPostUrls: tweets };
+        if (values.statsDescription)
+          metadata = { ...metadata, statsDescription: values.statsDescription };
+        setNewRoundMetadata(metadata);
+        setIsConfirmationModalOpen(true);
+      }}
+    >
+      {(props) => (
+        <Form>
+          <RoundPageStatsContent formProps={props} />
+        </Form>
+      )}
+    </Formik>
+  ) : (
+    <RoundPageStatsContent />
   );
 };
 
@@ -823,42 +1184,142 @@ const RoundLeaderboard = ({
   );
 };
 
-const TwitterButton = ({ round }: { round: Round }) => {
-  const shareText = `Share ${round.roundMetadata?.name}`;
+const ShareButton = ({
+  round,
+  tokenSymbol,
+  totalUSDCrowdfunded,
+  totalDonations,
+  chainId,
+  roundId,
+  type,
+}: {
+  round: Round;
+  tokenSymbol?: string;
+  totalUSDCrowdfunded: number;
+  totalDonations: number;
+  chainId: ChainId;
+  roundId: string;
+  type: "TWITTER" | "FARCASTER";
+}) => {
+  const roundName = round.roundMetadata?.name;
+  const tokenAmount =
+    round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable ?? 0;
 
-  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+  const shareText = `🌐 ${formatAmount(
+    tokenAmount,
+    true
+  )} ${tokenSymbol} matching pool
+📈 $${formatAmount(totalUSDCrowdfunded.toFixed(2))} funded so far
+🤝 ${formatAmount(totalDonations, true)} donations
+👀 Check out ${roundName}’s stats!
+
+${window.location.href}`;
+
+  // TODO: change the subdomain for reportcards.gitcoin.to to share.gitcoin.co, replace embedURL (`share.gitcoin.co/${chainId}/${roundId}`) and remove ${window.location.href} from the intent's text
+  const embedURL = "";
+
+  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     shareText
-  )}`;
+  )}&url=${embedURL}`;
+
+  const farcasterShareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
+    shareText
+  )}&embeds[]=${embedURL}`;
 
   return (
-    <Button
-      type="button"
-      onClick={() => window.open(shareUrl, "_blank")}
-      className="flex items-center justify-center shadow-sm text-sm rounded border-1 text-black bg-[#C1E4FC] px-4 sm:px-10 border-grey-100 hover:shadow-md"
-      data-testid="twitter-button"
-    >
-      <TwitterBlueIcon />
-      <span className="ml-2">Share on Twitter</span>
-    </Button>
+    <>
+      {type === "TWITTER" ? (
+        <button
+          type="button"
+          onClick={() => window.open(twitterShareUrl, "_blank")}
+          className="w-full flex items-center justify-center gap-2 font-mono hover:opacity-70 transition-all shadow-sm border px-4 py-2 rounded-lg border-black hover:shadow-md"
+        >
+          <TwitterBlueIcon className="h-6" />
+          <span className="flex-shrink-0 text-sm">Share on X</span>
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => window.open(farcasterShareUrl, "_blank")}
+          className="w-full flex items-center justify-center gap-2 font-mono hover:opacity-70 transition-all shadow-sm border px-4 py-2 rounded-lg border-black hover:shadow-md"
+        >
+          <span>
+            <WarpcastIcon className="h-6" />
+          </span>
+          <span className="flex-shrink-0 text-sm">Share on Warpcast</span>
+        </button>
+      )}
+    </>
   );
 };
 
-// const ShareStatsButton = ({
-//   handleClick,
-// }: {
-//   handleClick: () => void;
-// }): JSX.Element => {
-//   return (
-//     <button
-//       onClick={handleClick}
-//       className="rounded-lg px-4 py-2.5 font-mono sm:text-lg bg-green-200 hover:bg-green-300 text-white transition-all flex items-center justify-center gap-2"
-//       data-testid="share-results-footer"
-//     >
-//       <LinkIcon className="w-4 h-4" />
-//       Share
-//     </button>
-//   );
-// };
+const ShareStatsButton = ({
+  handleClick,
+}: {
+  handleClick: () => void;
+}): JSX.Element => {
+  return (
+    <button
+      onClick={handleClick}
+      className="rounded-lg px-4 py-2.5 font-mono sm:text-lg bg-green-200 hover:bg-green-300 text-white transition-all flex items-center justify-center gap-2"
+      data-testid="share-results-footer"
+    >
+      <LinkIcon className="w-4 h-4" />
+      Share
+    </button>
+  );
+};
+
+const EditButton = ({
+  handleClick,
+}: {
+  handleClick: () => void;
+}): JSX.Element => {
+  return (
+    <button
+      onClick={handleClick}
+      className="rounded-lg px-4 py-2.5 font-mono sm:text-lg bg-grey-50 hover:bg-grey-100 text-green-200 transition-all flex items-center justify-center gap-2"
+    >
+      <PencilIcon className="w-4 h-4" />
+      Edit
+    </button>
+  );
+};
+
+const CancelButton = ({
+  handleClick,
+}: {
+  handleClick: () => void;
+}): JSX.Element => {
+  return (
+    <button
+      onClick={handleClick}
+      className="rounded-lg px-4 py-2.5 font-mono sm:text-lg bg-grey-50 hover:bg-grey-100 transition-all flex items-center justify-center gap-2"
+    >
+      Cancel
+    </button>
+  );
+};
+
+const SaveButton = ({
+  handleClick,
+  isSaving,
+}: {
+  handleClick?: () => void;
+  isSaving?: boolean;
+}): JSX.Element => {
+  return (
+    <button
+      type="submit"
+      disabled={isSaving}
+      onClick={handleClick}
+      className="rounded-lg px-4 py-2.5 font-mono sm:text-lg bg-grey-50 hover:bg-grey-100 text-green-200 border border-green-200 transition-all flex items-center justify-center gap-2"
+    >
+      <CheckIcon className="w-4 h-4" />
+      {isSaving ? "Saving..." : "Save"}
+    </button>
+  );
+};
 
 const formatAmount = (amount: string | number, noDigits?: boolean) => {
   return Number(amount).toLocaleString("en-US", {
@@ -960,5 +1421,57 @@ const useFetchMatchingDistributionFromContract = (
     matchingData: matchingData?.matchingDistribution,
     isLoading: isLoading,
     isError: isError,
+  };
+};
+
+const useRoundOperator = (
+  roundId: string | undefined,
+  chainId: number
+): {
+  isRoundOperator: boolean;
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [isRoundOperator, setIsRoundOperator] = useState(false);
+
+  const { address, isConnected } = useAccount();
+  const chainData = getEnabledChains().find((chain) => chain.id === chainId);
+  const defaultProvider = ethers.getDefaultProvider(
+    chainData?.rpcUrls.default.http[0]
+  );
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        if (!roundId || !chainId || !address || !isConnected) return;
+
+        const roundImplementation = new ethers.Contract(
+          roundId,
+          roundImplementationABI,
+          defaultProvider
+        );
+        const operatorRole = await roundImplementation.ROUND_OPERATOR_ROLE();
+        const hasRole = await roundImplementation.hasRole(
+          operatorRole,
+          address
+        );
+
+        setIsRoundOperator(hasRole);
+        setIsLoading(false);
+      } catch (error) {
+        setIsError(true);
+        console.error(error);
+      }
+    }
+
+    fetchData();
+  }, [roundId, chainId, address, defaultProvider, isConnected]);
+
+  return {
+    isRoundOperator,
+    isLoading,
+    isError,
   };
 };

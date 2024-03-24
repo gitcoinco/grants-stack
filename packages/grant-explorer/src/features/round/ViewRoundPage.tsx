@@ -50,9 +50,9 @@ export default function ViewRound() {
   const currentTime = new Date();
   const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
   const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
-const isBeforeRoundEndDate =
-  round &&
-  (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
+  const isBeforeRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
 
   useEffect(() => {
     if (isLoading) setIsFirstPageLoad(true);
@@ -60,7 +60,14 @@ const isBeforeRoundEndDate =
       // if the round has ended, redirect to stats page
       navigate(`/round/${chainId}/${roundId}/stats`);
     }
-  }, [isLoading, isFirstPageLoad, chainId, isBeforeRoundEndDate, navigate, roundId]);
+  }, [
+    isLoading,
+    isFirstPageLoad,
+    chainId,
+    isBeforeRoundEndDate,
+    navigate,
+    roundId,
+  ]);
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />

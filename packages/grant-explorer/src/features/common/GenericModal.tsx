@@ -3,6 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 
 interface InfoModalProps {
   title?: string;
+  titleSize?: "sm" | "lg";
   body?: JSX.Element;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,6 +12,7 @@ interface InfoModalProps {
 
 export default function InfoModal({
   title = "Information Title",
+  titleSize = "sm",
   isOpen = false,
   setIsOpen = () => {
     /**/
@@ -55,19 +57,17 @@ export default function InfoModal({
             >
               <Dialog.Panel className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6">
                 <div className="sm:flex sm:items-start flex-col">
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                     <Dialog.Title
                       as="h3"
-                      className="text-base leading-6 font-semibold text-grey-500 text-center"
+                      className={`${
+                        titleSize === "sm" ? "text-base" : "text-2xl"
+                      } leading-6 font-semibold text-grey-500 text-center`}
                       data-testid="Info-heading"
                     >
                       {title}
                     </Dialog.Title>
-                    {props.body && (
-                      <div className="mt-2">
-                        {props.body}
-                      </div>
-                    )}
+                    {props.body && <div className="mt-2">{props.body}</div>}
                   </div>
                 </div>
               </Dialog.Panel>
