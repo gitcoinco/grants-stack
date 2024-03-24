@@ -18,5 +18,5 @@
     "types": ["@testing-library/jest-dom", "jest", "node"],
     "incremental": true
   },
-  "include": ["src", "../common/src/components/ProgressModal.tsx", "../common/src/components/ErrorModal.tsx"]
+  "include": ["src"]
 }
