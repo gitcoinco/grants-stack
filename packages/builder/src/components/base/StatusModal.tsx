@@ -117,7 +117,12 @@ export default function StatusModal({
   title,
 }: StatusModalProps) {
   return (
-    <BaseModal isOpen={open} onClose={() => onClose(false)} hideCloseButton>
+    <BaseModal
+      isOpen={open}
+      onClose={() => onClose(false)}
+      hideCloseButton
+      closeOnOverlayClick={false}
+    >
       <>
         <div>
           <div>
