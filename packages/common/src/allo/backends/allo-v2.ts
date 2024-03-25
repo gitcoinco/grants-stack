@@ -623,11 +623,6 @@ export class AlloV2 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
-
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to apply to round");
@@ -642,7 +637,7 @@ export class AlloV2 implements Allo {
 
       emit("indexingStatus", success(null));
 
-      return success(receipt.transactionHash);
+      return success(args.projectId);
     });
   }
 
