@@ -208,6 +208,7 @@ export const getApplicationsForManager = gql`
       metadata
       distributionTransaction
       statusSnapshots
+      anchorAddress
       round {
         strategyName
         strategyAddress
