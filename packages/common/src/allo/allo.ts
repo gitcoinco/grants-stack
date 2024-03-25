@@ -48,6 +48,7 @@ export interface Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 
@@ -73,6 +74,7 @@ export interface Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 

@@ -5,7 +5,7 @@ import {
   ROUND_PAYOUT_MERKLE_OLD,
   RoundPayoutTypeNew,
 } from "common";
-import { getRoundType } from "../api/utils";
+import { getRoundStrategyTitle } from "common";
 import { Badge } from "../common/styles";
 
 type Props = { strategyName: RoundPayoutTypeNew };
@@ -27,9 +27,7 @@ export function RoundStrategyBadge({ strategyName }: Props) {
   const color = colorOptions[strategyName];
   return (
     <Badge color={color} data-testid="round-badge">
-      {getRoundType(strategyName).length > 0
-        ? getRoundType(strategyName)
-        : "Unknown"}
+      {getRoundStrategyTitle(strategyName)}
     </Badge>
   );
 }

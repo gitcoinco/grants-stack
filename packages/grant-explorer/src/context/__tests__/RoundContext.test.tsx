@@ -20,11 +20,9 @@ describe("<ListRoundProvider />", () => {
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
-        getRoundByIdAndChainIdWithApprovedApplications: vi
-          .fn()
-          .mockResolvedValue({
-            round: expectedRound,
-          }),
+        getRoundForExplorer: vi.fn().mockResolvedValue({
+          round: expectedRound,
+        }),
       } as unknown as Mocked<DataLayer>;
 
       render(
@@ -43,11 +41,9 @@ describe("<ListRoundProvider />", () => {
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
-        getRoundByIdAndChainIdWithApprovedApplications: vi
-          .fn()
-          .mockResolvedValue({
-            round: expectedRound,
-          }),
+        getRoundForExplorer: vi.fn().mockResolvedValue({
+          round: expectedRound,
+        }),
       } as unknown as Mocked<DataLayer>;
 
       render(
@@ -68,11 +64,9 @@ describe("<ListRoundProvider />", () => {
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
-        getRoundByIdAndChainIdWithApprovedApplications: vi
-          .fn()
-          .mockResolvedValue({
-            round: expectedRound,
-          }),
+        getRoundForExplorer: vi.fn().mockResolvedValue({
+          round: expectedRound,
+        }),
       } as unknown as Mocked<DataLayer>;
 
       render(
@@ -95,9 +89,7 @@ describe("<ListRoundProvider />", () => {
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
-        getRoundByIdAndChainIdWithApprovedApplications: vi
-          .fn()
-          .mockRejectedValue(new Error()),
+        getRoundForExplorer: vi.fn().mockRejectedValue(new Error()),
       } as unknown as Mocked<DataLayer>;
 
       render(

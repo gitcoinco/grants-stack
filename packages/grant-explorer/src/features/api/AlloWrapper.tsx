@@ -10,7 +10,6 @@ import {
 import { getConfig } from "common/src/config";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNetwork, usePublicClient, useWalletClient } from "wagmi";
-import { zeroAddress } from "viem";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -43,7 +42,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
           waitUntilIndexerSynced: createWaitForIndexerSyncTo(
             `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
           ),
-          allo: zeroAddress,
         });
 
         setBackend(alloBackend);

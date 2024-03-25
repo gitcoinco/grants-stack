@@ -3,14 +3,15 @@ import {
   AlloProvider,
   AlloV1,
   AlloV2,
+  ChainId,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
 } from "common";
 import { useNetwork, useProvider, useSigner } from "wagmi";
 import { getConfig } from "common/src/config";
-import { addressesByChainID } from "./deployments";
 import { useMemo } from "react";
+import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -23,13 +24,14 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       return null;
     }
 
-    const addresses = addressesByChainID(chainID);
     const config = getConfig();
     let alloBackend: Allo;
 
+    const chainIdSupported = Object.values(ChainId).includes(chainID);
+
     if (config.allo.version === "allo-v2") {
       alloBackend = new AlloV2({
-        chainId: chainID,
+        chainId: chainIdSupported ? chainID : 1,
         transactionSender: createEthersTransactionSender(signer, web3Provider),
         ipfsUploader: createPinataIpfsUploader({
           token: getConfig().pinata.jwt,
@@ -38,11 +40,10 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
         waitUntilIndexerSynced: createWaitForIndexerSyncTo(
           `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
         ),
-        allo: addresses.projectRegistry as `0x${string}`,
       });
     } else {
       alloBackend = new AlloV1({
-        chainId: chainID,
+        chainId: chainIdSupported ? chainID : 1,
         transactionSender: createEthersTransactionSender(signer, web3Provider),
         ipfsUploader: createPinataIpfsUploader({
           token: getConfig().pinata.jwt,
@@ -57,7 +58,11 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     return alloBackend;
   }, [web3Provider, signer, chainID]);
 
-  return <AlloProvider backend={backend}>{children}</AlloProvider>;
+  return (
+    <AlloProvider backend={backend}>
+      <AlloVersionProvider>{children}</AlloVersionProvider>
+    </AlloProvider>
+  );
 }
 
 export default AlloWrapper;

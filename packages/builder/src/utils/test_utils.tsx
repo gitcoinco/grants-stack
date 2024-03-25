@@ -15,7 +15,6 @@ import {
 } from "data-layer";
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
-import { zeroAddress } from "viem";
 import { getConfig } from "common/src/config";
 import history from "../history";
 import setupStore from "../store";
@@ -55,6 +54,7 @@ export const buildRound = (round: any): Round => ({
   programName: "test-program",
   payoutStrategy: "0x",
   strategyName: "allov1.QF",
+  tags: ["allo-v1"],
   ...round,
 });
 
@@ -165,7 +165,6 @@ const alloBackend = new AlloV2({
     }),
   waitUntilIndexerSynced: async () => Promise.resolve(BigInt(1)),
   transactionSender: createMockTransactionSender(),
-  allo: zeroAddress,
 });
 
 // todo: introduce mock data layer?

@@ -108,6 +108,8 @@ export interface Program {
     name?: string;
     logo?: string;
   };
+
+  tags?: string[];
 }
 
 export type InputType =

@@ -3,7 +3,7 @@ import { Program, Web3Instance } from "./types";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ChainId } from "common";
 import { DataLayer } from "data-layer";
-import { getConfig } from "common/src/config";
+import { getAlloVersion, getConfig } from "common/src/config";
 
 /**
  * Fetch a list of programs
@@ -22,14 +22,12 @@ export async function listPrograms(
       chainId: ChainId;
     };
 
-    const config = getConfig();
-
     // fetch programs from indexer
 
     const programsRes = await dataLayer.getProgramsByUser({
       address,
       chainId,
-      alloVersion: config.allo.version,
+      tags: getAlloVersion() === "allo-v1" ? ["allo-v1"] : [],
     });
 
     if (!programsRes) {
@@ -45,6 +43,7 @@ export async function listPrograms(
         operatorWallets: program.roles.map(
           (role: { address: string }) => role.address
         ),
+        tags: program.tags,
         chain: {
           id: chainId,
           name: CHAINS[chainId]?.name,
@@ -99,6 +98,7 @@ export async function getProgramById(
     operatorWallets: program.roles.map(
       (role: { address: string }) => role.address
     ),
+    tags: program.tags,
     chain: {
       id: chainId,
       name: CHAINS[chainId]?.name,

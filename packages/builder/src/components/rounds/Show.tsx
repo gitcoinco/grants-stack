@@ -1,11 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import { ChainId } from "common";
-import { getConfig } from "common/src/config";
 import { RoundCategory, useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
+import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
+import { AlloVersion } from "data-layer/dist/data-layer.types";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -119,7 +120,7 @@ function ApplyButton(props: ApplyButtonProps) {
 function ShowRound() {
   const [roundData, setRoundData] = useState<any>();
   const dataLayer = useDataLayer();
-  const isV2 = getConfig().allo.version === "allo-v2";
+  const { version: alloVersion, switchToVersion } = useAlloVersion();
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -137,10 +138,6 @@ function ShowRound() {
     const round = roundState ? roundState.round : undefined;
     const web3ChainId = state.web3.chainID;
     const roundChainId = Number(chainId);
-
-    const versionError =
-      (isV2 && roundId?.startsWith("0x")) ||
-      (!isV2 && !roundId?.startsWith("0x"));
 
     const now = new Date().getTime() / 1000;
 
@@ -180,7 +177,6 @@ function ShowRound() {
       applicationsHaveEnded,
       votingHasStarted,
       votingHasEnded,
-      versionError,
     };
   }, shallowEqual);
 
@@ -243,6 +239,16 @@ function ShowRound() {
   useEffect(() => {
     if (props.round) {
       setRoundData(props.round);
+
+      if (!props.round.tags.includes(alloVersion)) {
+        const roundVersion = props.round.tags.find((tag) =>
+          tag.startsWith("allo-")
+        );
+        if (roundVersion === undefined) {
+          throw new Error("no allo version found, should never happen");
+        }
+        switchToVersion(roundVersion as AlloVersion);
+      }
     }
   }, [props.round]);
 
@@ -310,11 +316,7 @@ function ShowRound() {
     );
   }
 
-  if (
-    props.roundState === undefined ||
-    props.round === undefined ||
-    props.versionError
-  ) {
+  if (props.roundState === undefined || props.round === undefined) {
     return (
       <div>
         <ErrorModal

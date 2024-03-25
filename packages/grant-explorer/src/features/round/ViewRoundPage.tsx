@@ -1,6 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { getRoundStrategyTitle } from "common";
 
 import {
   ChainId,
@@ -10,6 +11,8 @@ import {
   truncateDescription,
 } from "common";
 import { Button, Input } from "common/src/styles";
+import AlloV1 from "common/src/icons/AlloV1";
+import AlloV2 from "common/src/icons/AlloV2";
 
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
@@ -19,7 +22,6 @@ import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
 import {
   CHAINS,
-  getRoundType,
   isDirectRound,
   isInfiniteDate,
   votingTokens,
@@ -47,6 +49,8 @@ import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
+import { getAlloVersion } from "common/src/config";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -71,6 +75,19 @@ export default function ViewRound() {
   const isBeforeRoundEndDate =
     round &&
     (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
+
+  const alloVersion = getAlloVersion();
+
+  useEffect(() => {
+    if (
+      isAfterRoundEndDate !== undefined &&
+      roundId?.startsWith("0x") &&
+      alloVersion === "allo-v2" &&
+      !isAfterRoundEndDate
+    ) {
+      window.location.href = `https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`;
+    }
+  }, [roundId, alloVersion, isAfterRoundEndDate]);
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
@@ -99,6 +116,29 @@ export default function ViewRound() {
       ) : (
         <NotFoundPage />
       )}
+    </>
+  );
+}
+
+export function AlloVersionBanner({ roundId }: { roundId: string }) {
+  const isAlloV1 = roundId.startsWith("0x");
+
+  return (
+    <>
+      <div className="fixed z-20 left-0 top-[64px] w-full bg-[#FFEFBE] p-4 text-center font-medium flex items-center justify-center">
+        <ExclamationCircleIcon className="h-5 w-5 mr-2" />
+        <span>
+          This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}. Any
+          projects that you add to your cart will have to be donated to
+          separately from projects on rounds deployed on Allo{" "}
+          {isAlloV1 ? "v2" : "v1"}. Learn more{" "}
+          <a href="#" target="_blank" rel="noreferrer" className="underline">
+            here
+          </a>
+          .
+        </span>
+      </div>
+      <div className="h-[64px] w-full"></div>
     </>
   );
 }
@@ -132,6 +172,8 @@ function BeforeRoundStart(props: {
   );
 }
 
+const alloVersion = getAlloVersion();
+
 function AfterRoundStart(props: {
   round: Round;
   chainId: ChainId;
@@ -148,6 +190,10 @@ function AfterRoundStart(props: {
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
     useState<Project>({} as Project);
+
+  const disableAddToCartButton =
+    (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
+    props.isAfterRoundEndDate;
 
   useEffect(() => {
     if (showCartNotification) {
@@ -245,10 +291,13 @@ function AfterRoundStart(props: {
     (isInfiniteDate(round.applicationsEndTime) ||
       round.applicationsEndTime >= currentTime);
 
+  const isAlloV1 = roundId.startsWith("0x");
+
   return (
     <>
       {showCartNotification && renderCartNotification()}
       <Navbar />
+      {props.isBeforeRoundEndDate && <AlloVersionBanner roundId={roundId} />}
       {props.isAfterRoundEndDate && (
         <div className="relative top-16">
           <RoundEndedBanner />
@@ -261,6 +310,10 @@ function AfterRoundStart(props: {
         <main>
           <div className="flex flex-col md:items-center md:justify-between md:gap-8 md:flex-row md:mb-0 mb-4">
             <div>
+              <div className="pb-4">
+                {isAlloV1 && <AlloV1 color="black" />}
+                {!isAlloV1 && <AlloV2 color="black" />}
+              </div>
               <p data-testid="round-title" className="text-3xl mb-5">
                 {round.roundMetadata?.name}
               </p>
@@ -269,7 +322,7 @@ function AfterRoundStart(props: {
                 className="text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mb-4 rounded-[20px]"
               >
                 {round.payoutStrategy?.strategyName &&
-                  getRoundType(round.payoutStrategy?.strategyName)}
+                  getRoundStrategyTitle(round.payoutStrategy?.strategyName)}
               </p>
               <div className="flex text-grey-400 mb-1">
                 <p className="mr-4 text-sm">
@@ -353,7 +406,7 @@ function AfterRoundStart(props: {
             <ProjectList
               projects={projects}
               roundRoutePath={`/round/${chainId}/${roundId}`}
-              isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+              isBeforeRoundEndDate={!disableAddToCartButton}
               roundId={roundId}
               round={round}
               chainId={chainId}

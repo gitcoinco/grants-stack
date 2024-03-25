@@ -22,6 +22,10 @@ import Footer from "common/src/components/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { usePrograms } from "../../context/program/ReadProgramContext";
 import { ProgressStatus } from "../api/types";
+import AlloV1 from "common/src/icons/AlloV1";
+import AlloV2 from "common/src/icons/AlloV2";
+import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
+import { ExclamationCircleIcon } from "@heroicons/react/solid";
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element;
@@ -40,7 +44,7 @@ const ProgramCard: React.FC<ProgramCardProps> = (props: ProgramCardProps) => (
       </CardDescription>
     </CardContent>
     <CardFooter>
-      <CardFooterContent className="justify-end p-6">
+      <CardFooterContent className="p-6">
         {props.footerContent}
       </CardFooterContent>
     </CardFooter>
@@ -73,6 +77,7 @@ function ListPrograms() {
   datadogLogs.logger.info("====> Route: /");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
+  const { version, switchToVersion } = useAlloVersion();
   const { programs, fetchProgramsStatus, listProgramsError } = usePrograms();
 
   function hasNoPrograms() {
@@ -94,10 +99,16 @@ function ListPrograms() {
         title={program.metadata.name}
         description={`${program.operatorWallets.length} Round Operators`}
         footerContent={
-          <p className="text-violet-400" data-testid="program-card">
-            View details{" "}
-            <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
-          </p>
+          <>
+            <div className="mr-auto">
+              {program.tags?.includes("allo-v1") && <AlloV1 color="black" />}
+              {program.tags?.includes("allo-v2") && <AlloV2 color="black" />}
+            </div>
+            <div className="text-violet-400 ml-auto" data-testid="program-card">
+              View details{" "}
+              <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
+            </div>
+          </>
         }
       />
     </Link>
@@ -106,6 +117,38 @@ function ListPrograms() {
   return (
     <div className="bg-grey-150">
       <Navbar programCta={isSuccess} />
+      {version === "allo-v1" && (
+        <div className="bg-[#D3EDFE] p-4 text-center font-medium flex flex-col items-center justify-center">
+          <div>
+            <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
+            You are currently on Allo v1. To switch to the most current version
+            of Manager,&nbsp;
+            <button
+              type="button"
+              className="underline"
+              onClick={(e) => {
+                e.preventDefault();
+                switchToVersion("allo-v2");
+              }}
+            >
+              switch to Allo v2.
+            </button>
+            &nbsp;
+          </div>
+          <div>
+            Click&nbsp;
+            <a
+              href="https://gitcoin.notion.site/Navigating-the-Transition-to-Allo-v2-A-Guide-for-Grants-Managers-63e2bdddccb94792af83fdffb1530b85?pvs=74"
+              rel="noreferrer"
+              className="underline"
+              target="_blank"
+            >
+              here
+            </a>
+            &nbsp;to learn more about Allo v2.
+          </div>
+        </div>
+      )}
       <header className="mb-2.5 bg-grey-500 overflow-hidden">
         <div className="grid grid-cols-2 grid-flow-col">
           <div className="row-span-4 md:pt-14 md:pl-20 lg:pt-32 lg:pl-24">

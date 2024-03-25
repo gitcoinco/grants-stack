@@ -35,7 +35,7 @@ function SwitchNetworkModal({
         >
           <Button
             variant={ButtonVariants.outline}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             styles={["cancel-button"]}
           >
             <span className="inline-flex flex-1 justify-center items-center">

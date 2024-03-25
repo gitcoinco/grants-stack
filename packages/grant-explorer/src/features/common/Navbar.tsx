@@ -10,10 +10,13 @@ import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
 import { PassportWidget } from "./PassportWidget";
 import { exploreRoundsLink } from "../discovery/LandingTabs";
+import { getAlloVersion } from "common/src/config";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
 export interface NavbarProps {
   customBackground?: string;
   showWalletInteraction?: boolean;
+  showAlloVersionBanner?: boolean;
 }
 
 export default function Navbar(props: NavbarProps) {
@@ -37,6 +40,7 @@ export default function Navbar(props: NavbarProps) {
   const showWalletInteraction = props.showWalletInteraction ?? true;
 
   const { address: walletAddress } = useAccount();
+  const alloVersion = getAlloVersion();
 
   return (
     <nav
@@ -103,6 +107,26 @@ export default function Navbar(props: NavbarProps) {
           </div>
         </div>
       </div>
+      {props.showAlloVersionBanner && (
+        <div className="bg-white/40 backdrop-blur-sm p-4 text-center w-full font-medium flex flex-col items-center justify-center text-black">
+          <div>
+            <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
+            To check out rounds on that are running on Allo{" "}
+            {alloVersion === "allo-v1" ? "v2" : "v1"}, please click{" "}
+            <a
+              href={
+                alloVersion === "allo-v1"
+                  ? "https://explorer.gitcoin.co"
+                  : "https://explorer-v1.gitcoin.co"
+              }
+              className="underline"
+              target="_blank"
+            >
+              here!
+            </a>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

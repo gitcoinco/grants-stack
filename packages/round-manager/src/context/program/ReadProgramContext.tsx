@@ -200,8 +200,10 @@ export const useProgramById = (
     }
   }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const program = context.state.programs.find((program) => program.id === id);
+
   return {
-    program: context.state.programs.find((program) => program.id === id),
+    program: program,
     fetchProgramsStatus: context.state.fetchProgramsStatus,
     getProgramByIdError: context.state.getProgramByIdError,
   };

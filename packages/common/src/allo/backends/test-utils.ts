@@ -1,4 +1,4 @@
-import { Hex, zeroAddress } from "viem";
+import { Hex } from "viem";
 import { vi } from "vitest";
 import { Allo } from "../allo";
 import { success } from "../common";
@@ -8,7 +8,6 @@ import { AlloV2 } from "./allo-v2";
 
 const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
 const waitUntilIndexerSynced = vi.fn().mockResolvedValue(success(null));
-const projectRegistryAddress = zeroAddress;
 const chainId = 1;
 
 const transactionSender = createMockTransactionSender();
@@ -26,7 +25,6 @@ export const alloV2: Allo = new AlloV2({
   ipfsUploader,
   transactionSender,
   waitUntilIndexerSynced,
-  allo: projectRegistryAddress,
 });
 
 export const getAllo = (version: string): Allo => {

@@ -126,11 +126,10 @@ export function SummaryContainer() {
     const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
     return Promise.all(
       uniqueProjects.map(async (proj) => {
-        const results =
-          await dataLayer.getRoundByIdAndChainIdWithApprovedApplications({
-            roundId: proj.roundId,
-            chainId: proj.chainId,
-          });
+        const results = await dataLayer.getRoundForExplorer({
+          roundId: proj.roundId,
+          chainId: proj.chainId,
+        });
         if (results === null) {
           return null;
         } else {

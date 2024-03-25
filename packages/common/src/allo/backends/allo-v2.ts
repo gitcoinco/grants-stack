@@ -72,7 +72,6 @@ export class AlloV2 implements Allo {
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
-    allo: Address;
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
@@ -166,7 +165,16 @@ export class AlloV2 implements Allo {
     }
 
     if (tx.type === "success") {
-      return this.transactionSender.wait(tx.value, 60_000, publicClient);
+      const receipt = await this.transactionSender.wait(
+        tx.value,
+        60_000,
+        publicClient
+      );
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+      return receipt;
     } else {
       throw tx.error;
     }
@@ -249,6 +257,8 @@ export class AlloV2 implements Allo {
         blockNumber: receipt.blockNumber,
       });
 
+      emit("indexingStatus", success(void 0));
+
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: RegistryAbi as Abi,
         receipt,
@@ -300,6 +310,7 @@ export class AlloV2 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -355,6 +366,8 @@ export class AlloV2 implements Allo {
         chainId: this.chainId,
         blockNumber: receipt.blockNumber,
       });
+
+      emit("indexingStatus", success(void 0));
 
       return success({
         projectId: projectId,

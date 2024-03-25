@@ -5,6 +5,7 @@ import {
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
+import { getAlloVersion } from "common/src/config";
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
   ComponentProps,
@@ -12,6 +13,7 @@ import React, {
   createElement,
   FunctionComponent,
   PropsWithChildren,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -42,6 +44,7 @@ import {
   mapApplicationToRound,
   useApplication,
 } from "../projects/hooks/useApplication";
+import { AlloVersionBanner } from "./ViewRoundPage";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -109,7 +112,22 @@ export default function ViewProjectDetails() {
       ? false
       : round && round.roundEndTime <= currentTime);
 
-  const disableAddToCartButton = isAfterRoundEndDate;
+  const alloVersion = getAlloVersion();
+
+  useEffect(() => {
+    if (
+      isAfterRoundEndDate !== undefined &&
+      roundId?.startsWith("0x") &&
+      alloVersion === "allo-v2" &&
+      !isAfterRoundEndDate
+    ) {
+      window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
+    }
+  }, [roundId, alloVersion, isAfterRoundEndDate]);
+
+  const disableAddToCartButton =
+    (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
+    isAfterRoundEndDate;
   const { projects, add, remove } = useCartStorage();
 
   const isAlreadyInCart = projects.some(
@@ -177,6 +195,7 @@ export default function ViewProjectDetails() {
   return (
     <>
       <DefaultLayout>
+        <AlloVersionBanner roundId={roundId} />
         {isAfterRoundEndDate && <RoundEndedBanner />}
         <div className="py-8 flex items-center" data-testid="bread-crumbs">
           <Breadcrumb items={breadCrumbs} />
