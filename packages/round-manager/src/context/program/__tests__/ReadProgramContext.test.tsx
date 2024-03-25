@@ -1,12 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { getProgramById, listPrograms } from "../../../features/api/program";
-import { Program, ProgressStatus } from "../../../features/api/types";
+import { Program } from "../../../features/api/types";
 import { makeProgramData } from "../../../test-utils";
 import {
   ReadProgramProvider,
   useProgramById,
   usePrograms,
 } from "../ReadProgramContext";
+import { ProgressStatus } from "common/src/types";
 
 const mockWallet = {
   address: "0x0",

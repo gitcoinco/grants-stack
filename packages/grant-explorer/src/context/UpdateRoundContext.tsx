@@ -1,9 +1,15 @@
 import React, { SetStateAction, createContext, useContext } from "react";
-import { ProgressStatus } from "common/src/types";
 import { RoundCategory, UpdateRoundParams } from "common/dist/types";
 import { Allo } from "common";
 import { Hex } from "viem";
 import { datadogLogs } from "@datadog/browser-logs";
+import { ProgressStatus } from "common/src/types";
+
+export type ProgressStep = {
+  name: string;
+  description: string;
+  status: ProgressStatus;
+};
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 

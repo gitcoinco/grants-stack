@@ -426,6 +426,8 @@ export interface Round {
       minDonationThresholdAmount?: number;
       sybilDefense?: boolean;
     };
+    socialPostUrls?: string[];
+    statsDescription?: string;
     support?: {
       type: string;
       info: string;

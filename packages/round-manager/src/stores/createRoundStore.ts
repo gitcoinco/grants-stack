@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ProgressStatus } from "../features/api/types";
+import { ProgressStatus } from "common/src/types";
 import { Address } from "viem";
 import { Allo } from "common";
 import { error, Result } from "common/src/allo/common";

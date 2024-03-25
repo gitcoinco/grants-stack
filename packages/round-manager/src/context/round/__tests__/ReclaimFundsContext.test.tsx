@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { ProgressStatus } from "../../../features/api/types";
+import { ProgressStatus } from "common/src/types";
 import {
   ReclaimFundsParams,
   ReclaimFundsProvider,

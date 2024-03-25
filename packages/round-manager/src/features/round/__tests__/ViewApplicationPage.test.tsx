@@ -29,7 +29,8 @@ import {
   makeGrantApplicationData,
   makeRoundData,
 } from "../../../test-utils";
-import { GrantApplication, ProgressStatus } from "../../api/types";
+import { GrantApplication } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import { useWallet } from "../../common/Auth";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import ViewApplicationPage from "../ViewApplicationPage";

@@ -16,7 +16,7 @@ import {
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import { updatePayoutApplicationStatuses } from "../../api/application";
-import { ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import { errorModalDelayMs } from "../../../constants";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";

@@ -1,5 +1,6 @@
 import { useCheckoutStore } from "./checkoutStore";
-import { CartProject, ProgressStatus } from "./features/api/types";
+import { CartProject } from "./features/api/types";
+import { ProgressStatus } from "common/src/types";
 import { ChainId } from "common";
 import { beforeEach } from "vitest";
 import { makeApprovedProjectData } from "./test-utils";

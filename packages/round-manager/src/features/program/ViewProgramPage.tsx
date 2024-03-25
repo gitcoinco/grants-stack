@@ -28,7 +28,7 @@ import NotFoundPage from "../common/NotFoundPage";
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { useRounds } from "../../context/round/RoundContext";
 import { useDebugMode } from "../../hooks";
-import { ProgressStatus } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import { Spinner } from "../common/Spinner";
 import { getPayoutRoundDescription } from "../common/Utils";
 import { parseRoundDates } from "../common/parseRoundDates";

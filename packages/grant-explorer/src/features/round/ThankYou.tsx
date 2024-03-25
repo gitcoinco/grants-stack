@@ -8,11 +8,11 @@ import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-log
 import Navbar from "../common/Navbar";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
-import { ProgressStatus } from "../api/types";
 import { ChainId } from "common";
 import { useAccount } from "wagmi";
 import { Hex } from "viem";
 import { useRoundById } from "../../context/RoundContext";
+import { ProgressStatus } from "common/src/types";
 
 export function createTwitterShareText(props: TwitterButtonParams) {
   return `I just donated to ${props.roundName?.trim() ?? "a round"}${

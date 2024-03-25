@@ -5,10 +5,10 @@ import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import {
   ApplicationStatus,
   GrantApplication,
-  ProgressStatus,
   ProgressStep,
   ProjectStatus,
 } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import ConfirmationModal from "../common/ConfirmationModal";
 import { Spinner } from "../common/Spinner";
 import {
@@ -28,8 +28,8 @@ import {
   Select,
 } from "./BulkApplicationCommon";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
-import ProgressModal from "../common/ProgressModal";
-import ErrorModal from "../common/ErrorModal";
+import ProgressModal from "common/src/components/ProgressModal";
+import ErrorModal from "common/src/components/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import { getRoundStrategyType, useAllo } from "common";
 

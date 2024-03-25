@@ -11,16 +11,16 @@ import { errorModalDelayMs, modalDelayMs } from "../../constants";
 import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/payoutStrategy";
 import {
   MatchingStatsData,
-  ProgressStatus,
   ProgressStep,
   Round,
   TransactionBlock,
 } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import { formatCurrency } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
-import ProgressModal from "../common/ProgressModal";
+import ProgressModal from "common/src/components/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { assertAddress } from "common/src/address";
 import { PayoutToken, payoutTokens } from "../api/payoutTokens";

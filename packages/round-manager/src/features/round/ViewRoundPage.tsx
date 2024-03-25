@@ -21,9 +21,9 @@ import { useDebugMode } from "../../hooks";
 import {
   ApplicationStatus,
   GrantApplication,
-  ProgressStatus,
   Round,
 } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import AccessDenied from "../common/AccessDenied";
 import { useWallet } from "../common/Auth";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";

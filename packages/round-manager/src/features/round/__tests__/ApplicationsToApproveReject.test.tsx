@@ -16,7 +16,7 @@ import {
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import { errorModalDelayMs } from "../../../constants";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import { AlloOperation, useAllo } from "common";

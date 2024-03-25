@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 
-import { ProgressStatus } from "../../features/api/types";
+import { ProgressStatus } from "common/src/types";
 
 import { PayoutToken } from "../../features/api/payoutTokens";
 import { Allo } from "common";

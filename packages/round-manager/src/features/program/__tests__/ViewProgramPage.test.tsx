@@ -11,7 +11,8 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { Program, ProgressStatus } from "../../api/types";
+import { Program } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import { useWallet } from "../../common/Auth";
 import ViewProgram from "../ViewProgramPage";
 

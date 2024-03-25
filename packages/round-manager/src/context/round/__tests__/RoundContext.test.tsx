@@ -3,7 +3,8 @@ import { RoundProvider, useRoundById, useRounds } from "../RoundContext";
 import { render, screen } from "@testing-library/react";
 import { makeRoundData } from "../../../test-utils";
 import { getRoundById, listRounds } from "../../../features/api/round";
-import { ProgressStatus, Round } from "../../../features/api/types";
+import { Round } from "../../../features/api/types";
+import { ProgressStatus } from "common/src/types";
 import { DataLayer, DataLayerProvider } from "data-layer";
 
 jest.mock("../../../features/api/round");

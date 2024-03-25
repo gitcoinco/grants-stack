@@ -9,6 +9,7 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { chains, config } from "./app/wagmi";
 import { RoundProvider } from "./context/RoundContext";
+import { UpdateRoundProvider } from "./context/UpdateRoundContext";
 import { initDatadog } from "./datadog";
 import { initPosthog } from "./posthog";
 import reportWebVitals from "./reportWebVitals";
@@ -30,6 +31,7 @@ import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import AlloWrapper from "./features/api/AlloWrapper";
+import ViewRoundStats from "./features/round/ViewRoundPageStats";
 
 initSentry();
 initDatadog();
@@ -66,46 +68,54 @@ root.render(
       <WagmiConfig config={config}>
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
-            <DataLayerProvider client={dataLayer}>
-              <AlloWrapper>
-                <HashRouter>
-                  <Routes>
-                    {/* Protected Routes */}
-                    <Route element={<Auth />} />
+            <UpdateRoundProvider>
+              <DataLayerProvider client={dataLayer}>
+                <AlloWrapper>
+                  <HashRouter>
+                    <Routes>
+                      {/* Protected Routes */}
+                      <Route element={<Auth />} />
 
-                    {/* Default Route */}
-                    <Route path="/" element={<LandingPage />} />
+                      {/* Default Route */}
+                      <Route path="/" element={<LandingPage />} />
 
-                    <Route path="/rounds" element={<ExploreRoundsPage />} />
+                      <Route path="/rounds" element={<ExploreRoundsPage />} />
 
-                    {/* Round Routes */}
-                    <Route
-                      path="/round/:chainId/:roundId"
-                      element={<ViewRound />}
-                    />
-                    <Route
-                      path="/round/:chainId/:roundId/:applicationId"
-                      element={<ViewProjectDetails />}
-                    />
+                      {/* Round Routes */}
+                      <Route
+                        path="/round/:chainId/:roundId"
+                        element={<ViewRound />}
+                      />
 
-                    <Route path="/cart" element={<ViewCart />} />
+                      <Route
+                        path="/round/:chainId/:roundId/stats"
+                        element={<ViewRoundStats />}
+                      />
 
-                    <Route path="/thankyou" element={<ThankYou />} />
+                      <Route
+                        path="/round/:chainId/:roundId/:applicationId"
+                        element={<ViewProjectDetails />}
+                      />
 
-                    <Route
-                      path="/contributors/:address"
-                      element={<ViewContributionHistoryPage />}
-                    />
+                      <Route path="/cart" element={<ViewCart />} />
 
-                    {/* Access Denied */}
-                    <Route path="/access-denied" element={<AccessDenied />} />
+                      <Route path="/thankyou" element={<ThankYou />} />
 
-                    {/* 404 */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </HashRouter>
-              </AlloWrapper>
-            </DataLayerProvider>
+                      <Route
+                        path="/contributors/:address"
+                        element={<ViewContributionHistoryPage />}
+                      />
+
+                      {/* Access Denied */}
+                      <Route path="/access-denied" element={<AccessDenied />} />
+
+                      {/* 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </HashRouter>
+                </AlloWrapper>
+              </DataLayerProvider>
+            </UpdateRoundProvider>
           </RoundProvider>
         </RainbowKitProvider>
       </WagmiConfig>

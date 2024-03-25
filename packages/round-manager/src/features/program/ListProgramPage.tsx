@@ -21,7 +21,7 @@ import { ReactComponent as Banner } from "../../assets/programs/city-voxel.svg";
 import Footer from "common/src/components/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { usePrograms } from "../../context/program/ReadProgramContext";
-import { ProgressStatus } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element;

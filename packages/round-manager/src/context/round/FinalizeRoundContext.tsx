@@ -1,4 +1,4 @@
-import { ProgressStatus } from "../../features/api/types";
+import { ProgressStatus } from "common/src/types";
 import React, { createContext, useContext, useReducer } from "react";
 import { useAllo } from "common";
 import { Address } from "viem";

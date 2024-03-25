@@ -15,7 +15,7 @@ import {
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import { MemoryRouter } from "react-router-dom";
-import { ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import { errorModalDelayMs } from "../../../constants";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import { AlloOperation, useAllo } from "common";
