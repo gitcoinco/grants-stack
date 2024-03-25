@@ -9,6 +9,7 @@ import { BigNumber } from "ethers";
 import { Address } from "viem";
 import { SchemaQuestion } from "./utils";
 import { RoundForManager } from "data-layer";
+import { ProgressStatus } from "common/src/types";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -403,13 +404,6 @@ export type AnswerBlock = {
     encryptedSymmetricKey: string;
   };
 };
-
-export enum ProgressStatus {
-  IS_SUCCESS = "IS_SUCCESS",
-  IN_PROGRESS = "IN_PROGRESS",
-  NOT_STARTED = "NOT_STARTED",
-  IS_ERROR = "IS_ERROR",
-}
 
 // TODO - what is the difference between ApplicationStatus and ProjectStatus (L155)
 export enum ApplicationStatus {

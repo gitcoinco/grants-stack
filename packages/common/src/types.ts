@@ -111,3 +111,10 @@ export type VotingToken = {
   // 2 different types/lists and remove the following attribute
   canVote: boolean;
 };
+
+export enum ProgressStatus {
+  IS_SUCCESS = "IS_SUCCESS",
+  IN_PROGRESS = "IN_PROGRESS",
+  NOT_STARTED = "NOT_STARTED",
+  IS_ERROR = "IS_ERROR",
+}

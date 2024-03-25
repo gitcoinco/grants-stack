@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { CartProject, ProgressStatus } from "./features/api/types";
+import { CartProject } from "./features/api/types";
+import { ProgressStatus } from "common/src/types";
 import { Allo, ChainId } from "common";
 import { useCartStorage } from "./store";
 import {

@@ -16,7 +16,8 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { ProgressStatus, Round } from "../../api/types";
+import { Round } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import ViewRoundPage from "../ViewRoundPage";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

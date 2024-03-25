@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { ChainId } from "common";
 import { CHAINS } from "../../api/utils";
-import { ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { Button } from "common/src/styles";

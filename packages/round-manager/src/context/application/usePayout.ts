@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { ProgressStatus, ProgressStep } from "../../features/api/types";
+import { ProgressStep } from "../../features/api/types";
+import { ProgressStatus } from "common/src/types";
 import {
   DirectPayoutStrategy__factory,
   Erc20__factory,

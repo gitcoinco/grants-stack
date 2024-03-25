@@ -4,7 +4,7 @@ import React, {
   useContext,
   useState,
 } from "react";
-import { ProgressStatus } from "../../features/api/types";
+import { ProgressStatus } from "common/src/types";
 import { Allo } from "common";
 import { getAddress } from "viem";
 

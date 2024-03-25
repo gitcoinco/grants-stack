@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
 import ProgressModal, { Step } from "common/src/components/ProgressModal";
-import { ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 
 const completedStep = {
   name: "My Todo List",

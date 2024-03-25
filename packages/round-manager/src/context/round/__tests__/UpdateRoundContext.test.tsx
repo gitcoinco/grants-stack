@@ -1,6 +1,7 @@
 import { saveToIPFS } from "../../../features/api/ipfs";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ProgressStatus, Round } from "../../../features/api/types";
+import { Round } from "../../../features/api/types";
+import { ProgressStatus } from "common/src/types";
 import {
   UpdateRoundData,
   UpdateRoundProvider,

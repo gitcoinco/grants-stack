@@ -19,7 +19,7 @@ import ErrorModal from "common/src/components/ErrorModal";
 import { ReactComponent as WarpcastIcon } from "../../assets/warpcast-logo.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/x-logo.svg";
 import { useRoundById } from "../../context/RoundContext";
-import { ProgressStatus, Project, Round } from "../api/types";
+import { Project, Round } from "../api/types";
 import {
   __deprecated_fetchFromIPFS,
   isDirectRound,
@@ -55,6 +55,7 @@ import { ProgressStep, useUpdateRound } from "../../context/UpdateRoundContext";
 import { useAllo } from "../api/AlloWrapper";
 import { useRoundUniqueDonorsCount } from "../projects/hooks/useRoundUniqueDonorsCount";
 import BeforeRoundStart from "./BeforeRoundStart";
+import { ProgressStatus } from "common/src/types";
 
 export type MatchingStatsData = {
   index?: number;

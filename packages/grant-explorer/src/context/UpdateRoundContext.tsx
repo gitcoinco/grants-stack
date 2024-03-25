@@ -3,7 +3,7 @@ import { RoundCategory, UpdateRoundParams } from "common/dist/types";
 import { Allo } from "common";
 import { Hex } from "viem";
 import { datadogLogs } from "@datadog/browser-logs";
-import { ProgressStatus } from "../features/api/types";
+import { ProgressStatus } from "common/src/types";
 
 export type ProgressStep = {
   name: string;
