@@ -53,6 +53,7 @@ export const useApplicationsByRoundId = (roundId: string) => {
                 ...snapshot,
                 updatedAt: new Date(snapshot.updatedAt),
               })),
+              anchorAddress: application.anchorAddress,
               answers: application.metadata.application.answers,
             },
           ];

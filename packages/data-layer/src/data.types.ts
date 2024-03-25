@@ -271,6 +271,7 @@ export type ProjectApplication = {
 };
 
 export type ProjectApplicationForManager = ProjectApplication & {
+  anchorAddress: Address;
   statusSnapshots: {
     status: ApplicationStatus;
     updatedAtBlock: string;
@@ -335,6 +336,7 @@ export type DistributionMatch = {
   projectId: string;
   projectName: string;
   applicationId: string;
+  anchorAddress: string;
   matchPoolPercentage: number;
   contributionsCount: number;
   matchAmountInToken: string;

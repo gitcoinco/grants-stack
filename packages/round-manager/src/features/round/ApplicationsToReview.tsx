@@ -129,6 +129,7 @@ export default function ApplicationsToReview() {
             applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
             distributionTransaction: application.distributionTransaction,
+            anchorAddress: application.anchorAddress,
           };
         })
       );

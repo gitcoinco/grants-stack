@@ -863,7 +863,7 @@ export class AlloV2 implements Allo {
 
       const distribution = args.matchingDistribution.map((d, index) => [
         index,
-        d.applicationId,
+        d.anchorAddress,
         d.projectPayoutAddress,
         d.matchAmountInToken,
       ]);

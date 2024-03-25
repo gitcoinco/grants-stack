@@ -11,7 +11,12 @@ import { useDropzone } from "react-dropzone";
 import { classNames } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
-import { ProgressStatus, ProgressStep, Round } from "../../api/types";
+import {
+  GrantApplication,
+  ProgressStatus,
+  ProgressStep,
+  Round,
+} from "../../api/types";
 import { LoadingRing, Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
@@ -27,6 +32,7 @@ import { PayoutToken, payoutTokens } from "../../api/payoutTokens";
 import { DistributionMatch } from "data-layer";
 import { utils } from "ethers";
 import { useContractAmountFunded } from "../FundContract";
+import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 
 type RevisedMatch = {
   revisedContributionCount: number;
@@ -171,15 +177,21 @@ export default function ViewRoundResultsWrapper() {
 
 function ViewRoundResultsWithId({ id }: { id: string }) {
   const round = useRoundById(id.toLowerCase());
+  const applications = useApplicationsByRoundId(id.toLowerCase());
   const chainId = round?.round?.chainId;
 
-  if (round.fetchRoundStatus === ProgressStatus.IN_PROGRESS) {
+  if (
+    round.fetchRoundStatus === ProgressStatus.IN_PROGRESS ||
+    applications.isLoading
+  ) {
     return <Spinner text="We're fetching the matching data." />;
   }
 
   if (
     round.error ||
     round.fetchRoundStatus === ProgressStatus.IS_ERROR ||
+    applications.error ||
+    applications.data === undefined ||
     round.round === undefined
   ) {
     return <div>Failed to load the round</div>;
@@ -200,6 +212,7 @@ function ViewRoundResultsWithId({ id }: { id: string }) {
   return (
     <ViewRoundResults
       roundId={id}
+      applications={applications.data}
       round={round.round}
       matchToken={matchToken}
     />
@@ -208,10 +221,12 @@ function ViewRoundResultsWithId({ id }: { id: string }) {
 
 function ViewRoundResults({
   roundId,
+  applications,
   round,
   matchToken,
 }: {
   roundId: string;
+  applications: GrantApplication[];
   round: Round;
   matchToken: PayoutToken;
 }) {
@@ -292,18 +307,30 @@ function ViewRoundResults({
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      const matchingJson: DistributionMatch[] = matches.map((match) => ({
-        contributionsCount: match.contributionsCount,
-        projectPayoutAddress: match.payoutAddress,
-        applicationId: match.applicationId,
-        matchPoolPercentage:
-          Number((BigInt(1000000) * match.revisedMatch) / round.matchAmount) /
-          1000000,
-        projectId: match.projectId,
-        projectName: match.projectName,
-        matchAmountInToken: match.revisedMatch.toString(),
-        originalMatchAmountInToken: match.matched.toString(),
-      }));
+      const matchingJson: DistributionMatch[] = matches.map((match) => {
+        const app = applications.find(
+          (app) => app.applicationIndex.toString() == match.applicationId
+        );
+
+        /// should not happen
+        if (app === undefined) {
+          throw new Error("Application not found");
+        }
+
+        return {
+          contributionsCount: match.contributionsCount,
+          projectPayoutAddress: match.payoutAddress,
+          anchorAddress: app.anchorAddress,
+          applicationId: match.applicationId,
+          matchPoolPercentage:
+            Number((BigInt(1000000) * match.revisedMatch) / round.matchAmount) /
+            1000000,
+          projectId: match.projectId,
+          projectName: match.projectName,
+          matchAmountInToken: match.revisedMatch.toString(),
+          originalMatchAmountInToken: match.matched.toString(),
+        };
+      });
 
       await finalizeRound(roundId, round.payoutStrategy.id, matchingJson);
 
