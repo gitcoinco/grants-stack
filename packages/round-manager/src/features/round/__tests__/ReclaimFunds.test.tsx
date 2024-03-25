@@ -8,7 +8,8 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { ProgressStatus, Round } from "../../api/types";
+import { Round } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import ReclaimFunds from "../ReclaimFunds";
 import ViewRoundPage from "../ViewRoundPage";
 

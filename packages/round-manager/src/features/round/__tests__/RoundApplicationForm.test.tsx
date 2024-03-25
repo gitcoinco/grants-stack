@@ -17,8 +17,8 @@ import { saveToIPFS } from "../../api/ipfs";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import {
   ApplicationMetadata,
-  ProgressStatus,
 } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";

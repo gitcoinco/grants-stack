@@ -11,7 +11,8 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { GrantApplication, ProgressStatus, Round } from "../../api/types";
+import { GrantApplication, Round } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import ViewRoundPage from "../ViewRoundPage";
 

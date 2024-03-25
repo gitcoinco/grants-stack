@@ -33,11 +33,11 @@ import {
   AnswerBlock,
   ApplicationStatus,
   GrantApplication,
-  ProgressStatus,
   ProgressStep,
   ProjectCredentials,
   ProjectStatus,
 } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Lit } from "../api/lit";
 import { utils } from "ethers";

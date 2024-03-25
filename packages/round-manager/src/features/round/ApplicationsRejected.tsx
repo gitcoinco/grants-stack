@@ -5,10 +5,10 @@ import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import {
   ApplicationStatus,
   GrantApplication,
-  ProgressStatus,
   ProgressStep,
   ProjectStatus,
 } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import ConfirmationModal from "../common/ConfirmationModal";
 import { Spinner } from "../common/Spinner";
 import {

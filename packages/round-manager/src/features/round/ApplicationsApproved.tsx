@@ -11,10 +11,10 @@ import {
 import {
   ApplicationStatus,
   GrantApplication,
-  ProgressStatus,
   ProgressStep,
   ProjectStatus,
 } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "../common/ConfirmationModal";
 import {

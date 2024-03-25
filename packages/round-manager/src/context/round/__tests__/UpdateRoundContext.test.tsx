@@ -1,7 +1,6 @@
 import { saveToIPFS } from "../../../features/api/ipfs";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Round } from "../../../features/api/types";
-import { ProgressStatus } from "common/src/types";
 import {
   UpdateRoundData,
   UpdateRoundProvider,
@@ -15,6 +14,7 @@ import {
   useAllo,
 } from "common";
 import { Hex } from "viem";
+import { ProgressStatus } from "common/dist/types";
 
 const mockWallet = {
   address: "0x0",

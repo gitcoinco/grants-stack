@@ -1,6 +1,5 @@
 import {
   Program,
-  ProgressStatus,
   Web3Instance,
 } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
@@ -9,6 +8,7 @@ import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Web3Provider } from "@ethersproject/providers";
 import { DataLayer, useDataLayer } from "data-layer";
+import { ProgressStatus } from "common/src/types";
 
 export interface ReadProgramState {
   programs: Program[];

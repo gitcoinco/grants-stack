@@ -18,9 +18,9 @@ import { Button } from "common/src/styles";
 import {
   ApplicationStatus,
   GrantApplication,
-  ProgressStatus,
   ProgressStep,
 } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import ConfirmationModal from "../common/ConfirmationModal";
 import {
   AdditionalGasFeesNote,

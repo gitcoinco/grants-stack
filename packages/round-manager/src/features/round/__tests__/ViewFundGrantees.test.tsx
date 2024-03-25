@@ -12,7 +12,8 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import * as merklePayoutStrategy from "../../api/payoutStrategy/payoutStrategy";
-import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
+import { MatchingStatsData, Round } from "../../api/types";
+import { ProgressStatus } from "common/src/types";
 import ViewFundGrantees from "../ViewFundGrantees";
 import { faker } from "@faker-js/faker";
 import { parseEther } from "ethers/lib/utils";

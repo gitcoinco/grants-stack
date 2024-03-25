@@ -1,7 +1,6 @@
 import {
   AppStatus,
   GrantApplication,
-  ProgressStatus,
   StatusForDirectPayout,
 } from "../../features/api/types";
 import React, {
@@ -21,6 +20,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { useWallet } from "../../features/common/Auth";
 import { Allo, RoundStrategyType } from "common";
 import { Address } from "viem";
+import { ProgressStatus } from "common/src/types";
 
 export interface BulkUpdateGrantApplicationState {
   roundId: string;

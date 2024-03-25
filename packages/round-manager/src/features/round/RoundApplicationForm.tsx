@@ -25,10 +25,10 @@ import {
   ApplicationMetadata,
   EditQuestion,
   Program,
-  ProgressStatus,
   ProjectRequirements,
   Round,
 } from "../api/types";
+import { ProgressStatus } from "common/src/types";
 import {
   SchemaQuestion,
   generateApplicationSchema,
