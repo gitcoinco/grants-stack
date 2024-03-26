@@ -43,7 +43,7 @@ describe("<ViewProgram />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    stubProgram = makeProgramData({ id: programId });
+    stubProgram = makeProgramData({ id: programId, tags: ["allo-v2"] });
 
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},
