@@ -5,6 +5,7 @@ import { useParams as useRouterParams } from "react-router";
 import { useOutletContext } from "react-router-dom";
 import z from "zod";
 import { ChainId } from "./chain-ids";
+import { Round } from "data-layer";
 
 export * from "./icons";
 export * from "./markdown";
@@ -373,7 +374,8 @@ export interface Web3Instance {
 
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
-export function chainToPassportCommunityIdMap(chainId: number) {
+export function roundToPassportCommunityIdMap(round: Round) {
+  const chainId = round.chainId;
   switch (chainId) {
     case ChainId.AVALANCHE:
       return process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID_AVALANCHE;

@@ -16,11 +16,9 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
   const { address } = useAccount();
 
   const { passportState, passportScore, passportColor, donationImpact } =
-    usePassport({ address });
+    usePassport({ address, round });
 
   const [isOpen, setIsOpen] = useState(false);
-
-  console.log("round", round);
 
   function handleClick() {
     if (

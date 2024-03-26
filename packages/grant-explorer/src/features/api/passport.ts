@@ -5,21 +5,24 @@ import {
   PassportResponseSchema,
   PassportState,
   submitPassport,
-  chainToPassportCommunityIdMap,
-  ChainId,
+  roundToPassportCommunityIdMap,
 } from "common";
+import { Round } from "data-layer";
 import { useEffect, useMemo } from "react";
 import useSWR from "swr";
-import { useNetwork } from "wagmi";
 
 export { submitPassport, fetchPassport, PassportState };
 export type { PassportResponse };
 
-export function usePassport({ address }: { address: string | undefined }) {
-  const { chain } = useNetwork();
-  const chainId = chain?.id || ChainId.MAINNET;
+export function usePassport({
+  address,
+  round,
+}: {
+  address: string | undefined;
+  round: Round;
+}) {
   // fetch passport community id based on chain id
-  const PASSPORT_COMMUNITY_ID = chainToPassportCommunityIdMap(chainId);
+  const PASSPORT_COMMUNITY_ID = roundToPassportCommunityIdMap(round);
   const swr = useSWR<PassportResponse, Response, () => [string, string] | null>(
     () =>
       address && PASSPORT_COMMUNITY_ID

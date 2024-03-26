@@ -68,6 +68,7 @@ export function RoundInCart(
 
   const { passportColor } = usePassport({
     address,
+    round: round!,
   });
 
   const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
