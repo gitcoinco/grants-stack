@@ -19,7 +19,7 @@ export function usePassport({
   round,
 }: {
   address: string | undefined;
-  round: Round;
+  round?: Round;
 }) {
   const PASSPORT_COMMUNITY_ID = roundToPassportCommunityIdMap(round);
 
