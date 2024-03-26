@@ -64,17 +64,19 @@ export function RoundInCart(
     },
   ]);
 
-  const estimateText = matchingEstimatesToText(matchingEstimates);
+  const estimate = matchingEstimatesToText(matchingEstimates);
 
   const totalDonationInUSD =
     props.roundCart.reduce((acc, proj) => acc + Number(proj.amount), 0) *
     props.payoutTokenPrice;
 
-  const { passportColor } = usePassport({
+  let { passportColor } = usePassport({
     address,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     round: round!,
   });
+
+  passportColor = isSybilDefenseEnabled ? passportColor : "green";
 
   const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
 
@@ -136,19 +138,22 @@ export function RoundInCart(
               </div>
             )}
           </div>
-          <div className="gap-2 justify-center">
-            <div
-              className={`flex flex-row gap-4 items-center justify-between font-semibold italic ${passportTextClass}`}
-            >
+          <div className="flex flex-row gap-3 justify-center pt-1 pr-2">
+            <div>
               {matchingEstimateError === undefined &&
                 matchingEstimates !== undefined && (
                   <div className="flex justify-end flex-nowrap">
                     <Skeleton isLoaded={!matchingEstimateLoading}>
-                      <p className={"flex flex-nowrap items-center"}>
+                      <p className={"flex flex-nowrap items-center gap-2"}>
                         <text>Total Match </text>
-                        <BoltIcon className={"w-4 h-4 inline"} />
-                        ~$
-                        {estimateText}
+                        <div
+                          className={`flex flex-row items-center justify-between font-semibold italic ${passportTextClass}`}
+                        >
+                          <BoltIcon className={"w-4 h-4 inline"} />
+                          ~$
+                          {estimate?.toFixed(2)}
+                        </div>
+                        <div>|</div>
                       </p>
                     </Skeleton>
                   </div>
