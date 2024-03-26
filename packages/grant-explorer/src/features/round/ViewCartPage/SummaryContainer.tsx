@@ -28,11 +28,12 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
-import { useDataLayer } from "data-layer";
+import { Round, useDataLayer } from "data-layer";
 import { fetchBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
 import { useAllo } from "../../api/AlloWrapper";
 import { getFormattedRoundId } from "../../common/utils/utils";
+import { R } from "vitest/dist/reporters-2ff87305";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -337,8 +338,10 @@ export function SummaryContainer() {
     }
   }
 
+  // fix this to use different passport scores per round
   const { passportColor, passportScore, passportState } = usePassport({
     address: address ?? "",
+    round: rounds?.[0] as Round,
   });
   const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
 

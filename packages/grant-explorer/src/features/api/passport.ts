@@ -21,8 +21,8 @@ export function usePassport({
   address: string | undefined;
   round: Round;
 }) {
-  // fetch passport community id based on chain id
   const PASSPORT_COMMUNITY_ID = roundToPassportCommunityIdMap(round);
+
   const swr = useSWR<PassportResponse, Response, () => [string, string] | null>(
     () =>
       address && PASSPORT_COMMUNITY_ID
