@@ -29,6 +29,9 @@ export function RoundInCart(
     props.roundCart[0].roundId
   ).round;
 
+  const isSybilDefenseEnabled =
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
+
   const minDonationThresholdAmount =
     round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount ??
     1;
@@ -136,7 +139,7 @@ export function RoundInCart(
         })}
       </div>
       <div className="p-4 bg-grey-100 rounded-md">
-        {address && round && (
+        {address && round && isSybilDefenseEnabled && (
           <div data-testid="passport-widget">
             <PassportWidget round={round} alignment="left" />
           </div>

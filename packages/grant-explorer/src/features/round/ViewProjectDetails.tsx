@@ -104,6 +104,8 @@ export default function ViewProjectDetails() {
 
   const projectToRender = mapApplicationToProject(application);
   const round = mapApplicationToRound(application);
+  const isSybilDefenseEnabled =
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
 
@@ -203,7 +205,7 @@ export default function ViewProjectDetails() {
           <div className="flex items-center pt-2" data-testid="bread-crumbs">
             <Breadcrumb items={breadCrumbs} />
           </div>
-          {walletAddress && round && (
+          {walletAddress && round && isSybilDefenseEnabled && (
             <div data-testid="passport-widget">
               <PassportWidget round={round} alignment="right" />
             </div>

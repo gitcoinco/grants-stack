@@ -188,6 +188,8 @@ function AfterRoundStart(props: {
   const [projects, setProjects] = useState<Project[]>();
   const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
   const { address: walletAddress } = useAccount();
+  const isSybilDefenseEnabled =
+    round.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
 
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
@@ -310,7 +312,7 @@ function AfterRoundStart(props: {
           <div className="flex flex-col pt-2" data-testid="bread-crumbs">
             <Breadcrumb items={breadCrumbs} />
           </div>
-          {walletAddress && (
+          {walletAddress && isSybilDefenseEnabled && (
             <div data-testid="passport-widget">
               <PassportWidget round={round} alignment="right" />
             </div>
