@@ -203,9 +203,9 @@ export default function ViewProjectDetails() {
           <div className="flex items-center pt-2" data-testid="bread-crumbs">
             <Breadcrumb items={breadCrumbs} />
           </div>
-          {walletAddress && (
+          {walletAddress && round && (
             <div data-testid="passport-widget">
-              <PassportWidget />
+              <PassportWidget round={round} alignment="right" />
             </div>
           )}
         </div>

@@ -312,7 +312,7 @@ function AfterRoundStart(props: {
           </div>
           {walletAddress && (
             <div data-testid="passport-widget">
-              <PassportWidget />
+              <PassportWidget round={round} alignment="right" />
             </div>
           )}
         </div>

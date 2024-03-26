@@ -5,14 +5,22 @@ import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-log
 import { ReactComponent as GitcoinPassportBWLogo } from "../../assets/passport-logo-bw.svg";
 import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport-logo-full.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
+import { Round } from "data-layer";
 
-export function PassportWidget() {
+type PassportWidgetProps = {
+  round: Round;
+  alignment?: "left" | "right";
+};
+
+export function PassportWidget({ round, alignment }: PassportWidgetProps) {
   const { address } = useAccount();
 
   const { passportState, passportScore, passportColor, donationImpact } =
     usePassport({ address });
 
   const [isOpen, setIsOpen] = useState(false);
+
+  console.log("round", round);
 
   function handleClick() {
     if (
@@ -66,7 +74,9 @@ export function PassportWidget() {
           direction={isOpen ? "up" : "down"}
         />
         <div
-          className={`backdrop-blur-[2px] cursor-auto absolute mt-1 top-12 border-2
+          className={`backdrop-blur-[2px] cursor-auto absolute mt-1 top-12 ${
+            alignment === "left" ? "left-[-20px]" : ""
+          } border-2
            z-10 ml-[-75px] font-modern-era-medium md:right-0
             md:ml-0 md:mr-[-20px] w-96 bg-white md:bg-white/90 py-4 px-6
              rounded-3xl shadow-lg ${isOpen ? "block" : "hidden"}`}
