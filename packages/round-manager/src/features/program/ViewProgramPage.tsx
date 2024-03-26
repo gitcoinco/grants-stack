@@ -406,10 +406,7 @@ export default function ViewProgram() {
                   <div className="md:mb-8">
                     <div className="flex flex-row justify-between">
                       <p className="font-bold">My Rounds</p>
-                      {!(
-                        programToRender?.tags?.includes("allo-v1") &&
-                        getAlloVersion() === "allo-v2"
-                      ) && (
+                      {getAlloVersion() === "allo-v2" && (
                         <span
                           onClick={() => {
                             setIsModalOpen(true);
@@ -421,7 +418,7 @@ export default function ViewProgram() {
                             className="h-5 w-5 inline -translate-y-0.5"
                             aria-hidden="true"
                           />
-                          &nbsp;Create round
+                          &nbsp;Create rounds
                         </span>
                       )}
                     </div>
@@ -429,12 +426,10 @@ export default function ViewProgram() {
                   </div>
                 </div>
               )}
-              {
-                isRoundsFetched 
-                && roundItems.length === 0  && 
-                !((programToRender?.tags?.includes("allo-v1") && getAlloVersion() === "allo-v2"))
-                && noRoundsGroup
-              }
+              {isRoundsFetched &&
+                roundItems.length === 0 &&
+                getAlloVersion() === "allo-v2" &&
+                noRoundsGroup}
               <Transition.Root show={isModalOpen} as={Fragment}>
                 <Dialog
                   as="div"
