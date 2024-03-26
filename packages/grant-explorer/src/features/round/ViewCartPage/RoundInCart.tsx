@@ -66,6 +66,10 @@ export function RoundInCart(
 
   const estimateText = matchingEstimatesToText(matchingEstimates);
 
+  const totalDonationInUSD =
+    props.roundCart.reduce((acc, proj) => acc + Number(proj.amount), 0) *
+    props.payoutTokenPrice;
+
   const { passportColor } = usePassport({
     address,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -96,23 +100,6 @@ export function RoundInCart(
             </div>
           )}
         </div>
-
-        <div
-          className={`flex flex-row gap-4 items-center justify-between font-semibold italic ${passportTextClass}`}
-        >
-          {matchingEstimateError === undefined &&
-            matchingEstimates !== undefined && (
-              <div className="flex justify-end flex-nowrap">
-                <Skeleton isLoaded={!matchingEstimateLoading}>
-                  <p className={"flex flex-nowrap items-center"}>
-                    <BoltIcon className={"w-4 h-4 inline"} />
-                    ~$
-                    {estimateText}
-                  </p>
-                </Skeleton>
-              </div>
-            )}
-        </div>
       </div>
       <div>
         {props.roundCart.map((project, key) => {
@@ -141,11 +128,39 @@ export function RoundInCart(
         })}
       </div>
       <div className="p-4 bg-grey-100 rounded-md">
-        {address && round && isSybilDefenseEnabled && (
-          <div data-testid="passport-widget">
-            <PassportWidget round={round} alignment="left" />
+        <div className="flex flex-row justify-between">
+          <div>
+            {address && round && isSybilDefenseEnabled && (
+              <div data-testid="passport-widget">
+                <PassportWidget round={round} alignment="left" />
+              </div>
+            )}
           </div>
-        )}
+          <div className="gap-2 justify-center">
+            <div
+              className={`flex flex-row gap-4 items-center justify-between font-semibold italic ${passportTextClass}`}
+            >
+              {matchingEstimateError === undefined &&
+                matchingEstimates !== undefined && (
+                  <div className="flex justify-end flex-nowrap">
+                    <Skeleton isLoaded={!matchingEstimateLoading}>
+                      <p className={"flex flex-nowrap items-center"}>
+                        <text>Total Match </text>
+                        <BoltIcon className={"w-4 h-4 inline"} />
+                        ~$
+                        {estimateText}
+                      </p>
+                    </Skeleton>
+                  </div>
+                )}
+            </div>
+            <div>
+              <p className="text-md">
+                Total donation ${totalDonationInUSD.toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
