@@ -14,6 +14,7 @@ import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor, usePassport } from "../../api/passport";
 import { VotingToken } from "common";
 import { getFormattedRoundId } from "../../common/utils/utils";
+import { PassportWidget } from "../../common/PassportWidget";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {
@@ -108,30 +109,39 @@ export function RoundInCart(
             )}
         </div>
       </div>
-      {props.roundCart.map((project, key) => {
-        const matchingEstimateUSD = matchingEstimates
-          ?.flat()
-          .find(
-            (est) =>
-              getAddress(est.recipient ?? zeroAddress) ===
-              getAddress(project.recipient ?? zeroAddress)
-          )?.differenceInUSD;
-        return (
-          <div key={key}>
-            <ProjectInCart
-              projects={props.roundCart}
-              selectedPayoutToken={props.selectedPayoutToken}
-              removeProjectFromCart={props.handleRemoveProjectFromCart}
-              project={project}
-              index={key}
-              matchingEstimateUSD={matchingEstimateUSD}
-              roundRoutePath={`/round/${props.roundCart[0].chainId}/${props.roundCart[0].roundId}`}
-              last={key === props.roundCart.length - 1}
-              payoutTokenPrice={props.payoutTokenPrice}
-            />
+      <div>
+        {props.roundCart.map((project, key) => {
+          const matchingEstimateUSD = matchingEstimates
+            ?.flat()
+            .find(
+              (est) =>
+                getAddress(est.recipient ?? zeroAddress) ===
+                getAddress(project.recipient ?? zeroAddress)
+            )?.differenceInUSD;
+          return (
+            <div key={key}>
+              <ProjectInCart
+                projects={props.roundCart}
+                selectedPayoutToken={props.selectedPayoutToken}
+                removeProjectFromCart={props.handleRemoveProjectFromCart}
+                project={project}
+                index={key}
+                matchingEstimateUSD={matchingEstimateUSD}
+                roundRoutePath={`/round/${props.roundCart[0].chainId}/${props.roundCart[0].roundId}`}
+                last={key === props.roundCart.length - 1}
+                payoutTokenPrice={props.payoutTokenPrice}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <div className="p-4 bg-grey-100 rounded-md">
+        {address && round && (
+          <div data-testid="passport-widget">
+            <PassportWidget round={round} alignment="left" />
           </div>
-        );
-      })}
+        )}
+      </div>
     </div>
   );
 }
