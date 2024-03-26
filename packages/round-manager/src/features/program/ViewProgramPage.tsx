@@ -34,7 +34,6 @@ import { getPayoutRoundDescription } from "../common/Utils";
 import { parseRoundDates } from "../common/parseRoundDates";
 import { isDirectRound } from "../round/ViewRoundPage";
 import { getRoundDescriptionStatus } from "./getRoundDescriptionStatus";
-import { getAlloVersion } from "common/src/config";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -406,7 +405,7 @@ export default function ViewProgram() {
                   <div className="md:mb-8">
                     <div className="flex flex-row justify-between">
                       <p className="font-bold">My Rounds</p>
-                      {getAlloVersion() === "allo-v2" && (
+                      {programToRender?.tags?.includes("allo-v2") && (
                         <span
                           onClick={() => {
                             setIsModalOpen(true);
@@ -418,7 +417,7 @@ export default function ViewProgram() {
                             className="h-5 w-5 inline -translate-y-0.5"
                             aria-hidden="true"
                           />
-                          &nbsp;Create rounds
+                          &nbsp;Create round
                         </span>
                       )}
                     </div>
@@ -428,7 +427,7 @@ export default function ViewProgram() {
               )}
               {isRoundsFetched &&
                 roundItems.length === 0 &&
-                getAlloVersion() === "allo-v2" &&
+                programToRender?.tags?.includes("allo-v2") &&
                 noRoundsGroup}
               <Transition.Root show={isModalOpen} as={Fragment}>
                 <Dialog
