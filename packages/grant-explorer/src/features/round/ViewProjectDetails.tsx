@@ -18,7 +18,7 @@ import React, {
   useState,
 } from "react";
 import useSWR from "swr";
-import { useEnsName } from "wagmi";
+import { useAccount, useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
@@ -45,6 +45,7 @@ import {
   useApplication,
 } from "../projects/hooks/useApplication";
 import { AlloVersionBanner } from "./ViewRoundPage";
+import { PassportWidget } from "../common/PassportWidget";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -90,6 +91,7 @@ export default function ViewProjectDetails() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const { chainId, roundId, applicationId } = useProjectDetailsParams();
   const dataLayer = useDataLayer();
+  const { address: walletAddress } = useAccount();
 
   const { data: application, error } = useApplication(
     {
@@ -197,8 +199,15 @@ export default function ViewProjectDetails() {
       <DefaultLayout>
         <AlloVersionBanner roundId={roundId} />
         {isAfterRoundEndDate && <RoundEndedBanner />}
-        <div className="py-8 flex items-center" data-testid="bread-crumbs">
-          <Breadcrumb items={breadCrumbs} />
+        <div className="flex flex-row justify-between my-8">
+          <div className="flex items-center pt-2" data-testid="bread-crumbs">
+            <Breadcrumb items={breadCrumbs} />
+          </div>
+          {walletAddress && (
+            <div data-testid="passport-widget">
+              <PassportWidget />
+            </div>
+          )}
         </div>
         <div className="mb-4">
           <ProjectBanner
