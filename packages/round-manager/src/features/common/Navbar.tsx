@@ -5,7 +5,6 @@ import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo-dar
 import { Button } from "common/src/styles";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { AlloVersionSwitcher } from "common/src/components/AlloVersionSwitcher";
-import { getAlloVersion } from "common/src/config";
 
 export interface NavbarProps {
   programCta?: boolean;
@@ -16,8 +15,6 @@ export default function Navbar({
   alloVersionSwitcherVisible: alloVersionSwitcherVisible = true,
   programCta: programCta = true,
 }: NavbarProps) {
-  const createProgramEnabled = programCta && getAlloVersion() === "allo-v2";
-
   return (
     <>
       <nav className="bg-moon-600">
@@ -43,7 +40,7 @@ export default function Navbar({
             </div>
             <div className="flex items-center gap-4">
               <div className="flex-shrink-0">
-                {createProgramEnabled && (
+                {programCta && (
                   <Link to="/program/create" data-testid={"program-create"}>
                     <Button
                       $variant="solid"
