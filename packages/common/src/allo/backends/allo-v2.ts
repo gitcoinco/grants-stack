@@ -538,6 +538,7 @@ export class AlloV2 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -622,11 +623,6 @@ export class AlloV2 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
-
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to apply to round");
@@ -634,7 +630,14 @@ export class AlloV2 implements Allo {
         return error(result);
       }
 
-      return success(receipt.transactionHash);
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(args.projectId);
     });
   }
 
