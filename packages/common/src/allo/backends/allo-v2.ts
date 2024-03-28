@@ -61,6 +61,13 @@ function applicationStatusToNumber(status: ApplicationStatus) {
   }
 }
 
+export function getAlloAddress(chainId: ChainId) {
+  const allo = new AlloV2Contract({
+    chain: chainId,
+  });
+  return allo.address();
+}
+
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
   private ipfsUploader: IpfsUploader;

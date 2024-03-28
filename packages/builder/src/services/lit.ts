@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { Buffer } from "buffer";
 import { Provider } from "@wagmi/core";
+import { getConfig } from "common/src/config";
 import { isJestRunning } from "common";
 import { global } from "../global";
 
@@ -9,6 +10,7 @@ const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 window.Buffer = Buffer;
 
 const litClient = LitJsSdk ? new LitJsSdk.LitNodeClient() : null;
+const isV2 = getConfig().allo.version === "allo-v2";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type LitClient = any;
@@ -55,6 +57,31 @@ export default class Lit {
    * @returns
    */
   isRoundOperatorAccessControl() {
+    if (isV2) {
+      return [
+        {
+          conditionType: "evmContract",
+          contractAddress: this.contract,
+          functionName: "isValidAllocator",
+          functionParams: [":userAddress"],
+          functionAbi: {
+            inputs: [
+              { name: "_allocator", type: "address", internalType: "address" },
+            ],
+            name: "isValidAllocator",
+            outputs: [{ name: "", type: "bool", internalType: "bool" }],
+            stateMutability: "view",
+            type: "function",
+          },
+          chain: this.chain,
+          returnValueTest: {
+            key: "",
+            comparator: "=",
+            value: "true",
+          },
+        },
+      ];
+    }
     return [
       {
         conditionType: "evmContract",
