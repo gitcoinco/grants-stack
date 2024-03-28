@@ -48,6 +48,11 @@ export const getApplicationSteps = (newProject?: boolean): Step[] => {
       status: RoundApplicationStatus.SendingTx,
     },
     {
+      name: "Indexing",
+      description: "Indexing the data.",
+      status: RoundApplicationStatus.Indexing,
+    },
+    {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
       status: RoundApplicationStatus.Sent,

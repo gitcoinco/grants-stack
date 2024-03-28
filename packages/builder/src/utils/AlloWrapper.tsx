@@ -3,10 +3,10 @@ import {
   AlloProvider,
   AlloV1,
   AlloV2,
-  ChainId,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
+  isChainIdSupported,
 } from "common";
 import { getConfig } from "common/src/config";
 import { useEffect, useState } from "react";
@@ -22,17 +22,17 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const [backend, setBackend] = useState<Allo | null>(null);
 
   useEffect(() => {
-    if (!web3Provider || !signer || !chainID) {
+    const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
+
+    if (!web3Provider || !signer || !chainID || !chainIdSupported) {
       setBackend(null);
     } else {
-      const chainIdSupported = Object.values(ChainId).includes(chainID);
-
       const config = getConfig();
       let alloBackend: Allo;
 
       if (config.allo.version === "allo-v2") {
         alloBackend = new AlloV2({
-          chainId: chainIdSupported ? chainID : 1,
+          chainId: chainID,
           transactionSender: createEthersTransactionSender(
             signer,
             web3Provider
@@ -49,7 +49,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
         setBackend(alloBackend);
       } else {
         alloBackend = new AlloV1({
-          chainId: chainIdSupported ? chainID : 1,
+          chainId: chainID,
           transactionSender: createEthersTransactionSender(
             signer,
             web3Provider

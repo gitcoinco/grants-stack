@@ -1,8 +1,11 @@
 import { Buffer } from "buffer";
 import { isJestRunning } from "common";
 import { datadogLogs } from "@datadog/browser-logs";
+import { getConfig } from "common/src/config";
+import { getAddress } from "viem";
 
-const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk-old-w-pgn");
+const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
+const isV2 = getConfig().allo.version === "allo-v2";
 
 window.Buffer = Buffer;
 
@@ -44,7 +47,7 @@ export class Lit {
    */
   constructor(initConfig: LitInit) {
     this.chainId = initConfig.chainId;
-    this.contract = initConfig.contract;
+    this.contract = getAddress(initConfig.contract);
   }
 
   /**
@@ -52,6 +55,32 @@ export class Lit {
    * @returns
    */
   isRoundOperatorAccessControl() {
+    if (isV2) {
+      return [
+        {
+          conditionType: "evmContract",
+          contractAddress: this.contract,
+          functionName: "isValidAllocator",
+          functionParams: [":userAddress"],
+          functionAbi: {
+            inputs: [
+              { name: "_allocator", type: "address", internalType: "address" },
+            ],
+            name: "isValidAllocator",
+            outputs: [{ name: "", type: "bool", internalType: "bool" }],
+            stateMutability: "view",
+            type: "function",
+          },
+          chain: this.chainIdToChainName(this.chainId),
+          returnValueTest: {
+            key: "",
+            comparator: "=",
+            value: "true",
+          },
+        },
+      ];
+    }
+
     return [
       {
         conditionType: "evmContract",

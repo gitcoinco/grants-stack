@@ -38,11 +38,18 @@ import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { getRoundStrategyType, renderToPlainText, useAllo } from "common";
 import { roundApplicationsToCSV } from "../api/exports";
-import { utils } from "ethers";
 import { useWallet } from "../common/Auth";
 
-async function exportAndDownloadCSV(roundId: string, chainId: number) {
-  const csv = await roundApplicationsToCSV(roundId, chainId);
+export async function exportAndDownloadCSV(
+  roundId: string,
+  chainId: number,
+  litContractAddress: string
+) {
+  const csv = await roundApplicationsToCSV(
+    roundId,
+    chainId,
+    litContractAddress
+  );
 
   // create a download link and click it
   const outputBlob = new Blob([csv], {
@@ -218,9 +225,20 @@ export default function ApplicationsToApproveReject({
   };
 
   async function handleExportCsvClick(roundId: string, chainId: number) {
+    if (
+      applications === undefined ||
+      applications[0].payoutStrategy?.id === undefined
+    ) {
+      return;
+    }
+
     try {
       setIsCsvExportLoading(true);
-      await exportAndDownloadCSV(roundId, chainId);
+      await exportAndDownloadCSV(
+        roundId,
+        chainId,
+        roundId.startsWith("0x") ? roundId : applications[0].payoutStrategy.id
+      );
     } catch (e) {
       datadogLogs.logger.error(
         `error: exportApplicationCsv - ${e}, id: ${roundId}`
@@ -240,7 +258,7 @@ export default function ApplicationsToApproveReject({
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
             disabled={isCsvExportLoading}
-            onClick={() => handleExportCsvClick(utils.getAddress(id), chain.id)}
+            onClick={() => handleExportCsvClick(id, chain.id)}
           >
             {isCsvExportLoading ? (
               <>

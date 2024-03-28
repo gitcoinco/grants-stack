@@ -283,6 +283,9 @@ export const getTxExplorerForContract = (
 
     case ChainId.MAINNET:
       return `https://etherscan.io/address/${contractAddress}`;
+
+    case ChainId.ARBITRUM:
+      return `https://arbiscan.io/address/${contractAddress}`;
   }
 };
 /**

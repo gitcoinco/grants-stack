@@ -604,6 +604,7 @@ export class AlloV1 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -647,6 +648,8 @@ export class AlloV1 implements Allo {
         chainId: this.chainId,
         blockNumber: receipt.blockNumber,
       });
+
+      emit("indexingStatus", success(null));
 
       return success(args.projectId);
     });

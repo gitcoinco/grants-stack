@@ -38,28 +38,7 @@ import { useWallet } from "../common/Auth";
 import { roundApplicationsToCSV } from "../api/exports";
 import { CheckIcon } from "@heroicons/react/solid";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
-
-async function exportAndDownloadCSV(roundId: string, chainId: number) {
-  const csv = await roundApplicationsToCSV(roundId, chainId);
-
-  // create a download link and click it
-  const outputBlob = new Blob([csv], {
-    type: "text/csv;charset=utf-8;",
-  });
-
-  const link = document.createElement("a");
-
-  try {
-    const dataUrl = URL.createObjectURL(outputBlob);
-    link.setAttribute("href", dataUrl);
-    link.setAttribute("download", `applications-${roundId}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-  } finally {
-    document.body.removeChild(link);
-  }
-}
+import { exportAndDownloadCSV } from "./ApplicationsToApproveReject";
 
 // Move applications received in direct grants to In Review
 
@@ -209,9 +188,19 @@ export default function ApplicationsToReview() {
   };
 
   async function handleExportCsvClick(roundId: string, chainId: number) {
+    if (
+      applications === undefined ||
+      applications[0].payoutStrategy?.id === undefined
+    ) {
+      return;
+    }
     try {
       setIsCsvExportLoading(true);
-      await exportAndDownloadCSV(roundId, chainId);
+      await exportAndDownloadCSV(
+        roundId,
+        chainId,
+        roundId.startsWith("0x") ? roundId : applications[0].payoutStrategy.id
+      );
     } catch (e) {
       datadogLogs.logger.error(
         `error: exportApplicationCsv - ${e}, id: ${roundId}`

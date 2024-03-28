@@ -363,7 +363,7 @@ export class DataLayer {
     roundId: Lowercase<Address> | string;
     chainId: number;
     applicationId: string;
-  }): Promise<Application | undefined> {
+  }): Promise<Application | null> {
     const requestVariables = {
       roundId,
       chainId,
@@ -376,7 +376,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    return response.application ?? [];
+    return response.application ?? null;
   }
 
   /**

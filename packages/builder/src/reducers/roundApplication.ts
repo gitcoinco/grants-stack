@@ -18,6 +18,7 @@ export const enum Status {
   UploadingMetadata,
   CreateProject,
   SendingTx,
+  Indexing,
   Sent,
   Found,
   NotFound,

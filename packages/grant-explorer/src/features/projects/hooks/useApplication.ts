@@ -1,16 +1,11 @@
 import useSWR from "swr";
 import { Application, DataLayer, Project, Round } from "data-layer";
-import { getConfig } from "common/src/config";
 
 type Params = {
   chainId?: number;
   roundId?: string;
   applicationId?: string;
 };
-
-const {
-  allo: { version },
-} = getConfig();
 
 export function useApplication(params: Params, dataLayer: DataLayer) {
   const shouldFetch = Object.values(params).every(Boolean);
@@ -20,26 +15,13 @@ export function useApplication(params: Params, dataLayer: DataLayer) {
       applicationId: params.applicationId as string,
       roundId: params.roundId as string,
     };
-    return dataLayer.getApplication(validatedParams).then((application) => {
-      /* Don't fetch v2 rounds when allo version is set to v1 */
-      if (
-        version === "allo-v1" &&
-        application?.round?.tags?.includes("allo-v2")
-      ) {
-        return;
-      }
-      return application;
-    });
+    return (await dataLayer.getApplication(validatedParams)) ?? undefined;
   });
 }
 
 // These functions map the application data to fit the shape of the view
 // Changing the view would require significant changes to the markup + cart storage
-export function mapApplicationToProject(
-  application?: Application
-): Project | undefined {
-  if (!application) return;
-
+export function mapApplicationToProject(application: Application): Project {
   return {
     grantApplicationId: application.id,
     applicationIndex: Number(application.id),
@@ -52,10 +34,7 @@ export function mapApplicationToProject(
   };
 }
 
-export function mapApplicationToRound(
-  application?: Application
-): Round | undefined {
-  if (!application) return;
+export function mapApplicationToRound(application: Application): Round {
   return {
     roundEndTime: new Date(application.round.donationsEndTime),
     roundStartTime: new Date(application.round.donationsStartTime),

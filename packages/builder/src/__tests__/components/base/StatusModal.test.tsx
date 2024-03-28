@@ -10,7 +10,15 @@ describe("<StatusModal /> with applicationSteps", () => {
     {
       error: false,
       currentStep: getApplicationSteps()[0],
-      icons: ["current", "waiting", "waiting", "waiting", "waiting", "waiting"],
+      icons: [
+        "current",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+      ],
     },
     {
       error: false,
@@ -18,6 +26,7 @@ describe("<StatusModal /> with applicationSteps", () => {
       icons: [
         "completed",
         "current",
+        "waiting",
         "waiting",
         "waiting",
         "waiting",
@@ -34,6 +43,7 @@ describe("<StatusModal /> with applicationSteps", () => {
         "waiting",
         "waiting",
         "waiting",
+        "waiting",
       ],
     },
     {
@@ -44,6 +54,7 @@ describe("<StatusModal /> with applicationSteps", () => {
         "completed",
         "completed",
         "current",
+        "waiting",
         "waiting",
         "waiting",
       ],
@@ -58,12 +69,27 @@ describe("<StatusModal /> with applicationSteps", () => {
         "completed",
         "current",
         "waiting",
+        "waiting",
       ],
     },
     {
       error: false,
       currentStep: getApplicationSteps()[5],
       icons: [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "current",
+        "waiting",
+      ],
+    },
+    {
+      error: false,
+      currentStep: getApplicationSteps()[6],
+      icons: [
+        "completed",
         "completed",
         "completed",
         "completed",
@@ -78,12 +104,28 @@ describe("<StatusModal /> with applicationSteps", () => {
     {
       error: true,
       currentStep: getApplicationSteps()[0],
-      icons: ["error", "waiting", "waiting", "waiting", "waiting", "waiting"],
+      icons: [
+        "error",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+      ],
     },
     {
       error: true,
       currentStep: getApplicationSteps()[1],
-      icons: ["completed", "error", "waiting", "waiting", "waiting", "waiting"],
+      icons: [
+        "completed",
+        "error",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+      ],
     },
     {
       error: true,
@@ -92,6 +134,7 @@ describe("<StatusModal /> with applicationSteps", () => {
         "completed",
         "completed",
         "error",
+        "waiting",
         "waiting",
         "waiting",
         "waiting",
@@ -107,6 +150,7 @@ describe("<StatusModal /> with applicationSteps", () => {
         "error",
         "waiting",
         "waiting",
+        "waiting",
       ],
     },
     {
@@ -119,12 +163,27 @@ describe("<StatusModal /> with applicationSteps", () => {
         "completed",
         "error",
         "waiting",
+        "waiting",
       ],
     },
     {
       error: true,
       currentStep: getApplicationSteps()[5],
       icons: [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "error",
+        "waiting",
+      ],
+    },
+    {
+      error: true,
+      currentStep: getApplicationSteps()[6],
+      icons: [
+        "completed",
         "completed",
         "completed",
         "completed",
