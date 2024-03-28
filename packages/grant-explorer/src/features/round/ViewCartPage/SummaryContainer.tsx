@@ -28,11 +28,12 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
-import { useDataLayer } from "data-layer";
+import { Round, useDataLayer } from "data-layer";
 import { fetchBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
 import { useAllo } from "../../api/AlloWrapper";
 import { getFormattedRoundId } from "../../common/utils/utils";
+import { R } from "vitest/dist/reporters-2ff87305";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -337,10 +338,7 @@ export function SummaryContainer() {
     }
   }
 
-  const { passportColor, passportScore, passportState } = usePassport({
-    address: address ?? "",
-  });
-  const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
+  const passportTextClass = getClassForPassportColor("black");
 
   const { data: totalDonationAcrossChainsInUSDData } = useSWR(
     totalDonationsPerChain,
@@ -403,7 +401,7 @@ export function SummaryContainer() {
   } = useMatchingEstimates(matchingEstimateParamsPerRound);
 
   const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
-  const estimateText = matchingEstimatesToText(matchingEstimates);
+  const estimate = matchingEstimatesToText(matchingEstimates);
 
   /** Special case where none of the chains to be checked out have enough funds */
   const notEnoughFunds = Object.values(enoughFundsToDonatePerChain).every(
@@ -431,19 +429,14 @@ export function SummaryContainer() {
             <>
               <div className="flex flex-row mt-4 items-center">
                 <p>Estimated match</p>
-                <MatchingEstimateTooltip
-                  isEligible={
-                    (passportScore !== undefined && passportScore >= 15) ||
-                    noPassportRoundsInCart
-                  }
-                />
+                <MatchingEstimateTooltip isEligible={noPassportRoundsInCart} />
               </div>
               <div className="flex justify-end mt-4">
                 <Skeleton isLoaded={!matchingEstimateLoading}>
                   <p>
                     <BoltIcon className={"w-4 h-4 inline"} />
                     ~$
-                    {estimateText}
+                    {estimate?.toFixed(2)}
                   </p>
                 </Skeleton>
               </div>
@@ -483,12 +476,7 @@ export function SummaryContainer() {
             }
 
             /* Check if user hasn't connected passport yet, display the warning modal */
-            if (
-              (passportState === PassportState.ERROR ||
-                passportState === PassportState.NOT_CONNECTED ||
-                passportState === PassportState.INVALID_PASSPORT) &&
-              !noPassportRoundsInCart
-            ) {
+            if (estimate === 0 && !noPassportRoundsInCart) {
               setDonateWarningModalOpen(true);
               return;
             }

@@ -89,6 +89,5 @@ export function matchingEstimatesToText(
     ?.flat()
     .map((est) => est.differenceInUSD ?? 0)
     .filter((diff) => diff > 0)
-    .reduce((acc, b) => acc + b, 0)
-    .toFixed(2);
+    .reduce((acc, b) => acc + b, 0);
 }

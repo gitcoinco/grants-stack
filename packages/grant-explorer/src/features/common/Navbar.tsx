@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
-import { PassportWidget } from "./PassportWidget";
 import { exploreRoundsLink } from "../discovery/LandingTabs";
 import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
@@ -70,11 +69,6 @@ export default function Navbar(props: NavbarProps) {
             >
               Explore rounds
             </Link>
-            {walletAddress && (
-              <div data-testid="passport-widget">
-                <PassportWidget />
-              </div>
-            )}
             {showWalletInteraction && (
               <div>
                 <div
