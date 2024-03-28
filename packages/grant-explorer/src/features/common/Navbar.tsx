@@ -111,19 +111,33 @@ export default function Navbar(props: NavbarProps) {
         <div className="bg-white/40 backdrop-blur-sm p-4 text-center w-full font-medium flex flex-col items-center justify-center text-black">
           <div>
             <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-            To check out rounds on that are running on Allo{" "}
-            {alloVersion === "allo-v1" ? "v2" : "v1"}, please click{" "}
-            <a
-              href={
-                alloVersion === "allo-v1"
-                  ? "https://explorer.gitcoin.co"
-                  : "https://explorer-v1.gitcoin.co"
-              }
-              className="underline"
-              target="_blank"
-            >
-              here!
-            </a>
+            {alloVersion === "allo-v2" ? (
+              <>
+                Rounds launched before the 25th of March appear on Allo v1.
+                Check out those rounds{" "}
+                <a
+                  className="underline"
+                  target="_blank"
+                  href="https://explorer-v1.gitcoin.co"
+                >
+                  here
+                </a>
+                !
+              </>
+            ) : (
+              <>
+                Rounds launched after the 24th of March appear on Allo v2. Check
+                out those rounds{" "}
+                <a
+                  className="underline"
+                  target="_blank"
+                  href="https://explorer.gitcoin.co"
+                >
+                  here
+                </a>
+                !
+              </>
+            )}
           </div>
         </div>
       )}
