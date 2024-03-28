@@ -87,7 +87,7 @@ export const submitPassport = (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-API-KEY":
+      "X-API-Key":
         round.chainId === ChainId.AVALANCHE
           ? `${process.env.REACT_APP_PASSPORT_AVALANCHE_API_KEY}`
           : `${process.env.REACT_APP_PASSPORT_API_KEY}`,

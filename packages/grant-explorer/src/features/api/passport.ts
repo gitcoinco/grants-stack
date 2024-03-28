@@ -40,8 +40,6 @@ export function usePassport({
           ? await submitPassport(...args)
           : await fetchPassport(...args);
 
-      console.log("fetchPassport", res);
-
       if (res.ok) {
         return PassportResponseSchema.parse(await res.json());
       } else {
