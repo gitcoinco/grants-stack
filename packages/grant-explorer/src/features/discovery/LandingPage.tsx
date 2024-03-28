@@ -2,6 +2,7 @@ import { GradientLayout } from "../common/DefaultLayout";
 import {
   ACTIVE_ROUNDS_FILTER,
   ROUNDS_ENDING_SOON_FILTER,
+  FEATURED_ROUNDS_FILTER,
   RoundStatus,
   useFilterRounds,
 } from "./hooks/useFilterRounds";
@@ -26,24 +27,59 @@ const LandingPage = () => {
     getEnabledChains()
   );
 
+  const featuredRounds = useFilterRounds(
+    FEATURED_ROUNDS_FILTER,
+    getEnabledChains()
+  );
+
   const filteredActiveRounds = useMemo(() => {
     return filterRoundsWithProjects(
       filterOutPrivateRounds(activeRounds.data ?? [])
     );
   }, [activeRounds.data]);
+
   const filteredRoundsEndingSoon = useMemo(() => {
     return filterRoundsWithProjects(
       filterOutPrivateRounds(roundsEndingSoon.data ?? [])
     );
   }, [roundsEndingSoon.data]);
 
+  const featuredRoundsData = useMemo(() => {
+    return filterRoundsWithProjects(
+      filterOutPrivateRounds(featuredRounds.data ?? [])
+    );
+  }, [featuredRounds.data]);
+
   return (
     <GradientLayout showWalletInteraction showAlloVersionBanner>
       <LandingHero />
       <LandingSection
-        title="Donate now"
+        title="Featured Rounds"
         action={
           <ViewAllLink to={`/rounds?${toQueryString(ACTIVE_ROUNDS_FILTER)}`}>
+            View all
+          </ViewAllLink>
+        }
+      >
+        <RoundsGrid
+          {...{
+            ...activeRounds,
+            data: featuredRoundsData.sort(
+              (a, b) => b.matchAmountInUsd - a.matchAmountInUsd
+            ),
+          }}
+          loadingCount={4}
+          maxCount={6}
+          getItemClassName={(_, i) =>
+            `${i % 3 && i % 4 ? "" : "md:col-span-2"}`
+          }
+          roundType="active"
+        />
+      </LandingSection>
+      <LandingSection
+        title="Donate now"
+        action={
+          <ViewAllLink to={`/rounds?${toQueryString(FEATURED_ROUNDS_FILTER)}`}>
             View all
           </ViewAllLink>
         }
