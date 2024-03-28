@@ -265,7 +265,7 @@ export default function Form({
       projectApplications.filter((app) => app.projectId === projectId).length >
       0;
 
-    setHasExistingApplication(hasProjectAppliedToRound);
+    // setHasExistingApplication(hasProjectAppliedToRound);
     setIsLoading(false);
     handleInput(e);
   };
