@@ -5,6 +5,7 @@ import { useParams as useRouterParams } from "react-router";
 import { useOutletContext } from "react-router-dom";
 import z from "zod";
 import { ChainId } from "./chain-ids";
+import { getAlloVersion } from "./config";
 
 export * from "./icons";
 export * from "./markdown";
@@ -409,3 +410,10 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
 export const getTxBlockExplorerLink = (chainId: ChainId, txHash: string) => {
   return txBlockExplorerLinks[chainId] + txHash;
 };
+
+export function isChainIdSupported(chainId: number) {
+  if (chainId === 424 && getAlloVersion() === "allo-v2") {
+    return false;
+  }
+  return Object.values(ChainId).includes(chainId);
+}
