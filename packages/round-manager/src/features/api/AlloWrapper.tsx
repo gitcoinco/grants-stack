@@ -7,6 +7,7 @@ import {
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
+  isChainIdSupported,
 } from "common";
 import { useNetwork, useProvider, useSigner } from "wagmi";
 import { getConfig } from "common/src/config";
@@ -20,18 +21,18 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const chainID = chain?.id;
 
   const backend = useMemo(() => {
-    if (!web3Provider || !signer || !chainID) {
+    const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
+
+    if (!web3Provider || !signer || !chainID || !chainIdSupported) {
       return null;
     }
 
     const config = getConfig();
     let alloBackend: Allo;
 
-    const chainIdSupported = Object.values(ChainId).includes(chainID);
-
     if (config.allo.version === "allo-v2") {
       alloBackend = new AlloV2({
-        chainId: chainIdSupported ? chainID : 1,
+        chainId: chainID,
         transactionSender: createEthersTransactionSender(signer, web3Provider),
         ipfsUploader: createPinataIpfsUploader({
           token: getConfig().pinata.jwt,
@@ -43,7 +44,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       });
     } else {
       alloBackend = new AlloV1({
-        chainId: chainIdSupported ? chainID : 1,
+        chainId: chainID,
         transactionSender: createEthersTransactionSender(signer, web3Provider),
         ipfsUploader: createPinataIpfsUploader({
           token: getConfig().pinata.jwt,
