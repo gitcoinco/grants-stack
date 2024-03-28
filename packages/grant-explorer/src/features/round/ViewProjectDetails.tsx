@@ -88,8 +88,21 @@ export default function ViewProjectDetails() {
     "====> Route: /round/:chainId/:roundId/:applicationId"
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-  const { chainId, roundId, applicationId } = useProjectDetailsParams();
+  const {
+    chainId,
+    roundId,
+    applicationId: paramApplicationId,
+  } = useProjectDetailsParams();
   const dataLayer = useDataLayer();
+
+  let applicationId: string;
+
+  /// handle URLs where the application ID is ${roundId}-${applicationId}
+  if (paramApplicationId.includes("-")) {
+    applicationId = paramApplicationId.split("-")[1];
+  } else {
+    applicationId = paramApplicationId;
+  }
 
   const { data: application, error } = useApplication(
     {
@@ -100,8 +113,8 @@ export default function ViewProjectDetails() {
     dataLayer
   );
 
-  const projectToRender = mapApplicationToProject(application);
-  const round = mapApplicationToRound(application);
+  const projectToRender = application && mapApplicationToProject(application);
+  const round = application && mapApplicationToRound(application);
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
 
