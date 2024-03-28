@@ -118,16 +118,31 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                 </div>
                 <p className="text-left text-xs font-dm-mono">
                   Your donation impact is calculated based on your Passport
-                  score. Scores higher than 15 will begin to be eligible for
-                  matching, and your donation impact scales as your Passport
-                  score increases. You can update your score by heading over to{" "}
-                  <a
-                    href={"https://passport.gitcoin.co"}
-                    className={"underline"}
-                  >
-                    Passport
-                  </a>
-                  .
+                  score.
+                  {round.chainId !== ChainId.AVALANCHE && (
+                    <span>
+                      Scores higher than 15 will begin to be eligible for
+                      matching, and your donation impact scales as your Passport
+                      score increases.
+                    </span>
+                  )}
+                  <span>
+                    You can update your score by heading over to Passport.{" "}
+                  </span>
+                  {round.chainId === ChainId.AVALANCHE && (
+                    <span>
+                      To learn more about the Avalanche Custom Scorer, click{" "}
+                      <a
+                        href={
+                          "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/supporter-donor-faq/passport-custom-scorer"
+                        }
+                        className={"underline"}
+                      >
+                        here
+                      </a>
+                      .
+                    </span>
+                  )}
                 </p>
               </>
             ) : (
