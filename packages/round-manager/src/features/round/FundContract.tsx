@@ -40,7 +40,7 @@ export function useContractAmountFunded(args: {
       error: undefined;
       data: {
         fundedAmount: bigint;
-        fundedAmountInUsd: number;
+        fundedAmountInUsd: number | undefined;
       };
     } {
   const { round, payoutToken } = args;
@@ -93,13 +93,15 @@ export function useContractAmountFunded(args: {
     }
   }
 
-  if (balanceData !== undefined && priceData !== undefined) {
+  if (balanceData !== undefined) {
     return {
       isLoading: false,
       error: undefined,
       data: {
         fundedAmount: balanceData.value.toBigInt(),
-        fundedAmountInUsd: Number(balanceData.formatted) * Number(priceData),
+        fundedAmountInUsd: priceData
+          ? Number(balanceData.formatted) * Number(priceData)
+          : undefined,
       },
     };
   }
@@ -371,7 +373,12 @@ export default function FundContract(props: {
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Matching pool size:</p>
           <p className="text-sm">
-            {matchingFunds.toFixed(2)} {matchingFundPayoutToken?.name}{" "}
+            {matchingFunds
+              ?.toLocaleString(undefined, {
+                minimumFractionDigits: 5,
+              })
+              .replace(/\.?0+$/, "")}{" "}
+            {matchingFundPayoutToken?.name}{" "}
             {matchingFundsInUSD && matchingFundsInUSD > 0 ? (
               <span className="text-sm text-slate-400 ml-2">
                 ${matchingFundsInUSD.toFixed(2)} USD
@@ -457,7 +464,11 @@ export default function FundContract(props: {
               <p className="text-sm w-1/3">Amount left to fund:</p>
               <p className="text-sm">
                 {" "}
-                {totalAmountLeftToFund.toFixed(4)}{" "}
+                {totalAmountLeftToFund
+                  ?.toLocaleString(undefined, {
+                    minimumFractionDigits: 5,
+                  })
+                  .replace(/\.?0+$/, "")}{" "}
                 {matchingFundPayoutToken?.name}{" "}
                 {amountLeftToFundInUSD !== undefined &&
                 amountLeftToFundInUSD > 0 ? (

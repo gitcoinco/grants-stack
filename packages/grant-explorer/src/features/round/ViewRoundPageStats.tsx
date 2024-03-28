@@ -2,8 +2,6 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { Formik, Field, Form, FieldArray, FormikProps } from "formik";
-import useSWR from "swr";
-import { Client } from "allo-indexer-client";
 import roundImplementationABI from "common/src/allo/abis/allo-v1/RoundImplementation";
 import merklePayoutStrategyImplementationABI from "common/src/allo/abis/allo-v1/MerklePayoutStrategyImplementation";
 import {
@@ -56,6 +54,7 @@ import { useAllo } from "../api/AlloWrapper";
 import { useRoundUniqueDonorsCount } from "../projects/hooks/useRoundUniqueDonorsCount";
 import BeforeRoundStart from "./BeforeRoundStart";
 import { ProgressStatus } from "common/src/types";
+import { getAlloVersion } from "common/src/config";
 
 export type MatchingStatsData = {
   index?: number;
@@ -84,6 +83,7 @@ export default function ViewRoundStats() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId/stats");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
+  const alloVersion = getAlloVersion();
   const { chainId, roundId } = useParams();
 
   const { round, isLoading } = useRoundById(
@@ -94,7 +94,21 @@ export default function ViewRoundStats() {
   const currentTime = new Date();
   const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
   const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
-
+  const isAfterRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime)
+      ? false
+      : round && round.roundEndTime <= currentTime);
+  useEffect(() => {
+    if (
+      isAfterRoundEndDate !== undefined &&
+      roundId?.startsWith("0x") &&
+      alloVersion === "allo-v2" &&
+      !isAfterRoundEndDate
+    ) {
+      window.location.href = `https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`;
+    }
+  }, [roundId, alloVersion, isAfterRoundEndDate]);
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
   ) : (

@@ -109,6 +109,8 @@ export interface Program {
     name?: string;
     logo?: string;
   };
+
+  tags?: string[];
 }
 
 export type InputType =
@@ -388,6 +390,8 @@ export interface GrantApplication {
    * Index of a grant application
    */
   applicationIndex: number;
+  anchorAddress: string;
+
   /**
    * Created timestamp of a grant application
    */

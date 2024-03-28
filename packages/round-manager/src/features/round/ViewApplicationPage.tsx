@@ -70,6 +70,8 @@ import { getPayoutRoundDescription } from "../common/Utils";
 import moment from "moment";
 import ApplicationDirectPayout from "./ApplicationDirectPayout";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
+import { getAddress } from "ethers/lib/utils.js";
+import { getAlloAddress } from "common/dist/allo/backends/allo-v2";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -296,6 +298,10 @@ export default function ViewApplicationPage() {
 
   const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>();
   useEffect(() => {
+    if (!round || !applications) {
+      return;
+    }
+
     // Iterate through application answers and decrypt PII information
     const decryptAnswers = async () => {
       const _answerBlocks: AnswerBlock[] = [];
@@ -314,9 +320,12 @@ export default function ViewApplicationPage() {
 
               const response = await fetch(base64EncryptedString);
               const encryptedString: Blob = await response.blob();
+
               const lit = new Lit({
                 chainId: chain.id,
-                contract: utils.getAddress(roundId),
+                contract: roundId.startsWith("0x")
+                  ? roundId
+                  : round?.payoutStrategy.id ?? "",
               });
 
               const decryptedString = await lit.decryptString(
@@ -349,7 +358,7 @@ export default function ViewApplicationPage() {
       decryptAnswers();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [application, hasAccess, isLoading]);
+  }, [application, round, hasAccess, isLoading]);
 
   // Handle case where project github is not set but user github is set. if both are not available, set to null
   const registeredGithub =

@@ -1,3 +1,5 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
   // if this is not set it will default to user's operating system preferences
   darkMode: "class",
@@ -43,6 +45,7 @@ module.exports = {
     },
     fontFamily: {
       sans: ['"Libre Franklin"'],
+      mono: ['"DM Mono"', ...defaultTheme.fontFamily.mono],
     },
   },
   important: true,

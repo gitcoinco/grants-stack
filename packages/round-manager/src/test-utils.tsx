@@ -187,6 +187,7 @@ export const makeMatchingStatsData = (): DistributionMatch => {
     matchAmountInToken: faker.datatype.number().toString(),
     originalMatchAmountInToken: faker.datatype.number().toString(),
     projectPayoutAddress: faker.finance.ethereumAddress(),
+    anchorAddress: faker.finance.ethereumAddress(),
   };
 };
 
@@ -204,6 +205,7 @@ export const makeApplication = (): GrantApplication => {
     ] as ProjectStatus,
     applicationIndex: faker.datatype.number(),
     createdAt: faker.date.past().toDateString(),
+    anchorAddress: faker.finance.ethereumAddress(),
     distributionTransaction: null,
   };
 };
@@ -366,6 +368,7 @@ export const makeGrantApplicationData = (
         randomInt(0, 4)
       ] as ProjectStatus),
     applicationIndex: applicationIndex ?? faker.datatype.number(),
+    anchorAddress: faker.finance.ethereumAddress(),
     createdAt: faker.datatype.number().toString(),
   };
 };

@@ -9,6 +9,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Round } from "../api/types";
 import { isDirectRound, isInfiniteDate, votingTokens } from "../api/utils";
+import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { ProjectBanner } from "../common/ProjectBanner";
 import { Spinner } from "../common/Spinner";
@@ -21,18 +22,18 @@ import {
   CardTitle,
   CardsContainer,
 } from "../common/styles";
-
 import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
 import { useToken } from "wagmi";
 import { getAddress } from "viem";
 import { ProjectLogo } from "../common/ProjectCard";
-
 import React from "react";
 import { DefaultLayout } from "../common/DefaultLayout";
 import ViewRoundPageHero from "./ViewRoundPageHero";
 import ViewRoundPageTabs from "./ViewRoundPageTabs";
 import BeforeRoundStart from "./BeforeRoundStart";
+import { getAlloVersion } from "common/src/config";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -53,6 +54,11 @@ export default function ViewRound() {
   const isBeforeRoundEndDate =
     round &&
     (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
+  const isAfterRoundEndDate =
+    round &&
+    (isInfiniteDate(round.roundEndTime)
+      ? false
+      : round && round.roundEndTime <= currentTime);
 
   useEffect(() => {
     if (isLoading) setIsFirstPageLoad(true);
@@ -68,6 +74,18 @@ export default function ViewRound() {
     navigate,
     roundId,
   ]);
+  const alloVersion = getAlloVersion();
+
+  useEffect(() => {
+    if (
+      isAfterRoundEndDate !== undefined &&
+      roundId?.startsWith("0x") &&
+      alloVersion === "allo-v2" &&
+      !isAfterRoundEndDate
+    ) {
+      window.location.href = `https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`;
+    }
+  }, [roundId, alloVersion, isAfterRoundEndDate]);
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
@@ -98,6 +116,31 @@ export default function ViewRound() {
   );
 }
 
+export function AlloVersionBanner({ roundId }: { roundId: string }) {
+  const isAlloV1 = roundId.startsWith("0x");
+
+  return (
+    <>
+      <div className="fixed z-20 left-0 top-[64px] w-full bg-[#FFEFBE] p-4 text-center font-medium flex items-center justify-center">
+        <ExclamationCircleIcon className="h-5 w-5 mr-2" />
+        <span>
+          This round has been deployed on Allo {isAlloV1 ? "v1" : "v2"}. Any
+          projects that you add to your cart will have to be donated to
+          separately from projects on rounds deployed on Allo{" "}
+          {isAlloV1 ? "v2" : "v1"}. Learn more{" "}
+          <a href="#" target="_blank" rel="noreferrer" className="underline">
+            here
+          </a>
+          .
+        </span>
+      </div>
+      <div className="h-[64px] w-full"></div>
+    </>
+  );
+}
+
+const alloVersion = getAlloVersion();
+
 function AfterRoundStart(props: {
   round: Round;
   chainId: ChainId;
@@ -123,6 +166,10 @@ function AfterRoundStart(props: {
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
     useState<Project>({} as Project);
+
+  const disableAddToCartButton =
+    (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
+    isAfterRoundEndDate;
 
   useEffect(() => {
     if (showCartNotification) {
@@ -209,6 +256,8 @@ function AfterRoundStart(props: {
     <>
       <DefaultLayout>
         {showCartNotification && renderCartNotification()}
+        <Navbar />
+        {isBeforeRoundEndDate && <AlloVersionBanner roundId={roundId} />}
         <div>
           <ViewRoundPageHero
             round={round}
@@ -243,7 +292,7 @@ function AfterRoundStart(props: {
               projects={projects}
               isProjectsLoading={isProjectsLoading}
               roundRoutePath={`/round/${chainId}/${roundId}`}
-              isBeforeRoundEndDate={isBeforeRoundEndDate}
+              isBeforeRoundEndDate={!disableAddToCartButton}
               roundId={roundId}
               round={round}
               chainId={chainId}

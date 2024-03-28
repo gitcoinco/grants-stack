@@ -1033,22 +1033,6 @@ export const isDirectRound = (round: Round) =>
 export const isInfiniteDate = (roundTime: Date) =>
   roundTime.toString() === "Invalid Date";
 
-export const getRoundType = (payoutStrategyName: RoundPayoutTypeNew) => {
-  switch (payoutStrategyName) {
-    // @ts-expect-error support old rounds
-    case ROUND_PAYOUT_MERKLE_OLD:
-    case ROUND_PAYOUT_MERKLE:
-      return "Quadratic Funding";
-    // @ts-expect-error support old rounds
-    case ROUND_PAYOUT_DIRECT_OLD:
-    case ROUND_PAYOUT_DIRECT:
-    case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
-      return "Direct Grants";
-    default:
-      return payoutStrategyName;
-  }
-};
-
 type GroupedCartProjects = {
   [chainId: number]: {
     [roundId: string]: CartProject[];

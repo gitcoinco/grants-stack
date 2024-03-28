@@ -95,6 +95,7 @@ export default function ApplicationsRejected() {
             status: application.status,
             applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
+            anchorAddress: application.anchorAddress,
             distributionTransaction: application.distributionTransaction,
           };
         })

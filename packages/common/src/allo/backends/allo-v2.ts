@@ -61,6 +61,13 @@ function applicationStatusToNumber(status: ApplicationStatus) {
   }
 }
 
+export function getAlloAddress(chainId: ChainId) {
+  const allo = new AlloV2Contract({
+    chain: chainId,
+  });
+  return allo.address();
+}
+
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
   private ipfsUploader: IpfsUploader;
@@ -72,7 +79,6 @@ export class AlloV2 implements Allo {
   constructor(args: {
     chainId: number;
     transactionSender: TransactionSender;
-    allo: Address;
     ipfsUploader: IpfsUploader;
     waitUntilIndexerSynced: WaitUntilIndexerSynced;
   }) {
@@ -166,7 +172,16 @@ export class AlloV2 implements Allo {
     }
 
     if (tx.type === "success") {
-      return this.transactionSender.wait(tx.value, 60_000, publicClient);
+      const receipt = await this.transactionSender.wait(
+        tx.value,
+        60_000,
+        publicClient
+      );
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+      return receipt;
     } else {
       throw tx.error;
     }
@@ -249,6 +264,8 @@ export class AlloV2 implements Allo {
         blockNumber: receipt.blockNumber,
       });
 
+      emit("indexingStatus", success(void 0));
+
       const projectCreatedEvent = decodeEventFromReceipt({
         abi: RegistryAbi as Abi,
         receipt,
@@ -300,6 +317,7 @@ export class AlloV2 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -355,6 +373,8 @@ export class AlloV2 implements Allo {
         chainId: this.chainId,
         blockNumber: receipt.blockNumber,
       });
+
+      emit("indexingStatus", success(void 0));
 
       return success({
         projectId: projectId,
@@ -525,6 +545,7 @@ export class AlloV2 implements Allo {
       ipfs: Result<string>;
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
   > {
     return new AlloOperation(async ({ emit }) => {
@@ -609,11 +630,6 @@ export class AlloV2 implements Allo {
 
       try {
         receipt = await this.transactionSender.wait(txResult.value);
-        await this.waitUntilIndexerSynced({
-          chainId: this.chainId,
-          blockNumber: receipt.blockNumber,
-        });
-
         emit("transactionStatus", success(receipt));
       } catch (err) {
         const result = new AlloError("Failed to apply to round");
@@ -621,7 +637,14 @@ export class AlloV2 implements Allo {
         return error(result);
       }
 
-      return success(receipt.transactionHash);
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(args.projectId);
     });
   }
 
@@ -850,7 +873,7 @@ export class AlloV2 implements Allo {
 
       const distribution = args.matchingDistribution.map((d, index) => [
         index,
-        d.applicationId,
+        d.anchorAddress,
         d.projectPayoutAddress,
         d.matchAmountInToken,
       ]);

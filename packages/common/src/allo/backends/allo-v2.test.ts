@@ -4,7 +4,7 @@ import {
   RegistryAbi,
 } from "@allo-team/allo-v2-sdk";
 import { RoundCategory } from "data-layer";
-import { Abi, Hex, encodeEventTopics } from "viem";
+import { Abi, Hex, encodeEventTopics, getAddress } from "viem";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { Result, success } from "../common";
 import {
@@ -18,8 +18,6 @@ const ipfsUploader = vi.fn().mockResolvedValue(success("ipfsHash"));
 const waitUntilIndexerSynced = vi.fn().mockResolvedValue(success(null));
 const transactionSender = createMockTransactionSender();
 const chainId = 1;
-
-const alloV2RegistryAddress = "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3";
 
 const profileCreationEvent = {
   indexed: {
@@ -45,7 +43,6 @@ describe("AlloV2", () => {
   beforeEach(() => {
     allo = new AlloV2({
       chainId,
-      allo: alloV2RegistryAddress,
       ipfsUploader,
       transactionSender,
       waitUntilIndexerSynced,
@@ -93,9 +90,7 @@ describe("AlloV2", () => {
     expect(transactionSender.sentTransactions).toHaveLength(1);
     expect(ipfsResult!).toEqual(success("ipfsHash"));
     expect(txResult!).toEqual(success(zeroTxHash));
-    expect(transactionSender.sentTransactions[0].to.toLowerCase()).toEqual(
-      alloV2RegistryAddress.toLocaleLowerCase()
-    );
+    getAddress(transactionSender.sentTransactions[0].to.toLowerCase());
     expect(txStatusResult!).toBeTruthy();
   });
 

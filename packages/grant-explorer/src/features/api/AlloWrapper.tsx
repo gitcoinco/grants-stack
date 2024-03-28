@@ -2,15 +2,14 @@ import {
   Allo,
   AlloV1,
   AlloV2,
-  ChainId,
   createPinataIpfsUploader,
   createViemTransactionSender,
   createWaitForIndexerSyncTo,
+  isChainIdSupported,
 } from "common";
 import { getConfig } from "common/src/config";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNetwork, usePublicClient, useWalletClient } from "wagmi";
-import { zeroAddress } from "viem";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -21,17 +20,17 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const [backend, setBackend] = useState<Allo | null>(null);
 
   useEffect(() => {
-    if (!publicClient || !walletClient || !chainID) {
+    const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
+
+    if (!publicClient || !walletClient || !chainID || !chainIdSupported) {
       setBackend(null);
     } else {
-      const chainIdSupported = Object.values(ChainId).includes(chainID);
-
       const config = getConfig();
       let alloBackend: Allo;
 
       if (config.allo.version === "allo-v2") {
         alloBackend = new AlloV2({
-          chainId: chainIdSupported ? chainID : 1,
+          chainId: chainID,
           transactionSender: createViemTransactionSender(
             walletClient,
             publicClient
@@ -43,13 +42,12 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
           waitUntilIndexerSynced: createWaitForIndexerSyncTo(
             `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
           ),
-          allo: zeroAddress,
         });
 
         setBackend(alloBackend);
       } else {
         alloBackend = new AlloV1({
-          chainId: chainIdSupported ? chainID : 1,
+          chainId: chainID,
           transactionSender: createViemTransactionSender(
             walletClient,
             publicClient

@@ -197,9 +197,10 @@ const applyToRound =
       .on("transactionStatus", async (res) => {
         if (res.type === "success") {
           dispatch({
-            type: ROUND_APPLICATION_LOADED,
+            type: ROUND_APPLICATION_LOADING,
             roundAddress: roundId,
             projectId: projectID,
+            status: Status.Indexing,
           });
         } else {
           dispatchAndLogApplicationError(
@@ -211,6 +212,17 @@ const applyToRound =
           console.log("Transaction Status Error", res.error);
         }
       })
+      .on("indexingStatus", (res) => {
+        if (res.type === "success") {
+          dispatch({
+            type: ROUND_APPLICATION_LOADED,
+            roundAddress: roundId,
+            projectId: projectID,
+          });
+        } else {
+          console.error("Indexing Status Error", res.error);
+        }
+      })
       .execute();
   };
 
@@ -219,7 +231,8 @@ export const submitApplication =
     roundId: string,
     formInputs: RoundApplicationAnswers,
     allo: Allo,
-    createLinkedProject: boolean
+    createLinkedProject: boolean,
+    dataLayer: DataLayer
   ) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
@@ -364,10 +377,6 @@ export const submitApplication =
 
     const isV2 = getConfig().allo.version === "allo-v2";
 
-    const projectUniqueID = isV2
-      ? (state.projects.anchor![projectID] as Hex)
-      : projectID;
-
     if (createLinkedProject) {
       // Create Linked Project
       const result = allo.createProject({
@@ -413,12 +422,30 @@ export const submitApplication =
             );
           }
         })
-        .on("transactionStatus", async (res) => {
+        .on("indexingStatus", async (res) => {
           if (res.type === "success") {
             console.log(
               "profile creation: Transaction Status Success",
               res.value
             );
+
+            const projectUniqueID = isV2
+              ? await dataLayer.getProjectAnchorByIdAndChainId({
+                  projectId: projectID,
+                  chainId: Number(chainID),
+                })
+              : projectID;
+
+            if (!projectUniqueID) {
+              dispatchAndLogApplicationError(
+                dispatch,
+                roundId,
+                "error no projectUniqueID",
+                Status.SigningApplication
+              );
+              return;
+            }
+
             dispatch<any>(
               applyToRound(
                 roundId,
@@ -439,6 +466,23 @@ export const submitApplication =
         })
         .execute();
     } else {
+      const projectUniqueID = isV2
+        ? await dataLayer.getProjectAnchorByIdAndChainId({
+            projectId: projectID,
+            chainId: Number(chainID),
+          })
+        : projectID;
+
+      if (!projectUniqueID) {
+        dispatchAndLogApplicationError(
+          dispatch,
+          roundId,
+          "error no projectUniqueID",
+          Status.SigningApplication
+        );
+        return;
+      }
+
       dispatch<any>(
         applyToRound(
           roundId,

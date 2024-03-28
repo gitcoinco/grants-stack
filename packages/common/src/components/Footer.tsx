@@ -2,7 +2,7 @@ import Discord from "../icons/Discord";
 import Support from "../icons/Support";
 import Github from "../icons/Github";
 import Gitbook from "../icons/Gitbook";
-import { getConfig, setLocalStorageConfigOverride } from "../config";
+import { getConfig } from "../config";
 
 const navigation = [
   {
@@ -35,15 +35,7 @@ const config = getConfig();
 const COMMIT_HASH = process.env.REACT_APP_GIT_SHA ?? "localhost";
 const ALLO_VERSION = config.allo.version;
 
-function switchAlloVersion(version: string) {
-  setLocalStorageConfigOverride("allo-version", version);
-  window.location.reload();
-}
-
 export default function Footer() {
-  const alloVersionAlternative =
-    ALLO_VERSION === "allo-v1" ? "allo-v2" : "allo-v1";
-
   return (
     <footer
       className={
@@ -52,14 +44,6 @@ export default function Footer() {
     >
       <div className={"text-gray-500 text-xs"}>
         build {COMMIT_HASH}-{ALLO_VERSION}
-        {config.appEnv === "development" && (
-          <button
-            className="ml-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => switchAlloVersion(alloVersionAlternative)}
-          >
-            Switch to {alloVersionAlternative}
-          </button>
-        )}
       </div>
       <div className="flex flex-row-reverse justify-between py-12 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">

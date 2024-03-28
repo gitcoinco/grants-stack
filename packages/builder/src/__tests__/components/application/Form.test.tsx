@@ -105,6 +105,7 @@ const round: Round = {
   },
   payoutStrategy: RoundCategory.QuadraticFunding,
   programName: "sample program",
+  tags: [],
 };
 
 jest.mock("wagmi", () => ({

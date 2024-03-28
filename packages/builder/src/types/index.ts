@@ -150,6 +150,7 @@ export type Round = {
   applicationMetadata: RoundApplicationMetadata;
   programName: string;
   payoutStrategy: RoundCategory;
+  tags: string[];
 };
 
 export enum RoundDisplayType {

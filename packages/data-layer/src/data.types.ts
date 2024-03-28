@@ -248,6 +248,10 @@ export type RoundWithApplications = Omit<RoundGetRound, "applications"> & {
   applications: Application[];
 };
 
+export type RoundForExplorer = Omit<RoundGetRound, "applications"> & {
+  applications: (Application & { anchorAddress: Address })[];
+};
+
 /**
  * The project application type for v2
  *
@@ -267,6 +271,7 @@ export type ProjectApplication = {
 };
 
 export type ProjectApplicationForManager = ProjectApplication & {
+  anchorAddress: Address;
   statusSnapshots: {
     status: ApplicationStatus;
     updatedAtBlock: string;
@@ -313,6 +318,7 @@ export type V2Round = {
   strategyAddress: Address;
   strategyName: string;
   readyForPayoutTransaction: string | null;
+  tags: string[];
 };
 
 /**
@@ -330,6 +336,7 @@ export type DistributionMatch = {
   projectId: string;
   projectName: string;
   applicationId: string;
+  anchorAddress: string;
   matchPoolPercentage: number;
   contributionsCount: number;
   matchAmountInToken: string;

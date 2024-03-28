@@ -464,7 +464,8 @@ export function PayProjectsTable(props: {
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         {formatCurrency(
                           project.matchAmountInToken,
-                          props.token.decimal
+                          props.token.decimal,
+                          4
                         )}
                         {" " + props.token.name.toUpperCase()}
                         {Boolean(props.price) &&

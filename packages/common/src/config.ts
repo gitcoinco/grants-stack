@@ -35,6 +35,9 @@ export type Config = {
   explorer: {
     disableEstimates: boolean;
   };
+  manager: {
+    disableDirectGrantsForAlloV2: boolean;
+  };
   allo: {
     version: AlloVersion;
   };
@@ -54,12 +57,24 @@ function getLocalStorageConfigOverrides(): LocalStorageConfigOverrides {
   return JSON.parse(configOverrides);
 }
 
+export function switchAlloVersionAndReloadPage(version: AlloVersion) {
+  const currentAlloVersion = getConfig().allo.version;
+
+  if (currentAlloVersion === version) {
+    return;
+  }
+
+  setLocalStorageConfigOverride("allo-version", version);
+  window.location.reload();
+}
+
 export function setLocalStorageConfigOverride(key: string, value: string) {
   if (typeof window === "undefined") {
     throw new Error("window is not defined");
   }
 
   const configOverrides = getLocalStorageConfigOverrides();
+
   configOverrides[key] = value;
   window.localStorage.setItem(
     "configOverrides",
@@ -84,10 +99,33 @@ function overrideConfigFromLocalStorage(config: Config): Config {
   };
 }
 
-export function getConfig(): Config {
-  if (config !== null) {
+// listen for allo version changes in other tabs
+if (typeof window !== "undefined") {
+  const currentAlloVersion = getAlloVersion();
+  window.addEventListener("storage", () => {
+    const newAlloVersion = getAlloVersion({ reload: true });
+    if (currentAlloVersion !== newAlloVersion) {
+      window.location.reload();
+    }
+  });
+}
+
+export function getAlloVersion(opts?: { reload: boolean }): AlloVersion {
+  return getConfig(opts).allo.version;
+}
+
+export function getConfig(
+  opts: { reload: boolean } = { reload: false }
+): Config {
+  if (config !== null && !opts?.reload) {
     return config;
   }
+
+  const hostnameAlloVersion =
+    typeof window !== "undefined" &&
+    window.location.hostname === "explorer-v1.gitcoin.co"
+      ? "allo-v1"
+      : undefined;
 
   config = {
     appEnv: z
@@ -194,13 +232,14 @@ export function getConfig(): Config {
       version: z
         .enum(["allo-v1", "allo-v2"])
         .default("allo-v1")
-        .parse(process.env.REACT_APP_ALLO_VERSION),
+        .parse(hostnameAlloVersion ?? process.env.REACT_APP_ALLO_VERSION),
+    },
+    manager: {
+      disableDirectGrantsForAlloV2: config?.allo.version === "allo-v1",
     },
   };
 
-  if (config.appEnv === "development") {
-    config = overrideConfigFromLocalStorage(config);
-  }
+  config = overrideConfigFromLocalStorage(config);
 
   return config;
 }

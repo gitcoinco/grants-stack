@@ -2,6 +2,7 @@ import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { checkRoundApplications } from "../../actions/roundApplication";
 import { loadRound } from "../../actions/rounds";
@@ -26,6 +27,7 @@ function ProjectsList() {
   const dataLayer = useDataLayer();
   const dispatch = useDispatch();
   const [showErrorModal, setShowErrorModal] = useState<boolean>(true);
+  const { version: alloVersion } = useAlloVersion();
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
@@ -154,16 +156,19 @@ function ProjectsList() {
         </ErrorModal>
       ) : (
         <>
-          <RoundApplyAlert
-            show={props.showRoundAlert}
-            confirmHandler={() => {
-              const { chainID, roundAddress } = parseRoundToApply(roundToApply);
-              const path = roundPath(chainID!, roundAddress!);
+          {props.round?.tags.includes(alloVersion) && (
+            <RoundApplyAlert
+              show={props.showRoundAlert}
+              confirmHandler={() => {
+                const { chainID, roundAddress } =
+                  parseRoundToApply(roundToApply);
+                const path = roundPath(chainID!, roundAddress!);
 
-              navigate(path);
-            }}
-            round={props.round}
-          />
+                navigate(path);
+              }}
+              round={props.round}
+            />
+          )}
           <div className="grow">
             {props.projectIDs.length ? (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">

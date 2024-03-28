@@ -3,15 +3,15 @@ import {
   AlloProvider,
   AlloV1,
   AlloV2,
-  ChainId,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
+  isChainIdSupported,
 } from "common";
 import { getConfig } from "common/src/config";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNetwork, useProvider, useSigner } from "wagmi";
-import { addressesByChainID } from "../contracts/deployments";
+import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -22,19 +22,17 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const [backend, setBackend] = useState<Allo | null>(null);
 
   useEffect(() => {
-    if (!web3Provider || !signer || !chainID) {
+    const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
+
+    if (!web3Provider || !signer || !chainID || !chainIdSupported) {
       setBackend(null);
     } else {
-      const addresses = addressesByChainID(chainID) ?? addressesByChainID(1);
-
-      const chainIdSupported = Object.values(ChainId).includes(chainID);
-
       const config = getConfig();
       let alloBackend: Allo;
 
       if (config.allo.version === "allo-v2") {
         alloBackend = new AlloV2({
-          chainId: chainIdSupported ? chainID : 1,
+          chainId: chainID,
           transactionSender: createEthersTransactionSender(
             signer,
             web3Provider
@@ -46,13 +44,12 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
           waitUntilIndexerSynced: createWaitForIndexerSyncTo(
             `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
           ),
-          allo: addresses.projectRegistry as `0x${string}`,
         });
 
         setBackend(alloBackend);
       } else {
         alloBackend = new AlloV1({
-          chainId: chainIdSupported ? chainID : 1,
+          chainId: chainID,
           transactionSender: createEthersTransactionSender(
             signer,
             web3Provider
@@ -71,7 +68,11 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     }
   }, [web3Provider, signer, chainID]);
 
-  return <AlloProvider backend={backend}>{children}</AlloProvider>;
+  return (
+    <AlloProvider backend={backend}>
+      <AlloVersionProvider>{children}</AlloVersionProvider>
+    </AlloProvider>
+  );
 }
 
 export default AlloWrapper;

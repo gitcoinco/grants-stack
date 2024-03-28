@@ -3,14 +3,16 @@ import {
   AlloProvider,
   AlloV1,
   AlloV2,
+  ChainId,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
+  isChainIdSupported,
 } from "common";
 import { useNetwork, useProvider, useSigner } from "wagmi";
 import { getConfig } from "common/src/config";
-import { addressesByChainID } from "./deployments";
 import { useMemo } from "react";
+import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
@@ -19,11 +21,12 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const chainID = chain?.id;
 
   const backend = useMemo(() => {
-    if (!web3Provider || !signer || !chainID) {
+    const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
+
+    if (!web3Provider || !signer || !chainID || !chainIdSupported) {
       return null;
     }
 
-    const addresses = addressesByChainID(chainID);
     const config = getConfig();
     let alloBackend: Allo;
 
@@ -38,7 +41,6 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
         waitUntilIndexerSynced: createWaitForIndexerSyncTo(
           `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
         ),
-        allo: addresses.projectRegistry as `0x${string}`,
       });
     } else {
       alloBackend = new AlloV1({
@@ -57,7 +59,11 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     return alloBackend;
   }, [web3Provider, signer, chainID]);
 
-  return <AlloProvider backend={backend}>{children}</AlloProvider>;
+  return (
+    <AlloProvider backend={backend}>
+      <AlloVersionProvider>{children}</AlloVersionProvider>
+    </AlloProvider>
+  );
 }
 
 export default AlloWrapper;

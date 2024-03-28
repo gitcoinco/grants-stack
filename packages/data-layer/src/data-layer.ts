@@ -26,6 +26,7 @@ import {
   v2Project,
   RoundForManager,
   Contribution,
+  RoundForExplorer,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -42,12 +43,13 @@ import {
   getProgramById,
   getProgramsByUserAndTag,
   getProjectById,
+  getProjectAnchorByIdAndChainId,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
   getRoundForManager,
   getRoundsForManager,
-  getRoundByIdAndChainIdWithApprovedApplications,
   getRoundUniqueDonorsCount,
+  getRoundForExplorer,
   getRoundsQuery,
   getDonationsByDonorAddress,
 } from "./queries";
@@ -152,22 +154,22 @@ export class DataLayer {
   async getProgramsByUser({
     address,
     chainId,
-    alloVersion,
+    tags,
   }: {
     address: string;
     chainId: number;
-    alloVersion: AlloVersion;
+    tags: string[];
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
       userAddress: address.toLowerCase(),
-      alloVersion,
       chainId,
+      tags: ["program", ...tags],
     };
 
     const response: { projects: Program[] } = await request(
       this.gsIndexerEndpoint,
       getProgramsByUserAndTag,
-      { ...requestVariables, tags: ["program", alloVersion] },
+      requestVariables,
     );
 
     return { programs: response.projects };
@@ -251,6 +253,25 @@ export class DataLayer {
     const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
     return { project };
+  }
+
+  async getProjectAnchorByIdAndChainId({
+    projectId,
+    chainId,
+  }: {
+    projectId: string;
+    chainId: number;
+  }): Promise<Address | undefined> {
+    const response: { project?: { anchorAddress: Address } } = await request(
+      this.gsIndexerEndpoint,
+      getProjectAnchorByIdAndChainId,
+      {
+        projectId,
+        chainId,
+      },
+    );
+
+    return response?.project?.anchorAddress;
   }
 
   /**
@@ -343,7 +364,7 @@ export class DataLayer {
     roundId: Lowercase<Address> | string;
     chainId: number;
     applicationId: string;
-  }): Promise<Application | undefined> {
+  }): Promise<Application | null> {
     const requestVariables = {
       roundId,
       chainId,
@@ -356,7 +377,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    return response.application ?? [];
+    return response.application ?? null;
   }
 
   /**
@@ -474,7 +495,7 @@ export class DataLayer {
     return response.rounds;
   }
 
-  async getRoundByIdAndChainIdWithApprovedApplications({
+  async getRoundForExplorer({
     roundId,
     chainId,
   }: {
@@ -486,9 +507,9 @@ export class DataLayer {
       chainId,
     };
 
-    const response: { rounds: RoundWithApplications[] } = await request(
+    const response: { rounds: RoundForExplorer[] } = await request(
       this.gsIndexerEndpoint,
-      getRoundByIdAndChainIdWithApprovedApplications,
+      getRoundForExplorer,
       requestVariables,
     );
 
@@ -496,19 +517,19 @@ export class DataLayer {
       return null;
     }
 
-    const _round = response.rounds[0] ?? [];
+    const round = response.rounds[0];
 
-    const projects: Project[] = _round.applications
-      .map((application: Application) => {
-        if (application.project === null) {
-          console.error(`Project not found for application ${application.id}`);
-          return null;
-        }
+    const projects: Project[] = round.applications.flatMap((application) => {
+      if (application.project === null) {
+        console.error(`Project not found for application ${application.id}`);
+        return [];
+      }
 
-        return {
+      return [
+        {
           grantApplicationId: application.id,
           projectRegistryId: application.projectId,
-          anchorAddress: application.project.anchorAddress,
+          anchorAddress: application.anchorAddress,
           recipient: application.metadata.application.recipient,
           projectMetadata: {
             title: application.project.metadata.title,
@@ -525,35 +546,33 @@ export class DataLayer {
             lastUpdated: application.project.metadata.lastUpdated,
           },
           grantApplicationFormAnswers:
-            application.metadata.application.answers.map(
-              (answer: GrantApplicationFormAnswer) => ({
-                questionId: answer.questionId,
-                question: answer.question,
-                answer: answer.answer,
-                hidden: answer.hidden,
-                type: answer.type,
-              }),
-            ),
-          status: application.status as ApplicationStatus,
+            application.metadata.application.answers.map((answer) => ({
+              questionId: answer.questionId,
+              question: answer.question,
+              answer: answer.answer,
+              hidden: answer.hidden,
+              type: answer.type,
+            })),
+          status: application.status,
           applicationIndex: Number(application.id),
-        };
-      })
-      .filter((p) => p !== null) as Project[];
+        },
+      ];
+    });
 
     return {
       round: {
-        id: _round.id,
-        chainId: _round.chainId,
-        applicationsStartTime: new Date(_round.applicationsStartTime),
-        applicationsEndTime: new Date(_round.applicationsEndTime),
-        roundStartTime: new Date(_round.donationsStartTime),
-        roundEndTime: new Date(_round.donationsEndTime),
-        token: _round.matchTokenAddress,
-        ownedBy: _round.ownedBy,
-        roundMetadata: _round.roundMetadata,
+        id: round.id,
+        chainId: round.chainId,
+        applicationsStartTime: new Date(round.applicationsStartTime),
+        applicationsEndTime: new Date(round.applicationsEndTime),
+        roundStartTime: new Date(round.donationsStartTime),
+        roundEndTime: new Date(round.donationsEndTime),
+        token: round.matchTokenAddress,
+        ownedBy: round.ownedBy,
+        roundMetadata: round.roundMetadata,
         payoutStrategy: {
-          id: _round.strategyAddress,
-          strategyName: _round.strategyName,
+          id: round.strategyAddress,
+          strategyName: round.strategyName,
         },
         approvedProjects: projects,
       },
@@ -584,7 +603,9 @@ export class DataLayer {
       },
     );
 
-    return response.donations;
+    return response.donations.filter((donation) => {
+      return donation.application.project !== null;
+    });
   }
 
   /**

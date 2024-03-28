@@ -244,7 +244,8 @@ function ViewApplication() {
                     props.round!.id,
                     answers,
                     allo,
-                    createLinkedProject
+                    createLinkedProject,
+                    dataLayer
                   )
                 );
               }}

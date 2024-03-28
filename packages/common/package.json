@@ -25,6 +25,7 @@
     "@rainbow-me/rainbowkit": "^0.12.16",
     "@wagmi/chains": "^1.8.0",
     "abitype": "^0.10.3",
+    "classnames": "^2.3.2",
     "data-layer": "workspace:*",
     "dompurify": "^2.4.3",
     "eslint-config-gitcoin": "workspace:*",

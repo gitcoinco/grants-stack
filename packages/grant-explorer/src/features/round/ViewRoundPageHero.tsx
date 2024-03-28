@@ -5,13 +5,20 @@ import { Badge } from "../common/styles";
 import {
   CHAINS,
   getDaysLeft,
-  getRoundType,
   isDirectRound,
   isInfiniteDate,
 } from "../api/utils";
 import { Round } from "../api/types";
-import { ChainId, formatUTCDateAsISOString, getUTCTime } from "common";
+import {
+  ChainId,
+  formatUTCDateAsISOString,
+  getRoundStrategyTitle,
+  getUTCTime,
+} from "common";
 import ApplyButton from "./ApplyButton";
+import AlloV1 from "common/src/icons/AlloV1";
+import AlloV2 from "common/src/icons/AlloV2";
+
 const builderURL = process.env.REACT_APP_BUILDER_URL;
 
 export default function ViewRoundPageHero({
@@ -62,7 +69,7 @@ export default function ViewRoundPageHero({
   };
 
   const roundEndsText = getRoundEndsText();
-
+  const isAlloV1 = roundId.startsWith("0x");
   return (
     <>
       <div className="py-8 flex flex-col" data-testid="bread-crumbs">
@@ -72,6 +79,10 @@ export default function ViewRoundPageHero({
       <section>
         <div className="flex flex-col md:items-center md:justify-between md:gap-8 md:flex-row md:mb-0 mb-4">
           <div>
+            <div className="pb-4">
+              {isAlloV1 && <AlloV1 color="black" />}
+              {!isAlloV1 && <AlloV2 color="black" />}
+            </div>
             <div className="flex items-center gap-4 mb-4">
               <h1
                 data-testid="round-title"
@@ -105,7 +116,7 @@ export default function ViewRoundPageHero({
             >
               <span>
                 {round.payoutStrategy?.strategyName &&
-                  getRoundType(round.payoutStrategy?.strategyName)}
+                  getRoundStrategyTitle(round.payoutStrategy?.strategyName)}
               </span>
             </Badge>
 
