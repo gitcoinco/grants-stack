@@ -767,7 +767,10 @@ function ViewRoundResults({
                     round &&
                       (await exportAndDownloadApplicationsCSV(
                         round.id,
-                        chain.id
+                        chain.id,
+                        round.id.startsWith("0x")
+                          ? round.id
+                          : round.payoutStrategy.id
                       ));
                   } finally {
                     setIsExportingApplicationsCSV(false);
@@ -901,9 +904,15 @@ function NoInformationContent() {
 
 async function exportAndDownloadApplicationsCSV(
   roundId: string,
-  chainId: number
+  chainId: number,
+  litContractAddress: string
 ) {
-  const csv = await roundApplicationsToCSV(roundId, chainId, true);
+  const csv = await roundApplicationsToCSV(
+    roundId,
+    chainId,
+    litContractAddress,
+    true
+  );
   // create a download link and click it
   const blob = new Blob([csv], {
     type: "text/csv;charset=utf-8;",
