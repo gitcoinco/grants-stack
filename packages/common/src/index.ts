@@ -54,38 +54,18 @@ export const PassportResponseSchema = z.object({
 export const fetchPassport = (
   address: string,
   communityId: string,
-  round: Round
+  _round: Round
 ): Promise<Response> => {
-  const chainId = round.chainId;
-  if (chainId === ChainId.AVALANCHE) {
-    return fetch(
-      `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/submit-passport`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": `${process.env.REACT_APP_PASSPORT_AVALANCHE_API_KEY}`,
-        },
-        body: JSON.stringify({
-          address: address,
-          community: communityId,
-          signature: "",
-          nonce: "",
-        }),
-      }
-    );
-  } else {
-    return fetch(
-      `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
-        },
-      }
-    );
-  }
+  return fetch(
+    `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
+      },
+    }
+  );
 };
 
 /**
@@ -93,11 +73,13 @@ export const fetchPassport = (
  *
  * @param address string
  * @param communityId string
+ * @param round Round
  * @returns
  */
 export const submitPassport = (
   address: string,
-  communityId: string
+  communityId: string,
+  round: Round
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/submit-passport`;
 
@@ -105,10 +87,13 @@ export const submitPassport = (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
+      "X-API-KEY":
+        round.chainId === ChainId.AVALANCHE
+          ? `${process.env.REACT_APP_PASSPORT_AVALANCHE_API_KEY}`
+          : `${process.env.REACT_APP_PASSPORT_API_KEY}`,
     },
     body: JSON.stringify({
-      address,
+      address: address,
       community: communityId,
       signature: "",
       nonce: "",

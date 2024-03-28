@@ -6,6 +6,7 @@ import {
   PassportState,
   submitPassport,
   roundToPassportCommunityIdMap,
+  ChainId,
 } from "common";
 import { Round } from "data-layer";
 import { useEffect, useMemo } from "react";
@@ -33,7 +34,11 @@ export function usePassport({
         ? [address, PASSPORT_COMMUNITY_ID, round]
         : null,
     async (args) => {
-      const res = await fetchPassport(...args);
+      // for avalance we need to submit the passport to fetch the score.
+      const res =
+        round.chainId === ChainId.AVALANCHE
+          ? await submitPassport(...args)
+          : await fetchPassport(...args);
 
       console.log("fetchPassport", res);
 
