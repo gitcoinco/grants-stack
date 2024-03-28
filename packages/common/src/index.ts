@@ -30,7 +30,7 @@ export enum PassportState {
 const PassportEvidenceSchema = z.object({
   type: z.string().nullish(),
   rawScore: z.coerce.number(),
-  threshold: z.string().nullish(),
+  threshold: z.union([z.string().nullish(), z.coerce.number()]),
 });
 
 export type PassportResponse = z.infer<typeof PassportResponseSchema>;
