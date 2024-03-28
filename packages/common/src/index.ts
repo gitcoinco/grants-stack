@@ -48,7 +48,7 @@ export const PassportResponseSchema = z.object({
  *
  * @param address
  * @param communityId
- * @param round
+ * @param _round
  * @returns
  */
 export const fetchPassport = (
@@ -56,16 +56,14 @@ export const fetchPassport = (
   communityId: string,
   _round: Round
 ): Promise<Response> => {
-  return fetch(
-    `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
-      },
-    }
-  );
+  const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`;
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
+    },
+  });
 };
 
 /**
