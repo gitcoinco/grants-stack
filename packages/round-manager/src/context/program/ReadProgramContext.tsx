@@ -9,6 +9,8 @@ import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Web3Provider } from "@ethersproject/providers";
 import { DataLayer, useDataLayer } from "data-layer";
+import { getAlloVersion } from "common/src/config";
+import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
 
 export interface ReadProgramState {
   programs: Program[];
@@ -175,6 +177,7 @@ export const useProgramById = (
   getProgramByIdError?: Error;
 } => {
   const context = useContext(ReadProgramContext);
+  const { switchToVersion, version } = useAlloVersion();
   const dataLayer = useDataLayer();
   if (context === undefined) {
     throw new Error("useProgramById must be used within a ProgramProvider");
@@ -201,6 +204,12 @@ export const useProgramById = (
   }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const program = context.state.programs.find((program) => program.id === id);
+
+  useEffect(() => {
+    if (program?.tags?.includes("allo-v2") && version === "allo-v1") {
+      switchToVersion("allo-v2");
+    }
+  }, [program, switchToVersion, version]);
 
   return {
     program: program,
