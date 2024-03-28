@@ -6,6 +6,7 @@ import { ReactComponent as GitcoinPassportBWLogo } from "../../assets/passport-l
 import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport-logo-full.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
 import { Round } from "data-layer";
+import { ChainId, roundToPassportURLMap } from "common";
 
 type PassportWidgetProps = {
   round: Round;
@@ -19,6 +20,8 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
     usePassport({ address, round });
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const passportURL = roundToPassportURLMap(round);
 
   function handleClick() {
     if (
@@ -148,9 +151,7 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
             <div className="flex justify-center">
               <button
                 className="flex flex-row gap-2 bg-gray-800 w-1/2 p-2 rounded-xl text-white"
-                onClick={() =>
-                  window.open("https://passport.gitcoin.co", "_blank")
-                }
+                onClick={() => window.open(passportURL, "_blank")}
               >
                 <GitcoinPassportLogo className="h-6 w-6" />
                 Open Passport
