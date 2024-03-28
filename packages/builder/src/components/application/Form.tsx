@@ -1,5 +1,6 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
+import { getConfig } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import {
   ExclamationTriangleIcon,
@@ -83,6 +84,7 @@ export default function Form({
   const dispatch = useDispatch();
   const dataLayer = useDataLayer();
   const { chains } = useNetwork();
+  const { version } = getConfig().allo;
 
   const [projectApplications, setProjectApplications] = useState<
     ProjectApplicationWithRound[]
@@ -265,7 +267,9 @@ export default function Form({
       projectApplications.filter((app) => app.projectId === projectId).length >
       0;
 
-    setHasExistingApplication(hasProjectAppliedToRound);
+    if (version === "allo-v2") {
+      setHasExistingApplication(hasProjectAppliedToRound);
+    }
     setIsLoading(false);
     handleInput(e);
   };
