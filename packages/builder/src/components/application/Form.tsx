@@ -84,9 +84,9 @@ export default function Form({
   const dataLayer = useDataLayer();
   const { chains } = useNetwork();
 
-  const [projectApplications, setProjectApplications] = useState<
-    ProjectApplicationWithRound[]
-  >([]);
+  const [, setProjectApplications] = useState<ProjectApplicationWithRound[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [answers, setAnswers] = useState<RoundApplicationAnswers>({});
@@ -96,7 +96,7 @@ export default function Form({
   const [showProjectDetails] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  // const [hasExistingApplication, setHasExistingApplication] = useState(false);
+  const [hasExistingApplication, setHasExistingApplication] = useState(false);
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
   >(undefined);
@@ -255,7 +255,7 @@ export default function Form({
     setIsLoading(true);
 
     if (projectId === "") {
-      // setHasExistingApplication(false);
+      setHasExistingApplication(false);
       setIsLoading(false);
       handleInput(e);
       return;
@@ -360,7 +360,7 @@ export default function Form({
     round.payoutStrategy === RoundCategory.Direct;
   // todo: ensure that the applications are made by a project owner
   const isValidProjectSelected =
-    isDirectRound &&
+    (isDirectRound || !hasExistingApplication) &&
     selectedProjectID !== null &&
     publishedApplication === undefined;
 
@@ -760,7 +760,7 @@ export default function Form({
             return null;
           })}
 
-          {/* {!!selectedProjectID && !isDirectRound && hasExistingApplication && (
+          {!!selectedProjectID && !isDirectRound && hasExistingApplication && (
             <div className="rounded-md bg-red-50 p-4 mt-5">
               <div className="flex">
                 <ExclamationCircleIcon className="h-5 w-5 text-red-400" />
@@ -770,9 +770,10 @@ export default function Form({
                 </h3>
               </div>
             </div>
-          )} */}
+          )}
 
-          {!!selectedProjectID &&
+          {!hasExistingApplication &&
+            !!selectedProjectID &&
             selectedProjectID !== "0" &&
             !haveProjectRequirementsBeenMet && (
               <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
