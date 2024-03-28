@@ -231,7 +231,7 @@ export function getConfig(
     allo: {
       version: z
         .enum(["allo-v1", "allo-v2"])
-        .default("allo-v1")
+        .default("allo-v2")
         .parse(hostnameAlloVersion ?? process.env.REACT_APP_ALLO_VERSION),
     },
     manager: {
