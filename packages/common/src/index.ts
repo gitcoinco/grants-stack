@@ -48,20 +48,44 @@ export const PassportResponseSchema = z.object({
  *
  * @param address
  * @param communityId
+ * @param round
  * @returns
  */
 export const fetchPassport = (
   address: string,
-  communityId: string
+  communityId: string,
+  round: Round
 ): Promise<Response> => {
-  const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`;
-  return fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
-    },
-  });
+  const chainId = round.chainId;
+  if (chainId === ChainId.AVALANCHE) {
+    return fetch(
+      `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/submit-passport`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": `${process.env.REACT_APP_PASSPORT_AVALANCHE_API_KEY}`,
+        },
+        body: JSON.stringify({
+          address: address,
+          community: communityId,
+          signature: "",
+          nonce: "",
+        }),
+      }
+    );
+  } else {
+    return fetch(
+      `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
+        },
+      }
+    );
+  }
 };
 
 /**
@@ -374,13 +398,23 @@ export interface Web3Instance {
 
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
-export function roundToPassportCommunityIdMap(round: Round | undefined) {
-  const chainId = round?.chainId ?? ChainId.MAINNET;
+export function roundToPassportCommunityIdMap(round: Round) {
+  const chainId = round.chainId;
   switch (chainId) {
     case ChainId.AVALANCHE:
       return process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID_AVALANCHE;
     default:
       return process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
+  }
+}
+
+export function roundToPassportURLMap(round: Round) {
+  const chainId = round.chainId;
+  switch (chainId) {
+    case ChainId.AVALANCHE:
+      return "https://passport.gitcoin.co/#/dashboard/avalanche";
+    default:
+      return "https://passport.gitcoin.co";
   }
 }
 

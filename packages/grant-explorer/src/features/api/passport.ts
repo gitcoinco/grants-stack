@@ -19,17 +19,23 @@ export function usePassport({
   round,
 }: {
   address: string | undefined;
-  round?: Round;
+  round: Round;
 }) {
   const PASSPORT_COMMUNITY_ID = roundToPassportCommunityIdMap(round);
 
-  const swr = useSWR<PassportResponse, Response, () => [string, string] | null>(
+  const swr = useSWR<
+    PassportResponse,
+    Response,
+    () => [string, string, Round] | null
+  >(
     () =>
-      address && PASSPORT_COMMUNITY_ID
-        ? [address, PASSPORT_COMMUNITY_ID]
+      address && PASSPORT_COMMUNITY_ID && round
+        ? [address, PASSPORT_COMMUNITY_ID, round]
         : null,
     async (args) => {
       const res = await fetchPassport(...args);
+
+      console.log("fetchPassport", res);
 
       if (res.ok) {
         return PassportResponseSchema.parse(await res.json());
