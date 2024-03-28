@@ -1,6 +1,11 @@
 import { fetchPassport, submitPassport } from "../passport";
 import { faker } from "@faker-js/faker";
-import { mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
+import {
+  makeRoundData,
+  mockBalance,
+  mockNetwork,
+  mockSigner,
+} from "../../../test-utils";
 import { Mock } from "vitest";
 
 vi.mock("../passport", () => {
@@ -13,6 +18,7 @@ vi.mock("../passport", () => {
 
 const userAddress = faker.finance.ethereumAddress();
 const communityId = faker.random.numeric();
+const mockRoundData = makeRoundData();
 
 const mockAccount = {
   address: userAddress,
@@ -37,7 +43,7 @@ describe("fetchPassport", () => {
       ok: true,
       status: 200,
     });
-    const resp = await fetchPassport(userAddress, communityId);
+    const resp = await fetchPassport(userAddress, communityId, mockRoundData);
     expect(resp).toBeDefined();
     expect(resp.ok).toBeTruthy();
     expect(resp.status).toEqual(200);
@@ -55,7 +61,7 @@ describe("submitPassport", () => {
       ok: true,
       status: 200,
     });
-    const resp = await submitPassport(userAddress, communityId);
+    const resp = await submitPassport(userAddress, communityId, mockRoundData);
     expect(resp).toBeDefined();
     expect(resp.ok).toBeTruthy();
     expect(resp.status).toEqual(200);
