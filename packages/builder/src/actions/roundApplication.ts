@@ -197,9 +197,10 @@ const applyToRound =
       .on("transactionStatus", async (res) => {
         if (res.type === "success") {
           dispatch({
-            type: ROUND_APPLICATION_LOADED,
+            type: ROUND_APPLICATION_LOADING,
             roundAddress: roundId,
             projectId: projectID,
+            status: Status.Indexing,
           });
         } else {
           dispatchAndLogApplicationError(
@@ -209,6 +210,17 @@ const applyToRound =
             Status.SendingTx
           );
           console.log("Transaction Status Error", res.error);
+        }
+      })
+      .on("indexingStatus", (res) => {
+        if (res.type === "success") {
+          dispatch({
+            type: ROUND_APPLICATION_LOADED,
+            roundAddress: roundId,
+            projectId: projectID,
+          });
+        } else {
+          console.error("Indexing Status Error", res.error);
         }
       })
       .execute();
