@@ -55,14 +55,6 @@ export enum RoundStatus {
   ending_soon = "ending_soon",
 }
 
-// todo: how to make this fetch only featured rounds? what makes them featured?
-export const FEATURED_ROUNDS_FILTER: RoundSelectionParams = {
-  orderBy: "MATCH_AMOUNT_IN_USD_DESC",
-  status: RoundStatus.active,
-  type: "allov1.QF",
-  network: "",
-};
-
 export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
   orderBy: "MATCH_AMOUNT_IN_USD_DESC",
   status: RoundStatus.active,

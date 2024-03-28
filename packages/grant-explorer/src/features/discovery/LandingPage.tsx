@@ -1,7 +1,6 @@
 import { GradientLayout } from "../common/DefaultLayout";
 import {
   ACTIVE_ROUNDS_FILTER,
-  FEATURED_ROUNDS_FILTER,
   ROUNDS_ENDING_SOON_FILTER,
   RoundStatus,
   useFilterRounds,
@@ -9,7 +8,6 @@ import {
 import { getEnabledChains } from "../../app/chainConfig";
 import { useMemo } from "react";
 import {
-  filterFeaturedRounds,
   filterOutPrivateRounds,
   filterRoundsWithProjects,
 } from "../api/rounds";
@@ -17,19 +15,29 @@ import { RoundsGrid } from "./RoundsGrid";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { toQueryString } from "./RoundsFilter";
+import { RoundGetRound } from "data-layer";
+
+// note: these are all v1 rounds
+// fixme: test v1 - local app defaults to v2
+const FEATURED_ROUNDS_IDS = [
+  // Gitcoin Citizens Retro Round 3
+  "0x5aa255d5cae9b6ce0f2d9aee209cb02349b83731",
+  // Uniswap-Arbitrum Grant Program (UAGP)
+  "0x6142eedc06d80f3b362ce43b4ac52fad679dc850",
+  // Prisma Grants Program
+  "0xdb0c772ddfe0e1e46c85f4ede3a6f81bca6e8545",
+  // test round v2 -> this works...
+  // "2",
+];
 
 const LandingPage = () => {
   const activeRounds = useFilterRounds(
     ACTIVE_ROUNDS_FILTER,
     getEnabledChains()
   );
+
   const roundsEndingSoon = useFilterRounds(
     ROUNDS_ENDING_SOON_FILTER,
-    getEnabledChains()
-  );
-
-  const featuredRounds = useFilterRounds(
-    FEATURED_ROUNDS_FILTER,
     getEnabledChains()
   );
 
@@ -45,11 +53,16 @@ const LandingPage = () => {
     );
   }, [roundsEndingSoon.data]);
 
-  const featuredRoundsData = useMemo(() => {
-    return filterOutPrivateRounds(
-      filterFeaturedRounds(featuredRounds.data ?? [])
-    );
-  }, [featuredRounds.data]);
+  const featuredRounds = useMemo(() => {
+    return filteredActiveRounds.filter((round: RoundGetRound) => {
+      return FEATURED_ROUNDS_IDS.includes(
+        round.id.toLowerCase() ||
+          round.roundMetadata.programContractAddress.toLowerCase()
+      );
+    });
+  }, [filteredActiveRounds]);
+
+  console.log("LandingPage =>", { featuredRounds, activeRounds });
 
   return (
     <GradientLayout showWalletInteraction showAlloVersionBanner>
@@ -63,12 +76,8 @@ const LandingPage = () => {
         }
       >
         <RoundsGrid
-          {...{
-            ...activeRounds,
-            data: featuredRoundsData?.sort(
-              (a, b) => b.matchAmountInUsd - a.matchAmountInUsd
-            ),
-          }}
+          isLoading={activeRounds.isLoading}
+          data={featuredRounds}
           loadingCount={4}
           maxCount={6}
           getItemClassName={(_, i) =>

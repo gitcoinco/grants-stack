@@ -62,27 +62,11 @@ const OVERRIDE_PRIVATE_ROUND_IDS = [
   "0xf89aad3fad6c3e79ffa3ccc835620fcc7e55f919",
 ];
 
-const FEATURED_ROUNDS_IDS = [
-  // Gitcoin Citizens Retro Round 3
-  "0x5aa255d5cae9b6ce0f2d9aee209cb02349b83731",
-  // Uniswap-Arbitrum Grant Program (UAGP)
-  "0x6142eedc06d80f3b362ce43b4ac52fad679dc850",
-  // Prisma Grants Program
-  "0xdb0c772ddfe0e1e46c85f4ede3a6f81bca6e8545",
-];
-
 export const filterOutPrivateRounds = (rounds: RoundGetRound[]) => {
   return rounds.filter(
     (round) =>
       round.roundMetadata.roundType !== "private" ||
       OVERRIDE_PRIVATE_ROUND_IDS.includes(round.id.toLowerCase())
-  );
-};
-
-export const filterFeaturedRounds = (rounds: RoundGetRound[]) => {
-  return rounds.filter(
-    (round) =>
-      FEATURED_ROUNDS_IDS.includes(round.id.toLowerCase())
   );
 };
 
