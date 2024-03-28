@@ -49,6 +49,8 @@ export const PassportResponseSchema = z.object({
  *
  * @param address
  * @param communityId
+ * We don't use the _round data yet, but we might need it in future
+ * if passport score calculation is different for different rounds
  * @param _round
  * @returns
  */
