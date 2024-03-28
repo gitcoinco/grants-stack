@@ -1,5 +1,6 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
+import { getConfig } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import {
   ExclamationTriangleIcon,
@@ -38,7 +39,6 @@ import FormValidationErrorList from "../base/FormValidationErrorList";
 import InputLabel from "../base/InputLabel";
 import LoadingSpinner from "../base/LoadingSpinner";
 import { validateApplication } from "../base/formValidation";
-import { getConfig } from "common/src/config";
 import Checkbox from "../grants/Checkbox";
 import Radio from "../grants/Radio";
 import Toggle from "../grants/Toggle";
@@ -267,7 +267,7 @@ export default function Form({
       projectApplications.filter((app) => app.projectId === projectId).length >
       0;
 
-    if (version === "allo-v1") {
+    if (version === "allo-v2") {
       setHasExistingApplication(hasProjectAppliedToRound);
     }
     setIsLoading(false);
