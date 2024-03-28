@@ -38,6 +38,7 @@ import FormValidationErrorList from "../base/FormValidationErrorList";
 import InputLabel from "../base/InputLabel";
 import LoadingSpinner from "../base/LoadingSpinner";
 import { validateApplication } from "../base/formValidation";
+import { getConfig } from "common/src/config";
 import Checkbox from "../grants/Checkbox";
 import Radio from "../grants/Radio";
 import Toggle from "../grants/Toggle";
@@ -83,6 +84,7 @@ export default function Form({
   const dispatch = useDispatch();
   const dataLayer = useDataLayer();
   const { chains } = useNetwork();
+  const { version } = getConfig().allo;
 
   const [projectApplications, setProjectApplications] = useState<
     ProjectApplicationWithRound[]
@@ -265,7 +267,9 @@ export default function Form({
       projectApplications.filter((app) => app.projectId === projectId).length >
       0;
 
-    setHasExistingApplication(hasProjectAppliedToRound);
+    if (version === "allo-v1") {
+      setHasExistingApplication(hasProjectAppliedToRound);
+    }
     setIsLoading(false);
     handleInput(e);
   };
