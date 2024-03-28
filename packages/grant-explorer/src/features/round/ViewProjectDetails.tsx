@@ -121,7 +121,7 @@ export default function ViewProjectDetails() {
       alloVersion === "allo-v2" &&
       !isAfterRoundEndDate
     ) {
-      window.location.href = `https://explorer-v1.gitcoin.co/round/${roundId}`;
+      window.location.href = `https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`;
     }
   }, [roundId, alloVersion, isAfterRoundEndDate]);
 
