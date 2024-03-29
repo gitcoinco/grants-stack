@@ -1,6 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChainId, renderToPlainText, truncateDescription } from "common";
 import { Input } from "common/src/styles";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
@@ -9,7 +9,6 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Round } from "../api/types";
 import { isDirectRound, isInfiniteDate, votingTokens } from "../api/utils";
-import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { ProjectBanner } from "../common/ProjectBanner";
 import { Spinner } from "../common/Spinner";
@@ -20,7 +19,6 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  CardsContainer,
 } from "../common/styles";
 import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
@@ -34,6 +32,8 @@ import ViewRoundPageTabs from "./ViewRoundPageTabs";
 import BeforeRoundStart from "./BeforeRoundStart";
 import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import { useRoundApprovedApplications } from "../projects/hooks/useRoundApplications";
+import { Application, useDataLayer } from "data-layer";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -256,7 +256,6 @@ function AfterRoundStart(props: {
     <>
       <DefaultLayout>
         {showCartNotification && renderCartNotification()}
-        <Navbar />
         {isBeforeRoundEndDate && <AlloVersionBanner roundId={roundId} />}
         <div>
           <ViewRoundPageHero
@@ -317,11 +316,34 @@ const ProjectList = (props: {
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { projects, roundRoutePath } = props;
+  const { projects, roundRoutePath, round, chainId, roundId } = props;
+  const dataLayer = useDataLayer();
+
+  const { data: applications } = useRoundApprovedApplications(
+    {
+      chainId,
+      roundId,
+      projectIds: round.approvedProjects?.map(
+        (proj) => proj.grantApplicationId
+      ),
+    },
+    dataLayer
+  );
+
+  const applicationsMapByGrantApplicationId:
+    | Map<string, Application>
+    | undefined = useMemo(() => {
+    if (!applications) return;
+    const map: Map<string, Application> = new Map();
+    applications.forEach((application) =>
+      map.set(application.projectId, application)
+    );
+    return map;
+  }, [applications]);
 
   return (
     <>
-      <CardsContainer className="gap-x-6 gap-y-12">
+      <div className="grid gap-x-6 gap-y-12 gap-5 justify-around md:justify-start sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
         {props.isProjectsLoading ? (
           <>
             {Array(6)
@@ -329,7 +351,7 @@ const ProjectList = (props: {
               .map((item, index) => (
                 <BasicCard
                   key={index}
-                  className="relative flex-grow min-w-[296px] h-[400px] animate-pulse bg-grey-100"
+                  className="relative animate-pulse bg-grey-100"
                 />
               ))}
           </>
@@ -349,6 +371,16 @@ const ProjectList = (props: {
                     props.setCurrentProjectAddedToCart
                   }
                   setShowCartNotification={props.setShowCartNotification}
+                  crowdfundedUSD={
+                    applicationsMapByGrantApplicationId?.get(
+                      project.projectRegistryId
+                    )?.totalAmountDonatedInUsd ?? 0
+                  }
+                  uniqueContributorsCount={
+                    applicationsMapByGrantApplicationId?.get(
+                      project.projectRegistryId
+                    )?.uniqueDonorsCount ?? 0
+                  }
                 />
               );
             })}
@@ -356,7 +388,7 @@ const ProjectList = (props: {
         ) : (
           <p>No projects</p>
         )}
-      </CardsContainer>
+      </div>
     </>
   );
 };
@@ -370,6 +402,8 @@ function ProjectCard(props: {
   chainId: ChainId;
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
+  crowdfundedUSD: number;
+  uniqueContributorsCount: number;
 }) {
   const { project, roundRoutePath, round } = props;
   const projectRecipient =
@@ -388,10 +422,7 @@ function ProjectCard(props: {
   cartProject.chainId = Number(props.chainId);
 
   return (
-    <BasicCard
-      className="relative flex-grow min-w-[296px] max-w-[700px]"
-      data-testid="project-card"
-    >
+    <BasicCard className="relative w-full" data-testid="project-card">
       <Link
         to={`${roundRoutePath}/${project.grantApplicationId}`}
         data-testid="project-detail-link"
@@ -400,9 +431,9 @@ function ProjectCard(props: {
           <ProjectBanner
             bannerImgCid={project.projectMetadata.bannerImg ?? null}
             classNameOverride={
-              "bg-black h-[120px] w-full object-cover rounded-t"
+              "bg-black h-[108px] w-full object-cover rounded-t"
             }
-            resizeHeight={120}
+            resizeHeight={108}
           />
         </CardHeader>
         <CardContent className="px-2 relative">
@@ -413,16 +444,20 @@ function ProjectCard(props: {
               className="ml-2 border-solid border-2 border-white absolute  -top-[24px] "
             />
           )}
-
-          <CardTitle data-testid="project-title" className="text-xl">
-            {project.projectMetadata.title}
-          </CardTitle>
-          <CardDescription className="mb-2 mt-0 " data-testid="project-owner">
-            by <span className="font-mono">{projectRecipient}</span>
-          </CardDescription>
+          <div>
+            <CardTitle data-testid="project-title" className="text-xl">
+              {project.projectMetadata.title}
+            </CardTitle>
+            <CardDescription
+              className="mb-2 mt-0 !text-sm"
+              data-testid="project-owner"
+            >
+              by <span className="font-mono">{projectRecipient}</span>
+            </CardDescription>
+          </div>
           <CardDescription
             data-testid="project-description"
-            className="h-[150px] overflow-hidden mb-1"
+            className="h-[130px] overflow-hidden mb-1 !text-sm"
           >
             {truncateDescription(
               renderToPlainText(project.projectMetadata.description),
@@ -432,8 +467,19 @@ function ProjectCard(props: {
         </CardContent>
       </Link>
       {!isDirectRound(round) && (
-        <CardFooter className="bg-white border-t px-2">
-          <CardContent className="text-xs mt-2">
+        <CardFooter className="bg-white">
+          <CardContent className="px-2 text-xs ">
+            <div className="border-t pt-1">
+              <p>
+                $
+                {props.crowdfundedUSD?.toLocaleString("en-US", {
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+              <p className="text-[10px] font-mono">
+                total raised by {props.uniqueContributorsCount} contributors
+              </p>
+            </div>
             {props.isBeforeRoundEndDate && (
               <CartButton
                 project={project}
