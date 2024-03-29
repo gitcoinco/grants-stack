@@ -12,7 +12,7 @@ import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor, usePassport } from "../../api/passport";
-import { VotingToken } from "common";
+import { ChainId, VotingToken } from "common";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { PassportWidget } from "../../common/PassportWidget";
 
@@ -141,7 +141,8 @@ export function RoundInCart(
           <div className="flex flex-row gap-3 justify-center pt-1 pr-2">
             <div>
               {matchingEstimateError === undefined &&
-                matchingEstimates !== undefined && (
+                matchingEstimates !== undefined &&
+                round?.chainId !== ChainId.AVALANCHE && (
                   <div className="flex justify-end flex-nowrap">
                     <Skeleton isLoaded={!matchingEstimateLoading}>
                       <div className="flex flex-row">
