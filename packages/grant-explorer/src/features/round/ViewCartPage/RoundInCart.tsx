@@ -168,7 +168,10 @@ export function RoundInCart(
             </div>
             <div>
               <p className="text-md">
-                Total donation ${totalDonationInUSD.toFixed(2)}
+                Total donation $
+                {isNaN(totalDonationInUSD)
+                  ? "0.0"
+                  : totalDonationInUSD.toFixed(2)}
               </p>
             </div>
           </div>
