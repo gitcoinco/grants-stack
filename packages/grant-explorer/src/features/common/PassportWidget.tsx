@@ -76,9 +76,9 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
         />
         <div
           className={`backdrop-blur-[2px] cursor-auto absolute mt-1 top-12 ${
-            alignment === "left" ? "left-[-20px]" : ""
+            alignment === "left" ? "left-[60px] md:left-[-20px]" : ""
           } border-2
-           z-10 ml-[-75px] font-modern-era-medium md:right-0
+           z-20 ml-[-75px] font-modern-era-medium md:right-0
             md:ml-0 md:mr-[-20px] w-96 bg-white md:bg-white/90 py-4 px-6
              rounded-3xl shadow-lg ${isOpen ? "block" : "hidden"}`}
         >

@@ -144,17 +144,23 @@ export function RoundInCart(
                 matchingEstimates !== undefined && (
                   <div className="flex justify-end flex-nowrap">
                     <Skeleton isLoaded={!matchingEstimateLoading}>
-                      <p className={"flex flex-nowrap items-center gap-2"}>
-                        <text>Total Match </text>
-                        <div
-                          className={`flex flex-row items-center justify-between font-semibold italic ${passportTextClass}`}
+                      <div className="flex flex-row">
+                        <p
+                          className={
+                            "flex flex-col md:flex-row items-center gap-2"
+                          }
                         >
-                          <BoltIcon className={"w-4 h-4 inline"} />
-                          ~$
-                          {estimate?.toFixed(2)}
-                        </div>
-                        <div>|</div>
-                      </p>
+                          <text>Total Match </text>
+                          <div
+                            className={`flex flex-row items-center justify-between font-semibold italic ${passportTextClass}`}
+                          >
+                            <BoltIcon className={"w-4 h-4 inline"} />
+                            ~$
+                            {estimate?.toFixed(2)}
+                          </div>
+                        </p>
+                        <span className="pl-2">|</span>
+                      </div>
                     </Skeleton>
                   </div>
                 )}
