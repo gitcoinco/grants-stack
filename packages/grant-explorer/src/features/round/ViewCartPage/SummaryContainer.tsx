@@ -1,4 +1,4 @@
-import { ChainId, getTokenPrice, NATIVE, PassportState } from "common";
+import { ChainId, getTokenPrice, NATIVE } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -13,7 +13,7 @@ import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
 
-import { getClassForPassportColor, usePassport } from "../../api/passport";
+import { getClassForPassportColor } from "../../api/passport";
 import useSWR from "swr";
 import { groupBy, uniqBy } from "lodash-es";
 import MRCProgressModal from "../../common/MRCProgressModal";
@@ -28,12 +28,11 @@ import {
 import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
-import { Round, useDataLayer } from "data-layer";
+import { useDataLayer } from "data-layer";
 import { fetchBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
 import { useAllo } from "../../api/AlloWrapper";
 import { getFormattedRoundId } from "../../common/utils/utils";
-import { R } from "vitest/dist/reporters-2ff87305";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();

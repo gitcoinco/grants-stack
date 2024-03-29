@@ -5,7 +5,7 @@ import {
   PassportResponseSchema,
   PassportState,
   submitPassport,
-  roundToPassportCommunityIdMap,
+  roundToPassportIdAndKeyMap,
   ChainId,
 } from "common";
 import { Round } from "data-layer";
@@ -22,17 +22,14 @@ export function usePassport({
   address: string | undefined;
   round: Round;
 }) {
-  const PASSPORT_COMMUNITY_ID = roundToPassportCommunityIdMap(round);
+  const { communityId, apiKey } = roundToPassportIdAndKeyMap(round);
 
   const swr = useSWR<
     PassportResponse,
     Response,
-    () => [string, string, Round] | null
+    () => [string, string, string] | null
   >(
-    () =>
-      address && PASSPORT_COMMUNITY_ID && round
-        ? [address, PASSPORT_COMMUNITY_ID, round]
-        : null,
+    () => (address && round ? [address, communityId, apiKey] : null),
     async (args) => {
       // for avalance we need to submit the passport to fetch the score.
       const res =

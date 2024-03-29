@@ -18,7 +18,7 @@ vi.mock("../passport", () => {
 
 const userAddress = faker.finance.ethereumAddress();
 const communityId = faker.random.numeric();
-const mockRoundData = makeRoundData();
+const apiKey = faker.random.alphaNumeric();
 
 const mockAccount = {
   address: userAddress,
@@ -43,7 +43,7 @@ describe("fetchPassport", () => {
       ok: true,
       status: 200,
     });
-    const resp = await fetchPassport(userAddress, communityId, mockRoundData);
+    const resp = await fetchPassport(userAddress, communityId, apiKey);
     expect(resp).toBeDefined();
     expect(resp.ok).toBeTruthy();
     expect(resp.status).toEqual(200);
@@ -61,7 +61,7 @@ describe("submitPassport", () => {
       ok: true,
       status: 200,
     });
-    const resp = await submitPassport(userAddress, communityId, mockRoundData);
+    const resp = await submitPassport(userAddress, communityId, apiKey);
     expect(resp).toBeDefined();
     expect(resp.ok).toBeTruthy();
     expect(resp.status).toEqual(200);

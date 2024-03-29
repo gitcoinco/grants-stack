@@ -6,7 +6,7 @@ import { useOutletContext } from "react-router-dom";
 import z from "zod";
 import { ChainId } from "./chain-ids";
 import { Round } from "data-layer";
-import { getAlloVersion } from "./config";
+import { getAlloVersion, getConfig } from "./config";
 
 export * from "./icons";
 export * from "./markdown";
@@ -49,22 +49,20 @@ export const PassportResponseSchema = z.object({
  *
  * @param address
  * @param communityId
- * We don't use the _round data yet, but we might need it in future
- * if passport score calculation is different for different rounds
- * @param _round
+ * @param apiKey
  * @returns
  */
 export const fetchPassport = (
   address: string,
   communityId: string,
-  _round: Round
+  apiKey: string
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`;
   return fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
   });
 };
@@ -74,13 +72,13 @@ export const fetchPassport = (
  *
  * @param address string
  * @param communityId string
- * @param round Round
+ * @param apiKey string
  * @returns
  */
 export const submitPassport = (
   address: string,
   communityId: string,
-  round: Round
+  apiKey: string
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/submit-passport`;
 
@@ -88,10 +86,7 @@ export const submitPassport = (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-API-Key":
-        round.chainId === ChainId.AVALANCHE
-          ? `${process.env.REACT_APP_PASSPORT_AVALANCHE_API_KEY}`
-          : `${process.env.REACT_APP_PASSPORT_API_KEY}`,
+      "X-API-Key": `${apiKey}`,
     },
     body: JSON.stringify({
       address: address,
@@ -384,13 +379,22 @@ export interface Web3Instance {
 
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
-export function roundToPassportCommunityIdMap(round: Round) {
+export function roundToPassportIdAndKeyMap(round: Round): {
+  communityId: string;
+  apiKey: string;
+} {
   const chainId = round?.chainId;
   switch (chainId) {
     case ChainId.AVALANCHE:
-      return process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID_AVALANCHE;
+      return {
+        communityId: getConfig().passport.passportAvalancheCommunityId,
+        apiKey: getConfig().passport.passportAvalancheAPIKey,
+      };
     default:
-      return process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
+      return {
+        communityId: getConfig().passport.passportCommunityId,
+        apiKey: getConfig().passport.passportAPIKey,
+      };
   }
 }
 

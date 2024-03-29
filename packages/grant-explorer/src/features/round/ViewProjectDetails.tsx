@@ -117,6 +117,7 @@ export default function ViewProjectDetails() {
 
   const projectToRender = application && mapApplicationToProject(application);
   const round = application && mapApplicationToRound(application);
+  round && (round.chainId = Number(chainId));
   const isSybilDefenseEnabled =
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
 
