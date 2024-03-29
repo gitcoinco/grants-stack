@@ -59,7 +59,12 @@ describe("useCartStorage Zustand store", () => {
     useCartStorage.getState().add(project);
     useCartStorage
       .getState()
-      .updateDonationAmount(project.grantApplicationId, updatedAmount);
+      .updateDonationAmount(
+        project.chainId,
+        project.roundId,
+        project.grantApplicationId,
+        updatedAmount
+      );
 
     const updatedProject = useCartStorage
       .getState()
@@ -120,7 +125,9 @@ describe("useCartStorage Zustand store", () => {
     const nonExistingId = "1234"; // Mock ID
     const initialProjects = [...useCartStorage.getState().projects];
 
-    useCartStorage.getState().updateDonationAmount(nonExistingId, "500");
+    useCartStorage
+      .getState()
+      .updateDonationAmount(1, "1", nonExistingId, "500");
 
     // Assert that the store state remains unchanged
     expect(useCartStorage.getState().projects).toEqual(initialProjects);
@@ -174,7 +181,12 @@ describe("useCartStorage Zustand store", () => {
     useCartStorage.getState().add(project);
     useCartStorage
       .getState()
-      .updateDonationAmount(project.grantApplicationId, "-50");
+      .updateDonationAmount(
+        project.chainId,
+        project.roundId,
+        project.grantApplicationId,
+        "-50"
+      );
 
     // Assuming negative donations are invalid and thus unchanged:
     expect(
