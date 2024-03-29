@@ -1,6 +1,5 @@
 import useSWR from "swr";
 import { Application, DataLayer } from "data-layer";
-import { Address, getAddress, zeroAddress } from "viem";
 
 type Params = {
   chainId?: number;
@@ -19,9 +18,7 @@ export function useRoundApprovedApplications(
       const validatedParams = (projectId: string) => {
         return {
           chainId: params.chainId as number,
-          roundId: getAddress(
-            params.roundId ?? zeroAddress
-          ).toLowerCase() as Lowercase<Address>,
+          roundId: params.roundId as string,
           applicationId: projectId as string,
         };
       };
