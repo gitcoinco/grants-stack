@@ -385,7 +385,7 @@ export interface Web3Instance {
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
 export function roundToPassportCommunityIdMap(round: Round) {
-  const chainId = round.chainId;
+  const chainId = round?.chainId;
   switch (chainId) {
     case ChainId.AVALANCHE:
       return process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID_AVALANCHE;
