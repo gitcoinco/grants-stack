@@ -8,6 +8,7 @@ import {
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
+import { ChainId } from "common";
 import { votingTokens } from "../../api/utils";
 import { vi } from "vitest";
 import { parseUnits, zeroAddress } from "viem";
