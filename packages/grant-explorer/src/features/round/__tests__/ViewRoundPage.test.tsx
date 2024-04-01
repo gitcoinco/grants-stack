@@ -8,7 +8,6 @@ import {
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
-import { ChainId } from "common";
 import { votingTokens } from "../../api/utils";
 import { vi } from "vitest";
 import { parseUnits, zeroAddress } from "viem";
@@ -99,7 +98,7 @@ describe("<ViewRound /> in case of before the application start date", () => {
     const token = votingTokens[0].address;
     stubRound = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -134,7 +133,7 @@ describe("<ViewRound /> in case of during the application period", () => {
     const token = votingTokens[0].address;
     stubRound = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -194,7 +193,7 @@ describe("<ViewRound /> in case of post application end date & before round star
     const token = votingTokens[0].address;
     stubRound = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -229,7 +228,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
     vi.clearAllMocks();
     stubRound = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -279,7 +278,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       approvedProjects: [expectedApprovedProject],
       applicationsStartTime,
       applicationsEndTime,
@@ -316,7 +315,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
     const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       approvedProjects: [expectedApprovedProject],
       applicationsStartTime,
       applicationsEndTime,
@@ -348,7 +347,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
     const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       approvedProjects,
       applicationsStartTime,
       applicationsEndTime,
@@ -383,7 +382,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
     const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       approvedProjects,
       applicationsStartTime,
       applicationsEndTime,
@@ -397,7 +396,6 @@ describe("<ViewRound /> in case of after the round start date", () => {
         rounds: [roundWithProjects],
         isLoading: false,
       },
-      dataLayer: mockDataLayer,
     });
 
     const projectLinks = screen.getAllByTestId(
@@ -438,7 +436,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
     const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       approvedProjects,
       applicationsStartTime,
       applicationsEndTime,
@@ -452,7 +450,6 @@ describe("<ViewRound /> in case of after the round start date", () => {
         rounds: [roundWithProjects],
         isLoading: false,
       },
-      dataLayer: mockDataLayer,
     });
 
     const searchInput = screen.getByPlaceholderText("Search");
@@ -474,7 +471,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
     const token = votingTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       approvedProjects,
       applicationsStartTime,
       applicationsEndTime,
@@ -489,7 +486,6 @@ describe("<ViewRound /> in case of after the round start date", () => {
           rounds: [roundWithProjects],
           isLoading: false,
         },
-        dataLayer: mockDataLayer,
       });
 
       expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
@@ -501,7 +497,6 @@ describe("<ViewRound /> in case of after the round start date", () => {
           rounds: [roundWithProjects],
           isLoading: false,
         },
-        dataLayer: mockDataLayer,
       });
       const addToCart = screen.getByTestId("add-to-cart");
       fireEvent.click(addToCart);
@@ -523,7 +518,6 @@ describe("<ViewRound /> in case of after the round start date", () => {
           ],
           isLoading: false,
         },
-        dataLayer: mockDataLayer,
       });
       // click add to cart
       const addToCart = screen.getByTestId("add-to-cart");
@@ -556,7 +550,7 @@ describe("<ViewRound /> in case ApplicationsEnd and RoundEnd dates are not set",
     const roundEndTime = new Date("foo");
     stubRound = makeRoundData({
       id: roundId,
-      chainId: ChainId.GOERLI,
+      chainId: 5,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -567,7 +561,6 @@ describe("<ViewRound /> in case ApplicationsEnd and RoundEnd dates are not set",
   it("Should display 'No End Date' for Applications and Round end dates", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
-      dataLayer: mockDataLayer,
     });
 
     const AppSubmissionButton = await screen.findAllByText("No End Date");
