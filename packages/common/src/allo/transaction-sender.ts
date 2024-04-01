@@ -10,6 +10,7 @@ import {
   Hex,
   Log,
   PublicClient,
+  TransactionNotFoundError,
   WalletClient,
   zeroAddress,
 } from "viem";
@@ -150,23 +151,35 @@ export function createViemTransactionSender(
       timeout?: number,
       customPublicClient?: PublicClient
     ): Promise<TransactionReceipt> {
-      const receipt = await (
-        customPublicClient ?? publicClient
-      ).waitForTransactionReceipt({
-        hash: txHash,
-        timeout: timeout,
-      });
+      for (let i = 0; i < 5; i++) {
+        try {
+          const receipt = await (
+            customPublicClient ?? publicClient
+          ).waitForTransactionReceipt({
+            hash: txHash,
+            timeout: timeout,
+          });
 
-      return {
-        transactionHash: receipt.transactionHash,
-        blockHash: receipt.blockHash,
-        blockNumber: receipt.blockNumber,
-        logs: receipt.logs.map((log: Log) => ({
-          data: log.data,
-          topics: log.topics,
-        })),
-        status: receipt.status,
-      };
+          return {
+            transactionHash: receipt.transactionHash,
+            blockHash: receipt.blockHash,
+            blockNumber: receipt.blockNumber,
+            logs: receipt.logs.map((log: Log) => ({
+              data: log.data,
+              topics: log.topics,
+            })),
+            status: receipt.status,
+          };
+        } catch (e) {
+          if (e instanceof TransactionNotFoundError) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+
+          throw e;
+        }
+      }
+
+      throw new Error("Transaction not found after 5 retries");
     },
 
     async address(): Promise<Address> {
