@@ -127,7 +127,7 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                     </span>
                   )}
                   <span>
-                    You can update your score by heading over to Passport.{" "}
+                    {" "}You can update your score by heading over to Passport.{" "}
                   </span>
                   {round.chainId === ChainId.AVALANCHE && (
                     <span>
