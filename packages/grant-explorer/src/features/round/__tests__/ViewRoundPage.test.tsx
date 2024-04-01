@@ -388,6 +388,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         rounds: [roundWithProjects],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     const projectLinks = screen.getAllByTestId(
@@ -441,6 +442,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         rounds: [roundWithProjects],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     const searchInput = screen.getByPlaceholderText("Search");
@@ -476,6 +478,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
           rounds: [roundWithProjects],
           isLoading: false,
         },
+        dataLayer: mockDataLayer,
       });
 
       expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
@@ -487,6 +490,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
           rounds: [roundWithProjects],
           isLoading: false,
         },
+        dataLayer: mockDataLayer,
       });
       const addToCart = screen.getByTestId("add-to-cart");
       fireEvent.click(addToCart);
@@ -508,6 +512,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
           ],
           isLoading: false,
         },
+        dataLayer: mockDataLayer,
       });
       // click add to cart
       const addToCart = screen.getByTestId("add-to-cart");
@@ -550,6 +555,7 @@ describe("<ViewRound /> in case ApplicationsEnd and RoundEnd dates are not set",
   it("Should display 'No End Date' for Applications and Round end dates", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
+      dataLayer: mockDataLayer,
     });
 
     const AppSubmissionButton = await screen.findAllByText("No End Date");
