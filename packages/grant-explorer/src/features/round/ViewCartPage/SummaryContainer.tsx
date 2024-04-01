@@ -195,7 +195,7 @@ export function SummaryContainer() {
     useState(false);
   const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
   /* Donate without matching warning modal */
-  const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
+  // const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
   useEffect(() => {
     /* Check if all chains that were meant to be checked out were succesful */
@@ -282,7 +282,7 @@ export function SummaryContainer() {
           }
         />
         {/*Passport not connected warning modal*/}
-        <ErrorModal
+        {/* <ErrorModal
           isOpen={donateWarningModalOpen}
           setIsOpen={setDonateWarningModalOpen}
           onDone={() => {
@@ -308,7 +308,7 @@ export function SummaryContainer() {
             </>
           }
           closeOnBackgroundClick={true}
-        />
+        /> */}
       </>
     );
   }
@@ -475,12 +475,11 @@ export function SummaryContainer() {
             }
 
             /* Check if user hasn't connected passport yet, display the warning modal */
-            if (estimate === 0 && !noPassportRoundsInCart) {
-              setDonateWarningModalOpen(true);
-              return;
-            }
+            // if (estimate === 0 && !noPassportRoundsInCart) {
+            //   setDonateWarningModalOpen(true);
+            //   return;
+            // }
 
-            /* If passport is fine, proceed straight to confirmation */
             handleConfirmation();
           }}
           className="items-center shadow-sm text-sm rounded w-full mt-4"
