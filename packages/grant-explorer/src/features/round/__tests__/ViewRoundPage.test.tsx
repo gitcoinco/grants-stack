@@ -109,6 +109,7 @@ describe("<ViewRound /> in case of before the application start date", () => {
   it("Should show grayed out Applications Open buttom", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
+      dataLayer: mockDataLayer,
     });
 
     const AppSubmissionButton = screen.getByTestId("applications-open-button");
@@ -151,6 +152,7 @@ describe("<ViewRound /> in case of during the application period", () => {
     // render the component
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
+      dataLayer: mockDataLayer,
     });
 
     // expect that components / text / dates / etc. specific to  application view page
@@ -167,6 +169,7 @@ describe("<ViewRound /> in case of during the application period", () => {
   it("Should show apply to round button", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
+      dataLayer: mockDataLayer,
     });
     const AppSubmissionButton = await screen.findAllByText(
       "Apply to Grant Round"
@@ -199,6 +202,7 @@ describe("<ViewRound /> in case of post application end date & before round star
   it("Should show Applications Closed button", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
+      dataLayer: mockDataLayer,
     });
 
     const AppSubmissionButton = screen.getByTestId(
@@ -240,6 +244,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
   it("displays the round name", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
+      dataLayer: mockDataLayer,
     });
 
     expect(await screen.findByTestId("round-title")).toBeInTheDocument();
@@ -248,6 +253,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
   it("displays the bread crumbs", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
+      dataLayer: mockDataLayer,
     });
 
     expect(await screen.findByTestId("bread-crumbs")).toBeInTheDocument();
@@ -281,6 +287,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         rounds: [roundWithProjects],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     const ProjectTitle = await screen.getByTestId("project-title");
@@ -316,6 +323,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         rounds: [roundWithProjects],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     const actualBanner = screen.getAllByRole("img", {
@@ -346,6 +354,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         rounds: [roundWithProjects],
         isLoading: false,
       },
+      dataLayer: mockDataLayer,
     });
 
     const projectCards = screen.getAllByTestId("project-card");
