@@ -5,14 +5,23 @@ import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-log
 import { ReactComponent as GitcoinPassportBWLogo } from "../../assets/passport-logo-bw.svg";
 import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport-logo-full.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
+import { Round } from "data-layer";
+import { ChainId, roundToPassportURLMap } from "common";
 
-export function PassportWidget() {
+type PassportWidgetProps = {
+  round: Round;
+  alignment?: "left" | "right";
+};
+
+export function PassportWidget({ round, alignment }: PassportWidgetProps) {
   const { address } = useAccount();
 
   const { passportState, passportScore, passportColor, donationImpact } =
-    usePassport({ address });
+    usePassport({ address, round });
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const passportURL = roundToPassportURLMap(round);
 
   function handleClick() {
     if (
@@ -66,8 +75,10 @@ export function PassportWidget() {
           direction={isOpen ? "up" : "down"}
         />
         <div
-          className={`backdrop-blur-[2px] cursor-auto absolute mt-1 top-12 border-2
-           z-10 ml-[-75px] font-modern-era-medium md:right-0
+          className={`backdrop-blur-[2px] cursor-auto absolute mt-1 top-12 ${
+            alignment === "left" ? "left-[60px] md:left-[-20px]" : ""
+          } border-2
+           z-20 ml-[-75px] font-modern-era-medium md:right-0
             md:ml-0 md:mr-[-20px] w-96 bg-white md:bg-white/90 py-4 px-6
              rounded-3xl shadow-lg ${isOpen ? "block" : "hidden"}`}
         >
@@ -107,16 +118,31 @@ export function PassportWidget() {
                 </div>
                 <p className="text-left text-xs font-dm-mono">
                   Your donation impact is calculated based on your Passport
-                  score. Scores higher than 15 will begin to be eligible for
-                  matching, and your donation impact scales as your Passport
-                  score increases. You can update your score by heading over to{" "}
-                  <a
-                    href={"https://passport.gitcoin.co"}
-                    className={"underline"}
-                  >
-                    Passport
-                  </a>
-                  .
+                  score.
+                  {round.chainId !== ChainId.AVALANCHE && (
+                    <span>
+                      Scores higher than 15 will begin to be eligible for
+                      matching, and your donation impact scales as your Passport
+                      score increases.
+                    </span>
+                  )}
+                  <span>
+                    {" "}You can update your score by heading over to Passport.{" "}
+                  </span>
+                  {round.chainId === ChainId.AVALANCHE && (
+                    <span>
+                      To learn more about the Avalanche Custom Scorer, click{" "}
+                      <a
+                        href={
+                          "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/supporter-donor-faq/passport-custom-scorer"
+                        }
+                        className={"underline"}
+                      >
+                        here
+                      </a>
+                      .
+                    </span>
+                  )}
                 </p>
               </>
             ) : (
@@ -140,9 +166,7 @@ export function PassportWidget() {
             <div className="flex justify-center">
               <button
                 className="flex flex-row gap-2 bg-gray-800 w-1/2 p-2 rounded-xl text-white"
-                onClick={() =>
-                  window.open("https://passport.gitcoin.co", "_blank")
-                }
+                onClick={() => window.open(passportURL, "_blank")}
               >
                 <GitcoinPassportLogo className="h-6 w-6" />
                 Open Passport

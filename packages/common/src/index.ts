@@ -5,7 +5,8 @@ import { useParams as useRouterParams } from "react-router";
 import { useOutletContext } from "react-router-dom";
 import z from "zod";
 import { ChainId } from "./chain-ids";
-import { getAlloVersion } from "./config";
+import { Round } from "data-layer";
+import { getAlloVersion, getConfig } from "./config";
 
 export * from "./icons";
 export * from "./markdown";
@@ -29,7 +30,7 @@ export enum PassportState {
 const PassportEvidenceSchema = z.object({
   type: z.string().nullish(),
   rawScore: z.coerce.number(),
-  threshold: z.string().nullish(),
+  threshold: z.union([z.string().nullish(), z.coerce.number()]),
 });
 
 export type PassportResponse = z.infer<typeof PassportResponseSchema>;
@@ -48,18 +49,20 @@ export const PassportResponseSchema = z.object({
  *
  * @param address
  * @param communityId
+ * @param apiKey
  * @returns
  */
 export const fetchPassport = (
   address: string,
-  communityId: string
+  communityId: string,
+  apiKey: string
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`;
   return fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
   });
 };
@@ -69,11 +72,13 @@ export const fetchPassport = (
  *
  * @param address string
  * @param communityId string
+ * @param apiKey string
  * @returns
  */
 export const submitPassport = (
   address: string,
-  communityId: string
+  communityId: string,
+  apiKey: string
 ): Promise<Response> => {
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/submit-passport`;
 
@@ -81,10 +86,10 @@ export const submitPassport = (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
+      "X-API-Key": `${apiKey}`,
     },
     body: JSON.stringify({
-      address,
+      address: address,
       community: communityId,
       signature: "",
       nonce: "",
@@ -373,6 +378,35 @@ export interface Web3Instance {
 }
 
 export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
+
+export function roundToPassportIdAndKeyMap(round: Round): {
+  communityId: string;
+  apiKey: string;
+} {
+  const chainId = round?.chainId;
+  switch (chainId) {
+    case ChainId.AVALANCHE:
+      return {
+        communityId: getConfig().passport.passportAvalancheCommunityId,
+        apiKey: getConfig().passport.passportAvalancheAPIKey,
+      };
+    default:
+      return {
+        communityId: getConfig().passport.passportCommunityId,
+        apiKey: getConfig().passport.passportAPIKey,
+      };
+  }
+}
+
+export function roundToPassportURLMap(round: Round) {
+  const chainId = round.chainId;
+  switch (chainId) {
+    case ChainId.AVALANCHE:
+      return "https://passport.gitcoin.co/#/dashboard/avalanche";
+    default:
+      return "https://passport.gitcoin.co";
+  }
+}
 
 export * from "./allo/transaction-builder";
 export type { VotingToken } from "./types";

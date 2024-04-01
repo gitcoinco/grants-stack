@@ -1,4 +1,4 @@
-import { ChainId, getTokenPrice, NATIVE, PassportState } from "common";
+import { ChainId, getTokenPrice, NATIVE } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -13,7 +13,7 @@ import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
 
-import { getClassForPassportColor, usePassport } from "../../api/passport";
+import { getClassForPassportColor } from "../../api/passport";
 import useSWR from "swr";
 import { groupBy, uniqBy } from "lodash-es";
 import MRCProgressModal from "../../common/MRCProgressModal";
@@ -195,7 +195,7 @@ export function SummaryContainer() {
     useState(false);
   const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
   /* Donate without matching warning modal */
-  const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
+  // const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
   useEffect(() => {
     /* Check if all chains that were meant to be checked out were succesful */
@@ -282,7 +282,7 @@ export function SummaryContainer() {
           }
         />
         {/*Passport not connected warning modal*/}
-        <ErrorModal
+        {/* <ErrorModal
           isOpen={donateWarningModalOpen}
           setIsOpen={setDonateWarningModalOpen}
           onDone={() => {
@@ -308,7 +308,7 @@ export function SummaryContainer() {
             </>
           }
           closeOnBackgroundClick={true}
-        />
+        /> */}
       </>
     );
   }
@@ -337,10 +337,7 @@ export function SummaryContainer() {
     }
   }
 
-  const { passportColor, passportScore, passportState } = usePassport({
-    address: address ?? "",
-  });
-  const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
+  const passportTextClass = getClassForPassportColor("black");
 
   const { data: totalDonationAcrossChainsInUSDData } = useSWR(
     totalDonationsPerChain,
@@ -403,7 +400,7 @@ export function SummaryContainer() {
   } = useMatchingEstimates(matchingEstimateParamsPerRound);
 
   const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
-  const estimateText = matchingEstimatesToText(matchingEstimates);
+  const estimate = matchingEstimatesToText(matchingEstimates);
 
   /** Special case where none of the chains to be checked out have enough funds */
   const notEnoughFunds = Object.values(enoughFundsToDonatePerChain).every(
@@ -431,19 +428,14 @@ export function SummaryContainer() {
             <>
               <div className="flex flex-row mt-4 items-center">
                 <p>Estimated match</p>
-                <MatchingEstimateTooltip
-                  isEligible={
-                    (passportScore !== undefined && passportScore >= 15) ||
-                    noPassportRoundsInCart
-                  }
-                />
+                <MatchingEstimateTooltip isEligible={noPassportRoundsInCart} />
               </div>
               <div className="flex justify-end mt-4">
                 <Skeleton isLoaded={!matchingEstimateLoading}>
                   <p>
                     <BoltIcon className={"w-4 h-4 inline"} />
                     ~$
-                    {estimateText}
+                    {estimate?.toFixed(2)}
                   </p>
                 </Skeleton>
               </div>
@@ -483,17 +475,11 @@ export function SummaryContainer() {
             }
 
             /* Check if user hasn't connected passport yet, display the warning modal */
-            if (
-              (passportState === PassportState.ERROR ||
-                passportState === PassportState.NOT_CONNECTED ||
-                passportState === PassportState.INVALID_PASSPORT) &&
-              !noPassportRoundsInCart
-            ) {
-              setDonateWarningModalOpen(true);
-              return;
-            }
+            // if (estimate === 0 && !noPassportRoundsInCart) {
+            //   setDonateWarningModalOpen(true);
+            //   return;
+            // }
 
-            /* If passport is fine, proceed straight to confirmation */
             handleConfirmation();
           }}
           className="items-center shadow-sm text-sm rounded w-full mt-4"

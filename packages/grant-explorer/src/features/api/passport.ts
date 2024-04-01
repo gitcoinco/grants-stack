@@ -5,23 +5,37 @@ import {
   PassportResponseSchema,
   PassportState,
   submitPassport,
+  roundToPassportIdAndKeyMap,
+  ChainId,
 } from "common";
+import { Round } from "data-layer";
 import { useEffect, useMemo } from "react";
 import useSWR from "swr";
 
 export { submitPassport, fetchPassport, PassportState };
 export type { PassportResponse };
 
-const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
+export function usePassport({
+  address,
+  round,
+}: {
+  address: string | undefined;
+  round: Round;
+}) {
+  const { communityId, apiKey } = roundToPassportIdAndKeyMap(round);
 
-export function usePassport({ address }: { address: string | undefined }) {
-  const swr = useSWR<PassportResponse, Response, () => [string, string] | null>(
-    () =>
-      address && PASSPORT_COMMUNITY_ID
-        ? [address, PASSPORT_COMMUNITY_ID]
-        : null,
+  const swr = useSWR<
+    PassportResponse,
+    Response,
+    () => [string, string, string] | null
+  >(
+    () => (address && round ? [address, communityId, apiKey] : null),
     async (args) => {
-      const res = await fetchPassport(...args);
+      // for avalance we need to submit the passport to fetch the score.
+      const res =
+        round.chainId === ChainId.AVALANCHE
+          ? await submitPassport(...args)
+          : await fetchPassport(...args);
 
       if (res.ok) {
         return PassportResponseSchema.parse(await res.json());
@@ -116,13 +130,14 @@ export function usePassport({ address }: { address: string | undefined }) {
   };
 }
 
-export type PassportColor = "gray" | "orange" | "yellow" | "green";
+export type PassportColor = "gray" | "orange" | "yellow" | "green" | "black";
 
 const passportColorToClassName: Record<PassportColor, string> = {
   gray: "text-gray-400",
   orange: "text-orange-400",
   yellow: "text-yellow-400",
   green: "text-green-400",
+  black: "text-black",
 };
 
 export const getClassForPassportColor = (color: PassportColor) =>

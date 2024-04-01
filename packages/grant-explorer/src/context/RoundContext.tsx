@@ -140,7 +140,7 @@ export const useRoundById = (
     context.dispatch({ type: ActionType.SET_ROUND_ID, payload: roundId });
     if (roundId) {
       const existingRound = context.state.rounds.find(
-        (round) => round.id === roundId
+        (round) => round.id === roundId && round.chainId === chainId
       );
 
       if (!existingRound?.token) {
@@ -149,7 +149,9 @@ export const useRoundById = (
     }
   }, [chainId, roundId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const round = context.state.rounds.find((round) => round.id === roundId);
+  const round = context.state.rounds.find(
+    (round) => round.id === roundId && round.chainId === chainId
+  );
 
   return {
     round: round,
