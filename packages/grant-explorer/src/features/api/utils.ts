@@ -6,15 +6,13 @@ import {
   NATIVE,
   ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_DIRECT_OLD,
-  ROUND_PAYOUT_MERKLE,
-  ROUND_PAYOUT_MERKLE_OLD,
-  RoundPayoutTypeNew,
   VotingToken,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
 import { useSearchParams } from "react-router-dom";
 import { getAddress, zeroAddress } from "viem";
 import { ethers } from "ethers";
+import { f } from "vitest/dist/reporters-2ff87305";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -258,6 +256,16 @@ export const OPTIMISM_MAINNET_TOKENS: VotingToken[] = [
     defaultForVoting: true,
     canVote: true,
   },
+  {
+    name: "OP",
+    chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+    address: "0x4200000000000000000000000000000000000042",
+    decimal: 18,
+    logo: TokenNamesAndLogos["OP"],
+    redstoneTokenId: RedstoneTokenIds["OP"],
+    defaultForVoting: false,
+    canVote: true,
+  }
 ];
 
 const FANTOM_MAINNET_TOKENS: VotingToken[] = [
