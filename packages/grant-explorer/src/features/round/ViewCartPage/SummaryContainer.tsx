@@ -2,7 +2,6 @@ import { ChainId, getTokenPrice, NATIVE } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
-import ErrorModal from "../../common/ErrorModal";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
 import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
@@ -12,7 +11,6 @@ import { useAccount, useWalletClient } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
-
 import { getClassForPassportColor } from "../../api/passport";
 import useSWR from "swr";
 import { groupBy, uniqBy } from "lodash-es";
@@ -371,9 +369,10 @@ export function SummaryContainer() {
       const projectFromRound = projects.find(
         (project) => project.roundId === round.id
       );
+
       return {
         roundId: getFormattedRoundId(round.id),
-        chainId: projectFromRound?.chainId ?? ChainId.MAINNET,
+        chainId: projectFromRound?.chainId ?? round.chainId ?? ChainId.MAINNET,
         potentialVotes: projects
           .filter((proj) => proj.roundId === round.id)
           .map((proj) => ({
@@ -393,11 +392,17 @@ export function SummaryContainer() {
       };
     }) ?? [];
 
+  /* Filter out the chains that are not supported by the matching estimates API */
+  const excludedChains = [43114, 43113];
+  const filteredMatchingEstimates = matchingEstimateParamsPerRound.filter(
+    (est) => !excludedChains.includes(est.chainId)
+  );
+
   const {
     data,
     error: matchingEstimateError,
     isLoading: matchingEstimateLoading,
-  } = useMatchingEstimates(matchingEstimateParamsPerRound);
+  } = useMatchingEstimates(filteredMatchingEstimates);
 
   const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
   const estimate = matchingEstimatesToText(matchingEstimates);
