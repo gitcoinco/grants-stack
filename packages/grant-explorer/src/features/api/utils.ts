@@ -12,7 +12,6 @@ import { RedstoneTokenIds } from "common/src/chain-ids";
 import { useSearchParams } from "react-router-dom";
 import { getAddress, zeroAddress } from "viem";
 import { ethers } from "ethers";
-import { f } from "vitest/dist/reporters-2ff87305";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
