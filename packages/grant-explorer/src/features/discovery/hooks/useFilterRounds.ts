@@ -11,7 +11,7 @@ import {
 import { isEmpty } from "lodash";
 import { useMemo } from "react";
 import { AlloVersion } from "data-layer/dist/data-layer.types";
-import { getAlloVersion } from "common/src/config";
+// import { getAlloVersion } from "common/src/config";
 
 export type StrategyName =
   | ""
@@ -89,15 +89,13 @@ export const useFilterRounds = (
     where.type === undefined || where.type.trim() === ""
       ? []
       : where.type.split(",");
-  const alloVersion = getAlloVersion();
-  const statuses = where.status.split(",");
+  // const alloVersion = getAlloVersion();
+  // const statuses = where.status.split(",");
   const filter = createRoundWhereFilter(
     statusFilter,
     strategyNames,
     chainIds,
-    statuses.includes(RoundStatus.finished) && alloVersion === "allo-v2"
-      ? undefined
-      : alloVersion
+    undefined
   );
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
@@ -111,6 +109,7 @@ const createRoundWhereFilter = (
   chainIds: number[],
   version: AlloVersion | undefined
 ): RoundsQueryVariables["filter"] => {
+  console.log("version", version);
   return {
     // @ts-expect-error TS thinks that some of the items can be undefined,
     // even though they can't, because they are filtered out down the line

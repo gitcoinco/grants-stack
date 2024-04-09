@@ -55,10 +55,7 @@ const LandingPage = () => {
 
   const featuredRounds = useMemo(() => {
     return filteredActiveRounds.filter((round: RoundGetRound) => {
-      return FEATURED_ROUNDS_IDS.includes(
-        round.id.toLowerCase() ||
-          round.roundMetadata.programContractAddress.toLowerCase()
-      );
+      return FEATURED_ROUNDS_IDS.includes(round.id.toLowerCase());
     });
   }, [filteredActiveRounds]);
 
