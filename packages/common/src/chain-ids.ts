@@ -37,4 +37,5 @@ export const RedstoneTokenIds = {
   mkUSD: "mkUSD",
   DATA: "DATA",
   USDGLO: "USDGLO",
+  OP: "OP",
 } as const;
