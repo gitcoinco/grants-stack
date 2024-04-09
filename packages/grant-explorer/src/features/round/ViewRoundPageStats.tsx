@@ -55,6 +55,7 @@ import { useRoundUniqueDonorsCount } from "../projects/hooks/useRoundUniqueDonor
 import BeforeRoundStart from "./BeforeRoundStart";
 import { ProgressStatus } from "common/src/types";
 import { getAlloVersion } from "common/src/config";
+import { ErrorBoundary } from "@sentry/react";
 
 export type MatchingStatsData = {
   index?: number;
@@ -723,7 +724,9 @@ const ReportCard = ({
                         </div>
                       ) : (
                         <div className="mx-auto">
-                          <FarcasterEmbed url={url} />
+                          <ErrorBoundary>
+                            <FarcasterEmbed url={url} />
+                          </ErrorBoundary>
                         </div>
                       )}
                     </div>
