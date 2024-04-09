@@ -65,7 +65,7 @@ function RoundTabs(props: {
   return (
     <Box className="font-modern-era-medium" bottom={0.5}>
       {props.tabs.tabs.length > 0 && (
-        <Tabs display="flex" defaultIndex={props.tabs.defaultSelectedIndex}>
+        <Tabs display="flex" gap={8} defaultIndex={props.tabs.defaultSelectedIndex}>
           {props.tabs.tabs.map((tab, index) => (
             <Link to={tab.to} key={tab.name}>
               <Tab
