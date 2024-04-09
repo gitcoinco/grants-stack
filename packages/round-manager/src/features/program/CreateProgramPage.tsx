@@ -190,7 +190,7 @@ export default function CreateProgram() {
   return (
     <div className="bg-[#F3F3F5]">
       <Navbar />
-      <div className="container mx-auto h-screen px-4 pt-8">
+      <div className="container mx-auto h-max px-4 pt-8">
         <header>
           <div className="flow-root">
             <h1 className="float-left text-[32px] mb-7">

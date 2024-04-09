@@ -67,11 +67,6 @@ describe("<Navbar>", () => {
     expect(screen.getByTestId("connect-wallet-button")).toBeInTheDocument();
   });
 
-  it("SHOULD display passport widget", () => {
-    renderWithContext(<Navbar customBackground="" />);
-    expect(screen.getByTestId("passport-widget")).toBeInTheDocument();
-  });
-
   it("SHOULD display cart if round has not ended", () => {
     renderWithContext(<Navbar customBackground="" />);
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();

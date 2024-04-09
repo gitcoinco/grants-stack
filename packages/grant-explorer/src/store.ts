@@ -12,7 +12,12 @@ interface CartState {
   clear: () => void;
   remove: (project: CartProject) => void;
   updateDonationsForChain: (chainId: ChainId, amount: string) => void;
-  updateDonationAmount: (grantApplicationId: string, amount: string) => void;
+  updateDonationAmount: (
+    chainId: ChainId,
+    roundId: string,
+    grantApplicationId: string,
+    amount: string
+  ) => void;
   chainToVotingToken: Record<ChainId, VotingToken>;
   getVotingTokenForChain: (chainId: ChainId) => VotingToken;
   setVotingTokenForChain: (chainId: ChainId, votingToken: VotingToken) => void;
@@ -120,13 +125,21 @@ export const useCartStorage = create<CartState>()(
           projects: newState,
         });
       },
-      updateDonationAmount: (grantApplicationId: string, amount: string) => {
+      updateDonationAmount: (
+        chainId: ChainId,
+        roundId: string,
+        grantApplicationId: string,
+        amount: string
+      ) => {
         if (amount.includes("-")) {
           return;
         }
 
         const projectIndex = get().projects.findIndex(
-          (donation) => donation.grantApplicationId === grantApplicationId
+          (donation) =>
+            donation.chainId === chainId &&
+            donation.roundId === roundId &&
+            donation.grantApplicationId === grantApplicationId
         );
 
         if (projectIndex !== -1) {

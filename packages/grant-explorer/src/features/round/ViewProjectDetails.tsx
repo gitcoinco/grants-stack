@@ -18,7 +18,7 @@ import React, {
   useState,
 } from "react";
 import useSWR from "swr";
-import { useEnsName } from "wagmi";
+import { useAccount, useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
@@ -44,6 +44,7 @@ import {
   useApplication,
 } from "../projects/hooks/useApplication";
 import { AlloVersionBanner } from "./ViewRoundPage";
+import { PassportWidget } from "../common/PassportWidget";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -93,6 +94,7 @@ export default function ViewProjectDetails() {
     applicationId: paramApplicationId,
   } = useProjectDetailsParams();
   const dataLayer = useDataLayer();
+  const { address: walletAddress } = useAccount();
 
   let applicationId: string;
 
@@ -114,6 +116,9 @@ export default function ViewProjectDetails() {
 
   const projectToRender = application && mapApplicationToProject(application);
   const round = application && mapApplicationToRound(application);
+  round && (round.chainId = Number(chainId));
+  const isSybilDefenseEnabled =
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
 
@@ -209,8 +214,15 @@ export default function ViewProjectDetails() {
       <DefaultLayout>
         <AlloVersionBanner roundId={roundId} />
         {isAfterRoundEndDate && <RoundEndedBanner />}
-        <div className="py-8 flex items-center" data-testid="bread-crumbs">
-          <Breadcrumb items={breadCrumbs} />
+        <div className="flex flex-row justify-between my-8">
+          <div className="flex items-center pt-2" data-testid="bread-crumbs">
+            <Breadcrumb items={breadCrumbs} />
+          </div>
+          {walletAddress && round && isSybilDefenseEnabled && (
+            <div data-testid="passport-widget">
+              <PassportWidget round={round} alignment="right" />
+            </div>
+          )}
         </div>
         <div className="mb-4">
           <ProjectBanner

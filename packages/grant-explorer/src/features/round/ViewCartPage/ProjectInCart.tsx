@@ -89,6 +89,8 @@ export function ProjectInCart(
             type="number"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               store.updateDonationAmount(
+                props.project.chainId,
+                props.project.roundId,
                 props.project.grantApplicationId,
                 e.target.value
               );

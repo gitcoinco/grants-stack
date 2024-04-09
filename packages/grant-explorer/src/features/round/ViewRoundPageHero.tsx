@@ -18,6 +18,8 @@ import {
 import ApplyButton from "./ApplyButton";
 import AlloV1 from "common/src/icons/AlloV1";
 import AlloV2 from "common/src/icons/AlloV2";
+import { useAccount } from "wagmi";
+import { PassportWidget } from "../common/PassportWidget";
 
 const builderURL = process.env.REACT_APP_BUILDER_URL;
 
@@ -35,6 +37,8 @@ export default function ViewRoundPageHero({
   isAfterRoundEndDate?: boolean;
   tokenSymbol?: string;
 }) {
+  const { address: walletAddress } = useAccount();
+
   const breadCrumbs = [
     {
       name: "Explorer Home",
@@ -70,10 +74,20 @@ export default function ViewRoundPageHero({
 
   const roundEndsText = getRoundEndsText();
   const isAlloV1 = roundId.startsWith("0x");
+
+  const isSybilDefenseEnabled =
+    round.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
   return (
     <>
-      <div className="py-8 flex flex-col" data-testid="bread-crumbs">
-        <Breadcrumb items={breadCrumbs} />
+      <div className="flex justify-between items-center mb-2 gap-2">
+        <div className="py-8 flex flex-col" data-testid="bread-crumbs">
+          <Breadcrumb items={breadCrumbs} />
+        </div>
+        {walletAddress && isSybilDefenseEnabled && (
+          <div data-testid="passport-widget">
+            <PassportWidget round={round} alignment="right" />
+          </div>
+        )}
       </div>
 
       <section>

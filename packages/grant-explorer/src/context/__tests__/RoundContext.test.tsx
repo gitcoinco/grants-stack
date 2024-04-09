@@ -16,7 +16,9 @@ describe("<ListRoundProvider />", () => {
 
   describe("useRoundById()", () => {
     it("provides round based on given round id", async () => {
-      const expectedRound = makeRoundData();
+      const expectedRound = makeRoundData({
+        chainId: 5,
+      });
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
@@ -37,7 +39,9 @@ describe("<ListRoundProvider />", () => {
     });
 
     it("sets isLoading to true when getRoundById call is in progress", async () => {
-      const expectedRound = makeRoundData();
+      const expectedRound = makeRoundData({
+        chainId: 5,
+      });
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
@@ -60,7 +64,9 @@ describe("<ListRoundProvider />", () => {
     });
 
     it("sets isLoading back to false and when getRoundById call succeeds", async () => {
-      const expectedRound = makeRoundData();
+      const expectedRound = makeRoundData({
+        chainId: 5,
+      });
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
@@ -85,7 +91,9 @@ describe("<ListRoundProvider />", () => {
     });
 
     it("sets isLoading back to false when getRoundById call fails", async () => {
-      const expectedRound = makeRoundData();
+      const expectedRound = makeRoundData({
+        chainId: 5,
+      });
       const expectedRoundId: string = expectedRound.id!;
 
       const dataLayerMock = {
@@ -113,7 +121,7 @@ describe("<ListRoundProvider />", () => {
 
 const TestingUseRoundByIdComponent = (props: { expectedRoundId: string }) => {
   const { round, isLoading, getRoundByIdError } = useRoundById(
-    1,
+    5,
     props.expectedRoundId
   );
   return (

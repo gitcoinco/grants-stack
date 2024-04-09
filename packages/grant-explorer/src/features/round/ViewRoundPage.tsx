@@ -134,7 +134,7 @@ export function AlloVersionBanner({ roundId }: { roundId: string }) {
           .
         </span>
       </div>
-      <div className="h-[64px] w-full"></div>
+      <div className="sm:h-[64px] h-[130px] w-full"></div>
     </>
   );
 }
@@ -163,6 +163,7 @@ function AfterRoundStart(props: {
   const [projects, setProjects] = useState<Project[]>();
   const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
   const [isProjectsLoading, setIsProjectsLoading] = useState(true);
+
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
     useState<Project>({} as Project);
@@ -469,33 +470,35 @@ function ProjectCard(props: {
       {!isDirectRound(round) && (
         <CardFooter className="bg-white">
           <CardContent className="px-2 text-xs ">
-            <div className="border-t pt-1">
-              <p>
-                $
-                {props.crowdfundedUSD?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}
-              </p>
-              <p className="text-[10px] font-mono">
-                total raised by {props.uniqueContributorsCount} contributors
-              </p>
+            <div className="border-t pt-1 flex items-center justify-between ">
+              <div>
+                <p>
+                  $
+                  {props.crowdfundedUSD?.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}
+                </p>
+                <p className="text-[11px] font-mono">
+                  total raised by {props.uniqueContributorsCount} contributors
+                </p>
+              </div>
+              {props.isBeforeRoundEndDate && (
+                <CartButton
+                  project={project}
+                  isAlreadyInCart={isAlreadyInCart}
+                  removeFromCart={() => {
+                    remove(cartProject);
+                  }}
+                  addToCart={() => {
+                    add(cartProject);
+                  }}
+                  setCurrentProjectAddedToCart={
+                    props.setCurrentProjectAddedToCart
+                  }
+                  setShowCartNotification={props.setShowCartNotification}
+                />
+              )}
             </div>
-            {props.isBeforeRoundEndDate && (
-              <CartButton
-                project={project}
-                isAlreadyInCart={isAlreadyInCart}
-                removeFromCart={() => {
-                  remove(cartProject);
-                }}
-                addToCart={() => {
-                  add(cartProject);
-                }}
-                setCurrentProjectAddedToCart={
-                  props.setCurrentProjectAddedToCart
-                }
-                setShowCartNotification={props.setShowCartNotification}
-              />
-            )}
           </CardContent>
         </CardFooter>
       )}
@@ -538,7 +541,7 @@ export function CartButtonToggle(props: {
   if (props.isAlreadyInCart) {
     return (
       <div
-        className="float-right cursor-pointer"
+        className="cursor-pointer"
         data-testid="remove-from-cart"
         onClick={props.removeFromCart}
       >
@@ -548,7 +551,7 @@ export function CartButtonToggle(props: {
   }
   return (
     <div
-      className="float-right current-pointer"
+      className="cursor-pointer"
       data-testid="add-to-cart"
       // oonclick adds the project to the cart, sets the current project added to cart and shows the cart notification
       onClick={() => {
