@@ -101,9 +101,8 @@ export const addresses: DeploymentAddressesMap = {
   sepolia: {
     projectRegistry: "0x2420EABfA2C0e6f77E435B0B7615c848bF4963AF",
   },
-  // todo: update this address when deployed.
   seiDevnet: {
-    projectRegistry: "",
+    projectRegistry: "0x5B47c6aFE27b0F5C8319366C6b8FbC0E02104b98",
   },
 };
 

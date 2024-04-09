@@ -6,9 +6,6 @@ import {
   NATIVE,
   ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_DIRECT_OLD,
-  ROUND_PAYOUT_MERKLE,
-  ROUND_PAYOUT_MERKLE_OLD,
-  RoundPayoutTypeNew,
   VotingToken,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
@@ -25,6 +22,9 @@ export function useDebugMode(): boolean {
     process.env.REACT_APP_DEBUG_MODE === "true"
   );
 }
+
+export const SeiIcon =
+  "https://ipfs.io/ipfs/QmUvNaLwzNf1bHjqTMW1aBjRgd5FrsTDqjSnyypLwxv8x5";
 
 export const CHAINS: Record<
   ChainId,
@@ -129,6 +129,11 @@ export const CHAINS: Record<
     name: "Scroll",
     logo: "./logos/scroll-logo.svg",
   },
+  [ChainId.SEI_DEVNET]: {
+    id: ChainId.SEI_DEVNET,
+    name: "SEI Devnet",
+    logo: SeiIcon,
+  },
 };
 
 export const TokenNamesAndLogos = {
@@ -148,6 +153,7 @@ export const TokenNamesAndLogos = {
   LUSD: "./logos/lusd-logo.svg",
   MUTE: "./logos/mute-logo.svg",
   DATA: "./logos/data-logo.svg",
+  SEI: SeiIcon,
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -779,6 +785,29 @@ const SCROLL_TOKENS: VotingToken[] = [
   },
 ];
 
+const SEI_TOKENS: VotingToken[] = [
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_DEVNET,
+    address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.SEI_DEVNET,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["ETH"],
+    redstoneTokenId: RedstoneTokenIds["ETH"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+];
+
 export const votingTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -797,6 +826,7 @@ export const votingTokens = [
   ...BASE_TOKENS,
   ...SCROLL_TOKENS,
   ...SEPOLIA_TOKENS,
+  ...SEI_TOKENS,
 ];
 
 type VotingTokensMap = Record<ChainId, VotingToken[]>;
@@ -822,6 +852,7 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.BASE]: BASE_TOKENS,
   [ChainId.SEPOLIA]: SEPOLIA_TOKENS,
   [ChainId.SCROLL]: SCROLL_TOKENS,
+  [ChainId.SEI_DEVNET]: SEI_TOKENS,
 };
 
 export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
@@ -858,6 +889,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
   [ChainId.BASE]: "https://basescan.org/tx/",
   [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
   [ChainId.SCROLL]: "https://scrollscan.com/tx/",
+  [ChainId.SEI_DEVNET]: "https://seistream.app/tx/",
 };
 
 /**

@@ -432,6 +432,7 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.BASE]: "https://basescan.org/tx/",
   [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
   [ChainId.SCROLL]: "https://scrollscan.com/tx/",
+  [ChainId.SEI_DEVNET]: "https://seistream.app/tx/",
 };
 
 /**

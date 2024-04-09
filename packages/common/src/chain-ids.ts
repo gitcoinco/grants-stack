@@ -18,6 +18,7 @@ export enum ChainId {
   DEV1 = 313371,
   DEV2 = 313372,
   SEPOLIA = 11155111,
+  SEI_DEVNET = 713715,
 }
 
 export const RedstoneTokenIds = {
@@ -37,4 +38,5 @@ export const RedstoneTokenIds = {
   mkUSD: "mkUSD",
   DATA: "DATA",
   USDGLO: "USDGLO",
+  SEI: "SEI",
 } as const;

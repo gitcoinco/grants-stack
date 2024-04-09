@@ -202,7 +202,7 @@ export const pgn: Chain = {
   },
 };
 
-export const customOptimism: Chain = {
+export const customOptimism = {
   id: 10,
   name: "Optimism",
   network: "optimism",
@@ -243,7 +243,7 @@ export const customOptimism: Chain = {
   },
 };
 
-export const customPolygon: Chain = {
+export const customPolygon = {
   id: 137,
   name: "Polygon",
   network: "matic",
@@ -284,7 +284,7 @@ export const customPolygon: Chain = {
   },
 };
 
-export const customMainnet: Chain = {
+export const customMainnet = {
   id: 1,
   network: "homestead",
   name: "Ethereum",
@@ -321,7 +321,7 @@ export const customMainnet: Chain = {
   },
 };
 
-export const seiDevnet: Chain = {
+export const seiDevnet = {
   id: 713715,
   name: "SEI Devnet",
   network: "SEI Devnet",
