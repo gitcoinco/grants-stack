@@ -17,17 +17,12 @@ import { LandingSection, ViewAllLink } from "./LandingSection";
 import { toQueryString } from "./RoundsFilter";
 import { RoundGetRound } from "data-layer";
 
-// note: these are all v1 rounds
-// fixme: test v1 - local app defaults to v2
+// note: Add fetured rounds here.
 const FEATURED_ROUNDS_IDS = [
   // Gitcoin Citizens Retro Round 3
   "0x5aa255d5cae9b6ce0f2d9aee209cb02349b83731",
   // Uniswap-Arbitrum Grant Program (UAGP)
   "0x6142eedc06d80f3b362ce43b4ac52fad679dc850",
-  // Prisma Grants Program
-  "0xdb0c772ddfe0e1e46c85f4ede3a6f81bca6e8545",
-  // test round v2 -> this works...
-  // "2",
 ];
 
 const LandingPage = () => {
@@ -56,8 +51,6 @@ const LandingPage = () => {
   const featuredRounds = filteredActiveRounds.filter((round: RoundGetRound) => {
     return FEATURED_ROUNDS_IDS.includes(round.id.toLowerCase());
   });
-
-  console.log("LandingPage =>", { featuredRounds, activeRounds });
 
   return (
     <GradientLayout showWalletInteraction showAlloVersionBanner>
