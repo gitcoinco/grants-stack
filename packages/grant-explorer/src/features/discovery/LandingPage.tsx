@@ -53,11 +53,9 @@ const LandingPage = () => {
     );
   }, [roundsEndingSoon.data]);
 
-  const featuredRounds = useMemo(() => {
-    return filteredActiveRounds.filter((round: RoundGetRound) => {
-      return FEATURED_ROUNDS_IDS.includes(round.id.toLowerCase());
-    });
-  }, [filteredActiveRounds]);
+  const featuredRounds = filteredActiveRounds.filter((round: RoundGetRound) => {
+    return FEATURED_ROUNDS_IDS.includes(round.id.toLowerCase());
+  });
 
   console.log("LandingPage =>", { featuredRounds, activeRounds });
 

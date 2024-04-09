@@ -10,8 +10,6 @@ import {
 } from "data-layer";
 import { isEmpty } from "lodash";
 import { useMemo } from "react";
-import { AlloVersion } from "data-layer/dist/data-layer.types";
-// import { getAlloVersion } from "common/src/config";
 
 export type StrategyName =
   | ""
@@ -58,7 +56,7 @@ export enum RoundStatus {
 export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
   orderBy: "MATCH_AMOUNT_IN_USD_DESC",
   status: RoundStatus.active,
-  type: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy,allov1.QF",
+  type: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy,allov1.QF,allov1.Direct",
   network: "",
 };
 
@@ -95,7 +93,6 @@ export const useFilterRounds = (
     statusFilter,
     strategyNames,
     chainIds,
-    undefined
   );
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
@@ -107,9 +104,7 @@ const createRoundWhereFilter = (
   statusFilter: TimeFilterVariables[],
   strategyNames: string[],
   chainIds: number[],
-  version: AlloVersion | undefined
 ): RoundsQueryVariables["filter"] => {
-  console.log("version", version);
   return {
     // @ts-expect-error TS thinks that some of the items can be undefined,
     // even though they can't, because they are filtered out down the line
@@ -129,15 +124,6 @@ const createRoundWhereFilter = (
           or: {
             chainId: {
               in: chainIds,
-            },
-          },
-        }),
-      },
-      {
-        ...(version && {
-          or: {
-            tags: {
-              contains: version,
             },
           },
         }),
