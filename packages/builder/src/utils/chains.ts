@@ -20,6 +20,7 @@ import {
   customMainnet,
   sepolia,
   scroll,
+  seiDevnet,
 } from "common/src/chains";
 import { getConfig } from "common/src/config";
 import { polygonMumbai } from "@wagmi/core/chains";
@@ -44,6 +45,7 @@ const availableChains: { [key: string]: Chain } = {
   zkSyncEraMainnet,
   zkSyncEraTestnet,
   sepolia,
+  seiDevnet,
 };
 
 const stagingChains = [
@@ -66,6 +68,7 @@ const stagingChains = [
   zkSyncEraMainnet,
   zkSyncEraTestnet,
   sepolia,
+  seiDevnet,
 ];
 
 const productionChains = [
@@ -104,7 +107,7 @@ export function getEnabledChainsAndProviders() {
   let usingDevOnlyChains = true;
 
   if (selectedChainsNames.length > 0) {
-    // if REACT_APP_CHAINS is specified we use those
+    // if REACT_APP_CHAINS_OVERRIDE is specified we use those
     selectedChainsNames.forEach((name) => {
       // if it's not a local dev chain, it means we are using external
       // chains and we need infura/alchemy ids to be set
@@ -122,12 +125,12 @@ export function getEnabledChainsAndProviders() {
       chains.push(chain);
     });
   } else if (config.appEnv === "production") {
-    // if REACT_APP_CHAINS is not specified  ans we are in production
+    // if REACT_APP_CHAINS_OVERRIDE is not specified  ans we are in production
     // we use the default chains for production environments
     usingDevOnlyChains = false;
     chains.push(...productionChains);
   } else {
-    // if REACT_APP_CHAINS is not specified we use the
+    // if REACT_APP_CHAINS_OVERRIDE is not specified we use the
     // default chains for staging
     usingDevOnlyChains = false;
     chains.push(...stagingChains);

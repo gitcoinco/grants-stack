@@ -22,7 +22,9 @@ export const BaseLogo =
 export const FantomFTMLogo =
   "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9";
 export const ScrollIcon =
-  "https://ipfs.io/ipfs/QmYRA5tXMmGxhw7HUNdr9DYN2GRX3MnLoJVweeWKgfxBZX";
+  "https://ipfs.io/ipfs/QmYRA5tXMmGxhw7HUNdr9DYN2GRX3MnLoJVweeWKgfxBZX"; 
+export const SeiIcon =
+  "https://ipfs.io/ipfs/QmUvNaLwzNf1bHjqTMW1aBjRgd5FrsTDqjSnyypLwxv8x5";
 
 const config = getConfig();
 
@@ -200,7 +202,7 @@ export const pgn: Chain = {
   },
 };
 
-export const customOptimism = {
+export const customOptimism: Chain = {
   id: 10,
   name: "Optimism",
   network: "optimism",
@@ -241,7 +243,7 @@ export const customOptimism = {
   },
 };
 
-export const customPolygon = {
+export const customPolygon: Chain = {
   id: 137,
   name: "Polygon",
   network: "matic",
@@ -282,7 +284,7 @@ export const customPolygon = {
   },
 };
 
-export const customMainnet = {
+export const customMainnet: Chain = {
   id: 1,
   network: "homestead",
   name: "Ethereum",
@@ -315,6 +317,32 @@ export const customMainnet = {
     default: {
       name: "Etherscan",
       url: "https://etherscan.io",
+    },
+  },
+};
+
+export const seiDevnet: Chain = {
+  id: 713715,
+  name: "SEI Devnet",
+  network: "SEI Devnet",
+  iconUrl: SeiIcon,
+  nativeCurrency: {
+    name: "SEI",
+    symbol: "SEI",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://evm-rpc-arctic-1.sei-apis.com"],
+    },
+    public: {
+      http: ["https://evm-rpc-arctic-1.sei-apis.com"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "SEI Explorer",
+      url: "https://seistream.app/",
     },
   },
 };
