@@ -11,10 +11,10 @@ export function TransactionButton(props: { chainId: number; txHash: string }) {
       <Button
         type="button"
         $variant="external-link"
-        className="flex flex-row text-gitcoin-violet-500 px-0"
+        className="flex flex-row border border-[#EBEBEB] rounded-lg text-black font-mono p-2"
       >
         <ArrowTopRightOnSquareIcon className="h-5 inline mx-2" />
-        <div>View transaction</div>
+        <span>View transaction</span>
       </Button>
     </a>
   );

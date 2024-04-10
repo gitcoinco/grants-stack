@@ -98,6 +98,16 @@ module.exports = {
             transform: "scale(2)",
           },
         },
+        peachTransition: {
+          "5%": {
+            "background-color": "#FF9776",
+            color: "#FFF",
+          },
+          "0%, 80%": {
+            "background-color": "#5F94BC",
+            color: "#FFF",
+          },
+        },
       },
     },
   },

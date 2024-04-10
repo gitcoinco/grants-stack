@@ -1,4 +1,5 @@
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
+import { Button } from "common/src/styles";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { getChainIds, votingTokens } from "../api/utils";
@@ -69,7 +70,7 @@ function ViewContributionHistoryFetcher(props: {
       path: "/",
     },
     {
-      name: "Profile",
+      name: "Donations",
       path: `/contributors/${props.address}`,
     },
   ] as BreadcrumbItem[];
@@ -201,7 +202,7 @@ export function ViewContributionHistory(props: {
               alt="Address Logo"
             />
             <div
-              className="text-[18px] lg:text-[32px]"
+              className="text-lg lg:text-4xl"
               data-testid="contributor-address"
               title={props.address}
             >
@@ -209,22 +210,33 @@ export function ViewContributionHistory(props: {
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
           </div>
-          <CopyToClipboardButton
-            textToCopy={`${currentOrigin}/#/contributors/${props.address}`}
-            styles="text-xs p-2"
-            iconStyle="h-4 w-4 mr-1"
-          />
+          {/* todo: update text opacity */}
+          <div className="flex justify-between items-center">
+            <Button className="shadow-sm inline-flex opacity-60 bg-gradient-to-br from-[#FF9776] via-[#5F94BC] to-[#DEAB0C] font-bold py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6">
+              <span className="font-mono text-black text-opacity-100">
+                Gitcoin Grants Impact
+              </span>
+            </Button>
+            <CopyToClipboardButton
+              textToCopy={`${currentOrigin}/#/contributors/${props.address}`}
+              iconStyle="h-4 w-4 mr-1 mt-1 shadow-sm"
+            />
+          </div>
         </div>
-        <div className="mt-8 mb-2">
-          Please note that your recent transactions may take a short while to
-          reflect in your donation history, as processing times may vary.
-        </div>
-        <div className="text-2xl my-6">Donation Impact</div>
-        <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-3 lg:grid-row-1 gap-4">
+        {/*  */}
+        <div className="text-2xl my-6 font-sans">Donation Impact</div>
+        <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-4 lg:grid-row-1 gap-4">
           <div className="col-span-2 lg:col-span-1">
             <StatCard
               title="Total Donations"
-              value={"$ " + totalDonations.toFixed(2).toString()}
+              value={"$" + totalDonations.toFixed(2).toString()}
+            />
+          </div>
+          {/* todo: get the matching amount */}
+          <div className="col-span-2 lg:col-span-1">
+            <StatCard
+              title="Total Matching"
+              value={"$" + "56M"}
             />
           </div>
           <div className="col-span-1">
@@ -241,7 +253,7 @@ export function ViewContributionHistory(props: {
           </div>
         </div>
         <div className="text-2xl my-6">Donation History</div>
-        <div className="text-lg bg-violet-100 text-black px-1 py-1 mb-2 font-semibold">
+        <div className="text-lg bg-[#F7F7F7] text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
           Active Rounds
         </div>
         <DonationsTable
@@ -249,7 +261,7 @@ export function ViewContributionHistory(props: {
           tokens={props.tokens}
           activeRound={true}
         />
-        <div className="text-lg bg-grey-100 text-black px-1 py-1 mb-2 font-semibold">
+        <div className="text-lg bg-[#F7F7F7] text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
           Past Rounds
         </div>
         <DonationsTable
