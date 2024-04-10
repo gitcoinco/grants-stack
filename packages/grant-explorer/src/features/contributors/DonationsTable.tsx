@@ -1,7 +1,4 @@
-import {
-  ChevronRightIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/24/solid";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
 import { Link } from "react-router-dom";
@@ -9,11 +6,7 @@ import { TransactionButton } from "./TransactionButton";
 import { ChainId, VotingToken } from "common";
 import { formatUnits } from "viem";
 import { Contribution } from "data-layer";
-import {
-  BoltIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from "@heroicons/react/24/outline";
+import { BoltIcon } from "@heroicons/react/24/outline";
 import {
   Accordion,
   AccordionButton,
@@ -74,11 +67,17 @@ function RoundsTableWithAccordian(props: {
     );
 
     return (
-      <>
+      <div className="pb-8">
         <Accordion className="w-full" allowToggle allowMultiple={true}>
-          <AccordionItem>
+          <AccordionItem id={roundId}>
             <h2>
-              <AccordionButton _expanded={{ bg: "white", color: "black" }}>
+              <AccordionButton
+                _expanded={{
+                  bg: "white",
+                  color: "black",
+                  hover: { bg: "white" },
+                }}
+              >
                 <Table
                   activeRound={props.activeRound}
                   contributions={props.contributions}
@@ -96,7 +95,7 @@ function RoundsTableWithAccordian(props: {
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
-      </>
+      </div>
     );
   }
 }
@@ -106,9 +105,9 @@ function TableHeader() {
     <table className="w-11/12 text-left mx-8">
       <thead className="font-sans text-lg">
         <tr>
-          <th className=" lg:pr-16 w-1/3 lg:w-1/3">Round</th>
+          <th className="lg:pr-16 w-1/3 lg:w-1/3">Round</th>
           <th>
-            <div className="flex flex-row items-center">
+            <div className="flex flex-row items-center lg:pr-16">
               <div className="py-4">Total Donation</div>
               <div className="py-4">
                 <InformationCircleIcon
@@ -209,7 +208,7 @@ function InnerTable(props: {
 
                       return (
                         <tr key={contribution.id} className="">
-                          <td className="py-4 pr-2 lg:pr-16 w-1/3 lg:w-1/2">
+                          <td className="py-4 pr-2 lg:pr-16 w-1/3 lg:w-1/3">
                             <div className="flex items-center">
                               <div className="flex flex-col sm:flex-row">
                                 {/* Link to the project */}
@@ -261,7 +260,7 @@ function Table(props: {
   activeRound: boolean;
 }) {
   return (
-    <table className="w-full text-left">
+    <table className="w-full text-left font-sans">
       <tbody>
         {props.contributions.length > 0 &&
           props.contributions
@@ -338,7 +337,7 @@ function Table(props: {
                     </span>
                   </td>
                   {/* Transaction Button */}
-                  <td className="py-4 truncate">
+                  <td className="truncate">
                     <div className="flex flex-auto items-center">
                       <TransactionButton
                         chainId={contribution.chainId}
