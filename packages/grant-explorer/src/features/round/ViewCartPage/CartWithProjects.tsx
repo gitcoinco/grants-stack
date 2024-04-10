@@ -52,7 +52,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
   }, [chainId]);
 
   return (
-    <div className="grow block px-[16px] py-4 bg-white">
+    <div className="grow block px-[16px] lg:pl-0 py-4 bg-white">
       <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3 mb-6">
         <div className="flex flex-row basis-[28%] gap-2">
           <img
@@ -60,8 +60,8 @@ export function CartWithProjects({ cart, chainId }: Props) {
             src={chain.logo}
             alt={"Chain Logo"}
           />
-          <h2 className="mt-3 text-xl font-semibold">{chain.name}</h2>
-          <h2 className="mt-3 text-xl font-semibold">({projectCount})</h2>
+          <h2 className="mt-3 text-2xl font-semibold">{chain.name}</h2>
+          <h2 className="mt-3 text-2xl font-semibold">({projectCount})</h2>
         </div>
         <div className="flex justify-center sm:justify-end flex-row gap-2 basis-[72%]">
           <div className="flex gap-4">
