@@ -11,7 +11,7 @@ export function TransactionButton(props: { chainId: number; txHash: string }) {
       <Button
         type="button"
         $variant="external-link"
-        className="flex flex-row border border-[#EBEBEB] rounded-lg text-black font-mono p-2"
+        className="flex flex-row border border-grey-100 rounded-lg text-black font-mono p-2"
       >
         <ArrowTopRightOnSquareIcon className="h-5 inline mx-2" />
         <span>View transaction</span>
