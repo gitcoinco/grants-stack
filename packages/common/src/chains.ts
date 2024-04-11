@@ -95,32 +95,6 @@ export const avalanche: Chain = {
   },
 };
 
-export const zkSyncEraTestnet: Chain = {
-  ...zkSyncTestnetOriginal,
-  iconUrl: ZkSyncIcon,
-  rpcUrls: {
-    default: {
-      http: ["https://testnet.era.zksync.dev"],
-    },
-    public: {
-      http: ["https://testnet.era.zksync.dev"],
-    },
-  },
-};
-
-export const zkSyncEraMainnet: Chain = {
-  ...zkSyncOriginal,
-  iconUrl: ZkSyncIcon,
-  rpcUrls: {
-    default: {
-      http: ["https://mainnet.era.zksync.io"],
-    },
-    public: {
-      http: ["https://mainnet.era.zksync.io"],
-    },
-  },
-};
-
 export const scroll: Chain = {
   id: 534352,
   name: "Scroll",
