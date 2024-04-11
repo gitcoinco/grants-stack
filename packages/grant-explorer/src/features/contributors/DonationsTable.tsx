@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionPanel,
 } from "@chakra-ui/react";
+import { useState } from "react";
 
 export function DonationsTable(props: {
   contributions: Contribution[];
@@ -39,44 +40,64 @@ export function DonationsTable(props: {
   );
 }
 
+type NestedContribution = Contribution[] & {
+  roundId: string;
+};
+
 function RoundsTableWithAccordian(props: {
   contributions: Contribution[];
   tokens: Record<string, VotingToken>;
   activeRound: boolean;
 }) {
   // 1. Sort contributions by round
-  const contributionsByRound =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    props.contributions.reduce((acc: any, contribution) => {
-      const roundId = contribution.roundId;
-      if (acc[roundId]) {
-        acc[roundId].push(contribution);
-      } else {
-        acc[roundId] = [contribution];
-      }
-      return acc;
-    }, {});
-
-  const sortedRounds = Object.keys(contributionsByRound);
-
-  for (const roundId of sortedRounds) {
-    const contributionsForRound = contributionsByRound[roundId];
-    console.log(
-      `Round ID: ${roundId} - Contributions: ${contributionsForRound.length}`,
-      `Contribution: ${contributionsForRound[0].amountInUsd.toFixed(2)}`
+  const nestedContributionsForRound: NestedContribution[] = [];
+  for (const contribution of props.contributions) {
+    const roundId = contribution.roundId;
+    const existingRound = nestedContributionsForRound.find(
+      (c) => c.roundId === roundId
     );
 
+    if (existingRound) {
+      existingRound.push(contribution);
+    } else {
+      nestedContributionsForRound.push([contribution] as NestedContribution);
+    }
+  }
+
+  const flattenedArray = [];
+  for (const roundId in nestedContributionsForRound) {
+    flattenedArray.push(...nestedContributionsForRound[roundId]);
+  }
+
+  const [defaultIndex, setDefaultIndex] = useState<
+    number | number[] | undefined
+  >(undefined);
+
+  for (const contribution of flattenedArray) {
     return (
       <div className="pb-8">
-        <Accordion className="w-full" allowToggle allowMultiple={true}>
-          <AccordionItem id={roundId}>
+        <Accordion
+          className="w-full"
+          allowMultiple={true}
+          defaultIndex={defaultIndex}
+          onChange={(index) => {
+            console.log("Index: ", index);
+
+            setDefaultIndex(index);
+          }}
+        >
+          <AccordionItem
+            isDisabled={props.contributions.length === 0}
+            id={contribution.id}
+          >
             <h2>
               <AccordionButton
                 _expanded={{
                   bg: "white",
                   color: "black",
-                  hover: { bg: "white" },
                 }}
+                _hover={{ bg: "white", color: "black" }}
+                _disabled={{ bg: "white", color: "black" }}
               >
                 <Table
                   activeRound={props.activeRound}
@@ -89,7 +110,7 @@ function RoundsTableWithAccordian(props: {
             <AccordionPanel pb={4}>
               <InnerTable
                 activeRound={props.activeRound}
-                contributions={contributionsForRound}
+                contributions={props.contributions}
                 tokens={props.tokens}
               />
             </AccordionPanel>
@@ -105,7 +126,7 @@ function TableHeader() {
     <table className="w-11/12 text-left mx-8">
       <thead className="font-sans text-lg">
         <tr>
-          <th className="lg:pr-16 w-1/3 lg:w-1/3">Round</th>
+          <th className="lg:pr-16 w-2/12 md:w-1/4 lg:1/3">Round</th>
           <th>
             <div className="flex flex-row items-center lg:pr-16">
               <div className="py-4">Total Donation</div>
@@ -169,9 +190,9 @@ function InnerTable(props: {
   activeRound: boolean;
 }) {
   return (
-    <div>
+    <div className="bg-grey-75 rounded-lg p-2 py-1">
       <div className="mt-4 overflow-hidden">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto">
           <div>
             <table className="w-full text-left">
               <thead className="font-sans text-lg">
@@ -289,7 +310,7 @@ function Table(props: {
 
               return (
                 <tr key={contribution.id}>
-                  <td className="py-4 pr-2 lg:pr-16 w-1/3 lg:w-1/3">
+                  <td className="py-4 pr-2 lg:pr-16 w-[36%]">
                     <div className="flex items-center">
                       <div className="flex flex-col sm:flex-row">
                         <div className="flex items-center">
@@ -319,7 +340,7 @@ function Table(props: {
                     </div>
                   </td>
                   {/* Display donations */}
-                  <td className="py-4 truncate lg:pr-16 w-1/3">
+                  <td className="py-4 truncate lg:pr-16 w-4/12">
                     <span className="font-bold">{formattedAmount} </span>
                     <span className="text-grey-400">
                       / ${contribution.amountInUsd.toFixed(2)}
@@ -327,7 +348,7 @@ function Table(props: {
                   </td>
                   {/* Display the matching amounts */}
                   {/* todo: update to actual matching amounts */}
-                  <td className="py-4 truncate lg:pr-16">
+                  <td className="py-4 truncate lg:pr-16 w-4/12">
                     <BoltIcon
                       className={"w-4 h-4 inline mb-1 mr-1 text-teal-500"}
                     />
@@ -337,7 +358,7 @@ function Table(props: {
                     </span>
                   </td>
                   {/* Transaction Button */}
-                  <td className="truncate">
+                  <td className="truncate lg:pr-1">
                     <div className="flex flex-auto items-center">
                       <TransactionButton
                         chainId={contribution.chainId}

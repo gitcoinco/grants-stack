@@ -194,10 +194,10 @@ export function ViewContributionHistory(props: {
         <Breadcrumb items={props.breadCrumbs} />
       </div>
       <main>
-        <div className="border-b pb-2 mb-4 flex items-center justify-between">
-          <div className="flex items-center">
+        <div className="border-b pb-2 mb-4 flex flex-row items-center justify-between">
+          <div className="flex flex-row items-center">
             <img
-              className="w-10 h-10 rounded-full mr-4"
+              className="w-10 h-10 rounded-full mr-4 mt-2"
               src={props.addressLogo}
               alt="Address Logo"
             />
@@ -212,7 +212,7 @@ export function ViewContributionHistory(props: {
           </div>
           {/* todo: update text opacity */}
           <div className="flex justify-between items-center">
-            <Button className="shadow-sm inline-flex opacity-60 bg-gradient-to-br from-[#FF9776] via-[#5F94BC] to-[#DEAB0C] font-bold py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6">
+            <Button className="shadow-sm inline-flex border border-black border-opacity-20 opacity-60 bg-gradient-to-br from-[#FF9776] via-[#5F94BC] to-[#DEAB0C] font-bold py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6">
               <span className="font-mono text-black text-opacity-100">
                 Gitcoin Grants Impact
               </span>
@@ -234,10 +234,7 @@ export function ViewContributionHistory(props: {
           </div>
           {/* todo: get the matching amount */}
           <div className="col-span-2 lg:col-span-1">
-            <StatCard
-              title="Total Matching"
-              value={"$" + "56M"}
-            />
+            <StatCard title="Total Matching" value={"$" + "56M"} />
           </div>
           <div className="col-span-1">
             <StatCard
@@ -253,7 +250,7 @@ export function ViewContributionHistory(props: {
           </div>
         </div>
         <div className="text-2xl my-6">Donation History</div>
-        <div className="text-lg bg-[#F7F7F7] text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
+        <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
           Active Rounds
         </div>
         <DonationsTable
@@ -261,7 +258,7 @@ export function ViewContributionHistory(props: {
           tokens={props.tokens}
           activeRound={true}
         />
-        <div className="text-lg bg-[#F7F7F7] text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
+        <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
           Past Rounds
         </div>
         <DonationsTable
