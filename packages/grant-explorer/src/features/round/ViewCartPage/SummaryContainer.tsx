@@ -427,7 +427,7 @@ export function SummaryContainer() {
           {matchingEstimateError === undefined &&
             matchingEstimates !== undefined && (
               <>
-                <div className="flex flex-row mt-4 items-center">
+                <div className="flex flex-row my-4 items-center">
                   <p className="italic">Estimated match</p>
                   <MatchingEstimateTooltip isEligible={noPassportRoundsInCart} />
                 </div>
