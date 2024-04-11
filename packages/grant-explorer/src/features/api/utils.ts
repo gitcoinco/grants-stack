@@ -789,21 +789,11 @@ const SEI_TOKENS: VotingToken[] = [
   {
     name: "SEI",
     chainId: ChainId.SEI_DEVNET,
-    address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["SEI"],
     redstoneTokenId: RedstoneTokenIds["SEI"],
     defaultForVoting: true,
-    canVote: true,
-  },
-  {
-    name: "ETH",
-    chainId: ChainId.SEI_DEVNET,
-    address: zeroAddress,
-    decimal: 18,
-    logo: TokenNamesAndLogos["ETH"],
-    redstoneTokenId: RedstoneTokenIds["ETH"],
-    defaultForVoting: false,
     canVote: true,
   },
 ];

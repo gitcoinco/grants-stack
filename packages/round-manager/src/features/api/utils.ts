@@ -106,6 +106,11 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "Scroll",
     logo: "/logos/scroll-logo.svg",
   },
+  [ChainId.SEI_DEVNET]: {
+    id: ChainId.SEI_DEVNET,
+    name: "SEI Devnet",
+    logo: "/logos/sei.png",
+  },
 };
 
 export type SupportType = {
