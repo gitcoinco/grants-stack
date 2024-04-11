@@ -40,82 +40,87 @@ export function DonationsTable(props: {
   );
 }
 
-type NestedContribution = Contribution[] & {
-  roundId: string;
-};
-
 function RoundsTableWithAccordian(props: {
   contributions: Contribution[];
   tokens: Record<string, VotingToken>;
   activeRound: boolean;
 }) {
   // 1. Sort contributions by round
-  const nestedContributionsForRound: NestedContribution[] = [];
-  for (const contribution of props.contributions) {
-    const roundId = contribution.roundId;
-    const existingRound = nestedContributionsForRound.find(
-      (c) => c.roundId === roundId
-    );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nestedContributionsForRound = props.contributions.reduce(
+    (acc: Record<string, Contribution[]>, contribution) => {
+      const roundId = contribution.roundId;
 
-    if (existingRound) {
-      existingRound.push(contribution);
-    } else {
-      nestedContributionsForRound.push([contribution] as NestedContribution);
-    }
-  }
-
-  const flattenedArray = [];
-  for (const roundId in nestedContributionsForRound) {
-    flattenedArray.push(...nestedContributionsForRound[roundId]);
-  }
+      if (!acc[roundId]) {
+        acc[roundId] = [];
+      }
+      acc[roundId].push(contribution);
+      return acc;
+    },
+    {}
+  );
 
   const [defaultIndex, setDefaultIndex] = useState<
     number | number[] | undefined
   >(undefined);
 
-  for (const contribution of flattenedArray) {
+  for (const key in nestedContributionsForRound) {
+    // const contributions = nestedContributionsForRound[key];
+
     return (
       <div className="pb-8">
-        <Accordion
-          className="w-full"
-          allowMultiple={true}
-          defaultIndex={defaultIndex}
-          onChange={(index) => {
-            console.log("Index: ", index);
+        {Object.entries(nestedContributionsForRound).map(
+          ([roundId, contributionsForRound], index) => {
+            const sortedContributions = contributionsForRound
+              .flat()
+              .sort(
+                (a, b) =>
+                  (Number(b.timestamp) || Number.MAX_SAFE_INTEGER) -
+                  (Number(a.timestamp) || Number.MAX_SAFE_INTEGER)
+              );
 
-            setDefaultIndex(index);
-          }}
-        >
-          <AccordionItem
-            isDisabled={props.contributions.length === 0}
-            id={contribution.id}
-          >
-            <h2>
-              <AccordionButton
-                _expanded={{
-                  bg: "white",
-                  color: "black",
+            return (
+              <Accordion
+                className="w-full"
+                allowMultiple={true}
+                defaultIndex={defaultIndex}
+                onChange={(index) => {
+                  setDefaultIndex(index);
                 }}
-                _hover={{ bg: "white", color: "black" }}
-                _disabled={{ bg: "white", color: "black" }}
               >
-                <Table
-                  activeRound={props.activeRound}
-                  contributions={props.contributions}
-                  tokens={props.tokens}
-                />
-                <AccordionIcon />
-              </AccordionButton>
-            </h2>
-            <AccordionPanel pb={4}>
-              <InnerTable
-                activeRound={props.activeRound}
-                contributions={props.contributions}
-                tokens={props.tokens}
-              />
-            </AccordionPanel>
-          </AccordionItem>
-        </Accordion>
+                <AccordionItem
+                  key={roundId}
+                  isDisabled={sortedContributions.length === 0}
+                >
+                  <h2>
+                    <AccordionButton
+                      _expanded={{
+                        bg: "white",
+                        color: "black",
+                      }}
+                      _hover={{ bg: "white", color: "black" }}
+                      _disabled={{ bg: "white", color: "black" }}
+                    >
+                      <Table
+                        activeRound={props.activeRound}
+                        contributions={sortedContributions}
+                        tokens={props.tokens}
+                      />
+                      <AccordionIcon />
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel pb={4}>
+                    <InnerTable
+                      activeRound={props.activeRound}
+                      contributions={sortedContributions}
+                      tokens={props.tokens}
+                    />
+                  </AccordionPanel>
+                </AccordionItem>
+              </Accordion>
+            );
+          }
+        )}
       </div>
     );
   }
@@ -126,8 +131,8 @@ function TableHeader() {
     <table className="w-11/12 text-left mx-8">
       <thead className="font-sans text-lg">
         <tr>
-          <th className="lg:pr-16 w-2/12 md:w-1/4 lg:1/3">Round</th>
-          <th>
+          <th className="lg:pr-16 w-4/12 md:w-1/3 lg:1/3">Round</th>
+          <th className="w-3/12 md:w-auto lg:1/3">
             <div className="flex flex-row items-center lg:pr-16">
               <div className="py-4">Total Donation</div>
               <div className="py-4">
@@ -177,7 +182,7 @@ function TableHeader() {
               </div>
             </div>
           </th>
-          <th className="text-right">Transaction</th>
+          {/* <th className="text-right">Transaction</th> */}
         </tr>
       </thead>
     </table>
@@ -199,6 +204,7 @@ function InnerTable(props: {
                 <tr>
                   <th>Project</th>
                   <th>Donation</th>
+                  <th>Transaction</th>
                 </tr>
               </thead>
               <tbody>
@@ -263,6 +269,15 @@ function InnerTable(props: {
                               / ${contribution.amountInUsd.toFixed(2)}
                             </span>
                           </td>
+                          {/* Transaction Button */}
+                          <td className="truncate lg:pr-1">
+                            <div className="flex flex-auto items-center">
+                              <TransactionButton
+                                chainId={contribution.chainId}
+                                txHash={contribution.transactionHash}
+                              />
+                            </div>
+                          </td>
                         </tr>
                       );
                     })}
@@ -280,95 +295,94 @@ function Table(props: {
   tokens: Record<string, VotingToken>;
   activeRound: boolean;
 }) {
+  const roundInfo = props.contributions[0];
+  const chainId = roundInfo.chainId;
+  const chainLogo = CHAINS[roundInfo.chainId as ChainId]?.logo;
+  const roundName = roundInfo.round.roundMetadata.name;
+
+  const sortedContributions = props.contributions;
+  // todo: make human readable using days, weeks, monts, etc...
+  const lastUpdated = sortedContributions[0].timestamp;
+
+  let formattedAmount = "N/A";
+  let totalContributionAmountInUsd = 0;
+  let totalContributionInMatchingToken = 0;
+
+  // Get the total contribution amount in USD and matching token
+  sortedContributions.forEach((contribution) => {
+    totalContributionAmountInUsd += contribution.amountInUsd;
+    totalContributionInMatchingToken += Number(contribution.amount);
+  });
+
+  // Get the formatted amount & token name
+  sortedContributions.map((contribution) => {
+    const tokenId =
+      contribution.tokenAddress.toLowerCase() + "-" + contribution.chainId;
+    const token = props.tokens[tokenId];
+
+    if (token) {
+      formattedAmount = `${formatUnits(
+        BigInt(totalContributionInMatchingToken),
+        token.decimal
+      )} ${token.name}`;
+    }
+  });
+
   return (
     <table className="w-full text-left font-sans">
       <tbody>
-        {props.contributions.length > 0 &&
-          props.contributions
-            .flat()
-            .sort(
-              (a, b) =>
-                (Number(b.timestamp) || Number.MAX_SAFE_INTEGER) -
-                (Number(a.timestamp) || Number.MAX_SAFE_INTEGER)
-            )
-
-            .map((contribution) => {
-              const tokenId =
-                contribution.tokenAddress.toLowerCase() +
-                "-" +
-                contribution.chainId;
-              const token = props.tokens[tokenId];
-
-              let formattedAmount = "N/A";
-
-              if (token) {
-                formattedAmount = `${formatUnits(
-                  BigInt(contribution.amount),
-                  token.decimal
-                )} ${token.name}`;
-              }
-
-              return (
-                <tr key={contribution.id}>
-                  <td className="py-4 pr-2 lg:pr-16 w-[36%]">
-                    <div className="flex items-center">
-                      <div className="flex flex-col sm:flex-row">
-                        <div className="flex items-center">
-                          {/* Network Icon */}
-                          <img
-                            className="w-4 h-4 mr-2"
-                            src={CHAINS[contribution.chainId as ChainId]?.logo}
-                            alt="Round Chain Logo"
-                          />
-                          {/* Link to the round */}
-                          <Link
-                            className={`underline inline-block lg:pr-2 lg:max-w-[200px] max-w-[75px] 2xl:max-w-fit truncate`}
-                            title={contribution.round.roundMetadata.name}
-                            to={`/round/${
-                              contribution.chainId
-                            }/${contribution.roundId.toLowerCase()}`}
-                            target="_blank"
-                          >
-                            {contribution.round.roundMetadata.name}
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Todo: display contribution timestamp */}
-                    <div className="text-sm text-gray-500">
-                      {(Math.random() * 100).toFixed(0)} mins ago
-                    </div>
-                  </td>
-                  {/* Display donations */}
-                  <td className="py-4 truncate lg:pr-16 w-4/12">
-                    <span className="font-bold">{formattedAmount} </span>
-                    <span className="text-grey-400">
-                      / ${contribution.amountInUsd.toFixed(2)}
-                    </span>
-                  </td>
-                  {/* Display the matching amounts */}
-                  {/* todo: update to actual matching amounts */}
-                  <td className="py-4 truncate lg:pr-16 w-4/12">
-                    <BoltIcon
-                      className={"w-4 h-4 inline mb-1 mr-1 text-teal-500"}
-                    />
-                    <span className="font-bold">~{formattedAmount} </span>
-                    <span className="text-grey-400">
-                      / ~${contribution.amountInUsd.toFixed(2)}
-                    </span>
-                  </td>
-                  {/* Transaction Button */}
-                  <td className="truncate lg:pr-1">
-                    <div className="flex flex-auto items-center">
-                      <TransactionButton
-                        chainId={contribution.chainId}
-                        txHash={contribution.transactionHash}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+        <tr key={roundInfo.id}>
+          <td className="py-4 pr-2 lg:pr-16 w-[36%]">
+            <div className="flex items-center">
+              <div className="flex flex-col sm:flex-row">
+                <div className="flex items-center">
+                  {/* Network Icon */}
+                  <img
+                    className="w-4 h-4 mr-2"
+                    src={chainLogo}
+                    alt="Round Chain Logo"
+                  />
+                  {/* Link to the round */}
+                  <Link
+                    className={`underline inline-block lg:pr-2 lg:max-w-[200px] max-w-[75px] 2xl:max-w-fit truncate`}
+                    title={roundName}
+                    to={`/round/${chainId}/${roundInfo.roundId.toLowerCase()}`}
+                    target="_blank"
+                  >
+                    {roundName}
+                  </Link>
+                </div>
+              </div>
+            </div>
+            {/* Todo: display contribution timestamp */}
+            <div className="text-sm text-gray-500">
+              {lastUpdated?.toString()} mins ago // FIX
+            </div>
+          </td>
+          {/* Display donations */}
+          <td className="py-4 truncate lg:pr-16 w-4/12">
+            <span className="font-bold">{formattedAmount} </span>
+            <span className="text-grey-400">
+              / ${totalContributionAmountInUsd.toFixed(2)}
+            </span>
+          </td>
+          {/* Display the matching amounts */}
+          {/* todo: update to actual matching amounts */}
+          <td className="py-4 truncate lg:pr-16 w-4/12">
+            <BoltIcon className={"w-4 h-4 inline mb-1 mr-1 text-teal-500"} />
+            <span className="font-bold">~{"TODO"} </span>
+            <span className="text-grey-400">/ ~${"TODO"}</span>
+          </td>
+          {/* Transaction Button */}
+          {/* <td className="truncate lg:pr-1">
+            <div className="flex flex-auto items-center">
+              <TransactionButton
+                chainId={contribution.chainId}
+                txHash={contribution.transactionHash}
+              />
+            </div>
+          </td> */}
+        </tr>
       </tbody>
     </table>
   );
