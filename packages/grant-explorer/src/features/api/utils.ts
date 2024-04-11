@@ -6,6 +6,9 @@ import {
   NATIVE,
   ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_DIRECT_OLD,
+  ROUND_PAYOUT_MERKLE,
+  ROUND_PAYOUT_MERKLE_OLD,
+  RoundPayoutTypeNew,
   VotingToken,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";

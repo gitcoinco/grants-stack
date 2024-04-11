@@ -9,7 +9,10 @@ import {
   TimeFilterVariables,
 } from "data-layer";
 import { isEmpty } from "lodash";
+import { ROUND_PAYOUT_MERKLE } from "common";
 import { useMemo } from "react";
+import { AlloVersion } from "data-layer/dist/data-layer.types";
+import { getAlloVersion, getConfig } from "common/src/config";
 
 export type StrategyName =
   | ""
@@ -56,7 +59,7 @@ export enum RoundStatus {
 export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
   orderBy: "MATCH_AMOUNT_IN_USD_DESC",
   status: RoundStatus.active,
-  type: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy,allov1.QF,allov1.Direct",
+  type: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy,allov1.QF",
   network: "",
 };
 
@@ -87,12 +90,15 @@ export const useFilterRounds = (
     where.type === undefined || where.type.trim() === ""
       ? []
       : where.type.split(",");
-  // const alloVersion = getAlloVersion();
-  // const statuses = where.status.split(",");
+  const alloVersion = getAlloVersion();
+  const statuses = where.status.split(",");
   const filter = createRoundWhereFilter(
     statusFilter,
     strategyNames,
     chainIds,
+    statuses.includes(RoundStatus.finished) && alloVersion === "allo-v2"
+      ? undefined
+      : alloVersion
   );
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
@@ -104,6 +110,7 @@ const createRoundWhereFilter = (
   statusFilter: TimeFilterVariables[],
   strategyNames: string[],
   chainIds: number[],
+  version: AlloVersion | undefined
 ): RoundsQueryVariables["filter"] => {
   return {
     // @ts-expect-error TS thinks that some of the items can be undefined,
@@ -124,6 +131,15 @@ const createRoundWhereFilter = (
           or: {
             chainId: {
               in: chainIds,
+            },
+          },
+        }),
+      },
+      {
+        ...(version && {
+          or: {
+            tags: {
+              contains: version,
             },
           },
         }),
