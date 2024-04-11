@@ -113,6 +113,14 @@ const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["USDGLO"],
     redstoneTokenId: RedstoneTokenIds["USDGLO"],
   },
+  {
+    name: "OP",
+    chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+    address: "0x4200000000000000000000000000000000000042",
+    decimal: 18,
+    logo: TokenNamesAndLogos["OP"],
+    redstoneTokenId: RedstoneTokenIds["OP"],
+  },
 ];
 const FANTOM_MAINNET_TOKENS: PayoutToken[] = [
   {

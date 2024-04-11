@@ -17,7 +17,9 @@ export default function ViewRoundStats() {
   const chainId = useChainId();
   const alloVersion = getConfig().allo.version;
   const roundId =
-    alloVersion === "allo-v1" ? utils.getAddress(id?.toLowerCase() ?? "") : id as string;
+    alloVersion === "allo-v1"
+      ? utils.getAddress(id?.toLowerCase() ?? "")
+      : (id as string);
 
   const { data: round } = useRound(roundId);
   const { data: applications } = useRoundApplications(roundId);
@@ -34,6 +36,9 @@ export default function ViewRoundStats() {
         t.address.toLowerCase() == round.token.toLowerCase() &&
         t.chainId === chainId
     );
+
+  // check if the round is on Avalanche to prevent matching stats from being displayed
+  const isAvaxRound: boolean = chainId === 43114 || chainId === 43113;
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -99,30 +104,32 @@ export default function ViewRoundStats() {
                 </th>
               </tr>
             </thead>
-            <tbody>
-              {round &&
-                matches &&
-                matches.map((match: Match) => {
-                  const percentage =
-                    Number(
-                      (BigInt(1000000) * match.matched) / round.matchAmount
-                    ) / 10000;
+            {!isAvaxRound && (
+              <tbody>
+                {round &&
+                  matches &&
+                  matches.map((match: Match) => {
+                    const percentage =
+                      Number(
+                        (BigInt(1000000) * match.matched) / round.matchAmount
+                      ) / 10000;
 
-                  return (
-                    <tr key={match.applicationId}>
-                      <td className="text-sm leading-5 text-gray-400 text-left">
-                        {match.projectName}
-                      </td>
-                      <td className="text-sm leading-5 text-gray-400 text-left">
-                        {match.contributionsCount}
-                      </td>
-                      <td className="text-sm leading-5 text-gray-400 text-left">
-                        {percentage.toString()}%
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
+                    return (
+                      <tr key={match.applicationId}>
+                        <td className="text-sm leading-5 text-gray-400 text-left">
+                          {match.projectName}
+                        </td>
+                        <td className="text-sm leading-5 text-gray-400 text-left">
+                          {match.contributionsCount}
+                        </td>
+                        <td className="text-sm leading-5 text-gray-400 text-left">
+                          {percentage.toString()}%
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            )}
           </table>
         </div>
         <div className="col-span-1 row-span-2 grid gap-y-6">
