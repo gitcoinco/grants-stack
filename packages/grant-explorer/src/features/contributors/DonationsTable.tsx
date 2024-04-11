@@ -6,7 +6,6 @@ import { TransactionButton } from "./TransactionButton";
 import { ChainId, VotingToken } from "common";
 import { formatUnits } from "viem";
 import { Contribution } from "data-layer";
-import { BoltIcon } from "@heroicons/react/24/outline";
 import {
   Accordion,
   AccordionButton,
@@ -15,6 +14,7 @@ import {
   AccordionPanel,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import moment from "moment";
 
 export function DonationsTable(props: {
   contributions: Contribution[];
@@ -45,8 +45,6 @@ function RoundsTableWithAccordian(props: {
   tokens: Record<string, VotingToken>;
   activeRound: boolean;
 }) {
-  // 1. Sort contributions by round
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const nestedContributionsForRound = props.contributions.reduce(
     (acc: Record<string, Contribution[]>, contribution) => {
       const roundId = contribution.roundId;
@@ -65,12 +63,10 @@ function RoundsTableWithAccordian(props: {
   >(undefined);
 
   for (const key in nestedContributionsForRound) {
-    // const contributions = nestedContributionsForRound[key];
-
     return (
       <div className="pb-8">
         {Object.entries(nestedContributionsForRound).map(
-          ([roundId, contributionsForRound], index) => {
+          ([_roundId, contributionsForRound], _index) => {
             const sortedContributions = contributionsForRound
               .flat()
               .sort(
@@ -89,7 +85,7 @@ function RoundsTableWithAccordian(props: {
                 }}
               >
                 <AccordionItem
-                  key={roundId}
+                  key={key}
                   isDisabled={sortedContributions.length === 0}
                 >
                   <h2>
@@ -131,7 +127,7 @@ function TableHeader() {
     <table className="w-11/12 text-left mx-8">
       <thead className="font-sans text-lg">
         <tr>
-          <th className="lg:pr-16 w-4/12 md:w-1/3 lg:1/3">Round</th>
+          <th className="lg:pr-16 w-1/2 md:w-1/2 lg:1/2">Round</th>
           <th className="w-3/12 md:w-auto lg:1/3">
             <div className="flex flex-row items-center lg:pr-16">
               <div className="py-4">Total Donation</div>
@@ -157,32 +153,6 @@ function TableHeader() {
               </div>
             </div>
           </th>
-          <th>
-            <div className="flex flex-row items-center">
-              <div className="py-4">Est. Match Amount</div>
-              <div className="py-4">
-                <InformationCircleIcon
-                  data-tip
-                  data-background-color="#0E0333"
-                  data-for="match-amount-tooltip"
-                  className="inline h-4 w-4 ml-2 mr-3"
-                  data-testid={"match-amount-tooltip"}
-                />
-                <ReactTooltip
-                  id="match-amount-tooltip"
-                  place="bottom"
-                  type="dark"
-                  effect="solid"
-                >
-                  <p className="text-xs">
-                    The displayed amount in USD reflects <br />
-                    the value at the time of your donation.
-                  </p>
-                </ReactTooltip>
-              </div>
-            </div>
-          </th>
-          {/* <th className="text-right">Transaction</th> */}
         </tr>
       </thead>
     </table>
@@ -255,9 +225,9 @@ function InnerTable(props: {
                                 </Link>
                               </div>
                             </div>
-                            {/* Todo: display contribution timestamp */}
+                            {/* Display contribution timestamp */}
                             <div className="text-sm text-gray-500">
-                              {(Math.random() * 100).toFixed(0)} mins ago
+                              {timeAgo(Number(contribution.timestamp))}
                             </div>
                           </td>
                           {/* Display donations */}
@@ -301,7 +271,6 @@ function Table(props: {
   const roundName = roundInfo.round.roundMetadata.name;
 
   const sortedContributions = props.contributions;
-  // todo: make human readable using days, weeks, monts, etc...
   const lastUpdated = sortedContributions[0].timestamp;
 
   let formattedAmount = "N/A";
@@ -354,9 +323,9 @@ function Table(props: {
                 </div>
               </div>
             </div>
-            {/* Todo: display contribution timestamp */}
+            {/* Display contribution timestamp */}
             <div className="text-sm text-gray-500">
-              {lastUpdated?.toString()} mins ago // FIX
+              {timeAgo(Number(lastUpdated))}
             </div>
           </td>
           {/* Display donations */}
@@ -366,24 +335,12 @@ function Table(props: {
               / ${totalContributionAmountInUsd.toFixed(2)}
             </span>
           </td>
-          {/* Display the matching amounts */}
-          {/* todo: update to actual matching amounts */}
-          <td className="py-4 truncate lg:pr-16 w-4/12">
-            <BoltIcon className={"w-4 h-4 inline mb-1 mr-1 text-teal-500"} />
-            <span className="font-bold">~{"TODO"} </span>
-            <span className="text-grey-400">/ ~${"TODO"}</span>
-          </td>
-          {/* Transaction Button */}
-          {/* <td className="truncate lg:pr-1">
-            <div className="flex flex-auto items-center">
-              <TransactionButton
-                chainId={contribution.chainId}
-                txHash={contribution.transactionHash}
-              />
-            </div>
-          </td> */}
         </tr>
       </tbody>
     </table>
   );
+}
+
+function timeAgo(timestamp: number) {
+  return moment(timestamp * 1000).fromNow();
 }
