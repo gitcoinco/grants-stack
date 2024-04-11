@@ -39,7 +39,7 @@ export function Summary({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mt-2">
+      <div className="flex flex-row justify-between mt-2 mb-5">
         <div className="flex flex-col">
           <p className="mb-2">Your contribution on</p>
           <p>
@@ -52,7 +52,7 @@ export function Summary({
           </p>
         </div>
         <div className="flex flex-col">
-          <p>
+          <p className="text-right">
             <span data-testid={"totalDonation"} className="mr-2">
               {formatUnits(totalDonation, selectedPayoutToken.decimal)}
             </span>
@@ -62,7 +62,7 @@ export function Summary({
           </p>
           {payoutTokenPrice && (
             <div className="flex justify-end mt-2">
-              <p className="text-[14px] text-grey-400">
+              <p className="text-[14px] text-[#979998] font-normal">
                 $ {totalDonationInUSD?.toFixed(2)}
               </p>
             </div>

@@ -418,88 +418,91 @@ export function SummaryContainer() {
     ).length === 0;
 
   return (
-    <div className="mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold sticky top-20">
-      <h2 className="text-xl border-b-2 pb-2">Summary</h2>
-      <div
-        className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${passportTextClass}`}
-      >
-        {matchingEstimateError === undefined &&
-          matchingEstimates !== undefined && (
-            <>
-              <div className="flex flex-row mt-4 items-center">
-                <p>Estimated match</p>
-                <MatchingEstimateTooltip isEligible={noPassportRoundsInCart} />
+    <div className="mb-5 block  rounded-t-lg shadow-lg  font-semibold sticky top-20">
+      <div className="px-4 pt-6 pb-4 bg-grey-50 border border-grey-50">
+        <h2 className="text-2xl border-b-2 pb-2 font-bold">Summary</h2>
+        <div
+          className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${passportTextClass}`}
+        >
+          {matchingEstimateError === undefined &&
+            matchingEstimates !== undefined && (
+              <>
+                <div className="flex flex-row mt-4 items-center">
+                  <p className="italic">Estimated match</p>
+                  <MatchingEstimateTooltip isEligible={noPassportRoundsInCart} />
+                </div>
+                <div className="flex justify-end mt-4">
+                  <Skeleton isLoaded={!matchingEstimateLoading}>
+                    <p>
+                      <BoltIcon className={"w-4 h-4 inline"} />
+                      ~$
+                      {estimate?.toFixed(2)}
+                    </p>
+                  </Skeleton>
+                </div>
+              </>
+            )}
+        </div>
+        <div>
+          {Object.keys(projectsByChain).map((chainId) => (
+            <Summary
+              key={chainId}
+              chainId={parseChainId(chainId)}
+              selectedPayoutToken={getVotingTokenForChain(parseChainId(chainId))}
+              totalDonation={totalDonationsPerChain[chainId]}
+            />
+          ))}
+          {totalDonationAcrossChainsInUSD &&
+          totalDonationAcrossChainsInUSD > 0 ? (
+            <div className="flex flex-row justify-between mt-4 border-t-2">
+              <div className="flex flex-col mt-4">
+                <p className="mb-2">Your total contribution</p>
               </div>
               <div className="flex justify-end mt-4">
-                <Skeleton isLoaded={!matchingEstimateLoading}>
-                  <p>
-                    <BoltIcon className={"w-4 h-4 inline"} />
-                    ~$
-                    {estimate?.toFixed(2)}
-                  </p>
-                </Skeleton>
+                <p>$ {totalDonationAcrossChainsInUSD?.toFixed(2)}</p>
               </div>
-            </>
+            </div>
+          ) : null}
+          {emptyInput && (
+            <p
+              data-testid="emptyInput"
+              className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+            >
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <span>You must enter donations for all the projects</span>
+            </p>
           )}
+        </div>
       </div>
-      <div>
-        {Object.keys(projectsByChain).map((chainId) => (
-          <Summary
-            key={chainId}
-            chainId={parseChainId(chainId)}
-            selectedPayoutToken={getVotingTokenForChain(parseChainId(chainId))}
-            totalDonation={totalDonationsPerChain[chainId]}
-          />
-        ))}
-        {totalDonationAcrossChainsInUSD &&
-        totalDonationAcrossChainsInUSD > 0 ? (
-          <div className="flex flex-row justify-between mt-4 border-t-2">
-            <div className="flex flex-col mt-4">
-              <p className="mb-2">Your total contribution</p>
-            </div>
-            <div className="flex justify-end mt-4">
-              <p>$ {totalDonationAcrossChainsInUSD?.toFixed(2)}</p>
-            </div>
-          </div>
-        ) : null}
-        <Button
-          $variant="solid"
-          data-testid="handle-confirmation"
-          type="button"
-          disabled={notEnoughFunds}
-          onClick={() => {
-            /* If wallet is not connected, display Rainbowkit modal */
-            if (!isConnected) {
-              openConnectModal?.();
-              return;
-            }
 
-            /* Check if user hasn't connected passport yet, display the warning modal */
-            // if (estimate === 0 && !noPassportRoundsInCart) {
-            //   setDonateWarningModalOpen(true);
-            //   return;
-            // }
+      <Button
+        // $variant="solid"
+        data-testid="handle-confirmation"
+        type="button"
+        disabled={notEnoughFunds}
+        onClick={() => {
+          /* If wallet is not connected, display Rainbowkit modal */
+          if (!isConnected) {
+            openConnectModal?.();
+            return;
+          }
 
-            handleConfirmation();
-          }}
-          className="items-center shadow-sm text-sm rounded w-full mt-4"
-        >
-          {isConnected
-            ? notEnoughFunds
-              ? "Not enough funds to donate"
-              : "Submit your donation!"
-            : "Connect wallet to continue"}
-        </Button>
-        {emptyInput && (
-          <p
-            data-testid="emptyInput"
-            className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-          >
-            <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-            <span>You must enter donations for all the projects</span>
-          </p>
-        )}
-      </div>
+          /* Check if user hasn't connected passport yet, display the warning modal */
+          // if (estimate === 0 && !noPassportRoundsInCart) {
+          //   setDonateWarningModalOpen(true);
+          //   return;
+          // }
+
+          handleConfirmation();
+        }}
+        className={`${notEnoughFunds && "border-t"} items-center shadow-sm text-sm rounded-b-lg w-full bg-blue-100 text-black py-5 text-normal font-mono`}
+      >
+        {isConnected
+          ? notEnoughFunds
+            ? "Not enough funds to donate"
+            : "Submit your donation!"
+          : "Connect wallet to continue"}
+      </Button>
       <PayoutModals />
     </div>
   );

@@ -1,16 +1,16 @@
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
-import React from "react";
 
 export function ApplyTooltip() {
   return (
     <div>
       <InformationCircleIcon
         data-tip
-        data-background-color="#5932C4"
+        data-background-color="#15B8DC"
         data-for="apply-tooltip"
-        className="inline h-4 w-4 ml-1 mb-1 mt-4"
+        className="inline h-5 w-5 ml-0 mb-1 mt-4"
         data-testid={"apply-tooltip"}
+        fill="#15B8DC"
       />
 
       <ReactTooltip

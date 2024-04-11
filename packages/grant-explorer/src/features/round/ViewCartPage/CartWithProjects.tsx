@@ -77,7 +77,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setFixedDonation(e.target.value);
               }}
-              className="w-16 lg:w-24"
+              className="w-16 lg:w-18"
             />
             <PayoutTokenDropdown
               selectedPayoutToken={selectedPayoutToken}
@@ -94,7 +94,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
               onClick={() => {
                 store.updateDonationsForChain(chainId, fixedDonation);
               }}
-              className="float-right md:float-none text-xs px-1 py-2 text-purple-600 border-0"
+              className="float-right md:float-none text-sm px-1 py-2 text-blue-200 border-0"
             >
               Apply to all
             </Button>
