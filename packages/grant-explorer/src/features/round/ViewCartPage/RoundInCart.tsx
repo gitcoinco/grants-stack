@@ -80,6 +80,10 @@ export function RoundInCart(
 
   const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
 
+  const showMatchingEstimate = matchingEstimateError === undefined &&
+  matchingEstimates !== undefined &&
+  round?.chainId !== ChainId.AVALANCHE;
+
   return (
     <div className="my-4">
       {/* Round In Cart */}
@@ -122,6 +126,7 @@ export function RoundInCart(
                   removeProjectFromCart={props.handleRemoveProjectFromCart}
                   project={project}
                   index={key}
+                  showMatchingEstimate={showMatchingEstimate}
                   matchingEstimateUSD={matchingEstimateUSD}
                   roundRoutePath={`/round/${props.roundCart[0].chainId}/${props.roundCart[0].roundId}`}
                   last={key === props.roundCart.length - 1}
@@ -144,31 +149,29 @@ export function RoundInCart(
           </div>
           <div className="flex flex-row gap-3 justify-center pt-1 pr-2">
             <div>
-              {matchingEstimateError === undefined &&
-                matchingEstimates !== undefined &&
-                round?.chainId !== ChainId.AVALANCHE && (
-                  <div className="flex justify-end flex-nowrap">
-                    <Skeleton isLoaded={!matchingEstimateLoading}>
-                      <div className="flex flex-row font-semibold">
-                        <p
-                          className={
-                            "flex flex-col md:flex-row items-center gap-2"
-                          }
+              {showMatchingEstimate && (
+                <div className="flex justify-end flex-nowrap">
+                  <Skeleton isLoaded={!matchingEstimateLoading}>
+                    <div className="flex flex-row font-semibold">
+                      <p
+                        className={
+                          "flex flex-col md:flex-row items-center gap-2"
+                        }
+                      >
+                        <span className="mr-2">Total match</span>
+                        <div
+                          className={`flex flex-row items-center justify-between font-semibold italic ${passportTextClass}`}
                         >
-                          <span className="mr-2">Total match</span>
-                          <div
-                            className={`flex flex-row items-center justify-between font-semibold italic ${passportTextClass}`}
-                          >
-                            <BoltIcon className={"w-4 h-4 inline"} />
-                            ~$
-                            {estimate?.toFixed(2)}
-                          </div>
-                        </p>
-                        <span className="pl-4">|</span>
-                      </div>
-                    </Skeleton>
-                  </div>
-                )}
+                          <BoltIcon className={"w-4 h-4 inline"} />
+                          ~$
+                          {estimate?.toFixed(2)}
+                        </div>
+                      </p>
+                      <span className="pl-4">|</span>
+                    </div>
+                  </Skeleton>
+                </div>
+              )}
             </div>
             <div className="font-semibold">
               <p>

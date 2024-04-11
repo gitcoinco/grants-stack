@@ -18,6 +18,7 @@ export function ProjectInCart(
     selectedPayoutToken: VotingToken;
     payoutTokenPrice: number;
     removeProjectFromCart: (project: CartProject) => void;
+    showMatchingEstimate: boolean;
     matchingEstimateUSD: number | undefined;
   }
 ) {
@@ -99,8 +100,8 @@ export function ProjectInCart(
           />
           <p className="m-auto">{props.selectedPayoutToken.name}</p>
           {props.payoutTokenPrice && (
-            <div className="m-auto px-2 min-w-max">
-              <span className="text-[14px] text-grey-400 ">
+            <div className="m-auto px-2 min-w-max flex flex-col">
+              <span className="text-sm text-grey-400 ">
                 ${" "}
                 {(
                   Number(
@@ -112,6 +113,11 @@ export function ProjectInCart(
                   ) * props.payoutTokenPrice
                 ).toFixed(2)}
               </span>
+              { props.showMatchingEstimate && 
+                <span className="text-green-400 text-sm">
+                  ~{props.matchingEstimateUSD || 0} USD
+                </span>
+              }
             </div>
           )}
           <TrashIcon
