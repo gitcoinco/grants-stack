@@ -234,7 +234,7 @@ export function ViewContributionHistory(props: {
           </div>
           {/* todo: get the matching amount */}
           <div className="col-span-2 lg:col-span-1">
-            <StatCard title="Total Matching" value={"$" + "56M"} />
+            <StatCard title="Total Est. Matching" value={"$" + "56M"} />
           </div>
           <div className="col-span-1">
             <StatCard
