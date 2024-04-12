@@ -2,7 +2,6 @@ import { ChainId, getTokenPrice, NATIVE } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
-import ErrorModal from "../../common/ErrorModal";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
 import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";

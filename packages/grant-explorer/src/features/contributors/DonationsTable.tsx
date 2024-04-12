@@ -127,8 +127,8 @@ function TableHeader() {
     <table className="w-11/12 text-left mx-8">
       <thead className="font-sans text-lg">
         <tr>
-          <th className="lg:pr-16 w-1/2 md:w-1/2 lg:1/2">Round</th>
-          <th className="w-3/12 md:w-auto lg:1/3">
+          <th className="lg:pr-16 w-2/5">Round</th>
+          <th className="w-2/5 md:w-auto">
             <div className="flex flex-row items-center lg:pr-16">
               <div className="py-4">Total Donation</div>
               <div className="py-4">
@@ -153,6 +153,7 @@ function TableHeader() {
               </div>
             </div>
           </th>
+          <th className="w-1/5">Transaction</th>
         </tr>
       </thead>
     </table>
@@ -174,7 +175,6 @@ function InnerTable(props: {
                 <tr>
                   <th>Project</th>
                   <th>Donation</th>
-                  <th>Transaction</th>
                 </tr>
               </thead>
               <tbody>
@@ -239,15 +239,6 @@ function InnerTable(props: {
                               / ${contribution.amountInUsd.toFixed(2)}
                             </span>
                           </td>
-                          {/* Transaction Button */}
-                          <td className="truncate lg:pr-1">
-                            <div className="flex flex-auto items-center">
-                              <TransactionButton
-                                chainId={contribution.chainId}
-                                txHash={contribution.transactionHash}
-                              />
-                            </div>
-                          </td>
                         </tr>
                       );
                     })}
@@ -301,7 +292,7 @@ function Table(props: {
     <table className="w-full text-left font-sans">
       <tbody>
         <tr key={roundInfo.id}>
-          <td className="py-4 pr-2 lg:pr-16 w-[36%]">
+          <td className="py-4 pr-2 w-2/5">
             <div className="flex items-center">
               <div className="flex flex-col sm:flex-row">
                 <div className="flex items-center">
@@ -329,11 +320,19 @@ function Table(props: {
             </div>
           </td>
           {/* Display donations */}
-          <td className="py-4 truncate lg:pr-16 w-4/12">
+          <td className="py-4 truncate lg:pr-16 w-1/3">
             <span className="font-bold">{formattedAmount} </span>
             <span className="text-grey-400">
               / ${totalContributionAmountInUsd.toFixed(2)}
             </span>
+          </td>
+          <td className="truncate lg:pr-1">
+            <div className="flex flex-auto w-1/3 items-center">
+              <TransactionButton
+                chainId={sortedContributions[0].chainId}
+                txHash={sortedContributions[0].transactionHash}
+              />
+            </div>
           </td>
         </tr>
       </tbody>

@@ -225,7 +225,7 @@ export function ViewContributionHistory(props: {
         </div>
         {/*  */}
         <div className="text-2xl my-6 font-sans">Donation Impact</div>
-        <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-4 lg:grid-row-1 gap-4">
+        <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-4 lg:grid-row-1 gap-6">
           <div className="col-span-2 lg:col-span-1">
             <StatCard
               title="Total Donations"
