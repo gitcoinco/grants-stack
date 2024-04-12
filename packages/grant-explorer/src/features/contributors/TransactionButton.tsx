@@ -14,7 +14,7 @@ export function TransactionButton(props: { chainId: number; txHash: string }) {
         className="flex flex-row items-center border border-grey-100 rounded-lg text-black font-mono p-2"
       >
         <ArrowTopRightOnSquareIcon className="h-5 inline mx-2" />
-        <span>View transaction</span>
+        <span>View</span>
       </Button>
     </a>
   );
