@@ -8,9 +8,11 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
-import { exploreRoundsLink } from "../discovery/LandingTabs";
+// import { exploreRoundsLink } from "../discovery/LandingTabs";
 import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import ExploreRoundsDropdown from "./ExploreRoundsDropdown";
+import { Dropdown } from "./Dropdown";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -62,13 +64,14 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
 
-          <div className="flex font-mono items-center gap-6">
-            <Link
+          <div className="flex flex-row items-center gap-6 font-mono font-medium">
+            <ExploreRoundsDropdown />
+            {/* <Link
               to={exploreRoundsLink}
               className="font-medium hover:underline hidden md:block"
             >
               Explore rounds
-            </Link>
+            </Link> */}
             {showWalletInteraction && (
               <div>
                 <div
