@@ -293,6 +293,7 @@ export default function Form({
   };
 
   const closeErrorModal = async () => {
+    setShowError(false);
     dispatch(resetApplicationError(round.address));
   };
 
