@@ -212,9 +212,9 @@ export function ViewContributionHistory(props: {
           </div>
           {/* todo: update text opacity */}
           <div className="flex justify-between items-center">
-            <Button className="shadow-sm inline-flex border border-black border-opacity-20 opacity-60 bg-gradient-to-br from-[#FF9776] via-[#5F94BC] to-[#DEAB0C] font-bold py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6">
+            <Button className="shadow-sm inline-flex border border-gray bg-gradient-to-br from-[#FF9776] via-[#5F94BC] to-[#DEAB0C] font-medium py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6">
               <span className="font-mono text-black text-opacity-100">
-                Gitcoin Grants Impact
+                Your Gitcoin Grants Impact
               </span>
             </Button>
             <CopyToClipboardButton
