@@ -8,11 +8,11 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
-// import { exploreRoundsLink } from "../discovery/LandingTabs";
 import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import ExploreRoundsDropdown from "./ExploreRoundsDropdown";
-import { Dropdown } from "./Dropdown";
+import ExploreRoundsDropdown, {
+  ExploreRoundsDropdownProps,
+} from "./ExploreRoundsDropdown";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -39,9 +39,66 @@ export default function Navbar(props: NavbarProps) {
   /** end of part that keeps the store in sync between tabs */
 
   const showWalletInteraction = props.showWalletInteraction ?? true;
-
   const { address: walletAddress } = useAccount();
   const alloVersion = getAlloVersion();
+
+  // todo: OP not justifying?? the image
+  // WEB3 Infra: https://builder.gitcoin.co/#/chains/42161/rounds/26
+  // Developer Tooling: https://builder.gitcoin.co/#/chains/42161/rounds/27
+  // dApps & Apps: https://builder.gitcoin.co/#/chains/42161/rounds/25
+  // Hackathon Alumni: https://builder.gitcoin.co/#/chains/42161/rounds/23
+  // Climate Solutions: https://builder.gitcoin.co/#/chains/42161/rounds/29
+  // ENS: https://builder.gitcoin.co/#/chains/42161/rounds/24
+  // Token Engineering Commons (TEC): https://builder.gitcoin.co/#/chains/10/rounds/9
+  // Open Civics: https://builder.gitcoin.co/#/chains/42161/rounds/31
+  // Hypercerts Ecosystem: https://builder.gitcoin.co/#/chains/42161/rounds/28
+  const rounds: ExploreRoundsDropdownProps[] = [
+    {
+      chainId: 42161,
+      name: "WEB3 Infrastructurre",
+      link: "",
+    },
+    {
+      chainId: 42161,
+      name: "Developer Tooling",
+      link: "",
+    },
+    {
+      chainId: 42161,
+      name: "dApps & Apps",
+      link: "",
+    },
+    {
+      chainId: 42161,
+      name: "Hackathon Alumni",
+      link: "",
+    },
+    {
+      chainId: 42161,
+      name: "Climate Solutions",
+      link: "",
+    },
+    {
+      chainId: 42161,
+      name: "ENS",
+      link: "",
+    },
+    {
+      chainId: 10,
+      name: "Token Engineering Commons (TEC)",
+      link: "",
+    },
+    {
+      chainId: 42161,
+      name: "Open Civics",
+      link: "",
+    },
+    {
+      chainId: 42161,
+      name: "Hypercerts Ecosystem",
+      link: "",
+    },
+  ];
 
   return (
     <nav
@@ -65,13 +122,8 @@ export default function Navbar(props: NavbarProps) {
           </div>
 
           <div className="flex flex-row items-center gap-6 font-mono font-medium">
-            <ExploreRoundsDropdown />
-            {/* <Link
-              to={exploreRoundsLink}
-              className="font-medium hover:underline hidden md:block"
-            >
-              Explore rounds
-            </Link> */}
+            {/* todo: pass the rounds: RoundsGetRounds[] to the <ExploreRoundsDropdown rounds={[]} /> */}
+            <ExploreRoundsDropdown rounds={rounds} />
             {showWalletInteraction && (
               <div>
                 <div

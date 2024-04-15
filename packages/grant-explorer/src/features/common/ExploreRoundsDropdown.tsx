@@ -1,10 +1,22 @@
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { RoundGetRound } from "data-layer";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
+import { CHAINS } from "../api/utils";
+import { ChainId } from "common";
+import { Link } from "react-router-dom";
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
+export type ExploreRoundsDropdownProps = {
+  chainId: number;
+  name: string;
+  link: string;
+};
 
 export default function ExploreRoundsDropdown(props: {
-  rounds?: RoundGetRound[];
+  rounds?: ExploreRoundsDropdownProps[];
 }) {
   return (
     <Menu as="div" className="relative inline-block text-left">
@@ -29,14 +41,40 @@ export default function ExploreRoundsDropdown(props: {
       >
         <Menu.Items className="absolute cursor-pointer right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
-            <Menu.Item>
-              {({ active }) => (
-                // todo: list the rounds and style
-                <div className="text-gray-800 block px-4 py-2 text-sm hover:bg-gray-100">
-                  Round 1
+            {props.rounds ? (
+              props.rounds?.map((round: ExploreRoundsDropdownProps) => {
+                return (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        className={classNames(
+                          active
+                            ? "flex flex-row justify-end text-gray-800 px-4 py-2 text-sm text-right hover:bg-gray-100"
+                            : "flex flex-row justify-end text-gray-800 px-4 py-2 text-sm text-right"
+                        )}
+                      >
+                        <img
+                          src={CHAINS[round.chainId as ChainId]?.logo}
+                          alt={"Chain"}
+                          className="rounded-full w-6 h-6 mr-2"
+                        />
+                        <Link to={round.link}>
+                          <span className="font-sans text-right">
+                            {round.name}
+                          </span>
+                        </Link>
+                      </div>
+                    )}
+                  </Menu.Item>
+                );
+              })
+            ) : (
+              <Menu.Item disabled>
+                <div className="flex flex-row justify-end text-gray-800 px-4 py-2 text-sm cursor-not-allowed">
+                  <span className="text-right">No rounds available</span>
                 </div>
-              )}
-            </Menu.Item>
+              </Menu.Item>
+            )}
           </div>
         </Menu.Items>
       </Transition>
