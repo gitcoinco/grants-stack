@@ -70,66 +70,65 @@ export function RoundInCart(
     props.roundCart.reduce((acc, proj) => acc + Number(proj.amount), 0) *
     props.payoutTokenPrice;
 
-  let { passportColor } = usePassport({
-    address,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    round: round!,
-  });
-
-  passportColor = isSybilDefenseEnabled ? passportColor : "green";
-
-  const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
+  const showMatchingEstimate = matchingEstimateError === undefined &&
+  matchingEstimates !== undefined &&
+  round?.chainId !== ChainId.AVALANCHE;
 
   return (
-    <div className="my-4 bg-grey-50 rounded-xl">
-      <div className="flex flex-row items-end pt-4 sm:px-4 px-2 justify-between">
-        <div className={"flex flex-col"}>
-          <div>
-            <p className="text-xl font-semibold inline">
-              {round?.roundMetadata?.name}
-            </p>
-            <p className="text-lg font-bold ml-2 inline">
-              ({props.roundCart.length})
-            </p>
-          </div>
-          {minDonationThresholdAmount && (
+    <div className="my-4">
+      {/* Round In Cart */}
+      <div className="bg-grey-50 px-4 py-6 rounded-t-xl">
+        <div className="flex flex-row items-end justify-between">
+          <div className={"flex flex-col"}>
             <div>
-              <p className="text-sm pt-2">
-                Your donation to each project must be valued at{" "}
-                {minDonationThresholdAmount} USD or more to be eligible for
-                matching.
+              <p className="text-xl font-semibold inline">
+                {round?.roundMetadata?.name}
+              </p>
+              <p className="text-lg font-bold ml-2 inline">
+                ({props.roundCart.length})
               </p>
             </div>
-          )}
+            {minDonationThresholdAmount && (
+              <div>
+                <p className="text-sm pt-2 italic mb-5">
+                  Your donation to each project must be valued at{" "}
+                  {minDonationThresholdAmount} USD or more to be eligible for
+                  matching.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+        <div>
+          {props.roundCart.map((project, key) => {
+            const matchingEstimateUSD = matchingEstimates
+              ?.flat()
+              .find(
+                (est) =>
+                  getAddress(est.recipient ?? zeroAddress) ===
+                  getAddress(project.recipient ?? zeroAddress)
+              )?.differenceInUSD;
+            return (
+              <div key={key}>
+                <ProjectInCart
+                  projects={props.roundCart}
+                  selectedPayoutToken={props.selectedPayoutToken}
+                  removeProjectFromCart={props.handleRemoveProjectFromCart}
+                  project={project}
+                  index={key}
+                  showMatchingEstimate={showMatchingEstimate}
+                  matchingEstimateUSD={matchingEstimateUSD}
+                  roundRoutePath={`/round/${props.roundCart[0].chainId}/${props.roundCart[0].roundId}`}
+                  last={key === props.roundCart.length - 1}
+                  payoutTokenPrice={props.payoutTokenPrice}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
-      <div>
-        {props.roundCart.map((project, key) => {
-          const matchingEstimateUSD = matchingEstimates
-            ?.flat()
-            .find(
-              (est) =>
-                getAddress(est.recipient ?? zeroAddress) ===
-                getAddress(project.recipient ?? zeroAddress)
-            )?.differenceInUSD;
-          return (
-            <div key={key}>
-              <ProjectInCart
-                projects={props.roundCart}
-                selectedPayoutToken={props.selectedPayoutToken}
-                removeProjectFromCart={props.handleRemoveProjectFromCart}
-                project={project}
-                index={key}
-                matchingEstimateUSD={matchingEstimateUSD}
-                roundRoutePath={`/round/${props.roundCart[0].chainId}/${props.roundCart[0].roundId}`}
-                last={key === props.roundCart.length - 1}
-                payoutTokenPrice={props.payoutTokenPrice}
-              />
-            </div>
-          );
-        })}
-      </div>
-      <div className="p-4 bg-grey-100 rounded-md">
+      {/* Total Donations */}
+      <div className="p-4 bg-grey-100 rounded-b-xl font-medium text-lg">
         <div className="flex flex-row justify-between">
           <div>
             {address && round && isSybilDefenseEnabled && (
@@ -140,35 +139,34 @@ export function RoundInCart(
           </div>
           <div className="flex flex-row gap-3 justify-center pt-1 pr-2">
             <div>
-              {matchingEstimateError === undefined &&
-                matchingEstimates !== undefined &&
-                round?.chainId !== ChainId.AVALANCHE && (
-                  <div className="flex justify-end flex-nowrap">
-                    <Skeleton isLoaded={!matchingEstimateLoading}>
-                      <div className="flex flex-row">
-                        <p
-                          className={
-                            "flex flex-col md:flex-row items-center gap-2"
-                          }
+              {showMatchingEstimate && (
+                <div className="flex justify-end flex-nowrap">
+                  <Skeleton isLoaded={!matchingEstimateLoading}>
+                    <div className="flex flex-row font-semibold">
+                      <p
+                        className={
+                          "flex flex-col md:flex-row items-center gap-2"
+                        }
+                      >
+                        <span className="mr-2">Total match</span>
+                        <div
+                          className="flex flex-row items-center justify-between font-semibold text-teal-500"
                         >
-                          <text>Total Match </text>
-                          <div
-                            className={`flex flex-row items-center justify-between font-semibold italic ${passportTextClass}`}
-                          >
-                            <BoltIcon className={"w-4 h-4 inline"} />
-                            ~$
-                            {estimate?.toFixed(2)}
-                          </div>
-                        </p>
-                        <span className="pl-2">|</span>
-                      </div>
-                    </Skeleton>
-                  </div>
-                )}
+                          <BoltIcon className={"w-4 h-4 inline"} />
+                          ~$
+                          {estimate?.toFixed(2)}
+                        </div>
+                      </p>
+                      <span className="pl-4">|</span>
+                    </div>
+                  </Skeleton>
+                </div>
+              )}
             </div>
-            <div>
-              <p className="text-md">
-                Total donation $
+            <div className="font-semibold">
+              <p>
+                <span className="mr-2">Total donation</span>
+                $
                 {isNaN(totalDonationInUSD)
                   ? "0.0"
                   : totalDonationInUSD.toFixed(2)}
