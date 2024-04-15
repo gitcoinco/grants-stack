@@ -293,7 +293,7 @@ export default function Form({
   };
 
   const closeErrorModal = async () => {
-    dispatch(resetApplicationError(round.address));
+    dispatch(resetApplicationError(round.id));
   };
 
   const handleSubmitApplicationRetry = async () => {
