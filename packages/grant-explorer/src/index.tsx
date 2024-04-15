@@ -1,6 +1,6 @@
 import "./browserPatches";
 
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, Theme, lightTheme } from "@rainbow-me/rainbowkit";
 import { getConfig } from "common/src/config";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import React from "react";
@@ -30,6 +30,7 @@ import ViewCart from "./features/round/ViewCartPage/ViewCartPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import AlloWrapper from "./features/api/AlloWrapper";
+import { merge } from "lodash";
 
 initSentry();
 initDatadog();
@@ -60,11 +61,22 @@ const dataLayer = new DataLayer({
   },
 });
 
+const customRainbowKitTheme = merge(lightTheme(), {
+  colors: {
+    accentColor: "#FFD9CD",
+    accentColorForeground: "#000000",
+  },
+}) as Theme;
+
 root.render(
   <React.StrictMode>
     <ChakraProvider>
       <WagmiConfig config={config}>
-        <RainbowKitProvider coolMode chains={chains}>
+        <RainbowKitProvider
+          theme={customRainbowKitTheme}
+          coolMode
+          chains={chains}
+        >
           <RoundProvider>
             <DataLayerProvider client={dataLayer}>
               <AlloWrapper>
