@@ -70,16 +70,6 @@ export function RoundInCart(
     props.roundCart.reduce((acc, proj) => acc + Number(proj.amount), 0) *
     props.payoutTokenPrice;
 
-  let { passportColor } = usePassport({
-    address,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    round: round!,
-  });
-
-  passportColor = isSybilDefenseEnabled ? passportColor : "green";
-
-  const passportTextClass = getClassForPassportColor(passportColor ?? "gray");
-
   const showMatchingEstimate = matchingEstimateError === undefined &&
   matchingEstimates !== undefined &&
   round?.chainId !== ChainId.AVALANCHE;
@@ -160,7 +150,7 @@ export function RoundInCart(
                       >
                         <span className="mr-2">Total match</span>
                         <div
-                          className={`flex flex-row items-center justify-between font-semibold italic ${passportTextClass}`}
+                          className="flex flex-row items-center justify-between font-semibold text-teal-500"
                         >
                           <BoltIcon className={"w-4 h-4 inline"} />
                           ~$
