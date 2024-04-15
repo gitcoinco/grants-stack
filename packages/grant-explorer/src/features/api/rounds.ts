@@ -23,10 +23,10 @@ export const useRounds = (
         }),
       ]);
 
-      console.log(spamRounds);
-
       return rounds.filter(
-        (round) => !spamRounds[round.chainId]?.[round.id.toLowerCase()]
+        (round) =>
+          !spamRounds[round.chainId]?.[round.id.toLowerCase()] &&
+          round.strategyName !== ""
       );
     },
     {
