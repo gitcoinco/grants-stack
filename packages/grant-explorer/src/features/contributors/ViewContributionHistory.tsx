@@ -212,7 +212,15 @@ export function ViewContributionHistory(props: {
           </div>
           {/* todo: update text opacity */}
           <div className="flex justify-between items-center">
-            <Button className="shadow-sm inline-flex border border-gray bg-gradient-to-br from-[#FF9776] via-[#5F94BC] to-[#DEAB0C] font-medium py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6">
+            <Button
+              className="shadow-sm inline-flex border-gray-300 border-2 bg-gradient-to-br from-[#f6d7caff] via-[#bddce8ff] to-[#ebdfa5ff] font-medium py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6"
+              onClick={() =>
+                window.open(
+                  `https://gg-your-impact.streamlit.app/?address=${props.address}`,
+                  "_blank"
+                )
+              }
+            >
               <span className="font-mono text-black text-opacity-100">
                 Your Gitcoin Grants Impact
               </span>
