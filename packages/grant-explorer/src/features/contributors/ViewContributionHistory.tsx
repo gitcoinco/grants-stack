@@ -1,3 +1,4 @@
+import { Button } from "common/src/styles";
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -209,11 +210,22 @@ export function ViewContributionHistory(props: {
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
           </div>
-          <CopyToClipboardButton
-            textToCopy={`${currentOrigin}/#/contributors/${props.address}`}
-            styles="text-xs p-2"
-            iconStyle="h-4 w-4 mr-1"
-          />
+          <div className="flex items-center gap-6">
+            <Button
+              type="button"
+              className={`font-mono font-medium text-black bold inline-flex justify-center bg-gradient-to-br from-[#f6d7caff] via-[#bddbe7ff] to-[#ebdfa5ff]`}
+              onClick={async () => {
+                window.location.href = `https://gg-your-impact.streamlit.app/?address=${props.address}`;
+              }}
+            >
+              <span className="text-xs">Your Gitcoin Grants Impact</span>
+            </Button>
+            <CopyToClipboardButton
+              textToCopy={`${currentOrigin}/#/contributors/${props.address}`}
+              styles="text-xs p-2"
+              iconStyle="h-4 w-4 mr-1"
+            />
+          </div>
         </div>
         <div className="mt-8 mb-2">
           Please note that your recent transactions may take a short while to
