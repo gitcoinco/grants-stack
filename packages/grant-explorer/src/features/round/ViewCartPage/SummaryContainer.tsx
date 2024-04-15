@@ -417,25 +417,27 @@ export function SummaryContainer() {
     ).length === 0;
 
   return (
-    <div className="mb-5 block  rounded-t-lg shadow-lg  font-semibold sticky top-20">
-      <div className="px-4 pt-6 pb-4 bg-grey-50 border border-grey-50">
+    <div className="block font-semibold sticky top-20">
+      <div className="px-4 pt-6 pb-4 rounded-t-3xl bg-grey-50 border border-grey-50">
         <h2 className="text-2xl border-b-2 pb-2 font-bold">Summary</h2>
         <div
-          className={`flex flex-row items-center justify-between mt-4 font-semibold italic ${passportTextClass}`}
+          className={`flex flex-row items-center justify-between mt-2 font-semibold italic ${passportTextClass}`}
         >
           {matchingEstimateError === undefined &&
             matchingEstimates !== undefined && (
               <>
                 <div className="flex flex-row my-4 items-center">
-                  <p className="italic">Estimated match</p>
-                  <MatchingEstimateTooltip isEligible={noPassportRoundsInCart} />
+                  <p className="font-bold mt-1">Estimated match</p>
+                  <MatchingEstimateTooltip
+                    isEligible={noPassportRoundsInCart}
+                  />
                 </div>
-                <div className="flex justify-end mt-4">
+                <div className="flex justify-end mt-2">
                   <Skeleton isLoaded={!matchingEstimateLoading}>
                     <p>
-                      <BoltIcon className={"w-4 h-4 inline"} />
+                      <BoltIcon className={"w-4 h-4 inline mb-1"} />
                       ~$
-                      {estimate?.toFixed(2)}
+                      {estimate?.toFixed(2)} {}
                     </p>
                   </Skeleton>
                 </div>
@@ -447,7 +449,9 @@ export function SummaryContainer() {
             <Summary
               key={chainId}
               chainId={parseChainId(chainId)}
-              selectedPayoutToken={getVotingTokenForChain(parseChainId(chainId))}
+              selectedPayoutToken={getVotingTokenForChain(
+                parseChainId(chainId)
+              )}
               totalDonation={totalDonationsPerChain[chainId]}
             />
           ))}
@@ -494,7 +498,9 @@ export function SummaryContainer() {
 
           handleConfirmation();
         }}
-        className={`${notEnoughFunds && "border-t"} items-center shadow-sm text-sm rounded-b-lg w-full bg-blue-100 text-black py-5 text-normal font-mono`}
+        className={`${
+          notEnoughFunds && "border-t"
+        } items-center text-sm rounded-b-3xl w-full bg-blue-100 text-black py-5 text-normal font-mono`}
       >
         {isConnected
           ? notEnoughFunds

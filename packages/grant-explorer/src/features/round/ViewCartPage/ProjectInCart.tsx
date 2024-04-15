@@ -96,7 +96,7 @@ export function ProjectInCart(
                 e.target.value
               );
             }}
-            className="w-[100px] sm:w-[80px] text-center"
+            className="w-[100px] sm:w-[80px] text-center border border-black"
           />
           <p className="m-auto">{props.selectedPayoutToken.name}</p>
           {props.payoutTokenPrice && (
@@ -115,7 +115,7 @@ export function ProjectInCart(
               </span>
               { props.showMatchingEstimate && 
                 <span className="text-green-400 text-sm">
-                  ~{props.matchingEstimateUSD || 0} USD
+                  ~{props.matchingEstimateUSD?.toFixed(2) || 0} USD
                 </span>
               }
             </div>

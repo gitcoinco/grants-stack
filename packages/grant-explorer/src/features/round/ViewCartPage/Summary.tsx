@@ -62,8 +62,8 @@ export function Summary({
           </p>
           {payoutTokenPrice && (
             <div className="flex justify-end mt-2">
-              <p className="text-[14px] text-[#979998] font-normal">
-                $ {totalDonationInUSD?.toFixed(2)}
+              <p className="text-[14px] text-[#979998] font-bold">
+                ${totalDonationInUSD?.toFixed(2)}
               </p>
             </div>
           )}
