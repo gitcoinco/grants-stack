@@ -75,8 +75,9 @@ export default function Navbar(props: NavbarProps) {
     },
     {
       chainId: 10,
-      name: "Token Engineering Commons",
+      name: "Token Engineering Commons (TEC)",
       link: "/round/10/9",
+      customClasses: "w-[7.5rem]"
     },
     {
       chainId: 42161,

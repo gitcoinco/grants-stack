@@ -13,6 +13,7 @@ export type ExploreRoundsDropdownProps = {
   chainId: number;
   name: string;
   link: string;
+  customClasses? : string;
 };
 
 export default function ExploreRoundsDropdown(props: {
@@ -54,7 +55,7 @@ export default function ExploreRoundsDropdown(props: {
                         alt={"Chain"}
                         className="rounded-full w-6 h-6 mr-2"
                       />
-                      <Link to={round.link} className="font-sans text-right">
+                      <Link to={round.link} className={classNames(`font-sans text-right ${round.customClasses}`)}>
                         {round.name}
                       </Link>
                     </div>
