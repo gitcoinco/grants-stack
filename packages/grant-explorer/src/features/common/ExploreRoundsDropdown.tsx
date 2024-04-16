@@ -54,7 +54,7 @@ export default function ExploreRoundsDropdown(props: {
                         alt={"Chain"}
                         className="rounded-full w-6 h-6 mr-2"
                       />
-                      <Link to={round.link} className="font-sans text-right max-w-[8rem]">
+                      <Link to={round.link} className="font-sans text-right">
                         {round.name}
                       </Link>
                     </div>
