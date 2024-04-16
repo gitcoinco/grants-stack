@@ -52,6 +52,7 @@ const MAINNET_CHAINS = [
   base,
   scroll,
   { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
+  seiDevnet,
 ].map(ensureValidChainId);
 
 export const getEnabledChains = (): Chain[] => {

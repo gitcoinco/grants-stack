@@ -82,6 +82,7 @@ const productionChains = [
   zkSyncEraMainnet,
   base,
   scroll,
+  seiDevnet,
 ];
 
 export function getEnabledChainsAndProviders() {

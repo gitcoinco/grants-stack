@@ -61,6 +61,7 @@ const mainnetChains = () => {
     base,
     scroll,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
+    seiDevnet,
   ];
 };
 
