@@ -22,7 +22,7 @@ export default function ExploreRoundsDropdown(props: {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-mono text-sm font-semibold text-gray-900">
+        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-mono text-sm text-gray-900">
           Explore rounds
           <ChevronDownIcon
             className="-mr-1 h-5 w-5 text-gray-800"
