@@ -1,18 +1,17 @@
 import { ReactComponent as PassportShieldGreen } from "common/src/assets/passport-shield-green.svg";
-// import { ReactComponent as PassportShieldYellow } from "../assets/passport-shield-yellow.svg";
-// import { ReactComponent as PassportShieldRed } from "../assets/passport-shield-red.svg";
-// import { ReactComponent as PassportShieldWhite } from "../assets/passport-shield-white.svg";
+import { ReactComponent as PassportShieldYellow } from "common/src/assets/passport-shield-yellow.svg";
+import { ReactComponent as PassportShieldOrange } from "common/src/assets/passport-shield-orange.svg";
+import { ReactComponent as PassportShieldWhite } from "common/src/assets/passport-shield-white.svg";
+import { PassportColor } from "../api/passport";
 
-type passportColor = "green" | "yellow" | "orange" | "white";
-
-export const PassportShield = (props: { color: passportColor }) => {
+export const PassportShield = (props: { color: PassportColor }) => {
   if (props.color === "green") {
     return <PassportShieldGreen />;
   } else if (props.color === "yellow") {
-    // return <PassportShieldYellow />;
+    return <PassportShieldYellow />;
   } else if (props.color === "orange") {
-    // return <PassportShieldRed />;
+    return <PassportShieldOrange />;
   } else if (props.color === "white") {
-    // return <PassportShieldWhite />;
+    return <PassportShieldWhite />;
   }
 };

@@ -38,17 +38,24 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
         className="flex flex-row gap-2 mt-1 relative cursor-pointer"
         onClick={() => handleClick()}
       >
-        <div className="relative">
-          <GitcoinPassportLogoFull />
+        <div className="pt-4">
+          <div className="hidden md:block">
+            <GitcoinPassportLogoFull />
+          </div>
+          <div className="block md:hidden">
+            <GitcoinPassportLogo />
+          </div>
         </div>
         {passportState === PassportState.SCORE_AVAILABLE && (
-          <div className="flex flex-row text-lg font-semibold hidden md:block">
+          <div className="relative hidden md:block">
             <PassportShield color={passportColor} />
-            {passportScore.toFixed(2)}
+            <p className="absolute z-10 top-4 left-1 pt-0.5 pl-0.5 text-sm font-semibold">
+              {passportScore.toFixed(2)}
+            </p>
           </div>
         )}
         <DropdownIcon
-          className="inline mt-3 md:block"
+          className="inline mt-6 md:block"
           direction={isOpen ? "up" : "down"}
         />
         <div
