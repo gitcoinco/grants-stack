@@ -4,7 +4,6 @@ import { Button } from "common/src/styles";
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
-import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
 import Navbar from "../common/Navbar";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
@@ -13,6 +12,7 @@ import { ChainId } from "common";
 import { useAccount } from "wagmi";
 import { Hex } from "viem";
 import { useRoundById } from "../../context/RoundContext";
+import xIcon from "../../assets/x-logo-black.png";
 
 export function createTwitterShareText(props: TwitterButtonParams) {
   return `I just donated to ${props.roundName?.trim() ?? "a round"}${
@@ -42,11 +42,11 @@ export function TwitterButton(props: TwitterButtonParams) {
     <Button
       type="button"
       onClick={() => window.open(shareUrl, "_blank")}
-      className="flex items-center justify-center shadow-sm text-sm rounded border-1 text-black bg-[#C1E4FC] px-4 sm:px-10 border-grey-100 hover:shadow-md"
+      className="flex items-center justify-center shadow-sm text-xs rounded-lg border-1 text-black bg-white px-4 sm:px-10 hover:shadow-md"
       data-testid="twitter-button"
     >
-      <TwitterBlueIcon />
-      <span className="ml-2">Share on Twitter</span>
+      <img src={xIcon} alt="X logo" className="w-5 h-5 font-semibold" />
+      <span className="ml-2">Share on X</span>
     </Button>
   );
 }
@@ -98,9 +98,9 @@ export default function ThankYou() {
   }, []);
 
   /** If there are projects left to check out, show a Back to cart button */
-  const showBackToCartButton =
-    cart.projects.filter((proj) => !checkedOutChains.includes(proj.chainId))
-      .length > 0;
+  // const showBackToCartButton =
+  //   cart.projects.filter((proj) => !checkedOutChains.includes(proj.chainId))
+  //     .length > 0;
 
   /** Fetch round data for tweet */
   const checkedOutProjects = useCheckoutStore((state) =>
@@ -130,8 +130,8 @@ export default function ThankYou() {
       <div className="relative top-28 lg:mx-20 px-4 py-7 h-screen">
         <main>
           <div className="text-center">
-            <h1 className="text-4xl my-8">
-              Thank you for supporting our community.
+            <h1 className="text-5xl my-8 font-sans">
+              Thank you for your support!
             </h1>
 
             <div className={"flex flex-col gap-5 items-center justify-center"}>
@@ -141,41 +141,25 @@ export default function ThankYou() {
                   roundName={round?.roundMetadata?.name}
                   isMrc={isMrc}
                 />
-
-                <Button
-                  type="button"
-                  $variant="outline"
-                  onClick={() => navigate(`/contributors/${address}`)}
-                  className="items-center justify-center shadow-sm text-sm rounded border border-solid border-grey-100 px-2 sm:px-10"
-                  data-testid="donation-history-button"
-                >
-                  View Donation History
-                </Button>
-              </div>
-
-              {showBackToCartButton ? (
-                <Button
-                  type="button"
-                  $variant="outline"
-                  onClick={() => navigate("/cart")}
-                  className="items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
-                  data-testid="home-button"
-                >
-                  Back to Cart
-                </Button>
-              ) : (
                 <Button
                   type="button"
                   $variant="outline"
                   onClick={() => navigate("/")}
-                  className="items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
+                  className="items-center justify-center text-xs rounded-lg w-[193px] border-1 bg-orange-100 hover:shadow-md px-10"
                   data-testid="home-button"
                 >
-                  Go back home
+                  Back home
                 </Button>
-              )}
+              </div>
+              <Button
+                type="button"
+                onClick={() => navigate(`/contributors/${address}`)}
+                className="items-center justify-center text-xs text-black rounded-lg border border-solid bg-grey-100 border-grey-100 px-2 hover:shadow-md sm:px-10"
+                data-testid="donation-history-button"
+              >
+                Donation History
+              </Button>
             </div>
-
             <div className="mt-11">
               <div className="flex justify-center">
                 <ThankYouBanner />

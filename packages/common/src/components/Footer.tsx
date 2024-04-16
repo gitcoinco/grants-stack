@@ -1,15 +1,23 @@
 import Discord from "../icons/Discord";
-import Support from "../icons/Support";
 import Github from "../icons/Github";
 import Gitbook from "../icons/Gitbook";
-import { getConfig } from "../config";
+// import { getConfig } from "../config";
+import Manager from "../icons/Manager";
+import Builder from "../icons/Builder";
 
 const navigation = [
+  // note: the Manager and Builder icons are white... so they are not visible on the white background of the footer
   {
-    name: "Support",
-    href: "https://support.gitcoin.co/gitcoin-knowledge-base",
+    name: "Manager",
+    href: "https://manager.gitcoin.co",
     testid: "support",
-    icon: Support,
+    icon: Manager,
+  },
+  {
+    name: "Builder",
+    href: "https://builder.gitcoin.co",
+    testid: "support",
+    icon: Builder,
   },
   {
     name: "Discord",
@@ -24,27 +32,28 @@ const navigation = [
     icon: Github,
   },
   {
-    name: "GitBook",
-    href: "https://docs.allo.gitcoin.co/getting-started/introduction",
-    testid: "gitbook",
+    name: "Knowledge Base",
+    href: "https://support.gitcoin.co/gitcoin-knowledge-base",
+    testid: "knowledgebase",
     icon: Gitbook,
   },
 ];
 
-const config = getConfig();
-const COMMIT_HASH = process.env.REACT_APP_GIT_SHA ?? "localhost";
-const ALLO_VERSION = config.allo.version;
+// note: not sure if we need this anymore? We could keep it as a hidden value for debugging purposes.
+// const config = getConfig();
+// const COMMIT_HASH = process.env.REACT_APP_GIT_SHA ?? "localhost";
+// const ALLO_VERSION = config.allo.version;
 
 export default function Footer() {
   return (
     <footer
       className={
-        "p-3 px-8 flex flex-row justify-between items-center relative z-10"
+        "p-3 pr-20 flex flex-row justify-end items-center relative z-10"
       }
     >
-      <div className={"text-gray-500 text-xs"}>
+      {/* <div className={"text-gray-500 text-xs"}>
         build {COMMIT_HASH}-{ALLO_VERSION}
-      </div>
+      </div> */}
       <div className="flex flex-row-reverse justify-between py-12 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">
           {navigation.map((item) => (
