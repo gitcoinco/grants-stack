@@ -111,7 +111,6 @@ export default function Navbar(props: NavbarProps) {
               </div>
             </Link>
           </div>
-
           <div className="flex flex-row items-center gap-6 font-mono font-medium">
             {rounds &&  <ExploreRoundsDropdown rounds={rounds} /> }
             {showWalletInteraction && (
