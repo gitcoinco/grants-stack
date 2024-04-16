@@ -745,3 +745,18 @@ export type Contribution = {
   };
   timestamp?: bigint;
 };
+
+export type ApprovedRoundApplication = {
+  id: string;
+  projectId: string;
+  chainId: number;
+  totalDonationsCount: number;
+  totalAmountDonatedInUsd: number;
+  createdAtBlock: number;
+  metadata: ProjectApplicationMetadata;
+  round: {
+    id: string;
+    chainId: number;
+    roundMetadata: RoundMetadata;
+  }
+}

@@ -20,13 +20,13 @@ import {
   Round,
   RoundGetRound,
   RoundsQueryVariables,
-  RoundWithApplications,
   SearchBasedProjectCategory,
   V2RoundWithProject,
   v2Project,
   RoundForManager,
   Contribution,
   RoundForExplorer,
+  ApprovedRoundApplication,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -51,8 +51,9 @@ import {
   getRoundForExplorer,
   getRoundsQuery,
   getDonationsByDonorAddress,
+  getActiveRoundApplications,
 } from "./queries";
-import { mergeCanonicalAndLinkedProjects } from "./utils";
+import { formatDateAsIndexer, mergeCanonicalAndLinkedProjects } from "./utils";
 
 /**
  * DataLayer is a class that provides a unified interface to the various data sources.
@@ -631,8 +632,41 @@ export class DataLayer {
     applications: ApplicationSummary[];
     pagination: PaginationInfo;
   }> {
-    const { applicationSummaries } =
-      await this.searchApiClient.getApplicationsApplicationsGet();
+
+    const now = formatDateAsIndexer(new Date());
+    const first =  1000;
+    const offset = 0;
+
+    const response: { applications: ApprovedRoundApplication[] } = await request(
+      this.gsIndexerEndpoint,
+      getActiveRoundApplications,
+      {
+        now,
+        first,
+        offset
+      },
+    );
+
+    const applicationSummaries: ApplicationSummary[] = response.applications.map((application) => {
+      return {
+        applicationRef: `${application.chainId}:${application.round.id}:${application.id}`,
+        bannerImageCid: application.metadata.application.project.bannerImg ?? "",
+        chainId: application.chainId,
+        contributionsTotalUsd: application.totalAmountDonatedInUsd,
+        contributorCount: application.totalDonationsCount,
+        createdAtBlock: application.createdAtBlock,
+        logoImageCid: application.metadata.application.project.logoImg ?? "",
+        name: application.metadata.application.project.title,
+        payoutWalletAddress: application.metadata.application.recipient,
+        projectId: application.projectId,
+        roundApplicationId: application.id,
+        roundId: application.round.id,
+        roundName: application.round.roundMetadata.name,
+        summaryText: application.metadata.application.project.description,
+        websiteUrl: application.metadata.application.project.website,
+      };
+    });
+
     const pageStart = page * this.searchResultsPageSize;
     const pageEnd = pageStart + this.searchResultsPageSize;
     let filteredApplicationSummaries: ApplicationSummary[] =

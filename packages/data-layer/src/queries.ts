@@ -583,3 +583,32 @@ export const getDonationsByDonorAddress = gql`
     }
   }
 `;
+
+export const getActiveRoundApplications = gql`
+  query getActiveRoundApplications($now: Datetime!, $first: Int!, $offset: Int!) {
+    applications(
+      filter: {
+        status: { equalTo: APPROVED }
+        round: {
+          donationsStartTime: { lessThan: $now }
+          donationsEndTime: { greaterThan: $now }
+        }
+      }
+      first: $first
+      offset: $offset
+    ) {
+      id
+      projectId
+      chainId
+      totalDonationsCount
+      totalAmountDonatedInUsd
+      createdAtBlock
+      metadata
+      round {
+        id
+        chainId
+        roundMetadata
+      }
+    }
+  }
+`;
