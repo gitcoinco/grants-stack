@@ -490,18 +490,6 @@ const getRoundForManagerFields = `
   }
 `;
 
-export const getRoundUniqueDonorsCount = gql`
-  query getRoundUniqueDonorsCount($roundId: String!, $chainId: Int!) {
-    rounds(
-      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
-    ) {
-      id
-      chainId
-      uniqueDonorsCount
-    }
-  }
-`;
-
 export const getRoundForManager = gql`
   query getRoundForManager($roundId: String!, $chainId: Int!) {
     rounds(
@@ -532,6 +520,13 @@ export const getRoundForExplorer = gql`
     ) {
       id
       chainId
+      roles {
+        address
+        role
+        createdAtBlock
+      }
+      matchingDistribution
+      uniqueDonorsCount
       applicationsStartTime
       applicationsEndTime
       donationsStartTime

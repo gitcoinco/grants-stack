@@ -949,13 +949,14 @@ export class AlloV2 implements Allo {
       if (!args.roundAddress) {
         return error(new AlloError("roundAddress must be provided"));
       }
-
       /** Upload roundMetadata ( includes applicationMetadata ) to IPFS */
-      if (data.roundMetadata && data.applicationMetadata) {
-        const ipfsResult = await this.ipfsUploader({
+      if (data.roundMetadata) {
+        let updateArgs: { round: AnyJson; application?: AnyJson } = {
           round: data.roundMetadata,
-          application: data.applicationMetadata,
-        });
+        };
+        if (data.applicationMetadata)
+          updateArgs = { ...updateArgs, application: data.applicationMetadata };
+        const ipfsResult = await this.ipfsUploader(updateArgs);
 
         emit("ipfs", ipfsResult);
 

@@ -77,15 +77,10 @@ export default function ViewRound() {
   const alloVersion = getAlloVersion();
 
   useEffect(() => {
-    if (
-      isAfterRoundEndDate !== undefined &&
-      roundId?.startsWith("0x") &&
-      alloVersion === "allo-v2" &&
-      !isAfterRoundEndDate
-    ) {
+    if (roundId?.startsWith("0x") && alloVersion === "allo-v2") {
       window.location.href = `https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`;
     }
-  }, [roundId, alloVersion, isAfterRoundEndDate]);
+  }, [roundId, alloVersion]);
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />

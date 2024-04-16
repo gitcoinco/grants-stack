@@ -18,28 +18,26 @@ import { ReactComponent as WarpcastIcon } from "../../assets/warpcast-logo.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/x-logo.svg";
 import { useRoundById } from "../../context/RoundContext";
 import { Project, Round } from "../api/types";
-import {
-  __deprecated_fetchFromIPFS,
-  isDirectRound,
-  isInfiniteDate,
-  votingTokens,
-} from "../api/utils";
+import { isDirectRound, isInfiniteDate, votingTokens } from "../api/utils";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { useAccount, useToken } from "wagmi";
 import { getAddress } from "viem";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import Plot from "react-plotly.js";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import * as Papa from "papaparse";
 import { UnparseObject } from "papaparse";
 import GenericModal from "../common/GenericModal";
-import { getEnabledChains } from "../../app/chainConfig";
-import { BaseProvider } from "@ethersproject/providers";
 import { DefaultLayout } from "../common/DefaultLayout";
 import ViewRoundPageHero from "./ViewRoundPageHero";
 import ViewRoundPageTabs from "./ViewRoundPageTabs";
-import { Application, RoundCategory, useDataLayer } from "data-layer";
+import {
+  Application,
+  DistributionMatch,
+  RoundCategory,
+  useDataLayer,
+} from "data-layer";
 import { useRoundApprovedApplications } from "../projects/hooks/useRoundApplications";
 import { CheckIcon, LinkIcon, PencilIcon } from "@heroicons/react/24/outline";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
@@ -51,28 +49,13 @@ import "react-farcaster-embed/dist/styles.css";
 import ConfirmationModal from "../common/ConfirmationModal";
 import { ProgressStep, useUpdateRound } from "../../context/UpdateRoundContext";
 import { useAllo } from "../api/AlloWrapper";
-import { useRoundUniqueDonorsCount } from "../projects/hooks/useRoundUniqueDonorsCount";
 import BeforeRoundStart from "./BeforeRoundStart";
 import { ProgressStatus } from "common/src/types";
 import { getAlloVersion } from "common/src/config";
 import { ErrorBoundary } from "@sentry/react";
 
-export type MatchingStatsData = {
-  index?: number;
-  projectName: string;
-  uniqueContributorsCount?: number;
-  contributionsCount: number;
-  matchPoolPercentage: number;
-  projectId: string;
-  applicationId: string;
-  matchAmountInToken: BigNumber;
-  originalMatchAmountInToken: BigNumber;
-  projectPayoutAddress: string;
-  status?: string;
-  hash?: string;
-};
 
-export type ProjectMatchingData = MatchingStatsData & {
+export type ProjectMatchingData = DistributionMatch & {
   matchAmountUSD?: number;
 };
 
@@ -95,21 +78,12 @@ export default function ViewRoundStats() {
   const currentTime = new Date();
   const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
   const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
-  const isAfterRoundEndDate =
-    round &&
-    (isInfiniteDate(round.roundEndTime)
-      ? false
-      : round && round.roundEndTime <= currentTime);
+
   useEffect(() => {
-    if (
-      isAfterRoundEndDate !== undefined &&
-      roundId?.startsWith("0x") &&
-      alloVersion === "allo-v2" &&
-      !isAfterRoundEndDate
-    ) {
+    if (roundId?.startsWith("0x") && alloVersion === "allo-v2") {
       window.location.href = `https://explorer-v1.gitcoin.co${window.location.pathname}${window.location.hash}`;
     }
-  }, [roundId, alloVersion, isAfterRoundEndDate]);
+  }, [roundId, alloVersion]);
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
   ) : (
@@ -247,7 +221,6 @@ const ReportCard = ({
 
   const allo = useAllo();
   const dataLayer = useDataLayer();
-  const { isRoundOperator } = useRoundOperator(roundId, chainId);
   const { updateRound, IPFSCurrentStatus, roundUpdateStatus, indexingStatus } =
     useUpdateRound();
 
@@ -272,21 +245,14 @@ const ReportCard = ({
       },
       dataLayer
     );
-  const { matchingData } = useFetchMatchingDistributionFromContract(
-    roundId,
-    chainId
-  );
 
-  const { data: uniqueDonorsCount } = useRoundUniqueDonorsCount(
-    { chainId, roundId },
-    dataLayer
+  const operatorWallets = round?.roles?.map(
+    (account: { address: string }) => account.address
   );
-
+  const { address } = useAccount();
+  const isRoundOperator =
+    !!address && !!operatorWallets?.includes(address.toLowerCase());
   const { data: tokenPrice } = useTokenPrice(token?.redstoneTokenId);
-
-  const totalDonors: number = useMemo(() => {
-    return !uniqueDonorsCount ? 0 : uniqueDonorsCount.uniqueDonorsCount;
-  }, [uniqueDonorsCount]);
 
   const applicationsWithMetadataAndMatchingData:
     | ApplicationWithMatchingData[]
@@ -299,9 +265,10 @@ const ReportCard = ({
     const matchingPoolUSD = Number(tokenPrice) * tokenAmount;
 
     const applicationsWithData = applications.map((application) => {
-      const projectMatchingData = matchingData?.find(
-        (match) => match.applicationId === application.id
-      );
+      const projectMatchingData =
+        round.matchingDistribution?.matchingDistribution?.find(
+          (match) => match.applicationId === application.id
+        );
 
       const projectMatchUSD = projectMatchingData?.matchPoolPercentage
         ? projectMatchingData.matchPoolPercentage * matchingPoolUSD
@@ -329,13 +296,7 @@ const ReportCard = ({
       return totalB - totalA;
     });
     return sortedApplications;
-  }, [
-    applications,
-    projects,
-    matchingData,
-    round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable,
-    tokenPrice,
-  ]);
+  }, [applications, projects, round, tokenPrice]);
 
   const projectsMatchAmountInToken =
     applicationsWithMetadataAndMatchingData?.map((application) =>
@@ -472,7 +433,9 @@ const ReportCard = ({
       await updateRound({
         roundId: round.id,
         roundAddress: round.payoutStrategy.id as `0x${string}`,
-        data: { roundMetadata: newMetadata },
+        data: {
+          roundMetadata: newMetadata,
+        },
         allo,
         roundCategory: isDirectRound(round)
           ? RoundCategory.Direct
@@ -608,7 +571,7 @@ const ReportCard = ({
         projectsMatchAmountInToken={projectsMatchAmountInToken}
         totalCrowdfunded={totalUSDCrowdfunded}
         totalDonations={totalDonations}
-        totalDonors={totalDonors}
+        totalDonors={round.uniqueDonorsCount ?? 0}
         totalProjects={applications?.length ?? 0}
         chainId={chainId}
         statsLoading={isGetApplicationsLoading}
@@ -1344,152 +1307,4 @@ const formatAmount = (amount: string | number, noDigits?: boolean) => {
     maximumFractionDigits: noDigits ? 0 : 2,
     minimumFractionDigits: noDigits ? 0 : 2,
   });
-};
-
-/**
- * Fetch finalized matching distribution
- * @param roundId - the ID of a specific round for detail
- * @param signerOrProvider
- */
-async function fetchMatchingDistribution(
-  roundId: string | undefined,
-  signerOrProvider: BaseProvider
-): Promise<{
-  matchingDistribution: MatchingStatsData[];
-}> {
-  try {
-    if (!roundId) {
-      throw new Error("Round ID is required");
-    }
-    let matchingDistribution: MatchingStatsData[] = [];
-    const roundImplementation = new ethers.Contract(
-      roundId,
-      roundImplementationABI,
-      signerOrProvider
-    );
-    const payoutStrategyAddress = await roundImplementation.payoutStrategy();
-    const payoutStrategy = new ethers.Contract(
-      payoutStrategyAddress,
-      merklePayoutStrategyImplementationABI,
-      signerOrProvider
-    );
-    const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
-    const distributionMetaPtr = distributionMetaPtrRes.pointer;
-    if (distributionMetaPtr !== "") {
-      const matchingDistributionRes =
-        await __deprecated_fetchFromIPFS(distributionMetaPtr);
-      matchingDistribution = matchingDistributionRes.matchingDistribution;
-
-      matchingDistribution.map((distribution) => {
-        distribution.matchAmountInToken = BigNumber.from(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (distribution.matchAmountInToken as any).hex
-        );
-      });
-    }
-
-    return { matchingDistribution };
-  } catch (error) {
-    console.error("fetchMatchingDistribution", error);
-    throw new Error("Unable to fetch matching distribution");
-  }
-}
-
-const useFetchMatchingDistributionFromContract = (
-  roundId: string | undefined,
-  chainId: number
-): {
-  matchingData?: MatchingStatsData[];
-  isLoading: boolean;
-  isError: boolean;
-} => {
-  const [matchingData, setMatchingData] = useState<{
-    matchingDistribution: MatchingStatsData[];
-  }>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        if (!roundId || !chainId) return;
-        const chainData = getEnabledChains().find(
-          (chain) => chain.id === chainId
-        );
-        const provider = ethers.getDefaultProvider(
-          chainData?.rpcUrls.default.http[0]
-        );
-
-        const matchingDataRes = await fetchMatchingDistribution(
-          roundId,
-          provider
-        );
-        setMatchingData(matchingDataRes);
-        setIsLoading(false);
-      } catch (error) {
-        setIsError(true);
-        console.error(error);
-      }
-    }
-
-    fetchData();
-  }, [roundId, chainId]);
-
-  return {
-    matchingData: matchingData?.matchingDistribution,
-    isLoading: isLoading,
-    isError: isError,
-  };
-};
-
-const useRoundOperator = (
-  roundId: string | undefined,
-  chainId: number
-): {
-  isRoundOperator: boolean;
-  isLoading: boolean;
-  isError: boolean;
-} => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [isRoundOperator, setIsRoundOperator] = useState(false);
-
-  const { address, isConnected } = useAccount();
-  const chainData = getEnabledChains().find((chain) => chain.id === chainId);
-  const defaultProvider = ethers.getDefaultProvider(
-    chainData?.rpcUrls.default.http[0]
-  );
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        if (!roundId || !chainId || !address || !isConnected) return;
-
-        const roundImplementation = new ethers.Contract(
-          roundId,
-          roundImplementationABI,
-          defaultProvider
-        );
-        const operatorRole = await roundImplementation.ROUND_OPERATOR_ROLE();
-        const hasRole = await roundImplementation.hasRole(
-          operatorRole,
-          address
-        );
-
-        setIsRoundOperator(hasRole);
-        setIsLoading(false);
-      } catch (error) {
-        setIsError(true);
-        console.error(error);
-      }
-    }
-
-    fetchData();
-  }, [roundId, chainId, address, defaultProvider, isConnected]);
-
-  return {
-    isRoundOperator,
-    isLoading,
-    isError,
-  };
 };

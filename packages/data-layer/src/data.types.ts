@@ -250,6 +250,11 @@ export type RoundWithApplications = Omit<RoundGetRound, "applications"> & {
 
 export type RoundForExplorer = Omit<RoundGetRound, "applications"> & {
   applications: (Application & { anchorAddress: Address })[];
+  matchingDistribution?: {
+    matchingDistribution: DistributionMatch[];
+  } | null;
+  roles?: AddressAndRole[];
+  uniqueDonorsCount?: number;
 };
 
 /**
@@ -489,6 +494,11 @@ export interface Round {
    * List of projects approved for the round
    */
   approvedProjects?: Project[];
+  matchingDistribution?: {
+    matchingDistribution: DistributionMatch[];
+  } | null;
+  roles?: AddressAndRole[];
+  uniqueDonorsCount?: number;
 }
 
 export type TimeFilter = {
