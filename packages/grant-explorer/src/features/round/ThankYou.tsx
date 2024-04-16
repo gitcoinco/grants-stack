@@ -160,11 +160,6 @@ export default function ThankYou() {
                 Donation History
               </Button>
             </div>
-            <div className="mt-11">
-              <div className="flex justify-center">
-                <ThankYouBanner />
-              </div>
-            </div>
           </div>
         </main>
         <div className="my-11">
