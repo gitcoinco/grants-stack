@@ -31,6 +31,7 @@ import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import AlloWrapper from "./features/api/AlloWrapper";
 import { merge } from "lodash";
+import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 
 initSentry();
 initDatadog();
@@ -89,6 +90,7 @@ root.render(
                     <Route path="/" element={<LandingPage />} />
 
                     <Route path="/rounds" element={<ExploreRoundsPage />} />
+                    <Route path="/projects" element={<ExploreProjectsPage />} />
 
                     {/* Round Routes */}
                     <Route
