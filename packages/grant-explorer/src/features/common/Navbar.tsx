@@ -42,61 +42,51 @@ export default function Navbar(props: NavbarProps) {
   const { address: walletAddress } = useAccount();
   const alloVersion = getAlloVersion();
 
-  // todo: OP not justifying?? the image
-  // WEB3 Infra: https://builder.gitcoin.co/#/chains/42161/rounds/26
-  // Developer Tooling: https://builder.gitcoin.co/#/chains/42161/rounds/27
-  // dApps & Apps: https://builder.gitcoin.co/#/chains/42161/rounds/25
-  // Hackathon Alumni: https://builder.gitcoin.co/#/chains/42161/rounds/23
-  // Climate Solutions: https://builder.gitcoin.co/#/chains/42161/rounds/29
-  // ENS: https://builder.gitcoin.co/#/chains/42161/rounds/24
-  // Token Engineering Commons (TEC): https://builder.gitcoin.co/#/chains/10/rounds/9
-  // Open Civics: https://builder.gitcoin.co/#/chains/42161/rounds/31
-  // Hypercerts Ecosystem: https://builder.gitcoin.co/#/chains/42161/rounds/28
   const rounds: ExploreRoundsDropdownProps[] = [
     {
       chainId: 42161,
       name: "WEB3 Infrastructurre",
-      link: "",
+      link: "/round/42161/26",
     },
     {
       chainId: 42161,
       name: "Developer Tooling",
-      link: "",
+      link: "/round/42161/27",
     },
     {
       chainId: 42161,
       name: "dApps & Apps",
-      link: "",
+      link: "/round/42161/25",
     },
     {
       chainId: 42161,
       name: "Hackathon Alumni",
-      link: "",
+      link: "/round/42161/23",
     },
     {
       chainId: 42161,
       name: "Climate Solutions",
-      link: "",
+      link: "/round/42161/29",
     },
     {
       chainId: 42161,
       name: "ENS",
-      link: "",
+      link: "/round/42161/24",
     },
     {
       chainId: 10,
-      name: "Token Engineering Commons (TEC)",
-      link: "",
+      name: "Token Engineering Commons",
+      link: "/round/10/9",
     },
     {
       chainId: 42161,
       name: "Open Civics",
-      link: "",
+      link: "/round/42161/31",
     },
     {
       chainId: 42161,
       name: "Hypercerts Ecosystem",
-      link: "",
+      link: "/round/42161/28",
     },
   ];
 
@@ -122,8 +112,7 @@ export default function Navbar(props: NavbarProps) {
           </div>
 
           <div className="flex flex-row items-center gap-6 font-mono font-medium">
-            {/* todo: pass the rounds: RoundsGetRounds[] to the <ExploreRoundsDropdown rounds={[]} /> */}
-            <ExploreRoundsDropdown rounds={rounds} />
+            {rounds &&  <ExploreRoundsDropdown rounds={rounds} /> }
             {showWalletInteraction && (
               <div>
                 <div
