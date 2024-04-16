@@ -62,7 +62,7 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex font-mono items-center gap-6">
             <Link
               to={exploreRoundsLink}
               className="font-medium hover:underline hidden md:block"
@@ -81,7 +81,7 @@ export default function Navbar(props: NavbarProps) {
                       smallScreen: "avatar",
                       largeScreen: "full",
                     }}
-                    chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
+                    chainStatus={{ smallScreen: "icon" }}
                   />
                 </div>
               </div>

@@ -9,7 +9,7 @@ type ButtonProps = {
 export const Button = tw.button`
   bg-violet-400 text-white
   py-2 px-4
-  rounded
+  rounded-md
   transition-colors
   focus:shadow-outline
   disabled:bg-slate-100
