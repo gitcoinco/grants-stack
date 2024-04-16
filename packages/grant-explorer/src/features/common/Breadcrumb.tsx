@@ -25,14 +25,9 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
             {item.name}
           </Link>
           {index < items.length - 1 && (
-            <span className="mx-2 text-grey-400">
-              <svg
-                className="flex-shrink-0 mx-2 h-3 w-3 text-grey-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M5.293 1.293a1 1 0 011.414 0l8 8a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414L11.586 10 5.293 3.707a1 1 0 010-1.414z" />
+            <span className="mx-3 text-grey-400">
+              <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M0.292894 9.70711C-0.0976307 9.31658 -0.0976307 8.68342 0.292894 8.29289L3.58579 5L0.292893 1.70711C-0.0976311 1.31658 -0.0976311 0.683418 0.292893 0.292894C0.683417 -0.0976312 1.31658 -0.0976312 1.70711 0.292894L5.70711 4.29289C6.09763 4.68342 6.09763 5.31658 5.70711 5.70711L1.70711 9.70711C1.31658 10.0976 0.683418 10.0976 0.292894 9.70711Z" fill="#555555"/>
               </svg>
             </span>
           )}

@@ -36,7 +36,7 @@ export default function LandingTabs() {
   ];
 
   return (
-    <Tabs>
+    <Tabs className="font-mono">
       {tabs.map((tab) => {
         const match = tab.to.split("?")[0];
         const isActive = pathname === match;

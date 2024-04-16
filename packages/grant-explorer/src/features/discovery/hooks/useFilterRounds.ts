@@ -9,10 +9,9 @@ import {
   TimeFilterVariables,
 } from "data-layer";
 import { isEmpty } from "lodash";
-import { ROUND_PAYOUT_MERKLE } from "common";
 import { useMemo } from "react";
 import { AlloVersion } from "data-layer/dist/data-layer.types";
-import { getAlloVersion, getConfig } from "common/src/config";
+import { getAlloVersion } from "common/src/config";
 
 export type StrategyName =
   | ""

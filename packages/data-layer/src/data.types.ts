@@ -5,7 +5,8 @@ export type RoundPayoutType =
   | "allov1.Direct"
   | "allov1.QF"
   | "allov2.DirectGrantsSimpleStrategy"
-  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy";
+  | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
+  | ""; // This is to handle the cases where the strategyName is not set in a round, mostly spam rounds
 export type RoundVisibilityType = "public" | "private";
 
 // Note: this also exists in `common` and not able to import from there due to circular dependency.

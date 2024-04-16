@@ -18,6 +18,7 @@ export function ProjectInCart(
     selectedPayoutToken: VotingToken;
     payoutTokenPrice: number;
     removeProjectFromCart: (project: CartProject) => void;
+    showMatchingEstimate: boolean;
     matchingEstimateUSD: number | undefined;
   }
 ) {
@@ -30,7 +31,7 @@ export function ProjectInCart(
 
   return (
     <div data-testid="cart-project">
-      <div className="mb-4 flex flex-col lg:flex-row justify-between sm:px-6 px-2 py-4 rounded-md">
+      <div className="mb-4 flex flex-col lg:flex-row justify-between sm:px-2 px-2 py-4 rounded-md">
         <div className="flex">
           <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
             <img
@@ -57,11 +58,11 @@ export function ProjectInCart(
               to={`${roundRoutePath}/${project.grantApplicationId}`}
               data-testid={"cart-project-link"}
             >
-              <p className="font-semibold text-lg mb-2 text-ellipsis line-clamp-1 max-w-[250px] 2xl:max-w-none">
+              <p className="font-semibold text-lg mb-2 text-ellipsis line-clamp-1 max-w-[400px] 2xl:max-w-none">
                 {props.project.projectMetadata.title}
               </p>
             </Link>
-            <p className="text-sm text-ellipsis line-clamp-3 max-w-[250px] 2xl:max-w-none">
+            <p className="text-sm text-ellipsis line-clamp-3 max-w-[400px] 2xl:max-w-none">
               {renderToPlainText(
                 props.project.projectMetadata.description
               ).substring(0, 130)}
@@ -95,12 +96,12 @@ export function ProjectInCart(
                 e.target.value
               );
             }}
-            className="w-[150px] sm:w-min"
+            className="w-[100px] sm:w-[80px] text-center border border-black"
           />
           <p className="m-auto">{props.selectedPayoutToken.name}</p>
           {props.payoutTokenPrice && (
-            <div className="m-auto px-2 min-w-max">
-              <span className="text-[14px] text-grey-400 ">
+            <div className="m-auto px-2 min-w-max flex flex-col">
+              <span className="text-sm text-grey-400 ">
                 ${" "}
                 {(
                   Number(
@@ -112,6 +113,11 @@ export function ProjectInCart(
                   ) * props.payoutTokenPrice
                 ).toFixed(2)}
               </span>
+              { props.showMatchingEstimate && 
+                <span className="text-teal-500 italic text-sm">
+                  ~{props.matchingEstimateUSD?.toFixed(2) || 0} USD
+                </span>
+              }
             </div>
           )}
           <TrashIcon
@@ -123,7 +129,9 @@ export function ProjectInCart(
           />
         </div>
       </div>
-      <hr className={props.last ? "" : `border-b-[2px] border-grey-100 mx-4`} />
+      {!props.last && 
+        <hr className="border-b-[2px] border-grey-100 mx-4" />
+      }
     </div>
   );
 }
