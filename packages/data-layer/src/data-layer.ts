@@ -632,40 +632,45 @@ export class DataLayer {
     applications: ApplicationSummary[];
     pagination: PaginationInfo;
   }> {
-
     const now = formatDateAsIndexer(new Date());
-    const first =  1000;
+    const first = 1000;
     const offset = 0;
 
-    const response: { applications: ApprovedRoundApplication[] } = await request(
-      this.gsIndexerEndpoint,
-      getActiveRoundApplications,
-      {
+    const response: { applications: ApprovedRoundApplication[] } =
+      await request(this.gsIndexerEndpoint, getActiveRoundApplications, {
         now,
         first,
-        offset
-      },
-    );
+        offset,
+      });
 
-    const applicationSummaries: ApplicationSummary[] = response.applications.map((application) => {
-      return {
-        applicationRef: `${application.chainId}:${application.round.id}:${application.id}`,
-        bannerImageCid: application.metadata.application.project.bannerImg ?? "",
-        chainId: application.chainId,
-        contributionsTotalUsd: application.totalAmountDonatedInUsd,
-        contributorCount: application.totalDonationsCount,
-        createdAtBlock: application.createdAtBlock,
-        logoImageCid: application.metadata.application.project.logoImg ?? "",
-        name: application.metadata.application.project.title,
-        payoutWalletAddress: application.metadata.application.recipient,
-        projectId: application.projectId,
-        roundApplicationId: application.id,
-        roundId: application.round.id,
-        roundName: application.round.roundMetadata.name,
-        summaryText: application.metadata.application.project.description,
-        websiteUrl: application.metadata.application.project.website,
-      };
-    });
+    const applicationSummaries = [];
+
+    for (let index = 0; index < response.applications.flat().length; index++) {
+      const application = response.applications.flat()[index];
+
+      try {
+        applicationSummaries.push({
+          applicationRef: `${application.chainId}:${application.round.id}:${application.id}`,
+          bannerImageCid:
+            application.metadata.application.project.bannerImg ?? "",
+          chainId: application.chainId,
+          contributionsTotalUsd: application.totalAmountDonatedInUsd,
+          contributorCount: application.totalDonationsCount,
+          createdAtBlock: application.createdAtBlock,
+          logoImageCid: application.metadata.application.project.logoImg ?? "",
+          name: application.metadata.application.project.title,
+          payoutWalletAddress: application.metadata.application.recipient,
+          projectId: application.projectId,
+          roundApplicationId: application.id,
+          roundId: application.round.id,
+          roundName: application.round.roundMetadata.name,
+          summaryText: application.metadata.application.project.description,
+          websiteUrl: application.metadata.application.project.website,
+        });
+      } catch (error) {
+        console.error("Error creating application summary", error);
+      }
+    }
 
     const pageStart = page * this.searchResultsPageSize;
     const pageEnd = pageStart + this.searchResultsPageSize;
