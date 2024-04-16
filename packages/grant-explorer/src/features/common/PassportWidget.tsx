@@ -2,11 +2,11 @@ import { useState } from "react";
 import { PassportState, usePassport } from "../api/passport";
 import { useAccount } from "wagmi";
 import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-logo.svg";
-import { ReactComponent as GitcoinPassportBWLogo } from "../../assets/passport-logo-bw.svg";
 import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport-logo-full.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
 import { Round } from "data-layer";
 import { ChainId, roundToPassportURLMap } from "common";
+import { PassportShield } from "./PassportShield";
 
 type PassportWidgetProps = {
   round: Round;
@@ -38,35 +38,12 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
         className="flex flex-row gap-2 mt-1 relative cursor-pointer"
         onClick={() => handleClick()}
       >
-        {passportState === PassportState.SCORE_AVAILABLE ? (
-          <div className="relative">
-            <GitcoinPassportLogo className="h-8 w-8" />
-            <div
-              className={`
-              ${
-                passportColor === "green"
-                  ? "bg-green-500"
-                  : passportColor === "yellow"
-                  ? "bg-yellow-500"
-                  : "bg-orange-500"
-              }
-              absolute bottom-0.5 right-0 w-3 h-3 rounded-2xl sm:block md:hidden`}
-            ></div>
-          </div>
-        ) : (
-          <GitcoinPassportBWLogo className="h-8 w-8" />
-        )}
+        <div className="relative">
+          <GitcoinPassportLogoFull />
+        </div>
         {passportState === PassportState.SCORE_AVAILABLE && (
-          <div
-            className={`${
-              passportColor === "green"
-                ? "text-green-400"
-                : passportColor === "yellow"
-                ? "text-yellow-400"
-                : "text-orange-400"
-            }
-            text-lg font-semibold hidden md:block`}
-          >
+          <div className="flex flex-row text-lg font-semibold hidden md:block">
+            <PassportShield color={passportColor} />
             {passportScore.toFixed(2)}
           </div>
         )}
@@ -127,7 +104,8 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                     </span>
                   )}
                   <span>
-                    {" "}You can update your score by heading over to Passport.{" "}
+                    {" "}
+                    You can update your score by heading over to Passport.{" "}
                   </span>
                   {round.chainId === ChainId.AVALANCHE && (
                     <span>

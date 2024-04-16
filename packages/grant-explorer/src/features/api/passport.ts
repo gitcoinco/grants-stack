@@ -130,7 +130,13 @@ export function usePassport({
   };
 }
 
-export type PassportColor = "gray" | "orange" | "yellow" | "green" | "black";
+export type PassportColor =
+  | "gray"
+  | "orange"
+  | "yellow"
+  | "green"
+  | "black"
+  | "white";
 
 const passportColorToClassName: Record<PassportColor, string> = {
   gray: "text-gray-400",
@@ -138,6 +144,7 @@ const passportColorToClassName: Record<PassportColor, string> = {
   yellow: "text-yellow-400",
   green: "text-green-400",
   black: "text-black",
+  white: "text-white",
 };
 
 export const getClassForPassportColor = (color: PassportColor) =>
