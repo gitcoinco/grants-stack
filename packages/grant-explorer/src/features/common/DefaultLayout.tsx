@@ -41,7 +41,7 @@ export function GradientLayout({
       />
       <div
         className={classNames(
-          "container mx-auto max-w-screen-xl relative z-10 px-4 sm:px-6 lg:px-20",
+          "container mx-auto max-w-screen-2xl relative z-10 px-4 sm:px-6 lg:px-20",
           showAlloVersionBanner ? "pt-[120px]" : "pt-16"
         )}
       >
