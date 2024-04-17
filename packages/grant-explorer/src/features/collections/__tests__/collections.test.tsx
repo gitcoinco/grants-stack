@@ -1,7 +1,7 @@
-import { parseCollectionJSON } from "../collections";
+import { parseCollection } from "../collections";
 import { ZodError } from "zod";
 
-describe("parseCollectionJSON", () => {
+describe("parseCollection", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -23,7 +23,7 @@ describe("parseCollectionJSON", () => {
       ],
     };
 
-    const response = parseCollectionJSON(data);
+    const response = parseCollection(data);
     expect(response).toEqual(data);
   });
 
@@ -43,7 +43,7 @@ describe("parseCollectionJSON", () => {
       },
     ]);
 
-    expect(() => parseCollectionJSON(data)).toThrowError(expectedError);
+    expect(() => parseCollection(data)).toThrowError(expectedError);
   });
 
   it("requires applications", async () => {
@@ -61,7 +61,7 @@ describe("parseCollectionJSON", () => {
       },
     ]);
 
-    expect(() => parseCollectionJSON(data)).toThrowError(expectedError);
+    expect(() => parseCollection(data)).toThrowError(expectedError);
   });
 
   it("requires chainId in applications", async () => {
@@ -85,7 +85,7 @@ describe("parseCollectionJSON", () => {
       },
     ]);
 
-    expect(() => parseCollectionJSON(data)).toThrowError(expectedError);
+    expect(() => parseCollection(data)).toThrowError(expectedError);
   });
 
   it("requires roundId in applications", async () => {
@@ -109,7 +109,7 @@ describe("parseCollectionJSON", () => {
       },
     ]);
 
-    expect(() => parseCollectionJSON(data)).toThrowError(expectedError);
+    expect(() => parseCollection(data)).toThrowError(expectedError);
   });
 
   it("requires id in applications", async () => {
@@ -133,6 +133,6 @@ describe("parseCollectionJSON", () => {
       },
     ]);
 
-    expect(() => parseCollectionJSON(data)).toThrowError(expectedError);
+    expect(() => parseCollection(data)).toThrowError(expectedError);
   });
 });
