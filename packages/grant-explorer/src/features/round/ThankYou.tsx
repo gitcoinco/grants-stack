@@ -45,7 +45,7 @@ export function TwitterButton(props: TwitterButtonParams) {
       className="flex items-center justify-center shadow-sm text-xs rounded-lg border-1 text-black bg-white px-4 sm:px-10 hover:shadow-md"
       data-testid="x-button"
     >
-      <img src={xIcon} alt="X logo" className="w-5 h-5 font-semibold" />
+      <img src={xIcon} alt="X logo" className="w-4 h-4 font-semibold" />
       <span className="ml-2">Share on X</span>
     </Button>
   );
@@ -132,14 +132,14 @@ export default function ThankYou() {
         alt="Thank you for your support"
         className="absolute inset-0 w-full min-h-screen object-cover z-0"
       />
-      <div className="relative top-28 lg:mx-20 px-4 py-7 h-screen">
-        <main>
-          <div className="text-center">
-            <h1 className="text-5xl my-8 font-sans">
+      <div className="flex flex-col min-h-screen relative lg:mx-20 px-4 py-7">
+        <main className="flex-grow">
+          <div className="flex flex-col text-center">
+            <h1 className="text-5xl mt-28 mb-8 font-sans">
               Thank you for your support!
             </h1>
-            <div className={"flex flex-col gap-5 items-center justify-center"}>
-              <div className={"flex gap-5 items-center justify-center"}>
+            <div className="flex flex-col gap-5 items-center justify-center">
+              <div className="flex gap-5 items-center justify-center">
                 <TwitterButton
                   address={address ?? "0x"}
                   roundName={round?.roundMetadata?.name}
@@ -166,7 +166,7 @@ export default function ThankYou() {
             </div>
           </div>
         </main>
-        <div className="absolute bottom-0 w-full">
+        <div className="fixed -bottom-6 right-11 w-full z-20">
           <Footer />
         </div>
       </div>
