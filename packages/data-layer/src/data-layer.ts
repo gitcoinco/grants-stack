@@ -7,11 +7,10 @@ import { Address } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
+import { gql } from "graphql-request";
 import {
   Application,
-  ApplicationStatus,
   Collection,
-  GrantApplicationFormAnswer,
   OrderByRounds,
   Program,
   Project,
@@ -20,7 +19,7 @@ import {
   Round,
   RoundGetRound,
   RoundsQueryVariables,
-  RoundWithApplications,
+  ExpandedApplicationRef,
   SearchBasedProjectCategory,
   V2RoundWithProject,
   v2Project,
@@ -380,6 +379,96 @@ export class DataLayer {
   }
 
   /**
+   * Returns a list of applications identified by their chainId, roundId, and id.
+   * @param expandedRefs
+   */
+  async getApplicationsByExpandedRefs(
+    expandedRefs: Array<ExpandedApplicationRef>,
+  ): Promise<ApplicationSummary[]> {
+    if (expandedRefs.length === 0) {
+      return [];
+    }
+
+    const applicationToFilter = (r: ExpandedApplicationRef) => {
+      return `{
+        and: {
+          chainId: { equalTo: ${r.chainId} }
+          roundId: {
+            equalTo: "${r.roundId}"
+          }
+          id: { equalTo: "${r.id}" }
+        }
+      }`;
+    };
+
+    const filters = expandedRefs.map(applicationToFilter).join("\n");
+
+    const query = gql`
+      query Application {
+        applications(
+          first: 100
+          filter: {
+            or: [
+              ${filters}
+            ]
+          }
+        ) {
+          id
+          chainId
+          roundId
+          projectId
+          status
+          totalAmountDonatedInUsd
+          uniqueDonorsCount
+          round {
+            strategyName
+            donationsStartTime
+            donationsEndTime
+            applicationsStartTime
+            applicationsEndTime
+            matchTokenAddress
+            roundMetadata
+            tags
+          }
+          metadata
+          project: canonicalProject {
+            tags
+            id
+            metadata
+            anchorAddress
+          }
+        }
+      }
+    `;
+
+    const response: { applications: Application[] } = await request(
+      this.gsIndexerEndpoint,
+      query,
+    );
+
+    return response.applications.map((a: Application) => {
+      return {
+        applicationRef: `${a.chainId}:${a.roundId}:${a.id}`,
+        chainId: parseInt(a.chainId),
+        roundApplicationId: a.id,
+        roundId: a.roundId,
+        roundName: a.round.roundMetadata?.name,
+        projectId: a.project.id,
+        name: a.project?.metadata?.title,
+        websiteUrl: a.project?.metadata?.website,
+        logoImageCid: a.project?.metadata?.logoImg!,
+        bannerImageCid: a.project?.metadata?.bannerImg!,
+        summaryText: a.project?.metadata?.description,
+        payoutWalletAddress: a.metadata?.application?.recipient,
+        createdAtBlock: 123,
+        contributorCount: a.uniqueDonorsCount,
+        contributionsTotalUsd: a.totalAmountDonatedInUsd,
+        tags: a.round.tags,
+      };
+    });
+  }
+
+  /**
    * Returns a single application as identified by its id, round name and chain name
    * @param projectId
    */
@@ -626,6 +715,10 @@ export class DataLayer {
       | {
           type: "refs";
           refs: string[];
+        }
+      | {
+          type: "expanded-refs";
+          refs: ExpandedApplicationRef[];
         };
   }): Promise<{
     applications: ApplicationSummary[];
