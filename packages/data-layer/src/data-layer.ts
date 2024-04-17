@@ -793,14 +793,6 @@ export class DataLayer {
     });
   }
 
-  async verifyPassportCredential(
-    credential: PassportVerifiableCredential,
-  ): Promise<{ isVerified: boolean }> {
-    return {
-      isVerified: await this.passportVerifier.verifyCredential(credential),
-    };
-  }
-
   async getProjectCollections(): Promise<Collection[]> {
     return await collections.getCollections({
       source: this.collectionsSource,
