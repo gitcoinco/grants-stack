@@ -3,7 +3,7 @@ import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
+import bgImage from "../../assets/thank-you.svg";
 import Navbar from "../common/Navbar";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
@@ -127,13 +127,17 @@ export default function ThankYou() {
   return (
     <>
       <Navbar />
+      <img
+        src={bgImage}
+        alt="Thank you for your support"
+        className="absolute inset-0 w-full min-h-screen object-cover z-0"
+      />
       <div className="relative top-28 lg:mx-20 px-4 py-7 h-screen">
         <main>
           <div className="text-center">
             <h1 className="text-5xl my-8 font-sans">
               Thank you for your support!
             </h1>
-
             <div className={"flex flex-col gap-5 items-center justify-center"}>
               <div className={"flex gap-5 items-center justify-center"}>
                 <TwitterButton
@@ -162,7 +166,7 @@ export default function ThankYou() {
             </div>
           </div>
         </main>
-        <div className="my-11">
+        <div className="absolute bottom-0 w-full">
           <Footer />
         </div>
       </div>

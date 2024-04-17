@@ -46,10 +46,7 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer className="bg-white shadow-lg p-3 pr-20 flex justify-end items-center fixed inset-x-0 bottom-0 z-10">
-      {/* <div className={"text-gray-500 text-xs"}>
-        build {COMMIT_HASH}-{ALLO_VERSION}
-      </div> */}
+    <footer className="bg-transparent p-3 pr-20 flex justify-end items-center w-full">
       <div className="flex flex-row-reverse justify-between py-12 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">
           {navigation.map((item) => (
