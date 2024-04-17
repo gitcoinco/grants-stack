@@ -97,6 +97,21 @@ export const submitPassport = (
   });
 };
 
+export const submitPassportLite = (
+  address: string,
+  apiKey: string
+): Promise<Response> => {
+  const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/passport/analysis/${address}`;
+
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": `${apiKey}`,
+    },
+  });
+};
+
 export function classNames(...classes: (false | null | undefined | string)[]) {
   return classes.filter(Boolean).join(" ");
 }
