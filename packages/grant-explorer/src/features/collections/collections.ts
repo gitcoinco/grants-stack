@@ -16,6 +16,6 @@ const collectionSchemaV1 = z.object({
 
 export type CollectionV1 = z.infer<typeof collectionSchemaV1>;
 
-export function parseCollection(json: any) {
+export function parseCollection(json: unknown) {
   return collectionSchemaV1.parse(json);
 }
