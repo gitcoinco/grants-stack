@@ -210,7 +210,6 @@ export function ViewContributionHistory(props: {
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
           </div>
-          {/* todo: update text opacity */}
           <div className="flex justify-between items-center">
             <Button
               className="shadow-sm inline-flex border-gray-300 border-2 bg-gradient-to-br from-[#f6d7caff] via-[#bddce8ff] to-[#ebdfa5ff] font-medium py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6"
@@ -231,7 +230,6 @@ export function ViewContributionHistory(props: {
             />
           </div>
         </div>
-        {/*  */}
         <div className="text-2xl my-6 font-sans">Donation Impact</div>
         <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-3 lg:grid-row-1 gap-6">
           <div className="col-span-2 lg:col-span-1">
@@ -240,10 +238,6 @@ export function ViewContributionHistory(props: {
               value={"$" + totalDonations.toFixed(2).toString()}
             />
           </div>
-          {/* todo: get the matching amount */}
-          {/* <div className="col-span-2 lg:col-span-1">
-            <StatCard title="Total Est. Matching" value={"$" + "56M"} />
-          </div> */}
           <div className="col-span-1">
             <StatCard
               title="Contributions"
