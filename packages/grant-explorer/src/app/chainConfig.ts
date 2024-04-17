@@ -18,6 +18,7 @@ import {
   zkSyncEraMainnet,
   zkSyncEraTestnet,
   sepolia,
+  seiDevnet,
 } from "common/src/chains";
 import { ChainId } from "common/src/chain-ids";
 
@@ -37,6 +38,7 @@ const TESTNET_CHAINS = [
   polygonMumbai,
   zkSyncEraTestnet,
   sepolia,
+  seiDevnet,
 ].map(ensureValidChainId);
 
 const MAINNET_CHAINS = [
@@ -50,6 +52,7 @@ const MAINNET_CHAINS = [
   base,
   scroll,
   { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
+  seiDevnet,
 ].map(ensureValidChainId);
 
 export const getEnabledChains = (): Chain[] => {

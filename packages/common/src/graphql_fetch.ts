@@ -73,4 +73,5 @@ export const graphQlEndpoints: Record<ChainId, string> = {
   [ChainId.BASE]: process.env.REACT_APP_SUBGRAPH_BASE_API!,
   [ChainId.SEPOLIA]: process.env.REACT_APP_SUBGRAPH_SEPOLIA_API!,
   [ChainId.SCROLL]: process.env.REACT_APP_SUBGRAPH_SCROLL_API!,
+  [ChainId.SEI_DEVNET]: process.env.REACT_APP_SUBGRAPH_SEI_DEVNET_API!,
 };
