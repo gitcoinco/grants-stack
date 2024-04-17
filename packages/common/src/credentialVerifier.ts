@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // --- DIDKit tooling to verify credentials
 import * as DIDKit from "@spruceid/didkit-wasm";
 
