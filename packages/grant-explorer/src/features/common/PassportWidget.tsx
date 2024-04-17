@@ -39,7 +39,11 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
         onClick={() => handleClick()}
       >
         <div className="pt-4">
-          <GitcoinPassportLogoFull />
+          {alignment === "right" ? (
+            <GitcoinPassportLogoFull />
+          ) : (
+            <GitcoinPassportLogo />
+          )}
         </div>
         {passportState === PassportState.SCORE_AVAILABLE ? (
           <div className="relative hidden md:flex justify-center items-center">

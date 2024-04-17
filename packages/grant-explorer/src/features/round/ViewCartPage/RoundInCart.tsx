@@ -70,9 +70,10 @@ export function RoundInCart(
     props.roundCart.reduce((acc, proj) => acc + Number(proj.amount), 0) *
     props.payoutTokenPrice;
 
-  const showMatchingEstimate = matchingEstimateError === undefined &&
-  matchingEstimates !== undefined &&
-  round?.chainId !== ChainId.AVALANCHE;
+  const showMatchingEstimate =
+    matchingEstimateError === undefined &&
+    matchingEstimates !== undefined &&
+    round?.chainId !== ChainId.AVALANCHE;
 
   return (
     <div className="my-4">
@@ -129,7 +130,7 @@ export function RoundInCart(
       </div>
       {/* Total Donations */}
       <div className="p-4 bg-grey-100 rounded-b-xl font-medium text-lg">
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between items-center">
           <div>
             {address && round && isSybilDefenseEnabled && (
               <div data-testid="passport-widget">
@@ -149,9 +150,7 @@ export function RoundInCart(
                         }
                       >
                         <span className="mr-2">Total match</span>
-                        <div
-                          className="flex flex-row items-center justify-between font-semibold text-teal-500"
-                        >
+                        <div className="flex flex-row items-center justify-between font-semibold text-teal-500">
                           <BoltIcon className={"w-4 h-4 inline"} />
                           ~$
                           {estimate?.toFixed(2)}
@@ -165,8 +164,7 @@ export function RoundInCart(
             </div>
             <div className="font-semibold">
               <p>
-                <span className="mr-2">Total donation</span>
-                $
+                <span className="mr-2">Total donation</span>$
                 {isNaN(totalDonationInUSD)
                   ? "0.0"
                   : totalDonationInUSD.toFixed(2)}
