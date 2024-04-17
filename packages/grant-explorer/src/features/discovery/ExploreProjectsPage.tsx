@@ -176,10 +176,6 @@ export function ExploreProjectsPage(): JSX.Element {
     <GradientLayout showWalletInteraction>
       <LandingHero />
 
-      {error !== undefined && (
-        <div className="text-center p-4 my-3">Something went wrong</div>
-      )}
-
       {collection.data && (
         <CollectionDetails
           collection={collection.data}
@@ -235,9 +231,14 @@ export function ExploreProjectsPage(): JSX.Element {
           )
         }
       >
+        {error !== undefined && (
+          <div className="text-center p-4 my-3">Something went wrong</div>
+        )}
+
         {isLoading === false &&
           isLoadingMore === false &&
-          applications.length === 0 && (
+          applications.length === 0 &&
+          collection === undefined && (
             <p>
               Your search did not match any projects. Try again using different
               keywords.

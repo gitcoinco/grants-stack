@@ -385,6 +385,10 @@ export class DataLayer {
   async getApplicationsByExpandedRefs(
     expandedRefs: Array<ExpandedApplicationRef>,
   ): Promise<ApplicationSummary[]> {
+    if (expandedRefs.length === 0) {
+      return [];
+    }
+
     const applicationToFilter = (r: ExpandedApplicationRef) => {
       return `{
         and: {
