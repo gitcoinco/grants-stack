@@ -173,7 +173,7 @@ describe("<ViewContributionHistory/>", () => {
     );
 
     expect(screen.getByText("Donation Impact")).toBeInTheDocument();
-    expect(screen.getByText("Total Est. Matching")).toBeInTheDocument();
+    // expect(screen.getByText("Total Est. Matching")).toBeInTheDocument();
     expect(screen.getByText("Donation History")).toBeInTheDocument();
     expect(screen.getByText("Active Rounds")).toBeInTheDocument();
     expect(screen.getByText("Past Rounds")).toBeInTheDocument();

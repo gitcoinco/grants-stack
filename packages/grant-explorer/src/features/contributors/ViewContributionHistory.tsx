@@ -233,7 +233,7 @@ export function ViewContributionHistory(props: {
         </div>
         {/*  */}
         <div className="text-2xl my-6 font-sans">Donation Impact</div>
-        <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-4 lg:grid-row-1 gap-6">
+        <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-3 lg:grid-row-1 gap-6">
           <div className="col-span-2 lg:col-span-1">
             <StatCard
               title="Total Donations"
@@ -241,9 +241,9 @@ export function ViewContributionHistory(props: {
             />
           </div>
           {/* todo: get the matching amount */}
-          <div className="col-span-2 lg:col-span-1">
+          {/* <div className="col-span-2 lg:col-span-1">
             <StatCard title="Total Est. Matching" value={"$" + "56M"} />
-          </div>
+          </div> */}
           <div className="col-span-1">
             <StatCard
               title="Contributions"
