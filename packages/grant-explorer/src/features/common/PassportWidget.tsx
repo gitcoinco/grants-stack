@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { PassportState, usePassport } from "../api/passport";
 import { useAccount } from "wagmi";
-import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-logo.svg";
 import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport-logo-full.svg";
+import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-logo.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
 import { Round } from "data-layer";
 import { ChainId, roundToPassportURLMap } from "common";
@@ -39,18 +39,26 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
         onClick={() => handleClick()}
       >
         <div className="pt-4">
-          <div className="hidden md:block">
-            <GitcoinPassportLogoFull />
-          </div>
-          <div className="block md:hidden">
-            <GitcoinPassportLogo />
-          </div>
+          <GitcoinPassportLogoFull />
         </div>
-        {passportState === PassportState.SCORE_AVAILABLE && (
-          <div className="relative hidden md:block">
+        {passportState === PassportState.SCORE_AVAILABLE ? (
+          <div className="relative hidden md:flex justify-center items-center">
             <PassportShield color={passportColor} />
-            <p className="absolute z-10 top-4 left-1 pt-0.5 pl-0.5 text-sm font-semibold">
+            <p
+              className="absolute text-sm font-modern-era-medium"
+              style={{ top: "50%", transform: "translateY(-50%)" }}
+            >
               {passportScore.toFixed(2)}
+            </p>
+          </div>
+        ) : (
+          <div className="relative hidden md:flex justify-center items-center">
+            <PassportShield color={"white"} />
+            <p
+              className="absolute text-sm font-modern-era-medium"
+              style={{ top: "50%", transform: "translateY(-50%)" }}
+            >
+              0.0
             </p>
           </div>
         )}
@@ -150,7 +158,7 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
             )}
             <div className="flex justify-center">
               <button
-                className="flex flex-row gap-2 bg-gray-800 w-1/2 p-2 rounded-xl text-white"
+                className="flex flex-row gap-2 bg-gray-800 w-1/2 p-2 rounded-xl text-white text-base"
                 onClick={() => window.open(passportURL, "_blank")}
               >
                 <GitcoinPassportLogo className="h-6 w-6" />
