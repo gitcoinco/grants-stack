@@ -11,6 +11,7 @@ import { getAlloVersion, getConfig } from "./config";
 export * from "./icons";
 export * from "./markdown";
 export * from "./allo/common";
+export * from "./credentialVerifier";
 
 export { ChainId };
 

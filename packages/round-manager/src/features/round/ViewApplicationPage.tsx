@@ -64,7 +64,7 @@ import {
   useAllo,
   VerifiedCredentialState,
 } from "common";
-import { renderToHTML } from "common";
+import { renderToHTML, PassportVerifierWithExpiration } from "common";
 import { useDebugMode } from "../../hooks";
 import { getPayoutRoundDescription } from "../common/Utils";
 import moment from "moment";
@@ -78,7 +78,7 @@ type Status = "done" | "current" | "rejected" | "approved" | undefined;
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
-const verifier = new PassportVerifier();
+const verifier = new PassportVerifierWithExpiration();
 
 function getApplicationStatusTitle(status: ProjectStatus) {
   switch (status) {
@@ -895,7 +895,7 @@ function vcIssuedToAddress(vc: VerifiableCredential, address: string) {
 
 async function isVerified(
   verifiableCredential: VerifiableCredential,
-  verifier: PassportVerifier,
+  verifier: PassportVerifierWithExpiration,
   provider: string,
   application: GrantApplication | undefined
 ) {
