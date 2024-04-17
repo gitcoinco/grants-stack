@@ -210,9 +210,9 @@ export function ViewContributionHistory(props: {
                 props.address.slice(0, 6) + "..." + props.address.slice(-6)}
             </div>
           </div>
-          {/* todo: update text opacity */}
           <div className="flex justify-between items-center">
-            <Button
+          {/* todo: removed until site is stable */}
+            {/* <Button
               className="shadow-sm inline-flex border-gray-300 border-2 bg-gradient-to-br from-[#f6d7caff] via-[#bddce8ff] to-[#ebdfa5ff] font-medium py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6"
               onClick={() =>
                 window.open(
@@ -224,7 +224,7 @@ export function ViewContributionHistory(props: {
               <span className="font-mono text-black text-opacity-100">
                 Your Gitcoin Grants Impact
               </span>
-            </Button>
+            </Button> */}
             <CopyToClipboardButton
               textToCopy={`${currentOrigin}/#/contributors/${props.address}`}
               iconStyle="h-4 w-4 mr-1 mt-1 shadow-sm"
