@@ -30,6 +30,7 @@ export const TokenNamesAndLogos = {
   MUTE: "/logos/mute-logo.svg",
   mkUSD: "/logos/mkusd-logo.svg", // Prisma mkUSD
   USDGLO: "/logos/usdglo-logo.svg",
+  SEI: "/logos/sei.png",
 } as const;
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -456,6 +457,17 @@ const SCROLL_TOKENS: PayoutToken[] = [
   },
 ];
 
+const SEI_TOKENS: PayoutToken[] = [
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_DEVNET,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -474,6 +486,7 @@ export const payoutTokens = [
   ...BASE_TOKENS,
   ...SEPOLIA_TOKENS,
   ...SCROLL_TOKENS,
+  ...SEI_TOKENS,
 ];
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {

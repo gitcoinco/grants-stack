@@ -41,11 +41,32 @@ import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { generateMerkleTree } from "./allo-v1";
 import { BigNumber, utils } from "ethers";
 
-const STRATEGY_ADDRESSES = {
-  [RoundCategory.QuadraticFunding]:
-    "0x787eC93Dd71a90563979417879F5a3298389227f",
-  [RoundCategory.Direct]: "0x8564d522b19836b7F5B4324E7Ee8Cb41810E9F9e",
-};
+function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
+  let strategyAddresses;
+  switch (chainId) {
+    case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID:
+      throw new Error("ZkSync era mainnet is not supported");
+    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
+      throw new Error("ZkSync era testnet is not supported");
+
+    case ChainId.SEI_DEVNET:
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x029dFAf686DfA0efdace5132ba422e9279D50b5b",
+        [RoundCategory.Direct]: "0x45181C4fD52d4d350380B3D42091b80065c702Ef",
+      };
+      break;
+
+    default:
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x787eC93Dd71a90563979417879F5a3298389227f",
+        [RoundCategory.Direct]: "0x8564d522b19836b7F5B4324E7Ee8Cb41810E9F9e",
+      };
+      break;
+  }
+  return strategyAddresses[strategy];
+}
 
 function applicationStatusToNumber(status: ApplicationStatus) {
   switch (status) {
@@ -470,7 +491,10 @@ export class AlloV2 implements Allo {
 
       const createPoolArgs: CreatePoolArgs = {
         profileId: profileId as Hex,
-        strategy: STRATEGY_ADDRESSES[args.roundData.roundCategory],
+        strategy: getStrategyAddress(
+          args.roundData.roundCategory,
+          this.chainId
+        ),
         initStrategyData: initStrategyDataEncoded,
         token,
         amount: 0n, // we send 0 tokens to the pool, we fund it later
