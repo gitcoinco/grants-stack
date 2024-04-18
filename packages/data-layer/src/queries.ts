@@ -69,10 +69,10 @@ export const getProgramById = gql`
  *
  * @returns The project
  */
-export const getProjectById = gql`
+export const getProjectsById = gql`
   query ($alloVersion: [String!]!, $projectId: String!) {
     projects(
-      first: 1
+      first: 100
       filter: {
         tags: { equalTo: $alloVersion }
         not: { tags: { contains: "program" } }

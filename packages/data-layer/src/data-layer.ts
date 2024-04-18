@@ -41,7 +41,7 @@ import {
   getLegacyProjectId,
   getProgramById,
   getProgramsByUserAndTag,
-  getProjectById,
+  getProjectsById,
   getProjectAnchorByIdAndChainId,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
@@ -242,7 +242,7 @@ export class DataLayer {
 
     const response: { projects: v2Project[] } = await request(
       this.gsIndexerEndpoint,
-      getProjectById,
+      getProjectsById,
       requestVariables,
     );
 
