@@ -93,7 +93,7 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                     } w-40 p-4 justify-start rounded-2xl`}
                   >
                     <p className="mb-2">Passport Score</p>
-                    <p className={"font-modern-era-regular"}>
+                    <p className={"font-modern-era-regular text-xl"}>
                       {passportScore.toFixed(2)}
                     </p>
                   </div>
@@ -107,7 +107,7 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                     } w-40 p-4 justify-start rounded-2xl`}
                   >
                     <p className="mb-2">Donation Impact</p>
-                    <p className={"font-modern-era-regular"}>
+                    <p className={"font-modern-era-regular text-xl"}>
                       +{donationImpact.toFixed(2)}%
                     </p>
                   </div>
