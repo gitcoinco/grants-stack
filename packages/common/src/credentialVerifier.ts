@@ -40,25 +40,25 @@ export class PassportVerifierWithExpiration {
     const { expirationDate, proof } = credential;
 
     // check that the credential is still valid (not expired)
-    if (new Date(expirationDate) > new Date()) {
-      try {
-        // parse the result of attempting to verify
-        const verify = JSON.parse(
-          await this._DIDKit.verifyCredential(
-            JSON.stringify(credential),
-            `{"proofPurpose":"${proof.proofPurpose}"}`
-          )
-        ) as { checks: string[]; warnings: string[]; errors: string[] };
+    // if (new Date(expirationDate) > new Date()) {
+    try {
+      // parse the result of attempting to verify
+      const verify = JSON.parse(
+        await this._DIDKit.verifyCredential(
+          JSON.stringify(credential),
+          `{"proofPurpose":"${proof.proofPurpose}"}`
+        )
+      ) as { checks: string[]; warnings: string[]; errors: string[] };
 
-        // did we get any errors when we attempted to verify?
-        return verify.errors.length === 0;
-      } catch (e) {
-        // if didkit throws, etc.
-        return false;
-      }
-    } else {
-      // past expiry :(
-      return true;
+      // did we get any errors when we attempted to verify?
+      return verify.errors.length === 0;
+    } catch (e) {
+      // if didkit throws, etc.
+      return false;
     }
+    // } else {
+    //   // past expiry :(
+    //   return false;
+    // }
   }
 }
