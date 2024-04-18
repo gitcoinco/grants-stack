@@ -226,6 +226,47 @@ export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
 };
 
+export const formatLocalDateAsISOString = (date: Date): string => {
+  // @ts-expect-error remove when DG support is merged
+  if (isNaN(date)) {
+    return "";
+  }
+  const localString = getLocalDate(date);
+  //const returnString = (date.getFullYear().toString() + "/" + date.getMonth().toString() + "/" + date.getDate().toString());
+  return localString;
+};
+
+function getTimezoneName() {
+  const today = new Date();
+  const short = today.toLocaleDateString(undefined);
+  const full = today.toLocaleDateString(undefined, { timeZoneName: "short" });
+
+  return full.replace(short, "").substring(2);
+}
+
+export const getLocalTime = (date: Date): string => {
+  const localTime = [
+    padSingleDigitNumberWithZero(date.getHours()),
+    padSingleDigitNumberWithZero(date.getMinutes()),
+  ];
+
+  return localTime.join(":") + " " + getTimezoneName();
+};
+
+export const getLocalDate = (date: Date): string => {
+  const localDate = [
+    padSingleDigitNumberWithZero(date.getFullYear()),
+    padSingleDigitNumberWithZero(date.getMonth() + 1),
+    padSingleDigitNumberWithZero(date.getDate()),
+  ];
+
+  return localDate.join("/");
+};
+
+export const getLocalDateTime = (date: Date): string => {
+  return `${getLocalDate(date)} ${getLocalTime(date)}`;
+};
+
 export const useTokenPrice = (tokenId: string | undefined) => {
   const [tokenPrice, setTokenPrice] = useState<number>();
   const [error, setError] = useState<Error | undefined>(undefined);

@@ -14,7 +14,7 @@ import { usePayout } from "../../context/application/usePayout";
 import { Button, Input } from "common/src/styles";
 import { BigNumber, ethers } from "ethers";
 import { AnswerBlock, GrantApplication, Round } from "../api/types";
-import { formatUTCDateAsISOString, getUTCTime } from "common";
+import { formatUTCDateAsISOString, getUTCTime, getLocalTime } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { getPayoutTokenOptions } from "../api/payoutTokens";
