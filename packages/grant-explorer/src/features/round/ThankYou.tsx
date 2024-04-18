@@ -127,12 +127,10 @@ export default function ThankYou() {
   return (
     <>
       <Navbar />
-      <img
-        src={bgImage}
-        alt="Thank you for your support"
-        className="absolute inset-0 w-full min-h-screen object-cover z-0"
-      />
-      <div className="flex flex-col min-h-screen relative lg:mx-20 px-4 py-7">
+      <div
+        className="flex flex-col min-h-screen relative bg-bottom bg-cover bg-no-repeat"
+        style={{ backgroundImage: `url(${bgImage})` }}
+      >
         <main className="flex-grow">
           <div className="flex flex-col text-center">
             <h1 className="text-5xl mt-28 mb-8 font-sans">
