@@ -65,8 +65,7 @@ export function ProjectCard(props: {
     onRemoveFromCart: removeFromCart,
   } = props;
 
-  // TODO: viem's getAddress fails with Error: expected Uint8Array, got object under Vitest
-  const roundId = application.roundId.toLowerCase() as Address;
+  const roundId = application.roundId.toLowerCase();
 
   return (
     <BasicCard className="w-full hover:opacity-90 transition hover:shadow-none">

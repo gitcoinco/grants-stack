@@ -39,7 +39,7 @@ function createCartProjectFromApplication(
     projectRegistryId: application.projectId,
     roundId: application.roundId,
     chainId: application.chainId,
-    grantApplicationId: createCompositeRoundApplicationId(application),
+    grantApplicationId: application.roundApplicationId,
     recipient: application.payoutWalletAddress,
     grantApplicationFormAnswers: [],
     status: "APPROVED",
@@ -55,7 +55,11 @@ function createCartProjectFromApplication(
 }
 
 function createCompositeRoundApplicationId(application: ApplicationSummary) {
-  return `${application.roundId}-${application.roundApplicationId}`.toLowerCase();
+  return [
+    application.chainId,
+    application.roundId.toLowerCase(),
+    application.roundApplicationId.toLowerCase(),
+  ].join(":");
 }
 
 function urlParamsToFilterList(urlParams: URLSearchParams): Filter[] {
@@ -126,7 +130,9 @@ export function ExploreProjectsPage(): JSX.Element {
 
   const applicationIdsInCart = useMemo(() => {
     return new Set(
-      projects.map((project) => project.grantApplicationId.toLowerCase())
+      projects.map((project) =>
+        [project.chainId, project.roundId, project.grantApplicationId].join(":")
+      )
     );
   }, [projects]);
 

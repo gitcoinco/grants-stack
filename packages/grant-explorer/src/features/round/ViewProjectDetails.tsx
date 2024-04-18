@@ -149,7 +149,10 @@ export default function ViewProjectDetails() {
   const { projects, add, remove } = useCartStorage();
 
   const isAlreadyInCart = projects.some(
-    (project) => project.grantApplicationId === applicationId
+    (project) =>
+      project.chainId === Number(chainId) &&
+      project.roundId === roundId &&
+      project.grantApplicationId === applicationId
   );
   const cartProject = projectToRender as CartProject;
 
