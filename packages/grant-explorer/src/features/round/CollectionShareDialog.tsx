@@ -191,17 +191,18 @@ function CreatingLinkPanel(props: State) {
 }
 
 function SharePanel(props: State) {
+  const initialTooltipText = "Copy to clipboard";
+
+  const [tooltipText, setTooltiptext] = useState(initialTooltipText);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   if (props.cid === undefined) {
     props.setState({ ...props, step: "error", error: new UndefinedCidError() });
     return;
   }
 
   const url = `${document.location.origin}${collectionPath(props.cid)}`;
-  const initialTooltipText = "Copy to clipboard";
-
-  const [tooltipText, setTooltiptext] = useState(initialTooltipText);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   return (
     <div className="mt-2">
