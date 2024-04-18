@@ -148,9 +148,12 @@ export default function ViewProjectDetails() {
     isAfterRoundEndDate;
   const { projects, add, remove } = useCartStorage();
 
-  const isAlreadyInCart = projects.some(
-    (project) => project.grantApplicationId === applicationId
-  );
+   const isAlreadyInCart = projects.some(
+     (project) =>
+       project.grantApplicationId === applicationId &&
+       project.chainId === Number(chainId) &&
+       project.roundId === roundId
+   );
   const cartProject = projectToRender as CartProject;
 
   if (cartProject !== undefined) {
