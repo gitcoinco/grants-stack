@@ -11,6 +11,7 @@ import { gql } from "graphql-request";
 export const getProgramsByUserAndTag = gql`
   query ($userAddress: String!, $chainId: Int!, $tags: [String!]!) {
     projects(
+      first: 100
       filter: {
         tags: { contains: $tags }
         chainId: { equalTo: $chainId }
@@ -43,6 +44,7 @@ export const getProgramsByUserAndTag = gql`
 export const getProgramById = gql`
   query ($programId: String!, $chainId: Int!) {
     projects(
+      first: 1
       filter: { id: { equalTo: $programId }, chainId: { equalTo: $chainId } }
     ) {
       id
@@ -67,9 +69,10 @@ export const getProgramById = gql`
  *
  * @returns The project
  */
-export const getProjectById = gql`
+export const getProjectsById = gql`
   query ($alloVersion: [String!]!, $projectId: String!) {
     projects(
+      first: 100
       filter: {
         tags: { equalTo: $alloVersion }
         not: { tags: { contains: "program" } }
@@ -106,7 +109,7 @@ export const getProjectById = gql`
  */
 export const getProjectAnchorByIdAndChainId = gql`
   query ($projectId: String!, $chainId: Int!) {
-    project(id: $projectId, chainId: $chainId) {
+    project(first: 1, id: $projectId, chainId: $chainId) {
       anchorAddress
     }
   }
@@ -120,7 +123,7 @@ export const getProjectAnchorByIdAndChainId = gql`
  */
 export const getLegacyProjectId = gql`
   query ($projectId: String!) {
-    legacyProjects(filter: { v2ProjectId: { equalTo: $projectId } }) {
+    legacyProjects(first: 1, filter: { v2ProjectId: { equalTo: $projectId } }) {
       v1ProjectId
     }
   }
@@ -170,6 +173,7 @@ export const getApplicationsByProjectIds = gql`
     $chainIds: [Int!]!
   ) {
     applications(
+      first: 1000
       filter: { projectId: { in: $projectIds }, chainId: { in: $chainIds } }
     ) {
       id
@@ -197,6 +201,7 @@ export const getApplicationsByProjectIds = gql`
 export const getApplicationsForManager = gql`
   query getApplicationsForManager($chainId: Int!, $roundId: String!) {
     applications(
+      first: 1000
       filter: { roundId: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
     ) {
       id
@@ -229,6 +234,7 @@ export const getApplicationStatusByRoundIdAndCID = gql`
     $metadataCid: String!
   ) {
     applications(
+      first: 1
       filter: {
         roundId: { equalTo: $roundId }
         chainId: { equalTo: $chainId }
@@ -281,6 +287,7 @@ export const getApplicationsByRoundIdAndProjectIds = gql`
     $projectIds: [String!]!
   ) {
     applications(
+      first: 1000
       filter: {
         chainId: { equalTo: $chainId }
         roundId: { equalTo: $roundId }
@@ -322,6 +329,7 @@ export const getProjectsByAddress = gql`
     $version: String!
   ) {
     projectRoles(
+      first: 100
       condition: { address: $address, chainId: $chainId, role: $role }
     ) {
       projectId
@@ -346,6 +354,7 @@ export const getProjectsAndRolesByAddress = gql`
     $chainIds: [Int!]!
   ) {
     projects(
+      first: 1000
       filter: {
         roles: { every: { address: { equalTo: $address } } }
         tags: { contains: $version }
@@ -383,6 +392,7 @@ export const getBlockNumberQuery = gql`
   query getBlockNumberQuery($chainId: Int!) {
     {
       subscriptions(
+        first: 1000
         filter: { chainId: { equalTo: $chainId }, toBlock: { equalTo: "latest" } }
       ) {
         chainId
@@ -424,6 +434,7 @@ export const getRoundsQuery = gql`
 export const getRoundByIdAndChainId = gql`
   query getRoundByIdAndChainId($roundId: String!, $chainId: Int!) {
     rounds(
+      first: 1
       filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
     ) {
       id
@@ -493,6 +504,7 @@ const getRoundForManagerFields = `
 export const getRoundForManager = gql`
   query getRoundForManager($roundId: String!, $chainId: Int!) {
     rounds(
+      first: 1
       filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
     ) {
       ${getRoundForManagerFields}
@@ -503,6 +515,7 @@ export const getRoundForManager = gql`
 export const getRoundsForManager = gql`
   query getRoundsForManager($chainId: Int!, $programId: String!) {
     rounds(
+      first: 1000
       filter: {
         chainId: { equalTo: $chainId }
         projectId: { equalTo: $programId }
@@ -516,6 +529,7 @@ export const getRoundsForManager = gql`
 export const getRoundForExplorer = gql`
   query getRoundForExplorer($roundId: String!, $chainId: Int!) {
     rounds(
+      first: 1
       filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
     ) {
       id
@@ -553,6 +567,7 @@ export const getRoundForExplorer = gql`
 export const getDonationsByDonorAddress = gql`
   query getDonationsByDonorAddress($address: String!, $chainIds: [Int!]!) {
     donations(
+      first: 1000
       filter: {
         chainId: { in: $chainIds }
         donorAddress: { equalTo: $address }
