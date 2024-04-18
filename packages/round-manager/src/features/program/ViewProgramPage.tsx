@@ -124,19 +124,19 @@ export default function ViewProgram() {
                         data-testid="application-time-period"
                       >
                         <span data-testid="application-start-time-period">
-                          {parsedRoundInfo.application.iso.start}
+                          {parsedRoundInfo.application.local_iso.start}
                         </span>
                         &nbsp;
                         <span className="text-grey-400">
-                          {parsedRoundInfo.application.utc.start}
+                          {parsedRoundInfo.application.local.start}
                         </span>
                         <span className="mx-1">-</span>
                         <span data-testid="application-end-time-period">
-                          {parsedRoundInfo.application.iso.end}
+                          {parsedRoundInfo.application.local_iso.end}
                         </span>
                         &nbsp;
                         <span className="text-grey-400">
-                          {parsedRoundInfo.application.utc.end}
+                          {parsedRoundInfo.application.local.end}
                         </span>
                       </div>
                     </div>
@@ -156,20 +156,20 @@ export default function ViewProgram() {
                         className="mr-1"
                         data-testid="round-start-time-period"
                       >
-                        {parsedRoundInfo.round.iso.start}
+                        {parsedRoundInfo.round.local_iso.start}
                       </span>
                       <span className="text-grey-400">
-                        {parsedRoundInfo.round.utc.start}
+                        {parsedRoundInfo.round.local.start}
                       </span>
                       <span className="mx-1">-</span>
                       <span
                         className="mr-1"
                         data-testid="round-end-time-period"
                       >
-                        {parsedRoundInfo.round.iso.end}
+                        {parsedRoundInfo.round.local_iso.end}
                       </span>
                       <span className="text-grey-400">
-                        {parsedRoundInfo.round.utc.end}
+                        {parsedRoundInfo.round.local.end}
                       </span>
                     </div>
                   </div>

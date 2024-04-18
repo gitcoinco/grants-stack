@@ -598,9 +598,9 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
       <span className="text-grey-400 mr-2">Applications:</span>
       <div className="flex flex-row gap-2">
         <p className="flex flex-col">
-          <span>{res.application.iso.start}</span>
+          <span>{res.application.local_iso.start}</span>
           <span className="text-grey-400 text-xs">
-            ({res.application.utc.start})
+            ({res.application.local.start})
           </span>
         </p>
         <p className="flex flex-col">
@@ -608,11 +608,11 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
         </p>
         <p className="flex flex-col">
           <span className="[&>*]:flex [&>*]:flex-col">
-            {res.application.iso.end}
+            {res.application.local_iso.end}
           </span>
-          {res.application.utc.end && (
+          {res.application.local.end && (
             <span className="text-grey-400 text-xs">
-              {res.application.utc.end}
+              {res.application.local.end}
             </span>
           )}
         </p>
@@ -630,16 +630,18 @@ export function RoundOpenDateRange({ round }: { round: RoundDates }) {
       <span className="text-grey-400 mr-2">Round:</span>
       <div className="flex flex-row gap-2">
         <p className="flex flex-col">
-          <span>{res.round.iso.start}</span>
-          <span className="text-grey-400 text-xs">{res.round.utc.start}</span>
+          <span>{res.round.local_iso.start}</span>
+          <span className="text-grey-400 text-xs">{res.round.local.start}</span>
         </p>
         <p className="flex flex-col">
           <span className="mx-1">-</span>
         </p>
         <p className="flex flex-col">
-          <span className="[&>*]:flex [&>*]:flex-col">{res.round.iso.end}</span>
-          {res.round.utc.end && (
-            <span className="text-grey-400 text-xs">{res.round.utc.end}</span>
+          <span className="[&>*]:flex [&>*]:flex-col">
+            {res.round.local_iso.end}
+          </span>
+          {res.round.local.end && (
+            <span className="text-grey-400 text-xs">{res.round.local.end}</span>
           )}
         </p>
       </div>

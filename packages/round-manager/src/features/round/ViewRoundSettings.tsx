@@ -9,6 +9,8 @@ import {
   classNames,
   getUTCDate,
   getUTCTime,
+  getLocalDate,
+  getLocalTime,
   useAllo,
 } from "common";
 import { Button } from "common/src/styles";
@@ -341,7 +343,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const roundEndDateTime = noRoundEndDate
     ? ""
     : round.roundEndTime
-    ? `${getUTCDate(round.roundEndTime)} ${getUTCTime(round.roundEndTime)}`
+    ? `${getLocalDate(round.roundEndTime)} ${getLocalTime(round.roundEndTime)}`
     : "...";
 
   const hasRoundEnded = moment().isAfter(moment(round.roundEndTime));
@@ -1422,9 +1424,11 @@ function RoundApplicationPeriod(props: {
                               ? "bg-grey-50 text-gray-400"
                               : ""
                           }`}
-                          defaultValue={`${getUTCDate(
+                          defaultValue={`${getLocalDate(
                             editedRound.applicationsStartTime
-                          )} ${getUTCTime(editedRound.applicationsStartTime)}`}
+                          )} ${getLocalTime(
+                            editedRound.applicationsStartTime
+                          )}`}
                           disabled
                         />
                       </div>
@@ -1590,12 +1594,12 @@ function RoundApplicationPeriod(props: {
                           ? "bg-grey-50 text-gray-400"
                           : ""
                       } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
-                      defaultValue={`${getUTCDate(
+                      defaultValue={`${getLocalDate(
                         editedRound.applicationsEndTime
-                      )} ${getUTCTime(editedRound.applicationsEndTime)}`}
-                      value={`${getUTCDate(
+                      )} ${getLocalTime(editedRound.applicationsEndTime)}`}
+                      value={`${getLocalDate(
                         editedRound.applicationsEndTime
-                      )} ${getUTCTime(editedRound.applicationsEndTime)}`}
+                      )} ${getLocalTime(editedRound.applicationsEndTime)}`}
                       disabled
                     />
                   </div>
@@ -1706,9 +1710,9 @@ function RoundApplicationPeriod(props: {
                       ? "bg-grey-50 text-gray-400"
                       : ""
                   } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
-                  defaultValue={`${getUTCDate(
+                  defaultValue={`${getLocalDate(
                     editedRound.roundStartTime
-                  )} ${getUTCTime(editedRound.roundStartTime)}`}
+                  )} ${getLocalTime(editedRound.roundStartTime)}`}
                   disabled
                 />
               </div>
@@ -1746,9 +1750,9 @@ function RoundApplicationPeriod(props: {
                           value={
                             noRoundEndDate
                               ? ""
-                              : `${getUTCDate(
+                              : `${getLocalDate(
                                   editedRound.roundEndTime
-                                )} ${getUTCTime(editedRound.roundEndTime)}`
+                                )} ${getLocalTime(editedRound.roundEndTime)}`
                           }
                           closeOnSelect
                           onChange={(date) => {
@@ -1824,9 +1828,9 @@ function RoundApplicationPeriod(props: {
                   value={
                     noRoundEndDate
                       ? ""
-                      : `${getUTCDate(editedRound.roundEndTime)} ${getUTCTime(
+                      : `${getLocalDate(
                           editedRound.roundEndTime
-                        )}`
+                        )} ${getLocalTime(editedRound.roundEndTime)}`
                   }
                   disabled
                 />
