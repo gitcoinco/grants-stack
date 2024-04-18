@@ -12,6 +12,7 @@ export * from "./icons";
 export * from "./markdown";
 export * from "./allo/common";
 
+export { PassportVerifierWithExpiration } from "./credentialVerifier";
 export { ChainId };
 
 export function useParams<T extends Record<string, string> = never>() {
