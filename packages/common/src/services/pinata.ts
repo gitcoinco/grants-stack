@@ -1,4 +1,4 @@
-import type { Config } from "common/src/config";
+import type { Config } from "../config";
 
 export default class PinataClient {
   private jwt: string;
@@ -34,7 +34,7 @@ export default class PinataClient {
     return fetch(url).then((resp) => resp.json());
   }
 
-  baseRequestData(name: string) {
+  baseRequestData(name: string, additionalMetadata?: Record<string, string>) {
     return {
       pinataOptions: {
         cidVersion: 1,
@@ -42,15 +42,16 @@ export default class PinataClient {
       pinataMetadata: {
         name,
         keyvalues: {
-          app: "grant-hub",
+          product: "grants-stack",
+          ...additionalMetadata,
         },
       },
     };
   }
 
-  pinJSON(object: any) {
+  pinJSON(object: any, additionalMetadata?: Record<string, string>) {
     const data = {
-      ...this.baseRequestData("grant-hub"),
+      ...this.baseRequestData("grants-stack", additionalMetadata),
       pinataContent: object,
     };
 
