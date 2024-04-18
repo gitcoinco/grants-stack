@@ -321,7 +321,12 @@ export function TwitterButton(props: { collectionUrl: string }) {
   );
 }
 
-function DialogButton(props: {
+function DialogButton({
+  children,
+  text,
+  theme,
+  onClick,
+}: {
   children?: JSX.Element;
   text: string;
   theme: "primary" | "secondary";
@@ -335,13 +340,11 @@ function DialogButton(props: {
   return (
     <button
       type="button"
-      className={`${
-        themes[props.theme]
-      } text-gray-700 w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
-      onClick={props.onClick}
+      className={`${themes[theme]} text-gray-700 w-full inline-flex justify-center rounded-md border  px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
+      onClick={onClick}
     >
-      {props.children !== undefined && <>{props.children}&nbsp;</>}
-      {props.text}
+      {children !== undefined && <>{children}&nbsp;</>}
+      {text}
     </button>
   );
 }
