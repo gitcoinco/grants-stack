@@ -11,8 +11,8 @@ import { getAlloVersion, getConfig } from "./config";
 export * from "./icons";
 export * from "./markdown";
 export * from "./allo/common";
-export * from "./credentialVerifier";
 
+export { PassportVerifierWithExpiration } from "./credentialVerifier";
 export { ChainId };
 
 export function useParams<T extends Record<string, string> = never>() {

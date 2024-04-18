@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-// --- DIDKit tooling to verify credentials
-import * as DIDKit from "@spruceid/didkit-wasm";
-
 // --- Passport SDK Packages
 import { DIDKitLib, VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+
+// --- DIDKit tooling to verify credentials
+import * as DIDKit from "@spruceid/didkit-wasm";
 
 // --- PassportVerifier - Read and verify the content of a Passport
 export class PassportVerifierWithExpiration {

@@ -1,5 +1,3 @@
-import { VerifiableCredential as PassportVerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import _fetch from "cross-fetch";
 import { request } from "graphql-request";
 import shuffle from "knuth-shuffle-seeded";
@@ -19,7 +17,6 @@ import {
   Round,
   RoundGetRound,
   RoundsQueryVariables,
-  ExpandedApplicationRef,
   SearchBasedProjectCategory,
   V2RoundWithProject,
   v2Project,
@@ -75,7 +72,6 @@ export class DataLayer {
   private searchApiClient: SearchApi;
   private subgraphEndpointsByChainId: Record<number, string>;
   private ipfsGateway: string;
-  private passportVerifier: PassportVerifier;
   private collectionsSource: collections.CollectionsSource;
   private gsIndexerEndpoint: string;
 
@@ -85,7 +81,6 @@ export class DataLayer {
     subgraph,
     indexer,
     ipfs,
-    passport,
     collections,
   }: {
     fetch?: typeof _fetch;
@@ -103,9 +98,6 @@ export class DataLayer {
     ipfs?: {
       gateway: string;
     };
-    passport?: {
-      verifier: PassportVerifier;
-    };
     collections?: {
       googleSheetsUrl: string;
     };
@@ -119,7 +111,6 @@ export class DataLayer {
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
     this.ipfsGateway = ipfs?.gateway ?? "https://ipfs.io";
-    this.passportVerifier = passport?.verifier ?? new PassportVerifier();
     this.collectionsSource =
       collections?.googleSheetsUrl === undefined
         ? { type: "hardcoded" }

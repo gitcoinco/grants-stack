@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { faker } from "@faker-js/faker";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   act,
   fireEvent,
@@ -11,6 +10,7 @@ import {
 } from "@testing-library/react";
 import {
   AlloOperation,
+  PassportVerifierWithExpiration,
   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
   useAllo,
 } from "common";
@@ -90,7 +90,7 @@ jest.mock("wagmi");
 jest.mock("../../common/useApplicationsByRoundId");
 
 const verifyCredentialMock = jest.spyOn(
-  PassportVerifier.prototype,
+  PassportVerifierWithExpiration.prototype,
   "verifyCredential"
 );
 
