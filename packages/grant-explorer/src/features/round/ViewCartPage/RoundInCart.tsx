@@ -69,9 +69,10 @@ export function RoundInCart(
     props.roundCart.reduce((acc, proj) => acc + Number(proj.amount), 0) *
     props.payoutTokenPrice;
 
-  const showMatchingEstimate = matchingEstimateError === undefined &&
-  matchingEstimates !== undefined &&
-  round?.chainId !== ChainId.AVALANCHE;
+  const showMatchingEstimate =
+    matchingEstimateError === undefined &&
+    matchingEstimates !== undefined &&
+    round?.chainId !== ChainId.AVALANCHE;
 
   return (
     <div className="my-4">
@@ -142,20 +143,18 @@ export function RoundInCart(
                 <div className="flex justify-end flex-nowrap">
                   <Skeleton isLoaded={!matchingEstimateLoading}>
                     <div className="flex flex-row font-semibold">
-                      <p
+                      <div
                         className={
-                          "flex flex-col md:flex-row items-center gap-2"
+                          "flex flex-col md:flex-row items-center gap-2 text-base"
                         }
                       >
                         <span className="mr-2">Total match</span>
-                        <div
-                          className="flex flex-row items-center justify-between font-semibold text-teal-500"
-                        >
+                        <div className="flex flex-row items-center justify-between font-semibold text-teal-500">
                           <BoltIcon className={"w-4 h-4 inline"} />
                           ~$
                           {estimate?.toFixed(2)}
                         </div>
-                      </p>
+                      </div>
                       <span className="pl-4">|</span>
                     </div>
                   </Skeleton>
@@ -164,8 +163,7 @@ export function RoundInCart(
             </div>
             <div className="font-semibold">
               <p>
-                <span className="mr-2">Total donation</span>
-                $
+                <span className="mr-2">Total donation</span>$
                 {isNaN(totalDonationInUSD)
                   ? "0.0"
                   : totalDonationInUSD.toFixed(2)}
