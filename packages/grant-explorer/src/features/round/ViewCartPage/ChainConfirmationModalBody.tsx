@@ -5,6 +5,7 @@ import { CHAINS } from "../../api/utils";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
 import { parseChainId } from "common/src/chains";
+import { Checkbox } from "@chakra-ui/react";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
@@ -84,20 +85,23 @@ export function ChainSummary({
   onChange,
   isLastItem,
 }: ChainSummaryProps) {
-
   return (
     <div
-      className={`flex flex-col justify-center mt-2 font-semibold ${
+      className={`flex flex-col justify-center mt-2 ${
         isLastItem ? "" : "border-b"
-      } px-2 py-4`}
+      } py-4`}
     >
-      <p>
-        <input
-          type="checkbox"
-          className={`mr-2 rounded-sm  ${
+      <p className="font-sans font-medium">
+        <Checkbox
+          className={`mr-2 pr-2 h-4 w-4  ${
             chainsBeingCheckedOut === 1 ? "invisible" : ""
           }`}
-          checked={checked}
+          border={"1px"}
+          borderRadius={"4px"}
+          colorScheme="whiteAlpha"
+          iconColor="black"
+          size="md"
+          isChecked={checked}
           disabled={chainsBeingCheckedOut === 1}
           onChange={(e) => onChange(e.target.checked)}
         />
@@ -106,14 +110,17 @@ export function ChainSummary({
           alt={CHAINS[chainId].name}
           src={CHAINS[chainId].logo}
         />
-        Checkout {CHAINS[chainId].name} cart
+        <span className="font-sans font-medium">
+          Checkout {CHAINS[chainId].name} cart
+        </span>
       </p>
-      <p className="ml-7 mt-1">
+      <p className="ml-7 mt-2">
         <span data-testid={"totalDonation"} className="mr-2">
           {formatUnits(totalDonation, selectedPayoutToken.decimal)}
         </span>
         <span data-testid={"chainSummaryPayoutToken"}>
           {selectedPayoutToken.name} to be contributed
+          <span className="text-grey-400 italic"> + X gas fee</span>
         </span>
       </p>
     </div>
