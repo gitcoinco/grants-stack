@@ -24,7 +24,7 @@ export const getProgramsByUserAndTag = gql`
       metadataCid
       tags
       createdByAddress
-      roles {
+      roles(first: 1000) {
         address
         role
         createdAtBlock
@@ -53,7 +53,7 @@ export const getProgramById = gql`
       metadataCid
       tags
       createdByAddress
-      roles {
+      roles(first: 1000) {
         address
         role
         createdAtBlock
@@ -91,7 +91,7 @@ export const getProjectsById = gql`
       nonce
       anchorAddress
       projectType
-      roles {
+      roles(first: 1000) {
         address
         role
         createdAtBlock
