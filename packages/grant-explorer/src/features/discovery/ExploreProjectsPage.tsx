@@ -15,7 +15,6 @@ import {
 import { PaginatedProjectsList } from "./PaginatedProjectsList";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useCategory } from "../categories/hooks/useCategories";
-import { useCollection } from "../collections/hooks/useCollections";
 import { CollectionDetails } from "../collections/CollectionDetails";
 import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
 import { getEnabledChains } from "../../app/chainConfig";

@@ -58,7 +58,9 @@ function initialState(
     cid: undefined,
     error: undefined,
     closeModal,
-    setState: () => {},
+    setState: (_: State) => {
+      throw new Error("Not implemented");
+    },
   };
 }
 
@@ -164,7 +166,7 @@ function CreatingLinkPanel(props: State) {
         step: "error",
       });
     }
-  }, [JSON.stringify(props.applications)]);
+  }, [props]);
   return (
     <div className="mt-2 py-6 text-center">
       <div role="status">

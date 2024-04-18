@@ -1,4 +1,3 @@
-import { Address } from "viem";
 import { Skeleton, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
