@@ -452,7 +452,7 @@ export const getRoundByIdAndChainId = gql`
       strategyName
       readyForPayoutTransaction
       projectId
-      roles {
+      roles(first: 100) {
         role
         address
       }
@@ -488,7 +488,7 @@ const getRoundForManagerFields = `
   fundedAmount
   fundedAmountInUsd
   matchingDistribution
-  roles {
+  roles(first: 100) {
     role
     address
     createdAtBlock
