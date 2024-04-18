@@ -99,10 +99,13 @@ function NamePanel(props: State) {
 
   return (
     <>
+      <Dialog.Title
+        as="h3"
+        className="text-lg font-medium leading-6 text-gray-900"
+      >
+        Name your collection
+      </Dialog.Title>
       <div className="mt-2">
-        <label className="text-sm font-medium text-gray-900 mb-2 block">
-          Give a name to your collection
-        </label>
         <input
           placeholder="Untitled"
           type="text"
@@ -118,6 +121,14 @@ function NamePanel(props: State) {
       </div>
       <div className="mt-4 sm:flex space-x-4">
         <DialogButton
+          text="Cancel"
+          theme="secondary"
+          onClick={() => {
+            props.closeModal();
+          }}
+        />
+        <DialogButton
+          theme="primary"
           text="Continue"
           onClick={() => {
             next();
@@ -212,10 +223,13 @@ function SharePanel(props: State) {
 
   return (
     <div className="mt-2">
-      <label className="text-sm font-medium text-gray-900 mb-2 block">
-        Share the link below with your friends:
-      </label>
-      <div className="relative mb-4">
+      <Dialog.Title
+        as="h3"
+        className="text-lg font-medium leading-6 text-gray-900"
+      >
+        Share your collection
+      </Dialog.Title>
+      <div className="relative mt-2">
         <input
           id="course-url"
           type="text"
@@ -296,6 +310,7 @@ export function TwitterButton(props: { collectionUrl: string }) {
 
   return (
     <DialogButton
+      theme="primary"
       onClick={() => {
         window.open(url, "_blank");
       }}
@@ -309,12 +324,17 @@ export function TwitterButton(props: { collectionUrl: string }) {
 function DialogButton(props: {
   children?: JSX.Element;
   text: string;
+  theme: "primary" | "secondary";
   onClick: () => void;
 }) {
+  const extraClasses =
+    props.theme === "primary"
+      ? "bg-blue-100 border border-blue-100 hover:border-blue-200"
+      : "bg-white border border-gray-100 hover:border-gray-300";
   return (
     <button
       type="button"
-      className="w-full inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+      className={`${extraClasses} text-gray-700 w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
       onClick={props.onClick}
     >
       {props.children !== undefined && <>{props.children}&nbsp;</>}
@@ -359,12 +379,6 @@ function DialogWrapper({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900"
-                >
-                  Share your collection
-                </Dialog.Title>
                 {children}
               </Dialog.Panel>
             </Transition.Child>
