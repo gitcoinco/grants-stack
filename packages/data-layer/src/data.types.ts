@@ -568,6 +568,12 @@ export type SearchBasedProjectCategory = {
   searchQuery: string;
 };
 
+export type ExpandedApplicationRef = {
+  chainId: number;
+  roundId: string;
+  id: string;
+};
+
 export type Collection = {
   id: string;
   author: string;
