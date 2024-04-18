@@ -1,4 +1,4 @@
-import { ChainId, getTokenPrice, NATIVE } from "common";
+import { ChainId, getTokenPrice, NATIVE, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -17,7 +17,7 @@ import { groupBy, uniqBy } from "lodash-es";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { formatUnits, parseUnits, zeroAddress } from "viem";
+import { Address, formatUnits, parseUnits, zeroAddress } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   matchingEstimatesToText,
@@ -31,6 +31,7 @@ import { fetchBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
 import { useAllo } from "../../api/AlloWrapper";
 import { getFormattedRoundId } from "../../common/utils/utils";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -238,7 +239,7 @@ export function SummaryContainer() {
     return emptyDonationsExist;
   }
 
-  function handleConfirmation() {
+  async function handleConfirmation() {
     const emptyDonations = checkEmptyDonations();
     setClickedSubmit(true);
 
@@ -247,6 +248,26 @@ export function SummaryContainer() {
     }
 
     setOpenChainConfirmationModal(true);
+
+    // submit address to passport lite
+    await submitToPassportLite();
+  }
+
+  async function submitToPassportLite() {
+    const passportApiKey = process.env.REACT_APP_PASSPORT_API_KEY;
+    const res = await submitPassportLite(
+      address as Address,
+      passportApiKey ?? ""
+    );
+
+    if (res.ok) {
+      // do nothing
+    } else {
+      console.error("Error submitting to Passport Lite", res);
+      datadogLogs.logger.error(
+        `error: submitting to passsport lite - ${res}, address - ${address}`
+      );
+    }
   }
 
   function PayoutModals() {
