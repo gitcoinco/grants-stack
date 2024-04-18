@@ -23,6 +23,7 @@ import {
   RoundForManager,
   Contribution,
   RoundForExplorer,
+  ExpandedApplicationRef,
 } from "./data.types";
 import {
   ApplicationSummary,
