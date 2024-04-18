@@ -109,6 +109,14 @@ export interface ApplicationSummary {
    * @memberof ApplicationSummary
    */
   contributionsTotalUsd: number;
+  /**
+   * Tags are present if applications are fetched from the indexer.
+   * They are not present if applications are fetched from the search backend.
+   * @type {array}
+   * @memberof ApplicationSummary
+   * @optional
+   */
+  tags?: Array<string>;
 }
 
 /**

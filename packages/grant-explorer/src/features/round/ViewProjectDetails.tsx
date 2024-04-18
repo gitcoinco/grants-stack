@@ -199,7 +199,7 @@ export default function ViewProjectDetails() {
         ),
       },
       {
-        name: "Grants",
+        name: "Milestone updates",
         content: <GrantList grants={grants} />,
       },
     ],
