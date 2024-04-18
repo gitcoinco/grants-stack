@@ -74,6 +74,10 @@ export function CollectionShareDialog(props: Props) {
     initialState(props.applications, closeModal)
   );
 
+  useEffect(() => {
+    setState({ ...state, applications: [...props.applications] });
+  }, [props.applications]);
+
   return (
     <>
       <DialogWrapper isOpen={props.isOpen} closeModal={closeModal}>
