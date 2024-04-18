@@ -548,7 +548,7 @@ export const getRoundForExplorer = gql`
       strategyAddress
       strategyName
       readyForPayoutTransaction
-      applications(filter: { status: { equalTo: APPROVED } }) {
+      applications(first: 1000, filter: { status: { equalTo: APPROVED } }) {
         id
         projectId
         status
