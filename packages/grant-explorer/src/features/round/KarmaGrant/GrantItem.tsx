@@ -76,6 +76,18 @@ export const GrantItem: React.FC<GrantItemProps> = ({ grant, url }) => {
             <Box overflow="hidden">
               <Divider borderWidth={1} my={4} />
               <Box
+                __css={{
+                  h1: {
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    margin: "1rem 0",
+                  },
+                  h2: {
+                    fontSize: "1.25rem",
+                    fontWeight: "bold",
+                    margin: "1rem 0",
+                  },
+                }}
                 dangerouslySetInnerHTML={{
                   __html: renderToHTML(grant.description),
                 }}
@@ -84,24 +96,25 @@ export const GrantItem: React.FC<GrantItemProps> = ({ grant, url }) => {
           )}
         </ExpandableGrid>
       </Box>
-      <ExpandableGrid classNames="p-4" isOpen={isOpen}>
+      <ExpandableGrid classNames="pt-4" isOpen={isOpen}>
         <Box overflow="hidden">
-          {grant.milestones.length > 0 ? (
+          {grant.milestones.length > 0 && (
             <MilestoneList milestones={grant.milestones} />
-          ) : (
-            <Text textAlign="center" fontWeight="semibold">
-              No updates are available for this grant currently. If you're the
-              grant owner, you can post updates{" "}
-              <Link color="blue.400" target="_blank" href={url}>
-                <Text as="span" className="text-gitcoin-violet-500">
-                  here
-                </Text>
-              </Link>
-              .
-            </Text>
           )}
         </Box>
       </ExpandableGrid>
+      {grant.milestones.length === 0 && (
+        <Text textAlign="center" mb={8}>
+          No updates are available for <b>{grant.title}</b> currently. If you're
+          the grant owner, you can post updates{" "}
+          <Link color="blue.400" target="_blank" href={url}>
+            <Text as="span" className="text-gitcoin-violet-500">
+              here
+            </Text>
+          </Link>
+          .
+        </Text>
+      )}
     </Box>
   );
 };
