@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, cleanup, screen } from "@testing-library/react";
+import { PassportVerifierWithExpiration } from "common";
 import Twitter from "../../../components/providers/Twitter";
 import setupStore from "../../../store";
 import {
@@ -8,7 +9,6 @@ import {
   buildFormMetadata,
 } from "../../../utils/test_utils";
 import { credentialsSaved } from "../../../actions/projectForm";
-import { PassportVerifierWithExpiration } from "common";
 
 const IAM_SERVER = "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 

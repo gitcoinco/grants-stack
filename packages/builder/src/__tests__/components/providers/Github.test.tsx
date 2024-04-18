@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, cleanup, screen } from "@testing-library/react";
+import { PassportVerifierWithExpiration } from "common";
 import Github from "../../../components/providers/Github";
 import setupStore from "../../../store";
 import {
@@ -8,7 +9,6 @@ import {
   buildFormMetadata,
 } from "../../../utils/test_utils";
 import { credentialsSaved } from "../../../actions/projectForm";
-import { PassportVerifierWithExpiration } from "common";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

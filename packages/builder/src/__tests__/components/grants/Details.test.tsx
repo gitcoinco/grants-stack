@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, cleanup, screen } from "@testing-library/react";
+import { PassportVerifierWithExpiration } from "common";
 import Details from "../../../components/grants/Details";
 import setupStore from "../../../store";
 import {
@@ -7,7 +8,6 @@ import {
   buildVerifiableCredential,
   buildProjectMetadata,
 } from "../../../utils/test_utils";
-import { PassportVerifierWithExpiration } from "common";
 
 const IAM_SERVER = "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
