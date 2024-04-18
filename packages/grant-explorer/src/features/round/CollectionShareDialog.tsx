@@ -327,14 +327,17 @@ function DialogButton(props: {
   theme: "primary" | "secondary";
   onClick: () => void;
 }) {
-  const extraClasses =
-    props.theme === "primary"
-      ? "bg-blue-100 border border-blue-100 hover:border-blue-200"
-      : "bg-white border border-gray-100 hover:border-gray-300";
+  const themes = {
+    primary: "bg-blue-100 border border-blue-100 hover:border-blue-200",
+    secondary: "bg-white border border-gray-100 hover:border-gray-300",
+  };
+
   return (
     <button
       type="button"
-      className={`${extraClasses} text-gray-700 w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
+      className={`${
+        themes[props.theme]
+      } text-gray-700 w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
       onClick={props.onClick}
     >
       {props.children !== undefined && <>{props.children}&nbsp;</>}
