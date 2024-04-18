@@ -49,7 +49,7 @@ export default class PinataClient {
     };
   }
 
-  pinJSON(object: any, additionalMetadata?: Record<string, string>) {
+  pinJSON(object: unknown, additionalMetadata?: Record<string, string>) {
     const data = {
       ...this.baseRequestData("grants-stack", additionalMetadata),
       pinataContent: object,
