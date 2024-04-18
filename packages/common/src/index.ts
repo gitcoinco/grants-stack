@@ -437,7 +437,7 @@ const passportLiteRounds = [
   { roundId: "9", chainId: 10 }, // Token Engineering Commons (TEC)
 ];
 
-export function checkPassportLiteRound(round: Round) {
+export function isRoundUsingPassportLite(round: Round) {
   const roundId = round.id;
   const chainId = round.chainId;
   return passportLiteRounds.some(

@@ -5,7 +5,11 @@ import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport
 import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-logo.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
 import { Round } from "data-layer";
-import { ChainId, checkPassportLiteRound, roundToPassportURLMap } from "common";
+import {
+  ChainId,
+  isRoundUsingPassportLite,
+  roundToPassportURLMap,
+} from "common";
 import { PassportShield } from "./PassportShield";
 
 type PassportWidgetProps = {
@@ -15,8 +19,6 @@ type PassportWidgetProps = {
 
 export function PassportWidget({ round, alignment }: PassportWidgetProps) {
   const { address } = useAccount();
-
-  const isPassportLiteRound = checkPassportLiteRound(round);
 
   const { passportState, passportScore, passportColor, donationImpact } =
     usePassport({ address, round });
@@ -36,7 +38,7 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
 
   return (
     <>
-      {isPassportLiteRound ? (
+      {isRoundUsingPassportLite(round) ? (
         <div title="This round is protected by a combination of Passport’s model-based detection system and specialized donation verification.">
           <GitcoinPassportLogo className="h-8 w-8" />
         </div>
