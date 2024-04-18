@@ -216,7 +216,6 @@ export const formatLocalDateAsISOString = (date: Date): string => {
     return "";
   }
   const localString = getLocalDate(date);
-  //const returnString = (date.getFullYear().toString() + "/" + date.getMonth().toString() + "/" + date.getDate().toString());
   return localString;
 };
 
