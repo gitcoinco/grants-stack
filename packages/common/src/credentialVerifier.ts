@@ -37,7 +37,8 @@ export class PassportVerifierWithExpiration {
     }
 
     // extract expirationDate
-    const { expirationDate, proof } = credential;
+    // const { expirationDate, proof } = credential;
+    const { proof } = credential;
 
     // check that the credential is still valid (not expired)
     // if (new Date(expirationDate) > new Date()) {
