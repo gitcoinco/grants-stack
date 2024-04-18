@@ -363,7 +363,7 @@ export const getProjectsAndRolesByAddress = gql`
         rolesExist: true
       }
     ) {
-      roles {
+      roles(first: 1000) {
         role
         address
         projectId
@@ -380,7 +380,7 @@ export const getProjectsAndRolesByAddress = gql`
       anchorAddress
       projectType
       createdAtBlock
-      applications {
+      applications(first: 1000) {
         id
         metadata
       }
