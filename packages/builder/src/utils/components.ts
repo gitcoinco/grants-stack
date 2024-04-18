@@ -1,6 +1,6 @@
 import { getConfig } from "common/src/config";
-import { DefaultProjectBanner, DefaultProjectLogo } from "../assets";
 import PinataClient from "common/src/services/pinata";
+import { DefaultProjectBanner, DefaultProjectLogo } from "../assets";
 import { Metadata, Project } from "../types";
 
 export enum ImgTypes {
