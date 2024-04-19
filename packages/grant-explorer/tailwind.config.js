@@ -30,10 +30,14 @@ module.exports = {
           ...colors.blue,
           100: "#D3EDFE",
           200: "#15B8DC",
+          300: "#5F94BC",
+          800: "#15003E"
         },
         green: {
           ...colors.green,
+           50: "#DCF5F2",
           100: "#ADEDE5",
+          200: "#47A095",
           300: "rgba(0, 67, 59, 1)",
         },
         orange: {
