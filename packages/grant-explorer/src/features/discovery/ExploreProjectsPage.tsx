@@ -1,3 +1,4 @@
+import { useParams } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import { GradientLayout } from "../common/DefaultLayout";
 import LandingHero from "./LandingHero";
@@ -18,6 +19,7 @@ import { useCollection } from "../collections/hooks/useCollections";
 import { CollectionDetails } from "../collections/CollectionDetails";
 import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
 import { getEnabledChains } from "../../app/chainConfig";
+import { useIpfsCollection } from "../collections/hooks/useCollections";
 
 const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   {
@@ -76,18 +78,22 @@ function filterListToUrlParams(filters: Filter[]): URLSearchParams {
 
 export function ExploreProjectsPage(): JSX.Element {
   const [urlParams, setUrlParams] = useSearchParams();
+  const { collectionCid } = useParams();
   const [filters, setFilters] = useState<Filter[]>(
     urlParamsToFilterList(urlParams)
   );
 
   const category = useCategory(urlParams.get("categoryId"));
-  const collection = useCollection(urlParams.get("collectionId"));
+  const collection = useIpfsCollection(collectionCid);
 
   const [searchInput, setSearchInput] = useState(urlParams.get("q") ?? "");
   const [searchQuery, setSearchQuery] = useState(urlParams.get("q") ?? "");
 
+  const isPreloading = category.isLoading || collection.isLoading;
+  const preloadingError = category.error || collection.error;
+
   const applicationsFetchOptions =
-    category.isLoading || collection.isLoading
+    isPreloading || preloadingError
       ? null
       : createApplicationFetchOptions({
           searchQuery,
@@ -100,17 +106,23 @@ export function ExploreProjectsPage(): JSX.Element {
     applications,
     applicationMeta,
     totalApplicationsCount,
-    isLoading,
+    isLoading: applicationsLoading,
     isLoadingMore,
     loadNextPage,
     hasMorePages,
-  } = useApplications(applicationsFetchOptions);
+    error: applicationsError,
+  } = useApplications(
+    isPreloading || preloadingError ? null : applicationsFetchOptions
+  );
 
-  const { projects, add, remove } = useCartStorage();
+  const isLoading = isPreloading || applicationsLoading;
+  const error = preloadingError || applicationsError;
 
   const allSemantic = applicationMeta.every(
     (item) => item.searchType === "semantic"
   );
+
+  const { projects, add, remove } = useCartStorage();
 
   const applicationIdsInCart = useMemo(() => {
     return new Set(
@@ -141,7 +153,7 @@ export function ExploreProjectsPage(): JSX.Element {
   } else if (category.data !== undefined) {
     pageTitle = category.data.name;
   } else if (collection.data !== undefined) {
-    pageTitle = collection.data.name;
+    pageTitle = collection.data.name ?? "Collection";
   }
 
   const onQueryChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -219,9 +231,14 @@ export function ExploreProjectsPage(): JSX.Element {
           )
         }
       >
+        {error !== undefined && (
+          <div className="text-center p-4 my-3">Something went wrong</div>
+        )}
+
         {isLoading === false &&
           isLoadingMore === false &&
-          applications.length === 0 && (
+          applications.length === 0 &&
+          collection === undefined && (
             <p>
               Your search did not match any projects. Try again using different
               keywords.
@@ -236,18 +253,20 @@ export function ExploreProjectsPage(): JSX.Element {
               browse through projects similar to your search.
             </p>
           )}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <PaginatedProjectsList
-            applications={applications}
-            isLoading={isLoading}
-            isLoadingMore={isLoadingMore}
-            hasMorePages={hasMorePages}
-            loadNextPage={loadNextPage}
-            onAddApplicationToCart={addApplicationToCart}
-            onRemoveApplicationFromCart={removeApplicationFromCart}
-            applicationExistsInCart={applicationExistsInCart}
-          />
-        </div>
+        {error === undefined && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <PaginatedProjectsList
+              applications={applications}
+              isLoading={isLoading}
+              isLoadingMore={isLoadingMore}
+              hasMorePages={hasMorePages}
+              loadNextPage={loadNextPage}
+              onAddApplicationToCart={addApplicationToCart}
+              onRemoveApplicationFromCart={removeApplicationFromCart}
+              applicationExistsInCart={applicationExistsInCart}
+            />
+          </div>
+        )}
       </LandingSection>
     </GradientLayout>
   );

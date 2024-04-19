@@ -8,9 +8,11 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useCartStorage } from "../../store";
 import { Link } from "react-router-dom";
-import { exploreRoundsLink } from "../discovery/LandingTabs";
 import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import ExploreRoundsDropdown, {
+  ExploreRoundsDropdownProps,
+} from "./ExploreRoundsDropdown";
 
 export interface NavbarProps {
   customBackground?: string;
@@ -37,9 +39,57 @@ export default function Navbar(props: NavbarProps) {
   /** end of part that keeps the store in sync between tabs */
 
   const showWalletInteraction = props.showWalletInteraction ?? true;
-
   const { address: walletAddress } = useAccount();
   const alloVersion = getAlloVersion();
+
+  const rounds: ExploreRoundsDropdownProps[] = [
+    {
+      chainId: 42161,
+      name: "WEB3 Infrastructurre",
+      link: "/round/42161/26",
+    },
+    {
+      chainId: 42161,
+      name: "Developer Tooling",
+      link: "/round/42161/27",
+    },
+    {
+      chainId: 42161,
+      name: "dApps & Apps",
+      link: "/round/42161/25",
+    },
+    {
+      chainId: 42161,
+      name: "Hackathon Alumni",
+      link: "/round/42161/23",
+    },
+    {
+      chainId: 42161,
+      name: "Climate Solutions",
+      link: "/round/42161/29",
+    },
+    {
+      chainId: 42161,
+      name: "ENS",
+      link: "/round/42161/24",
+    },
+    {
+      chainId: 10,
+      name: "Token Engineering Commons (TEC)",
+      link: "/round/10/9",
+      customClasses: "w-[7.5rem]"
+    },
+    {
+      chainId: 42161,
+      name: "Open Civics",
+      link: "/round/42161/31",
+    },
+    {
+      chainId: 42161,
+      name: "Hypercerts Ecosystem",
+      link: "/round/42161/28",
+    },
+  ];
 
   return (
     <nav
@@ -61,14 +111,8 @@ export default function Navbar(props: NavbarProps) {
               </div>
             </Link>
           </div>
-
-          <div className="flex items-center gap-6">
-            <Link
-              to={exploreRoundsLink}
-              className="font-medium hover:underline hidden md:block"
-            >
-              Explore rounds
-            </Link>
+          <div className="flex flex-row items-center gap-6 font-mono font-medium">
+            {rounds &&  <ExploreRoundsDropdown rounds={rounds} /> }
             {showWalletInteraction && (
               <div>
                 <div
@@ -81,7 +125,7 @@ export default function Navbar(props: NavbarProps) {
                       smallScreen: "avatar",
                       largeScreen: "full",
                     }}
-                    chainStatus={{ smallScreen: "icon", largeScreen: "full" }}
+                    chainStatus={{ smallScreen: "icon" }}
                   />
                 </div>
               </div>

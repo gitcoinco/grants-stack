@@ -8,6 +8,7 @@ import POLIcon from "common/src/icons/pol-logo.svg";
 import ZkSyncIcon from "common/src/icons/zksync-logo.svg";
 import ScrollIcon from "common/src/icons/scroll-logo.svg";
 import FantomFTMLogo from "common/src/assets/fantom-ftm-logo.png";
+import { SeiIcon } from "common/src/chains";
 import {
   EthDiamondGlyph,
   FTMTestnet,
@@ -51,6 +52,7 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   base: "Base",
   scroll: "Scroll",
   sepolia: "sepolia",
+  seiDevnet: "SEI Devnet",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -74,6 +76,7 @@ export const networkIcon: { [key in ChainName]: string } = {
   base: EthDiamondGlyph,
   scroll: ScrollIcon,
   sepolia: EthDiamondGlyph,
+  seiDevnet: SeiIcon,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -97,6 +100,7 @@ export const payoutIcon: { [key in ChainName]: string } = {
   base: EthDiamondGlyph,
   scroll: ScrollIcon,
   sepolia: EthDiamondGlyph,
+  seiDevnet: SeiIcon,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {

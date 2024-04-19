@@ -18,6 +18,7 @@ module.exports = {
         white: "#FFF",
         grey: {
           50: "#F3F3F5",
+          75: "#F7F7F7",
           100: "#EBEBEB",
           150: "#F3F3F5",
           200: "#C4C1CF",
@@ -100,6 +101,16 @@ module.exports = {
           },
           "50%": {
             transform: "scale(2)",
+          },
+        },
+        peachTransition: {
+          "5%": {
+            "background-color": "#FF9776",
+            color: "#FFF",
+          },
+          "0%, 80%": {
+            "background-color": "#5F94BC",
+            color: "#FFF",
           },
         },
       },

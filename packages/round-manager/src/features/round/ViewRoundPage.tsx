@@ -137,7 +137,7 @@ export default function ViewRoundPage() {
                   <ViewGrantsExplorerButton
                     iconStyle="h-4 w-4"
                     chainId={`${chain.id}`}
-                    roundId={id}
+                    roundId={round.id}
                   />
                 </div>
               </div>

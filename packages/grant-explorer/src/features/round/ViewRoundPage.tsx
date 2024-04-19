@@ -410,8 +410,11 @@ function AfterRoundStart(props: {
             <RoundEndedBanner />
           </div>
         )}
-        <div className="flex justify-between items-center mb-2 gap-2">
-          <div className="py-8 flex flex-col" data-testid="bread-crumbs">
+        <div className="flex flex-row justify-between mb-2 mt-8">
+          <div
+            className="flex flex-col pt-2 justify-center"
+            data-testid="bread-crumbs"
+          >
             <Breadcrumb items={breadCrumbs} />
           </div>
           {walletAddress && isSybilDefenseEnabled && (
@@ -543,7 +546,9 @@ function AfterRoundStart(props: {
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearchQuery(e.target.value)
+                }
               />
             </div>
           )}

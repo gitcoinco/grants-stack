@@ -14,8 +14,8 @@ export default function CopyToClipboardButton(props: CopyToClipboardType) {
   return (
     <Button
       type="button"
-      className={`inline-flex bg-violet-100 text-violet-600 w-30 justify-center ${
-        active && "animate-[violetTransition_20s_ease-in]"
+      className={`inline-flex bg-[#FFD9CD] text-black w-30 justify-center font-mono ${
+        active && "animate-[peachTransition_20s_ease-in]"
       } ${props.styles}`}
       onClick={async () => {
         setActive(true);

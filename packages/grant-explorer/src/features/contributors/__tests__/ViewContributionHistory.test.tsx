@@ -188,7 +188,7 @@ describe("<ViewContributionHistory/>", () => {
         expect(
           screen.getByText(contribution.application.project.name)
         ).toBeInTheDocument();
-        expect(screen.getAllByText("View transaction").length).toBeGreaterThan(
+        expect(screen.getAllByText("View").length).toBeGreaterThan(
           0
         );
       

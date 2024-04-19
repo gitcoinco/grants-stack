@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, cleanup, screen } from "@testing-library/react";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import { PassportVerifierWithExpiration } from "common";
 import Details from "../../../components/grants/Details";
 import setupStore from "../../../store";
 import {
@@ -94,7 +94,8 @@ _italic text_
 
       const verifyCredentialMock = jest.fn();
       verifyCredentialMock.mockReturnValue(true);
-      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
+      PassportVerifierWithExpiration.prototype.verifyCredential =
+        verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
@@ -131,7 +132,8 @@ _italic text_
 
       const verifyCredentialMock = jest.fn();
       verifyCredentialMock.mockReturnValue(true);
-      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
+      PassportVerifierWithExpiration.prototype.verifyCredential =
+        verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
@@ -172,7 +174,8 @@ _italic text_
 
       const verifyCredentialMock = jest.fn();
       verifyCredentialMock.mockReturnValue(true);
-      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
+      PassportVerifierWithExpiration.prototype.verifyCredential =
+        verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
@@ -248,7 +251,8 @@ _italic text_
 
     const verifyCredentialMock = jest.fn();
     verifyCredentialMock.mockReturnValue(true);
-    PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
+    PassportVerifierWithExpiration.prototype.verifyCredential =
+      verifyCredentialMock;
 
     await act(async () => {
       renderWrapped(

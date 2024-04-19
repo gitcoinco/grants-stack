@@ -1,11 +1,8 @@
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { getAddress } from "viem";
 import { describe, expect, test, vi } from "vitest";
 import {
   ProjectApplicationMetadata,
   ProjectApplicationWithRound,
-  RoundCategory,
   v2Project,
 } from ".";
 import { DataLayer } from "./data-layer";
@@ -558,38 +555,6 @@ describe("applications search", () => {
           headers: {},
         },
       );
-    });
-  });
-});
-
-describe("passport verification", () => {
-  test("invokes passport verifier", async () => {
-    const mockPassportVerifier = {
-      verifyCredential: vi.fn().mockResolvedValue(true),
-    } as unknown as PassportVerifier;
-
-    const dataLayer = new DataLayer({
-      search: { baseUrl: "https://example.com" },
-      subgraph: { endpointsByChainId: {} },
-      passport: { verifier: mockPassportVerifier },
-      indexer: { baseUrl: "https://example.com" },
-    });
-
-    const { isVerified } = await dataLayer.verifyPassportCredential({
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiableCredential"],
-      credentialSubject: {
-        id: "did:pkh:eip155:1:subject",
-      },
-    } as VerifiableCredential);
-
-    expect(isVerified).toBe(true);
-    expect(mockPassportVerifier.verifyCredential).toBeCalledWith({
-      "@context": ["https://www.w3.org/2018/credentials/v1"],
-      type: ["VerifiableCredential"],
-      credentialSubject: {
-        id: "did:pkh:eip155:1:subject",
-      },
     });
   });
 });

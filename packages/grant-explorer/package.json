@@ -41,7 +41,6 @@
     "@emotion/styled": "^11",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@gitcoinco/passport-sdk-verifier": "^0.2.2",
     "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^2.0.13",
     "@playwright/test": "^1.41.1",
