@@ -303,7 +303,7 @@ function SharePanel(props: State) {
 }
 
 export function TwitterButton(props: { collectionUrl: string }) {
-  const shareText = `Check out my favorite grants on @gitcoin's @grantsstack ${props.collectionUrl}`;
+  const shareText = `Check out my favorite projects on @gitcoin's @grantsstack ${props.collectionUrl}`;
   const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     shareText
   )}`;
