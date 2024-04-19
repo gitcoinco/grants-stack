@@ -1,7 +1,7 @@
 import { createElement, useState, useEffect, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { parseCollection } from "../collections/collections";
-import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
+import xIcon from "../../assets/x-logo-black.png";
 import PinataClient from "common/src/services/pinata";
 import { getConfig } from "common/src/config";
 import { collectionPath } from "common/src/routes/explorer";
@@ -314,9 +314,9 @@ export function TwitterButton(props: { collectionUrl: string }) {
       onClick={() => {
         window.open(url, "_blank");
       }}
-      text="Share on Twitter"
+      text="Share on X"
     >
-      <TwitterBlueIcon />
+      <img src={xIcon} alt="X logo" className="w-4 h-4 font-semibold" />
     </DialogButton>
   );
 }
@@ -333,18 +333,18 @@ function DialogButton({
   onClick: () => void;
 }) {
   const themes = {
-    primary: "bg-blue-100 border border-blue-100 hover:border-blue-200",
-    secondary: "bg-white border border-gray-100 hover:border-gray-300",
+    primary: "bg-blue-100",
+    secondary: "bg-white border border-gray-100",
   };
 
   return (
     <button
       type="button"
-      className={`${themes[theme]} text-gray-700 w-full inline-flex justify-center rounded-md border  px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
+      className={`${themes[theme]} text-gray-700 w-full rounded py-2 transition-colors focus:shadow-outline flex items-center justify-center shadow-sm px-4 sm:px-10 hover:shadow-md`}
       onClick={onClick}
     >
       {children !== undefined && <>{children}&nbsp;</>}
-      {text}
+      <span className="ml-2">{text}</span>
     </button>
   );
 }
