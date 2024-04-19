@@ -411,6 +411,8 @@ export type Eligibility = {
   requirements?: Requirement[];
 };
 
+export type SybilDefence = "auto" | "manual" | "none";
+
 export interface Round {
   /**
    * The on-chain unique round ID
@@ -434,7 +436,7 @@ export interface Round {
       matchingCapAmount?: number;
       minDonationThreshold?: boolean;
       minDonationThresholdAmount?: number;
-      sybilDefense?: boolean;
+      sybilDefense?: SybilDefence;
     };
     support?: {
       type: string;
@@ -631,7 +633,7 @@ export interface MatchingFunds {
 
 export interface QuadraticFundingConfig {
   matchingCap: boolean;
-  sybilDefense: boolean;
+  sybilDefense: SybilDefence;
   matchingCapAmount?: number;
   minDonationThreshold: boolean;
   matchingFundsAvailable: number;
