@@ -109,7 +109,7 @@ export const getProjectsById = gql`
  */
 export const getProjectAnchorByIdAndChainId = gql`
   query ($projectId: String!, $chainId: Int!) {
-    project(first: 1, id: $projectId, chainId: $chainId) {
+    project(id: $projectId, chainId: $chainId) {
       anchorAddress
     }
   }
