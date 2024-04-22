@@ -19,7 +19,10 @@ export function Header(props: { projects: CartProject[] }) {
       <div className="flex mt-5 border-b-2 pb-2">
         <h1 className="grow text-3xl">Cart</h1>
         <div>
-          <CollectionShareButtonContainer applications={applications} />
+          <CollectionShareButtonContainer
+            showOnlyInAlloVersion="allo-v2"
+            applications={applications}
+          />
         </div>
       </div>
 

@@ -4,8 +4,11 @@ import { parseCollection } from "../collections/collections";
 import xIcon from "../../assets/x-logo-black.png";
 import PinataClient from "common/src/services/pinata";
 import { getConfig } from "common/src/config";
+import { AlloVersion } from "data-layer/src/data-layer.types";
 import { collectionPath } from "common/src/routes/explorer";
 import { Button } from "common/src/styles";
+
+const config = getConfig();
 
 class EmptyCollectionError extends Error {
   constructor() {
@@ -161,7 +164,7 @@ function CreatingLinkPanel(props: State) {
         applications: props.applications,
       });
 
-      const pinataClient = new PinataClient(getConfig());
+      const pinataClient = new PinataClient(config);
       pinataClient
         .pinJSON(collection, {
           app: "explorer",
@@ -397,12 +400,19 @@ function DialogWrapper({
 }
 
 export function CollectionShareButtonContainer({
+  showOnlyInAlloVersion,
   applications,
 }: {
+  showOnlyInAlloVersion: AlloVersion;
   applications: Application[];
 }) {
   const [showCollectionShareDialog, setShowCollectionShareDialog] =
     useState(false);
+
+  if (config.allo.version !== showOnlyInAlloVersion) {
+    return null;
+  }
+
   return (
     <>
       {" "}
