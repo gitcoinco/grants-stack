@@ -598,3 +598,26 @@ export const getDonationsByDonorAddress = gql`
     }
   }
 `;
+
+export const getPayoutsByChainIdRoundIdRecipientId = gql`
+  query getPayoutsByChainIdRoundIdRecipientId($chainId: Int!, $roundId: String!, $recipientId: String!) {
+    round(
+      chainId: $chainId, id: $roundId) {
+      id
+      applications(
+        filter: {anchorAddress: {equalTo: $recipientId}}
+      ) {
+        id
+        applicationsPayoutsByChainIdAndRoundIdAndApplicationId {
+          id
+          tokenAddress
+          amount
+          amountInUsd
+          transactionHash
+          timestamp
+          sender
+        }
+      }
+    }
+  }
+`;

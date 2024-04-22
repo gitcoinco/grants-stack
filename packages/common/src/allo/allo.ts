@@ -13,6 +13,7 @@ import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";
 import { PermitSignature } from "./voting";
+import { BigNumber } from "ethers";
 
 export type CreateRoundArguments = {
   roundData: {
@@ -211,6 +212,23 @@ export interface Allo {
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<null>;
+    }
+  >;
+
+  payoutDirectGrants: (args: {
+    roundId: Hex | number;
+    token: Hex;
+    amount: bigint;
+    recipientAddress: Hex;
+    recipientId: Hex;
+    vault?: Hex;
+    applicationIndex?: number;
+  }) => AlloOperation<
+    Result<{ blockNumber: bigint }>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 }

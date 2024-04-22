@@ -1050,7 +1050,8 @@ export function getChainIds(): number[] {
 export const isDirectRound = (round: Round) =>
   // @ts-expect-error support old rounds
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_OLD ||
-  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT ||
+  round.payoutStrategy.strategyName === "allov2.DirectGrantsLiteStrategy";
 
 export const isInfiniteDate = (roundTime: Date) =>
   roundTime.toString() === "Invalid Date";

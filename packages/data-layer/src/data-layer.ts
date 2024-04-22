@@ -24,6 +24,8 @@ import {
   Contribution,
   RoundForExplorer,
   ExpandedApplicationRef,
+  Payout,
+  RoundApplicationPayout,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -48,6 +50,7 @@ import {
   getRoundForExplorer,
   getRoundsQuery,
   getDonationsByDonorAddress,
+  getPayoutsByChainIdRoundIdRecipientId,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -655,6 +658,20 @@ export class DataLayer {
     return response.donations.filter((donation) => {
       return donation.application.project !== null;
     });
+  }
+
+  async getPayoutsByChainIdRoundIdRecipientId(args: {
+    chainId: number;
+    roundId: string;
+    recipientId: string;
+  }): Promise<RoundApplicationPayout> {
+    const response: { round: RoundApplicationPayout } = await request(
+      this.gsIndexerEndpoint,
+      getPayoutsByChainIdRoundIdRecipientId,
+      args,
+    );
+
+    return response.round;
   }
 
   /**

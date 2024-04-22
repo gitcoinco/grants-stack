@@ -12,6 +12,7 @@ import {
   parseAbiParameters,
   parseUnits,
   zeroAddress,
+  zeroHash,
 } from "viem";
 import { AnyJson, ChainId, TransactionBuilder } from "../..";
 import { parseChainId } from "../../chains";
@@ -55,6 +56,7 @@ import { MRC_CONTRACTS } from "../addresses/mrc";
 import Erc20ABI from "../abis/erc20";
 import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutStrategyImplementation";
 import { BigNumber } from "ethers";
+import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
 
 function createProjectId(args: {
   chainId: number;
@@ -489,8 +491,8 @@ export class AlloV1 implements Allo {
             args.roundData.applicationsEndTime
               ? dateToEthereumTimestamp(args.roundData.applicationsEndTime)
               : args.roundData.roundEndTime
-              ? dateToEthereumTimestamp(args.roundData.roundEndTime)
-              : maxUint256,
+                ? dateToEthereumTimestamp(args.roundData.roundEndTime)
+                : maxUint256,
             dateToEthereumTimestamp(args.roundData.roundStartTime),
             args.roundData.roundEndTime
               ? dateToEthereumTimestamp(args.roundData.roundEndTime)
@@ -1171,6 +1173,83 @@ export class AlloV1 implements Allo {
       emit("indexingStatus", success(undefined));
 
       return success(args.roundId);
+    });
+  }
+
+  payoutDirectGrants(args: {
+    roundId: Hex | number; // address
+    token: Hex;
+    amount: bigint;
+    recipientAddress: Hex;
+    recipientId: Hex;
+    vault?: Hex;
+    applicationIndex?: number;
+  }): AlloOperation<
+    Result<{ blockNumber: bigint }>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (typeof args.roundId == "number") {
+        return error(new AlloError("roundId must be a Hex"));
+      }
+
+      if (!args.vault) {
+        return error(new AlloError("vault is required"));
+      }
+
+      if (!args.applicationIndex) {
+        return error(new AlloError("applicationIndex is required"));
+      }
+
+      const functionArguments = {
+        vault: args.vault,
+        token: args.token,
+        amount: BigInt(args.amount.toString()),
+        grantAddress: args.recipientAddress,
+        projectId: args.recipientId,
+        applicationIndex: BigInt(args.applicationIndex),
+        allowanceModule: zeroAddress,
+        allowanceSignature: zeroHash,
+      };
+
+      const tx = await sendTransaction(this.transactionSender, {
+        address: args.roundId,
+        abi: DirectPayoutStrategyImplementation,
+        functionName: "payout",
+        args: [functionArguments],
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to payout direct grants");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(void 0));
+
+      return success({
+        blockNumber: receipt.blockNumber,
+      });
     });
   }
 }

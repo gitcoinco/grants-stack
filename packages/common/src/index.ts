@@ -303,6 +303,7 @@ export type RoundPayoutTypeNew =
   | "allov2.SQFSuperFluidStrategy"
   | "allov2.MicroGrantsGovStrategy"
   | "allov2.DirectGrantsSimpleStrategy"
+  | "allov2.DirectGrantsLiteStrategy"
   | ""; // This is to handle the cases where the strategyName is not set in a round, mostly spam rounds
 
 export type RoundStrategyType = "QuadraticFunding" | "DirectGrants";
@@ -322,6 +323,7 @@ export function getRoundStrategyType(name: string): RoundStrategyType {
     case "allov1.Direct":
     case "DIRECT":
     case "allov2.DirectGrantsSimpleStrategy":
+    case "allov2.DirectGrantsLiteStrategy":
       return "DirectGrants";
 
     case "allov1.QF":

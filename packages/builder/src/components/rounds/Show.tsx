@@ -147,12 +147,38 @@ function ShowRound() {
     let votingHasEnded = false;
 
     // covers QF and DF application and voting periods condition evaluation
+    console.log({
+      1: roundState?.round,
+      2: roundState?.round?.applicationsStartTime !== undefined,
+      3: roundState?.round?.roundStartTime !== undefined,
+    });
+
+    // fixme: need to update this to make the rest of the date checks work properly.
+    const isDirectRound: boolean =
+      roundState?.round?.payoutStrategy === RoundCategory.Direct;
+    // todo: the strategyName is not available on the Round object...
+    //  ||
+    // roundState?.round?.strategyName ===
+    //   "allov2.DirectGrantsLiteStrategy";
+    // added !isDirectRound to the condition to make the date checks work properly to test...
+    const roundStartTime = !isDirectRound
+      ? roundState?.round?.applicationsStartTime
+      : roundState?.round?.roundStartTime;
+    const roundEndTime = !isDirectRound
+      ? roundState?.round?.applicationsEndTime
+      : roundState?.round?.roundEndTime;
+
     if (
       roundState?.round &&
       roundState?.round?.applicationsStartTime !== undefined &&
       roundState?.round?.roundStartTime !== undefined
     ) {
       applicationsHaveStarted = roundState.round?.applicationsStartTime <= now;
+      console.log(
+        roundState.round?.applicationsStartTime,
+        now,
+        roundState.round?.applicationsStartTime <= now
+      );
       votingHasStarted = roundState.round?.roundStartTime <= now;
     }
     if (
@@ -177,6 +203,9 @@ function ShowRound() {
       applicationsHaveEnded,
       votingHasStarted,
       votingHasEnded,
+      isDirectRound,
+      roundStartTime,
+      roundEndTime,
     };
   }, shallowEqual);
 
@@ -192,15 +221,22 @@ function ShowRound() {
     );
 
   const renderRoundDate = () =>
-    roundData && (
+    roundData &&
+    (props.isDirectRound ? (
       <>
-        {formatTimeUTC(roundData.roundStartTime)} -{" "}
-        {isInfinite(roundData.roundEndTime) || !roundData.roundEndTime
+        {formatTimeUTC(props.roundStartTime as number)} -{" "}
+        {isInfinite(props.roundEndTime as number) || !props.roundEndTime
           ? "No End Date"
-          : formatTimeUTC(roundData.roundEndTime)}
-        {}
+          : formatTimeUTC(props.roundEndTime)}
       </>
-    );
+    ) : (
+      <>
+        {formatTimeUTC(Number(props.roundStartTime))} -{" "}
+        {isInfinite(Number(props.roundEndTime)) || !props.roundEndTime
+          ? "No End Date"
+          : formatTimeUTC(props.roundEndTime)}
+      </>
+    ));
 
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [roundApplicationModal, setToggleRoundApplicationModal] =
@@ -241,7 +277,7 @@ function ShowRound() {
       setRoundData(props.round);
 
       if (!props.round.tags.includes(alloVersion)) {
-        const roundVersion = props.round.tags.find((tag) =>
+        const roundVersion = props.round.tags.find((tag: string) =>
           tag.startsWith("allo-")
         );
         if (roundVersion === undefined) {
@@ -342,7 +378,6 @@ function ShowRound() {
       </div>
     );
   }
-  const isDirectRound = props.round?.payoutStrategy === RoundCategory.Direct;
 
   return (
     <div
@@ -364,7 +399,8 @@ function ShowRound() {
           <div className="flex flex-1 flex-col mt-8">
             <span>{roundData?.roundMetadata.eligibility?.description}</span>
           </div>
-          {!isDirectRound && (
+          {/* todo: this should not show for DG - need to fix the isDirectRound - see comment above */}
+          {props.isDirectRound && (
             <div className="flex flex-1 flex-col mt-8">
               <span className="mb-2">Application Period:</span>
               <span>{renderApplicationDate()}</span>
@@ -372,6 +408,7 @@ function ShowRound() {
           )}
           <div className="flex flex-1 flex-col mt-8">
             <span className="mb-2">Round Dates:</span>
+            {/* todo: finish */}
             <span>{renderRoundDate()}</span>
           </div>
           <div className="flex flex-1 flex-col mt-8">

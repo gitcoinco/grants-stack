@@ -14,11 +14,13 @@ import { usePayout } from "../../context/application/usePayout";
 import { Button, Input } from "common/src/styles";
 import { BigNumber, ethers } from "ethers";
 import { AnswerBlock, GrantApplication, Round } from "../api/types";
-import { formatUTCDateAsISOString, getUTCTime } from "common";
+import { formatUTCDateAsISOString, getUTCTime, useAllo } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { getPayoutTokenOptions } from "../api/payoutTokens";
 import { usePayouts } from "./usePayouts";
+import { Hex } from "viem";
+import { useDataLayer } from "data-layer";
 
 const schema = yup.object().shape({
   amount: yup
@@ -65,11 +67,14 @@ export default function ApplicationDirectPayout({
   const network = useNetwork();
 
   const allInputs = watch();
+  const allo = useAllo();
+  const dataLayer = useDataLayer();
 
   const { data: payouts } = usePayouts({
     chainId: chain.id,
     roundId: round.id,
-    applicationIndex: application.applicationIndex,
+    recipientId: application.anchorAddress,
+    dataLayer,
   });
 
   // find answer with question "Payout token"
@@ -146,30 +151,34 @@ export default function ApplicationDirectPayout({
       throw Error("Payout wallet address not found in answers!");
     }
 
-    try {
-      await triggerPayout({
-        address,
-        signer,
-        token: tokenInfo,
-        projectId: application.projectId,
-        applicationIndex: application.applicationIndex,
-        payoutStrategyAddress: round.payoutStrategy.id,
-        payoutAmount: amountBN,
-        payoutVault: data.address,
-        payoutWallet: payoutWalletAddress,
-        allowance,
-      });
+    if (allo) {
+      try {
+        await triggerPayout({
+          address,
+          signer,
+          token: tokenInfo,
+          applicationId: application.anchorAddress as Hex,
+          applicationIndex: application.applicationIndex,
+          roundId: round.id as Hex,
+          roundAddress: round.payoutStrategy.id as Hex,
+          payoutAmount: BigInt(amountBN.toString()),
+          payoutVault: data.address as Hex,
+          payoutWallet: payoutWalletAddress as Hex,
+          allowance: BigInt(allowance.toString()),
+          allo,
+        });
 
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
-      setTimeout(() => {
-        setIsPayoutProgressModelOpen(false);
-      }, errorModalDelayMs);
-      setPayoutError({
-        message: "There was an error trying to trigger the payout.",
-        retry: () => onSubmit(data),
-      });
+        window.location.reload();
+      } catch (error) {
+        console.error(error);
+        setTimeout(() => {
+          setIsPayoutProgressModelOpen(false);
+        }, errorModalDelayMs);
+        setPayoutError({
+          message: "There was an error trying to trigger the payout.",
+          retry: () => onSubmit(data),
+        });
+      }
     }
   };
 
@@ -247,12 +256,10 @@ export default function ApplicationDirectPayout({
                             </td>
                             <td className="text-sm leading-5 px-2 text-gray-400 text-left">
                               {formatUTCDateAsISOString(
-                                new Date(Number(payout.createdAt) * 1000)
+                                new Date(payout.createdAt)
                               )}
                               &nbsp;
-                              {getUTCTime(
-                                new Date(Number(payout.createdAt) * 1000)
-                              )}
+                              {getUTCTime(new Date(payout.createdAt))}
                             </td>
                           </tr>
                         ))}

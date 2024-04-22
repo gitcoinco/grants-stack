@@ -178,47 +178,41 @@ async function _bulkUpdateGrantApplication({
 }: BulkUpdateGrantApplicationParams) {
   resetToInitialState(context);
   try {
-    const containsInReview = selectedApplications.some((a) => a.inReview);
+    context.setContractUpdatingStatus(ProgressStatus.IN_PROGRESS);
 
-    if (!containsInReview) {
-      context.setContractUpdatingStatus(ProgressStatus.IN_PROGRESS);
+    const result = await allo
+      .bulkUpdateApplicationStatus({
+        roundId,
+        applicationsToUpdate: selectedApplications.map((a) => ({
+          index: a.applicationIndex,
+          status: a.status,
+        })),
+        currentApplications: applications.map((a) => ({
+          index: a.applicationIndex,
+          status: a.status,
+        })),
+        // FIXME: use getAddress when tests stop failing because of it
+        strategyAddress: roundStrategyAddress as Address,
+      })
+      .on("transactionStatus", (tx) => {
+        if (tx.type === "success") {
+          context.setContractUpdatingStatus(ProgressStatus.IS_SUCCESS);
+          context.setIndexingStatus(ProgressStatus.IN_PROGRESS);
+        } else {
+          context.setContractUpdatingStatus(ProgressStatus.IS_ERROR);
+        }
+      })
+      .on("indexingStatus", (tx) => {
+        if (tx.type === "success") {
+          context.setIndexingStatus(ProgressStatus.IS_SUCCESS);
+        } else {
+          context.setIndexingStatus(ProgressStatus.IS_ERROR);
+        }
+      })
+      .execute();
 
-      const result = await allo
-        .bulkUpdateApplicationStatus({
-          roundId,
-          applicationsToUpdate: selectedApplications.map((a) => ({
-            index: a.applicationIndex,
-            status: a.status,
-          })),
-          currentApplications: applications.map((a) => ({
-            index: a.applicationIndex,
-            status: a.status,
-          })),
-          // FIXME: use getAddress when tests stop failing because of it
-          strategyAddress: roundStrategyAddress as Address,
-        })
-        .on("transactionStatus", (tx) => {
-          if (tx.type === "success") {
-            context.setContractUpdatingStatus(ProgressStatus.IS_SUCCESS);
-            context.setIndexingStatus(ProgressStatus.IN_PROGRESS);
-          } else {
-            context.setContractUpdatingStatus(ProgressStatus.IS_ERROR);
-          }
-        })
-        .on("indexingStatus", (tx) => {
-          if (tx.type === "success") {
-            context.setIndexingStatus(ProgressStatus.IS_SUCCESS);
-          } else {
-            context.setIndexingStatus(ProgressStatus.IS_ERROR);
-          }
-        })
-        .execute();
-
-      if (result.type === "error") {
-        console.error("failed to update application status", result.error);
-      }
-
-      return;
+    if (result.type === "error") {
+      console.error("failed to update application status", result.error);
     }
 
     const updatedApplications = applications.map((application) => {

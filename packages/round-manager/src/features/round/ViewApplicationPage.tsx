@@ -53,6 +53,7 @@ import {
   ApplicationOpenDateRange,
   RoundOpenDateRange,
   RoundBadgeStatus,
+  isDirectRound,
 } from "./ViewRoundPage";
 
 import {
@@ -370,7 +371,7 @@ export default function ViewApplicationPage() {
     return (
       <div className="relative">
         <div
-          className={`flex items-center justify-center rounded-full w-[24px] h-[24px] border-[2px] z-10 relative bg-white
+          className={`flex items-center justify-center rounded-full w-[24px] h-[24px] border-[2px] z-10 relative
         ${
           status === "done" || status === "approved"
             ? "bg-teal-500 border-teal-500"
@@ -526,10 +527,10 @@ export default function ViewApplicationPage() {
               </div>
             )}
             <div className="flex flex-row flex-wrap relative">
-              {round && strategyType === "DirectGrants" && (
-                <ApplicationOpenDateRange round={round} />
-              )}
-              {round && <RoundOpenDateRange round={round} />}
+              {round && <ApplicationOpenDateRange round={round} /> }
+              {round && !isDirectRound(round) &&
+                <RoundOpenDateRange round={round} />
+              }
               <div className="absolute right-0">
                 <ViewGrantsExplorerButton
                   iconStyle="h-4 w-4"

@@ -6,6 +6,7 @@ import { roundImplementationContract } from "./contracts";
 import { Round } from "./types";
 import { Signer } from "@ethersproject/abstract-signer";
 import { TransactionResponse } from "@ethersproject/providers";
+import moment from "moment";
 
 export enum UpdateAction {
   UPDATE_APPLICATION_META_PTR = "updateApplicationMetaPtr",
@@ -88,7 +89,8 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
 
   const strategyName =
     round.strategyName === "allov1.Direct" ||
-    round.strategyName === "allov2.DirectGrantsSimpleStrategy"
+    round.strategyName === "allov2.DirectGrantsSimpleStrategy" ||
+    round.strategyName === "allov2.DirectGrantsLiteStrategy"
       ? "DIRECT"
       : "MERKLE";
 
@@ -109,12 +111,12 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
       round.applicationMetadata as unknown as Round["applicationMetadata"],
     applicationsStartTime: new Date(applicationsStartTime),
     applicationsEndTime:
-      applicationsEndTime === null
+      applicationsEndTime === null || !moment(applicationsEndTime).isValid()
         ? maxDateForUint256
         : new Date(applicationsEndTime),
     roundStartTime: new Date(donationsStartTime),
     roundEndTime:
-      donationsEndTime === null
+      donationsEndTime === null || !moment(applicationsEndTime).isValid()
         ? maxDateForUint256
         : new Date(donationsEndTime),
     token: round.matchTokenAddress,

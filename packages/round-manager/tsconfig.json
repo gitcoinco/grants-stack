@@ -18,5 +18,8 @@
     "types": ["@testing-library/jest-dom", "jest", "node"],
     "incremental": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "../common/src/allo/abis/allo-v1/RegistryFactory__factory.ts"
+  ]
 }

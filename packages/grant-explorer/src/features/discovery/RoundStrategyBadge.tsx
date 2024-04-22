@@ -21,6 +21,7 @@ const colorOptions = {
   ["allov2.SQFSuperFluidStrategy"]: "yellow",
   ["allov2.MicroGrantsGovStrategy"]: "yellow",
   ["allov2.DirectGrantsSimpleStrategy"]: "yellow",
+  ["allov2.DirectGrantsLiteStrategy"]: "yellow",
   [""]: "grey",
 } as const;
 
