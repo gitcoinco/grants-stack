@@ -5,6 +5,7 @@ import xIcon from "../../assets/x-logo-black.png";
 import PinataClient from "common/src/services/pinata";
 import { getConfig } from "common/src/config";
 import { collectionPath } from "common/src/routes/explorer";
+import { Button } from "common/src/styles";
 
 class EmptyCollectionError extends Error {
   constructor() {
@@ -392,5 +393,35 @@ function DialogWrapper({
         </div>
       </Dialog>
     </Transition>
+  );
+}
+
+export function CollectionShareButtonContainer({
+  applications,
+}: {
+  applications: Application[];
+}) {
+  const [showCollectionShareDialog, setShowCollectionShareDialog] =
+    useState(false);
+  return (
+    <>
+      {" "}
+      <Button
+        type="button"
+        onClick={() => {
+          setShowCollectionShareDialog(true);
+        }}
+        className="rainbow-button
+            px-1 ml-4 items-center justify-center shadow-sm text-sm rounded border-1 text-black bg-[#C1E4FC] px-4 border-grey-100 hover:shadow-md"
+        data-testid="twitter-button"
+      >
+        <span>Share your cart as a collection</span>
+      </Button>
+      <CollectionShareDialog
+        isOpen={showCollectionShareDialog}
+        setIsOpen={setShowCollectionShareDialog}
+        applications={applications}
+      />
+    </>
   );
 }
