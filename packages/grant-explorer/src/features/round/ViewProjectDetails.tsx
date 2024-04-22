@@ -4,7 +4,7 @@ import {
   VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
+import { PassportVerifierWithExpiration, formatDateWithOrdinal, renderToHTML, useParams } from "common";
 import { getAlloVersion } from "common/src/config";
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
@@ -150,9 +150,9 @@ export default function ViewProjectDetails() {
 
   const isAlreadyInCart = projects.some(
     (project) =>
+      project.grantApplicationId === applicationId &&
       project.chainId === Number(chainId) &&
-      project.roundId === roundId &&
-      project.grantApplicationId === applicationId
+      project.roundId === roundId
   );
   const cartProject = projectToRender as CartProject;
 
@@ -202,7 +202,7 @@ export default function ViewProjectDetails() {
         ),
       },
       {
-        name: "Grants",
+        name: "Milestone updates",
         content: <GrantList grants={grants} />,
       },
     ],
@@ -679,8 +679,8 @@ async function isVerified(args: {
 }) {
   const { verifiableCredential, provider, project, dataLayer } = args;
 
-  const { isVerified: vcHasValidProof } =
-    await dataLayer.verifyPassportCredential(verifiableCredential);
+  const passportVerifier = new PassportVerifierWithExpiration();
+  const  vcHasValidProof = await passportVerifier.verifyCredential(verifiableCredential);
 
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(

@@ -59,9 +59,6 @@ importers:
       '@gitcoinco/passport-sdk-types':
         specifier: ^0.2.0
         version: 0.2.0
-      '@gitcoinco/passport-sdk-verifier':
-        specifier: ^0.2.2
-        version: 0.2.2
       '@headlessui/react':
         specifier: ^1.6.5
         version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
@@ -369,12 +366,18 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
+      '@gitcoinco/passport-sdk-types':
+        specifier: ^0.2.0
+        version: 0.2.0
       '@openzeppelin/merkle-tree':
         specifier: ^1.0.2
         version: 1.0.5
       '@rainbow-me/rainbowkit':
         specifier: ^0.12.16
         version: 0.12.16(@types/react@18.2.21)(ethers@5.7.2)(react@18.2.0)(wagmi@0.12.19)
+      '@spruceid/didkit-wasm':
+        specifier: 0.3.0-alpha0
+        version: 0.3.0-alpha0
       '@wagmi/chains':
         specifier: ^1.8.0
         version: 1.8.0(typescript@5.4.5)
@@ -463,9 +466,6 @@ importers:
       '@gitcoinco/passport-sdk-types':
         specifier: ^0.2.0
         version: 0.2.0
-      '@gitcoinco/passport-sdk-verifier':
-        specifier: ^0.2.2
-        version: 0.2.2(debug@4.3.4)
       cross-fetch:
         specifier: ^4.0.0
         version: 4.0.0
@@ -620,9 +620,6 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
-      '@gitcoinco/passport-sdk-verifier':
-        specifier: ^0.2.2
-        version: 0.2.2
       '@headlessui/react':
         specifier: ^1.7.4
         version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
@@ -960,9 +957,6 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
-      '@gitcoinco/passport-sdk-verifier':
-        specifier: ^0.1.2
-        version: 0.1.2
       '@headlessui/react':
         specifier: ^1.6.6
         version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
@@ -5504,59 +5498,12 @@ packages:
       command-exists: 1.2.9
       ts-interface-checker: 0.1.13
 
-  /@gitcoinco/passport-sdk-reader@0.1.4:
-    resolution: {integrity: sha512-MRZ+p3ZdBz7/7U7/+3/LnwU4nXMeWGwPWakvPLTXL0ys74jmIrn0b1j2uh0D8EsdstoAnksbO9wEBRED40wHAg==}
-    dependencies:
-      '@gitcoinco/passport-sdk-types': 0.2.0
-      tulons: 0.0.7
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /@gitcoinco/passport-sdk-reader@0.1.4(debug@4.3.4):
-    resolution: {integrity: sha512-MRZ+p3ZdBz7/7U7/+3/LnwU4nXMeWGwPWakvPLTXL0ys74jmIrn0b1j2uh0D8EsdstoAnksbO9wEBRED40wHAg==}
-    dependencies:
-      '@gitcoinco/passport-sdk-types': 0.2.0
-      tulons: 0.0.7(debug@4.3.4)
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /@gitcoinco/passport-sdk-types@0.1.2:
     resolution: {integrity: sha512-iAyvw1r+ZwSU/+wkvU0hI+NlaDPne+wot31V4Ya4Nx3Ru47grqEQa8jcj+WalV1RFZLhIJ84CppqI+PRoch7+g==}
+    dev: true
 
   /@gitcoinco/passport-sdk-types@0.2.0:
     resolution: {integrity: sha512-qS7P4atgeAEfI6VlGcoXr10E6SsKAlHiPNfSyr25HJpnNomi7J0Yy6krscUPiPsn1eCKOFQeC8uDqTdiXXMGLw==}
-
-  /@gitcoinco/passport-sdk-verifier@0.1.2:
-    resolution: {integrity: sha512-VvIcnoQfV0Y4xhF3Ay9maUkuIbAZk4uaD0OQjXBJAnKZM1JtfWUqTo5OWHPb55CzKv1o4V14LGBpJOGqaQWHyg==}
-    dependencies:
-      '@gitcoinco/passport-sdk-reader': 0.1.4
-      '@gitcoinco/passport-sdk-types': 0.1.2
-      '@spruceid/didkit-wasm': 0.2.1
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /@gitcoinco/passport-sdk-verifier@0.2.2:
-    resolution: {integrity: sha512-Z6drCRRKXV4QeO5a2zIyUAOB9RfiJhA/zICfmpQZkLOIFDuoctezMy0NM5s28Pbq4st74rcN7E3497sBRvTumQ==}
-    dependencies:
-      '@gitcoinco/passport-sdk-reader': 0.1.4
-      '@gitcoinco/passport-sdk-types': 0.2.0
-      '@spruceid/didkit-wasm': 0.3.0-alpha0
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /@gitcoinco/passport-sdk-verifier@0.2.2(debug@4.3.4):
-    resolution: {integrity: sha512-Z6drCRRKXV4QeO5a2zIyUAOB9RfiJhA/zICfmpQZkLOIFDuoctezMy0NM5s28Pbq4st74rcN7E3497sBRvTumQ==}
-    dependencies:
-      '@gitcoinco/passport-sdk-reader': 0.1.4(debug@4.3.4)
-      '@gitcoinco/passport-sdk-types': 0.2.0
-      '@spruceid/didkit-wasm': 0.3.0-alpha0
-    transitivePeerDependencies:
-      - debug
-    dev: false
 
   /@graphql-typed-document-node/core@3.2.0:
     resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
@@ -8050,10 +7997,6 @@ packages:
       - bufferutil
       - encoding
       - utf-8-validate
-    dev: false
-
-  /@spruceid/didkit-wasm@0.2.1:
-    resolution: {integrity: sha512-Qi0ZVS2vNA6iVwOzfIdyVQSj1Q88DgV0HyjnQGZ84YsrjaxbCSPwyhZs3TBzUGKwvoyiGCvWohYnL0G3BsPEMQ==}
     dev: false
 
   /@spruceid/didkit-wasm@0.3.0-alpha0:
@@ -12329,7 +12272,7 @@ packages:
   /axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.5
+      follow-redirects: 1.15.5(debug@4.3.4)
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -12342,6 +12285,7 @@ packages:
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
+    dev: true
 
   /axios@1.2.2(debug@4.3.4):
     resolution: {integrity: sha512-bz/J4gS2S3I7mpN/YZfGFTqhXTYzRho8Ay38w2otuuDR322KzFIWm/4W2K6gIwvWaws5n+mnb7D1lN9uD+QH6Q==}
@@ -27164,22 +27108,6 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
     dev: true
-
-  /tulons@0.0.7:
-    resolution: {integrity: sha512-JyL9Vn4PPG2TTEJS35yqQgAMLd3IX9pFIlbiLmv47HuHTo2F3ihYg2yfMqde4hqGY1nGk77iJ/lvsTbAURJ8rg==}
-    dependencies:
-      axios: 0.27.2
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /tulons@0.0.7(debug@4.3.4):
-    resolution: {integrity: sha512-JyL9Vn4PPG2TTEJS35yqQgAMLd3IX9pFIlbiLmv47HuHTo2F3ihYg2yfMqde4hqGY1nGk77iJ/lvsTbAURJ8rg==}
-    dependencies:
-      axios: 0.27.2(debug@4.3.4)
-    transitivePeerDependencies:
-      - debug
-    dev: false
 
   /tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}

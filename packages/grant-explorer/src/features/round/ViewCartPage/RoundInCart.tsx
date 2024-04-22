@@ -129,7 +129,7 @@ export function RoundInCart(
       </div>
       {/* Total Donations */}
       <div className="p-4 bg-grey-100 rounded-b-xl font-medium text-lg">
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between items-center">
           <div>
             {address && round && isSybilDefenseEnabled && (
               <div data-testid="passport-widget">

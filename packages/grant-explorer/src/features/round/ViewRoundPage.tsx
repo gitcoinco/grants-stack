@@ -309,7 +309,10 @@ function AfterRoundStart(props: {
       )}
       <div className="relative top-20 lg:mx-20 px-4 py-7 h-screen">
         <div className="flex flex-row justify-between mb-2">
-          <div className="flex flex-col pt-2" data-testid="bread-crumbs">
+          <div
+            className="flex flex-col pt-2 justify-center"
+            data-testid="bread-crumbs"
+          >
             <Breadcrumb items={breadCrumbs} />
           </div>
           {walletAddress && isSybilDefenseEnabled && (
