@@ -36,6 +36,7 @@ export function ChainConfirmationModalBody({
   const getVotingTokenForChain = useCartStorage(
     (state) => state.getVotingTokenForChain
   );
+
   return (
     <>
       <p className="text-sm text-grey-400">
@@ -52,6 +53,7 @@ export function ChainConfirmationModalBody({
               selectedPayoutToken={getVotingTokenForChain(chainId)}
               totalDonation={totalDonationsPerChain[chainId]}
               checked={chainIdsBeingCheckedOut.includes(chainId)}
+              chainsBeingCheckedOut={chainIdsBeingCheckedOut.length}
               onChange={(checked) =>
                 handleChainCheckboxChange(chainId, checked)
               }
@@ -68,6 +70,7 @@ type ChainSummaryProps = {
   selectedPayoutToken: VotingToken;
   chainId: ChainId;
   checked: boolean;
+  chainsBeingCheckedOut: number;
   onChange: (checked: boolean) => void;
   isLastItem: boolean;
 };
@@ -77,9 +80,11 @@ export function ChainSummary({
   totalDonation,
   chainId,
   checked,
+  chainsBeingCheckedOut,
   onChange,
   isLastItem,
 }: ChainSummaryProps) {
+
   return (
     <div
       className={`flex flex-col justify-center mt-2 font-semibold ${
@@ -89,8 +94,11 @@ export function ChainSummary({
       <p>
         <input
           type="checkbox"
-          className="mr-2 rounded-sm"
+          className={`mr-2 rounded-sm  ${
+            chainsBeingCheckedOut === 1 ? "invisible" : ""
+          }`}
           checked={checked}
+          disabled={chainsBeingCheckedOut === 1}
           onChange={(e) => onChange(e.target.checked)}
         />
         <img
