@@ -113,8 +113,9 @@ gap-4
 
 export const Tab = ({
   active,
+  show,
   ...linkProps
-}: React.ComponentProps<typeof Link> & { active: boolean }) => {
+}: React.ComponentProps<typeof Link> & { show: boolean; active: boolean }) => {
   return (
     <Link
       className={`
@@ -124,6 +125,7 @@ export const Tab = ({
   border-blue-100
   rounded-t-2xl
   -mb-1
+  ${show ? "" : "hidden"}
   ${active ? `font-bold bg-blue-100 border-orange-100` : ""}
   `}
       {...linkProps}

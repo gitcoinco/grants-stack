@@ -712,6 +712,7 @@ function ProjectCard(props: {
 
   const isAlreadyInCart = projects.some(
     (cartProject) =>
+      cartProject.chainId === Number(props.chainId) &&
       cartProject.grantApplicationId === project.grantApplicationId &&
       cartProject.roundId === props.roundId
   );
