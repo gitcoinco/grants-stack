@@ -1,57 +1,8 @@
-import { AppStatus } from "./types";
-import { roundImplementationContract, ERC20Contract } from "./contracts";
+import { ERC20Contract } from "./contracts";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
-import { DirectPayoutStrategy__factory } from "../../types/generated/typechain";
 import { PayoutToken } from "./payoutTokens";
-
-export const updateApplicationStatuses = async (
-  roundId: string,
-  signer: Signer,
-  statuses: AppStatus[]
-): Promise<{ transactionBlockNumber: number }> => {
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
-    signer
-  );
-
-  const tx = await roundImplementation.setApplicationStatuses(statuses);
-
-  const receipt = await tx.wait();
-
-  console.log("✅ Transaction hash: ", tx.hash);
-
-  const blockNumber = receipt.blockNumber;
-
-  return {
-    transactionBlockNumber: blockNumber,
-  };
-};
-
-export const updatePayoutApplicationStatuses = async (
-  payoutStrategyAddress: string,
-  signer: Signer,
-  statuses: AppStatus[]
-): Promise<{ transactionBlockNumber: number }> => {
-  const payout = DirectPayoutStrategy__factory.connect(
-    payoutStrategyAddress,
-    signer
-  );
-
-  const tx = await payout.setApplicationsInReview(statuses);
-
-  const receipt = await tx.wait();
-
-  console.log("✅ Transaction hash: ", tx.hash);
-
-  const blockNumber = receipt.blockNumber;
-
-  return {
-    transactionBlockNumber: blockNumber,
-  };
-};
 
 export const fundRoundContract = async (
   roundId: string,

@@ -136,6 +136,7 @@ export interface Allo {
       index: number;
       status: ApplicationStatus;
     }[];
+    strategy?: RoundCategory;
   }) => AlloOperation<
     Result<void>,
     {
@@ -211,6 +212,23 @@ export interface Allo {
       transaction: Result<Hex>;
       transactionStatus: Result<TransactionReceipt>;
       indexingStatus: Result<null>;
+    }
+  >;
+
+  payoutDirectGrants: (args: {
+    roundId: Hex | number;
+    token: Hex;
+    amount: bigint;
+    recipientAddress: Hex;
+    recipientId: Hex;
+    vault?: Hex;
+    applicationIndex?: number;
+  }) => AlloOperation<
+    Result<{ blockNumber: bigint }>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
     }
   >;
 }

@@ -18,5 +18,7 @@
     "types": ["@testing-library/jest-dom", "jest", "node"],
     "incremental": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+  ]
 }

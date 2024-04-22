@@ -146,7 +146,16 @@ function ShowRound() {
     let votingHasStarted = false;
     let votingHasEnded = false;
 
-    // covers QF and DF application and voting periods condition evaluation
+    const isDirectRound: boolean =
+      roundState?.round?.payoutStrategy === RoundCategory.Direct;
+
+    const roundStartTime = !isDirectRound
+      ? roundState?.round?.applicationsStartTime
+      : roundState?.round?.roundStartTime;
+    const roundEndTime = !isDirectRound
+      ? roundState?.round?.applicationsEndTime
+      : roundState?.round?.roundEndTime;
+
     if (
       roundState?.round &&
       roundState?.round?.applicationsStartTime !== undefined &&
@@ -177,6 +186,9 @@ function ShowRound() {
       applicationsHaveEnded,
       votingHasStarted,
       votingHasEnded,
+      isDirectRound,
+      roundStartTime,
+      roundEndTime,
     };
   }, shallowEqual);
 
@@ -192,15 +204,22 @@ function ShowRound() {
     );
 
   const renderRoundDate = () =>
-    roundData && (
+    roundData &&
+    (props.isDirectRound ? (
       <>
-        {formatTimeUTC(roundData.roundStartTime)} -{" "}
-        {isInfinite(roundData.roundEndTime) || !roundData.roundEndTime
+        {formatTimeUTC(props.roundStartTime as number)} -{" "}
+        {isInfinite(props.roundEndTime as number) || !props.roundEndTime
           ? "No End Date"
-          : formatTimeUTC(roundData.roundEndTime)}
-        {}
+          : formatTimeUTC(props.roundEndTime)}
       </>
-    );
+    ) : (
+      <>
+        {formatTimeUTC(Number(props.roundStartTime))} -{" "}
+        {isInfinite(Number(props.roundEndTime)) || !props.roundEndTime
+          ? "No End Date"
+          : formatTimeUTC(props.roundEndTime)}
+      </>
+    ));
 
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [roundApplicationModal, setToggleRoundApplicationModal] =
@@ -241,7 +260,7 @@ function ShowRound() {
       setRoundData(props.round);
 
       if (!props.round.tags.includes(alloVersion)) {
-        const roundVersion = props.round.tags.find((tag) =>
+        const roundVersion = props.round.tags.find((tag: string) =>
           tag.startsWith("allo-")
         );
         if (roundVersion === undefined) {
@@ -342,7 +361,6 @@ function ShowRound() {
       </div>
     );
   }
-  const isDirectRound = props.round?.payoutStrategy === RoundCategory.Direct;
 
   return (
     <div
@@ -357,23 +375,19 @@ function ShowRound() {
           {roundData?.roundMetadata.name}
         </h2>
         <div className="flex flex-col mt-3 mb-8 text-secondary-text">
-          {/* <div className="flex flex-1 flex-col mt-12">
-                <span>Matching Funds Available:</span>
-                <span>$XXX,XXX</span>
-              </div> */}
           <div className="flex flex-1 flex-col mt-8">
             <span>{roundData?.roundMetadata.eligibility?.description}</span>
           </div>
-          {!isDirectRound && (
+          <div className="flex flex-1 flex-col mt-8">
+            <span className="mb-2">Application Period:</span>
+            <span>{renderApplicationDate()}</span>
+          </div>
+          {!props.isDirectRound && (
             <div className="flex flex-1 flex-col mt-8">
-              <span className="mb-2">Application Period:</span>
-              <span>{renderApplicationDate()}</span>
+              <span className="mb-2">Round Dates:</span>
+              <span>{renderRoundDate()}</span>
             </div>
           )}
-          <div className="flex flex-1 flex-col mt-8">
-            <span className="mb-2">Round Dates:</span>
-            <span>{renderRoundDate()}</span>
-          </div>
           <div className="flex flex-1 flex-col mt-8">
             <span className="mb-2">Eligibility Requirements:</span>
             {roundData?.roundMetadata?.eligibility?.requirements.map(

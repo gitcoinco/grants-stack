@@ -88,6 +88,7 @@ export function AboutProject(props: {
             target="_blank"
             rel="noreferrer"
             className="text-base font-normal text-black"
+            aria-label="Website Link"
           >
             <DetailSummary
               text={`${website}`}
@@ -105,6 +106,7 @@ export function AboutProject(props: {
             target="_blank"
             rel="noreferrer"
             className="text-base font-normal text-black"
+            aria-label="Twitter Link"
           >
             <DetailSummary
               text={projectTwitter}
@@ -123,6 +125,7 @@ export function AboutProject(props: {
             target="_blank"
             rel="noreferrer"
             className="text-base font-normal text-black"
+            aria-label="GitHub Link"
           >
             <DetailSummary
               text={`${userGithub}`}
@@ -141,6 +144,7 @@ export function AboutProject(props: {
             target="_blank"
             rel="noreferrer"
             className="text-base font-normal text-black"
+            aria-label="GitHub Link"
           >
             <DetailSummary
               text={`${projectGithub}`}
