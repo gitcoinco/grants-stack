@@ -696,6 +696,16 @@ export class AlloV2 implements Allo {
         throw new AlloError("DirectGrants is not supported yet!");
       }
 
+      const strategyInstance = new DonationVotingMerkleDistributionStrategy(
+        {
+          chain: this.chainId,
+          poolId: BigInt(args.roundId),
+          address: args.strategyAddress,
+        }
+      );
+
+      const totalApplications = await strategyInstance.recipientsCounter();
+
       const rows = buildUpdatedRowsOfApplicationStatuses({
         applicationsToUpdate: args.applicationsToUpdate,
         currentApplications: args.currentApplications,
@@ -707,7 +717,7 @@ export class AlloV2 implements Allo {
         address: args.strategyAddress,
         abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi as Abi,
         functionName: "reviewRecipients",
-        args: [rows, args.currentApplications.length + 1],
+        args: [rows, totalApplications],
       });
 
       emit("transaction", txResult);
