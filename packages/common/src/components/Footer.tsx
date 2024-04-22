@@ -2,8 +2,8 @@ import Discord from "../icons/Discord";
 import Github from "../icons/Github";
 import Gitbook from "../icons/Gitbook";
 // import { getConfig } from "../config";
-import Manager from "../icons/Manager";
-import Builder from "../icons/Builder";
+import ManagerIcon from "../icons/ManagerIcon";
+import BuilderIcon from "../icons/BuilderIcon";
 
 const navigation = [
   // note: the Manager and Builder icons are white... so they are not visible on the white background of the footer
@@ -11,13 +11,13 @@ const navigation = [
     name: "Manager",
     href: "https://manager.gitcoin.co",
     testid: "support",
-    icon: Manager,
+    icon: ManagerIcon,
   },
   {
     name: "Builder",
     href: "https://builder.gitcoin.co",
     testid: "support",
-    icon: Builder,
+    icon: BuilderIcon,
   },
   {
     name: "Discord",

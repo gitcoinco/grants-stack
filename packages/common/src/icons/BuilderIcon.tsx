@@ -1,4 +1,4 @@
-function Builder() {
+function BuilderIcon() {
   return (
     <svg
       width="21"
@@ -27,4 +27,4 @@ function Builder() {
   );
 }
 
-export default Builder;
+export default BuilderIcon;

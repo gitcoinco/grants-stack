@@ -1,4 +1,4 @@
-function Manager() {
+function ManagerIcon() {
   return (
     <svg
       width="24"
@@ -15,4 +15,4 @@ function Manager() {
   );
 }
 
-export default Manager;
+export default ManagerIcon;
