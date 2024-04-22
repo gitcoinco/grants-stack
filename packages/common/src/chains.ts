@@ -7,7 +7,6 @@ import {
   fantomTestnet as fantomTestnetOriginal,
   sepolia as ethereumSepolia,
   zkSync as zkSyncOriginal,
-  zkSyncTestnet as zkSyncTestnetOriginal,
 } from "@wagmi/chains";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
@@ -98,14 +97,21 @@ export const avalanche: Chain = {
 };
 
 export const zkSyncEraTestnet: Chain = {
-  ...zkSyncTestnetOriginal,
+  id: 300,
+  name: "zkSync Era Testnet",
+  network: "zksync era testnet",
   iconUrl: ZkSyncIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
   rpcUrls: {
     default: {
-      http: ["https://testnet.era.zksync.dev"],
+      http: ["https://sepolia.era.zksync.dev"],
     },
     public: {
-      http: ["https://testnet.era.zksync.dev"],
+      http: ["https://sepolia.era.zksync.dev"],
     },
   },
 };
