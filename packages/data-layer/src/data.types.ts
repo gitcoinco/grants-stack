@@ -436,7 +436,7 @@ export interface Round {
       matchingCapAmount?: number;
       minDonationThreshold?: boolean;
       minDonationThresholdAmount?: number;
-      sybilDefense?: SybilDefence;
+      sybilDefense?: SybilDefence | boolean; // this is to support both old and new sybil defense types.
     };
     support?: {
       type: string;
@@ -633,7 +633,7 @@ export interface MatchingFunds {
 
 export interface QuadraticFundingConfig {
   matchingCap: boolean;
-  sybilDefense: SybilDefence;
+  sybilDefense: SybilDefence | boolean;
   matchingCapAmount?: number;
   minDonationThreshold: boolean;
   matchingFundsAvailable: number;
