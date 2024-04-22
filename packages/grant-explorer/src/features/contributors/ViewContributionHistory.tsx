@@ -1,5 +1,4 @@
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
-import { Button } from "common/src/styles";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { getChainIds, votingTokens } from "../api/utils";
@@ -211,7 +210,7 @@ export function ViewContributionHistory(props: {
             </div>
           </div>
           <div className="flex justify-between items-center">
-          {/* todo: removed until site is stable */}
+            {/* todo: removed until site is stable */}
             {/* <Button
               className="shadow-sm inline-flex border-gray-300 border-2 bg-gradient-to-br from-[#f6d7caff] via-[#bddce8ff] to-[#ebdfa5ff] font-medium py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6"
               onClick={() =>

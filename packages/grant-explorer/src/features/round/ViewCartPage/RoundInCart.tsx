@@ -143,9 +143,9 @@ export function RoundInCart(
                 <div className="flex justify-end flex-nowrap">
                   <Skeleton isLoaded={!matchingEstimateLoading}>
                     <div className="flex flex-row font-semibold">
-                      <p
+                      <div
                         className={
-                          "flex flex-col md:flex-row items-center gap-2"
+                          "flex flex-col md:flex-row items-center gap-2 text-base"
                         }
                       >
                         <span className="mr-2">Total match</span>
@@ -154,7 +154,7 @@ export function RoundInCart(
                           ~$
                           {estimate?.toFixed(2)}
                         </div>
-                      </p>
+                      </div>
                       <span className="pl-4">|</span>
                     </div>
                   </Skeleton>

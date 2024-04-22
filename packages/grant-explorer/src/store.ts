@@ -98,6 +98,7 @@ export const useCartStorage = create<CartState>()(
           projects: updateOrInsertCartProject(currentProjects, newProject),
         });
       },
+
       /** @param grantApplicationId - ${roundAddress}-${applicationId} */
       remove: (projectToRemove) => {
         set({

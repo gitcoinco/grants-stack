@@ -106,6 +106,7 @@ export default function ThankYou() {
   const checkedOutProjects = useCheckoutStore((state) =>
     state.getCheckedOutProjects()
   );
+
   const isMrc =
     new Set(checkedOutProjects.map((project) => project.chainId)).size > 1;
   const topProject = checkedOutProjects
