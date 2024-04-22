@@ -380,6 +380,9 @@ function ViewRoundResults({
 
   const disableRoundSaturationControls = Math.round(roundSaturation) >= 100;
 
+  const sybilDefense =
+    round.roundMetadata?.quadraticFundingConfig?.sybilDefense;
+
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
       <p className="text-xl font-semibold leading-6 mb-10">Round Results</p>
@@ -437,24 +440,96 @@ function ViewRoundResults({
                   CSV
                 </a>
               </div>
+              {/* Matching Distribution*/}
               <div
-                className="flex mt-6 pt-6 mb-4 border-t border-gray-100"
+                className="mt-6 pt-6 mb-4 border-t border-gray-100"
                 data-testid="match-stats-title"
                 ref={matchingTableRef}
               >
-                <span className="text-sm leading-5 text-gray-500 font-semibold text-left">
-                  {areMatchingFundsRevised
+                <p className="text-sm leading-5 text-gray-500 font-semibold text-left">
+                  {sybilDefense === "auto"
+                    ? "Matching Distribution"
+                    : areMatchingFundsRevised
                     ? "Revised Matching Distribution"
                     : "Matching Distribution"}
-                </span>
-                <span className="text-sm leading-5 text-gray-300 text-left ml-2">
-                  Preview
-                </span>
-                {matches && (
-                  <span className="text-sm leading-5 text-violet-400 text-left ml-auto">
-                    ({matches.length}) Projects
-                  </span>
+                </p>
+                {sybilDefense === "auto" ? (
+                  <p className="text-sm mt-2">
+                    Frictionless auto-sybil detection
+                  </p>
+                ) : sybilDefense === "manual" ? (
+                  <p className="text-sm mt-2">
+                    Manual verification with Passport
+                  </p>
+                ) : (
+                  <p className="text-sm mt-2">Manual Verification</p>
                 )}
+                <div>
+                  <RadioGroup>
+                    <RadioGroup.Option value="auto">
+                      {({ checked }) => (
+                        <div
+                          className={classNames(
+                            "cursor-pointer flex items-center",
+                            disableRoundSaturationControls &&
+                              "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          <input
+                            type="radio"
+                            className="text-indigo-600 focus:ring-indigo-500"
+                            checked={checked}
+                            readOnly
+                          />
+                          <span
+                            className={classNames(
+                              "ml-2 font-medium text-gray-900",
+                              checked && "text-indigo-900"
+                            )}
+                          >
+                            Recommended
+                          </span>
+                        </div>
+                      )}
+                    </RadioGroup.Option>
+                    <RadioGroup.Option value="manual">
+                      {({ checked }) => (
+                        <div
+                          className={classNames(
+                            "cursor-pointer flex items-center",
+                            disableRoundSaturationControls &&
+                              "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          <input
+                            type="radio"
+                            className="text-indigo-600 focus:ring-indigo-500"
+                            checked={checked}
+                            readOnly
+                          />
+                          <span
+                            className={classNames(
+                              "ml-2 font-medium text-gray-900",
+                              checked && "text-indigo-900"
+                            )}
+                          >
+                            Upload your own results
+                          </span>
+                        </div>
+                      )}
+                    </RadioGroup.Option>
+                  </RadioGroup>
+                </div>
+                <div className="flex mt-6 pt-6 mb-4">
+                  <p className="text-sm leading-5 text-gray-500 font-semibold text-left">
+                    Preview
+                  </p>
+                  {matches && (
+                    <span className="text-sm leading-5 text-violet-400 text-left ml-auto">
+                      ({matches.length}) Projects
+                    </span>
+                  )}
+                </div>
               </div>
               {isLoadingMatchingFunds ? (
                 <Spinner text="We're fetching the matching data." />
