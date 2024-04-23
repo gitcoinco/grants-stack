@@ -94,3 +94,10 @@
     }
   }
 }
+
+.rainbow-button {
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.60) 100%), linear-gradient(124deg, #FF9776 17.77%, #5F94BC 35.47%, #25BDCE 59.3%, #DEAB0C 91.61%);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+}
