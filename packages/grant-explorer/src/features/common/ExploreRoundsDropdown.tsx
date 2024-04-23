@@ -11,9 +11,10 @@ function classNames(...classes: string[]) {
 
 export type ExploreRoundsDropdownProps = {
   chainId: number;
+  roundId: string;
   name: string;
   link: string;
-  customClasses? : string;
+  customClasses?: string;
 };
 
 export default function ExploreRoundsDropdown(props: {
@@ -44,18 +45,25 @@ export default function ExploreRoundsDropdown(props: {
           <div className="py-1">
             {props.rounds?.map((round: ExploreRoundsDropdownProps) => {
               return (
-                <Menu.Item>
+                <Menu.Item key={`${round.chainId}-${round.roundId}`}>
                   {({ active }) => (
-                    <div className={classNames(
-                      "flex flex-row justify-end text-gray-800 px-4 py-2 text-sm",
-                      active ? "hover:bg-gray-100" : ""
-                    )}>
+                    <div
+                      className={classNames(
+                        "flex flex-row justify-end text-gray-800 px-4 py-2 text-sm",
+                        active ? "hover:bg-gray-100" : ""
+                      )}
+                    >
                       <img
                         src={CHAINS[parseChainId(round.chainId)]?.logo}
                         alt={"Chain"}
                         className="rounded-full w-6 h-6 mr-2"
                       />
-                      <Link to={round.link} className={classNames(`font-sans text-right ${round.customClasses}`)}>
+                      <Link
+                        to={round.link}
+                        className={classNames(
+                          `font-sans text-right ${round.customClasses}`
+                        )}
+                      >
                         {round.name}
                       </Link>
                     </div>

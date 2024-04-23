@@ -1,7 +1,7 @@
-import { Collection } from "data-layer";
 import useSWRInfinite from "swr/infinite";
 import { useDataLayer, SearchBasedProjectCategory } from "data-layer";
 import { useMemo } from "react";
+import { CollectionV1 } from "../../collections/collections";
 
 export type ApplicationFilter =
   | {
@@ -11,6 +11,10 @@ export type ApplicationFilter =
   | {
       type: "refs";
       refs: string[];
+    }
+  | {
+      type: "expanded-refs";
+      refs: { chainId: number; roundId: string; id: string }[];
     };
 
 export type ApplicationFetchOptions =
@@ -20,6 +24,11 @@ export type ApplicationFetchOptions =
     }
   | {
       type: "applications-paginated";
+      filter?: ApplicationFilter;
+      order?: { type: "random"; seed: number };
+    }
+  | {
+      type: "applications-collection";
       filter?: ApplicationFilter;
       order?: { type: "random"; seed: number };
     };
@@ -65,6 +74,29 @@ export function useApplications(options: ApplicationFetchOptions | null) {
             pagination,
             applicationMeta: [],
           };
+        }
+        case "applications-collection": {
+          if (options.filter?.type === "expanded-refs") {
+            const applications = await dataLayer.getApplicationsByExpandedRefs(
+              options.filter?.refs ?? []
+            );
+
+            const v2Applications = applications.filter(
+              (a) => a.tags?.includes("allo-v2")
+            );
+
+            return {
+              applications: v2Applications,
+              pagination: {
+                currentPage: 1,
+                totalPages: 1,
+                totalItems: v2Applications.length,
+              },
+              applicationMeta: [],
+            };
+          } else {
+            throw new Error("Unsupported filter type");
+          }
         }
       }
     },
@@ -115,7 +147,7 @@ export function createApplicationFetchOptions({
 }: {
   searchQuery?: string;
   category?: SearchBasedProjectCategory;
-  collection?: Collection;
+  collection?: CollectionV1;
   filters: Filter[];
 }): ApplicationFetchOptions {
   let applicationsFetchOptions: ApplicationFetchOptions = {
@@ -139,8 +171,11 @@ export function createApplicationFetchOptions({
     };
   } else if (collection !== undefined) {
     applicationsFetchOptions = {
-      type: "applications-paginated",
-      filter: { type: "refs", refs: collection.applicationRefs },
+      type: "applications-collection",
+      filter: {
+        type: "expanded-refs",
+        refs: collection.applications,
+      },
       order: {
         type: "random",
         seed: PROJECTS_SORTING_SEED,

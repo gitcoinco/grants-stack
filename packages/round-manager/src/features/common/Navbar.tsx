@@ -17,7 +17,7 @@ export default function Navbar({
 }: NavbarProps) {
   return (
     <>
-      <nav className="bg-moon-600">
+      <nav className="bg-moon-600 z-10">
         <div
           className="mx-auto px-4 sm:px-6 lg:px-20"
           style={{

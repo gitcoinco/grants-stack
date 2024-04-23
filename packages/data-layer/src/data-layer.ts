@@ -1,5 +1,3 @@
-import { VerifiableCredential as PassportVerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import _fetch from "cross-fetch";
 import { request } from "graphql-request";
 import shuffle from "knuth-shuffle-seeded";
@@ -7,11 +5,10 @@ import { Address } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
+import { gql } from "graphql-request";
 import {
   Application,
-  ApplicationStatus,
   Collection,
-  GrantApplicationFormAnswer,
   OrderByRounds,
   Program,
   Project,
@@ -20,13 +17,13 @@ import {
   Round,
   RoundGetRound,
   RoundsQueryVariables,
-  RoundWithApplications,
   SearchBasedProjectCategory,
   V2RoundWithProject,
   v2Project,
   RoundForManager,
   Contribution,
   RoundForExplorer,
+  ExpandedApplicationRef,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -42,7 +39,7 @@ import {
   getLegacyProjectId,
   getProgramById,
   getProgramsByUserAndTag,
-  getProjectById,
+  getProjectsById,
   getProjectAnchorByIdAndChainId,
   getProjectsAndRolesByAddress,
   getRoundByIdAndChainId,
@@ -76,7 +73,6 @@ export class DataLayer {
   private searchApiClient: SearchApi;
   private subgraphEndpointsByChainId: Record<number, string>;
   private ipfsGateway: string;
-  private passportVerifier: PassportVerifier;
   private collectionsSource: collections.CollectionsSource;
   private gsIndexerEndpoint: string;
 
@@ -86,7 +82,6 @@ export class DataLayer {
     subgraph,
     indexer,
     ipfs,
-    passport,
     collections,
   }: {
     fetch?: typeof _fetch;
@@ -104,9 +99,6 @@ export class DataLayer {
     ipfs?: {
       gateway: string;
     };
-    passport?: {
-      verifier: PassportVerifier;
-    };
     collections?: {
       googleSheetsUrl: string;
     };
@@ -120,7 +112,6 @@ export class DataLayer {
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
     this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
     this.ipfsGateway = ipfs?.gateway ?? "https://ipfs.io";
-    this.passportVerifier = passport?.verifier ?? new PassportVerifier();
     this.collectionsSource =
       collections?.googleSheetsUrl === undefined
         ? { type: "hardcoded" }
@@ -243,7 +234,7 @@ export class DataLayer {
 
     const response: { projects: v2Project[] } = await request(
       this.gsIndexerEndpoint,
-      getProjectById,
+      getProjectsById,
       requestVariables,
     );
 
@@ -377,6 +368,96 @@ export class DataLayer {
     );
 
     return response.application ?? null;
+  }
+
+  /**
+   * Returns a list of applications identified by their chainId, roundId, and id.
+   * @param expandedRefs
+   */
+  async getApplicationsByExpandedRefs(
+    expandedRefs: Array<ExpandedApplicationRef>,
+  ): Promise<ApplicationSummary[]> {
+    if (expandedRefs.length === 0) {
+      return [];
+    }
+
+    const applicationToFilter = (r: ExpandedApplicationRef) => {
+      return `{
+        and: {
+          chainId: { equalTo: ${r.chainId} }
+          roundId: {
+            equalTo: "${r.roundId}"
+          }
+          id: { equalTo: "${r.id}" }
+        }
+      }`;
+    };
+
+    const filters = expandedRefs.map(applicationToFilter).join("\n");
+
+    const query = gql`
+      query Application {
+        applications(
+          first: 100
+          filter: {
+            or: [
+              ${filters}
+            ]
+          }
+        ) {
+          id
+          chainId
+          roundId
+          projectId
+          status
+          totalAmountDonatedInUsd
+          uniqueDonorsCount
+          round {
+            strategyName
+            donationsStartTime
+            donationsEndTime
+            applicationsStartTime
+            applicationsEndTime
+            matchTokenAddress
+            roundMetadata
+            tags
+          }
+          metadata
+          project: canonicalProject {
+            tags
+            id
+            metadata
+            anchorAddress
+          }
+        }
+      }
+    `;
+
+    const response: { applications: Application[] } = await request(
+      this.gsIndexerEndpoint,
+      query,
+    );
+
+    return response.applications.map((a: Application) => {
+      return {
+        applicationRef: `${a.chainId}:${a.roundId}:${a.id}`,
+        chainId: parseInt(a.chainId),
+        roundApplicationId: a.id,
+        roundId: a.roundId,
+        roundName: a.round.roundMetadata?.name,
+        projectId: a.project.id,
+        name: a.project?.metadata?.title,
+        websiteUrl: a.project?.metadata?.website,
+        logoImageCid: a.project?.metadata?.logoImg!,
+        bannerImageCid: a.project?.metadata?.bannerImg!,
+        summaryText: a.project?.metadata?.description,
+        payoutWalletAddress: a.metadata?.application?.recipient,
+        createdAtBlock: 123,
+        contributorCount: a.uniqueDonorsCount,
+        contributionsTotalUsd: a.totalAmountDonatedInUsd,
+        tags: a.round.tags,
+      };
+    });
   }
 
   /**
@@ -626,6 +707,10 @@ export class DataLayer {
       | {
           type: "refs";
           refs: string[];
+        }
+      | {
+          type: "expanded-refs";
+          refs: ExpandedApplicationRef[];
         };
   }): Promise<{
     applications: ApplicationSummary[];
@@ -698,14 +783,6 @@ export class DataLayer {
       first,
       filter,
     });
-  }
-
-  async verifyPassportCredential(
-    credential: PassportVerifiableCredential,
-  ): Promise<{ isVerified: boolean }> {
-    return {
-      isVerified: await this.passportVerifier.verifyCredential(credential),
-    };
   }
 
   async getProjectCollections(): Promise<Collection[]> {

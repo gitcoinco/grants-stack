@@ -1,11 +1,11 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { Allo, AnyJson } from "common";
+import PinataClient from "common/src/services/pinata";
 import { getConfig } from "common/src/config";
 import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
-import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";

@@ -12,6 +12,7 @@ export * from "./icons";
 export * from "./markdown";
 export * from "./allo/common";
 
+export { PassportVerifierWithExpiration } from "./credentialVerifier";
 export { ChainId };
 
 export function useParams<T extends Record<string, string> = never>() {
@@ -94,6 +95,21 @@ export const submitPassport = (
       signature: "",
       nonce: "",
     }),
+  });
+};
+
+export const submitPassportLite = (
+  address: string,
+  apiKey: string
+): Promise<Response> => {
+  const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/passport/analysis/${address}`;
+
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": `${apiKey}`,
+    },
   });
 };
 
@@ -407,6 +423,27 @@ export function roundToPassportURLMap(round: Round) {
     default:
       return "https://passport.gitcoin.co";
   }
+}
+
+const passportLiteRounds = [
+  //GG20 rounds
+  { roundId: "23", chainId: 42161 }, // Hackathon Alumni
+  { roundId: "24", chainId: 42161 }, // ENS
+  { roundId: "25", chainId: 42161 }, // dApps & Apps
+  { roundId: "26", chainId: 42161 }, // WEB3 Infrastructurre
+  { roundId: "27", chainId: 42161 }, // Developer Tooling
+  { roundId: "28", chainId: 42161 }, // Hypercerts Ecosystem
+  { roundId: "29", chainId: 42161 }, // Climate Solutions
+  { roundId: "31", chainId: 42161 }, // Open Civics
+  { roundId: "9", chainId: 10 }, // Token Engineering Commons (TEC)
+];
+
+export function isRoundUsingPassportLite(round: Round) {
+  const roundId = round.id;
+  const chainId = round.chainId;
+  return passportLiteRounds.some(
+    (r) => r.roundId === roundId && r.chainId === chainId
+  );
 }
 
 export * from "./allo/transaction-builder";

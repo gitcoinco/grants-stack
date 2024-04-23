@@ -1,6 +1,7 @@
 import "./browserPatches";
 
 import { RainbowKitProvider, Theme, lightTheme } from "@rainbow-me/rainbowkit";
+import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 import { getConfig } from "common/src/config";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import React from "react";
@@ -113,6 +114,10 @@ root.render(
 
                     {/* Access Denied */}
                     <Route path="/access-denied" element={<AccessDenied />} />
+                    <Route
+                      path="/collections/:collectionCid"
+                      element={<ExploreProjectsPage />}
+                    />
 
                     {/* 404 */}
                     <Route path="*" element={<NotFound />} />

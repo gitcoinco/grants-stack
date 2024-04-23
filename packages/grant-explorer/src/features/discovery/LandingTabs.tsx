@@ -43,6 +43,12 @@ export default function LandingTabs() {
       children: isDesktop ? "Explore projects" : "Projects",
       tabName: "home-projects-tab",
     },
+      to: "/",
+      activeRegExp: /^\/collections/,
+      children: "Collections",
+      tabName: "home-collections-tab",
+      showRegExp: /^\/collections/,
+    },
   ];
 
   return (

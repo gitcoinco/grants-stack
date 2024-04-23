@@ -1,14 +1,17 @@
-import { Collection } from "data-layer";
 import tw from "tailwind-styled-components";
 import { CheckIcon, LinkIcon } from "@heroicons/react/20/solid";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { CollectionV1 } from "./collections";
 
 type Props = {
-  collection: Collection;
+  collection: CollectionV1;
   projectsInView: number;
   onAddAllApplicationsToCart: () => void;
 };
+
+const defaultCollectionName = "Untitled Collection";
+
 export function CollectionDetails({
   collection,
   projectsInView,
@@ -16,12 +19,9 @@ export function CollectionDetails({
 }: Props) {
   return (
     <div className="mt-16">
-      <h3 className="text-4xl font-medium mb-2">{`${collection.name} (${collection.applicationRefs.length})`}</h3>
-      <div className="text-lg flex gap-2 mb-12">
-        by:
-        <span className="text-white">{collection.author}</span>
-      </div>
-
+      <h3 className="text-4xl font-medium mb-2">{`${
+        collection.name ?? defaultCollectionName
+      } (${projectsInView})`}</h3>
       <div className="flex">
         <div className="text-lg flex-1 whitespace-pre-wrap">
           {collection.description}
@@ -31,7 +31,7 @@ export function CollectionDetails({
             <ShareButton url={location.href} />
             <AddToCartButton
               current={projectsInView}
-              total={collection.applicationRefs.length}
+              total={collection.applications.length}
               onAdd={onAddAllApplicationsToCart}
             />
           </div>

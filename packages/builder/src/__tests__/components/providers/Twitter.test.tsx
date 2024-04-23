@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, cleanup, screen } from "@testing-library/react";
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import { PassportVerifierWithExpiration } from "common";
 import Twitter from "../../../components/providers/Twitter";
 import setupStore from "../../../store";
 import {
@@ -39,7 +39,8 @@ describe("<Twitter />", () => {
 
       const verifyCredentialMock = jest.fn();
       verifyCredentialMock.mockReturnValue(true);
-      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
+      PassportVerifierWithExpiration.prototype.verifyCredential =
+        verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
@@ -74,7 +75,8 @@ describe("<Twitter />", () => {
 
       const verifyCredentialMock = jest.fn();
       verifyCredentialMock.mockReturnValue(true);
-      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
+      PassportVerifierWithExpiration.prototype.verifyCredential =
+        verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
@@ -108,7 +110,8 @@ describe("<Twitter />", () => {
 
       const verifyCredentialMock = jest.fn();
       verifyCredentialMock.mockReturnValue(true);
-      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
+      PassportVerifierWithExpiration.prototype.verifyCredential =
+        verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(

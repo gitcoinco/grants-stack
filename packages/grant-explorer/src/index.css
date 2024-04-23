@@ -1,93 +1,103 @@
 @import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Miriam+Libre:wght@400;700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap");
 
 @font-face {
-    font-family: "Modern Era";
-    font-weight: 400;
-    src: local("ModernEraRegular"),
-    url("../public/modern-era-regular.otf") format('opentype');
+  font-family: "Modern Era Regular";
+  font-weight: 400;
+  src:
+    local("ModernEraRegular"),
+    url("../public/ModernEra-Regular.woff") format("woff");
 }
 
 @font-face {
-    font-family: "Modern Era Medium";
-    font-weight: 500;
-    src: local("ModernEraMedium"),
-    url("../public/modern-era-medium.otf") format('opentype');
+  font-family: "Modern Era Medium";
+  font-weight: 500;
+  src:
+    local("ModernEraMedium"),
+    url("../public/modern-era-medium.otf") format("opentype");
 }
 
 @font-face {
-    font-family: "Modern Era Bold";
-    font-weight: 600;
-    src: local("ModernEraBold"),
-    url("../public/modern-era-bold.otf") format('opentype');
+  font-family: "Modern Era Bold";
+  font-weight: 600;
+  src:
+    local("ModernEraBold"),
+    url("../public/modern-era-bold.otf") format("opentype");
 }
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 .font-dm-mono {
-    font-family: 'DM Mono', monospace;
+  font-family: "DM Mono", monospace;
 }
 
 .font-modern-era-medium {
-    font-family: 'Modern Era Medium', serif;
+  font-family: "Modern Era Medium", serif;
 }
 
 .font-modern-era-regular {
-    font-family: 'Modern Era Regular', serif;
+  font-family: "Modern Era Regular", serif;
 }
 
 .blurred::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backdrop-filter: blur(22px);
-    z-index: -1;
-    background-color: rgba(255 255 255 / 3%);
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(22px);
+  z-index: -1;
+  background-color: rgba(255 255 255 / 3%);
 }
 
 @layer base {
-    html {
-        @apply text-grey-500;
-    }
+  html {
+    @apply text-grey-500;
+  }
 
-    h1 {
-        @apply text-7xl;
-    }
+  h1 {
+    @apply text-7xl;
+  }
 
-    h2 {
-        @apply text-5xl;
-    }
+  h2 {
+    @apply text-5xl;
+  }
 
-    h3 {
-        @apply text-3xl;
-    }
+  h3 {
+    @apply text-3xl;
+  }
 
-    h4 {
-        @apply text-2xl;
-    }
+  h4 {
+    @apply text-2xl;
+  }
 
-    h5 {
-        @apply text-base;
-    }
+  h5 {
+    @apply text-base;
+  }
 
-    h6 {
-        @apply text-sm;
-    }
+  h6 {
+    @apply text-sm;
+  }
 
-    p {
-        @apply text-base;
-    }
+  p {
+    @apply text-base;
+  }
 
-    .quick-view-summary {
-        margin-right: 0rem;
+  .quick-view-summary {
+    margin-right: 0rem;
 
-        @media (max-width: 768px) {
-            margin-right: -4rem;
-        }
+    @media (max-width: 768px) {
+      margin-right: -4rem;
     }
+  }
+}
+
+.rainbow-button {
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.60) 100%), linear-gradient(124deg, #FF9776 17.77%, #5F94BC 35.47%, #25BDCE 59.3%, #DEAB0C 91.61%);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 }
