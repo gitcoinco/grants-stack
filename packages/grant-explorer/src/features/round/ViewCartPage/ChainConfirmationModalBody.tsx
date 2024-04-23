@@ -105,6 +105,7 @@ export function ChainSummary({
           disabled={chainsBeingCheckedOut === 1}
           onChange={(e) => onChange(e.target.checked)}
         />
+        <Checkbox className="mt-1 mr-2" border={"1px"} borderRadius={"4px"} colorScheme="whiteAlpha" iconColor="black" size="lg" isChecked={checked} onChange={(e) => onChange(e.target.checked)} />
         <img
           className="inline mr-2 w-5 h-5"
           alt={CHAINS[chainId].name}
@@ -120,7 +121,6 @@ export function ChainSummary({
         </span>
         <span data-testid={"chainSummaryPayoutToken"}>
           {selectedPayoutToken.name} to be contributed
-          <span className="text-grey-400 italic"> + X gas fee</span>
         </span>
       </p>
     </div>
