@@ -50,12 +50,12 @@ export default function MRCProgressModal({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6">
+              <Dialog.Panel className="relative bg-white rounded-3xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6">
                 <div className="sm:flex sm:items-start">
-                  <div className="mt-3 text-center sm:mt-0 sm:text-left">
+                  <div className="mt-3 font-sans text-center sm:mt-0 sm:text-left">
                     <Dialog.Title
                       as="h3"
-                      className="text-base leading-6 font-semibold text-grey-500"
+                      className="text-lg font-medium text-grey-500"
                     >
                       {heading}
                     </Dialog.Title>
