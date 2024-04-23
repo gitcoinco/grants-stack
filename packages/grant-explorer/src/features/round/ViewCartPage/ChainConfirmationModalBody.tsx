@@ -93,19 +93,18 @@ export function ChainSummary({
     >
       <p className="font-sans font-medium">
         <Checkbox
-          className={`mr-2 pr-2 h-4 w-4  ${
+          className={`mr-2 mt-1  ${
             chainsBeingCheckedOut === 1 ? "invisible" : ""
           }`}
           border={"1px"}
           borderRadius={"4px"}
           colorScheme="whiteAlpha"
           iconColor="black"
-          size="md"
+          size="lg"
           isChecked={checked}
           disabled={chainsBeingCheckedOut === 1}
           onChange={(e) => onChange(e.target.checked)}
         />
-        <Checkbox className="mt-1 mr-2" border={"1px"} borderRadius={"4px"} colorScheme="whiteAlpha" iconColor="black" size="lg" isChecked={checked} onChange={(e) => onChange(e.target.checked)} />
         <img
           className="inline mr-2 w-5 h-5"
           alt={CHAINS[chainId].name}
