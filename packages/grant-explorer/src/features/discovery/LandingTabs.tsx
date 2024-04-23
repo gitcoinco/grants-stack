@@ -43,12 +43,6 @@ export default function LandingTabs() {
       children: isDesktop ? "Explore projects" : "Projects",
       tabName: "home-projects-tab",
     },
-      to: "/",
-      activeRegExp: /^\/collections/,
-      children: "Collections",
-      tabName: "home-collections-tab",
-      showRegExp: /^\/collections/,
-    },
   ];
 
   return (
@@ -63,11 +57,11 @@ export default function LandingTabs() {
             key={tab.to}
             to={tab.to}
             active={isActive}
-            // show={
-            //   tab.showRegExp === undefined
-            //     ? true
-            //     : tab.showRegExp.test(pathname)
-            // }
+            show={
+              tab.showRegExp === undefined
+                ? true
+                : tab.showRegExp.test(pathname)
+            }
             {...tabProps}
           >
             {tab.children}
