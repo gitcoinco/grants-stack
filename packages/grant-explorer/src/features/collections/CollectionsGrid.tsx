@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Collection } from "data-layer";
+import { CommunityCollection } from "./community";
 import CollectionCard from "./CollectionCard";
 
 // Index position of the big cards
@@ -7,7 +7,14 @@ const collectionGridLayout = [0, 5, 6, 11];
 
 const DISPLAY_COUNT = 12;
 
-export function CollectionsGrid({ data }: { data: Collection[] }) {
+export function CollectionsGrid({
+  data,
+}: {
+  data: CommunityCollection[] | undefined;
+}) {
+  if (!data) {
+    return null;
+  }
   // Shuffle the collections
   const shuffled = useMemo(() => shuffle(data), [data]);
 
@@ -17,7 +24,7 @@ export function CollectionsGrid({ data }: { data: Collection[] }) {
         const size = collectionGridLayout.includes(i) ? "big" : "small";
         return (
           <div
-            key={collection?.id}
+            key={collection?.cid}
             className={size === "big" ? "md:col-span-2" : ""}
           >
             <CollectionCard collection={collection} size={size} />

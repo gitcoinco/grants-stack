@@ -15,6 +15,8 @@ import { RoundsGrid } from "./RoundsGrid";
 import LandingHero from "./LandingHero";
 import { LandingSection, ViewAllLink } from "./LandingSection";
 import { toQueryString } from "./RoundsFilter";
+import { useCollections } from "../collections/hooks/useCollections";
+import { CollectionsGrid } from "../collections/CollectionsGrid";
 
 const LandingPage = () => {
   const activeRounds = useFilterRounds(
@@ -37,9 +39,16 @@ const LandingPage = () => {
     );
   }, [roundsEndingSoon.data]);
 
+  const collections = useCollections();
+
   return (
     <GradientLayout showWalletInteraction showAlloVersionBanner>
       <LandingHero />
+
+      <LandingSection title="Community collections">
+        <CollectionsGrid data={collections.data} />
+      </LandingSection>
+
       <LandingSection
         title="Donate now"
         action={
