@@ -7,17 +7,9 @@ const collectionGridLayout = [0, 5, 6, 11];
 
 const DISPLAY_COUNT = 12;
 
-export function CollectionsGrid({
-  data,
-}: {
-  data: CommunityCollection[] | undefined;
-}) {
+export function CollectionsGrid({ data }: { data: CommunityCollection[] }) {
   // Shuffle the collections
   const shuffled = useMemo(() => shuffle(data), [data]);
-
-  if (!data) {
-    return null;
-  }
 
   return (
     <div className="md:grid space-y-4 md:space-y-0 md:grid-cols-4 gap-6">

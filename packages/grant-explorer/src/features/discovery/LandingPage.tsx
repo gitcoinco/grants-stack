@@ -46,7 +46,9 @@ const LandingPage = () => {
       <LandingHero />
 
       <LandingSection title="Community collections">
-        <CollectionsGrid data={collections.data} />
+        {collections.data !== undefined && (
+          <CollectionsGrid data={collections.data} />
+        )}
       </LandingSection>
 
       <LandingSection
