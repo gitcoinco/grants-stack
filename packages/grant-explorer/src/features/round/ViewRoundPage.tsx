@@ -401,7 +401,6 @@ function AfterRoundStart(props: {
     <>
       <DefaultLayout>
         {showCartNotification && renderCartNotification()}
-        <Navbar />
         {props.isAfterRoundEndDate && (
           <div className="relative top-16">
             <RoundEndedBanner />
@@ -960,7 +959,9 @@ const RoundStatsTabContent = ({
         </div>
 
         <div className="max-w-[53rem] m-auto w-full bg-green-50 rounded-2xl py-8 px-2 flex justify-center items-center gap-8 flex-wrap">
-          <p className="text-xl sm:text-2xl font-medium">Want to check out more stats?</p>
+          <p className="text-xl sm:text-2xl font-medium">
+            Want to check out more stats?
+          </p>
           <a
             href={`https://reportcards.gitcoin.co/${chainId}/${roundId}`}
             target="_blank"
