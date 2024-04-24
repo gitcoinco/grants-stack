@@ -613,16 +613,13 @@ const ProjectList = (props: {
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { projects, roundRoutePath, round, chainId, roundId } = props;
+  const { projects, roundRoutePath, chainId, roundId } = props;
   const dataLayer = useDataLayer();
 
   const { data: applications } = useRoundApprovedApplications(
     {
       chainId,
       roundId,
-      projectIds: round.approvedProjects?.map(
-        (proj) => proj.grantApplicationId
-      ),
     },
     dataLayer
   );
@@ -883,9 +880,6 @@ const RoundStatsTabContent = ({
       {
         chainId,
         roundId,
-        projectIds: round.approvedProjects?.map(
-          (proj) => proj.grantApplicationId
-        ),
       },
       dataLayer
     );
@@ -960,7 +954,9 @@ const RoundStatsTabContent = ({
         </div>
 
         <div className="max-w-[53rem] m-auto w-full bg-green-50 rounded-2xl py-8 px-2 flex justify-center items-center gap-8 flex-wrap">
-          <p className="text-xl sm:text-2xl font-medium">Want to check out more stats?</p>
+          <p className="text-xl sm:text-2xl font-medium">
+            Want to check out more stats?
+          </p>
           <a
             href={`https://reportcards.gitcoin.co/${chainId}/${roundId}`}
             target="_blank"
