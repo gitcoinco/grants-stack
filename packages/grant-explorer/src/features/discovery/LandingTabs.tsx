@@ -38,11 +38,10 @@ export default function LandingTabs() {
       tabName: "home-rounds-tab",
     },
     {
-      to: "/",
-      activeRegExp: /^\/collections/,
-      children: "Collections",
-      tabName: "home-collections-tab",
-      showRegExp: /^\/collections/,
+      to: "/projects",
+      activeRegExp: /^\/projects/,
+      children: isDesktop ? "Explore projects" : "Projects",
+      tabName: "home-projects-tab",
     },
   ];
 
