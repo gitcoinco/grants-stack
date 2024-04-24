@@ -1,64 +1,84 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { Hex } from "viem";
+import { gql, GraphQLClient } from "graphql-request";
+import internal from "stream";
+import { date } from "zod";
 
-const osoUrl = process.env.REACT_APP_OSO_URL;
+const osoApiKey = process.env.REACT_APP_OSO_API_KEY;
+const osoUrl = "https://opensource-observer.hasura.app/v1/graphql";
+const graphQLClient = new GraphQLClient(osoUrl, {
+  headers: {
+    authorization: `Bearer ${osoApiKey}`,
+  },
+})
 
-export interface IOSOGrant {
-  uid: Hex;
-  projectUID: Hex;
-  communityUID: Hex;
-  title: string;
-  description: string;
-  createdAtMs: number;
+export interface IOSOStats {
+  code_metrics_by_project: {
+    contributors : number;
+    first_commit_date : number;
+  }
 }
 
-export function useOSO(projectId?: string) {
-  const [stats, setStats] = useState<IOSOGrant[]>([]);
+export function useOSO(projectTitle?: string) {
+  const emptyReturn : IOSOStats = {
+    code_metrics_by_project:
+      {
+        contributors : 0,
+        first_commit_date : 0
+      }
+  };
+  const [stats, setStats] = useState<IOSOStats>(emptyReturn);
 
-  const getStatsFor = async (projectRegistryId: string) => {
+  const getStatsFor = async (projectRegistryTitle: string) => {
     if (!osoUrl) throw new Error("Open Source Observer url not set.");
-    try {
-      const items: IOSOGrant[] = await fetch(
-        `${osoUrl}/grants/external-id/${projectRegistryId}`
-      ).then((res) => res.json());
+    const query = gql`{
+      code_metrics_by_project(where: {project_slug: {_eq: "${projectRegistryTitle}"}}) {
+        contributors
+        first_commit_date
+      }
+    }`
 
-      if (!Array.isArray(items)) {
-        setStats([]);
+    try {
+      const items: IOSOStats = await graphQLClient.request<IOSOStats>(query)
+      console.log(items);
+
+      if (!Array.isArray(items.code_metrics_by_project)) {
+        setStats(emptyReturn);
         return;
       }
 
-      const parsedItems =
-        items
-          .filter((grant) => grant.title)
-          .map((grant) => ({
-            ...grant
-          }))
-          .sort((a, b) => b.createdAtMs - a.createdAtMs) || [];
+      console.log(items.code_metrics_by_project[0].contributors);
+      const parsedItems : IOSOStats = {
+        code_metrics_by_project:
+          {
+            contributors : items.code_metrics_by_project[0].contributors,
+            first_commit_date : items.code_metrics_by_project[0].first_commit_date
+          }
+      };
+
 
       setStats(parsedItems);
     } catch (e) {
-      console.error(`No grants found for project: ${projectRegistryId}`);
+      console.error(`No stats found for project: ${projectRegistryTitle}`);
       console.error(e);
-      setStats([]);
+      setStats(emptyReturn);
     }
   };
 
-  const { isLoading } = useSWR(
-    `${osoUrl}/grants/external-id/${projectId}`,
-    {
-      fetcher: async () => projectId && getStatsFor(projectId),
+  const { isLoading } = useSWR(osoUrl, {
+      fetcher: async () => projectTitle && getStatsFor(projectTitle),
     }
   );
 
   return {
     /**
-     * Fetch GAP Indexer for grants for a project
-     * @param projectRegistryId registryId
+     * Fetch OSO for stats on a project
+     * @param projectRegistryTitle projectTitle
      */
     getStatsFor,
     /**
-     * Grants for a project (loaded from GAP)
+     * Stats for a project (loaded from OSO)
      */
     stats,
     isGapLoading: isLoading,
