@@ -12,11 +12,12 @@ export function CollectionsGrid({
 }: {
   data: CommunityCollection[] | undefined;
 }) {
+  // Shuffle the collections
+  const shuffled = useMemo(() => shuffle(data), [data]);
+
   if (!data) {
     return null;
   }
-  // Shuffle the collections
-  const shuffled = useMemo(() => shuffle(data), [data]);
 
   return (
     <div className="md:grid space-y-4 md:space-y-0 md:grid-cols-4 gap-6">
