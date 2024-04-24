@@ -401,7 +401,6 @@ function AfterRoundStart(props: {
     <>
       <DefaultLayout>
         {showCartNotification && renderCartNotification()}
-        <Navbar />
         {props.isAfterRoundEndDate && (
           <div className="relative top-16">
             <RoundEndedBanner />
