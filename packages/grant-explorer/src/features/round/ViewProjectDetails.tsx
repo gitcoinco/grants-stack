@@ -43,7 +43,6 @@ import {
   mapApplicationToRound,
   useApplication,
 } from "../projects/hooks/useApplication";
-import { AlloVersionBanner } from "./ViewRoundPage";
 import { PassportWidget } from "../common/PassportWidget";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
@@ -217,7 +216,6 @@ export default function ViewProjectDetails() {
   return (
     <>
       <DefaultLayout>
-        <AlloVersionBanner roundId={roundId} />
         {isAfterRoundEndDate && <RoundEndedBanner />}
         <div className="flex flex-row justify-between my-8">
           <div className="flex items-center pt-2" data-testid="bread-crumbs">
