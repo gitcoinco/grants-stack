@@ -10,17 +10,15 @@ import {
 } from "react";
 import {
   CalendarIcon,
-  VotingToken,
-  getRoundStrategyTitle,
-  useTokenPrice,
-} from "common";
-
-import {
   ChainId,
   formatUTCDateAsISOString,
+  getRoundStrategyTitle,
   getUTCTime,
+  isRoundUsingPassportLite,
   renderToPlainText,
   truncateDescription,
+  useTokenPrice,
+  VotingToken,
 } from "common";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
@@ -417,11 +415,12 @@ function AfterRoundStart(props: {
           >
             <Breadcrumb items={breadCrumbs} />
           </div>
-          {walletAddress && isSybilDefenseEnabled && (
-            <div data-testid="passport-widget">
-              <PassportWidget round={round} alignment="right" />
-            </div>
-          )}
+          {walletAddress &&
+            (isSybilDefenseEnabled || isRoundUsingPassportLite(round)) && (
+              <div data-testid="passport-widget">
+                <PassportWidget round={round} alignment="right" />
+              </div>
+            )}
         </div>
 
         <section>
