@@ -301,7 +301,6 @@ function AfterRoundStart(props: {
     <>
       {showCartNotification && renderCartNotification()}
       <Navbar />
-      {props.isBeforeRoundEndDate && <AlloVersionBanner roundId={roundId} />}
       {props.isAfterRoundEndDate && (
         <div className="relative top-16">
           <RoundEndedBanner />
